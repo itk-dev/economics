@@ -7,15 +7,27 @@
         "php": ">=8.1",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "doctrine/orm": "^2.13",
         "symfony/console": "6.1.*",
         "symfony/dotenv": "6.1.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.1.*",
+        "symfony/http-client": "6.1.*",
+        "symfony/monolog-bundle": "^3.8",
         "symfony/runtime": "6.1.*",
+        "symfony/security-bundle": "6.1.*",
+        "symfony/twig-bundle": "6.1.*",
         "symfony/yaml": "6.1.*"
     },
     "require-dev": {
-        "ergebnis/composer-normalize": "^2.28"
+        "ergebnis/composer-normalize": "^2.28",
+        "friendsofphp/php-cs-fixer": "^3.11",
+        "friendsoftwig/twigcs": "^6.0",
+        "phpunit/phpunit": "^9.5",
+        "symfony/debug-bundle": "6.1.*",
+        "symfony/maker-bundle": "^1.47",
+        "symfony/phpunit-bridge": "^6.1",
+        "vimeo/psalm": "^4.28"
     },
     "replace": {
         "symfony/polyfill-ctype": "*",
@@ -70,6 +82,22 @@
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
-        }
+        },
+        "check-coding-standards/php-cs-fixer": [
+            "php-cs-fixer fix --dry-run --format=checkstyle"
+        ],
+        "check-coding-standards/twigcs": [
+            "twigcs templates"
+        ],
+        "coding-standards-check": [
+            "@check-coding-standards/php-cs-fixer",
+            "@check-coding-standards/twigcs"
+        ],
+        "coding-standards-apply": [
+            "php-cs-fixer fix"
+        ],
+        "phpunit": [
+            "./vendor/bin/phpunit"
+        ]
     }
 }
