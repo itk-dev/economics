@@ -1,0 +1,55 @@
+create_project_form:
+  error: Fejl
+  title: Opret projekt
+  project_name:
+    label: Projekt navn
+    help: Et navn til at identificere projektet
+    warning: Projekt navn er allerede i brug
+  project_key:
+    label: Projekt nøgle
+    help: En nøgle der bruges som prefix til opgaver i projektet
+    warning: Nøglen er allerede i brug
+  description:
+    label: Beskrivelse
+    help: En beskrivelse af projektet
+  team:
+    label: Team
+    help: Det ITK team som projektet er tilknyttet
+  account:
+    label: Konto
+    help: Kontoen som projektet er tilknyttet
+  create_new_account:
+    label: Opret ny konto
+    help: Dette vil oprette en ny konto i Jira
+  new_account_name:
+    label: Konto navn
+    help: Et navn til at identificere kontoen
+  new_account_key:
+    label: Kommunal afdeling eller PSP/CVR nummer
+    help: Et PSP nummer hvis det er en ITK konto, en afdeling hvis det er en kommunal konto, et CVR nummer hvis kontoen er knyttet til en kunde udenfor kommunen.
+  new_account_customer:
+    label: Kunde
+    help: Kunden der repræsenterer kontoen
+  new_account_contact:
+    label: Kontakt
+    help: Person der repræsenterer kontoen
+  new_customer:
+    label: Opret ny kunde
+    help: Dette vil oprette en kunde i Jira
+  new_customer_name:
+    label: Kunde navn
+    help: Navn til at identificere kunden
+  new_customer_key:
+    label: EAN/Debitor nummer
+    help: Angiv kundens debitornummer (4 cifre) hvis det er en kunde under Aarhus kommune eller EAN nummer (13 cifre) hvis det er en ekstern kunde
+  save:
+    label: Opret projekt
+    progress_text: Opretter projekt
+create_project_submitted:
+  title: Projekt oprettet
+  sub_text: Men du mangler lige det sidste skridt!
+  project_title: Nyt projekt oprettet
+  account_title: Ny konto oprettet
+  customer_title: Ny kunde oprettet
+  last_step:
+    text: For at knytte projektet til dit team skal du følge linket herunder og klikke "Add Project Link" under "Links to Projects", find og vælg dit nye projekt på listen.

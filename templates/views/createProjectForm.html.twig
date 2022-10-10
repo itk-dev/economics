@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'create_project_form.title'|trans }}
+{% endblock %}
+{% block content %}
+  <h1>{{ 'create_project_form.title'|trans }}</h1>
+  <div class="form" id="create-project-form" data-form-config="{{ formConfig }}">
+    {{ form_start(form) }}
+    <div class="form-errors">
+      {{ form_errors(form) }}
+    </div>
+    <div class="form-group create_project_form_project_name_wrapper">
+      {{ form_label(form.project_name) }}
+      <span class="invalid-feedback name-warning-message">
+        <span class="d-block">
+          <span class="form-error-icon badge badge-danger text-uppercase">{{ 'create_project_form.error'|trans }}</span>
+          <span class="form-error-message">{{ 'create_project_form.project_name.warning'|trans }}</span>
+        </span>
+      </span>
+      {{ form_errors(form.project_name) }}
+      {{ form_widget(form.project_name) }}
+      {{ form_help(form.project_name) }}
+    </div>
+    <div class="form-group create_project_form_project_key_wrapper">
+      {{ form_label(form.project_key) }}
+      <span class="invalid-feedback key-warning-message">
+        <span class="d-block">
+          <span class="form-error-icon badge badge-danger text-uppercase">{{ 'create_project_form.error'|trans }}</span>
+          <span class="form-error-message">{{ 'create_project_form.project_key.warning'|trans }}</span>
+        </span>
+      </span>
+      {{ form_errors(form.project_key) }}
+      {{ form_widget(form.project_key) }}
+      {{ form_help(form.project_key) }}
+    </div>
+    <div class="form-group">
+      {{ form_row(form.description) }}
+    </div>
+    <div class="form-group">
+      {{ form_row(form.team) }}
+    </div>
+    {% if form.account is defined %}
+      <div class="form-group">
+        {% if form.account is defined %}{{ form_row(form.account) }}{% endif %}
+        {% if form.new_account is defined %}{{ form_row(form.new_account) }}{% endif %}
+      </div>
+    {% endif %}
+    {% if form.account is defined %}
+      <div class="form-group toggle-account-group collapse">
+        {% if form.new_account_name is defined %}{{ form_row(form.new_account_name) }}{% endif %}
+        {% if form.new_account_key is defined %}{{ form_row(form.new_account_key) }}{% endif %}
+        {% if form.new_account_contact is defined %}{{ form_row(form.new_account_contact) }}{% endif %}
+        {% if form.new_account_customer is defined %}{{ form_row(form.new_account_customer) }}{% endif %}
+        {% if form.new_customer is defined %}{{ form_row(form.new_customer) }}{% endif %}
+        <div class="form-group toggle-customer-group collapse">
+          {% if form.new_customer_name is defined %}{{ form_row(form.new_customer_name) }}{% endif %}
+          {% if form.new_customer_key is defined %}{{ form_row(form.new_customer_key) }}{% endif %}
+        </div>
+      </div>
+    {% endif %}
+    {{ form_end(form) }}
+    <div id="create_project_form_save_text" style="display: none;">
+    <button class="btn btn-primary" type="button" disabled>
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      {{ 'create_project_form.save.progress_text'|trans }}
+    </button>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ encore_entry_script_tags('app') }}
+  {{ encore_entry_script_tags('create_project') }}
+{% endblock %}

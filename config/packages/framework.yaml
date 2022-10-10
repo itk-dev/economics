@@ -17,6 +17,12 @@ framework:
     php_errors:
         log: true
 
+    http_client:
+        scoped_clients:
+            project.tracker.api:
+                base_uri: '%env(PROJECT_TRACKER_URL)%'
+                auth_basic: '%env(PROJECT_TRACKER_USER)%:%env(PROJECT_TRACKER_TOKEN)%'
+
 when@test:
     framework:
         test: true
