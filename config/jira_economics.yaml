@@ -1,0 +1,145 @@
+parameters:
+  custom_fields: ~
+  billing_receiver_account: ~
+  billing_material_numbers: ~
+  project_billing_internal_material_id: ~
+  project_billing_external_material_id: ~
+  project_billing_default_text: ~
+  project_billing_supplier: ~
+  portal:
+    menu:
+      jira:
+        roles: ROLE_JIRA
+        title: 'Jira'
+        desc: 'Jira'
+        icon: 'fa-th-large'
+        routeName: 'jira_index'
+        # active: false
+
+      admin:
+        roles: ROLE_ADMIN
+        title: 'Admin'
+        desc: 'Admin'
+        icon: 'fa-cog'
+        routeName: 'easyadmin'
+        # active: false
+
+    apps:
+      grafisk_service:
+        title: 'Bestilling hos Grafisk service'
+        desc: 'Bestilling hos Grafisk service'
+        icon: 'fa-braille'
+        routeName: 'graphic_service_order_form'
+        btnTxt: 'Opret bestilling'
+
+  jira:
+    menu:
+      dash:
+        title: 'Dash'
+        desc: 'App oversigt'
+        icon: 'fa-th-large'
+        routeName: 'jira_index'
+        # active: '/' === $pathInfo
+
+      planning:
+        title: 'Planlægning'
+        desc: 'Planlægningsoversigt baseret på tasks i Jira'
+        icon: 'fa-braille'
+        routeName: 'planning_index'
+        # active: $this->routeStartsWith('planning_index' $pathInfo)
+
+      newProject:
+        title: 'Nyt projekt'
+        desc: 'Opret et nyt Jira-projekt ud fra en skabelon'
+        icon: 'fa-project-diagram'
+        routeName: 'create_project_form'
+        # active: $this->routeStartsWith('create_project_form' $pathInfo)
+
+      billing:
+        title: 'Faktura'
+        desc: 'Opret og rediger fakturaer baseret på tasks i Jira'
+        icon: 'fa-file-invoice'
+        routeName: 'billing_index'
+        # active: $this->routeStartsWith('billing_index' $pathInfo)
+
+      expense:
+        title: 'Udgift'
+        desc: 'Opret udgifter i forbindelse med projekter og tasks'
+        icon: 'fa-credit-card'
+        routeName: 'expense_new'
+        # active: $this->routeStartsWith('expense_new' $pathInfo)
+
+      sprint_report:
+        title: 'Sprintrapport'
+        desc: 'Generér sprintrapport'
+        icon: 'fa-file-alt'
+        routeName: 'sprint_report_index'
+
+      gs_billing:
+        title: 'Grafisk service fakturering'
+        desc: 'Lav udtræk af grafiske opgaver'
+        icon: 'fa-file-export'
+        routeName: 'graphic_service_billing_index'
+
+      project_billing:
+        title: 'Projekt fakturering'
+        desc: 'Lav fakturaer for et projekt ud fra Accounts på de enkelte issues'
+        icon: 'fa-file-invoice-dollar'
+        routeName: 'project_billing_index'
+
+      portal:
+        title: 'Portal'
+        desc: 'Portal'
+        icon: 'fa-cog'
+        routeName: 'portal_index'
+        # active: false
+
+    apps:
+      planning:
+        title: 'Planlægning'
+        desc: 'Planlægningsoversigt baseret på tasks i Jira'
+        icon: 'fa-braille'
+        routeName: 'planning_index'
+        btnTxt: 'Se planlægning'
+
+      newProject:
+        title: 'Nyt projekt'
+        desc: 'Opret et nyt Jira-projekt ud fra en skabelon'
+        icon: 'fa-project-diagram'
+        routeName: 'create_project_form'
+        btnTxt: 'Opret Nyt projekt'
+
+      billing:
+        title: 'Faktura'
+        desc: 'Opret og rediger fakturaer baseret på tasks i Jira'
+        icon: 'fa-file-invoice'
+        routeName: 'billing_index'
+        btnTxt: 'Lav en Faktura'
+
+      expense:
+        title: 'Udgift'
+        desc: 'Opret udgifter i forbindelse med projekter og tasks'
+        icon: 'fa-credit-card'
+        routeName: 'expense_new'
+        btnTxt: 'Opret en udgift'
+
+      sprint_report:
+        title: 'Sprintrapport'
+        desc: 'Generér sprintrapport'
+        icon: 'fa-file-alt'
+        routeName: 'sprint_report_index'
+        btnTxt: 'Lav sprintrapport'
+
+      gs_billing:
+        title: 'Grafisk service fakturering'
+        desc: 'Lav udtræk af grafiske opgaver'
+        icon: 'fa-file-export'
+        routeName: 'graphic_service_billing_index'
+        btnTxt: 'Lav udtræk'
+
+      project_billing:
+        title: 'Projekt fakturering'
+        desc: 'Lav fakturaer for et projekt ud fra Accounts på de enkelte issues'
+        icon: 'fa-file-invoice-dollar'
+        routeName: 'project_billing_index'
+        btnTxt: 'Lav udtræk'

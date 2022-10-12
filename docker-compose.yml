@@ -60,18 +60,18 @@ services:
 #      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.middlewares=redirect-to-https"
 #      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
-  mailhog:
-    image: itkdev/mailhog
-    networks:
-      - app
-      - frontend
-    ports:
-      - "1025"
-      - "8025"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=frontend"
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-http.rule=Host(`${COMPOSE_DOMAIN}`)"
+#  mailhog:
+#    image: itkdev/mailhog
+#    networks:
+#      - app
+#      - frontend
+#    ports:
+#      - "1025"
+#      - "8025"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.docker.network=frontend"
+#      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}-http.rule=Host(`${COMPOSE_DOMAIN}`)"
 
 volumes:
   # Named volume requires that you have NFS shares enabled (performance boost on Macs).

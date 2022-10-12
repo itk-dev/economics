@@ -110,9 +110,37 @@ class JiraApiService implements ApiServiceInterface
         return $list;
     }
 
+    /**
+     * Create a jira project.
+     *
+     * See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-projects/#api-rest-api-3-project-post
+     *
+     * @param array $data
+     *
+     * @return string|null
+     */
+    public function createJiraProject(array $data): ?string
+    {
+        $projectKey = strtoupper($data['form']['project_key']);
+        $project = [
+            'assigneeType' => 'UNASSIGNED',
+            'categoryId' => $data['selectedTeamConfig']['project_category'],
+            'description' => $data['form']['description'],
+            'issueTypeScheme' => $data['selectedTeamConfig']['issue_type_scheme'],
+            'issueTypeScreenScheme' => $data['selectedTeamConfig']['issue_type_screen_scheme'],
+            'key' => $projectKey,
+            'lead' => $data['selectedTeamConfig']['team_lead'],
+            'name' => $data['form']['project_name'],
+            'permissionScheme' => $data['selectedTeamConfig']['permission_scheme'],
+            'templateKey' => 'com.atlassian.jira-core-project-templates:jira-core-simplified-process-control',
+            'typeKey' => 'software',
+            'workflowScheme' => $data['selectedTeamConfig']['workflow_scheme'],
+        ];
 
+        $response = $this->post('/rest/api/2/project', $project);
 
-
+        return ('project was created' === $response->message) ? $projectKey : null;
+    }
 
 
 

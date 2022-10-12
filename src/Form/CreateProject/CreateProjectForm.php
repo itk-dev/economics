@@ -11,6 +11,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
@@ -22,8 +24,6 @@ class CreateProjectForm extends AbstractType
     public function __construct(
         private readonly JiraApiService $apiService,
     ) {
-//        $resolver = new OptionsResolver();
-//        $this->configureOptions($resolver);
     }
 
     /**
@@ -40,16 +40,27 @@ class CreateProjectForm extends AbstractType
     {
         $builder->add('project_name', TextType::class, [
             'label' => 'create_project_form.project_name.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
             'constraints' => [
                 new NotNull(['groups' => 'base']),
             ],
-            'attr' => ['class' => 'form-control'],
-            'help_attr' => ['class' => 'form-text text-muted'],
+            'attr' => [
+                'class' => 'form-element',
+            ],
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
             'help' => 'create_project_form.project_name.help',
             'required' => false,
+            'row_attr' => ['class' => 'form-element-wrapper'],
         ])
         ->add('project_key', TextType::class, [
             'label' => 'create_project_form.project_key.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
             'constraints' => [
                 new NotNull(['groups' => 'base']),
                 new Regex([
@@ -63,23 +74,40 @@ class CreateProjectForm extends AbstractType
                     'maxMessage' => 'create_project_form.project_key.constraint.max',
                 ]),
             ],
-            'attr' => ['class' => 'form-control'],
-            'help_attr' => ['class' => 'form-text text-muted'],
+            'attr' => [
+                'class' => 'form-element',
+            ],
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
             'help' => 'create_project_form.project_key.help',
             'required' => false,
+            'row_attr' => ['class' => 'form-element-wrapper'],
         ])
         ->add('description', TextareaType::class, [
             'label' => 'create_project_form.description.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
             'constraints' => [
                 new NotNull(['groups' => 'base']),
             ],
-            'attr' => ['class' => 'form-control', 'required'],
-            'help_attr' => ['class' => 'form-text text-muted'],
+            'attr' => [
+                'class' => 'form-element',
+                'rows' => 5,
+            ],
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
             'help' => 'create_project_form.description.help',
             'required' => false,
+            'row_attr' => ['class' => 'form-element-wrapper'],
         ])
         ->add('team', ChoiceType::class, [
             'label' => 'create_project_form.team.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
             'choices' => $this->getTeamChoices(),
             'choice_translation_domain' => false,
             'constraints' => [
@@ -88,126 +116,186 @@ class CreateProjectForm extends AbstractType
                     'groups' => 'base',
                 ]),
             ],
-            'attr' => ['class' => 'form-control'],
-            'help_attr' => ['class' => 'form-text text-muted'],
+            'attr' => [
+                'class' => 'form-element',
+            ],
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
             'help' => 'create_project_form.team.help',
+            'row_attr' => ['class' => 'form-element-wrapper'],
+        ])
+        ->add('account', ChoiceType::class, [
+            'label' => 'create_project_form.account.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
+            'choices' => $this->getAccountChoices(),
+            'choice_translation_domain' => false,
+            'attr' => ['class' => 'form-element js-select2'],
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
+            'help' => 'create_project_form.account.help',
+            'constraints' => [
+                new NotNull([
+                    'groups' => 'select_account',
+                    'message' => 'create_project_form.account.constraint.not_null',
+                ]),
+            ],
+            'row_attr' => ['class' => 'form-element-wrapper'],
+        ])
+        ->add('new_account', CheckboxType::class, [
+            'label' => 'create_project_form.create_new_account.label',
+            'label_attr' => ['class' => 'form-label'],
+            'attr' => [
+                'class' => 'form-check-input',
+                'data-toggle' => 'collapse',
+                'data-target' => '.toggle-account-group',
+            ],
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
+            'help' => 'create_project_form.create_new_account.help',
+            'required' => false,
+            'validation_groups' => ['account'],
+            'row_attr' => ['class' => 'form-element-wrapper'],
+        ])
+        ->add('new_account_name', TextType::class, [
+            'label' => 'create_project_form.new_account_name.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
+            'attr' => [
+                'class' => 'form-element',
+            ],
+            'required' => false,
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
+            'help' => 'create_project_form.new_account_name.help',
+            'constraints' => [
+                new NotNull(['groups' => 'account']),
+            ],
+            'row_attr' => ['class' => 'form-element-wrapper'],
+        ])
+        ->add('new_account_key', TextType::class, [
+            'label' => 'create_project_form.new_account_key.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
+            'attr' => [
+                'class' => 'form-element',
+            ],
+            'required' => false,
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
+            'help' => 'create_project_form.new_account_key.help',
+            'constraints' => [
+                new NotNull(['groups' => 'account']),
+            ],
+            'row_attr' => ['class' => 'form-element-wrapper'],
+        ])
+        ->add('new_account_contact', TextType::class, [
+            'label' => 'create_project_form.new_account_contact.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
+            'attr' => [
+                'class' => 'form-element',
+            ],
+            'required' => false,
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
+            'help' => 'create_project_form.new_account_contact.help',
+            'constraints' => [
+                new NotNull(['groups' => 'account']),
+            ],
+            'row_attr' => ['class' => 'form-element-wrapper'],
+        ])
+        ->add('new_account_customer', ChoiceType::class, [
+            'label' => 'create_project_form.new_account_customer.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
+            'choices' => $this->getCustomerChoices(),
+            'choice_translation_domain' => false,
+            'required' => false,
+            'attr' => ['class' => 'form-element js-select2'],
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
+            'help' => 'create_project_form.new_account_customer.help',
+            'constraints' => [
+                new NotNull([
+                    'groups' => 'select_customer',
+                    'message' => 'create_project_form.new_account_customer.constraint.not_null',
+                ]),
+            ],
+            'row_attr' => ['class' => 'form-element-wrapper'],
+        ])
+        ->add('new_customer', CheckboxType::class, [
+            'label' => 'create_project_form.new_customer.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
+            'attr' => [
+                'class' => 'form-check-input',
+                'data-toggle' => 'collapse',
+                'data-target' => '.toggle-customer-group',
+            ],
+            'required' => false,
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
+            'help' => 'create_project_form.new_customer.help',
+            'validation_groups' => ['customer'],
+            'row_attr' => ['class' => 'form-element-wrapper'],
+        ])
+        ->add('new_customer_name', TextType::class, [
+            'label' => 'create_project_form.new_customer_name.label',
+            'attr' => [
+                'class' => 'form-element',
+            ],
+            'required' => false,
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
+            'help' => 'create_project_form.new_customer_name.help',
+            'constraints' => [
+                new NotNull(['groups' => 'customer']),
+            ],
+            'row_attr' => ['class' => 'form-element-wrapper'],
+        ])
+        ->add('new_customer_key', TextType::class, [
+            'label' => 'create_project_form.new_customer_key.label',
+            'label_attr' => [
+                'class' => 'form-label'
+            ],
+            'attr' => [
+                'class' => 'form-element',
+            ],
+            'required' => false,
+            'help_attr' => [
+                'class' => 'form-help'
+            ],
+            'help' => 'create_project_form.new_customer_key.help',
+            'constraints' => [
+                new NotNull(['groups' => 'customer']),
+                new Regex([
+                    'pattern' => '/^([0-9]{4}|[0-9]{13})$/',
+                    'message' => 'create_project_form.new_customer_key.constraint.regex',
+                    'groups' => 'customer',
+                ]),
+            ],
+            'row_attr' => ['class' => 'form-element-wrapper'],
         ]);
 
-//        if (\in_array('ADMINISTER', $options['user_permissions'])) {
-            $builder->add('account', ChoiceType::class, [
-                'label' => 'create_project_form.account.label',
-                'choices' => $this->getAccountChoices(),
-                'choice_translation_domain' => false,
-                'attr' => ['class' => 'form-control js-select2'],
-                'help_attr' => ['class' => 'form-text text-muted'],
-                'help' => 'create_project_form.account.help',
-                'constraints' => [
-                    new NotNull([
-                        'groups' => 'select_account',
-                        'message' => 'create_project_form.account.constraint.not_null',
-                    ]),
-                ],
-            ])
-            ->add('new_account', CheckboxType::class, [
-                'label' => 'create_project_form.create_new_account.label',
-                'label_attr' => ['class' => 'form-check-label'],
-                'attr' => [
-                    'class' => 'form-check-input',
-                    'data-toggle' => 'collapse',
-                    'data-target' => '.toggle-account-group',
-                ],
-                'help_attr' => ['class' => 'form-text text-muted'],
-                'help' => 'create_project_form.create_new_account.help',
-                'required' => false,
-                'validation_groups' => ['account'],
-            ])
-            ->add('new_account_name', TextType::class, [
-                'label' => 'create_project_form.new_account_name.label',
-                'attr' => ['class' => 'form-control'],
-                'required' => false,
-                'help_attr' => ['class' => 'form-text text-muted'],
-                'help' => 'create_project_form.new_account_name.help',
-                'constraints' => [
-                    new NotNull(['groups' => 'account']),
-                ],
-            ])
-            ->add('new_account_key', TextType::class, [
-                'label' => 'create_project_form.new_account_key.label',
-                'attr' => ['class' => 'form-control'],
-                'required' => false,
-                'help_attr' => ['class' => 'form-text text-muted'],
-                'help' => 'create_project_form.new_account_key.help',
-                'constraints' => [
-                    new NotNull(['groups' => 'account']),
-                ],
-            ])
-            ->add('new_account_contact', TextType::class, [
-                'label' => 'create_project_form.new_account_contact.label',
-                'attr' => ['class' => 'form-control'],
-                'required' => false,
-                'help_attr' => ['class' => 'form-text text-muted'],
-                'help' => 'create_project_form.new_account_contact.help',
-                'constraints' => [
-                    new NotNull(['groups' => 'account']),
-                ],
-            ])
-            ->add('new_account_customer', ChoiceType::class, [
-                'label' => 'create_project_form.new_account_customer.label',
-                'choices' => $this->getCustomerChoices(),
-                'choice_translation_domain' => false,
-                'required' => false,
-                'attr' => ['class' => 'form-control js-select2'],
-                'help_attr' => ['class' => 'form-text text-muted'],
-                'help' => 'create_project_form.new_account_customer.help',
-                'constraints' => [
-                    new NotNull([
-                        'groups' => 'select_customer',
-                        'message' => 'create_project_form.new_account_customer.constraint.not_null',
-                    ]),
-                ],
-            ])
-            ->add('new_customer', CheckboxType::class, [
-                'label' => 'create_project_form.new_customer.label',
-                'label_attr' => ['class' => 'form-check-label'],
-                'attr' => [
-                    'class' => 'form-check-input',
-                    'data-toggle' => 'collapse',
-                    'data-target' => '.toggle-customer-group',
-                ],
-                'required' => false,
-                'help_attr' => ['class' => 'form-text text-muted'],
-                'help' => 'create_project_form.new_customer.help',
-                'validation_groups' => ['customer'],
-            ])
-            ->add('new_customer_name', TextType::class, [
-                'label' => 'create_project_form.new_customer_name.label',
-                'attr' => ['class' => 'form-control'],
-                'required' => false,
-                'help_attr' => ['class' => 'form-text text-muted'],
-                'help' => 'create_project_form.new_customer_name.help',
-                'constraints' => [
-                    new NotNull(['groups' => 'customer']),
-                ],
-            ])
-            ->add('new_customer_key', TextType::class, [
-                'label' => 'create_project_form.new_customer_key.label',
-                'attr' => ['class' => 'form-control'],
-                'required' => false,
-                'help_attr' => ['class' => 'form-text text-muted'],
-                'help' => 'create_project_form.new_customer_key.help',
-                'constraints' => [
-                    new NotNull(['groups' => 'customer']),
-                    new Regex([
-                        'pattern' => '/^([0-9]{4}|[0-9]{13})$/',
-                        'message' => 'create_project_form.new_customer_key.constraint.regex',
-                        'groups' => 'customer',
-                    ]),
-                ],
-            ]);
-//        }
         $builder->add('save', SubmitType::class, [
             'label' => 'create_project_form.save.label',
-            'attr' => ['class' => 'btn btn-primary'],
+            'attr' => ['class' => 'btn-primary'],
         ]);
     }
 
@@ -266,27 +354,4 @@ class CreateProjectForm extends AbstractType
         return ['-- Select --' => null] + $optionalCustomerChoices;
     }
 
-//    /**
-//     * Perform validation in groups based on choices during submit.
-//     *
-//     * @param OptionsResolver $resolver Options related to form
-//     */
-//    public function configureOptions(OptionsResolver $resolver)
-//    {
-//        $resolver->setDefaults([
-//            'user_permissions' => null,
-//            'validation_groups' => function (FormInterface $form) {
-//                $data = $form->getData();
-//                if (true === $data['new_account']) {
-//                    if (true === $data['new_customer']) {
-//                        return ['Default', 'base', 'account', 'customer'];
-//                    }
-//
-//                    return ['Default', 'base', 'account', 'select_customer'];
-//                }
-//
-//                return ['Default', 'base', 'select_account'];
-//            },
-//        ]);
-//    }
 }
