@@ -122,7 +122,7 @@ class CreateProjectController extends AbstractController
 
         // The initial form build.
         return $this->render(
-            'views/createProjectForm.html.twig',
+            'views/createProject/form.html.twig',
             [
                 'form' => $form->createView(),
                 'formConfig' => json_encode(
@@ -142,14 +142,13 @@ class CreateProjectController extends AbstractController
     public function submitted(Request $request): Response
     {
         return $this->render(
-            '@CreateProjectBundle/createProjectSubmitted.html.twig',
+            'views/createProject/submitted.html.twig',
             [
                 'form_data' => $_SESSION['form_data'],
-                'global_menu_items' => $menuService->getGlobalMenuItems(),
             ]
         );
     }
-    
+
     /**
      * Create array of all project names and their keys.
      *

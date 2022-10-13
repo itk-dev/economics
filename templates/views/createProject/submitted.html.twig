@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'create_project_submitted.title'|trans }}
+{% endblock %}
+
+{% block content %}
+  <div role="alert">
+    <h4 class="alert-heading">{{ 'create_project_submitted.title'|trans }}</h4>
+    <p class="card-text">{{ 'create_project_submitted.sub_text'|trans }}<br>
+    <p>{{ 'create_project_submitted.last_step.text'|trans }}</p>
+    <hr>
+    <p>
+      <a href="{{ form_data.jira_url }}/secure/Tempo.jspa#/teams/team/{{ form_data.selectedTeamConfig.tempo_team_id }}/" target="_blank">{{ form_data.jira_url }}/secure/Tempo.jspa#/teams/team/{{ form_data.selectedTeamConfig.tempo_team_id }}/</a>
+    </p>
+  </div>
+  <h3>{{ 'create_project_submitted.project_title'|trans }}</h3>
+  <div class="mb-2">
+    <span class="label"><strong>{{ 'create_project_form.project_name.label'|trans }}:</strong></span>
+    <span class="value">{{ form_data.form.project_name }}</span>
+  </div>
+  <div class="mb-2">
+    <span class="label"><strong>{{ 'create_project_form.project_key.label'|trans }}:</strong></span>
+    <span class="value" style="text-transform: uppercase">{{ form_data.form.project_key }}</span>
+  </div>
+  <div class="mb-2">
+    <span class="label"><strong>{{ 'create_project_form.description.label'|trans }}:</strong></span>
+    <span class="value">{{ form_data.form.description }}</span>
+  </div>
+  <div class="mb-2">
+    <span class="label"><strong>{{ 'create_project_form.team.label'|trans }}:</strong></span>
+    <span class="value">{{ form_data.selectedTeamConfig.team_name }}</span>
+  </div>
+  {% if not form_data.form.new_account %}
+    <div class="mb-2">
+      <span class="label"><strong>{{ 'create_project_form.account.label'|trans }}:</strong></span>
+      <span class="value">{{ form_data.form.account }}</span>
+    </div>
+  {% else %}
+    <h3 class="mt-4">{{ 'create_project_submitted.account_title'|trans }}</h3>
+    <div class="mb-2">
+      <span class="label"><strong>{{ 'create_project_form.new_account_name.label'|trans }}:</strong></span>
+      <span class="value">{{ form_data.form.new_account_name }}</span>
+    </div>
+    <div class="mb-2">
+      <span class="label"><strong>{{ 'create_project_form.new_account_key.label'|trans }}:</strong></span>
+      <span class="value">{{ form_data.form.new_account_key }}</span>
+    </div>
+    <div class="mb-2">
+      <span class="label"><strong>{{ 'create_project_form.new_account_contact.label'|trans }}:</strong></span>
+      <span class="value">{{ form_data.form.new_account_contact }}</span>
+    </div>
+    {% if not form_data.form.new_customer %}
+      <div class="mb-2">
+        <span class="label"><strong>{{ 'create_project_form.new_account_customer.label'|trans }}:</strong></span>
+        <span class="value">{{ form_data.form.new_account_customer }}</span>
+      </div>
+    {% else %}
+      <h3 class="mt-4">{{ 'create_project_submitted.customer_title'|trans }}</h3>
+      <div class="mb-2">
+        <span class="label"><strong>{{ 'create_project_form.new_customer_name.label'|trans }}:</strong></span>
+        <span class="value">{{ form_data.form.new_customer_name }}</span>
+      </div>
+      <div class="mb-2">
+        <span class="label"><strong>{{ 'create_project_form.new_customer_key.label'|trans }}:</strong></span>
+        <span class="value">{{ form_data.form.new_customer_key }}</span>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endblock %}
