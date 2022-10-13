@@ -20,8 +20,6 @@ class JiraApiService implements ApiServiceInterface
     }
 
     /**
-     * @return mixed
-     *
      * @throws ApiServiceException
      */
     public function getAllProjectCategories(): mixed
@@ -31,8 +29,6 @@ class JiraApiService implements ApiServiceInterface
 
     /**
      * Get all accounts.
-     *
-     * @return mixed
      *
      * @throws ApiServiceException
      */
@@ -44,8 +40,6 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Get all accounts.
      *
-     * @return mixed
-     *
      * @throws ApiServiceException
      */
     public function getAllCustomers(): mixed
@@ -53,11 +47,8 @@ class JiraApiService implements ApiServiceInterface
         return $this->get('/rest/tempo-accounts/1/customer/');
     }
 
-
     /**
      * Get all projects, including archived.
-     *
-     * @return mixed
      *
      * @throws ApiServiceException
      */
@@ -72,8 +63,6 @@ class JiraApiService implements ApiServiceInterface
      * @param $key
      *   A project key or id
      *
-     * @return mixed
-     *
      * @throws ApiServiceException
      */
     public function getProject($key): mixed
@@ -84,8 +73,6 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Get current user permissions.
      *
-     * @return mixed
-     *
      * @throws ApiServiceException
      */
     public function getCurrentUserPermissions(): mixed
@@ -95,8 +82,6 @@ class JiraApiService implements ApiServiceInterface
 
     /**
      * Get list of allowed permissions for current user.
-     *
-     * @return array
      *
      * @throws ApiServiceException
      */
@@ -120,8 +105,6 @@ class JiraApiService implements ApiServiceInterface
      *
      * See https://docs.atlassian.com/software/jira/docs/api/REST/9.3.0/#api/2/project-createProject
      *
-     * @param array $data
-     *
      * @return ?string
      *
      * @throws ApiServiceException
@@ -130,18 +113,18 @@ class JiraApiService implements ApiServiceInterface
     {
         $projectKey = strtoupper($data['form']['project_key']);
         $project = [
-            "key" => $projectKey,
-            "name" => $data['form']['project_name'],
-            "projectTypeKey" => "software",
-            "projectTemplateKey" => "com.pyxis.greenhopper.jira:basic-software-development-template",
-            "description" => $data['form']['description'],
-            "lead" => $data['selectedTeamConfig']['team_lead'],
-            "assigneeType" => "UNASSIGNED",
-            "avatarId" => 10324, // Default avatar image
-            "permissionScheme" => $data['selectedTeamConfig']['permission_scheme'],
-            "notificationScheme" => 10000, // Default Notification Scheme
-            "workflowSchemeId" => $data['selectedTeamConfig']['workflow_scheme'],
-            "categoryId" => $data['selectedTeamConfig']['project_category'],
+            'key' => $projectKey,
+            'name' => $data['form']['project_name'],
+            'projectTypeKey' => 'software',
+            'projectTemplateKey' => 'com.pyxis.greenhopper.jira:basic-software-development-template',
+            'description' => $data['form']['description'],
+            'lead' => $data['selectedTeamConfig']['team_lead'],
+            'assigneeType' => 'UNASSIGNED',
+            'avatarId' => 10324, // Default avatar image
+            'permissionScheme' => $data['selectedTeamConfig']['permission_scheme'],
+            'notificationScheme' => 10000, // Default Notification Scheme
+            'workflowSchemeId' => $data['selectedTeamConfig']['workflow_scheme'],
+            'categoryId' => $data['selectedTeamConfig']['project_category'],
         ];
 
         $response = $this->post('/rest/api/2/project', $project);
@@ -152,10 +135,6 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Create a jira customer.
      *
-     * @param string $name
-     * @param string $key
-     *
-     * @return mixed
      * @throws ApiServiceException
      */
     public function createTimeTrackerCustomer(string $name, string $key): mixed
@@ -171,13 +150,6 @@ class JiraApiService implements ApiServiceInterface
 
     /**
      * Create a Jira account.
-     *
-     * @param string $name
-     * @param string $key
-     * @param string $customerKey
-     * @param string $contactUsername
-     *
-     * @return mixed
      *
      * @throws ApiServiceException
      */
@@ -207,10 +179,6 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Get tempo account base on key.
      *
-     * @param string $key
-     *
-     * @return mixed
-     *
      * @throws ApiServiceException
      */
     public function getTimeTrackerAccount(string $key): mixed
@@ -222,9 +190,9 @@ class JiraApiService implements ApiServiceInterface
      * Create a project link to account.
      *
      * @param mixed $project
-     *  The project that was created on form submit
+     *                       The project that was created on form submit
      * @param mixed $account
-     *  The account that was created on form submit
+     *                       The account that was created on form submit
      *
      * @throws ApiServiceException
      */
@@ -243,12 +211,9 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Create project board.
      *
-     * @param string $type
-     * @param mixed $project
-     *
      * @throws ApiServiceException
      */
-    public function createProjectBoard(string $type,mixed $project): void
+    public function createProjectBoard(string $type, mixed $project): void
     {
         // If no template is configured don't create a board.
         if (empty($this->formData['selectedTeamConfig']['board_template'])) {
@@ -280,22 +245,10 @@ class JiraApiService implements ApiServiceInterface
         ]);
     }
 
-
-
-
-
-
-
-
     /**
      * Get from Jira.
      *
      * @TODO: Wrap the call in request function, they er 99% the same code.
-     *
-     * @param string $path
-     * @param array $query
-     *
-     * @return mixed
      *
      * @throws ApiServiceException
      */
@@ -304,7 +257,7 @@ class JiraApiService implements ApiServiceInterface
         try {
             $response = $this->projectTrackerApi->request('GET', $path,
                 [
-                    'query' => $query
+                    'query' => $query,
                 ]
             );
 
@@ -330,9 +283,8 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-
         } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
-            throw new ApiServiceException($e->getMessage(), $e->getCode(), $e);
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
         return null;
@@ -340,11 +292,6 @@ class JiraApiService implements ApiServiceInterface
 
     /**
      * Post to Jira.
-     *
-     * @param string $path
-     * @param array $data
-     *
-     * @return mixed
      *
      * @throws ApiServiceException
      */
@@ -381,20 +328,14 @@ class JiraApiService implements ApiServiceInterface
                     break;
             }
         } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
-            throw new ApiServiceException($e->getMessage(), $e->getCode(), $e);
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
         return null;
     }
 
-
     /**
      * Put to Jira.
-     *
-     * @param string $path
-     * @param array $data
-     *
-     * @return mixed
      *
      * @throws ApiServiceException
      */
@@ -430,9 +371,8 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-
         } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
-            throw new ApiServiceException($e->getMessage(), $e->getCode(), $e);
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
         return null;
@@ -440,10 +380,6 @@ class JiraApiService implements ApiServiceInterface
 
     /**
      * Delete in Jira.
-     *
-     * @param string $path
-     *
-     * @return bool
      *
      * @throws ApiServiceException
      */
@@ -472,9 +408,8 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-
         } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
-            throw new ApiServiceException($e->getMessage(), $e->getCode(), $e);
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
         return false;

@@ -2,7 +2,7 @@
 
 namespace App\Form\CreateProject;
 
-use App\Service\Exceptions\ApiServiceException;
+use App\Exception\ApiServiceException;
 use App\Service\ProjectTracker\JiraApiService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -26,9 +26,9 @@ class CreateProjectForm extends AbstractType
      * Build the form.
      *
      * @param FormBuilderInterface $builder
-     *   The form builder
-     * @param array $options
-     *   Options related to the form
+     *                                      The form builder
+     * @param array                $options
+     *                                      Options related to the form
      *
      * @throws ApiServiceException
      */
@@ -37,7 +37,7 @@ class CreateProjectForm extends AbstractType
         $builder->add('project_name', TextType::class, [
             'label' => 'create_project_form.project_name.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'constraints' => [
                 new NotNull(['groups' => 'base']),
@@ -46,7 +46,7 @@ class CreateProjectForm extends AbstractType
                 'class' => 'form-element',
             ],
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.project_name.help',
             'required' => false,
@@ -55,7 +55,7 @@ class CreateProjectForm extends AbstractType
         ->add('project_key', TextType::class, [
             'label' => 'create_project_form.project_key.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'constraints' => [
                 new NotNull(['groups' => 'base']),
@@ -74,7 +74,7 @@ class CreateProjectForm extends AbstractType
                 'class' => 'form-element',
             ],
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.project_key.help',
             'required' => false,
@@ -83,7 +83,7 @@ class CreateProjectForm extends AbstractType
         ->add('description', TextareaType::class, [
             'label' => 'create_project_form.description.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'constraints' => [
                 new NotNull(['groups' => 'base']),
@@ -93,7 +93,7 @@ class CreateProjectForm extends AbstractType
                 'rows' => 5,
             ],
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.description.help',
             'required' => false,
@@ -102,7 +102,7 @@ class CreateProjectForm extends AbstractType
         ->add('team', ChoiceType::class, [
             'label' => 'create_project_form.team.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'choices' => $this->getTeamChoices(),
             'choice_translation_domain' => false,
@@ -116,7 +116,7 @@ class CreateProjectForm extends AbstractType
                 'class' => 'form-element',
             ],
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.team.help',
             'row_attr' => ['class' => 'form-element-wrapper'],
@@ -124,13 +124,13 @@ class CreateProjectForm extends AbstractType
         ->add('account', ChoiceType::class, [
             'label' => 'create_project_form.account.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'choices' => $this->getAccountChoices(),
             'choice_translation_domain' => false,
             'attr' => ['class' => 'form-element js-select2'],
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.account.help',
             'constraints' => [
@@ -150,7 +150,7 @@ class CreateProjectForm extends AbstractType
                 'data-target' => '.toggle-account-group',
             ],
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.create_new_account.help',
             'required' => false,
@@ -160,14 +160,14 @@ class CreateProjectForm extends AbstractType
         ->add('new_account_name', TextType::class, [
             'label' => 'create_project_form.new_account_name.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'attr' => [
                 'class' => 'form-element',
             ],
             'required' => false,
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.new_account_name.help',
             'constraints' => [
@@ -178,14 +178,14 @@ class CreateProjectForm extends AbstractType
         ->add('new_account_key', TextType::class, [
             'label' => 'create_project_form.new_account_key.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'attr' => [
                 'class' => 'form-element',
             ],
             'required' => false,
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.new_account_key.help',
             'constraints' => [
@@ -196,14 +196,14 @@ class CreateProjectForm extends AbstractType
         ->add('new_account_contact', TextType::class, [
             'label' => 'create_project_form.new_account_contact.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'attr' => [
                 'class' => 'form-element',
             ],
             'required' => false,
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.new_account_contact.help',
             'constraints' => [
@@ -214,14 +214,14 @@ class CreateProjectForm extends AbstractType
         ->add('new_account_customer', ChoiceType::class, [
             'label' => 'create_project_form.new_account_customer.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'choices' => $this->getCustomerChoices(),
             'choice_translation_domain' => false,
             'required' => false,
             'attr' => ['class' => 'form-element js-select2'],
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.new_account_customer.help',
             'constraints' => [
@@ -235,7 +235,7 @@ class CreateProjectForm extends AbstractType
         ->add('new_customer', CheckboxType::class, [
             'label' => 'create_project_form.new_customer.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'attr' => [
                 'class' => 'form-check-input',
@@ -244,7 +244,7 @@ class CreateProjectForm extends AbstractType
             ],
             'required' => false,
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.new_customer.help',
             'validation_groups' => ['customer'],
@@ -257,7 +257,7 @@ class CreateProjectForm extends AbstractType
             ],
             'required' => false,
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.new_customer_name.help',
             'constraints' => [
@@ -268,14 +268,14 @@ class CreateProjectForm extends AbstractType
         ->add('new_customer_key', TextType::class, [
             'label' => 'create_project_form.new_customer_key.label',
             'label_attr' => [
-                'class' => 'form-label'
+                'class' => 'form-label',
             ],
             'attr' => [
                 'class' => 'form-element',
             ],
             'required' => false,
             'help_attr' => [
-                'class' => 'form-help'
+                'class' => 'form-help',
             ],
             'help' => 'create_project_form.new_customer_key.help',
             'constraints' => [
@@ -299,7 +299,7 @@ class CreateProjectForm extends AbstractType
      * Generate an array of teams from project categories.
      *
      * @return array
-     *   A list of teams and their id
+     *               A list of teams and their id
      *
      * @throws ApiServiceException
      */
@@ -318,7 +318,7 @@ class CreateProjectForm extends AbstractType
      * Generate an array of accounts from tempo accounts.
      *
      * @return array
-     *   A list of tempo accounts and their key
+     *               A list of tempo accounts and their key
      *
      * @throws ApiServiceException
      */
@@ -329,6 +329,7 @@ class CreateProjectForm extends AbstractType
         foreach ($accounts as $account) {
             $optionalAccounts[$account->name.' ('.$account->key.')'] = $account->key;
         }
+
         return ['-- Select --' => null] + $optionalAccounts;
     }
 
@@ -336,7 +337,7 @@ class CreateProjectForm extends AbstractType
      * Generate an array of customers from tempo customers.
      *
      * @return array
-     *   A list of tempo customers and their key
+     *               A list of tempo customers and their key
      *
      * @throws ApiServiceException
      */
@@ -347,7 +348,7 @@ class CreateProjectForm extends AbstractType
         foreach ($customers as $customer) {
             $optionalCustomerChoices[$customer->name.' ('.$customer->key.')'] = $customer->key;
         }
+
         return ['-- Select --' => null] + $optionalCustomerChoices;
     }
-
 }

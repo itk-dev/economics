@@ -2,11 +2,8 @@
 
 namespace App\Service\ProjectTracker;
 
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-
 /**
- * @deprecated This class should not be used.
+ * @deprecated this class should not be used
  */
 abstract class AbstractService
 {

@@ -3,9 +3,7 @@
 namespace App\Controller\CreateProject;
 
 use App\Form\CreateProject\CreateProjectForm;
-use App\Service\Exceptions\ApiServiceException;
 use App\Service\ProjectTracker\ApiServiceInterface;
-use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class CreateProjectController extends AbstractController
 {
-    private $formData;
-
     public function __construct(
         private readonly ApiServiceInterface $apiService
     ) {
@@ -25,9 +21,6 @@ class CreateProjectController extends AbstractController
 
     /**
      * Create a project and all related entities.
-     *
-     * @throws JsonException
-     * @throws ApiServiceException
      */
     #[Route('/create-project/new', name: 'create_project_form')]
     public function createProject(Request $request): Response
@@ -36,29 +29,27 @@ class CreateProjectController extends AbstractController
         $form->handleRequest($request);
 
         // Set form data.
-        $this->formData = [
+        $formData = [
             'form' => $form->getData(),
             'projects' => $this->apiService->getAllProjects(),
             'accounts' => $this->apiService->getAllAccounts(),
             'projectCategories' => $this->apiService->getAllProjectCategories(),
-            'allTeamsConfig' => $this->getParameter('teamconfig'),
+            'allTeamsConfig' => (array) $this->getParameter('teamconfig'),
         ];
-
-
 
         // Handle form submission.
         if ($form->isSubmitted() && $form->isValid()) {
             // Do stuff on submission.
 
             // Set selected team config.
-            foreach ($this->formData['projectCategories'] as $team) {
-                if ($team->id === $this->formData['form']['team']) {
-                    $this->formData['selectedTeamConfig'] = $this->formData['allTeamsConfig'][$team->name];
+            foreach ($formData['projectCategories'] as $team) {
+                if ($team->id === $formData['form']['team']) {
+                    $formData['selectedTeamConfig'] = $formData['allTeamsConfig'][$team->name];
                 }
             }
 
             // Create project.
-            $newProjectKey = $this->apiService->createProject($this->formData);
+            $newProjectKey = $this->apiService->createProject($formData);
             if (!$newProjectKey) {
                 exit('Error: No project was created.');
             } else {
@@ -66,56 +57,56 @@ class CreateProjectController extends AbstractController
             }
 
             // Check for new account.
-            if ($this->formData['form']['new_account']) {
+            if ($formData['form']['new_account']) {
                 // Add project ID if account key is municipality name.
-                if (!is_numeric($this->formData['form']['new_account_key'])) {
-                    $this->formData['form']['new_account_key'] = str_replace(
-                            ' ',
-                            '_',
-                            $this->formData['form']['new_account_key']
-                        ).'-'.$newProjectKey;
+                if (!is_numeric($formData['form']['new_account_key'])) {
+                    $formData['form']['new_account_key'] = str_replace(
+                        ' ',
+                        '_',
+                        $formData['form']['new_account_key']
+                    ).'-'.$newProjectKey;
                 }
 
                 // Check for new customer.
-                if ($this->formData['form']['new_customer']) {
+                if ($formData['form']['new_customer']) {
                     // Create customer.
-                    $customer = $this->apiService->createTimeTrackerCustomer($this->formData['form']['new_customer_name'], $this->formData['form']['new_customer_key']);
+                    $customer = $this->apiService->createTimeTrackerCustomer($formData['form']['new_customer_name'], $formData['form']['new_customer_key']);
 
                     // Set customer key from new customer.
-                    $this->formData['form']['new_account_customer'] = $customer->key;
+                    $formData['form']['new_account_customer'] = $customer->key;
                 } else {
-                    foreach ($this->formData['accounts'] as $account) {
+                    foreach ($formData['accounts'] as $account) {
                         // Get the account that was selected in form.
                         // This holds the customer data we need.
-                        if ($account->key === $this->formData['form']['account']) {
+                        if ($account->key === $formData['form']['account']) {
                             // Set customer key from selected customer.
-                            $this->formData['form']['new_account_customer'] = $account->customer->key;
+                            $formData['form']['new_account_customer'] = $account->customer->key;
                         }
                     }
                 }
 
                 // Create account if new account is selected.
                 $account = $this->apiService->createTimeTrackerAccount(
-                    $this->formData['form']['new_account_name'],
-                    $this->formData['form']['new_account_key'],
-                    $this->formData['form']['new_account_customer'],
-                    $this->formData['form']['new_account_contact']
+                    $formData['form']['new_account_name'],
+                    $formData['form']['new_account_key'],
+                    $formData['form']['new_account_customer'],
+                    $formData['form']['new_account_contact']
                 );
             } else {
                 // Set account key from selected account in form.
-                $account = $this->apiService->getTimeTrackerAccount($this->formData['form']['account']);
+                $account = $this->apiService->getTimeTrackerAccount($formData['form']['account']);
             }
 
             // Add project to tempo account
             $this->apiService->addProjectToTimeTrackerAccount($project, $account);
 
             // Create project board
-            if (!empty($this->formData['selectedTeamConfig']['board_template'])) {
-                $this->apiService->createProjectBoard($this->formData['selectedTeamConfig']['board_template']['type'], $project);
+            if (!empty($formData['selectedTeamConfig']['board_template'])) {
+                $this->apiService->createProjectBoard($formData['selectedTeamConfig']['board_template']['type'], $project);
             }
 
             // Go to form submitted page.
-            $_SESSION['form_data'] = $this->formData;
+            $_SESSION['form_data'] = $formData;
 
             return $this->redirectToRoute('create_project_submitted');
         }
@@ -129,7 +120,7 @@ class CreateProjectController extends AbstractController
                     [
                         'allProjects' => $this->allProjectsByKey(),
                     ]
-                )
+                ),
             ]
         );
     }
@@ -153,7 +144,7 @@ class CreateProjectController extends AbstractController
      * Create array of all project names and their keys.
      *
      * @return array
-     *   All projects indexed by key
+     *               All projects indexed by key
      */
     private function allProjectsByKey(): array
     {
