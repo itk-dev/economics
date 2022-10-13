@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Exceptions;
+namespace App\Exception;
 
 class ApiServiceException extends \Exception {
 

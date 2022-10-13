@@ -2,8 +2,8 @@
 
 namespace App\Form\CreateProject;
 
+use App\Service\Exceptions\ApiServiceException;
 use App\Service\ProjectTracker\JiraApiService;
-use JsonException;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -11,10 +11,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Regex;
@@ -34,7 +30,7 @@ class CreateProjectForm extends AbstractType
      * @param array $options
      *   Options related to the form
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -305,7 +301,7 @@ class CreateProjectForm extends AbstractType
      * @return array
      *   A list of teams and their id
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     private function getTeamChoices(): array
     {
@@ -324,7 +320,7 @@ class CreateProjectForm extends AbstractType
      * @return array
      *   A list of tempo accounts and their key
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     private function getAccountChoices(): array
     {
@@ -342,7 +338,7 @@ class CreateProjectForm extends AbstractType
      * @return array
      *   A list of tempo customers and their key
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     private function getCustomerChoices(): array
     {
