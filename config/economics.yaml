@@ -1,0 +1,8 @@
+parameters:
+  custom_fields: ~
+  billing_receiver_account: ~
+  billing_material_numbers: ~
+  project_billing_internal_material_id: ~
+  project_billing_external_material_id: ~
+  project_billing_default_text: ~
+  project_billing_supplier: ~
