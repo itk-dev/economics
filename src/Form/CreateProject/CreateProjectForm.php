@@ -64,13 +64,13 @@ class CreateProjectForm extends AbstractType
             'constraints' => [
                 new NotNull(['groups' => 'base']),
                 new Regex([
-                    'pattern' => '/^[a-zA-Z]+$/',
+                    'pattern' => '/^[a-zA-Z0-9]+$/',
                     'message' => 'create_project_form.project_key.constraint.regex',
                 ]),
                 new Length([
                     'min' => 2,
                     'minMessage' => 'create_project_form.project_key.constraint.min',
-                    'max' => 7,
+                    'max' => 8,
                     'maxMessage' => 'create_project_form.project_key.constraint.max',
                 ]),
             ],

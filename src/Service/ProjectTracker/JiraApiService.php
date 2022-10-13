@@ -2,7 +2,12 @@
 
 namespace App\Service\ProjectTracker;
 
+use App\Service\Exceptions\ApiServiceException;
 use JsonException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JiraApiService implements ApiServiceInterface
@@ -17,7 +22,7 @@ class JiraApiService implements ApiServiceInterface
     /**
      * @return mixed
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     public function getAllProjectCategories(): mixed
     {
@@ -29,7 +34,7 @@ class JiraApiService implements ApiServiceInterface
      *
      * @return mixed
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     public function getAllAccounts(): mixed
     {
@@ -41,7 +46,7 @@ class JiraApiService implements ApiServiceInterface
      *
      * @return mixed
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     public function getAllCustomers(): mixed
     {
@@ -54,7 +59,7 @@ class JiraApiService implements ApiServiceInterface
      *
      * @return mixed
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     public function getAllProjects(): mixed
     {
@@ -69,7 +74,7 @@ class JiraApiService implements ApiServiceInterface
      *
      * @return mixed
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     public function getProject($key): mixed
     {
@@ -81,7 +86,7 @@ class JiraApiService implements ApiServiceInterface
      *
      * @return mixed
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     public function getCurrentUserPermissions(): mixed
     {
@@ -93,7 +98,7 @@ class JiraApiService implements ApiServiceInterface
      *
      * @return array
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     public function getPermissionsList(): array
     {
@@ -113,28 +118,30 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Create a jira project.
      *
-     * See https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-projects/#api-rest-api-3-project-post
+     * See https://docs.atlassian.com/software/jira/docs/api/REST/9.3.0/#api/2/project-createProject
      *
      * @param array $data
      *
-     * @return string|null
+     * @return ?string
+     *
+     * @throws ApiServiceException
      */
     public function createJiraProject(array $data): ?string
     {
         $projectKey = strtoupper($data['form']['project_key']);
         $project = [
-            'assigneeType' => 'UNASSIGNED',
-            'categoryId' => $data['selectedTeamConfig']['project_category'],
-            'description' => $data['form']['description'],
-            'issueTypeScheme' => $data['selectedTeamConfig']['issue_type_scheme'],
-            'issueTypeScreenScheme' => $data['selectedTeamConfig']['issue_type_screen_scheme'],
-            'key' => $projectKey,
-            'lead' => $data['selectedTeamConfig']['team_lead'],
-            'name' => $data['form']['project_name'],
-            'permissionScheme' => $data['selectedTeamConfig']['permission_scheme'],
-            'templateKey' => 'com.atlassian.jira-core-project-templates:jira-core-simplified-process-control',
-            'typeKey' => 'software',
-            'workflowScheme' => $data['selectedTeamConfig']['workflow_scheme'],
+            "key" => $projectKey,
+            "name" => $data['form']['project_name'],
+            "projectTypeKey" => "software",
+            "projectTemplateKey" => "com.pyxis.greenhopper.jira:basic-software-development-template",
+            "description" => $data['form']['description'],
+            "lead" => $data['selectedTeamConfig']['team_lead'],
+            "assigneeType" => "UNASSIGNED",
+            "avatarId" => 10324, // Default avatar image
+            "permissionScheme" => $data['selectedTeamConfig']['permission_scheme'],
+            "notificationScheme" => 10000, // Default Notification Scheme
+            "workflowSchemeId" => $data['selectedTeamConfig']['workflow_scheme'],
+            "categoryId" => $data['selectedTeamConfig']['project_category'],
         ];
 
         $response = $this->post('/rest/api/2/project', $project);
@@ -146,22 +153,55 @@ class JiraApiService implements ApiServiceInterface
 
 
 
+
+
+
     /**
      * Get from Jira.
+     *
+     * @TODO: Wrap the call in request function, they er 99% the same code.
      *
      * @param string $path
      * @param array $query
      *
      * @return mixed
      *
-     * @throws JsonException
+     * @throws ApiServiceException
      */
     private function get(string $path, array $query = []): mixed
     {
-        $response = $this->projectTrackerApi->request('GET', $path, ['query' => $query]);
+        try {
+            $response = $this->projectTrackerApi->request('GET', $path,
+                [
+                    'query' => $query
+                ]
+            );
 
-        if ($body = $response->getContent()) {
-            return json_decode($body, false, 512, JSON_THROW_ON_ERROR);
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                    if ($body) {
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                    }
+                    break;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+
+        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+            throw new ApiServiceException($e->getMessage(), $e->getCode(), $e);
         }
 
         return null;
@@ -174,19 +214,42 @@ class JiraApiService implements ApiServiceInterface
      * @param array $data
      *
      * @return mixed
+     *
+     * @throws ApiServiceException
      */
     private function post(string $path, array $data): mixed
     {
-        $response = $this->projectTrackerApi->request(
-            'POST',
-            $path,
-            [
-                'json' => $data,
-            ]
-        );
+        try {
+            $response = $this->projectTrackerApi->request('POST', $path,
+                [
+                    'json' => $data,
+                ]
+            );
 
-        if ($body = $response->getContent()) {
-            return json_decode($body);
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                    if ($body) {
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                    }
+                    break;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+            throw new ApiServiceException($e->getMessage(), $e->getCode(), $e);
         }
 
         return null;
@@ -200,19 +263,43 @@ class JiraApiService implements ApiServiceInterface
      * @param array $data
      *
      * @return mixed
+     *
+     * @throws ApiServiceException
      */
     private function put(string $path, array $data): mixed
     {
-        $response = $this->projectTrackerApi->request(
-            'PUT',
-            $path,
-            [
-                'json' => $data,
-            ]
-        );
+        try {
+            $response = $this->projectTrackerApi->request('PUT', $path,
+                [
+                    'json' => $data,
+                ]
+            );
 
-        if ($body = $response->getContent()) {
-            return json_decode($body);
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                    if ($body) {
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                    }
+                    break;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+
+        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+            throw new ApiServiceException($e->getMessage(), $e->getCode(), $e);
         }
 
         return null;
@@ -224,12 +311,39 @@ class JiraApiService implements ApiServiceInterface
      * @param string $path
      *
      * @return mixed
+     *
+     * @throws ApiServiceException
      */
     private function delete(string $path): mixed
     {
-        $response = $this->projectTrackerApi->request('DELETE', $path);
-        if ($body = $response->getContent()) {
-            return json_decode($body);
+        try {
+            $response = $this->projectTrackerApi->request('DELETE', $path);
+
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                    if ($body) {
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                    }
+                    break;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+
+        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+            throw new ApiServiceException($e->getMessage(), $e->getCode(), $e);
         }
 
         return null;
