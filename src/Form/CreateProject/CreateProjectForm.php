@@ -173,7 +173,7 @@ class CreateProjectForm extends AbstractType
             'constraints' => [
                 new NotNull(['groups' => 'account']),
             ],
-            'row_attr' => ['class' => 'form-element-wrapper'],
+            'row_attr' => ['class' => 'form-element-wrapper form-group-account hidden'],
         ])
         ->add('new_account_key', TextType::class, [
             'label' => 'create_project_form.new_account_key.label',
@@ -181,7 +181,7 @@ class CreateProjectForm extends AbstractType
                 'class' => 'form-label',
             ],
             'attr' => [
-                'class' => 'form-element',
+                'class' => 'form-element form-group-account',
             ],
             'required' => false,
             'help_attr' => [
@@ -191,7 +191,7 @@ class CreateProjectForm extends AbstractType
             'constraints' => [
                 new NotNull(['groups' => 'account']),
             ],
-            'row_attr' => ['class' => 'form-element-wrapper'],
+            'row_attr' => ['class' => 'form-element-wrapper form-group-account hidden'],
         ])
         ->add('new_account_contact', TextType::class, [
             'label' => 'create_project_form.new_account_contact.label',
@@ -203,13 +203,13 @@ class CreateProjectForm extends AbstractType
             ],
             'required' => false,
             'help_attr' => [
-                'class' => 'form-help',
+                'class' => 'form-help form-group-account',
             ],
             'help' => 'create_project_form.new_account_contact.help',
             'constraints' => [
                 new NotNull(['groups' => 'account']),
             ],
-            'row_attr' => ['class' => 'form-element-wrapper'],
+            'row_attr' => ['class' => 'form-element-wrapper form-group-account hidden'],
         ])
         ->add('new_account_customer', ChoiceType::class, [
             'label' => 'create_project_form.new_account_customer.label',
@@ -230,7 +230,7 @@ class CreateProjectForm extends AbstractType
                     'message' => 'create_project_form.new_account_customer.constraint.not_null',
                 ]),
             ],
-            'row_attr' => ['class' => 'form-element-wrapper'],
+            'row_attr' => ['class' => 'form-element-wrapper form-group-account hidden'],
         ])
         ->add('new_customer', CheckboxType::class, [
             'label' => 'create_project_form.new_customer.label',
@@ -248,7 +248,7 @@ class CreateProjectForm extends AbstractType
             ],
             'help' => 'create_project_form.new_customer.help',
             'validation_groups' => ['customer'],
-            'row_attr' => ['class' => 'form-element-wrapper'],
+            'row_attr' => ['class' => 'form-element-wrapper hidden'],
         ])
         ->add('new_customer_name', TextType::class, [
             'label' => 'create_project_form.new_customer_name.label',
@@ -263,7 +263,7 @@ class CreateProjectForm extends AbstractType
             'constraints' => [
                 new NotNull(['groups' => 'customer']),
             ],
-            'row_attr' => ['class' => 'form-element-wrapper'],
+            'row_attr' => ['class' => 'form-element-wrapper form-group-customer hidden'],
         ])
         ->add('new_customer_key', TextType::class, [
             'label' => 'create_project_form.new_customer_key.label',
@@ -286,7 +286,7 @@ class CreateProjectForm extends AbstractType
                     'groups' => 'customer',
                 ]),
             ],
-            'row_attr' => ['class' => 'form-element-wrapper'],
+            'row_attr' => ['class' => 'form-element-wrapper form-group-customer hidden'],
         ]);
 
         $builder->add('save', SubmitType::class, [

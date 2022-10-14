@@ -5,5 +5,5 @@
 {% endblock %}
 
 {% block content %}
-  INDEX
+  <div {{ react_component('MyComponent', { 'fullName': "World, in react from twig in symfony" }) }}></div>
 {% endblock %}

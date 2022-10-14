@@ -30,4 +30,8 @@
     .page-title {
         @apply text-4xl mb-8;
     }
+
+    .hidden {
+        @apply invisible;
+    }
 }
