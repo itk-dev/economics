@@ -121,11 +121,6 @@ abstract class AbstractService
 //        return $worklogs;
 //    }
 //
-//    public function getAccount($accountId)
-//    {
-//        return $this->get('/rest/tempo-accounts/1/account/'.$accountId.'/');
-//    }
-//
 //    public function getRateTableByAccount($accountId)
 //    {
 //        return $this->get('/rest/tempo-accounts/1/ratetable', [

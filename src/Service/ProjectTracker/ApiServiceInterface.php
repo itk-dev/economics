@@ -29,4 +29,10 @@ interface ApiServiceInterface
     public function addProjectToTimeTrackerAccount(mixed $project, mixed $account): void;
 
     public function createProjectBoard(string $type, mixed $project): void;
+
+    public function getAccount(int $accountId): mixed;
+
+    public function getRateTableByAccount(int $accountId): mixed;
+
+    public function getAccountIdsByProject(int $projectId): mixed;
 }

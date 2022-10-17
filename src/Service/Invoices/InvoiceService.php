@@ -10,16 +10,16 @@
 
 namespace App\Service\Invoices;
 
-use App\Service\JiraService;
-use Billing\Entity\Expense;
-use Billing\Entity\Invoice;
-use Billing\Entity\InvoiceEntry;
-use Billing\Entity\Project;
-use Billing\Entity\Worklog;
+use App\Entity\Expense;
+use App\Entity\Invoice;
+use App\Entity\InvoiceEntry;
+use App\Entity\Project;
+use App\Entity\Worklog;
+use App\Repository\ExpenseRepository;
+use App\Repository\InvoiceRepository;
+use App\Service\ProjectTracker\ApiServiceInterface;
+use App\Repository\WorklogRepository;
 use Billing\Exception\InvoiceException;
-use Billing\Repository\ExpenseRepository;
-use Billing\Repository\InvoiceRepository;
-use Billing\Repository\WorklogRepository;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -29,11 +29,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class InvoiceService
 {
-    private $worklogRepository;
-    private $expenseRepository;
-    private $invoiceRepository;
+    private WorklogRepository $worklogRepository;
+    private ExpenseRepository $expenseRepository;
+    private InvoiceRepository $invoiceRepository;
     private $boundReceiverAccount;
-    private $cache;
+    private CacheProvider $cache;
 
     /**
      * Constructor.
@@ -41,17 +41,14 @@ class InvoiceService
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
+        private readonly ApiServiceInterface $apiService,
     ) {
     }
 
     /**
      * Get invoices for specific Jira project.
-     *
-     * @param $jiraProjectId
-     *
-     * @return array
      */
-    public function getInvoices($jiraProjectId)
+    public function getInvoices(int $jiraProjectId): array
     {
         if (!(int) $jiraProjectId) {
             throw new HttpException(400, 'Expected integer in request');
@@ -65,7 +62,6 @@ class InvoiceService
         }
 
         $invoices = [];
-
         foreach ($project->getInvoices() as $invoice) {
             $invoices[] = $this->getInvoiceArray($invoice);
         }
@@ -78,7 +74,7 @@ class InvoiceService
      *
      * @return array
      */
-    public function getAllInvoices()
+    public function getAllInvoices(): array
     {
         $repository = $this->entityManager->getRepository(Invoice::class);
         $invoices = $repository->findAll();
@@ -88,7 +84,6 @@ class InvoiceService
         }
 
         $invoicesArray = [];
-
         foreach ($invoices as $invoice) {
             $invoicesArray[] = $this->getInvoiceArray($invoice);
         }
@@ -98,12 +93,8 @@ class InvoiceService
 
     /**
      * Get specific invoice by id.
-     *
-     * @param $invoiceId
-     *
-     * @return array
      */
-    public function getInvoice($invoiceId)
+    public function getInvoice(int $invoiceId): array
     {
         if (!(int) $invoiceId) {
             throw new HttpException(400, 'Expected integer in request');
@@ -121,60 +112,53 @@ class InvoiceService
 
     /**
      * Get invoice as array.
-     *
-     * @return array
      */
-    private function getInvoiceArray(Invoice $invoice, bool $withAccount = false)
+    private function getInvoiceArray(Invoice $invoice, bool $withAccount = false): array
     {
         $account = null;
-        $totalPrice = null;
 
         // Get account information.
         if ($withAccount) {
             try {
-                $account = $this->getAccount($invoice->getCustomerAccountId());
+                $account = $this->apiService->getAccount($invoice->getCustomerAccountId());
                 $account->defaultPrice = $this->getAccountDefaultPrice($invoice->getCustomerAccountId());
             } catch (Exception $exception) {
                 $account = null;
             }
         }
 
-        $totalPrice = array_reduce($invoice->getInvoiceEntries()->toArray(), function ($carry, InvoiceEntry $entry) {
+        $totalPrice = array_reduce($invoice->getInvoiceEntries()->toArray(), function (int $carry, InvoiceEntry $entry) {
             return $carry + $entry->getAmount() * $entry->getPrice();
         }, 0);
 
         return [
             'id' => $invoice->getId(),
             'name' => $invoice->getName(),
-            'projectId' => $invoice->getProject()->getJiraId(),
+            'projectId' => $invoice->getProject()->getRemoteId(),
             'projectName' => $invoice->getProject()->getName(),
-            'jiraId' => $invoice->getProject()->getJiraId(),
-            'recorded' => $invoice->getRecorded(),
+            'jiraId' => $invoice->getProject()->getRemoteId(),
+            'recorded' => $invoice->isRecorded(),
             'accountId' => $invoice->getCustomerAccountId(),
             'description' => $invoice->getDescription(),
             'paidByAccount' => $invoice->getPaidByAccount(),
             'account' => $account,
             'totalPrice' => $totalPrice,
-            'exportedDate' => $invoice->getExportedDate() ? $invoice->getExportedDate()->format('c') : null,
+            'exportedDate' => $invoice->getExportedDate()?->format('c'),
             'created' => $invoice->getCreatedAt()->format('c'),
             'created_by' => $invoice->getCreatedBy(),
             'defaultPayToAccount' => $invoice->getDefaultPayToAccount(),
             'defaultMaterialNumber' => $invoice->getDefaultMaterialNumber(),
-            'periodFrom' => $invoice->getPeriodFrom() ? $invoice->getPeriodFrom()->format('U') : null,
-            'periodTo' => $invoice->getPeriodTo() ? $invoice->getPeriodTo()->format('U') : null,
+            'periodFrom' => $invoice->getPeriodFrom()?->format('U'),
+            'periodTo' => $invoice->getPeriodTo()?->format('U'),
         ];
     }
 
     /**
      * Post new invoice, creating a new entity referenced by the returned id.
      *
-     * @param $invoiceData
-     *
-     * @return array invoiceData
-     *
      * @throws Exception
      */
-    public function postInvoice($invoiceData)
+    public function postInvoice(array $invoiceData): array
     {
         if (empty($invoiceData['projectId']) || !(int) ($invoiceData['projectId'])) {
             throw new HttpException(400, "Expected integer value for 'projectId' in request");
@@ -189,7 +173,7 @@ class InvoiceService
 
         // If project is not present in db, add it from Jira.
         if (!$project) {
-            $project = $this->getJiraProject($invoiceData['projectId']);
+            $project = $this->getProject($invoiceData['projectId']);
         }
 
         $invoice = new Invoice();
@@ -210,7 +194,7 @@ class InvoiceService
 
         // Set project default description.
         $project = $this->getProject($invoiceData['projectId']);
-        $lead = $project->lead ? $this->getUser($project->lead->key) : null;
+        $lead = $project->lead ?? null; // $this->getUser($project->lead->key) : null;
         $leadName = $lead->displayName ?? '';
         $leadMail = $lead->emailAddress ?? '';
         $description = $this->translator->trans(
@@ -228,13 +212,9 @@ class InvoiceService
     /**
      * Put specific invoice, replacing the invoice referenced by the given id.
      *
-     * @param $invoiceData
-     *
-     * @return array
-     *
      * @throws Exception
      */
-    public function putInvoice($invoiceData)
+    public function putInvoice(array $invoiceData): array
     {
         if (empty($invoiceData['id']) || !(int) ($invoiceData['id'])) {
             throw new HttpException(400, "Expected integer value for 'id' in request");
@@ -297,10 +277,8 @@ class InvoiceService
 
     /**
      * Delete specific invoice referenced by the given id.
-     *
-     * @param $invoiceId
      */
-    public function deleteInvoice($invoiceId)
+    public function deleteInvoice(int $invoiceId): void
     {
         if (empty($invoiceId) || !(int) $invoiceId) {
             throw new HttpException(400, 'Expected integer in request');
@@ -323,12 +301,8 @@ class InvoiceService
 
     /**
      * Get invoiceEntries for specific invoice.
-     *
-     * @param $invoiceId
-     *
-     * @return array
      */
-    public function getInvoiceEntries($invoiceId)
+    public function getInvoiceEntries(int $invoiceId): array
     {
         if (!(int) $invoiceId) {
             throw new HttpException(400, 'Expected integer in request');
@@ -355,7 +329,7 @@ class InvoiceService
      *
      * @return array
      */
-    public function getAllInvoiceEntries()
+    public function getAllInvoiceEntries(): array
     {
         $repository = $this->entityManager->getRepository(InvoiceEntry::class);
         $invoiceEntries = $repository->findAll();
@@ -383,12 +357,8 @@ class InvoiceService
 
     /**
      * Get specific invoiceEntry by id.
-     *
-     * @param $invoiceEntryId
-     *
-     * @return array
      */
-    public function getInvoiceEntry($invoiceEntryId)
+    public function getInvoiceEntry(int $invoiceEntryId): array
     {
         if (!(int) $invoiceEntryId) {
             throw new HttpException(400, 'Expected integer in request');
@@ -406,10 +376,8 @@ class InvoiceService
 
     /**
      * Get invoice entry as array.
-     *
-     * @return array
      */
-    private function getInvoiceEntryArray(InvoiceEntry $invoiceEntry)
+    private function getInvoiceEntryArray(InvoiceEntry $invoiceEntry): array
     {
         return [
             'id' => $invoiceEntry->getId(),
@@ -436,12 +404,8 @@ class InvoiceService
 
     /**
      * Post new invoiceEntry, creating a new entity referenced by the returned id.
-     *
-     * @param $invoiceEntryData
-     *
-     * @return array invoiceEntryData
      */
-    public function postInvoiceEntry($invoiceEntryData)
+    public function postInvoiceEntry(array $invoiceEntryData): array
     {
         if (empty($invoiceEntryData['invoiceId']) || !(int) ($invoiceEntryData['invoiceId'])) {
             throw new HttpException(400, "Expected integer value for 'invoiceId' in request");
@@ -455,7 +419,7 @@ class InvoiceService
             throw new HttpException(404, 'Invoice with id '.$invoiceEntryData['invoiceId'].' not found');
         }
 
-        if ($invoice->getRecorded()) {
+        if ($invoice->isRecorded()) {
             throw new HttpException(400, 'Invoice with id '.$invoiceEntryData['invoiceId'].' has been recorded');
         }
 
@@ -476,10 +440,8 @@ class InvoiceService
 
     /**
      * Set invoiceEntry from data array.
-     *
-     * @return \Billing\Entity\InvoiceEntry
      */
-    private function setInvoiceEntryValuesFromData(InvoiceEntry $invoiceEntry, array $invoiceEntryData)
+    private function setInvoiceEntryValuesFromData(InvoiceEntry $invoiceEntry, array $invoiceEntryData): InvoiceEntry
     {
         if (isset($invoiceEntryData['entryType'])) {
             $invoiceEntry->setEntryType($invoiceEntryData['entryType']);
@@ -587,12 +549,8 @@ class InvoiceService
 
     /**
      * Put specific invoiceEntry, replacing the invoiceEntry referenced by the given id.
-     *
-     * @param $invoiceEntryData
-     *
-     * @return array
      */
-    public function putInvoiceEntry($invoiceEntryData)
+    public function putInvoiceEntry(array $invoiceEntryData): array
     {
         if (empty($invoiceEntryData['id']) || !(int) ($invoiceEntryData['id'])) {
             throw new HttpException(400, "Expected integer value for 'id' in request");
@@ -605,7 +563,7 @@ class InvoiceService
             throw new HttpException(404, 'Unable to update invoiceEntry with id '.$invoiceEntryData['id'].' as it does not already exist');
         }
 
-        if ($invoiceEntry->getInvoice()->getRecorded()) {
+        if ($invoiceEntry->getInvoice()->isRecorded()) {
             throw new HttpException(400, 'Unable to update invoiceEntry with id '.$invoiceEntryData['id'].' since the invoice it belongs to has been recorded.');
         }
 
@@ -619,10 +577,8 @@ class InvoiceService
 
     /**
      * Delete specific invoice entry referenced by the given id.
-     *
-     * @param $invoiceEntryId
      */
-    public function deleteInvoiceEntry($invoiceEntryId)
+    public function deleteInvoiceEntry(int $invoiceEntryId): void
     {
         if (empty($invoiceEntryId) || !(int) $invoiceEntryId) {
             throw new HttpException(400, 'Expected integer in request');
@@ -635,7 +591,7 @@ class InvoiceService
             throw new HttpException(404, 'InvoiceEntry with id '.$invoiceEntryId.' did not exist');
         }
 
-        if ($invoiceEntry->getInvoice()->getRecorded()) {
+        if ($invoiceEntry->getInvoice()->isRecorded()) {
             throw new HttpException(400, 'Unable to delete invoiceEntry with id '.$invoiceEntryId.' since the invoice it belongs to has been recorded.');
         }
 
@@ -646,13 +602,9 @@ class InvoiceService
     /**
      * Record an invoice.
      *
-     * @param $invoiceId
-     *
-     * @return array
-     *
      * @throws InvoiceException
      */
-    public function recordInvoice($invoiceId)
+    public function recordInvoice(int $invoiceId): array
     {
         $invoice = $this->entityManager->getRepository(Invoice::class)
             ->find($invoiceId);
@@ -666,7 +618,7 @@ class InvoiceService
         }
 
         try {
-            $customerAccount = $this->getAccount($customerAccountId);
+            $customerAccount = $this->apiService->getAccount($customerAccountId);
         } catch (\Exception $e) {
             if (404 === $e->getCode()) {
                 throw new InvoiceException('Jira: Customer account not found', 404);
@@ -737,7 +689,7 @@ class InvoiceService
         return $this->getInvoiceArray($invoice);
     }
 
-    private function checkInvoiceEntry(InvoiceEntry $invoiceEntry)
+    private function checkInvoiceEntry(InvoiceEntry $invoiceEntry): bool|string
     {
         if (!$invoiceEntry->getEntryType()) {
             return 'entryType not set';
@@ -766,7 +718,7 @@ class InvoiceService
         return true;
     }
 
-    public function markInvoiceAsExported($invoiceId)
+    public function markInvoiceAsExported(int $invoiceId): void
     {
         $invoice = $this->invoiceRepository->findOneBy(['id' => $invoiceId]);
 
@@ -786,7 +738,7 @@ class InvoiceService
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function exportInvoicesToSpreadsheet(array $invoiceIds)
+    public function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -917,25 +869,17 @@ class InvoiceService
 
     /**
      * Get specific project by Jira project ID.
-     *
-     * @param $jiraProjectId
-     *
-     * @return \Billing\Entity\Project|object
      */
-    public function getJiraProject($jiraProjectId)
+    public function getProject(int $projectId)
     {
-        if (!(int) $jiraProjectId) {
+        if (!(int) $projectId) {
             throw new HttpException(400, 'Expected integer in request');
         }
 
-        try {
-            $result = $this->getProject($jiraProjectId);
-        } catch (HttpException $e) {
-            throw $e;
-        }
+        $result = $this->getProject($projectId);
 
         $repository = $this->entityManager->getRepository(Project::class);
-        $project = $repository->findOneBy(['jiraId' => $jiraProjectId]);
+        $project = $repository->findOneBy(['jiraId' => $projectId]);
 
         if (!$project) {
             $project = new Project();
@@ -955,12 +899,8 @@ class InvoiceService
 
     /**
      * Get project worklogs with extra metadata.
-     *
-     * @param $projectId
-     *
-     * @return mixed
      */
-    public function getProjectWorklogsWithMetadata($projectId)
+    public function getProjectWorklogsWithMetadata(int $projectId): mixed
     {
         $worklogs = $this->getProjectWorklogs($projectId);
 
@@ -971,7 +911,7 @@ class InvoiceService
         $project = $this->getProject($projectId);
         $versions = $project->versions;
         $epics = $this->getProjectEpics($projectId);
-        $accounts = $this->getAllAccounts();
+        $accounts = $this->apiService->getAllAccounts();
 
         $epicNameCustomFieldId = $this->getCustomFieldId('Epic Name');
 
@@ -1016,7 +956,7 @@ class InvoiceService
             if (null !== $worklogEntity) {
                 $worklog->addedToInvoiceEntryId = $worklogEntity->getInvoiceEntry()->getId();
 
-                $worklog->billed = $worklogEntity->getIsBilled();
+                $worklog->billed = $worklogEntity->isBilled();
             }
         }
 
@@ -1025,12 +965,8 @@ class InvoiceService
 
     /**
      * Get project expenses.
-     *
-     * @param $projectId
-     *
-     * @return array
      */
-    public function getProjectExpenses($projectId)
+    public function getProjectExpenses(int $projectId): array
     {
         $allExpenses = $this->getExpenses();
         $issues = array_reduce($this->getProjectIssues($projectId), function ($carry, $issue) {
@@ -1054,12 +990,8 @@ class InvoiceService
 
     /**
      * Get project expenses with metadata about version, epic, etc.
-     *
-     * @param $projectId
-     *
-     * @return array
      */
-    public function getProjectExpensesWithMetadata($projectId)
+    public function getProjectExpensesWithMetadata(int $projectId): array
     {
         $expenses = $this->getProjectExpenses($projectId);
 
@@ -1098,7 +1030,7 @@ class InvoiceService
             if (null !== $expenseEntity) {
                 $expense->addedToInvoiceEntryId = $expenseEntity->getInvoiceEntry()->getId();
 
-                $expense->billed = $expenseEntity->getIsBilled();
+                $expense->billed = $expenseEntity->isBilled();
             }
         }
 
@@ -1107,25 +1039,16 @@ class InvoiceService
 
     /**
      * Get epics for project.
-     *
-     * @param $projectId
-     *
-     * @return array
      */
-    public function getProjectEpics($projectId)
+    public function getProjectEpics(int $projectId): array
     {
         return $this->getProjectIssues($projectId, 'Epic');
     }
 
     /**
      * Get project issues of a given issue type.
-     *
-     * @param $projectId
-     * @param string $issueType
-     *
-     * @return array
      */
-    public function getProjectIssues($projectId, string $issueType = null, array $additionalJQL = null)
+    public function getProjectIssues($projectId, string $issueType = null, array $additionalJQL = null): array
     {
         $issues = [];
 
@@ -1162,22 +1085,18 @@ class InvoiceService
 
     /**
      * Get accounts for a given project id.
-     *
-     * @param $projectId
-     *
-     * @return array|false|mixed
      */
-    public function getProjectAccounts($projectId)
+    public function getProjectAccounts(int $projectId): mixed
     {
         $cacheKey = 'project_accounts_'.$projectId;
         if ($this->cache->contains($cacheKey)) {
             return $this->cache->fetch($cacheKey);
         }
 
-        $accountIds = $this->getAccountIdsByProject($projectId);
+        $accountIds = $this->apiService->getAccountIdsByProject($projectId);
         $accounts = [];
         foreach ($accountIds as $accountId) {
-            $accounts[$accountId] = $this->getAccount($accountId);
+            $accounts[$accountId] = $this->apiService->getAccount($accountId);
             $accounts[$accountId]->defaultPrice = $this->getAccountDefaultPrice($accountId);
         }
 
@@ -1189,10 +1108,8 @@ class InvoiceService
 
     /**
      * Get to accounts.
-     *
-     * @return array|false|mixed
      */
-    public function getToAccounts()
+    public function getToAccounts(): mixed
     {
         $cacheKey = 'to_accounts';
         if ($this->cache->contains($cacheKey)) {
@@ -1200,11 +1117,11 @@ class InvoiceService
         }
 
         $toAccounts = [];
-        $allAccounts = $this->getAllAccounts();
+        $allAccounts = $this->apiService->getAllAccounts();
 
         foreach ($allAccounts as $account) {
             if ('INTERN' === $account->category->name) {
-                if ('XG' === substr($account->key, 0, 2) || 'XD' === substr($account->key, 0, 2)) {
+                if (str_starts_with($account->key, 'XG') || str_starts_with($account->key, 'XD')) {
                     $toAccounts[$account->key] = $account;
                 }
             }
@@ -1219,8 +1136,24 @@ class InvoiceService
     /**
      * Clear cache entries.
      */
-    public function clearCache()
+    public function clearCache(): bool
     {
         return $this->cache->flushAll();
+    }
+
+    /**
+     * Get default price from account.
+     */
+    public function getAccountDefaultPrice(int $accountId): int|null
+    {
+        $rateTable = $this->apiService->getRateTableByAccount($accountId);
+
+        foreach ($rateTable->rates as $rate) {
+            if ('DEFAULT_RATE' === $rate->link->type) {
+                return $rate->amount;
+            }
+        }
+
+        return null;
     }
 }

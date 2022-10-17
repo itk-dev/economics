@@ -45,6 +45,7 @@ create_project_form:
   save:
     label: Opret projekt
     progress_text: Opretter projekt
+
 create_project_submitted:
   title: Projekt oprettet
   sub_text: Men du mangler lige det sidste skridt!
@@ -53,3 +54,6 @@ create_project_submitted:
   customer_title: Ny kunde oprettet
   last_step:
     text: For at knytte projektet til dit team skal du følge linket herunder og klikke "Add Project Link" under "Links to Projects", find og vælg dit nye projekt på listen.
+
+invoices:
+  title: Fakturaer

@@ -246,6 +246,52 @@ class JiraApiService implements ApiServiceInterface
     }
 
     /**
+     * Get account based on id.
+     *
+     * @throws ApiServiceException
+     */
+    public function getAccount(int $accountId): mixed
+    {
+        return $this->get('/rest/tempo-accounts/1/account/'.$accountId.'/');
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function getRateTableByAccount(int $accountId): mixed
+    {
+        return $this->get('/rest/tempo-accounts/1/ratetable', [
+            'scopeId' => $accountId,
+            'scopeType' => 'ACCOUNT',
+        ]);
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function getAccountIdsByProject(int $projectId): mixed
+    {
+        $projectLinks = $this->get('/rest/tempo-accounts/1/link/project/'.$projectId);
+
+        return array_reduce($projectLinks, function ($carry, $item) {
+            $carry[] = $item->accountId;
+
+            return $carry;
+        }, []);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
      * Get from Jira.
      *
      * @TODO: Wrap the call in request function, they er 99% the same code.

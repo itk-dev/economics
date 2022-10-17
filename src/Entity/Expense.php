@@ -27,7 +27,7 @@ class Expense
         return $this->id;
     }
 
-    public function isIsBilled(): ?bool
+    public function isBilled(): ?bool
     {
         return $this->isBilled;
     }

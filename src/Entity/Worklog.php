@@ -52,7 +52,7 @@ class Worklog
         return $this;
     }
 
-    public function isIsBilled(): ?bool
+    public function isBilled(): ?bool
     {
         return $this->isBilled;
     }
