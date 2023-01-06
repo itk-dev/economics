@@ -35,4 +35,10 @@ interface ApiServiceInterface
     public function getRateTableByAccount(int $accountId): mixed;
 
     public function getAccountIdsByProject(int $projectId): mixed;
+
+    public function getAllBoards(): mixed;
+
+    public function getAllSprints(string $boardId): array;
+
+    public function getIssuesInSprint(string $boardId, string $sprintId): array;
 }

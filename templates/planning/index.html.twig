@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planning{% endblock %}
+
+{% block content %}
+<div class="planning-wrapper">
+    <style>
+        td.high {
+            background-color: #eb886f;
+        }
+        td.success {
+            background-color: #2fb1a2;
+        }
+    </style>
+
+    <h1 class="page-title">Planning</h1>
+
+    <div>
+        <table class="table-auto">
+            <thead>
+                <tr>
+                    <th class="border-2 p-2"></th>
+                    {% for sprint in sprints %}
+                        <th class="border-2 font-bold p-2">{{ sprint.name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignee in assignees %}
+                    <tr>
+                        <td class="border-2 font-bold p-2">
+                            {{ assignee.displayName }}
+                        </td>
+                        {% for sprint in sprints %}
+                            {% if sprintCells[assignee.key][sprint.id] is defined %}
+                                {% set res = sprintCells[assignee.key][sprint.id] / 60 / 60 %}
+                                <td class="border-2 font-bold p-2{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
+                                    {{ res }}
+                                </td>
+                            {% else %}
+                                <td class="border-2 font-bold p-2"></td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

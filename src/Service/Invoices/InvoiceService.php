@@ -19,7 +19,7 @@ use App\Repository\ExpenseRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\ProjectTracker\ApiServiceInterface;
 use App\Repository\WorklogRepository;
-use Billing\Exception\InvoiceException;
+use App\Exception\InvoiceException;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;

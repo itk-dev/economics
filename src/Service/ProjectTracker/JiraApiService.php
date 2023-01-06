@@ -280,21 +280,75 @@ class JiraApiService implements ApiServiceInterface
         }, []);
     }
 
+    /**
+     * @throws ApiServiceException
+     */
+    public function getAllBoards(): mixed {
+        return $this->get('/rest/agile/1.0/board');
+    }
 
+    /**
+     * @throws ApiServiceException
+     */
+    public function getAllSprints(string $boardId, string $state = 'future,active'): array
+    {
+        $sprints = [];
 
+        $startAt = 0;
+        while (true) {
+            $result = $this->get('/rest/agile/1.0/board/'.$boardId.'/sprint', [
+                'startAt' => $startAt,
+                'maxResults' => 50,
+                'state' => $state,
+            ]);
+            $sprints = array_merge($sprints, $result->values);
 
+            if ($result->isLast) {
+                break;
+            }
 
+            $startAt = $startAt + 50;
+        }
 
+        return $sprints;
+    }
 
+    public function getIssuesInSprint(string $boardId, string $sprintId): array
+    {
+        $issues = [];
+        $fields = implode(
+            ',',
+            [
+                'timetracking',
+                'summary',
+                'status',
+                'assignee',
+                'project',
+            ]
+        );
 
+        $startAt = 0;
+        while (true) {
+            $result = $this->get('/rest/agile/1.0/board/'.$boardId.'/sprint/'.$sprintId.'/issue', [
+                'startAt' => $startAt,
+                'fields' => $fields,
+            ]);
+            $issues = array_merge($issues, $result->issues);
 
+            $startAt = $startAt + 50;
 
+            if ($startAt > $result->total) {
+                break;
+            }
+        }
 
+        return $issues;
+    }
 
     /**
      * Get from Jira.
      *
-     * @TODO: Wrap the call in request function, they er 99% the same code.
+     * @TODO: Wrap the call in request function, they are 99% the same code.
      *
      * @throws ApiServiceException
      */
