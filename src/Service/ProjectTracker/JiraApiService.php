@@ -4,6 +4,7 @@ namespace App\Service\ProjectTracker;
 
 use App\Exception\ApiServiceException;
 use DateTime;
+use Exception;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -349,7 +350,7 @@ class JiraApiService implements ApiServiceInterface
 
     /**
      * @throws ApiServiceException
-     * @throws \Exception
+     * @throws Exception
      */
     public function getPlanningData(): array
     {
@@ -358,17 +359,19 @@ class JiraApiService implements ApiServiceInterface
 
         $sprints = [];
         $sprintIssues = [];
-        $sprintCells = [];
+        $assigneeCells = [];
+        $projectCells = [];
 
         $allSprints = $this->getAllSprints($boardId);
 
+        // TODO: Make goals configurable.
         $weekGoalLow = 20;
         $weekGoalHigh = 30;
 
         foreach ($allSprints as $sprint) {
-            // Expected sprint name examples.
-            // $a = "DEV sprint uge 2-3-4.23";
-            // $b = "ServiceSupport uge 5.23";
+            // Expected sprint name examples:
+            // DEV sprint uge 2-3-4.23
+            // ServiceSupport uge 5.23
 
             $pattern = "/(?<weeks>(?:-?\d+-?)*)\.(?<year>\d+)$/";
 
@@ -396,6 +399,7 @@ class JiraApiService implements ApiServiceInterface
         }
 
         $assignees = [];
+        $projects = [];
 
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issue) {
@@ -416,24 +420,58 @@ class JiraApiService implements ApiServiceInterface
                         ];
                     }
 
-                    if (!isset($sprintCells[$assigneeKey][$sprintId])) {
-                        $sprintCells[$assigneeKey][$sprintId] = 0;
+                    if (!isset($assigneeCells[$assigneeKey][$sprintId])) {
+                        $assigneeCells[$assigneeKey][$sprintId] = [
+                            'sumSeconds' => 0,
+                            'sumHours' => 0.0,
+                        ];
                     }
 
-                    $sprintCells[$assigneeKey][$sprintId] = $sprintCells[$assigneeKey][$sprintId] +
+                    $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] = $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] +
                         ($issue->fields->timetracking->remainingEstimateSeconds ?? 0);
+                    $assigneeCells[$assigneeKey][$sprintId]['sumHours'] = $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] / (60 * 60);
+
+                    $project = $issue->fields->project;
+                    $projectKey = $project->key;
+                    $projectDisplayName = $project->name;
+
+                    if (!array_key_exists($projectKey, $projects)) {
+                        $projects[$projectKey] = (object) [
+                            'key' => $projectKey,
+                            'displayName' => $projectDisplayName,
+                        ];
+                    }
+
+                    if (!isset($projectCells[$projectKey][$sprintId])) {
+                        $projectCells[$projectKey][$sprintId] = [
+                            'sumSeconds' => 0,
+                            'sumHours' => 0.0,
+                        ];
+                    }
+
+                    $projectCells[$projectKey][$sprintId]['sumSeconds'] = $projectCells[$projectKey][$sprintId]['sumSeconds'] +
+                        ($issue->fields->timetracking->remainingEstimateSeconds ?? 0);
+                    $projectCells[$projectKey][$sprintId]['sumHours'] = $projectCells[$projectKey][$sprintId]['sumSeconds'] / (60 * 60);
                 }
             }
         }
 
+        // Sort assignees by name.
         usort($assignees, function ($a, $b) {
+            return mb_strtolower($a->displayName) > mb_strtolower($b->displayName);
+        });
+
+        // Sort projects by name.
+        usort($projects, function ($a, $b) {
             return mb_strtolower($a->displayName) > mb_strtolower($b->displayName);
         });
 
         return [
             'sprints' => $sprints,
             'assignees' => $assignees,
-            'sprintCells' => $sprintCells,
+            'assigneeCells' => $assigneeCells,
+            'projects' => $projects,
+            'projectCells' => $projectCells,
         ];
     }
 
@@ -478,7 +516,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -522,7 +560,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -566,7 +604,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -603,7 +641,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 

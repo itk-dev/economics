@@ -3,6 +3,7 @@
 namespace App\Controller\Planning;
 
 use App\Service\ProjectTracker\ApiServiceInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,19 +16,13 @@ class PlanningController extends AbstractController
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     #[Route('/planning', name: 'app_planning')]
     public function index(): Response
     {
         $planningData = $this->apiService->getPlanningData();
 
-        return $this->render('planning/index.html.twig', [
-            'controller_name' => 'PlanningController',
-            'sprints' => $planningData['sprints'],
-            'assignees' => $planningData['assignees'],
-            'sprintCells' => $planningData['sprintCells'],
-        ]);
+        return $this->render('planning/index.html.twig', array_merge(['controller_name' => 'PlanningController'], $planningData));
     }
-
 }
