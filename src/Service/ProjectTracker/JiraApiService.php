@@ -17,7 +17,8 @@ class JiraApiService implements ApiServiceInterface
 
     public function __construct(
         protected readonly HttpClientInterface $projectTrackerApi,
-        $customFieldMappings
+        $customFieldMappings,
+        protected readonly string $defaultBoard,
     ) {
     }
 
@@ -354,8 +355,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getPlanningData(): array
     {
-        // TODO: Make boardId configurable.
-        $boardId = 30;
+        $boardId = $this->defaultBoard;
 
         $sprints = [];
         $sprintIssues = [];
@@ -404,6 +404,10 @@ class JiraApiService implements ApiServiceInterface
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issue) {
                 if ($issue->fields->status->statusCategory->key !== 'done') {
+                    $project = $issue->fields->project;
+                    $projectKey = $project->key;
+                    $projectDisplayName = $project->name;
+
                     if (empty($issue->fields->assignee)) {
                         $assigneeKey = 'unassigned';
                         $assigneeDisplayName = 'Unassigned';
@@ -417,23 +421,49 @@ class JiraApiService implements ApiServiceInterface
                         $assignees[$assigneeKey] = (object) [
                             'key' => $assigneeKey,
                             'displayName' => $assigneeDisplayName,
+                            'projects' => [],
                         ];
                     }
 
                     if (!isset($assigneeCells[$assigneeKey][$sprintId])) {
                         $assigneeCells[$assigneeKey][$sprintId] = [
+                            'id' => $sprintId,
                             'sumSeconds' => 0,
                             'sumHours' => 0.0,
                         ];
                     }
 
-                    $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] = $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] +
-                        ($issue->fields->timetracking->remainingEstimateSeconds ?? 0);
+                    $remainingSeconds = $issue->fields->timetracking->remainingEstimateSeconds ?? 0;
+
+                    $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] = $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] + $remainingSeconds;
                     $assigneeCells[$assigneeKey][$sprintId]['sumHours'] = $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] / (60 * 60);
 
-                    $project = $issue->fields->project;
-                    $projectKey = $project->key;
-                    $projectDisplayName = $project->name;
+                    if (!array_key_exists($projectKey, $assigneeCells[$assigneeKey]['projects'])) {
+                        $assigneeCells[$assigneeKey]['projects'][$projectKey] = [
+                            'key' => $projectKey,
+                            'sprints' => [],
+                        ];
+                    }
+
+                    if (!array_key_exists($sprintId, $assigneeCells[$assigneeKey]['projects'][$projectKey]['sprints'])) {
+                        $assigneeCells[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId] = [
+                            'sumSeconds' => 0,
+                            'sumHours' => 0.0,
+                            'issues' => [],
+                        ];
+                    }
+                    $assigneeCells[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId]['sumSeconds'] =
+                        $assigneeCells[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId]['sumSeconds'] + $remainingSeconds;
+                    $assigneeCells[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId]['sumHours'] =
+                        $assigneeCells[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId]['sumSeconds'] / (60 * 60);
+
+                    $assigneeCells[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId]['issues'][] = (object) [
+                        'key' => $issue->key,
+                        'displayName' => $issue->fields->summary,
+                        'remainingHours' =>  isset($issue->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : 'UE',
+                        'link' => "jiraurl/browse/".$issue->key,
+                        'sprintId' => $sprintId,
+                    ];
 
                     if (!array_key_exists($projectKey, $projects)) {
                         $projects[$projectKey] = (object) [
@@ -444,13 +474,13 @@ class JiraApiService implements ApiServiceInterface
 
                     if (!isset($projectCells[$projectKey][$sprintId])) {
                         $projectCells[$projectKey][$sprintId] = [
+                            'id' => $sprintId,
                             'sumSeconds' => 0,
                             'sumHours' => 0.0,
                         ];
                     }
 
-                    $projectCells[$projectKey][$sprintId]['sumSeconds'] = $projectCells[$projectKey][$sprintId]['sumSeconds'] +
-                        ($issue->fields->timetracking->remainingEstimateSeconds ?? 0);
+                    $projectCells[$projectKey][$sprintId]['sumSeconds'] = $projectCells[$projectKey][$sprintId]['sumSeconds'] + $remainingSeconds;
                     $projectCells[$projectKey][$sprintId]['sumHours'] = $projectCells[$projectKey][$sprintId]['sumSeconds'] / (60 * 60);
                 }
             }
