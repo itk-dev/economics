@@ -20,6 +20,8 @@ class JiraApiService implements ApiServiceInterface
         $customFieldMappings,
         protected readonly string $defaultBoard,
         protected readonly string $jiraUrl,
+        protected readonly float $weekGoalLow,
+        protected readonly float $weekGoalHigh,
     ) {
     }
 
@@ -365,10 +367,6 @@ class JiraApiService implements ApiServiceInterface
 
         $allSprints = $this->getAllSprints($boardId);
 
-        // TODO: Make goals configurable.
-        $weekGoalLow = 25;
-        $weekGoalHigh = 34.5;
-
         foreach ($allSprints as $sprint) {
             // Expected sprint name examples:
             // DEV sprint uge 2-3-4.23
@@ -389,8 +387,8 @@ class JiraApiService implements ApiServiceInterface
             $sprints[] = [
                 'id' => $sprint->id,
                 'weeks' => $weeks,
-                'sprintGoalLow' => $weekGoalLow * $weeks,
-                'sprintGoalHigh' => $weekGoalHigh * $weeks,
+                'sprintGoalLow' => $this->weekGoalLow * $weeks,
+                'sprintGoalHigh' => $this->weekGoalHigh * $weeks,
                 'name' => $sprint->name,
             ];
 
