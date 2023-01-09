@@ -87,21 +87,24 @@
             <thead>
             <tr>
                 <th class="border-2 p-2"></th>
+                <th class="border-2 p-2"></th>
                 {% for sprint in sprints %}
                     <th class="border-2 font-bold p-2">{{ sprint.name }}</th>
                 {% endfor %}
             </tr>
             </thead>
-            <tbody>
             {% for project in projects %}
-                <tr>
+                <tbody {{ stimulus_controller('toggle') }}>
+                <tr class="border-2">
                     <td class="border-2 font-bold p-2">
                         {{ project.displayName }}
+                        <button class="float-right" type="button" data-action="toggle#toggleParent" data-toggle-target="button" >+</button>
                     </td>
+                    <td></td>
                     {% for sprint in sprints %}
                         {% if projectCells[project.key][sprint.id] is defined %}
                             {% set res = projectCells[project.key][sprint.id]['sumHours'] %}
-                            <td class="border-2 font-bold p-2">
+                            <td class="border-2 font-bold p-2{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
                                 {{ res }}
                             </td>
                         {% else %}
@@ -109,8 +112,38 @@
                         {% endif %}
                     {% endfor %}
                 </tr>
+                {% for assignee in project.assignees %}
+                    <tr data-toggle-target="parent" class="border-2">
+                        <td class="border-2 p-2"></td>
+                        <td class="border-2 font-bold p-2">{{ assignee.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ assignee.key }}">+</button></td>
+                        {% for sprint in sprints %}
+                            {% if assignee.sprints[sprint.id] is defined %}
+                                <td class="border-2 font-bold p-2">
+                                    {{ assignee.sprints[sprint.id]['sumHours'] }}
+                                </td>
+                            {% else %}
+                                <td class="border-2 font-bold p-2"></td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% for issue in assignee.issues %}
+                        <tr data-toggle-target="child" data-parent-id="{{ assignee.key }}">
+                            <td class="border-2 p-2"></td>
+                            <td class="border-2 p-2"><a href="{{ issue.link }}" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">{{ issue.key }}</a>: {{ issue.displayName }}</td>
+                            {% for sprint in sprints %}
+                                {% if issue.sprintId == sprint.id %}
+                                    <td class="border-2 font-bold p-2">
+                                        {{ issue.remainingHours }}
+                                    </td>
+                                {% else %}
+                                    <td class="border-2 font-bold p-2"></td>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
             {% endfor %}
-            </tbody>
         </table>
     </div>
 </div>

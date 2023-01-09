@@ -471,6 +471,7 @@ class JiraApiService implements ApiServiceInterface
                         $projects[$projectKey] = [
                             'key' => $projectKey,
                             'displayName' => $projectDisplayName,
+                            'assignees' => [],
                         ];
                     }
 
@@ -484,6 +485,34 @@ class JiraApiService implements ApiServiceInterface
 
                     $projectCells[$projectKey][$sprintId]['sumSeconds'] = $projectCells[$projectKey][$sprintId]['sumSeconds'] + $remainingSeconds;
                     $projectCells[$projectKey][$sprintId]['sumHours'] = $projectCells[$projectKey][$sprintId]['sumSeconds'] / (60 * 60);
+
+                    if (!array_key_exists($assigneeKey, $projects[$projectKey]['assignees'])) {
+                        $projects[$projectKey]['assignees'][$assigneeKey] = [
+                            'key' => $assigneeKey,
+                            'displayName' => $assigneeDisplayName,
+                            'sprints' => [],
+                            'issues' => [],
+                        ];
+                    }
+
+                    if (!array_key_exists($sprintId, $projects[$projectKey]['assignees'][$assigneeKey]['sprints'])) {
+                        $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId] = [
+                            'sumSeconds' => 0,
+                            'sumHours' => 0.0,
+                        ];
+                    }
+                    $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId]['sumSeconds'] =
+                        $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId]['sumSeconds'] + $remainingSeconds;
+                    $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId]['sumHours'] =
+                        $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId]['sumSeconds'] / (60 * 60);
+
+                    $projects[$projectKey]['assignees'][$assigneeKey]['issues'][] = [
+                        'key' => $issue->key,
+                        'displayName' => $issue->fields->summary,
+                        'remainingHours' =>  isset($issue->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : 'UE',
+                        'link' => $this->jiraUrl."/browse/".$issue->key,
+                        'sprintId' => $sprintId,
+                    ];
                 }
             }
         }
