@@ -28,11 +28,11 @@
                 </tr>
             </thead>
             {% for assignee in assignees %}
-            <tbody {{ stimulus_controller('toggle-projects') }}>
+            <tbody {{ stimulus_controller('toggle') }}>
                 <tr class="border-2">
                     <td class="border-2 font-bold p-2">
                         {{ assignee.displayName }}
-                        <button class="float-right" type="button" data-action="toggle-projects#toggleAssignee" data-toggle-projects-target="button" >+</button>
+                        <button class="float-right" type="button" data-action="toggle#toggleParent" data-toggle-target="button" >+</button>
                     </td>
                     <td></td>
                     {% for sprint in sprints %}
@@ -47,9 +47,9 @@
                     {% endfor %}
                 </tr>
                 {% for project in assignee.projects %}
-                    <tr data-toggle-projects-target="project" class="border-2">
+                    <tr data-toggle-target="parent" class="border-2">
                         <td class="border-2 p-2"></td>
-                        <td class="border-2 font-bold p-2">{{ project.displayName }} <button class="float-right" type="button" data-action="toggle-projects#toggleProject" data-toggle-projects-target="button" data-project-id="{{ project.key }}">+</button></td>
+                        <td class="border-2 font-bold p-2">{{ project.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ project.key }}">+</button></td>
                         {% for sprint in sprints %}
                             {% if project.sprints[sprint.id] is defined %}
                                 <td class="border-2 font-bold p-2">
@@ -61,7 +61,7 @@
                         {% endfor %}
                     </tr>
                     {% for issue in project.issues %}
-                        <tr data-toggle-projects-target="issue" data-project-id="{{ project.key }}">
+                        <tr data-toggle-target="child" data-parent-id="{{ project.key }}">
                             <td class="border-2 p-2"></td>
                             <td class="border-2 p-2"><a href="{{ issue.link }}" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">{{ issue.key }}</a>: {{ issue.displayName }}</td>
                             {% for sprint in sprints %}
