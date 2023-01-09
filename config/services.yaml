@@ -31,3 +31,4 @@ services:
         arguments:
             $customFieldMappings: '%custom_fields%'
             $defaultBoard: '%env(JIRA_API_SERVICE_DEFAULT_BOARD)%'
+            $jiraUrl: '%env(PROJECT_TRACKER_URL)%'
