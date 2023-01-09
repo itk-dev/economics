@@ -517,12 +517,12 @@ class JiraApiService implements ApiServiceInterface
 
         // Sort assignees by name.
         usort($assignees, function ($a, $b) {
-            return mb_strtolower($a['displayName']) > mb_strtolower($b['displayName']);
+            return mb_strtolower($a['displayName']) <=> mb_strtolower($b['displayName']);
         });
 
         // Sort projects by name.
         usort($projects, function ($a, $b) {
-            return mb_strtolower($a['displayName']) > mb_strtolower($b['displayName']);
+            return mb_strtolower($a['displayName']) <=> mb_strtolower($b['displayName']);
         });
 
         return [
