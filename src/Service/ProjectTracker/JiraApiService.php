@@ -3,7 +3,15 @@
 namespace App\Service\ProjectTracker;
 
 use App\Exception\ApiServiceException;
+use App\Model\Planning\Assignee;
+use App\Model\Planning\AssigneeProject;
+use App\Model\Planning\Issue;
+use App\Model\Planning\PlanningData;
+use App\Model\Planning\Project;
+use App\Model\Planning\Sprint;
+use App\Model\Planning\SprintSum;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -351,32 +359,37 @@ class JiraApiService implements ApiServiceInterface
         return $issues;
     }
 
-
     /**
+     * Create data for planning page.
+     *
      * @throws ApiServiceException
      * @throws Exception
      */
-    public function getPlanningData(): array
+    public function getPlanningData(): PlanningData
     {
+        $planning = new PlanningData();
+        $assignees = $planning->assignees;
+        $projects = $planning->projects;
+        $sprints = $planning->sprints;
+
         $boardId = $this->defaultBoard;
 
-        $sprints = [];
         $sprintIssues = [];
-        $assigneeCells = [];
-        $projectCells = [];
 
         $allSprints = $this->getAllSprints($boardId);
 
-        foreach ($allSprints as $sprint) {
+        foreach ($allSprints as $sprintData) {
             // Expected sprint name examples:
-            // DEV sprint uge 2-3-4.23
-            // ServiceSupport uge 5.23
+            //   DEV sprint uge 2-3-4.23
+            //   ServiceSupport uge 5.23
+            // From this we extract the number of weeks the sprint covers.
+            // This is used to calculate the sprint goals low and high points.
 
             $pattern = "/(?<weeks>(?:-?\d+-?)*)\.(?<year>\d+)$/";
 
             $matches = [];
 
-            preg_match_all($pattern, $sprint->name, $matches);
+            preg_match_all($pattern, $sprintData->name, $matches);
 
             if (!empty($matches['weeks'])) {
                 $weeks = count(explode('-', $matches['weeks'][0]));
@@ -384,158 +397,151 @@ class JiraApiService implements ApiServiceInterface
                 $weeks = 1;
             }
 
-            $sprints[] = [
-                'id' => $sprint->id,
-                'weeks' => $weeks,
-                'sprintGoalLow' => $this->weekGoalLow * $weeks,
-                'sprintGoalHigh' => $this->weekGoalHigh * $weeks,
-                'name' => $sprint->name,
-            ];
+            $sprint = new Sprint(
+                $sprintData->id,
+                $weeks,
+                $this->weekGoalLow * $weeks,
+                $this->weekGoalHigh * $weeks,
+                $sprintData->name,
+            );
+            $sprints->add($sprint);
 
-            $issues = $this->getIssuesInSprint($boardId, $sprint->id);
+            $issues = $this->getIssuesInSprint($boardId, $sprintData->id);
 
-            $sprintIssues[$sprint->id] = $issues;
+            $sprintIssues[$sprintData->id] = $issues;
         }
 
-        $assignees = [];
-        $projects = [];
-
         foreach ($sprintIssues as $sprintId => $issues) {
-            foreach ($issues as $issue) {
-                if ($issue->fields->status->statusCategory->key !== 'done') {
-                    $project = $issue->fields->project;
+            foreach ($issues as $issueData) {
+                if ($issueData->fields->status->statusCategory->key !== 'done') {
+                    $project = $issueData->fields->project;
                     $projectKey = $project->key;
                     $projectDisplayName = $project->name;
+                    $remainingSeconds = $issueData->fields->timetracking->remainingEstimateSeconds ?? 0;
 
-                    if (empty($issue->fields->assignee)) {
+                    if (empty($issueData->fields->assignee)) {
                         $assigneeKey = 'unassigned';
                         $assigneeDisplayName = 'Unassigned';
                     }
                     else {
-                        $assigneeKey = $issue->fields->assignee->key;
-                        $assigneeDisplayName = $issue->fields->assignee->displayName;
+                        $assigneeKey = $issueData->fields->assignee->key;
+                        $assigneeDisplayName = $issueData->fields->assignee->displayName;
                     }
 
-                    if (!array_key_exists($assigneeKey, $assignees)) {
-                        $assignees[$assigneeKey] = [
-                            'key' => $assigneeKey,
-                            'displayName' => $assigneeDisplayName,
-                            'projects' => [],
-                        ];
+                    // Add assignee if not already added.
+                    if (!$assignees->containsKey($assigneeKey)) {
+                        $assignees->set($assigneeKey, new Assignee($assigneeKey, $assigneeDisplayName));
                     }
 
-                    if (!isset($assigneeCells[$assigneeKey][$sprintId])) {
-                        $assigneeCells[$assigneeKey][$sprintId] = [
-                            'id' => $sprintId,
-                            'sumSeconds' => 0,
-                            'sumHours' => 0.0,
-                        ];
+                    /** @var Assignee $assignee */
+                    $assignee = $assignees->get($assigneeKey);
+
+                    // Add sprint if not already added.
+                    if (!$assignee->sprintSums->containsKey($sprintId)) {
+                        $assignee->sprintSums->set($sprintId, new SprintSum($sprintId));
                     }
 
-                    $remainingSeconds = $issue->fields->timetracking->remainingEstimateSeconds ?? 0;
+                    /** @var SprintSum $sprintSum */
+                    $sprintSum = $assignee->sprintSums->get($sprintId);
+                    $sprintSum->sumSeconds += $remainingSeconds;
+                    $sprintSum->sumHours = $sprintSum->sumSeconds / (60 * 60);
 
-                    $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] = $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] + $remainingSeconds;
-                    $assigneeCells[$assigneeKey][$sprintId]['sumHours'] = $assigneeCells[$assigneeKey][$sprintId]['sumSeconds'] / (60 * 60);
-
-                    if (!array_key_exists($projectKey, $assignees[$assigneeKey]['projects'])) {
-                        $assignees[$assigneeKey]['projects'][$projectKey] = [
-                            'key' => $projectKey,
-                            'displayName' => $projectDisplayName,
-                            'sprints' => [],
-                            'issues' => [],
-                        ];
+                    // Add assignee project if not already added.
+                    if (!$assignee->projects->containsKey($projectKey)) {
+                        $assigneeProject = new AssigneeProject($projectKey, $projectDisplayName);
+                        $assignee->projects->set($projectKey, $assigneeProject);
                     }
 
-                    if (!array_key_exists($sprintId, $assignees[$assigneeKey]['projects'][$projectKey]['sprints'])) {
-                        $assignees[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId] = [
-                            'sumSeconds' => 0,
-                            'sumHours' => 0.0,
-                        ];
-                    }
-                    $assignees[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId]['sumSeconds'] =
-                        $assignees[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId]['sumSeconds'] + $remainingSeconds;
-                    $assignees[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId]['sumHours'] =
-                        $assignees[$assigneeKey]['projects'][$projectKey]['sprints'][$sprintId]['sumSeconds'] / (60 * 60);
+                    /** @var AssigneeProject $assigneeProject */
+                    $assigneeProject = $assignee->projects->get($projectKey);
 
-                    $assignees[$assigneeKey]['projects'][$projectKey]['issues'][] = [
-                        'key' => $issue->key,
-                        'displayName' => $issue->fields->summary,
-                        'remainingHours' =>  isset($issue->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : 'UE',
-                        'link' => $this->jiraUrl."/browse/".$issue->key,
-                        'sprintId' => $sprintId,
-                    ];
-
-                    if (!array_key_exists($projectKey, $projects)) {
-                        $projects[$projectKey] = [
-                            'key' => $projectKey,
-                            'displayName' => $projectDisplayName,
-                            'assignees' => [],
-                        ];
+                    // Add project sprint sum if not already added.
+                    if (!$assigneeProject->sprintSums->containsKey($sprintId)) {
+                        $assigneeProject->sprintSums->set($sprintId, new SprintSum($sprintId));
                     }
 
-                    if (!isset($projectCells[$projectKey][$sprintId])) {
-                        $projectCells[$projectKey][$sprintId] = [
-                            'id' => $sprintId,
-                            'sumSeconds' => 0,
-                            'sumHours' => 0.0,
-                        ];
+                    /** @var SprintSum $sprintSum */
+                    $projectSprintSum = $assigneeProject->sprintSums->get($sprintId);
+                    $projectSprintSum->sumSeconds += $remainingSeconds;
+                    $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
+
+                    $assigneeProject->issues->add(
+                        new Issue(
+                            $issueData->key,
+                            $issueData->fields->summary,
+                            isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
+                            $this->jiraUrl."/browse/".$issueData->key,
+                            $sprintId
+                        )
+                    );
+
+                    // Add project if not already added.
+                    if (!$projects->containsKey($projectKey)) {
+                        $projects->set($projectKey, new Project(
+                            $projectKey,
+                            $projectDisplayName,
+                        ));
                     }
 
-                    $projectCells[$projectKey][$sprintId]['sumSeconds'] = $projectCells[$projectKey][$sprintId]['sumSeconds'] + $remainingSeconds;
-                    $projectCells[$projectKey][$sprintId]['sumHours'] = $projectCells[$projectKey][$sprintId]['sumSeconds'] / (60 * 60);
+                    /** @var Project $project */
+                    $project = $projects->get($projectKey);
 
-                    if (!array_key_exists($assigneeKey, $projects[$projectKey]['assignees'])) {
-                        $projects[$projectKey]['assignees'][$assigneeKey] = [
-                            'key' => $assigneeKey,
-                            'displayName' => $assigneeDisplayName,
-                            'sprints' => [],
-                            'issues' => [],
-                        ];
+                    // Add sprint sum if not already added.
+                    if (!$project->sprintSums->containsKey($sprintId)) {
+                        $project->sprintSums->set($sprintId, new SprintSum($sprintId));
                     }
 
-                    if (!array_key_exists($sprintId, $projects[$projectKey]['assignees'][$assigneeKey]['sprints'])) {
-                        $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId] = [
-                            'sumSeconds' => 0,
-                            'sumHours' => 0.0,
-                        ];
-                    }
-                    $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId]['sumSeconds'] =
-                        $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId]['sumSeconds'] + $remainingSeconds;
-                    $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId]['sumHours'] =
-                        $projects[$projectKey]['assignees'][$assigneeKey]['sprints'][$sprintId]['sumSeconds'] / (60 * 60);
+                    /** @var SprintSum $projectSprintSum */
+                    $projectSprintSum = $project->sprintSums->get($sprintId);
+                    $projectSprintSum->sumSeconds += $remainingSeconds;
+                    $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
 
-                    $projects[$projectKey]['assignees'][$assigneeKey]['issues'][] = [
-                        'key' => $issue->key,
-                        'displayName' => $issue->fields->summary,
-                        'remainingHours' =>  isset($issue->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : 'UE',
-                        'link' => $this->jiraUrl."/browse/".$issue->key,
-                        'sprintId' => $sprintId,
-                    ];
+                    if (!$project->assignees->containsKey($assigneeKey)) {
+                        $project->assignees->set($assigneeKey, new AssigneeProject(
+                            $assigneeKey,
+                            $assigneeDisplayName,
+                        ));
+                    }
+
+                    /** @var AssigneeProject $projectAssignee */
+                    $projectAssignee = $project->assignees->get($assigneeKey);
+
+                    if (!$projectAssignee->sprintSums->containsKey($sprintId)) {
+                        $projectAssignee->sprintSums->set($sprintId, new SprintSum($sprintId));
+                    }
+
+                    /** @var SprintSum $projectAssigneeSprintSum */
+                    $projectAssigneeSprintSum = $projectAssignee->sprintSums->get($sprintId);
+                    $projectAssigneeSprintSum->sumSeconds += $remainingSeconds;
+                    $projectAssigneeSprintSum->sumHours = $projectAssigneeSprintSum->sumSeconds / (60 * 60);
+
+                    $projectAssignee->issues->add(new Issue(
+                        $issueData->key,
+                        $issueData->fields->summary,
+                        isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
+                        $this->jiraUrl."/browse/".$issueData->key,
+                        $sprintId
+                    ));
                 }
             }
         }
 
         // Sort assignees by name.
-        usort($assignees, function ($a, $b) {
-            return mb_strtolower($a['displayName']) <=> mb_strtolower($b['displayName']);
+        $iterator = $assignees->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
         });
+        $planning->assignees = new ArrayCollection(iterator_to_array($iterator));
 
         // Sort projects by name.
-        usort($projects, function ($a, $b) {
-            return mb_strtolower($a['displayName']) <=> mb_strtolower($b['displayName']);
+        $iterator = $projects->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
         });
+        $planning->projects = new ArrayCollection(iterator_to_array($iterator));
 
-        return [
-            'sprints' => $sprints,
-            'assignees' => $assignees,
-            'assigneeCells' => $assigneeCells,
-            'projects' => $projects,
-            'projectCells' => $projectCells,
-        ];
+        return $planning;
     }
-
-
-
 
     /**
      * Get from Jira.

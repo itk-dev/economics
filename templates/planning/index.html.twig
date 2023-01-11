@@ -13,6 +13,10 @@
         }
     </style>
 
+    {% set sprints = planningData.sprints %}
+    {% set assignees = planningData.assignees %}
+    {% set projects = planningData.projects %}
+
     <h1 class="page-title">{{ 'planning.title'|trans }}</h1>
 
     <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'planning.assignees'|trans }}</h3>
@@ -23,7 +27,7 @@
                     <th class="border-2 p-2"></th>
                     <th class="border-2 p-2"></th>
                     {% for sprint in sprints %}
-                        <th class="border-2 font-bold p-2">{{ sprint.name }}</th>
+                        <th class="border-2 font-bold p-2">{{ sprint.displayName }}</th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -36,8 +40,8 @@
                     </td>
                     <td></td>
                     {% for sprint in sprints %}
-                        {% if assigneeCells[assignee.key][sprint.id] is defined %}
-                            {% set res = assigneeCells[assignee.key][sprint.id]['sumHours'] %}
+                        {% if assignee.sprintSums.containsKey(sprint.sprintId) %}
+                            {% set res = assignee.sprintSums.get(sprint.sprintId).sumHours %}
                             <td class="border-2 font-bold p-2{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
                                 {{ res }}
                             </td>
@@ -51,9 +55,9 @@
                         <td class="border-2 p-2"></td>
                         <td class="border-2 font-bold p-2">{{ project.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ project.key }}">+</button></td>
                         {% for sprint in sprints %}
-                            {% if project.sprints[sprint.id] is defined %}
+                            {% if project.sprintSums.containsKey(sprint.sprintId) %}
                                 <td class="border-2 font-bold p-2">
-                                    {{ project.sprints[sprint.id]['sumHours'] }}
+                                    {{ project.sprintSums.get(sprint.sprintId).sumHours }}
                                 </td>
                             {% else %}
                                 <td class="border-2 font-bold p-2"></td>
@@ -65,7 +69,7 @@
                             <td class="border-2 p-2"></td>
                             <td class="border-2 p-2"><a href="{{ issue.link }}" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">{{ issue.key }}</a>: {{ issue.displayName }}</td>
                             {% for sprint in sprints %}
-                                {% if issue.sprintId == sprint.id %}
+                                {% if issue.sprintId == sprint.sprintId %}
                                     <td class="border-2 font-bold p-2">
                                         {{ issue.remainingHours }}
                                     </td>
@@ -89,7 +93,7 @@
                 <th class="border-2 p-2"></th>
                 <th class="border-2 p-2"></th>
                 {% for sprint in sprints %}
-                    <th class="border-2 font-bold p-2">{{ sprint.name }}</th>
+                    <th class="border-2 font-bold p-2">{{ sprint.displayName }}</th>
                 {% endfor %}
             </tr>
             </thead>
@@ -102,8 +106,8 @@
                     </td>
                     <td></td>
                     {% for sprint in sprints %}
-                        {% if projectCells[project.key][sprint.id] is defined %}
-                            {% set res = projectCells[project.key][sprint.id]['sumHours'] %}
+                        {% if project.sprintSums.containsKey(sprint.sprintId) %}
+                            {% set res = project.sprintSums.get(sprint.sprintId).sumHours %}
                             <td class="border-2 font-bold p-2{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
                                 {{ res }}
                             </td>
@@ -117,9 +121,9 @@
                         <td class="border-2 p-2"></td>
                         <td class="border-2 font-bold p-2">{{ assignee.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ assignee.key }}">+</button></td>
                         {% for sprint in sprints %}
-                            {% if assignee.sprints[sprint.id] is defined %}
+                            {% if assignee.sprintSums.containsKey(sprint.sprintId) %}
                                 <td class="border-2 font-bold p-2">
-                                    {{ assignee.sprints[sprint.id]['sumHours'] }}
+                                    {{ assignee.sprintSums.get(sprint.sprintId).sumHours }}
                                 </td>
                             {% else %}
                                 <td class="border-2 font-bold p-2"></td>
@@ -131,7 +135,7 @@
                             <td class="border-2 p-2"></td>
                             <td class="border-2 p-2"><a href="{{ issue.link }}" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">{{ issue.key }}</a>: {{ issue.displayName }}</td>
                             {% for sprint in sprints %}
-                                {% if issue.sprintId == sprint.id %}
+                                {% if issue.sprintId == sprint.sprintId %}
                                     <td class="border-2 font-bold p-2">
                                         {{ issue.remainingHours }}
                                     </td>

@@ -23,6 +23,9 @@ class PlanningController extends AbstractController
     {
         $planningData = $this->apiService->getPlanningData();
 
-        return $this->render('planning/index.html.twig', array_merge(['controller_name' => 'PlanningController'], $planningData));
+        return $this->render('planning/index.html.twig', [
+            'controller_name' => 'PlanningController',
+            'planningData' => $planningData
+        ]);
     }
 }
