@@ -1,5 +1,10 @@
 import { Controller } from '@hotwired/stimulus';
 
+/**
+ * Toggle controller.
+ *
+ * Toggles 'hidden' class for parent and child targets.
+ */
 export default class extends Controller {
     static targets = ['parent', 'child', 'button'];
 

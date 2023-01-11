@@ -295,6 +295,9 @@ class JiraApiService implements ApiServiceInterface
     }
 
     /**
+     * Get all boards.
+     *
+     * @return mixed
      * @throws ApiServiceException
      */
     public function getAllBoards(): mixed {
@@ -302,6 +305,11 @@ class JiraApiService implements ApiServiceInterface
     }
 
     /**
+     * Get all sprints for a given board.
+     *
+     * @param string $boardId board id.
+     * @param string $state sprint state. Defaults to future,active sprints.
+     * @return array
      * @throws ApiServiceException
      */
     public function getAllSprints(string $boardId, string $state = 'future,active'): array
@@ -327,6 +335,14 @@ class JiraApiService implements ApiServiceInterface
         return $sprints;
     }
 
+    /**
+     * Get all issues for given board and sprint.
+     *
+     * @param string $boardId id of the jira board to extract issues from.
+     * @param string $sprintId id of the sprint to extract issues for.
+     * @return array Array of issues.
+     * @throws ApiServiceException
+     */
     public function getIssuesInSprint(string $boardId, string $sprintId): array
     {
         $issues = [];
