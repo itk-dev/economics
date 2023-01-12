@@ -3,6 +3,7 @@
 namespace App\Service\ProjectTracker;
 
 use App\Model\Planning\PlanningData;
+use App\Model\SprintReport\SprintReportData;
 
 interface ApiServiceInterface
 {
@@ -45,4 +46,6 @@ interface ApiServiceInterface
     public function getIssuesInSprint(string $boardId, string $sprintId): array;
 
     public function getPlanningData(): PlanningData;
+
+    public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
 }
