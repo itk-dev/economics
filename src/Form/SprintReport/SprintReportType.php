@@ -15,18 +15,21 @@ class SprintReportType extends AbstractType
     {
         $builder
             ->add('projectId', ChoiceType::class, [
-                'placeholder' => 'select an option',
+                'placeholder' => 'sprint_report.select_an_option',
                 'required' => true,
                 'label' => 'sprint_report.select_project',
+                'label_attr' => ['class' => 'form-label'],
+                'disabled' => true,
                 'attr' => [
                     'data-sprint-report-target' => 'project',
                     'data-action' => 'sprint-report#submitForm',
                 ]
             ])
             ->add('versionId', ChoiceType::class, [
-                'placeholder' => 'select an option',
+                'placeholder' => 'sprint_report.select_an_option',
                 'required' => false,
                 'label' => 'sprint_report.select_version',
+                'label_attr' => ['class' => 'form-label'],
                 'disabled' => true,
                 'attr' => [
                     'data-sprint-report-target' => 'version',
@@ -40,7 +43,10 @@ class SprintReportType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => SprintReportFormData::class,
-            'attr' => ['data-sprint-report-target' => 'form'],
+            'attr' => [
+                'data-sprint-report-target' => 'form',
+                'class' => 'sprint-report-form',
+            ],
         ]);
     }
 }

@@ -34,9 +34,10 @@ class SprintReportController extends AbstractController
         }
 
         $form->add('projectId', ChoiceType::class, [
-            'placeholder' => 'select an option',
+            'placeholder' => 'sprint_report.select_an_option',
             'choices' => $projectChoices,
             'label' => 'sprint_report.select_project',
+            'label_attr' => ['class' => 'form-label'],
             'attr' => [
                 'data-sprint-report-target' => 'project',
                 'data-action' => 'sprint-report#submitForm',
@@ -54,9 +55,10 @@ class SprintReportController extends AbstractController
             }
 
             $form->add('versionId', ChoiceType::class, [
-                'placeholder' => 'select an option',
+                'placeholder' => 'sprint_report.select_an_option',
                 'choices' => $versionChoices,
                 'label' => 'sprint_report.select_version',
+                'label_attr' => ['class' => 'form-label'],
                 'attr' => [
                     'data-sprint-report-target' => 'version',
                     'data-action' => 'sprint-report#submitForm',

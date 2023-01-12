@@ -23,75 +23,71 @@
         <div class="hidden" id="report" {{ stimulus_target('sprint-report', 'content') }}>
             {% if report is defined and report is not null %}
                 {% set sprintReport = report.data %}
-                <div class="row">
-                    <div class="col">
-                        <div>
-                            <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'sprint_report.heading_overview'|trans }}</h3>
-                            <table class="table-auto">
-                                <tbody>
-                                <tr>
-                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project'|trans }}: </strong>
-                                    </td>
-                                    <td class="border-2 p-2">{{ sprintReport.project.name }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.version'|trans }}: </strong>
-                                    </td>
-                                    <td class="border-2 p-2">{{ sprintReport.version.name }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.budget'|trans }}: </strong>
-                                    </td>
-                                    <td class="border-2 p-2"><input type="number" id="input-budget"
-                                                                    style="width: 200px; border: 0"></td>
-                                </tr>
-                                <tr>
-                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.spent_hours'|trans }}
-                                            : </strong></td>
-                                    <td class="border-2 p-2">
-                                        <span id="spent_hours">{{ sprintReport.spentHours }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.remaining_hours'|trans }}
-                                            : </strong></td>
-                                    <td class="border-2 p-2" id="remaining_hours">
-                                        {{ sprintReport.remainingHours }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project_hours'|trans }}
-                                            : </strong></td>
-                                    <td class="border-2 p-2" id="project_hours">
-                                        {{ sprintReport.spentHours + sprintReport.remainingHours }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.finished_degree'|trans }}
-                                            : </strong></td>
-                                    <td class="border-2 p-2"><input type="number"
-                                                                    id="input_finished_degree"
-                                                                    max="100" min="0" style="width: 200px; border: 0;">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project_forecast'|trans }}
-                                            : </strong></td>
-                                    <td class="border-2 p-2"><span id="project_total_forecast"></span></td>
-                                </tr>
-                                <tr>
-                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.over_under_index'|trans }}
-                                            : </strong></td>
-                                    <td class="border-2 p-2"><span id="over_under_index"></span></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <div>
+                    <h3 class="subheading">{{ 'sprint_report.heading_overview'|trans }}</h3>
+                    <table class="table-auto">
+                        <tbody>
+                        <tr>
+                            <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project'|trans }}: </strong>
+                            </td>
+                            <td class="border-2 p-2">{{ sprintReport.project.name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.version'|trans }}: </strong>
+                            </td>
+                            <td class="border-2 p-2">{{ sprintReport.version.name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.budget'|trans }}: </strong>
+                            </td>
+                            <td class="border-2 p-2"><input type="number" id="input-budget"
+                                                            style="width: 200px; border: 0"></td>
+                        </tr>
+                        <tr>
+                            <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.spent_hours'|trans }}
+                                    : </strong></td>
+                            <td class="border-2 p-2">
+                                <span id="spent_hours">{{ sprintReport.spentHours }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.remaining_hours'|trans }}
+                                    : </strong></td>
+                            <td class="border-2 p-2" id="remaining_hours">
+                                {{ sprintReport.remainingHours }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project_hours'|trans }}
+                                    : </strong></td>
+                            <td class="border-2 p-2" id="project_hours">
+                                {{ sprintReport.spentHours + sprintReport.remainingHours }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.finished_degree'|trans }}
+                                    : </strong></td>
+                            <td class="border-2 p-2"><input type="number"
+                                                            id="input_finished_degree"
+                                                            max="100" min="0" style="width: 200px; border: 0;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project_forecast'|trans }}
+                                    : </strong></td>
+                            <td class="border-2 p-2"><span id="project_total_forecast"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.over_under_index'|trans }}
+                                    : </strong></td>
+                            <td class="border-2 p-2"><span id="over_under_index"></span></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <div>
-                    <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'sprint_report.heading_phases'|trans }}</h3>
+                    <h3 class="subheading">{{ 'sprint_report.heading_phases'|trans }}</h3>
                     <table class="table-auto">
                         <thead>
                         <tr>
@@ -115,7 +111,7 @@
                 </div>
 
                 <div>
-                    <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'sprint_report.heading_spent_hours'|trans }}</h3>
+                    <h3 class="subheading">{{ 'sprint_report.heading_spent_hours'|trans }}</h3>
                     <table class="table-auto">
                         <thead>
                         <tr>
@@ -157,8 +153,8 @@
                 </div>
 
                 <div>
-                    <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'sprint_report.heading_planned_hours'|trans }}</h3>
-                    <table class="table table-bordered">
+                    <h3 class="subheading">{{ 'sprint_report.heading_planned_hours'|trans }}</h3>
+                    <table class="table-auto">
                         <thead>
                         <tr>
                             <th class="border-2 p-2">{{ 'sprint_report.table.epic'|trans }}</th>

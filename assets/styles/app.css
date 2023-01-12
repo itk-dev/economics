@@ -12,7 +12,7 @@
     }
 
     .form-label {
-        @apply block mb-2 text-sm font-medium text-blue-900 dark:text-blue-300;
+        @apply block mt-2 mb-2 text-sm font-medium text-blue-900 dark:text-gray-900;
     }
 
     .form-element {
@@ -33,5 +33,13 @@
 
     .hidden {
         @apply invisible;
+    }
+
+    .sprint-report-form {
+        @apply grid gap-6 mb-6 md:grid-cols-2;
+    }
+
+    .subheading {
+        @apply font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800;
     }
 }
