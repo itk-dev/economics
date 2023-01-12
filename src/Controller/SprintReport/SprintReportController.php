@@ -33,9 +33,11 @@ class SprintReportController extends AbstractController
             $projectChoices[$project->name] = $project->key;
         }
 
+        // Override projectId with element with choices.
         $form->add('projectId', ChoiceType::class, [
             'placeholder' => 'sprint_report.select_an_option',
             'choices' => $projectChoices,
+            'required' => true,
             'label' => 'sprint_report.select_project',
             'label_attr' => ['class' => 'form-label'],
             'attr' => [
@@ -54,9 +56,11 @@ class SprintReportController extends AbstractController
                 $versionChoices[$version->name] = $version->id;
             }
 
+            // Override versionId with element with choices.
             $form->add('versionId', ChoiceType::class, [
                 'placeholder' => 'sprint_report.select_an_option',
                 'choices' => $versionChoices,
+                'required' => true,
                 'label' => 'sprint_report.select_version',
                 'label_attr' => ['class' => 'form-label'],
                 'attr' => [
