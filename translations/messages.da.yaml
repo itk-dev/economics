@@ -59,6 +59,8 @@ invoices:
   title: Fakturaer
 
 sprint_report:
+  select_project: Vælg projekt
+  select_version: Vælg version
   title: Sprintrapport
   heading: Sprintrapport
   heading_overview: Overblik

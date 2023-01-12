@@ -6,174 +6,192 @@
     <h1 class="page-title">{{ 'sprint_report.title'|trans }}</h1>
 
     <div class="content" {{ stimulus_controller('sprint-report') }}>
-        <div class="selections">
+        <div {{ stimulus_target('sprint-report', 'loading') }}>
+            <div role="status">
+                <svg aria-hidden="true" class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                </svg>
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+
+        <div class="hidden selections grid" {{ stimulus_target('sprint-report', 'select') }}>
             {{ form(form) }}
         </div>
-        <div id="report">
+
+        <div class="hidden" id="report" {{ stimulus_target('sprint-report', 'content') }}>
             {% if report is defined and report is not null %}
                 {% set sprintReport = report.data %}
-                <div class="container-fluid" style="max-width: 1400px; margin: 2em auto;">
-                    <h1 style="margin-bottom: 1em">{{ 'sprint_report.heading'|trans }}</h1>
-                    <div class="row">
-                        <div class="col">
-                            <div>
-                                <h3>{{ 'sprint_report.heading_overview'|trans }}</h3>
-                                <table class="table-auto">
-                                    <tbody>
-                                    <tr>
-                                        <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project'|trans }}: </strong></td>
-                                        <td class="border-2 p-2">{{ sprintReport.project.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.version'|trans }}: </strong></td>
-                                        <td class="border-2 p-2">{{ sprintReport.version.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.budget'|trans }}: </strong></td>
-                                        <td class="border-2 p-2"><input type="number" id="input-budget"
-                                                   style="width: 200px; border: 0"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.spent_hours'|trans }}: </strong></td>
-                                        <td class="border-2 p-2">
-                                            <span id="spent_hours">{{ sprintReport.spentHours }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.remaining_hours'|trans }}: </strong></td>
-                                        <td class="border-2 p-2" id="remaining_hours">
-                                            {{ sprintReport.remainingHours }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project_hours'|trans }}: </strong></td>
-                                        <td class="border-2 p-2" id="project_hours">
-                                            {{ sprintReport.spentHours + sprintReport.remainingHours }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.finished_degree'|trans }}: </strong></td>
-                                        <td class="border-2 p-2"><input type="number"
-                                                   id="input_finished_degree"
-                                                   max="100" min="0" style="width: 200px; border: 0;">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project_forecast'|trans }}: </strong></td>
-                                        <td class="border-2 p-2"><span id="project_total_forecast"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.over_under_index'|trans }}: </strong></td>
-                                        <td class="border-2 p-2"><span id="over_under_index"></span></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                <div class="row">
+                    <div class="col">
+                        <div>
+                            <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'sprint_report.heading_overview'|trans }}</h3>
+                            <table class="table-auto">
+                                <tbody>
+                                <tr>
+                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project'|trans }}: </strong>
+                                    </td>
+                                    <td class="border-2 p-2">{{ sprintReport.project.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.version'|trans }}: </strong>
+                                    </td>
+                                    <td class="border-2 p-2">{{ sprintReport.version.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.budget'|trans }}: </strong>
+                                    </td>
+                                    <td class="border-2 p-2"><input type="number" id="input-budget"
+                                                                    style="width: 200px; border: 0"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.spent_hours'|trans }}
+                                            : </strong></td>
+                                    <td class="border-2 p-2">
+                                        <span id="spent_hours">{{ sprintReport.spentHours }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.remaining_hours'|trans }}
+                                            : </strong></td>
+                                    <td class="border-2 p-2" id="remaining_hours">
+                                        {{ sprintReport.remainingHours }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project_hours'|trans }}
+                                            : </strong></td>
+                                    <td class="border-2 p-2" id="project_hours">
+                                        {{ sprintReport.spentHours + sprintReport.remainingHours }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.finished_degree'|trans }}
+                                            : </strong></td>
+                                    <td class="border-2 p-2"><input type="number"
+                                                                    id="input_finished_degree"
+                                                                    max="100" min="0" style="width: 200px; border: 0;">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.project_forecast'|trans }}
+                                            : </strong></td>
+                                    <td class="border-2 p-2"><span id="project_total_forecast"></span></td>
+                                </tr>
+                                <tr>
+                                    <td class="border-2 p-2"><strong>{{ 'sprint_report.sub.over_under_index'|trans }}
+                                            : </strong></td>
+                                    <td class="border-2 p-2"><span id="over_under_index"></span></td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div>
-                        <h3>{{ 'sprint_report.heading_phases'|trans }}</h3>
-                        <table class="table-auto">
-                            <thead>
-                            <tr>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.epic'|trans }}</th>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.estimate'|trans }}</th>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.remaining_hours'|trans }}</th>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.registered_hours'|trans }}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for epic in sprintReport.epics %}
-                                <tr>
-                                    <td class="border-2 p-2">{{ epic.name }}</td>
-                                    <td class="border-2 p-2">{{ epic.originalEstimateSum / 60 / 60 }}</td>
-                                    <td class="border-2 p-2">{{ epic.remainingSum / 60 / 60 }}</td>
-                                    <td class="border-2 p-2">{{ epic.spentSum / 60 / 60 }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                </div>
 
-                    <div>
-                        <h3>{{ 'sprint_report.heading_spent_hours'|trans }}</h3>
-                        <table class="table-auto">
-                            <thead>
+                <div>
+                    <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'sprint_report.heading_phases'|trans }}</h3>
+                    <table class="table-auto">
+                        <thead>
+                        <tr>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.epic'|trans }}</th>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.estimate'|trans }}</th>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.remaining_hours'|trans }}</th>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.registered_hours'|trans }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for epic in sprintReport.epics %}
                             <tr>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.epic'|trans }}</th>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.estimate'|trans }}</th>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.reg'|trans }}</th>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.no_sprint'|trans }}</th>
+                                <td class="border-2 p-2">{{ epic.name }}</td>
+                                <td class="border-2 p-2">{{ epic.originalEstimateSum / 60 / 60 }}</td>
+                                <td class="border-2 p-2">{{ epic.remainingSum / 60 / 60 }}</td>
+                                <td class="border-2 p-2">{{ epic.spentSum / 60 / 60 }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'sprint_report.heading_spent_hours'|trans }}</h3>
+                    <table class="table-auto">
+                        <thead>
+                        <tr>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.epic'|trans }}</th>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.estimate'|trans }}</th>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.reg'|trans }}</th>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.no_sprint'|trans }}</th>
+                            {% for sprint in sprintReport.sprints %}
+                                {% if sprint.state != 'FUTURE' %}
+                                    <th class="border-2 p-2">{{ sprint.shortName }}</th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for epic in sprintReport.epics %}
+                            <tr>
+                                <td class="border-2 p-2">{{ epic.name }}</td>
+                                <td class="border-2 p-2">{{ epic.originalEstimateSum / 60 / 60 }}</td>
+                                <td class="border-2 p-2">{{ epic.spentSum / 60 / 60 }}</td>
+                                <td class="border-2 p-2">
+                                    {% if epic.loggedWork['NoSprint'] is defined %}
+                                        {{ epic.loggedWork['NoSprint'] / 60 / 60 }}
+                                    {% endif %}
+                                </td>
                                 {% for sprint in sprintReport.sprints %}
                                     {% if sprint.state != 'FUTURE' %}
-                                        <th class="border-2 p-2">{{ sprint.shortName }}</th>
+                                        <td class="border-2 p-2">
+                                            {% if epic.loggedWork[sprint.id] is defined %}
+                                                {{ epic.loggedWork[sprint.id] / 60 / 60 }}
+                                            {% endif %}
+                                        </td>
                                     {% endif %}
                                 {% endfor %}
                             </tr>
-                            </thead>
-                            <tbody>
-                            {% for epic in sprintReport.epics %}
-                                <tr>
-                                    <td class="border-2 p-2">{{ epic.name }}</td>
-                                    <td class="border-2 p-2">{{ epic.originalEstimateSum / 60 / 60 }}</td>
-                                    <td class="border-2 p-2">{{ epic.spentSum / 60 / 60 }}</td>
-                                    <td class="border-2 p-2">
-                                        {% if epic.loggedWork['NoSprint'] is defined %}
-                                            {{ epic.loggedWork['NoSprint'] / 60 / 60 }}
-                                        {% endif %}
-                                    </td>
-                                    {% for sprint in sprintReport.sprints %}
-                                        {% if sprint.state != 'FUTURE' %}
-                                            <td class="border-2 p-2">
-                                                {% if epic.loggedWork[sprint.id] is defined %}
-                                                    {{ epic.loggedWork[sprint.id] / 60 / 60 }}
-                                                {% endif %}
-                                            </td>
-                                        {% endif %}
-                                    {% endfor %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div>
-                        <h3>{{ 'sprint_report.heading_planned_hours'|trans }}</h3>
-                        <table class="table table-bordered">
-                            <thead>
+                <div>
+                    <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'sprint_report.heading_planned_hours'|trans }}</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.epic'|trans }}</th>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.estimate'|trans }}</th>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.remaining_hours'|trans }}</th>
+                            <th class="border-2 p-2">{{ 'sprint_report.table.planned_work_sum'|trans }}</th>
+                            {% for sprint in sprintReport.sprints %}
+                                {% if sprint.state == 'FUTURE' or sprint.state == 'ACTIVE' %}
+                                    <th class="border-2 p-2">{{ sprint.shortName }}</th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for epic in sprintReport.epics %}
                             <tr>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.epic'|trans }}</th>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.estimate'|trans }}</th>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.remaining_hours'|trans }}</th>
-                                <th class="border-2 p-2">{{ 'sprint_report.table.planned_work_sum'|trans }}</th>
+                                <td class="border-2 p-2">{{ epic.name }}</td>
+                                <td class="border-2 p-2">{{ epic.originalEstimateSum / 60 / 60 }}</td>
+                                <td class="border-2 p-2">{{ epic.remainingSum / 60 / 60 }}</td>
+                                <td class="border-2 p-2">{{ epic.plannedWorkSum / 60 / 60 }}</td>
                                 {% for sprint in sprintReport.sprints %}
                                     {% if sprint.state == 'FUTURE' or sprint.state == 'ACTIVE' %}
-                                        <th class="border-2 p-2">{{ sprint.shortName }}</th>
+                                        <td class="border-2 p-2">
+                                            {% if epic.remainingWork[sprint.id] is defined %}
+                                                {{ epic.remainingWork[sprint.id] / 60 / 60 }}
+                                            {% endif %}
+                                        </td>
                                     {% endif %}
                                 {% endfor %}
                             </tr>
-                            </thead>
-                            <tbody>
-                            {% for epic in sprintReport.epics %}
-                                <tr>
-                                    <td class="border-2 p-2">{{ epic.name }}</td>
-                                    <td class="border-2 p-2">{{ epic.originalEstimateSum / 60 / 60 }}</td>
-                                    <td class="border-2 p-2">{{ epic.remainingSum / 60 / 60 }}</td>
-                                    <td class="border-2 p-2">{{ epic.plannedWorkSum / 60 / 60 }}</td>
-                                    {% for sprint in sprintReport.sprints %}
-                                        {% if sprint.state == 'FUTURE' or sprint.state == 'ACTIVE' %}
-                                            <td class="border-2 p-2">
-                                                {% if epic.remainingWork[sprint.id] is defined %}
-                                                    {{ epic.remainingWork[sprint.id] / 60 / 60 }}
-                                                {% endif %}
-                                            </td>
-                                        {% endif %}
-                                    {% endfor %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             {% endif %}
         </div>
