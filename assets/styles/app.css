@@ -43,11 +43,19 @@
         @apply font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800;
     }
 
+    .table-row {
+        @apply border-2;
+    }
+
     .table-cell {
         @apply border-2 p-2;
     }
 
     .table-cell-heading {
         @apply border-2 p-2 font-bold;
+    }
+
+    .link {
+        @apply underline text-blue-600 hover:text-blue-800 visited:text-purple-600;
     }
 }

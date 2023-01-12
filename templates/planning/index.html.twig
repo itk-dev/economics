@@ -19,22 +19,22 @@
 
     <h1 class="page-title">{{ 'planning.title'|trans }}</h1>
 
-    <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'planning.assignees'|trans }}</h3>
+    <h3 class="subheading">{{ 'planning.assignees'|trans }}</h3>
     <div>
         <table class="table-auto">
             <thead>
                 <tr>
-                    <th class="border-2 p-2"></th>
-                    <th class="border-2 p-2"></th>
+                    <th class="table-cell"></th>
+                    <th class="table-cell"></th>
                     {% for sprint in sprints %}
-                        <th class="border-2 font-bold p-2">{{ sprint.displayName }}</th>
+                        <th class="table-cell-heading">{{ sprint.displayName }}</th>
                     {% endfor %}
                 </tr>
             </thead>
             {% for assignee in assignees %}
             <tbody {{ stimulus_controller('toggle') }}>
-                <tr class="border-2">
-                    <td class="border-2 font-bold p-2">
+                <tr class="table-row">
+                    <td class="table-cell-heading">
                         {{ assignee.displayName }}
                         <button class="float-right" type="button" data-action="toggle#toggleParent" data-toggle-target="button" >+</button>
                     </td>
@@ -42,39 +42,39 @@
                     {% for sprint in sprints %}
                         {% if assignee.sprintSums.containsKey(sprint.sprintId) %}
                             {% set res = assignee.sprintSums.get(sprint.sprintId).sumHours %}
-                            <td class="border-2 font-bold p-2{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
+                            <td class="table-cell-heading{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
                                 {{ res }}
                             </td>
                         {% else %}
-                            <td class="border-2 font-bold p-2"></td>
+                            <td class="table-cell-heading"></td>
                         {% endif %}
                     {% endfor %}
                 </tr>
                 {% for project in assignee.projects %}
-                    <tr data-toggle-target="parent" class="border-2">
-                        <td class="border-2 p-2"></td>
-                        <td class="border-2 font-bold p-2">{{ project.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ project.key }}">+</button></td>
+                    <tr data-toggle-target="parent" class="table-row">
+                        <td class="table-cell"></td>
+                        <td class="table-cell-heading">{{ project.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ project.key }}">+</button></td>
                         {% for sprint in sprints %}
                             {% if project.sprintSums.containsKey(sprint.sprintId) %}
-                                <td class="border-2 font-bold p-2">
+                                <td class="table-cell-heading">
                                     {{ project.sprintSums.get(sprint.sprintId).sumHours }}
                                 </td>
                             {% else %}
-                                <td class="border-2 font-bold p-2"></td>
+                                <td class="table-cell-heading"></td>
                             {% endif %}
                         {% endfor %}
                     </tr>
                     {% for issue in project.issues %}
                         <tr data-toggle-target="child" data-parent-id="{{ project.key }}">
-                            <td class="border-2 p-2"></td>
-                            <td class="border-2 p-2"><a href="{{ issue.link }}" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">{{ issue.key }}</a>: {{ issue.displayName }}</td>
+                            <td class="table-cell"></td>
+                            <td class="table-cell"><a href="{{ issue.link }}" class="link">{{ issue.key }}</a>: {{ issue.displayName }}</td>
                             {% for sprint in sprints %}
                                 {% if issue.sprintId == sprint.sprintId %}
-                                    <td class="border-2 font-bold p-2">
+                                    <td class="table-cell-heading">
                                         {{ issue.remainingHours }}
                                     </td>
                                 {% else %}
-                                    <td class="border-2 font-bold p-2"></td>
+                                    <td class="table-cell-heading"></td>
                                 {% endif %}
                             {% endfor %}
                         </tr>
@@ -85,22 +85,22 @@
         </table>
     </div>
 
-    <h3 class="font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800">{{ 'planning.projects'|trans }}</h3>
+    <h3 class="subheading">{{ 'planning.projects'|trans }}</h3>
     <div>
         <table class="table-auto">
             <thead>
             <tr>
-                <th class="border-2 p-2"></th>
-                <th class="border-2 p-2"></th>
+                <th class="table-cell"></th>
+                <th class="table-cell"></th>
                 {% for sprint in sprints %}
-                    <th class="border-2 font-bold p-2">{{ sprint.displayName }}</th>
+                    <th class="table-cell-heading">{{ sprint.displayName }}</th>
                 {% endfor %}
             </tr>
             </thead>
             {% for project in projects %}
                 <tbody {{ stimulus_controller('toggle') }}>
-                <tr class="border-2">
-                    <td class="border-2 font-bold p-2">
+                <tr class="table-row">
+                    <td class="table-cell-heading">
                         {{ project.displayName }}
                         <button class="float-right" type="button" data-action="toggle#toggleParent" data-toggle-target="button" >+</button>
                     </td>
@@ -108,39 +108,39 @@
                     {% for sprint in sprints %}
                         {% if project.sprintSums.containsKey(sprint.sprintId) %}
                             {% set res = project.sprintSums.get(sprint.sprintId).sumHours %}
-                            <td class="border-2 font-bold p-2{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
+                            <td class="table-cell-heading{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
                                 {{ res }}
                             </td>
                         {% else %}
-                            <td class="border-2 font-bold p-2"></td>
+                            <td class="table-cell-heading"></td>
                         {% endif %}
                     {% endfor %}
                 </tr>
                 {% for assignee in project.assignees %}
-                    <tr data-toggle-target="parent" class="border-2">
-                        <td class="border-2 p-2"></td>
-                        <td class="border-2 font-bold p-2">{{ assignee.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ assignee.key }}">+</button></td>
+                    <tr data-toggle-target="parent" class="table-row">
+                        <td class="table-cell"></td>
+                        <td class="table-cell-heading">{{ assignee.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ assignee.key }}">+</button></td>
                         {% for sprint in sprints %}
                             {% if assignee.sprintSums.containsKey(sprint.sprintId) %}
-                                <td class="border-2 font-bold p-2">
+                                <td class="table-cell-heading">
                                     {{ assignee.sprintSums.get(sprint.sprintId).sumHours }}
                                 </td>
                             {% else %}
-                                <td class="border-2 font-bold p-2"></td>
+                                <td class="table-cell-heading"></td>
                             {% endif %}
                         {% endfor %}
                     </tr>
                     {% for issue in assignee.issues %}
                         <tr data-toggle-target="child" data-parent-id="{{ assignee.key }}">
-                            <td class="border-2 p-2"></td>
-                            <td class="border-2 p-2"><a href="{{ issue.link }}" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">{{ issue.key }}</a>: {{ issue.displayName }}</td>
+                            <td class="table-cell"></td>
+                            <td class="table-cell"><a href="{{ issue.link }}" class="link">{{ issue.key }}</a>: {{ issue.displayName }}</td>
                             {% for sprint in sprints %}
                                 {% if issue.sprintId == sprint.sprintId %}
-                                    <td class="border-2 font-bold p-2">
+                                    <td class="table-cell-heading">
                                         {{ issue.remainingHours }}
                                     </td>
                                 {% else %}
-                                    <td class="border-2 font-bold p-2"></td>
+                                    <td class="table-cell-heading"></td>
                                 {% endif %}
                             {% endfor %}
                         </tr>
