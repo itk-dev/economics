@@ -1,4 +1,4 @@
-import { Controller } from '@hotwired/stimulus';
+import {Controller} from '@hotwired/stimulus';
 import Choices from "choices.js";
 import 'choices.js/src/styles/choices.scss';
 
@@ -8,7 +8,7 @@ import 'choices.js/src/styles/choices.scss';
  * Handles selections in dropdowns.
  */
 export default class extends Controller {
-    static targets = ['project', 'version', 'form', 'loading', 'content', 'select', 'budget', 'finishedPercentage', 'spentHours', 'projectTotalForecast', 'overUnderIndex'];
+    static targets = ['project', 'version', 'form', 'loading', 'content', 'select', 'budget', 'finishedPercentage', 'spentHours', 'projectTotalForecast', 'overUnderIndex', 'budgetSubmit'];
     spentHours = 0;
 
     connect() {
@@ -36,12 +36,17 @@ export default class extends Controller {
         this.formTarget.submit();
     }
 
-    async submitBudget() {
+    submitBudget() {
         const budget = parseFloat(this.budgetTarget.value);
         const projectId = this.budgetTarget.dataset.projectId;
         const versionId = this.budgetTarget.dataset.versionId;
 
-        const response = await fetch('/sprint-report/budget', {
+        const text = this.budgetSubmitTarget.innerHTML;
+        this.budgetSubmitTarget.innerHTML = '...';
+        this.budgetSubmitTarget.setAttribute('disabled', 'disabled');
+        this.budgetSubmitTarget.setAttribute('class', 'btn-disabled');
+
+        fetch('/sprint-report/budget', {
             method: 'POST',
             mode: 'same-origin',
             cache: 'no-cache',
@@ -53,9 +58,17 @@ export default class extends Controller {
                 versionId,
                 budget
             })
-        });
-
-        return response.json();
+        })
+            .then(() => {
+                this.budgetSubmitTarget.setAttribute('class', 'btn-success')
+            })
+            .catch((err) => {
+                this.budgetSubmitTarget.setAttribute('class', 'btn-error');
+            })
+            .finally(() => {
+                this.budgetSubmitTarget.removeAttribute('disabled');
+                this.budgetSubmitTarget.innerHTML = text;
+            });
     }
 
     calculateForecasts() {
