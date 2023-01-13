@@ -47,7 +47,7 @@ class SprintReportController extends AbstractController
             'label_attr' => ['class' => 'form-label'],
             'attr' => [
                 'data-sprint-report-target' => 'project',
-                'data-action' => 'sprint-report#submitForm',
+                'data-action' => 'sprint-report#submitFormProjectId',
             ],
         ]);
 

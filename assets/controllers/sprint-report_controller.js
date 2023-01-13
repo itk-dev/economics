@@ -9,7 +9,6 @@ import 'choices.js/src/styles/choices.scss';
  */
 export default class extends Controller {
     static targets = ['project', 'version', 'form', 'loading', 'content', 'select', 'budget', 'finishedPercentage', 'spentHours', 'projectTotalForecast', 'overUnderIndex', 'budgetSubmit'];
-    spentHours = 0;
 
     connect() {
         this.calculateForecasts = this.calculateForecasts.bind(this);
@@ -22,10 +21,15 @@ export default class extends Controller {
         this.contentTarget.classList.remove('hidden');
         this.selectTarget.classList.remove('hidden');
 
-        this.spentHours = parseFloat(this.spentHoursTarget.innerHTML);
+        if (this.projectTarget.value && this.versionTarget.value) {
+            this.budgetTarget.addEventListener('change', this.calculateForecasts);
+            this.finishedPercentageTarget.addEventListener('change', this.calculateForecasts);
+        }
+    }
 
-        this.budgetTarget.addEventListener('change', this.calculateForecasts);
-        this.finishedPercentageTarget.addEventListener('change', this.calculateForecasts);
+    submitFormProjectId() {
+        this.versionTarget.value = null;
+        this.submitForm();
     }
 
     submitForm() {
@@ -72,6 +76,7 @@ export default class extends Controller {
     }
 
     calculateForecasts() {
+        const spentHours = parseFloat(this.spentHoursTarget.innerHTML);
         const finishedDegree = parseFloat(this.finishedPercentageTarget.value);
         const sales_budget = parseFloat(this.budgetTarget.value);
 
@@ -79,7 +84,7 @@ export default class extends Controller {
         let over_under = null;
 
         if (finishedDegree > 0) {
-            forecast = this.spentHours / finishedDegree * 100;
+            forecast = spentHours / finishedDegree * 100;
             this.projectTotalForecastTarget.innerHTML = '' + forecast.toFixed(2);
         }
         if (sales_budget > 0 && forecast != null) {

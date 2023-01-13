@@ -21,7 +21,7 @@ class SprintReportType extends AbstractType
                 'disabled' => true,
                 'attr' => [
                     'data-sprint-report-target' => 'project',
-                    'data-action' => 'sprint-report#submitForm',
+                    'data-action' => 'sprint-report#submitFormProjectId',
                 ],
             ])
             ->add('versionId', ChoiceType::class, [
