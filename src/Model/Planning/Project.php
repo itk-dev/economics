@@ -12,10 +12,6 @@ class Project
     public Collection $assignees;
     public Collection $sprintSums;
 
-    /**
-     * @param string $key
-     * @param string $displayName
-     */
     public function __construct(string $key, string $displayName)
     {
         $this->key = $key;

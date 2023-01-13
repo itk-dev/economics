@@ -10,13 +10,11 @@ use App\Model\Planning\PlanningData;
 use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
 use App\Model\Planning\SprintSum;
-use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportData;
+use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Exception;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -302,19 +300,19 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Get all boards.
      *
-     * @return mixed
      * @throws ApiServiceException
      */
-    public function getAllBoards(): mixed {
+    public function getAllBoards(): mixed
+    {
         return $this->get('/rest/agile/1.0/board');
     }
 
     /**
      * Get all sprints for a given board.
      *
-     * @param string $boardId board id.
-     * @param string $state sprint state. Defaults to future,active sprints.
-     * @return array
+     * @param string $boardId board id
+     * @param string $state   sprint state. Defaults to future,active sprints.
+     *
      * @throws ApiServiceException
      */
     public function getAllSprints(string $boardId, string $state = 'future,active'): array
@@ -343,9 +341,11 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Get all issues for given board and sprint.
      *
-     * @param string $boardId id of the jira board to extract issues from.
-     * @param string $sprintId id of the sprint to extract issues for.
-     * @return array Array of issues.
+     * @param string $boardId  id of the jira board to extract issues from
+     * @param string $sprintId id of the sprint to extract issues for
+     *
+     * @return array array of issues
+     *
      * @throws ApiServiceException
      */
     public function getIssuesInSprint(string $boardId, string $sprintId): array
@@ -434,7 +434,7 @@ class JiraApiService implements ApiServiceInterface
 
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issueData) {
-                if ($issueData->fields->status->statusCategory->key !== 'done') {
+                if ('done' !== $issueData->fields->status->statusCategory->key) {
                     $project = $issueData->fields->project;
                     $projectKey = $project->key;
                     $projectDisplayName = $project->name;
@@ -443,8 +443,7 @@ class JiraApiService implements ApiServiceInterface
                     if (empty($issueData->fields->assignee)) {
                         $assigneeKey = 'unassigned';
                         $assigneeDisplayName = 'Unassigned';
-                    }
-                    else {
+                    } else {
                         $assigneeKey = $issueData->fields->assignee->key;
                         $assigneeDisplayName = $issueData->fields->assignee->displayName;
                     }
@@ -491,7 +490,7 @@ class JiraApiService implements ApiServiceInterface
                             $issueData->key,
                             $issueData->fields->summary,
                             isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
-                            $this->jiraUrl."/browse/".$issueData->key,
+                            $this->jiraUrl.'/browse/'.$issueData->key,
                             $sprintId
                         )
                     );
@@ -540,7 +539,7 @@ class JiraApiService implements ApiServiceInterface
                         $issueData->key,
                         $issueData->fields->summary,
                         isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
-                        $this->jiraUrl."/browse/".$issueData->key,
+                        $this->jiraUrl.'/browse/'.$issueData->key,
                         $sprintId
                     ));
                 }
@@ -564,15 +563,10 @@ class JiraApiService implements ApiServiceInterface
         return $planning;
     }
 
-
     /**
      * Get custom field id by field name.
      *
      * These refer to mappings set in jira_economics.local.yaml.
-     *
-     * @param string $fieldName
-     *
-     * @return bool|string
      */
     private function getCustomFieldId(string $fieldName): bool|string
     {
@@ -650,7 +644,7 @@ class JiraApiService implements ApiServiceInterface
                     $split = explode('=', $field);
 
                     if (count($split) > 1) {
-                        $value = $split[1] == '<null>' ? null : $split[1];
+                        $value = '<null>' == $split[1] ? null : $split[1];
 
                         $sprint[$split[0]] = $value;
                     }
@@ -731,11 +725,11 @@ class JiraApiService implements ApiServiceInterface
                 }
             }
 
-            foreach  ($issueEntry->fields->worklog->worklogs as $worklogData) {
+            foreach ($issueEntry->fields->worklog->worklogs as $worklogData) {
                 $workLogStarted = strtotime($worklogData->started);
 
                 $worklogSprints = array_filter($sprints->toArray(), function ($sprintEntry) use ($workLogStarted) {
-                    /** @var SprintReportSprint $sprintEntry */
+                    /* @var SprintReportSprint $sprintEntry */
                     return
                         $sprintEntry->startDateTimestamp <= $workLogStarted &&
                         ($sprintEntry->completedDateTimstamp ?? $sprintEntry->endDateTimestamp) > $workLogStarted;
@@ -806,7 +800,6 @@ class JiraApiService implements ApiServiceInterface
 
         return $sprintReportData;
     }
-
 
     /**
      * Get from Jira.

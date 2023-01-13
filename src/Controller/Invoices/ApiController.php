@@ -3,10 +3,9 @@
 namespace App\Controller\Invoices;
 
 use App\Service\Invoices\InvoiceService;
-
-//use App\Service\PhpSpreadsheetExportService;
-//use Billing\Exception\InvoiceException;
-//use PhpOffice\PhpSpreadsheet\IOFactory;
+// use App\Service\PhpSpreadsheetExportService;
+// use Billing\Exception\InvoiceException;
+// use PhpOffice\PhpSpreadsheet\IOFactory;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,7 +19,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/invoices')]
 class ApiController extends AbstractController
 {
-
     #[Route('/project/{jiraProjectId}', name: 'invoice_index', defaults: ['projectId' => '...'])]
     public function projectAction(InvoiceService $invoiceService, Request $request): JsonResponse
     {
@@ -231,9 +229,8 @@ class ApiController extends AbstractController
     /**
      * @Route("/export_invoices", name="api_export_invoices", methods={"GET"})
      *
-     * @param \App\Service\PhpSpreadsheetExportService  $phpSpreadsheetExportService
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \Billing\Service\BillingService           $billingService
+     * @param \App\Service\PhpSpreadsheetExportService $phpSpreadsheetExportService
+     * @param \Billing\Service\BillingService          $billingService
      *
      * @return \Symfony\Component\HttpFoundation\Response
      *

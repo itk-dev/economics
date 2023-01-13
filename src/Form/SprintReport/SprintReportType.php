@@ -5,7 +5,6 @@ namespace App\Form\SprintReport;
 use App\Model\SprintReport\SprintReportFormData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,7 +22,7 @@ class SprintReportType extends AbstractType
                 'attr' => [
                     'data-sprint-report-target' => 'project',
                     'data-action' => 'sprint-report#submitForm',
-                ]
+                ],
             ])
             ->add('versionId', ChoiceType::class, [
                 'placeholder' => 'sprint_report.select_an_option',
@@ -34,7 +33,7 @@ class SprintReportType extends AbstractType
                 'attr' => [
                     'data-sprint-report-target' => 'version',
                     'data-action' => 'sprint-report#submitForm',
-                ]
+                ],
             ])
         ;
     }

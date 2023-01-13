@@ -12,14 +12,6 @@ class SprintReportSprint
     public ?int $endDateTimestamp;
     public ?int $completedDateTimestamp;
 
-    /**
-     * @param string $id
-     * @param string $name
-     * @param string $state
-     * @param int|null $startDateTimestamp
-     * @param int|null $endDateTimestamp
-     * @param int|null $completedDateTimestamp
-     */
     public function __construct(string $id, string $name, string $state, ?int $startDateTimestamp, ?int $endDateTimestamp, ?int $completedDateTimestamp)
     {
         $this->id = $id;

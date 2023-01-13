@@ -10,13 +10,6 @@ class Sprint
     public float $sprintGoalHigh;
     public string $displayName;
 
-    /**
-     * @param string $sprintId
-     * @param int $weeks
-     * @param float $sprintGoalLow
-     * @param float $sprintGoalHigh
-     * @param string $displayName
-     */
     public function __construct(string $sprintId, int $weeks, float $sprintGoalLow, float $sprintGoalHigh, string $displayName)
     {
         $this->sprintId = $sprintId;

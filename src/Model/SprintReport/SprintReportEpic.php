@@ -17,10 +17,6 @@ class SprintReportEpic
     public Collection $loggedWork;
     public Collection $remainingWork;
 
-    /**
-     * @param string $id
-     * @param string $name
-     */
     public function __construct(string $id, string $name)
     {
         $this->id = $id;

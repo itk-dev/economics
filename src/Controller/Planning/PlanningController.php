@@ -25,7 +25,7 @@ class PlanningController extends AbstractController
 
         return $this->render('planning/index.html.twig', [
             'controller_name' => 'PlanningController',
-            'planningData' => $planningData
+            'planningData' => $planningData,
         ]);
     }
 }

@@ -17,5 +17,4 @@ class PlanningData
         $this->projects = new ArrayCollection();
         $this->sprints = new ArrayCollection();
     }
-
 }

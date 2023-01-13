@@ -2,10 +2,8 @@
 
 namespace App\Controller\SprintReport;
 
-use App\Entity\Budget;
 use App\Form\SprintReport\SprintReportType;
 use App\Model\SprintReport\SprintReportFormData;
-use App\Repository\BudgetRepository;
 use App\Service\ProjectTracker\ApiServiceInterface;
 use App\Service\SprintReport\SprintReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -50,13 +48,13 @@ class SprintReportController extends AbstractController
             'attr' => [
                 'data-sprint-report-target' => 'project',
                 'data-action' => 'sprint-report#submitForm',
-            ]
+            ],
         ]);
 
         $requestData = $request->get('sprint_report');
 
-        if (!empty($requestData["projectId"])) {
-            $project = $this->apiService->getProject($requestData["projectId"]);
+        if (!empty($requestData['projectId'])) {
+            $project = $this->apiService->getProject($requestData['projectId']);
 
             $versionChoices = [];
             foreach ($project->versions as $version) {
@@ -73,7 +71,7 @@ class SprintReportController extends AbstractController
                 'attr' => [
                     'data-sprint-report-target' => 'version',
                     'data-action' => 'sprint-report#submitForm',
-                ]
+                ],
             ]);
         }
 
