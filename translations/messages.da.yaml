@@ -62,6 +62,7 @@ sprint_report:
   select_project: Vælg projekt
   select_version: Vælg version
   select_an_option: Vælg en mulighed
+  save_budget: Gem
   title: Sprintrapport
   heading: Sprintrapport
   heading_overview: Overblik

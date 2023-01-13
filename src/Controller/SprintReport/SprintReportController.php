@@ -2,19 +2,26 @@
 
 namespace App\Controller\SprintReport;
 
+use App\Entity\Budget;
 use App\Form\SprintReport\SprintReportType;
 use App\Model\SprintReport\SprintReportFormData;
+use App\Repository\BudgetRepository;
 use App\Service\ProjectTracker\ApiServiceInterface;
+use App\Service\SprintReport\SprintReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SprintReportController extends AbstractController
 {
-    public function __construct(private readonly ApiServiceInterface $apiService)
-    {
+    public function __construct(
+        private readonly ApiServiceInterface $apiService,
+        private readonly SprintReportService $sprintReportService,
+    ) {
     }
 
     #[Route('/sprint-report', name: 'app_sprint_report')]
@@ -80,6 +87,8 @@ class SprintReportController extends AbstractController
 
             if (!empty($projectId) && !empty($versionId)) {
                 $reportData = $this->apiService->getSprintReportData($projectId, $versionId);
+
+                $budget = $this->sprintReportService->getBudget($projectId, $versionId);
             }
         }
 
@@ -87,6 +96,25 @@ class SprintReportController extends AbstractController
             'form' => $form->createView(),
             'data' => $sprintReportFormData,
             'report' => $reportData,
+            'budget' => $budget ?? null,
+        ]);
+    }
+
+    #[Route('/sprint-report/budget', name: 'app_sprint_report_budget', methods: ['POST'])]
+    public function updateBudget(Request $request): Response
+    {
+        $data = $request->toArray();
+
+        $projectId = $data['projectId'] ?? throw new HttpException(400, 'Missing projectId.');
+        $versionId = $data['versionId'] ?? throw new HttpException(400, 'Missing versionId.');
+        $budgetAmount = $data['budget'] ?? null;
+
+        $budget = $this->sprintReportService->saveBudget($projectId, $versionId, $budgetAmount);
+
+        return new JsonResponse([
+            'projectId' => $budget->getProjectId(),
+            'versionId' => $budget->getVersionId(),
+            'budget' => $budget->getBudget(),
         ]);
     }
 }

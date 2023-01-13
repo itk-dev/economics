@@ -10,6 +10,7 @@ use App\Model\Planning\PlanningData;
 use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
 use App\Model\Planning\SprintSum;
+use App\Model\SprintReport\Epic;
 use App\Model\SprintReport\SprintReportData;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -575,9 +576,16 @@ class JiraApiService implements ApiServiceInterface
         return isset($this->customFieldMappings[$fieldName]) ? 'customfield_'.$this->customFieldMappings[$fieldName] : false;
     }
 
+    /**
+     * @throws ApiServiceException
+     * @throws Exception
+     */
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData
     {
-        $boardId = $this->defaultBoard;
+        $sprintReportData = new SprintReportData();
+        $epics = $sprintReportData->epics;
+
+        $epics->set('NoEpic', new Epic('NoEpic', 'No epic'));
 
         // Get version, project, customFields from Jira.
         $version = $this->get('/rest/api/2/version/'.$versionId);
@@ -585,17 +593,6 @@ class JiraApiService implements ApiServiceInterface
 
         $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
         $customFieldSprintId = $this->getCustomFieldId('Sprint');
-
-        // Get active sprint.
-        $activeSprint = $this->get(
-            '/rest/agile/1.0/board/'.$boardId.'/sprint',
-            [
-                'state' => 'active',
-            ]
-        );
-        $activeSprint = \count(
-            $activeSprint->values
-        ) > 0 ? $activeSprint->values[0] : null;
 
         // Get all issues for version.
         $issues = [];
@@ -637,15 +634,6 @@ class JiraApiService implements ApiServiceInterface
             }
         }
 
-        $epics = [];
-        $epics['NoEpic'] = (object) [
-            'id' => null,
-            'name' => 'No epic',
-            'spentSum' => 0,
-            'remainingSum' => 0,
-            'originalEstimateSum' => 0,
-            'plannedWorkSum' => 0,
-        ];
         $sprints = [];
         $spentSum = 0;
         $remainingSum = 0;
@@ -688,28 +676,29 @@ class JiraApiService implements ApiServiceInterface
 
             // Get issue epic.
             if (isset($issue->fields->{$customFieldEpicLinkId})) {
-                if (!isset($epics[$issue->fields->{$customFieldEpicLinkId}])) {
-                    $epic = $epics[$issue->fields->{$customFieldEpicLinkId}] = $this->get(
-                        'rest/agile/1.0/epic/'.$issue->fields->{$customFieldEpicLinkId}
-                    );
+                $epicLinkId = $issue->fields->{$customFieldEpicLinkId};
 
-                    $epic->spentSum = 0;
-                    $epic->remainingSum = 0;
-                    $epic->originalEstimateSum = 0;
-                    $epic->plannedWorkSum = 0;
+                if (!$epics->containsKey($epicLinkId)) {
+                    $epicData = $this->get('rest/agile/1.0/epic/'.$epicLinkId);
+
+                    $epic = new Epic($epicLinkId, $epicData->name);
+                    $epics->set($epicLinkId, $epic);
                 }
-                $issue->epic = $epics[$issue->fields->{$customFieldEpicLinkId}];
+
+                $issue->epic = $epics->get($issue->fields->{$customFieldEpicLinkId});
             } else {
-                $issue->epic = $epics['NoEpic'];
+                $issue->epic = $epics->get('NoEpic');
             }
 
             // Gather worklogs for sprints/epics.
             if (!isset($issue->epic->worklogs)) {
                 $issue->epic->worklogs = [];
             }
+
             if (!isset($issue->epic->loggedWork)) {
                 $issue->epic->loggedWork = [];
             }
+
             foreach ($issue->fields->worklog->worklogs as $worklog) {
                 $workLogStarted = strtotime($worklog->started);
                 $sprint = array_filter($sprints, function ($k) use ($workLogStarted) {
@@ -764,28 +753,30 @@ class JiraApiService implements ApiServiceInterface
         ksort($sprints);
 
         // Sort epics by name.
-        usort($epics, function ($a, $b) {
+        $iterator = $epics->getIterator();
+        $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->name) <=> mb_strtolower($b->name);
         });
+        $epics = new ArrayCollection(iterator_to_array($iterator));
 
         // Calculate spent, remaining hours.
         $spentHours = $spentSum / 3600;
         $remainingHours = $remainingSum / 3600;
 
         $data = [
-            'version' => $version,
-            'project' => $project,
             'issues' => $issues,
-            'activeSprint' => $activeSprint,
             'sprints' => $sprints,
-            'spentSum' => $spentSum,
-            'spentHours' => $spentHours,
-            'remainingHours' => $remainingHours,
             'epics' => $epics,
         ];
 
-        $sprintReportData = new SprintReportData();
         $sprintReportData->data = $data;
+        $sprintReportData->projectName = $project->name;
+        $sprintReportData->versionName = $version->name;
+        $sprintReportData->remainingHours = $remainingHours;
+        $sprintReportData->spentHours = $spentHours;
+        $sprintReportData->spentSum = $spentSum;
+        $sprintReportData->projectHours = $spentHours + $remainingHours;
+        $sprintReportData->epics = $epics;
 
         return $sprintReportData;
     }

@@ -29,49 +29,58 @@
                         <tbody>
                         <tr>
                             <td class="table-cell-heading">{{ 'sprint_report.sub.project'|trans }}</td>
-                            <td class="table-cell">{{ sprintReport.project.name }}</td>
+                            <td class="table-cell">{{ report.projectName }}</td>
                         </tr>
                         <tr>
                             <td class="table-cell-heading">{{ 'sprint_report.sub.version'|trans }}</td>
-                            <td class="table-cell">{{ sprintReport.version.name }}</td>
+                            <td class="table-cell">{{ report.versionName }}</td>
                         </tr>
                         <tr>
-                            <td class="table-cell-heading">{{ 'sprint_report.sub.budget'|trans }}</td>
-                            <td class="table-cell"><input type="number" id="input-budget"
-                                                            style="width: 200px; border: 0"></td>
+                            <td class="table-cell-heading"><label for="input-budget">{{ 'sprint_report.sub.budget'|trans }}</label></td>
+                            <td class="table-cell">
+                                <form>
+                                    <input type="number" id="input-budget" style="min-width: 200px; border: 0"
+                                           value="{{ budget ? budget.budget : '' }}"
+                                           data-project-id="{{ data.projectId }}"
+                                           data-version-id="{{ data.versionId }}"
+                                           data-sprint-report-target="budget"
+                                    >
+                                    <button type="button" class="btn-primary" data-action="sprint-report#submitBudget">
+                                        {{ 'sprint_report.save_budget'|trans }}</button>
+                                </form>
+                            </td>
                         </tr>
                         <tr>
                             <td class="table-cell-heading">{{ 'sprint_report.sub.spent_hours'|trans }}</td>
                             <td class="table-cell">
-                                <span id="spent_hours">{{ sprintReport.spentHours }}</span>
+                                <span id="spent_hours" data-sprint-report-target="spentHours">{{ report.spentHours }}</span>
                             </td>
                         </tr>
                         <tr>
                             <td class="table-cell-heading">{{ 'sprint_report.sub.remaining_hours'|trans }}</td>
                             <td class="table-cell" id="remaining_hours">
-                                {{ sprintReport.remainingHours }}
+                                {{ report.remainingHours }}
                             </td>
                         </tr>
                         <tr>
                             <td class="table-cell-heading">{{ 'sprint_report.sub.project_hours'|trans }}</td>
                             <td class="table-cell" id="project_hours">
-                                {{ sprintReport.spentHours + sprintReport.remainingHours }}
+                                {{ report.projectHours }}
                             </td>
                         </tr>
                         <tr>
-                            <td class="table-cell-heading">{{ 'sprint_report.sub.finished_degree'|trans }}</td>
-                            <td class="table-cell"><input type="number"
-                                                            id="input_finished_degree"
-                                                            max="100" min="0" style="width: 200px; border: 0;">
+                            <td class="table-cell-heading"><label for="input_finished_degree">{{ 'sprint_report.sub.finished_degree'|trans }}</label></td>
+                            <td class="table-cell">
+                                <input type="number" id="input_finished_degree" data-sprint-report-target="finishedPercentage" max="100" min="0" style="width: 100%; border: 0;">
                             </td>
                         </tr>
                         <tr>
                             <td class="table-cell-heading">{{ 'sprint_report.sub.project_forecast'|trans }}</td>
-                            <td class="table-cell"><span id="project_total_forecast"></span></td>
+                            <td class="table-cell" data-sprint-report-target="projectTotalForecast"></td>
                         </tr>
                         <tr>
                             <td class="table-cell-heading">{{ 'sprint_report.sub.over_under_index'|trans }}</td>
-                            <td class="table-cell"><span id="over_under_index"></span></td>
+                            <td class="table-cell" data-sprint-report-target="overUnderIndex"></td>
                         </tr>
                         </tbody>
                     </table>
