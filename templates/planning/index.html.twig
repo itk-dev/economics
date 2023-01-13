@@ -108,7 +108,7 @@
                     {% for sprint in sprints %}
                         {% if project.sprintSums.containsKey(sprint.sprintId) %}
                             {% set res = project.sprintSums.get(sprint.sprintId).sumHours %}
-                            <td class="table-cell-heading{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
+                            <td class="table-cell-heading">
                                 {{ res }}
                             </td>
                         {% else %}
