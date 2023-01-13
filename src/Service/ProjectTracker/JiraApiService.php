@@ -10,10 +10,13 @@ use App\Model\Planning\PlanningData;
 use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
 use App\Model\Planning\SprintSum;
-use App\Model\SprintReport\Epic;
+use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportData;
+use App\Model\SprintReport\SprintReportIssue;
+use App\Model\SprintReport\SprintReportSprint;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Exception;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -576,26 +579,15 @@ class JiraApiService implements ApiServiceInterface
         return isset($this->customFieldMappings[$fieldName]) ? 'customfield_'.$this->customFieldMappings[$fieldName] : false;
     }
 
-    /**
-     * @throws ApiServiceException
-     * @throws Exception
-     */
-    public function getSprintReportData(string $projectId, string $versionId): SprintReportData
+    private function getIssuesForProjectVersion($projectId, $versionId): array
     {
-        $sprintReportData = new SprintReportData();
-        $epics = $sprintReportData->epics;
+        $issues = [];
 
-        $epics->set('NoEpic', new Epic('NoEpic', 'No epic'));
-
-        // Get version, project, customFields from Jira.
-        $version = $this->get('/rest/api/2/version/'.$versionId);
-        $project = $this->getProject($projectId);
-
+        // Get customFields from Jira.
         $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
         $customFieldSprintId = $this->getCustomFieldId('Sprint');
 
         // Get all issues for version.
-        $issues = [];
         $startAt = 0;
         $fields = implode(
             ',',
@@ -613,8 +605,8 @@ class JiraApiService implements ApiServiceInterface
             ]
         );
 
+        // Get issues for the given project and version.
         while (true) {
-            // @TODO: Move to separate call.
             $results = $this->get(
                 '/rest/api/2/search',
                 [
@@ -625,6 +617,7 @@ class JiraApiService implements ApiServiceInterface
                     'startAt' => $startAt,
                 ]
             );
+
             $issues = array_merge($issues, $results->issues);
 
             $startAt = $startAt + 50;
@@ -634,123 +627,163 @@ class JiraApiService implements ApiServiceInterface
             }
         }
 
-        $sprints = [];
+        return $issues;
+    }
+
+    private function getIssueSprint($issueEntry): ?SprintReportSprint
+    {
+        $customFieldSprintId = $this->getCustomFieldId('Sprint');
+
+        // Get sprints for issue.
+        if (isset($issueEntry->fields->{$customFieldSprintId})) {
+            foreach ($issueEntry->fields->{$customFieldSprintId} as $sprintString) {
+                $replace = preg_replace(
+                    ['/.*\[/', '/].*/'],
+                    '',
+                    $sprintString
+                );
+                $fields = explode(',', $replace);
+
+                $sprint = [];
+
+                foreach ($fields as $field) {
+                    $split = explode('=', $field);
+
+                    if (count($split) > 1) {
+                        $value = $split[1] == '<null>' ? null : $split[1];
+
+                        $sprint[$split[0]] = $value;
+                    }
+                }
+
+                return new SprintReportSprint(
+                    $sprint['id'],
+                    $sprint['name'],
+                    $sprint['state'],
+                    $sprint['startDate'] ? strtotime($sprint['startDate']) : null,
+                    $sprint['endDate'] ? strtotime($sprint['endDate']) : null,
+                    $sprint['completeDate'] ? strtotime($sprint['completeDate']) : null,
+                );
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @throws ApiServiceException
+     * @throws Exception
+     */
+    public function getSprintReportData(string $projectId, string $versionId): SprintReportData
+    {
+        $sprintReportData = new SprintReportData();
+        $epics = $sprintReportData->epics;
+        $issues = $sprintReportData->issues;
+        $sprints = $sprintReportData->sprints;
+
         $spentSum = 0;
         $remainingSum = 0;
 
-        // Extract sprint and epics from agile custom field.
-        foreach ($issues as $issue) {
-            $issue->sprints = [];
+        $epics->set('NoEpic', new SprintReportEpic('NoEpic', 'Uden Epic'));
 
-            // Get sprints for issue.
-            if (isset($issue->fields->{$customFieldSprintId})) {
-                foreach ($issue->fields->{$customFieldSprintId} as $sprintString) {
-                    $replace = preg_replace(
-                        ['/.*\[/', '/].*/'],
-                        '',
-                        $sprintString
-                    );
-                    $fields = explode(',', $replace);
+        // Get version and project.
+        $version = $this->get('/rest/api/2/version/'.$versionId);
+        $project = $this->getProject($projectId);
 
-                    $sprint = [];
-                    foreach ($fields as $field) {
-                        $split = explode('=', $field);
+        // Get customField for Jira.
+        $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
 
-                        $sprint[$split[0]] = $split[1];
-                    }
+        $issueEntries = $this->getIssuesForProjectVersion($projectId, $versionId);
 
-                    // Set shortName
-                    $sprint['shortName'] = str_replace('Sprint ', '', $sprint['name']);
+        foreach ($issueEntries as $issueEntry) {
+            $issue = new SprintReportIssue();
+            $issues->add($issue);
 
-                    $issue->sprints[] = (object) $sprint;
+            // Set issue epic.
+            if (isset($issueEntry->fields->{$customFieldEpicLinkId})) {
+                $epicLinkId = $issueEntry->fields->{$customFieldEpicLinkId};
 
-                    if (!isset($sprints[$sprint['id']])) {
-                        $sprints[$sprint['id']] = (object) $sprint;
-                    }
-
-                    if ('ACTIVE' === $sprint['state'] || 'FUTURE' === $sprint['state']) {
-                        $issue->assignedToSprint = (object) $sprint;
-                    }
-                }
-            }
-
-            // Get issue epic.
-            if (isset($issue->fields->{$customFieldEpicLinkId})) {
-                $epicLinkId = $issue->fields->{$customFieldEpicLinkId};
-
+                // Add to epics if not already added.
                 if (!$epics->containsKey($epicLinkId)) {
                     $epicData = $this->get('rest/agile/1.0/epic/'.$epicLinkId);
 
-                    $epic = new Epic($epicLinkId, $epicData->name);
+                    $epic = new SprintReportEpic($epicLinkId, $epicData->name);
                     $epics->set($epicLinkId, $epic);
                 }
 
-                $issue->epic = $epics->get($issue->fields->{$customFieldEpicLinkId});
+                $issue->epic = $epics->get($issueEntry->fields->{$customFieldEpicLinkId});
             } else {
                 $issue->epic = $epics->get('NoEpic');
             }
 
-            // Gather worklogs for sprints/epics.
-            if (!isset($issue->epic->worklogs)) {
-                $issue->epic->worklogs = [];
-            }
+            // Get sprint for issue.
+            $issueSprint = $this->getIssueSprint($issueEntry);
 
-            if (!isset($issue->epic->loggedWork)) {
-                $issue->epic->loggedWork = [];
-            }
+            // Add to sprints if not already added.
+            if (isset($issueSprint)) {
+                if (!$sprints->containsKey($issueSprint->id)) {
+                    $sprints->set($issueSprint->id, $issueSprint);
+                }
 
-            foreach ($issue->fields->worklog->worklogs as $worklog) {
-                $workLogStarted = strtotime($worklog->started);
-                $sprint = array_filter($sprints, function ($k) use ($workLogStarted) {
-                    return
-                        strtotime($k->startDate) <= $workLogStarted &&
-                        (isset($k->completeDate) ? strtotime($k->completeDate) : strtotime($k->endDate)) > $workLogStarted;
-                });
-
-                if (!empty($sprint)) {
-                    $sprint = array_pop($sprint);
-
-                    if (!isset($issue->epic->worklogs[$sprint->id])) {
-                        $issue->epic->worklogs[$sprint->id] = [];
-                    }
-                    $issue->epic->worklogs[$sprint->id][] = $worklog;
-
-                    $issue->epic->loggedWork[$sprint->id] = (isset($issue->epic->loggedWork[$sprint->id]) ? $issue->epic->loggedWork[$sprint->id] : 0) + $worklog->timeSpentSeconds;
-                } else {
-                    if (!isset($issue->epic->worklogs['NoSprint'])) {
-                        $issue->epic->worklogs['NoSprint'] = [];
-                    }
-                    $issue->epic->worklogs['NoSprint'][] = $worklog;
-
-                    $issue->epic->loggedWork['NoSprint'] = (isset($issue->epic->loggedWork['NoSprint']) ? $issue->epic->loggedWork['NoSprint'] : 0) + $worklog->timeSpentSeconds;
+                // Set which sprint the issue is assigned to.
+                if ('ACTIVE' === $issueSprint->state || 'FUTURE' === $issueSprint->state) {
+                    $issue->assignedToSprint = $issueSprint;
                 }
             }
 
+            foreach  ($issueEntry->fields->worklog->worklogs as $worklogData) {
+                $workLogStarted = strtotime($worklogData->started);
+
+                $worklogSprints = array_filter($sprints->toArray(), function ($sprintEntry) use ($workLogStarted) {
+                    /** @var SprintReportSprint $sprintEntry */
+                    return
+                        $sprintEntry->startDateTimestamp <= $workLogStarted &&
+                        ($sprintEntry->completedDateTimstamp ?? $sprintEntry->endDateTimestamp) > $workLogStarted;
+                });
+
+                $worklogSprintId = 'NoSprint';
+
+                if (!empty($worklogSprints)) {
+                    $worklogSprint = array_pop($worklogSprints);
+
+                    $worklogSprintId = $worklogSprint->id;
+                }
+
+                $issue->epic->loggedWork->set($worklogSprintId, ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklogData->timeSpentSeconds);
+            }
+
             // Accumulate spentSum.
-            $spentSum = $spentSum + $issue->fields->timespent;
-            $issue->epic->spentSum = $issue->epic->spentSum + $issue->fields->timespent;
+            $spentSum = $spentSum + $issueEntry->fields->timespent;
+            $issue->epic->spentSum = $issue->epic->spentSum + $issueEntry->fields->timespent;
 
             // Accumulate remainingSum.
-            if ('Done' !== !$issue->fields->status->name && isset($issue->fields->timetracking->remainingEstimateSeconds)) {
-                $remainingSum = $remainingSum + $issue->fields->timetracking->remainingEstimateSeconds;
+            if ('Done' !== !$issueEntry->fields->status->name && isset($issueEntry->fields->timetracking->remainingEstimateSeconds)) {
+                $remainingEstimateSeconds = $issueEntry->fields->timetracking->remainingEstimateSeconds;
+                $remainingSum = $remainingSum + $remainingEstimateSeconds;
 
-                $issue->epic->remainingSum = $issue->epic->remainingSum + $issue->fields->timetracking->remainingEstimateSeconds;
+                $issue->epic->remainingSum = $issue->epic->remainingSum + $remainingEstimateSeconds;
 
                 if (!empty($issue->assignedToSprint)) {
-                    $sprint = $issue->assignedToSprint;
-                    $issue->epic->remainingWork[$sprint->id] = (isset($issue->epic->remainingWork[$sprint->id]) ? $issue->epic->remainingWork[$sprint->id] : 0) + $issue->fields->timetracking->remainingEstimateSeconds;
-                    $issue->epic->plannedWorkSum = $issue->epic->plannedWorkSum + $issue->fields->timetracking->remainingEstimateSeconds;
+                    $assignedToSprint = $issue->assignedToSprint;
+                    $issue->epic->remainingWork->set($assignedToSprint->id, ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds);
+                    $issue->epic->plannedWorkSum = $issue->epic->plannedWorkSum + $remainingEstimateSeconds;
                 }
             }
 
             // Accumulate originalEstimateSum.
-            if (isset($issue->fields->timeoriginalestimate)) {
-                $issue->epic->originalEstimateSum = $issue->epic->originalEstimateSum + $issue->fields->timeoriginalestimate;
+            if (isset($issueEntry->fields->timeoriginalestimate)) {
+                $issue->epic->originalEstimateSum = $issue->epic->originalEstimateSum + $issueEntry->fields->timeoriginalestimate;
+
+                $sprintReportData->originaltEstimatSum += $issueEntry->fields->timeoriginalestimate;
             }
         }
 
         // Sort sprints by key.
-        ksort($sprints);
+        $iterator = $sprints->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return mb_strtolower($a->id) <=> mb_strtolower($b->id);
+        });
+        $sprints = new ArrayCollection(iterator_to_array($iterator));
 
         // Sort epics by name.
         $iterator = $epics->getIterator();
@@ -763,13 +796,6 @@ class JiraApiService implements ApiServiceInterface
         $spentHours = $spentSum / 3600;
         $remainingHours = $remainingSum / 3600;
 
-        $data = [
-            'issues' => $issues,
-            'sprints' => $sprints,
-            'epics' => $epics,
-        ];
-
-        $sprintReportData->data = $data;
         $sprintReportData->projectName = $project->name;
         $sprintReportData->versionName = $version->name;
         $sprintReportData->remainingHours = $remainingHours;

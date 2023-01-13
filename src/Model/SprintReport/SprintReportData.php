@@ -17,6 +17,7 @@ class SprintReportData
     public float $projectHours;
     public string $projectName;
     public string $versionName;
+    public float $originaltEstimatSum = 0.0;
 
     public function __construct()
     {

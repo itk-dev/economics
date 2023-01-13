@@ -71,7 +71,7 @@
                             {% for sprint in sprints %}
                                 {% if issue.sprintId == sprint.sprintId %}
                                     <td class="table-cell-heading">
-                                        {{ issue.remainingHours }}
+                                        {{ issue.remainingHours ?? 'UE' }}
                                     </td>
                                 {% else %}
                                     <td class="table-cell-heading"></td>
@@ -137,7 +137,7 @@
                             {% for sprint in sprints %}
                                 {% if issue.sprintId == sprint.sprintId %}
                                     <td class="table-cell-heading">
-                                        {{ issue.remainingHours }}
+                                        {{ issue.remainingHours ?? 'UE' }}
                                     </td>
                                 {% else %}
                                     <td class="table-cell-heading"></td>
