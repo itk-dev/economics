@@ -6,6 +6,8 @@ use App\Form\SprintReport\SprintReportType;
 use App\Model\SprintReport\SprintReportFormData;
 use App\Service\ProjectTracker\ApiServiceInterface;
 use App\Service\SprintReport\SprintReportService;
+use Mpdf\Mpdf;
+use Mpdf\MpdfException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -114,5 +116,29 @@ class SprintReportController extends AbstractController
             'versionId' => $budget->getVersionId(),
             'budget' => $budget->getBudget(),
         ]);
+    }
+
+    /**
+     * @throws MpdfException
+     */
+    #[Route('/sprint-report/generate-pdf', name: 'app_sprint_report_pdf', methods: ['GET'])]
+    public function generatePdf(Request $request)
+    {
+        $projectId = $request->query->get('projectId');
+        $versionId = $request->query->get('versionId');
+
+        $reportData = $this->apiService->getSprintReportData($projectId, $versionId);
+
+        $html = $this->renderView('sprint_report/pdf.html.twig', [
+            'report' => $reportData,
+            'data' => [
+                'projectId' => $projectId,
+                'versionId' => $versionId,
+            ],
+        ]);
+
+        $mpdf = new Mpdf();
+        $mpdf->WriteHTML($html);
+        $mpdf->Output();
     }
 }

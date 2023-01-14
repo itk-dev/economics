@@ -69,6 +69,7 @@ sprint_report:
   heading_phases: Projektets faser
   heading_spent_hours: Forbrugt pr. uge
   heading_planned_hours: Planlagt pr. uge
+  pdf_title: Sprint rapport eksport
   sub:
     project: Projekt
     version: Bestilling

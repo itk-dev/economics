@@ -11,6 +11,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.13",
         "gedmo/doctrine-extensions": "^3.9",
+        "mpdf/mpdf": "v8.1.2",
         "phpoffice/phpspreadsheet": "^1.25",
         "symfony/console": "6.1.*",
         "symfony/dotenv": "6.1.*",
