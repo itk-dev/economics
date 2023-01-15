@@ -8,6 +8,7 @@
     <table class="table-auto">
         <thead>
             <tr>
+                <th>{{ 'invoices.list_id'|trans }}</th>
                 <th>{{ 'invoices.list_name'|trans }}</th>
                 <th>{{ 'invoices.list_project'|trans }}</th>
                 <th>{{ 'invoices.list_created_by'|trans }}</th>
@@ -19,6 +20,7 @@
         <tbody>
         {% for invoice in invoices %}
             <tr>
+                <td>{{ invoice.id }}</td>
                 <td>{{ invoice.name }}</td>
                 <td>{{ invoice.projectId }} {# TODO: Get project name #}</td>
                 <td>{{ invoice.createdBy }}</td>
@@ -37,5 +39,12 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>
+    <div class="navigation">
+        {{ knp_pagination_render(invoices) }}
+    </div>
+    <div class="count">
+        {{ invoices.getTotalItemCount }} fakturaer.
+    </div>
+
+    <a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>
 {% endblock %}
