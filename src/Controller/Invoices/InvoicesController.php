@@ -78,7 +78,8 @@ class InvoicesController extends AbstractController
     #[Route('/{id}', name: 'app_invoices_delete', methods: ['POST'])]
     public function delete(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$invoice->getId(), $request->request->get('_token'))) {
+        $token = $request->request->get('_token');
+        if (is_string($token) && $this->isCsrfTokenValid('delete'.$invoice->getId(), $token)) {
             $invoiceRepository->remove($invoice, true);
         }
 

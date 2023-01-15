@@ -27,6 +27,7 @@ class SprintReportService
         }
 
         $budget->setBudget($budgetAmount);
+
         $this->entityManager->flush();
 
         return $budget;

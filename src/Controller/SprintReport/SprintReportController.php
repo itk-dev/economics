@@ -53,7 +53,11 @@ class SprintReportController extends AbstractController
             ],
         ]);
 
-        $requestData = $request->get('sprint_report');
+        $requestData = $request->request->all();
+
+        if (isset($requestData['sprint_report'])) {
+            $requestData = $requestData['sprint_report'];
+        }
 
         if (!empty($requestData['projectId'])) {
             $project = $this->apiService->getProject($requestData['projectId']);
@@ -124,8 +128,8 @@ class SprintReportController extends AbstractController
     #[Route('/sprint-report/generate-pdf', name: 'app_sprint_report_pdf', methods: ['GET'])]
     public function generatePdf(Request $request)
     {
-        $projectId = $request->query->get('projectId');
-        $versionId = $request->query->get('versionId');
+        $projectId = (string) $request->query->get('projectId');
+        $versionId = (string) $request->query->get('versionId');
 
         $reportData = $this->apiService->getSprintReportData($projectId, $versionId);
 

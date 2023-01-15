@@ -11,8 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @method SprintReportBudget|null find($id, $lockMode = null, $lockVersion = null)
  * @method SprintReportBudget|null findOneBy(array $criteria, array $orderBy = null)
- * @method SprintReportBudget[]    findAll()
- * @method SprintReportBudget[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method findAll()
+ * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class SprintReportBudgetRepository extends ServiceEntityRepository
 {
@@ -38,29 +38,4 @@ class SprintReportBudgetRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
-//    /**
-//     * @return Budget[] Returns an array of Budget objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('b.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Budget
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

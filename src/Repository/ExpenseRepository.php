@@ -11,8 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @method Expense|null find($id, $lockMode = null, $lockVersion = null)
  * @method Expense|null findOneBy(array $criteria, array $orderBy = null)
- * @method Expense[]    findAll()
- * @method Expense[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method findAll()
+ * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ExpenseRepository extends ServiceEntityRepository
 {
@@ -38,29 +38,4 @@ class ExpenseRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
-//    /**
-//     * @return Expense[] Returns an array of Expense objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('e.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Expense
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }
