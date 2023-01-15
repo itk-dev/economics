@@ -55,9 +55,6 @@ create_project_submitted:
   last_step:
     text: For at knytte projektet til dit team skal du følge linket herunder og klikke "Add Project Link" under "Links to Projects", find og vælg dit nye projekt på listen.
 
-invoices:
-  title: Fakturaer
-
 sprint_report:
   select_project: Vælg projekt
   select_version: Vælg version
@@ -101,3 +98,14 @@ planning:
   title: Planlægning
   assignees: Brugere
   projects: Projekter
+
+invoices:
+  title: Fakturaer
+  list_name: Faktura
+  list_project: Projekt
+  list_created_by: Oprettet af
+  list_updated_at: Dato
+  list_amount: Beløb
+  list_actions: ''
+  list_no_records_found: Ingen fundet
+  action_create_new: Ny faktura
