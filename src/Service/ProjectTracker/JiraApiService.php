@@ -14,6 +14,7 @@ use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
+use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -480,10 +481,12 @@ class JiraApiService implements ApiServiceInterface
                         $assigneeProject->sprintSums->set($sprintId, new SprintSum($sprintId));
                     }
 
-                    /** @var SprintSum $sprintSum */
+                    /** @var SprintSum $projectSprintSum */
                     $projectSprintSum = $assigneeProject->sprintSums->get($sprintId);
-                    $projectSprintSum->sumSeconds += $remainingSeconds;
-                    $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
+                    if (isset($projectSprintSum)) {
+                        $projectSprintSum->sumSeconds += $remainingSeconds;
+                        $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
+                    }
 
                     $assigneeProject->issues->add(
                         new Issue(
@@ -547,6 +550,7 @@ class JiraApiService implements ApiServiceInterface
         }
 
         // Sort assignees by name.
+        /** @var ArrayIterator $iterator */
         $iterator = $assignees->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
@@ -554,6 +558,7 @@ class JiraApiService implements ApiServiceInterface
         $planning->assignees = new ArrayCollection(iterator_to_array($iterator));
 
         // Sort projects by name.
+        /** @var ArrayIterator $iterator */
         $iterator = $projects->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
@@ -650,6 +655,10 @@ class JiraApiService implements ApiServiceInterface
                     }
                 }
 
+                if (!isset($sprint['id']) || !isset($sprint['name']) || !isset($sprint['state'])) {
+                    continue;
+                }
+
                 return new SprintReportSprint(
                     $sprint['id'],
                     $sprint['name'],
@@ -703,12 +712,18 @@ class JiraApiService implements ApiServiceInterface
 
                     $epic = new SprintReportEpic($epicLinkId, $epicData->name);
                     $epics->set($epicLinkId, $epic);
+                } else {
+                    $epic = $epics->get($issueEntry->fields->{$customFieldEpicLinkId});
                 }
-
-                $issue->epic = $epics->get($issueEntry->fields->{$customFieldEpicLinkId});
             } else {
-                $issue->epic = $epics->get('NoEpic');
+                $epic = $epics->get('NoEpic');
             }
+
+            if (!$epic instanceof SprintReportEpic) {
+                continue;
+            }
+
+            $issue->epic = $epic;
 
             // Get sprint for issue.
             $issueSprint = $this->getIssueSprint($issueEntry);
@@ -748,10 +763,10 @@ class JiraApiService implements ApiServiceInterface
 
             // Accumulate spentSum.
             $spentSum = $spentSum + $issueEntry->fields->timespent;
-            $issue->epic->spentSum = $issue->epic->spentSum + $issueEntry->fields->timespent;
+            $issue->epic->spentSum += $issueEntry->fields->timespent;
 
             // Accumulate remainingSum.
-            if ('Done' !== !$issueEntry->fields->status->name && isset($issueEntry->fields->timetracking->remainingEstimateSeconds)) {
+            if ('Done' !== $issueEntry->fields->status->name && isset($issueEntry->fields->timetracking->remainingEstimateSeconds)) {
                 $remainingEstimateSeconds = $issueEntry->fields->timetracking->remainingEstimateSeconds;
                 $remainingSum = $remainingSum + $remainingEstimateSeconds;
 
@@ -773,6 +788,7 @@ class JiraApiService implements ApiServiceInterface
         }
 
         // Sort sprints by key.
+        /** @var ArrayIterator $iterator */
         $iterator = $sprints->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->id) <=> mb_strtolower($b->id);
@@ -780,6 +796,7 @@ class JiraApiService implements ApiServiceInterface
         $sprints = new ArrayCollection(iterator_to_array($iterator));
 
         // Sort epics by name.
+        /** @var ArrayIterator $iterator */
         $iterator = $epics->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->name) <=> mb_strtolower($b->name);
@@ -797,6 +814,7 @@ class JiraApiService implements ApiServiceInterface
         $sprintReportData->spentSum = $spentSum;
         $sprintReportData->projectHours = $spentHours + $remainingHours;
         $sprintReportData->epics = $epics;
+        $sprintReportData->sprints = $sprints;
 
         return $sprintReportData;
     }
