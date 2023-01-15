@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Budget;
+use App\Entity\SprintReport\Budget;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -2,7 +2,7 @@
 
 namespace App\Service\SprintReport;
 
-use App\Entity\Budget;
+use App\Entity\SprintReport\Budget;
 use App\Repository\BudgetRepository;
 use Doctrine\ORM\EntityManagerInterface;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\SprintReport;
 
 use App\Repository\BudgetRepository;
 use Doctrine\ORM\Mapping as ORM;
