@@ -102,15 +102,23 @@
         "check-coding-standards/twigcs": [
             "twigcs templates"
         ],
+        "coding-standards-apply": [
+            "php-cs-fixer fix"
+        ],
         "coding-standards-check": [
             "@check-coding-standards/php-cs-fixer",
             "@check-coding-standards/twigcs"
         ],
-        "coding-standards-apply": [
-            "php-cs-fixer fix"
-        ],
         "phpunit": [
             "./vendor/bin/phpunit"
+        ],
+        "prepare-code": [
+            "composer normalize",
+            "@coding-standards-apply",
+            "@psalm"
+        ],
+        "psalm": [
+            "./vendor/bin/psalm --no-cache"
         ]
     }
 }

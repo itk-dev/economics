@@ -26,7 +26,7 @@ class InvoicesController extends AbstractController
         );
 
         return $this->render('invoices/index.html.twig', [
-            'invoices' => $pagination
+            'invoices' => $pagination,
         ]);
     }
 

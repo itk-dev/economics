@@ -10,7 +10,7 @@ class SprintReportService
 {
     public function __construct(
         private readonly SprintReportBudgetRepository $budgetRepository,
-        private readonly EntityManagerInterface       $entityManager,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
