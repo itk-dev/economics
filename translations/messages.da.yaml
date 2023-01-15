@@ -101,6 +101,7 @@ planning:
 
 invoices:
   title: Fakturaer
+  list_id: '#'
   list_name: Faktura
   list_project: Projekt
   list_created_by: Oprettet af

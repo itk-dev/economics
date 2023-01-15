@@ -10,11 +10,11 @@
 
 namespace App\Service\Invoices;
 
-use App\Entity\Expense;
-use App\Entity\Invoice;
-use App\Entity\InvoiceEntry;
-use App\Entity\Project;
-use App\Entity\Worklog;
+use App\Entity\Billing\Expense;
+use App\Entity\Billing\Invoice;
+use App\Entity\Billing\InvoiceEntry;
+use App\Entity\Billing\Project;
+use App\Entity\Billing\Worklog;
 use App\Exception\InvoiceException;
 use App\Repository\ExpenseRepository;
 use App\Repository\InvoiceRepository;

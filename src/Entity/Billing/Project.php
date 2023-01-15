@@ -1,15 +1,20 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Billing;
 
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Blameable\Traits\BlameableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project
 {
+    use BlameableEntity;
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -22,10 +27,13 @@ class Project
     private Collection $invoices;
 
     #[ORM\Column(length: 255)]
-    private ?string $remoteKey = null;
+    private ?string $projectTrackerProjectUrl;
+
+    #[ORM\Column(length: 255)]
+    private ?string $projectTrackerKey;
 
     #[ORM\Column]
-    private ?int $remoteId = null;
+    private ?int $projectTrackerId;
 
     public function __construct()
     {
@@ -79,27 +87,33 @@ class Project
         return $this;
     }
 
-    public function getRemoteKey(): ?string
+    public function getProjectTrackerProjectUrl(): ?string
     {
-        return $this->remoteKey;
+        return $this->projectTrackerProjectUrl;
     }
 
-    public function setRemoteKey(string $remoteKey): self
+    public function setProjectTrackerProjectUrl(?string $projectTrackerProjectUrl): void
     {
-        $this->remoteKey = $remoteKey;
-
-        return $this;
+        $this->projectTrackerProjectUrl = $projectTrackerProjectUrl;
     }
 
-    public function getRemoteId(): ?int
+    public function getProjectTrackerKey(): ?string
     {
-        return $this->remoteId;
+        return $this->projectTrackerKey;
     }
 
-    public function setRemoteId(int $remoteId): self
+    public function setProjectTrackerKey(?string $projectTrackerKey): void
     {
-        $this->remoteId = $remoteId;
+        $this->projectTrackerKey = $projectTrackerKey;
+    }
 
-        return $this;
+    public function getProjectTrackerId(): ?int
+    {
+        return $this->projectTrackerId;
+    }
+
+    public function setProjectTrackerId(?int $projectTrackerId): void
+    {
+        $this->projectTrackerId = $projectTrackerId;
     }
 }

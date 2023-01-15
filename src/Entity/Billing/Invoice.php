@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Billing;
 
 use App\Repository\InvoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -41,6 +41,9 @@ class Invoice
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $exportedDate = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lockedCustomerKey = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lockedContactName = null;

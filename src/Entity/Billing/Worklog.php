@@ -1,13 +1,18 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Billing;
 
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Blameable\Traits\BlameableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: WorklogRepository::class)]
 class Worklog
 {
+    use BlameableEntity;
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -20,7 +25,7 @@ class Worklog
     #[ORM\JoinColumn(nullable: false)]
     private ?InvoiceEntry $invoiceEntry = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?bool $isBilled = null;
 
     public function getId(): ?int

@@ -2,7 +2,7 @@
 
 namespace App\Form\Invoices;
 
-use App\Entity\Invoice;
+use App\Entity\Billing\Invoice;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

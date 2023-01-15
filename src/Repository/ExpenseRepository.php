@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Expense;
+use App\Entity\Billing\Expense;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

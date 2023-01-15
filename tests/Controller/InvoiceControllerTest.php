@@ -2,7 +2,7 @@
 
 namespace App\Test\Controller;
 
-use App\Entity\Invoice;
+use App\Entity\Billing\Invoice;
 use App\Repository\InvoiceRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
