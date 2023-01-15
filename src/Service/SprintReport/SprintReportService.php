@@ -2,24 +2,24 @@
 
 namespace App\Service\SprintReport;
 
-use App\Entity\SprintReport\Budget;
-use App\Repository\BudgetRepository;
+use App\Entity\SprintReport\SprintReportBudget;
+use App\Repository\SprintReportBudgetRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class SprintReportService
 {
     public function __construct(
-        private readonly BudgetRepository $budgetRepository,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly SprintReportBudgetRepository $budgetRepository,
+        private readonly EntityManagerInterface       $entityManager,
     ) {
     }
 
-    public function saveBudget($projectId, $versionId, $budgetAmount): Budget
+    public function saveBudget($projectId, $versionId, $budgetAmount): SprintReportBudget
     {
         $budget = $this->budgetRepository->findOneBy(['projectId' => $projectId, 'versionId' => $versionId]);
 
         if (!$budget) {
-            $budget = new Budget();
+            $budget = new SprintReportBudget();
             $budget->setProjectId($projectId);
             $budget->setVersionId($versionId);
 
@@ -32,7 +32,7 @@ class SprintReportService
         return $budget;
     }
 
-    public function getBudget($projectId, $versionId): ?Budget
+    public function getBudget($projectId, $versionId): ?SprintReportBudget
     {
         return $this->budgetRepository->findOneBy(['projectId' => $projectId, 'versionId' => $versionId]);
     }

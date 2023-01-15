@@ -2,11 +2,11 @@
 
 namespace App\Entity\SprintReport;
 
-use App\Repository\BudgetRepository;
+use App\Repository\SprintReportBudgetRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: BudgetRepository::class)]
-class Budget
+#[ORM\Entity(repositoryClass: SprintReportBudgetRepository::class)]
+class SprintReportBudget
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
