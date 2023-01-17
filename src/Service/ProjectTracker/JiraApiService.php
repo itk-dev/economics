@@ -651,6 +651,7 @@ class JiraApiService implements ApiServiceInterface
         // Get sprints for issue.
         if (isset($issueEntry->fields->{$customFieldSprintId})) {
             foreach ($issueEntry->fields->{$customFieldSprintId} as $sprintString) {
+                // Remove everything before and after brackets.
                 $replace = preg_replace(
                     ['/.*\[/', '/].*/'],
                     '',
@@ -672,7 +673,7 @@ class JiraApiService implements ApiServiceInterface
 
                 $sprintState = SprintStateEnum::OTHER;
 
-                switch($sprint['state']) {
+                switch ($sprint['state']) {
                     case 'ACTIVE':
                         $sprintState = SprintStateEnum::ACTIVE;
                         break;
@@ -692,7 +693,7 @@ class JiraApiService implements ApiServiceInterface
             }
         }
 
-        throw new ApiServiceException("Sprint not found", 404);
+        throw new ApiServiceException('Sprint not found', 404);
     }
 
     /**
@@ -750,7 +751,7 @@ class JiraApiService implements ApiServiceInterface
                 }
 
                 // Set which sprint the issue is assigned to.
-                if ($issueSprint->state === SprintStateEnum::ACTIVE || $issueSprint->state === SprintStateEnum::FUTURE) {
+                if (SprintStateEnum::ACTIVE === $issueSprint->state || SprintStateEnum::FUTURE === $issueSprint->state) {
                     $issue->assignedToSprint = $issueSprint;
                 }
             } catch (ApiServiceException) {
