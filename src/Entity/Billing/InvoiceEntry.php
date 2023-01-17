@@ -48,13 +48,9 @@ class InvoiceEntry
     #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
-    #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: Expense::class)]
-    private Collection $expenses;
-
     public function __construct()
     {
         $this->worklogs = new ArrayCollection();
-        $this->expenses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -182,36 +178,6 @@ class InvoiceEntry
             // set the owning side to null (unless already changed)
             if ($worklog->getInvoiceEntry() === $this) {
                 $worklog->setInvoiceEntry(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Expense>
-     */
-    public function getExpenses(): Collection
-    {
-        return $this->expenses;
-    }
-
-    public function addExpense(Expense $expense): self
-    {
-        if (!$this->expenses->contains($expense)) {
-            $this->expenses->add($expense);
-            $expense->setInvoiceEntry($this);
-        }
-
-        return $this;
-    }
-
-    public function removeExpense(Expense $expense): self
-    {
-        if ($this->expenses->removeElement($expense)) {
-            // set the owning side to null (unless already changed)
-            if ($expense->getInvoiceEntry() === $this) {
-                $expense->setInvoiceEntry(null);
             }
         }
 
