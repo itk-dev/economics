@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ 'sprint_report.pdf_title'|trans }}</title>
+    <style>
+        table {
+            border-spacing: 0;
+        }
+        .table-cell {
+            border: 1px solid grey;
+        }
+        .table-cell-heading {
+            border: 1px solid grey;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ 'sprint_report.title'|trans }}</h1>
+    {% include 'sprint_report/report.html.twig' %}
+</body>
+</html>

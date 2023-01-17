@@ -2,7 +2,7 @@
 
 ## Description
 
-Planning supplies an overview remaining hours of work for each sprint, assignee and project.
+Planning supplies an overview of remaining hours of work for each sprint, assignee and project.
 
 Sub-tables can be expanded under each assignee/project with +, to the level of viewing which issues are allocated for
 a given sprint.

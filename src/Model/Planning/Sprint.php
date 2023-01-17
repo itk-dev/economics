@@ -4,19 +4,12 @@ namespace App\Model\Planning;
 
 class Sprint
 {
-    public string $sprintId;
-    public int $weeks;
-    public float $sprintGoalLow;
-    public float $sprintGoalHigh;
-    public string $displayName;
+    public readonly string $sprintId;
+    public readonly int $weeks;
+    public readonly float $sprintGoalLow;
+    public readonly float $sprintGoalHigh;
+    public readonly string $displayName;
 
-    /**
-     * @param string $sprintId
-     * @param int $weeks
-     * @param float $sprintGoalLow
-     * @param float $sprintGoalHigh
-     * @param string $displayName
-     */
     public function __construct(string $sprintId, int $weeks, float $sprintGoalLow, float $sprintGoalHigh, string $displayName)
     {
         $this->sprintId = $sprintId;

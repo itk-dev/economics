@@ -113,7 +113,7 @@ class CreateProjectController extends AbstractController
 
         // The initial form build.
         return $this->render(
-            'views/createProject/form.html.twig',
+            'create-project/form.html.twig',
             [
                 'form' => $form->createView(),
                 'formConfig' => json_encode(
@@ -133,7 +133,7 @@ class CreateProjectController extends AbstractController
     public function submitted(Request $request): Response
     {
         return $this->render(
-            'views/createProject/submitted.html.twig',
+            'create-project/submitted.html.twig',
             [
                 'form_data' => $_SESSION['form_data'],
             ]

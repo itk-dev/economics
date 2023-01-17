@@ -15,11 +15,11 @@ use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Project;
 use App\Entity\Worklog;
+use App\Exception\InvoiceException;
 use App\Repository\ExpenseRepository;
 use App\Repository\InvoiceRepository;
-use App\Service\ProjectTracker\ApiServiceInterface;
 use App\Repository\WorklogRepository;
-use App\Exception\InvoiceException;
+use App\Service\ProjectTracker\ApiServiceInterface;
 use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -71,8 +71,6 @@ class InvoiceService
 
     /**
      * Get all invoices.
-     *
-     * @return array
      */
     public function getAllInvoices(): array
     {
@@ -160,7 +158,7 @@ class InvoiceService
      */
     public function postInvoice(array $invoiceData): array
     {
-        if (empty($invoiceData['projectId']) || !(int) ($invoiceData['projectId'])) {
+        if (empty($invoiceData['projectId']) || !(int) $invoiceData['projectId']) {
             throw new HttpException(400, "Expected integer value for 'projectId' in request");
         }
 
@@ -216,7 +214,7 @@ class InvoiceService
      */
     public function putInvoice(array $invoiceData): array
     {
-        if (empty($invoiceData['id']) || !(int) ($invoiceData['id'])) {
+        if (empty($invoiceData['id']) || !(int) $invoiceData['id']) {
             throw new HttpException(400, "Expected integer value for 'id' in request");
         }
 
@@ -326,8 +324,6 @@ class InvoiceService
 
     /**
      * Get all invoiceEntries.
-     *
-     * @return array
      */
     public function getAllInvoiceEntries(): array
     {
@@ -407,7 +403,7 @@ class InvoiceService
      */
     public function postInvoiceEntry(array $invoiceEntryData): array
     {
-        if (empty($invoiceEntryData['invoiceId']) || !(int) ($invoiceEntryData['invoiceId'])) {
+        if (empty($invoiceEntryData['invoiceId']) || !(int) $invoiceEntryData['invoiceId']) {
             throw new HttpException(400, "Expected integer value for 'invoiceId' in request");
         }
 
@@ -552,7 +548,7 @@ class InvoiceService
      */
     public function putInvoiceEntry(array $invoiceEntryData): array
     {
-        if (empty($invoiceEntryData['id']) || !(int) ($invoiceEntryData['id'])) {
+        if (empty($invoiceEntryData['id']) || !(int) $invoiceEntryData['id']) {
             throw new HttpException(400, "Expected integer value for 'id' in request");
         }
 
@@ -733,8 +729,6 @@ class InvoiceService
      * Export the selected invoices (by id) to csv.
      *
      * @param array $invoiceIds array of invoice ids that should be exported
-     *
-     * @return \PhpOffice\PhpSpreadsheet\Spreadsheet
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
