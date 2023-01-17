@@ -19,7 +19,7 @@
         </div>
 
         {% if report is defined and report is not null %}
-            <a href="{{ path('app_sprint_report_pdf', {projectId: data.projectId, versionId: data.versionId}) }}">PDF</a>
+            <a type="button" class="link" href="{{ path('app_sprint_report_pdf', {projectId: data.projectId, versionId: data.versionId}) }}">{{ 'sprint_report.render_as_pdf'|trans }}</a>
         {% endif %}
 
         <div class="hidden" id="report" {{ stimulus_target('sprint-report', 'content') }}>
