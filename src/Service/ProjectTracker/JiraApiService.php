@@ -26,6 +26,21 @@ class JiraApiService implements ApiServiceInterface
 {
     private const CPB_ACCOUNT_MANAGER = 'anbjv';
     private const NO_SPRINT = 'NoSprint';
+    private const API_PATH_SEARCH = '/rest/api/2/search';
+    private const API_PATH_VERSION = '/rest/api/2/version/';
+    private const API_PATH_PROJECT_CATEGORIES = '/rest/api/2/projectCategory';
+    private const API_PATH_ACCOUNT = '/rest/tempo-accounts/1/account/';
+    private const API_PATH_ACCOUNT_BY_KEY = '/rest/tempo-accounts/1/account/key/';
+    private const API_PATH_CUSTOMERS = '/rest/tempo-accounts/1/customer/';
+    private const API_PATH_PROJECT = '/rest/api/2/project';
+    private const API_PATH_PROJECT_BY_ID = '/rest/api/2/project/';
+    private const API_PATH_MY_PERMISSIONS = '/rest/api/2/mypermissions';
+    private const API_PATH_LINK_PROJECT_TO_ACCOUNT = '/rest/tempo-accounts/1/link/';
+    private const API_PATH_FILTER = '/rest/api/2/filter';
+    private const API_PATH_BOARD = '/rest/agile/1.0/board';
+    private const API_PATH_EPIC = '/rest/agile/1.0/epic';
+    private const API_PATH_RATE_TABLE = '/rest/tempo-accounts/1/ratetable';
+    private const API_PATH_ACCOUNT_IDS_BY_PROJECT = '/rest/tempo-accounts/1/link/project/';
 
     public function __construct(
         protected readonly HttpClientInterface $projectTrackerApi,
@@ -43,7 +58,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAllProjectCategories(): mixed
     {
-        return $this->get('/rest/api/2/projectCategory');
+        return $this->get(self::API_PATH_PROJECT_CATEGORIES);
     }
 
     /**
@@ -53,7 +68,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAllAccounts(): mixed
     {
-        return $this->get('/rest/tempo-accounts/1/account/');
+        return $this->get(self::API_PATH_ACCOUNT);
     }
 
     /**
@@ -63,7 +78,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAllCustomers(): mixed
     {
-        return $this->get('/rest/tempo-accounts/1/customer/');
+        return $this->get(self::API_PATH_CUSTOMERS);
     }
 
     /**
@@ -73,7 +88,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAllProjects(): mixed
     {
-        return $this->get('/rest/api/2/project');
+        return $this->get(self::API_PATH_PROJECT);
     }
 
     /**
@@ -86,7 +101,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getProject($key): mixed
     {
-        return $this->get('/rest/api/2/project/'.$key);
+        return $this->get(self::API_PATH_PROJECT_BY_ID.$key);
     }
 
     /**
@@ -96,7 +111,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getCurrentUserPermissions(): mixed
     {
-        return $this->get('/rest/api/2/mypermissions');
+        return $this->get(self::API_PATH_MY_PERMISSIONS);
     }
 
     /**
@@ -146,7 +161,7 @@ class JiraApiService implements ApiServiceInterface
             'categoryId' => $data['selectedTeamConfig']['project_category'],
         ];
 
-        $response = $this->post('/rest/api/2/project', $project);
+        $response = $this->post(self::API_PATH_PROJECT, $project);
 
         return $response->key == $projectKey ? $projectKey : null;
     }
@@ -158,7 +173,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function createTimeTrackerCustomer(string $name, string $key): mixed
     {
-        return $this->post('/rest/tempo-accounts/1/customer/',
+        return $this->post(self::API_PATH_CUSTOMERS,
             [
                 'isNew' => 1,
                 'name' => $name,
@@ -174,7 +189,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function createTimeTrackerAccount(string $name, string $key, string $customerKey, string $contactUsername): mixed
     {
-        return $this->post('/rest/tempo-accounts/1/account/',
+        return $this->post(self::API_PATH_ACCOUNT,
             [
                 'name' => $name,
                 'key' => $key,
@@ -202,7 +217,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getTimeTrackerAccount(string $key): mixed
     {
-        return $this->get('/rest/tempo-accounts/1/account/key/'.$key);
+        return $this->get(self::API_PATH_ACCOUNT_BY_KEY.$key);
     }
 
     /**
@@ -217,7 +232,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function addProjectToTimeTrackerAccount(mixed $project, mixed $account): void
     {
-        $this->post('/rest/tempo-accounts/1/link/', [
+        $this->post(self::API_PATH_LINK_PROJECT_TO_ACCOUNT, [
             'scopeType' => 'PROJECT',
             'defaultAccount' => 'true',
             'linkType' => 'MANUAL',
@@ -240,7 +255,7 @@ class JiraApiService implements ApiServiceInterface
         }
 
         // Create project filter.
-        $filterResponse = $this->post('/rest/api/2/filter', [
+        $filterResponse = $this->post(self::API_PATH_FILTER, [
             'name' => 'Filter for Project: '.$project->name,
             'description' => 'Project filter for '.$project->name,
             'jql' => 'project = '.$project->key.' ORDER BY Rank ASC',
@@ -249,7 +264,7 @@ class JiraApiService implements ApiServiceInterface
         ]);
 
         // Share project filter with project members.
-        $this->post('/rest/api/2/filter/'.$filterResponse->id.'/permission', [
+        $this->post(self::API_PATH_FILTER.'/'.$filterResponse->id.'/permission', [
             'type' => 'project',
             'projectId' => $project->id,
             'view' => true,
@@ -257,7 +272,7 @@ class JiraApiService implements ApiServiceInterface
         ]);
 
         // Create board with project filter.
-        $this->post('/rest/agile/1.0/board', [
+        $this->post(self::API_PATH_BOARD, [
             'name' => 'Project: '.$project->name,
             'type' => $type,
             'filterId' => $filterResponse->id,
@@ -271,7 +286,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAccount(int $accountId): mixed
     {
-        return $this->get('/rest/tempo-accounts/1/account/'.$accountId.'/');
+        return $this->get(self::API_PATH_ACCOUNT.$accountId.'/');
     }
 
     /**
@@ -279,7 +294,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getRateTableByAccount(int $accountId): mixed
     {
-        return $this->get('/rest/tempo-accounts/1/ratetable', [
+        return $this->get(self::API_PATH_RATE_TABLE, [
             'scopeId' => $accountId,
             'scopeType' => 'ACCOUNT',
         ]);
@@ -290,7 +305,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAccountIdsByProject(int $projectId): mixed
     {
-        $projectLinks = $this->get('/rest/tempo-accounts/1/link/project/'.$projectId);
+        $projectLinks = $this->get(self::API_PATH_ACCOUNT_IDS_BY_PROJECT.$projectId);
 
         return array_reduce($projectLinks, function ($carry, $item) {
             $carry[] = $item->accountId;
@@ -306,7 +321,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAllBoards(): mixed
     {
-        return $this->get('/rest/agile/1.0/board');
+        return $this->get(self::API_PATH_BOARD);
     }
 
     /**
@@ -323,7 +338,7 @@ class JiraApiService implements ApiServiceInterface
 
         $startAt = 0;
         while (true) {
-            $result = $this->get('/rest/agile/1.0/board/'.$boardId.'/sprint', [
+            $result = $this->get(self::API_PATH_BOARD.'/'.$boardId.'/sprint', [
                 'startAt' => $startAt,
                 'maxResults' => 50,
                 'state' => $state,
@@ -366,7 +381,7 @@ class JiraApiService implements ApiServiceInterface
 
         $startAt = 0;
         while (true) {
-            $result = $this->get('/rest/agile/1.0/board/'.$boardId.'/sprint/'.$sprintId.'/issue', [
+            $result = $this->get(self::API_PATH_BOARD.'/'.$boardId.'/sprint/'.$sprintId.'/issue', [
                 'startAt' => $startAt,
                 'fields' => $fields,
             ]);
@@ -603,7 +618,7 @@ class JiraApiService implements ApiServiceInterface
         // Get issues for the given project and version.
         while (true) {
             $results = $this->get(
-                '/rest/api/2/search',
+                self::API_PATH_SEARCH,
                 [
                     'jql' => 'fixVersion='.$versionId,
                     'project' => $projectId,
@@ -682,7 +697,7 @@ class JiraApiService implements ApiServiceInterface
         $epics->set('NoEpic', new SprintReportEpic('NoEpic', 'Uden Epic'));
 
         // Get version and project.
-        $version = $this->get('/rest/api/2/version/'.$versionId);
+        $version = $this->get(self::API_PATH_VERSION.$versionId);
         $project = $this->getProject($projectId);
 
         // Get customField for Jira.
@@ -700,7 +715,7 @@ class JiraApiService implements ApiServiceInterface
 
                 // Add to epics if not already added.
                 if (!$epics->containsKey($epicLinkId)) {
-                    $epicData = $this->get('rest/agile/1.0/epic/'.$epicLinkId);
+                    $epicData = $this->get(self::API_PATH_EPIC.'/'.$epicLinkId);
 
                     $epic = new SprintReportEpic($epicLinkId, $epicData->name);
                     $epics->set($epicLinkId, $epic);
