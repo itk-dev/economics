@@ -25,6 +25,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class JiraApiService implements ApiServiceInterface
 {
     private const CPB_ACCOUNT_MANAGER = 'anbjv';
+    private const NO_SPRINT = 'NoSprint';
 
     public function __construct(
         protected readonly HttpClientInterface $projectTrackerApi,
@@ -735,7 +736,7 @@ class JiraApiService implements ApiServiceInterface
                         ($sprintEntry->completedDateTimstamp ?? $sprintEntry->endDateTimestamp) > $workLogStarted;
                 });
 
-                $worklogSprintId = 'NoSprint';
+                $worklogSprintId = self::NO_SPRINT;
 
                 if (!empty($worklogSprints)) {
                     $worklogSprint = array_pop($worklogSprints);
