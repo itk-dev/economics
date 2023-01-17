@@ -7,8 +7,8 @@ use Doctrine\Common\Collections\Collection;
 
 class Project
 {
-    public string $key;
-    public string $displayName;
+    public readonly string $key;
+    public readonly string $displayName;
     public Collection $assignees;
     public Collection $sprintSums;
 

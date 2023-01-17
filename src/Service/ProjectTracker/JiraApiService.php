@@ -14,6 +14,7 @@ use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
+use App\Model\SprintReport\SprintStateEnum;
 use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
@@ -659,10 +660,21 @@ class JiraApiService implements ApiServiceInterface
                     continue;
                 }
 
+                $sprintState = SprintStateEnum::OTHER;
+
+                switch($sprint['state']) {
+                    case 'ACTIVE':
+                        $sprintState = SprintStateEnum::ACTIVE;
+                        break;
+                    case 'FUTURE':
+                        $sprintState = SprintStateEnum::FUTURE;
+                        break;
+                }
+
                 return new SprintReportSprint(
                     $sprint['id'],
                     $sprint['name'],
-                    $sprint['state'],
+                    $sprintState,
                     $sprint['startDate'] ? strtotime($sprint['startDate']) : null,
                     $sprint['endDate'] ? strtotime($sprint['endDate']) : null,
                     $sprint['completeDate'] ? strtotime($sprint['completeDate']) : null,
@@ -735,7 +747,7 @@ class JiraApiService implements ApiServiceInterface
                 }
 
                 // Set which sprint the issue is assigned to.
-                if ('ACTIVE' === $issueSprint->state || 'FUTURE' === $issueSprint->state) {
+                if ($issueSprint->state === SprintStateEnum::ACTIVE || $issueSprint->state === SprintStateEnum::FUTURE) {
                     $issue->assignedToSprint = $issueSprint;
                 }
             }
@@ -758,7 +770,8 @@ class JiraApiService implements ApiServiceInterface
                     $worklogSprintId = $worklogSprint->id;
                 }
 
-                $issue->epic->loggedWork->set($worklogSprintId, ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklogData->timeSpentSeconds);
+                $newLoggedWork = ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklogData->timeSpentSeconds;
+                $issue->epic->loggedWork->set($worklogSprintId, $newLoggedWork);
             }
 
             // Accumulate spentSum.
@@ -783,7 +796,7 @@ class JiraApiService implements ApiServiceInterface
             if (isset($issueEntry->fields->timeoriginalestimate)) {
                 $issue->epic->originalEstimateSum = $issue->epic->originalEstimateSum + $issueEntry->fields->timeoriginalestimate;
 
-                $sprintReportData->originaltEstimatSum += $issueEntry->fields->timeoriginalestimate;
+                $sprintReportData->originalEstimateSum += $issueEntry->fields->timeoriginalestimate;
             }
         }
 

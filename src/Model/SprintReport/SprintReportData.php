@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\Collection;
 
 class SprintReportData
 {
-    public array $data;
     public Collection $epics;
     public Collection $sprints;
     public Collection $issues;
@@ -17,7 +16,7 @@ class SprintReportData
     public float $projectHours;
     public string $projectName;
     public string $versionName;
-    public float $originaltEstimatSum = 0.0;
+    public float $originalEstimateSum = 0.0;
 
     public function __construct()
     {
