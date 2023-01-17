@@ -641,7 +641,10 @@ class JiraApiService implements ApiServiceInterface
         return $issues;
     }
 
-    private function getIssueSprint($issueEntry): ?SprintReportSprint
+    /**
+     * @throws ApiServiceException
+     */
+    private function getIssueSprint($issueEntry): SprintReportSprint
     {
         $customFieldSprintId = $this->getCustomFieldId('Sprint');
 
@@ -689,7 +692,7 @@ class JiraApiService implements ApiServiceInterface
             }
         }
 
-        return null;
+        throw new ApiServiceException("Sprint not found", 404);
     }
 
     /**
@@ -739,10 +742,9 @@ class JiraApiService implements ApiServiceInterface
             }
 
             // Get sprint for issue.
-            $issueSprint = $this->getIssueSprint($issueEntry);
+            try {
+                $issueSprint = $this->getIssueSprint($issueEntry);
 
-            // Add to sprints if not already added.
-            if (isset($issueSprint)) {
                 if (!$sprints->containsKey($issueSprint->id)) {
                     $sprints->set($issueSprint->id, $issueSprint);
                 }
@@ -751,6 +753,8 @@ class JiraApiService implements ApiServiceInterface
                 if ($issueSprint->state === SprintStateEnum::ACTIVE || $issueSprint->state === SprintStateEnum::FUTURE) {
                     $issue->assignedToSprint = $issueSprint;
                 }
+            } catch (ApiServiceException) {
+                // Ignore if sprint is not found.
             }
 
             foreach ($issueEntry->fields->worklog->worklogs as $worklogData) {
