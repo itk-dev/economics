@@ -8,7 +8,7 @@
  * This source file is subject to the MIT license.
  */
 
-namespace Billing\Exception;
+namespace App\Exception;
 
 use Exception;
 

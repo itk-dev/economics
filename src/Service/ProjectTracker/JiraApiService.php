@@ -3,6 +3,16 @@
 namespace App\Service\ProjectTracker;
 
 use App\Exception\ApiServiceException;
+use App\Model\Planning\Assignee;
+use App\Model\Planning\AssigneeProject;
+use App\Model\Planning\Issue;
+use App\Model\Planning\PlanningData;
+use App\Model\Planning\Project;
+use App\Model\Planning\Sprint;
+use App\Model\Planning\SprintSum;
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Exception;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -15,7 +25,11 @@ class JiraApiService implements ApiServiceInterface
 
     public function __construct(
         protected readonly HttpClientInterface $projectTrackerApi,
-        $customFieldMappings
+        $customFieldMappings,
+        protected readonly string $defaultBoard,
+        protected readonly string $jiraUrl,
+        protected readonly float $weekGoalLow,
+        protected readonly float $weekGoalHigh,
     ) {
     }
 
@@ -280,21 +294,275 @@ class JiraApiService implements ApiServiceInterface
         }, []);
     }
 
+    /**
+     * Get all boards.
+     *
+     * @return mixed
+     * @throws ApiServiceException
+     */
+    public function getAllBoards(): mixed {
+        return $this->get('/rest/agile/1.0/board');
+    }
 
+    /**
+     * Get all sprints for a given board.
+     *
+     * @param string $boardId board id.
+     * @param string $state sprint state. Defaults to future,active sprints.
+     * @return array
+     * @throws ApiServiceException
+     */
+    public function getAllSprints(string $boardId, string $state = 'future,active'): array
+    {
+        $sprints = [];
 
+        $startAt = 0;
+        while (true) {
+            $result = $this->get('/rest/agile/1.0/board/'.$boardId.'/sprint', [
+                'startAt' => $startAt,
+                'maxResults' => 50,
+                'state' => $state,
+            ]);
+            $sprints = array_merge($sprints, $result->values);
 
+            if ($result->isLast) {
+                break;
+            }
 
+            $startAt = $startAt + 50;
+        }
 
+        return $sprints;
+    }
 
+    /**
+     * Get all issues for given board and sprint.
+     *
+     * @param string $boardId id of the jira board to extract issues from.
+     * @param string $sprintId id of the sprint to extract issues for.
+     * @return array Array of issues.
+     * @throws ApiServiceException
+     */
+    public function getIssuesInSprint(string $boardId, string $sprintId): array
+    {
+        $issues = [];
+        $fields = implode(
+            ',',
+            [
+                'timetracking',
+                'summary',
+                'status',
+                'assignee',
+                'project',
+            ]
+        );
 
+        $startAt = 0;
+        while (true) {
+            $result = $this->get('/rest/agile/1.0/board/'.$boardId.'/sprint/'.$sprintId.'/issue', [
+                'startAt' => $startAt,
+                'fields' => $fields,
+            ]);
+            $issues = array_merge($issues, $result->issues);
 
+            $startAt = $startAt + 50;
 
+            if ($startAt > $result->total) {
+                break;
+            }
+        }
 
+        return $issues;
+    }
+
+    /**
+     * Create data for planning page.
+     *
+     * @throws ApiServiceException
+     * @throws Exception
+     */
+    public function getPlanningData(): PlanningData
+    {
+        $planning = new PlanningData();
+        $assignees = $planning->assignees;
+        $projects = $planning->projects;
+        $sprints = $planning->sprints;
+
+        $boardId = $this->defaultBoard;
+
+        $sprintIssues = [];
+
+        $allSprints = $this->getAllSprints($boardId);
+
+        foreach ($allSprints as $sprintData) {
+            // Expected sprint name examples:
+            //   DEV sprint uge 2-3-4.23
+            //   ServiceSupport uge 5.23
+            // From this we extract the number of weeks the sprint covers.
+            // This is used to calculate the sprint goals low and high points.
+
+            $pattern = "/(?<weeks>(?:-?\d+-?)*)\.(?<year>\d+)$/";
+
+            $matches = [];
+
+            preg_match_all($pattern, $sprintData->name, $matches);
+
+            if (!empty($matches['weeks'])) {
+                $weeks = count(explode('-', $matches['weeks'][0]));
+            } else {
+                $weeks = 1;
+            }
+
+            $sprint = new Sprint(
+                $sprintData->id,
+                $weeks,
+                $this->weekGoalLow * $weeks,
+                $this->weekGoalHigh * $weeks,
+                $sprintData->name,
+            );
+            $sprints->add($sprint);
+
+            $issues = $this->getIssuesInSprint($boardId, $sprintData->id);
+
+            $sprintIssues[$sprintData->id] = $issues;
+        }
+
+        foreach ($sprintIssues as $sprintId => $issues) {
+            foreach ($issues as $issueData) {
+                if ($issueData->fields->status->statusCategory->key !== 'done') {
+                    $project = $issueData->fields->project;
+                    $projectKey = $project->key;
+                    $projectDisplayName = $project->name;
+                    $remainingSeconds = $issueData->fields->timetracking->remainingEstimateSeconds ?? 0;
+
+                    if (empty($issueData->fields->assignee)) {
+                        $assigneeKey = 'unassigned';
+                        $assigneeDisplayName = 'Unassigned';
+                    }
+                    else {
+                        $assigneeKey = $issueData->fields->assignee->key;
+                        $assigneeDisplayName = $issueData->fields->assignee->displayName;
+                    }
+
+                    // Add assignee if not already added.
+                    if (!$assignees->containsKey($assigneeKey)) {
+                        $assignees->set($assigneeKey, new Assignee($assigneeKey, $assigneeDisplayName));
+                    }
+
+                    /** @var Assignee $assignee */
+                    $assignee = $assignees->get($assigneeKey);
+
+                    // Add sprint if not already added.
+                    if (!$assignee->sprintSums->containsKey($sprintId)) {
+                        $assignee->sprintSums->set($sprintId, new SprintSum($sprintId));
+                    }
+
+                    /** @var SprintSum $sprintSum */
+                    $sprintSum = $assignee->sprintSums->get($sprintId);
+                    $sprintSum->sumSeconds += $remainingSeconds;
+                    $sprintSum->sumHours = $sprintSum->sumSeconds / (60 * 60);
+
+                    // Add assignee project if not already added.
+                    if (!$assignee->projects->containsKey($projectKey)) {
+                        $assigneeProject = new AssigneeProject($projectKey, $projectDisplayName);
+                        $assignee->projects->set($projectKey, $assigneeProject);
+                    }
+
+                    /** @var AssigneeProject $assigneeProject */
+                    $assigneeProject = $assignee->projects->get($projectKey);
+
+                    // Add project sprint sum if not already added.
+                    if (!$assigneeProject->sprintSums->containsKey($sprintId)) {
+                        $assigneeProject->sprintSums->set($sprintId, new SprintSum($sprintId));
+                    }
+
+                    /** @var SprintSum $sprintSum */
+                    $projectSprintSum = $assigneeProject->sprintSums->get($sprintId);
+                    $projectSprintSum->sumSeconds += $remainingSeconds;
+                    $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
+
+                    $assigneeProject->issues->add(
+                        new Issue(
+                            $issueData->key,
+                            $issueData->fields->summary,
+                            isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
+                            $this->jiraUrl."/browse/".$issueData->key,
+                            $sprintId
+                        )
+                    );
+
+                    // Add project if not already added.
+                    if (!$projects->containsKey($projectKey)) {
+                        $projects->set($projectKey, new Project(
+                            $projectKey,
+                            $projectDisplayName,
+                        ));
+                    }
+
+                    /** @var Project $project */
+                    $project = $projects->get($projectKey);
+
+                    // Add sprint sum if not already added.
+                    if (!$project->sprintSums->containsKey($sprintId)) {
+                        $project->sprintSums->set($sprintId, new SprintSum($sprintId));
+                    }
+
+                    /** @var SprintSum $projectSprintSum */
+                    $projectSprintSum = $project->sprintSums->get($sprintId);
+                    $projectSprintSum->sumSeconds += $remainingSeconds;
+                    $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
+
+                    if (!$project->assignees->containsKey($assigneeKey)) {
+                        $project->assignees->set($assigneeKey, new AssigneeProject(
+                            $assigneeKey,
+                            $assigneeDisplayName,
+                        ));
+                    }
+
+                    /** @var AssigneeProject $projectAssignee */
+                    $projectAssignee = $project->assignees->get($assigneeKey);
+
+                    if (!$projectAssignee->sprintSums->containsKey($sprintId)) {
+                        $projectAssignee->sprintSums->set($sprintId, new SprintSum($sprintId));
+                    }
+
+                    /** @var SprintSum $projectAssigneeSprintSum */
+                    $projectAssigneeSprintSum = $projectAssignee->sprintSums->get($sprintId);
+                    $projectAssigneeSprintSum->sumSeconds += $remainingSeconds;
+                    $projectAssigneeSprintSum->sumHours = $projectAssigneeSprintSum->sumSeconds / (60 * 60);
+
+                    $projectAssignee->issues->add(new Issue(
+                        $issueData->key,
+                        $issueData->fields->summary,
+                        isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
+                        $this->jiraUrl."/browse/".$issueData->key,
+                        $sprintId
+                    ));
+                }
+            }
+        }
+
+        // Sort assignees by name.
+        $iterator = $assignees->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
+        });
+        $planning->assignees = new ArrayCollection(iterator_to_array($iterator));
+
+        // Sort projects by name.
+        $iterator = $projects->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
+        });
+        $planning->projects = new ArrayCollection(iterator_to_array($iterator));
+
+        return $planning;
+    }
 
     /**
      * Get from Jira.
      *
-     * @TODO: Wrap the call in request function, they er 99% the same code.
+     * @TODO: Wrap the call in request function, they are 99% the same code.
      *
      * @throws ApiServiceException
      */
@@ -329,7 +597,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -373,7 +641,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -417,7 +685,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -454,7 +722,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 

@@ -30,3 +30,7 @@ services:
     App\Service\ProjectTracker\JiraApiService:
         arguments:
             $customFieldMappings: '%custom_fields%'
+            $defaultBoard: '%env(JIRA_API_SERVICE_DEFAULT_BOARD)%'
+            $jiraUrl: '%env(PROJECT_TRACKER_URL)%'
+            $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
+            $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'

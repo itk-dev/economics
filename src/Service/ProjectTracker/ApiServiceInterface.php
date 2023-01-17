@@ -2,6 +2,8 @@
 
 namespace App\Service\ProjectTracker;
 
+use App\Model\Planning\PlanningData;
+
 interface ApiServiceInterface
 {
     public function getAllAccounts(): mixed;
@@ -35,4 +37,12 @@ interface ApiServiceInterface
     public function getRateTableByAccount(int $accountId): mixed;
 
     public function getAccountIdsByProject(int $projectId): mixed;
+
+    public function getAllBoards(): mixed;
+
+    public function getAllSprints(string $boardId): array;
+
+    public function getIssuesInSprint(string $boardId, string $sprintId): array;
+
+    public function getPlanningData(): PlanningData;
 }
