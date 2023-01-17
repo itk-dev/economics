@@ -4,11 +4,11 @@ namespace App\Model\Planning;
 
 class Issue
 {
-    public string $key;
-    public string $displayName;
-    public ?float $remainingHours;
-    public string $link;
-    public string $sprintId;
+    public readonly string $key;
+    public readonly string $displayName;
+    public readonly ?float $remainingHours;
+    public readonly string $link;
+    public readonly string $sprintId;
 
     public function __construct(string $key, string $displayName, ?float $remainingHours, string $link, string $stringId)
     {

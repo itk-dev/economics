@@ -7,8 +7,8 @@ use Doctrine\Common\Collections\Collection;
 
 class SprintReportEpic
 {
-    public string $id;
-    public string $name;
+    public readonly string $id;
+    public readonly string $name;
     public float $spentSum = 0;
     public float $remainingSum = 0;
     public float $originalEstimateSum = 0;

@@ -6,13 +6,12 @@ class SprintReportSprint
 {
     public string $id;
     public string $name;
-    // TODO: Replace with enum.
-    public string $state;
+    public SprintStateEnum $state;
     public ?int $startDateTimestamp;
     public ?int $endDateTimestamp;
     public ?int $completedDateTimestamp;
 
-    public function __construct(string $id, string $name, string $state, ?int $startDateTimestamp, ?int $endDateTimestamp, ?int $completedDateTimestamp)
+    public function __construct(string $id, string $name, SprintStateEnum $state, ?int $startDateTimestamp, ?int $endDateTimestamp, ?int $completedDateTimestamp)
     {
         $this->id = $id;
         $this->name = $name;
