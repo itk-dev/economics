@@ -636,7 +636,7 @@ class JiraApiService implements ApiServiceInterface
             $issues = array_merge($issues, $results->issues);
 
             $startAt = $startAt + 50;
-        } while ($results->total < $startAt);
+        } while (isset($results->total) && $results->total < $startAt);
 
         return $issues;
     }
