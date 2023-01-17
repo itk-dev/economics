@@ -6,9 +6,9 @@ class Issue
 {
     public readonly string $key;
     public readonly string $displayName;
+    public readonly ?float $remainingHours;
     public readonly string $link;
     public readonly string $sprintId;
-    public readonly ?float $remainingHours;
 
     public function __construct(string $key, string $displayName, ?float $remainingHours, string $link, string $stringId)
     {
