@@ -590,6 +590,9 @@ class JiraApiService implements ApiServiceInterface
         return isset($this->customFieldMappings[$fieldName]) ? 'customfield_'.$this->customFieldMappings[$fieldName] : false;
     }
 
+    /**
+     * @throws ApiServiceException
+     */
     private function getIssuesForProjectVersion($projectId, $versionId): array
     {
         $issues = [];
@@ -599,7 +602,6 @@ class JiraApiService implements ApiServiceInterface
         $customFieldSprintId = $this->getCustomFieldId('Sprint');
 
         // Get all issues for version.
-        $startAt = 0;
         $fields = implode(
             ',',
             [
@@ -616,8 +618,10 @@ class JiraApiService implements ApiServiceInterface
             ]
         );
 
+        $startAt = 0;
+
         // Get issues for the given project and version.
-        while (true) {
+        do {
             $results = $this->get(
                 self::API_PATH_SEARCH,
                 [
@@ -632,11 +636,7 @@ class JiraApiService implements ApiServiceInterface
             $issues = array_merge($issues, $results->issues);
 
             $startAt = $startAt + 50;
-
-            if ($results->total < $startAt) {
-                break;
-            }
-        }
+        } while ($results->total < $startAt);
 
         return $issues;
     }
