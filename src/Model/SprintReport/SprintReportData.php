@@ -3,13 +3,15 @@
 namespace App\Model\SprintReport;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 class SprintReportData
 {
-    public Collection $epics;
-    public Collection $sprints;
-    public Collection $issues;
+    /** @var ArrayCollection<string, SprintReportEpic> */
+    public ArrayCollection $epics;
+    /** @var ArrayCollection<string, SprintReportSprint> */
+    public ArrayCollection $sprints;
+    /** @var ArrayCollection<string, SprintReportIssue> */
+    public ArrayCollection $issues;
     public float $spentSum;
     public float $spentHours;
     public float $remainingHours;

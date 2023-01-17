@@ -776,7 +776,7 @@ class JiraApiService implements ApiServiceInterface
                     $worklogSprintId = $worklogSprint->id;
                 }
 
-                $newLoggedWork = ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklogData->timeSpentSeconds;
+                $newLoggedWork = (float) ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklogData->timeSpentSeconds;
                 $issue->epic->loggedWork->set($worklogSprintId, $newLoggedWork);
             }
 
@@ -793,7 +793,8 @@ class JiraApiService implements ApiServiceInterface
 
                 if (!empty($issue->assignedToSprint)) {
                     $assignedToSprint = $issue->assignedToSprint;
-                    $issue->epic->remainingWork->set($assignedToSprint->id, ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds);
+                    $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
+                    $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
                     $issue->epic->plannedWorkSum = $issue->epic->plannedWorkSum + $remainingEstimateSeconds;
                 }
             }
@@ -831,6 +832,7 @@ class JiraApiService implements ApiServiceInterface
         $sprintReportData->spentSum = $spentSum;
         $sprintReportData->projectHours = $spentHours + $remainingHours;
         $sprintReportData->epics = $epics;
+        $sprintReportData->sprints = $sprints;
 
         return $sprintReportData;
     }

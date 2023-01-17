@@ -3,7 +3,6 @@
 namespace App\Model\SprintReport;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 class SprintReportEpic
 {
@@ -13,9 +12,12 @@ class SprintReportEpic
     public float $remainingSum = 0;
     public float $originalEstimateSum = 0;
     public float $plannedWorkSum = 0;
-    public Collection $sprints;
-    public Collection $loggedWork;
-    public Collection $remainingWork;
+    /** @var ArrayCollection<string, SprintReportSprint> */
+    public ArrayCollection $sprints;
+    /** @var ArrayCollection<string, float> */
+    public ArrayCollection $loggedWork;
+    /** @var ArrayCollection<string, float> */
+    public ArrayCollection $remainingWork;
 
     public function __construct(string $id, string $name)
     {

@@ -3,14 +3,15 @@
 namespace App\Model\Planning;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 
 class Assignee
 {
     public readonly string $key;
     public readonly string $displayName;
-    public Collection $projects;
-    public Collection $sprintSums;
+    /** @var ArrayCollection<string, AssigneeProject> */
+    public ArrayCollection $projects;
+    /** @var ArrayCollection<string, SprintSum> */
+    public ArrayCollection $sprintSums;
 
     public function __construct(string $key, string $displayName)
     {
