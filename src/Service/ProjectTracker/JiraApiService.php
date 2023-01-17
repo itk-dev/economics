@@ -34,6 +34,7 @@ class JiraApiService implements ApiServiceInterface
         protected readonly string $jiraUrl,
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
+        protected readonly string $sprintNameRegex,
     ) {
     }
 
@@ -406,8 +407,7 @@ class JiraApiService implements ApiServiceInterface
             //   ServiceSupport uge 5.23
             // From this we extract the number of weeks the sprint covers.
             // This is used to calculate the sprint goals low and high points.
-
-            $pattern = "/(?<weeks>(?:-?\d+-?)*)\.(?<year>\d+)$/";
+            $pattern = !empty($this->sprintNameRegex) ? $this->sprintNameRegex : "/(?<weeks>(?:-?\d+-?)*)\.(?<year>\d+)$/";
 
             $matches = [];
 
