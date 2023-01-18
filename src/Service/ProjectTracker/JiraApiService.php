@@ -15,9 +15,7 @@ use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintStateEnum;
-use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
-use Exception;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -403,7 +401,7 @@ class JiraApiService implements ApiServiceInterface
      * Create data for planning page.
      *
      * @throws ApiServiceException
-     * @throws Exception
+     * @throws \Exception
      */
     public function getPlanningData(): PlanningData
     {
@@ -453,9 +451,9 @@ class JiraApiService implements ApiServiceInterface
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issueData) {
                 if ('done' !== $issueData->fields->status->statusCategory->key) {
-                    $project = $issueData->fields->project;
-                    $projectKey = $project->key;
-                    $projectDisplayName = $project->name;
+                    $projectData = $issueData->fields->project;
+                    $projectKey = $projectData->key;
+                    $projectDisplayName = $projectData->name;
                     $remainingSeconds = $issueData->fields->timetracking->remainingEstimateSeconds ?? 0;
 
                     if (empty($issueData->fields->assignee)) {
@@ -567,7 +565,7 @@ class JiraApiService implements ApiServiceInterface
         }
 
         // Sort assignees by name.
-        /** @var ArrayIterator $iterator */
+        /** @var \ArrayIterator $iterator */
         $iterator = $assignees->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
@@ -575,7 +573,7 @@ class JiraApiService implements ApiServiceInterface
         $planning->assignees = new ArrayCollection(iterator_to_array($iterator));
 
         // Sort projects by name.
-        /** @var ArrayIterator $iterator */
+        /** @var \ArrayIterator $iterator */
         $iterator = $projects->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
@@ -682,7 +680,7 @@ class JiraApiService implements ApiServiceInterface
 
                 $sprintState = SprintStateEnum::OTHER;
 
-                switch($sprint['state']) {
+                switch ($sprint['state']) {
                     case 'ACTIVE':
                         $sprintState = SprintStateEnum::ACTIVE;
                         break;
@@ -707,7 +705,7 @@ class JiraApiService implements ApiServiceInterface
 
     /**
      * @throws ApiServiceException
-     * @throws Exception
+     * @throws \Exception
      */
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData
     {
@@ -823,7 +821,7 @@ class JiraApiService implements ApiServiceInterface
         }
 
         // Sort sprints by key.
-        /** @var ArrayIterator $iterator */
+        /** @var \ArrayIterator $iterator */
         $iterator = $sprints->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->id) <=> mb_strtolower($b->id);
@@ -831,7 +829,7 @@ class JiraApiService implements ApiServiceInterface
         $sprints = new ArrayCollection(iterator_to_array($iterator));
 
         // Sort epics by name.
-        /** @var ArrayIterator $iterator */
+        /** @var \ArrayIterator $iterator */
         $iterator = $epics->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->name) <=> mb_strtolower($b->name);
@@ -892,7 +890,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -936,7 +934,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -980,7 +978,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -1017,7 +1015,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
