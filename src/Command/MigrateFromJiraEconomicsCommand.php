@@ -32,16 +32,17 @@ class MigrateFromJiraEconomicsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->info("This command will add the doctrine migration versions table and add the first migration to it to avoid executing this migration.");
+        $io->info('This command will add the doctrine migration versions table and add the first migration to it to avoid executing this migration.');
 
-        if (!$io->confirm("Are you sure?", false)) {
+        if (!$io->confirm('Are you sure?', false)) {
             $io->writeln('Aborted...');
+
             return Command::SUCCESS;
         }
 
         $connection = $this->entityManager->getConnection();
 
-        $sql = "CREATE TABLE `doctrine_migration_versions` (`version` varchar(191) COLLATE utf8mb3_unicode_ci NOT NULL, `executed_at` datetime DEFAULT NULL, `execution_time` int(11) DEFAULT NULL, PRIMARY KEY (`version`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;";
+        $sql = 'CREATE TABLE `doctrine_migration_versions` (`version` varchar(191) COLLATE utf8mb3_unicode_ci NOT NULL, `executed_at` datetime DEFAULT NULL, `execution_time` int(11) DEFAULT NULL, PRIMARY KEY (`version`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;';
 
         $prepared = $connection->prepare($sql);
         $prepared->executeQuery();

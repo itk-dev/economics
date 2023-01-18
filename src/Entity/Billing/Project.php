@@ -119,6 +119,6 @@ class Project
 
     public function __toString(): string
     {
-        return $this->name ?? $this->id;
+        return (string) ($this->name ?? $this->id);
     }
 }
