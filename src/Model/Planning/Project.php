@@ -8,7 +8,7 @@ class Project
 {
     public readonly string $key;
     public readonly string $displayName;
-    /** @var ArrayCollection<string, Assignee> */
+    /** @var ArrayCollection<string, AssigneeProject> */
     public ArrayCollection $assignees;
     /** @var ArrayCollection<string, SprintSum> */
     public ArrayCollection $sprintSums;
