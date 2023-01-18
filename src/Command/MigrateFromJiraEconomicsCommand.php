@@ -52,6 +52,11 @@ class MigrateFromJiraEconomicsCommand extends Command
         $prepared = $connection->prepare($createInitialRow);
         $prepared->executeQuery();
 
+        $deleteTables = 'DROP TABLE messenger_messages; DROP TABLE migration_versions;';
+
+        $prepared = $connection->prepare($deleteTables);
+        $prepared->executeQuery();
+
         return Command::SUCCESS;
     }
 }
