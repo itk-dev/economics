@@ -28,9 +28,6 @@ class Invoice
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?int $projectId = null;
-
-    #[ORM\Column]
     private ?bool $recorded = null;
 
     #[ORM\Column(nullable: true)]
@@ -108,18 +105,6 @@ class Invoice
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getProjectId(): ?int
-    {
-        return $this->projectId;
-    }
-
-    public function setProjectId(int $projectId): self
-    {
-        $this->projectId = $projectId;
 
         return $this;
     }

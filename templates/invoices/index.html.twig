@@ -22,7 +22,7 @@
             <tr>
                 <td>{{ invoice.id }}</td>
                 <td>{{ invoice.name }}</td>
-                <td>{{ invoice.projectId }} {# TODO: Get project name #}</td>
+                <td>{{ invoice.project }} {# TODO: Get project name #}</td>
                 <td>{{ invoice.createdBy }}</td>
                 <td>{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ 'TODO: Amount' }}</td>

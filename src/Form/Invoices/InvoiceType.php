@@ -14,7 +14,6 @@ class InvoiceType extends AbstractType
         $builder
             ->add('name')
             ->add('description')
-            ->add('projectId')
             ->add('recorded')
             ->add('customerAccountId')
             ->add('recordedDate')

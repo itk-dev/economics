@@ -116,4 +116,9 @@ class Project
     {
         $this->projectTrackerId = $projectTrackerId;
     }
+
+    public function __toString(): string
+    {
+        return $this->name ?? $this->id;
+    }
 }
