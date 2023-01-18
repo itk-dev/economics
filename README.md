@@ -2,14 +2,15 @@
 
 Integration with project/issue tracker to ease management.
 
-## Migration from previous
+## Migration path from JiraEconomics
 
-1. Copy database
-2. Add `doctrine_migration_versions` with the first migration set as already executed.
-   Can be done with the following command:
+1. Copy database from JiraEconomics.
+2. Run:
    ```
    bin/console app:migrate-from-jira-economics
    ```
+   to prepare the database. This will remove a couple of tables and add the doctrine_migration_versions table
+   with the Version20230101000000 migration marked as already run.
 3. Execute the remaining migrations:
    ```
    bin/console doctrine:migrations:migrate
