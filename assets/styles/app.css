@@ -3,6 +3,32 @@
 @tailwind utilities;
 
 @layer components {
+    .body {
+        @apply bg-white text-black dark:bg-slate-800 dark:text-white;
+    }
+
+    .navigation-item {
+        @apply flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 hover:dark:bg-slate-900;
+    }
+
+    .navigation-title {
+        @apply self-center text-xl font-semibold whitespace-nowrap dark:text-white;
+    }
+
+    .label {
+        @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white;
+    }
+
+    .link {
+        @apply font-medium text-blue-600 dark:text-blue-500 hover:underline;
+    }
+
+    .button {
+        @apply text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800;
+    }
+
+    /* ----- */
+
     .btn-primary {
         @apply py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75;
     }
@@ -44,11 +70,15 @@
     }
 
     .sprint-report-form {
-        @apply grid gap-6 mb-6 md:grid-cols-2;
+        @apply grid gap-3 mb-6 md:grid-cols-2;
+    }
+
+    .choices__list--dropdown .choices__item--selectable {
+        padding: 1em !important;
     }
 
     .subheading {
-        @apply font-medium leading-tight text-2xl mt-5 mb-5 text-gray-800;
+        @apply font-medium leading-tight text-2xl mt-5 mb-5;
     }
 
     .table-row {
@@ -61,9 +91,5 @@
 
     .table-cell-heading {
         @apply border-2 p-2 font-bold;
-    }
-
-    .link {
-        @apply underline text-blue-600 hover:text-blue-800 visited:text-purple-600;
     }
 }

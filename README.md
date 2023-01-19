@@ -2,6 +2,16 @@
 
 Integration with project/issue tracker to ease management.
 
+## Development
+
+Getting started:
+```bash
+docker compose run node npm install
+docker compose up -d
+```
+
+The node container will watch for code changes in assets folder and recompile.
+
 ## Migration path from JiraEconomics
 
 1. Copy database from JiraEconomics.

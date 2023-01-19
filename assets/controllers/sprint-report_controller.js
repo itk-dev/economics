@@ -14,8 +14,8 @@ export default class extends Controller {
         this.calculateForecasts = this.calculateForecasts.bind(this);
 
         // Initialize choices.js
-        new Choices(this.projectTarget, {allowHTML: true});
-        new Choices(this.versionTarget, {allowHTML: true});
+        new Choices(this.projectTarget, {allowHTML: true, itemSelectText: ''});
+        new Choices(this.versionTarget, {allowHTML: true, itemSelectText: ''});
 
         this.loadingTarget.classList.add('hidden');
         this.contentTarget.classList.remove('hidden');
