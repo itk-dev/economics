@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Billing;
+namespace App\Entity;
 
 use App\Repository\InvoiceEntryRepository;
 use Doctrine\Common\Collections\ArrayCollection;

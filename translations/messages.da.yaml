@@ -112,3 +112,23 @@ invoices:
   list_actions: ''
   list_no_records_found: Ingen fundet
   action_create_new: Ny faktura
+  id: Faktura ID
+  status: Status
+  status_posted: Bogført
+  status_not_posted: Ikke bogført
+  action_update: Opdater
+  edit: Rediger faktura
+  client_information: Klientinformationer
+  invoice_for: Faktura for [%project%] (%projectTrackerId%)
+  no_client: Ingen klient valgt
+  client_psp: PSP
+  client_account: Konto
+  client_type: Type
+  client_standard_price: Standardpris
+  client_contact: Kontakt
+  client_name: Klient
+
+material_number_enum:
+  internal: "Interne: 103361"
+  external_with_moms: "Eksterne m/moms: 100006"
+  external_without_moms: "Eksterne u/moms: 100008"

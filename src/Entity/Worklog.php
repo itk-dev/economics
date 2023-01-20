@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Billing;
+namespace App\Entity;
 
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\Mapping as ORM;

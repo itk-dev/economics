@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Billing;
+namespace App\Entity;
 
 use App\Repository\InvoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -61,7 +61,7 @@ class Invoice
     private ?string $defaultPayToAccount = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $defaultMaterialNumber = null;
+    private ?MaterialNumberEnum $defaultMaterialNumber = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $periodFrom = null;
@@ -74,6 +74,9 @@ class Invoice
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     private ?Project $project = null;
+
+    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    private ?Client $client = null;
 
     public function __construct()
     {
@@ -303,6 +306,18 @@ class Invoice
     public function setProject(?Project $project): self
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(?Client $client): self
+    {
+        $this->client = $client;
 
         return $this;
     }

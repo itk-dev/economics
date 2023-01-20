@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Billing;
+namespace App\Entity;
 
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -35,9 +35,13 @@ class Project
     #[ORM\Column]
     private ?int $projectTrackerId;
 
+    #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'projects')]
+    private Collection $clients;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
+        $this->clients = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -120,5 +124,29 @@ class Project
     public function __toString(): string
     {
         return (string) ($this->name ?? $this->id);
+    }
+
+    /**
+     * @return Collection<int, Client>
+     */
+    public function getClients(): Collection
+    {
+        return $this->clients;
+    }
+
+    public function addClient(Client $client): self
+    {
+        if (!$this->clients->contains($client)) {
+            $this->clients->add($client);
+        }
+
+        return $this;
+    }
+
+    public function removeClient(Client $client): self
+    {
+        $this->clients->removeElement($client);
+
+        return $this;
     }
 }

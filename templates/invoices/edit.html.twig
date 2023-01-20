@@ -1,13 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Invoice{% endblock %}
+{% block title %}{{ 'invoices.edit'|trans }}{% endblock %}
 
 {% block content %}
-    <h1>Edit Invoice</h1>
+    <div class="text-faded">{{ 'invoices.invoice_for'|trans({'%project%': invoice.project.name, '%projectTrackerId%': invoice.project.projectTrackerId}) }}</div>
 
-    {{ include('invoices/_form.html.twig', {'button_label': 'Update'}) }}
+    <h1 class="page-title">{{ invoice.name }}</h1>
 
-    <a href="{{ path('app_invoices_index') }}">back to list</a>
+    <div class="grid-split">
+        <div>
+            <div class="info-block">
+                <span class="info-block">{{ 'invoices.id'|trans }}: <span class="text-bold">{{ invoice.id }}</span></span>
+                <span class="info-block">{{ 'invoices.status'|trans }}: <span class="text-bold">{{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</span></span>
+            </div>
+            {{ include('invoices/_form.html.twig', {'button_label': 'invoices.action_update'|trans}) }}
+        </div>
+        <div class="client-information-block">
+            <ul class="list-group">
+                <li class="list-group-item border-bottom text-bold">{{ 'invoices.client_information'|trans }}</li>
+                {% if invoice.client != null %}
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_type'|trans }}: {{ invoice.client.type }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_account'|trans }}: {{ invoice.client.account }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
+                {% else %}
+                    <li class="list-group-item">{{ 'invoices.no_client'|trans }}</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
 
     {{ include('invoices/_delete_form.html.twig') }}
 {% endblock %}

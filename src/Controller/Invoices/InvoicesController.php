@@ -2,7 +2,7 @@
 
 namespace App\Controller\Invoices;
 
-use App\Entity\Billing\Invoice;
+use App\Entity\Invoice;
 use App\Form\Invoices\InvoiceType;
 use App\Repository\InvoiceRepository;
 use Knp\Component\Pager\PaginatorInterface;

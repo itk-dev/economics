@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Billing\Worklog;
+use App\Entity\Worklog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
