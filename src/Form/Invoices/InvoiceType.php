@@ -17,12 +17,15 @@ class InvoiceType extends AbstractType
     {
         $builder
             ->add('name',  null, [
+                'required' => true,
                 'attr' => ['class' => 'form-element']
             ])
             ->add('description', TextareaType::class, [
+                'required' => true,
                 'attr' => ['class' => 'form-element', 'rows' => 4]
             ])
             ->add('project',  null, [
+                'required' => true,
                 'attr' => ['class' => 'form-element']
             ])
             ->add('client',  null, [

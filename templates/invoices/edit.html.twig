@@ -5,9 +5,18 @@
 {% block content %}
     <h1 class="page-title">{{ invoice.name }}</h1>
 
+    {{ form_start(form) }}
     <div class="grid-split">
         <div>
-            {{ include('invoices/_form.html.twig', {'button_label': 'invoices.action_update'|trans}) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.description) }}
+            {{ form_row(form.project) }}
+            {{ form_row(form.client) }}
+            {{ form_row(form.defaultMaterialNumber) }}
+            {{ form_row(form.periodFrom) }}
+            {{ form_row(form.periodTo) }}
+            {{ form_row(form.payerAccount) }}
+            {{ form_row(form.defaultReceiverAccount) }}
         </div>
         <div>
             <ul class="list-group margin-bottom">
@@ -28,8 +37,14 @@
                     <li class="list-group-item">{{ 'invoices.no_client'|trans }}</li>
                 {% endif %}
             </ul>
+
+            <button class="button">{{ 'invoices.action_save'|trans }}</button>
         </div>
     </div>
+    {{ form_end(form) }}
 
-    {{ include('invoices/_delete_form.html.twig') }}
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
+        {{ include('invoices/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

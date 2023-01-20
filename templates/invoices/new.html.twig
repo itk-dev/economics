@@ -3,9 +3,19 @@
 {% block title %}New Invoice{% endblock %}
 
 {% block content %}
-    <h1>Create new Invoice</h1>
+    <h1 class="page-title">{{ 'invoices.create_new'|trans }}</h1>
 
-    {{ include('invoices/_form.html.twig') }}
+    {{ form_start(form) }}
+    <div>
+        {{ form_row(form.name) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.project) }}
 
-    <a href="{{ path('app_invoices_index') }}">back to list</a>
+        <button class="button">{{ 'invoices.action_create'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
+    </div>
 {% endblock %}

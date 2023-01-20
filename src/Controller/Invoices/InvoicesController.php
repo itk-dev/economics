@@ -3,6 +3,7 @@
 namespace App\Controller\Invoices;
 
 use App\Entity\Invoice;
+use App\Form\Invoices\InvoiceNewType;
 use App\Form\Invoices\InvoiceType;
 use App\Repository\InvoiceRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -34,7 +35,7 @@ class InvoicesController extends AbstractController
     public function new(Request $request, InvoiceRepository $invoiceRepository): Response
     {
         $invoice = new Invoice();
-        $form = $this->createForm(InvoiceType::class, $invoice);
+        $form = $this->createForm(InvoiceNewType::class, $invoice);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -43,20 +44,14 @@ class InvoicesController extends AbstractController
             $invoice->setUpdatedAt(new \DateTime());
             $invoiceRepository->save($invoice, true);
 
-            return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_invoices_edit', [
+                'id' => $invoice->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('invoices/new.html.twig', [
+        return $this->render('invoices/new.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_invoices_show', methods: ['GET'])]
-    public function show(Invoice $invoice): Response
-    {
-        return $this->render('invoices/show.html.twig', [
-            'invoice' => $invoice,
         ]);
     }
 
@@ -72,7 +67,7 @@ class InvoicesController extends AbstractController
             return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('invoices/edit.html.twig', [
+        return $this->render('invoices/edit.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
         ]);

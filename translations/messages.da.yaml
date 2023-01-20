@@ -129,7 +129,12 @@ invoices:
   client_contact: Kontakt
   client_name: Klient
   info: Faktura
+  create_new: 'Opret faktura'
   action_edit: 'Redigér'
+  action_save: 'Gem faktura'
+  action_delete: 'Slet faktura'
+  action_create: 'Opret faktura'
+  back_to_list: 'Tilbage til listen'
 
 material_number_enum:
   internal: "Interne: 103361"
