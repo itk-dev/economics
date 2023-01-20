@@ -55,10 +55,10 @@ class Invoice
     private ?string $lockedSalesChannel = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $paidByAccount = null;
+    private ?string $legacyPaidByAccount = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $defaultPayToAccount = null;
+    private ?string $legacyDefaultPayToAccount = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?MaterialNumberEnum $defaultMaterialNumber = null;
@@ -77,6 +77,12 @@ class Invoice
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     private ?Client $client = null;
+
+    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    private ?Account $defaultReceiverAccount = null;
+
+    #[ORM\ManyToOne]
+    private ?Account $payerAccount = null;
 
     public function __construct()
     {
@@ -208,42 +214,6 @@ class Invoice
         return $this;
     }
 
-    public function getPaidByAccount(): ?string
-    {
-        return $this->paidByAccount;
-    }
-
-    public function setPaidByAccount(?string $paidByAccount): self
-    {
-        $this->paidByAccount = $paidByAccount;
-
-        return $this;
-    }
-
-    public function getDefaultPayToAccount(): ?string
-    {
-        return $this->defaultPayToAccount;
-    }
-
-    public function setDefaultPayToAccount(?string $defaultPayToAccount): self
-    {
-        $this->defaultPayToAccount = $defaultPayToAccount;
-
-        return $this;
-    }
-
-    public function getDefaultMaterialNumber(): ?string
-    {
-        return $this->defaultMaterialNumber;
-    }
-
-    public function setDefaultMaterialNumber(?string $defaultMaterialNumber): self
-    {
-        $this->defaultMaterialNumber = $defaultMaterialNumber;
-
-        return $this;
-    }
-
     public function getPeriodFrom(): ?\DateTimeInterface
     {
         return $this->periodFrom;
@@ -320,5 +290,49 @@ class Invoice
         $this->client = $client;
 
         return $this;
+    }
+
+    public function getDefaultReceiverAccount(): ?Account
+    {
+        return $this->defaultReceiverAccount;
+    }
+
+    public function setDefaultReceiverAccount(?Account $defaultReceiverAccount): self
+    {
+        $this->defaultReceiverAccount = $defaultReceiverAccount;
+
+        return $this;
+    }
+
+    public function getPayerAccount(): ?Account
+    {
+        return $this->payerAccount;
+    }
+
+    public function setPayerAccount(?Account $payerAccount): self
+    {
+        $this->payerAccount = $payerAccount;
+
+        return $this;
+    }
+
+    public function getLockedCustomerKey(): ?string
+    {
+        return $this->lockedCustomerKey;
+    }
+
+    public function setLockedCustomerKey(?string $lockedCustomerKey): void
+    {
+        $this->lockedCustomerKey = $lockedCustomerKey;
+    }
+
+    public function getDefaultMaterialNumber(): ?MaterialNumberEnum
+    {
+        return $this->defaultMaterialNumber;
+    }
+
+    public function setDefaultMaterialNumber(?MaterialNumberEnum $defaultMaterialNumber): void
+    {
+        $this->defaultMaterialNumber = $defaultMaterialNumber;
     }
 }

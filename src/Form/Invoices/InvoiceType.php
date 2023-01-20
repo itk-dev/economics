@@ -28,15 +28,16 @@ class InvoiceType extends AbstractType
             ->add('client',  null, [
                 'attr' => ['class' => 'form-element']
             ])
-            ->add('paidByAccount',  null, [
+            ->add('payerAccount',  null, [
                 'attr' => ['class' => 'form-element']
             ])
-            ->add('defaultPayToAccount',  null, [
+            ->add('defaultReceiverAccount',  null, [
                 'attr' => ['class' => 'form-element']
             ])
             ->add('defaultMaterialNumber',  EnumType::class, [
                 'class' => MaterialNumberEnum::class,
                 'choice_label' => fn ($choice) => match ($choice) {
+                    MaterialNumberEnum::NONE => '',
                     MaterialNumberEnum::INTERNAL => 'material_number_enum.internal',
                     MaterialNumberEnum::EXTERNAL_WITH_MOMS => 'material_number_enum.external_with_moms',
                     MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS => 'material_number_enum.external_without_moms',
