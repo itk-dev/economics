@@ -32,7 +32,7 @@
     }
 
     .bottom-actions {
-        @apply border-t border-gray-500 p-5 m-5 text-right flex items-center space-x-5 justify-end;
+        @apply p-5 m-5 text-right flex items-center space-x-5 justify-end;
     }
 
     .info-block {

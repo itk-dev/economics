@@ -37,7 +37,8 @@ class InvoicesController extends AbstractController
         $pagination = $paginator->paginate(
             $qb,
             $request->query->getInt('page', 1),
-            3
+            3,
+            ['defaultSortFieldName' => 'invoice.createdAt', 'defaultSortDirection' => 'desc']
         );
 
         return $this->render('invoices/index.html.twig', [
@@ -57,6 +58,7 @@ class InvoicesController extends AbstractController
             $invoice->setRecorded(false);
             $invoice->setCreatedAt(new \DateTime());
             $invoice->setUpdatedAt(new \DateTime());
+            $invoice->setTotalPrice(0);
             $invoiceRepository->save($invoice, true);
 
             return $this->redirectToRoute('app_invoices_edit', [
@@ -77,6 +79,7 @@ class InvoicesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $invoice->setUpdatedAt(new \DateTime());
             $invoiceRepository->save($invoice, true);
 
             return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);

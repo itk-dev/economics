@@ -41,6 +41,45 @@
             <button class="button">{{ 'invoices.action_save'|trans }}</button>
         </div>
     </div>
+    <div>
+        <h3 class="subheading">{{ 'invoices.invoice_entries'|trans }}</h3>
+
+        <table class="table margin-bottom">
+            <thead class="table-thead">
+            <tr>
+                <th class="table-th">{{ 'invoices.invoice_entry_receiver_acccount'|trans }}</th>
+                <th class="table-th">{{ 'invoices.invoice_entry_material_number'|trans }}</th>
+                <th class="table-th">{{ 'invoices.invoice_entry_product'|trans }}</th>
+                <th class="table-th">{{ 'invoices.invoice_entry_amount'|trans }}</th>
+                <th class="table-th">{{ 'invoices.invoice_entry_price'|trans }}</th>
+                <th class="table-th">{{ 'invoices.invoice_entry_total_price'|trans }}</th>
+                <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for index, invoiceEntry in invoice.invoiceEntries %}
+                <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                    <td class="table-td">{{ invoiceEntry.account }}</td>
+                    <td class="table-td">{{ invoiceEntry.materialNumber }}</td>
+                    <td class="table-td">{{ invoiceEntry.product }}</td>
+                    <td class="table-td">{{ invoiceEntry.amount }}</td>
+                    <td class="table-td">{{ invoiceEntry.price }}</td>
+                    <td class="table-td">{{ invoiceEntry.price * invoiceEntry.amount }}</td>
+                    <td class="table-td">
+                        <a class="link" href="{{ path('app_invoices_edit', {'id': invoiceEntry.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr class="table-tr">
+                    <td colspan="7" class="table-td">{{ 'invoices.list_no_records_found'|trans }}</td>
+                </tr>
+            {% endfor %}
+            <tr class="table-tr">
+                <td colspan="7" class="table-td"><a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new_invoice_entry'|trans }}</a>
+            </tr>
+            </tbody>
+        </table>
+    </div>
     {{ form_end(form) }}
 
     <div class="bottom-actions">

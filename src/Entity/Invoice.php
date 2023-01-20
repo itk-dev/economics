@@ -84,6 +84,9 @@ class Invoice
     #[ORM\ManyToOne]
     private ?Account $payerAccount = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $totalPrice = null;
+
     public function __construct()
     {
         $this->invoiceEntries = new ArrayCollection();
@@ -334,5 +337,17 @@ class Invoice
     public function setDefaultMaterialNumber(?MaterialNumberEnum $defaultMaterialNumber): void
     {
         $this->defaultMaterialNumber = $defaultMaterialNumber;
+    }
+
+    public function getTotalPrice(): ?float
+    {
+        return $this->totalPrice;
+    }
+
+    public function setTotalPrice(?float $totalPrice): self
+    {
+        $this->totalPrice = $totalPrice;
+
+        return $this;
     }
 }

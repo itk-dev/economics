@@ -21,7 +21,7 @@
                 <th class="table-th">{{ 'invoices.list_project'|trans }}</th>
                 <th class="table-th">{{ knp_pagination_sortable(invoices, 'invoices.list_created_by'|trans, 'invoice.createdBy') }}</th>
                 <th class="table-th">{{ knp_pagination_sortable(invoices, 'invoices.list_updated_at'|trans, 'invoice.updatedAt') }}</th>
-                <th class="table-th">{{ 'invoices.list_amount'|trans }}</th>
+                <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
                 <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
             </tr>
         </thead>
@@ -33,7 +33,7 @@
                 <td class="table-td">{{ invoice.project }}</td>
                 <td class="table-td">{{ invoice.createdBy }}</td>
                 <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d') : '' }}</td>
-                <td class="table-td">{{ 'TODO: Amount' }}</td>
+                <td class="table-td">{{ invoice.totalPrice }}</td>
                 <td class="table-td">
                     <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
                 </td>
