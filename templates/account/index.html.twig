@@ -1,37 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Account index{% endblock %}
+{% block title %}{{ 'accounts.title'|trans }}{% endblock %}
 
 {% block content %}
-    <h1>Account index</h1>
+    <h1 class="page-title">{{ 'accounts.title'|trans }}</h1>
 
-    <table class="table">
-        <thead>
+    <table class="table margin-bottom">
+        <thead class="table-thead">
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Value</th>
-                <th>actions</th>
+                <th class="table-th">{{ 'accounts.id'|trans }}</th>
+                <th class="table-th">{{ 'accounts.name'|trans }}</th>
+                <th class="table-th">{{ 'accounts.value'|trans }}</th>
+                <th class="table-th">{{ 'accounts.actions'|trans }}</th>
             </tr>
         </thead>
         <tbody>
-        {% for account in accounts %}
-            <tr>
-                <td>{{ account.id }}</td>
-                <td>{{ account.name }}</td>
-                <td>{{ account.value }}</td>
-                <td>
-                    <a href="{{ path('app_account_show', {'id': account.id}) }}">show</a>
-                    <a href="{{ path('app_account_edit', {'id': account.id}) }}">edit</a>
+        {% for index, account in accounts %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ account.id }}</td>
+                <td class="table-td">{{ account.name }}</td>
+                <td class="table-td">{{ account.value }}</td>
+                <td class="table-td">
+                    <a class="link" href="{{ path('app_account_edit', {'id': account.id}) }}">{{ 'accounts.edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
+            <tr class="table-tr">
+                <td colspan="4">{{ 'accounts.no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_account_new') }}">Create new</a>
+    <a class="link" href="{{ path('app_account_new') }}">{{ 'accounts.create_new'|trans }}</a>
 {% endblock %}

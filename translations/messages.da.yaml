@@ -95,7 +95,7 @@ navigation:
   planning: Planlægning
   sprint_report: Sprintrapport
   title: Economics
-  accounts: Kontoer
+  accounts: Konto
 
 planning:
   title: Planlægning
@@ -103,7 +103,7 @@ planning:
   projects: Projekter
 
 invoices:
-  title: Fakturaer
+  title: Faktura
   list_id: '#'
   list_name: Faktura
   list_project: Projekt
@@ -120,7 +120,7 @@ invoices:
   action_update: Opdater
   edit: Rediger faktura
   client_information: Klientinformationer
-  invoice_for: Faktura for [%project%] (%projectTrackerId%)
+  invoice_for: "Faktura for [%project%] (eksternt id: %projectTrackerId%)"
   no_client: Ingen klient valgt
   client_psp: PSP
   client_account: Konto
@@ -128,8 +128,19 @@ invoices:
   client_standard_price: Standardpris
   client_contact: Kontakt
   client_name: Klient
+  info: Information
 
 material_number_enum:
   internal: "Interne: 103361"
   external_with_moms: "Eksterne m/moms: 100006"
   external_without_moms: "Eksterne u/moms: 100008"
+
+accounts:
+  id: '#'
+  create_new: 'Ny konto'
+  no_records_found: 'Ingen fundet'
+  edit: 'Redigér'
+  value: 'Værdi'
+  actions: 'Handlinger'
+  name: 'Navn'
+  title: 'Konto'

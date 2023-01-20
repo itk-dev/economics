@@ -5,34 +5,34 @@
 {% block content %}
     <h1 class="page-title">{{ 'invoices.title'|trans }}</h1>
 
-    <table class="table-auto">
-        <thead>
+    <table class="table margin-bottom">
+        <thead class="table-thead">
             <tr>
-                <th>{{ 'invoices.list_id'|trans }}</th>
-                <th>{{ 'invoices.list_name'|trans }}</th>
-                <th>{{ 'invoices.list_project'|trans }}</th>
-                <th>{{ 'invoices.list_created_by'|trans }}</th>
-                <th>{{ 'invoices.list_updated_at'|trans }}</th>
-                <th>{{ 'invoices.list_amount'|trans }}</th>
-                <th>{{ 'invoices.list_actions'|trans }}</th>
+                <th class="table-th">{{ 'invoices.list_id'|trans }}</th>
+                <th class="table-th">{{ 'invoices.list_name'|trans }}</th>
+                <th class="table-th">{{ 'invoices.list_project'|trans }}</th>
+                <th class="table-th">{{ 'invoices.list_created_by'|trans }}</th>
+                <th class="table-th">{{ 'invoices.list_updated_at'|trans }}</th>
+                <th class="table-th">{{ 'invoices.list_amount'|trans }}</th>
+                <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
             </tr>
         </thead>
         <tbody>
-        {% for invoice in invoices %}
-            <tr>
-                <td>{{ invoice.id }}</td>
-                <td>{{ invoice.name }}</td>
-                <td>{{ invoice.project }} {# TODO: Get project name #}</td>
-                <td>{{ invoice.createdBy }}</td>
-                <td>{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ 'TODO: Amount' }}</td>
-                <td>
+        {% for index, invoice in invoices %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ invoice.id }}</td>
+                <td class="table-td">{{ invoice.name }}</td>
+                <td class="table-td">{{ invoice.project }} {# TODO: Get project name #}</td>
+                <td class="table-td">{{ invoice.createdBy }}</td>
+                <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td class="table-td">{{ 'TODO: Amount' }}</td>
+                <td class="table-td">
                     <a href="{{ path('app_invoices_show', {'id': invoice.id}) }}">show</a>
                     <a href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}
-            <tr>
+            <tr class="table-tr">
                 <td colspan="22">{{ 'invoices.list_no_records_found'|trans }}</td>
             </tr>
         {% endfor %}

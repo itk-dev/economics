@@ -47,6 +47,10 @@
         @apply w-full p-4 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white;
     }
 
+    .margin-bottom {
+        @apply mb-5;
+    }
+
     .list-group-item {
         @apply w-full px-4 py-2;
     }
@@ -118,5 +122,33 @@
 
     .table-cell-heading {
         @apply border-2 p-2 font-bold;
+    }
+
+    .table-wrapper {
+        @apply relative overflow-x-auto shadow-md sm:rounded-lg;
+    }
+
+    .table {
+        @apply w-full text-sm text-left text-gray-500 dark:text-gray-400;
+    }
+
+    .table-thead {
+        @apply text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400;
+    }
+
+    .table-th {
+        @apply px-6 py-3;
+    }
+
+    .table-td {
+        @apply px-6 py-4;
+    }
+
+    .table-tr {
+        @apply bg-white border-b dark:bg-gray-900 dark:border-gray-700;
+    }
+
+    .table-tr-alt {
+        @apply bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700;
     }
 }

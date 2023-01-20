@@ -38,6 +38,9 @@ class InvoicesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $invoice->setRecorded(false);
+            $invoice->setCreatedAt(new \DateTime());
+            $invoice->setUpdatedAt(new \DateTime());
             $invoiceRepository->save($invoice, true);
 
             return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);

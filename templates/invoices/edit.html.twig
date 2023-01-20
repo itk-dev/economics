@@ -3,20 +3,20 @@
 {% block title %}{{ 'invoices.edit'|trans }}{% endblock %}
 
 {% block content %}
-    <div class="text-faded">{{ 'invoices.invoice_for'|trans({'%project%': invoice.project.name, '%projectTrackerId%': invoice.project.projectTrackerId}) }}</div>
-
     <h1 class="page-title">{{ invoice.name }}</h1>
+    <div class="text-faded margin-bottom">{{ 'invoices.invoice_for'|trans({'%project%': invoice.project.name, '%projectTrackerId%': invoice.project.projectTrackerId}) }}</div>
 
     <div class="grid-split">
         <div>
-            <div class="info-block">
-                <span class="info-block">{{ 'invoices.id'|trans }}: <span class="text-bold">{{ invoice.id }}</span></span>
-                <span class="info-block">{{ 'invoices.status'|trans }}: <span class="text-bold">{{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</span></span>
-            </div>
             {{ include('invoices/_form.html.twig', {'button_label': 'invoices.action_update'|trans}) }}
         </div>
-        <div class="client-information-block">
-            <ul class="list-group">
+        <div>
+            <ul class="list-group margin-bottom">
+                <li class="list-group-item border-bottom text-bold">{{ 'invoices.info'|trans }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.id'|trans }}: {{ invoice.id }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.status'|trans }}: {{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</li>
+            </ul>
+            <ul class="list-group margin-bottom">
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.client_information'|trans }}</li>
                 {% if invoice.client != null %}
                     <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
