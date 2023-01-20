@@ -22,13 +22,12 @@
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                 <td class="table-td">{{ invoice.id }}</td>
                 <td class="table-td">{{ invoice.name }}</td>
-                <td class="table-td">{{ invoice.project }} {# TODO: Get project name #}</td>
+                <td class="table-td">{{ invoice.project }}</td>
                 <td class="table-td">{{ invoice.createdBy }}</td>
                 <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td class="table-td">{{ 'TODO: Amount' }}</td>
                 <td class="table-td">
-                    <a href="{{ path('app_invoices_show', {'id': invoice.id}) }}">show</a>
-                    <a href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">edit</a>
+                    <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}
@@ -41,9 +40,6 @@
 
     <div class="navigation">
         {{ knp_pagination_render(invoices) }}
-    </div>
-    <div class="count">
-        {{ invoices.getTotalItemCount }} fakturaer.
     </div>
 
     <a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>

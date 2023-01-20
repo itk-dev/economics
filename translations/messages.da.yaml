@@ -113,11 +113,11 @@ invoices:
   list_actions: ''
   list_no_records_found: Ingen fundet
   action_create_new: Ny faktura
-  id: Faktura ID
+  id: Faktura
   status: Status
   status_posted: Bogført
   status_not_posted: Ikke bogført
-  action_update: Opdater
+  action_update: Gem ændringer
   edit: Rediger faktura
   client_information: Klientinformationer
   invoice_for: "Faktura for [%project%] (eksternt id: %projectTrackerId%)"
@@ -128,7 +128,8 @@ invoices:
   client_standard_price: Standardpris
   client_contact: Kontakt
   client_name: Klient
-  info: Information
+  info: Faktura
+  action_edit: 'Redigér'
 
 material_number_enum:
   internal: "Interne: 103361"
