@@ -5,14 +5,22 @@
 {% block content %}
     <h1 class="page-title">{{ 'invoices.title'|trans }}</h1>
 
+    {{ form_start(form) }}
+    <div class="invoices-filter-form">
+        {{ form_row(form.recorded) }}
+        {{ form_row(form.createdBy) }}
+        <button class="button m-5">{{ 'invoices.search'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
     <table class="table margin-bottom">
         <thead class="table-thead">
             <tr>
-                <th class="table-th">{{ 'invoices.list_id'|trans }}</th>
-                <th class="table-th">{{ 'invoices.list_name'|trans }}</th>
+                <th class="table-th">{{ knp_pagination_sortable(invoices, 'invoices.list_id'|trans, 'invoice.id') }}</th>
+                <th class="table-th">{{ knp_pagination_sortable(invoices, 'invoices.list_name'|trans, 'invoice.name') }}</th>
                 <th class="table-th">{{ 'invoices.list_project'|trans }}</th>
-                <th class="table-th">{{ 'invoices.list_created_by'|trans }}</th>
-                <th class="table-th">{{ 'invoices.list_updated_at'|trans }}</th>
+                <th class="table-th">{{ knp_pagination_sortable(invoices, 'invoices.list_created_by'|trans, 'invoice.createdBy') }}</th>
+                <th class="table-th">{{ knp_pagination_sortable(invoices, 'invoices.list_updated_at'|trans, 'invoice.updatedAt') }}</th>
                 <th class="table-th">{{ 'invoices.list_amount'|trans }}</th>
                 <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
             </tr>
@@ -24,7 +32,7 @@
                 <td class="table-td">{{ invoice.name }}</td>
                 <td class="table-td">{{ invoice.project }}</td>
                 <td class="table-td">{{ invoice.createdBy }}</td>
-                <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d') : '' }}</td>
                 <td class="table-td">{{ 'TODO: Amount' }}</td>
                 <td class="table-td">
                     <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
@@ -32,15 +40,16 @@
             </tr>
         {% else %}
             <tr class="table-tr">
-                <td colspan="22">{{ 'invoices.list_no_records_found'|trans }}</td>
+                <td colspan="7">{{ 'invoices.list_no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
+            <tr>
+                <td colspan="7" class="text-right">
+                    {{ knp_pagination_render(invoices) }}
+                </td>
+            </tr>
         </tbody>
     </table>
-
-    <div class="navigation">
-        {{ knp_pagination_render(invoices) }}
-    </div>
 
     <a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>
 {% endblock %}

@@ -107,7 +107,7 @@ invoices:
   list_id: '#'
   list_name: Faktura
   list_project: Projekt
-  list_created_by: Oprettet af
+  list_created_by: Opretter
   list_updated_at: Dato
   list_amount: Beløb
   list_actions: ''
@@ -135,6 +135,11 @@ invoices:
   action_delete: 'Slet faktura'
   action_create: 'Opret faktura'
   back_to_list: 'Tilbage til listen'
+  search: 'Filtrér'
+  recorded_true: 'Bogført'
+  recorded_false: 'Ikke bogført'
+  recorded: Bogført
+  created_by: Opretter
 
 material_number_enum:
   internal: "Interne: 103361"
