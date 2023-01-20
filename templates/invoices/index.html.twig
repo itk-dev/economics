@@ -44,12 +44,11 @@
             </tr>
         {% endfor %}
             <tr>
-                <td colspan="7" class="text-right">
+                <td colspan="2"><a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>
+                <td colspan="5" class="text-right">
                     {{ knp_pagination_render(invoices) }}
                 </td>
             </tr>
         </tbody>
     </table>
-
-    <a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>
 {% endblock %}

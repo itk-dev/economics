@@ -112,7 +112,7 @@ invoices:
   list_amount: Beløb
   list_actions: ''
   list_no_records_found: Ingen fundet
-  action_create_new: Ny faktura
+  action_create_new: Opret ny faktura
   id: Faktura
   status: Status
   status_posted: Bogført
