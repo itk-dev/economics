@@ -60,6 +60,9 @@ class Account
 
     public function __toString(): string
     {
-        return (string) $this->getName() ?? $this->getValue();
+        $name = $this->getName();
+        $value = $this->getValue();
+
+        return "$value: $name";
     }
 }

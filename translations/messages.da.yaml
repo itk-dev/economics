@@ -178,10 +178,15 @@ material_number_enum:
 
 accounts:
   id: '#'
-  create_new: 'Ny konto'
+  create_new: 'Opret ny konto'
   no_records_found: 'Ingen fundet'
   edit: 'Redigér'
   value: 'Værdi'
   actions: 'Handlinger'
   name: 'Navn'
   title: 'Konto'
+  back_to_list: 'Tilbage til listen'
+  action_save: 'Gem'
+  name_helptext: 'Vælg et navn'
+  value_helptext: 'Vælg kontoens værdi, som sættes ind i fakturaen.'
+  delete: 'Slet konto'
