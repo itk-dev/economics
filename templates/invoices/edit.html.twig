@@ -17,12 +17,16 @@
             {{ form_row(form.periodTo) }}
             {{ form_row(form.payerAccount) }}
             {{ form_row(form.defaultReceiverAccount) }}
+
+            <div class="actions-right">
+                <button class="button">{{ 'invoices.action_save'|trans }}</button>
+            </div>
         </div>
-        <div>
+        <div style="padding-top: 28px">
             <ul class="list-group margin-bottom">
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.invoice_for'|trans({'%project%': invoice.project.name, '%projectTrackerId%': invoice.project.projectTrackerId}) }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.id'|trans }}: {{ invoice.id }}</li>
-                <li class="list-group-item border-bottom">{{ 'invoices.status'|trans }}: {{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</li>
+                <li class="list-group-item">{{ 'invoices.status'|trans }}: {{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</li>
             </ul>
             <ul class="list-group margin-bottom">
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.client_information'|trans }}</li>
@@ -32,13 +36,11 @@
                     <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_type'|trans }}: {{ invoice.client.type }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_account'|trans }}: {{ invoice.client.account }}</li>
-                    <li class="list-group-item border-bottom">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
+                    <li class="list-group-item">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
                 {% else %}
                     <li class="list-group-item">{{ 'invoices.no_client'|trans }}</li>
                 {% endif %}
             </ul>
-
-            <button class="button">{{ 'invoices.action_save'|trans }}</button>
         </div>
     </div>
     <div>
@@ -66,7 +68,7 @@
                     <td class="table-td">{{ invoiceEntry.price }}</td>
                     <td class="table-td">{{ invoiceEntry.price * invoiceEntry.amount }}</td>
                     <td class="table-td">
-                        <a class="link" href="{{ path('app_invoices_edit', {'id': invoiceEntry.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
+                        <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
                     </td>
                 </tr>
             {% else %}
@@ -75,7 +77,7 @@
                 </tr>
             {% endfor %}
             <tr class="table-tr">
-                <td colspan="7" class="table-td"><a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new_invoice_entry'|trans }}</a>
+                <td colspan="7" class="table-td"><a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id}) }}">{{ 'invoices.action_create_new_invoice_entry'|trans }}</a>
             </tr>
             </tbody>
         </table>

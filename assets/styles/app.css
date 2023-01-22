@@ -16,7 +16,7 @@
     }
 
     .label {
-        @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white;
+        @apply block mb-1 text-sm font-medium text-gray-900 dark:text-white;
     }
 
     .link {
@@ -33,6 +33,10 @@
 
     .bottom-actions {
         @apply p-5 m-5 text-right flex items-center space-x-5 justify-end;
+    }
+
+    .actions-right {
+        @apply mt-5 text-right flex items-center space-x-5 justify-end;
     }
 
     .info-block {
@@ -87,9 +91,17 @@
         @apply block mt-2 mb-2 text-sm font-medium text-blue-900 dark:text-gray-900;
     }
 
+    .form-row {
+        @apply mb-4;
+    }
+
     .form-element {
         resize: none;
-        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-2;
+        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-1;
+    }
+
+    .help-text {
+        @apply text-gray-800/75 dark:text-gray-200/75 font-light text-xs;
     }
 
     .form-checkbox {

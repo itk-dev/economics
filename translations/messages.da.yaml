@@ -103,32 +103,32 @@ planning:
   projects: Projekter
 
 invoices:
-  title: Faktura
+  title: 'Faktura'
   list_id: '#'
-  list_name: Faktura
-  list_project: Projekt
-  list_created_by: Opretter
-  list_updated_at: Dato
-  list_total_price: Beløb
-  list_actions: ''
-  list_no_records_found: Ingen fundet
-  action_create_new: Opret ny faktura
-  id: Faktura
-  status: Status
-  status_posted: Bogført
-  status_not_posted: Ikke bogført
-  action_update: Gem ændringer
-  edit: Rediger faktura
-  client_information: Klientinformationer
-  invoice_for: "Faktura for [%project%] (eksternt id: %projectTrackerId%)"
-  no_client: Ingen klient valgt
-  client_psp: PSP
-  client_account: Konto
-  client_type: Type
-  client_standard_price: Standardpris
-  client_contact: Kontakt
-  client_name: Klient
-  info: Faktura
+  list_name: 'Faktura'
+  list_project: 'Projekt'
+  list_created_by: 'Opretter'
+  list_updated_at: 'Dato'
+  list_total_price: 'Beløb'
+  list_actions: 'Handlinger'
+  list_no_records_found: 'Ingen fundet'
+  action_create_new: 'Opret ny faktura'
+  id: 'Faktura'
+  status: 'Status'
+  status_posted: 'Bogført'
+  status_not_posted: 'Ikke bogført'
+  action_update: 'Gem ændringer'
+  edit: 'Rediger faktura'
+  client_information: 'Kundekontoinformationer'
+  invoice_for: "Faktura for [%project%] (%projectTrackerId%)"
+  no_client: 'Ingen kundekonto valgt'
+  client_psp: 'PSP'
+  client_account: 'Konto'
+  client_type: 'Type'
+  client_standard_price: 'Standardpris'
+  client_contact: 'Kontakt'
+  client_name: 'Kundekonto'
+  info: 'Faktura'
   create_new: 'Opret faktura'
   action_edit: 'Redigér'
   action_save: 'Gem faktura'
@@ -138,8 +138,8 @@ invoices:
   search: 'Filtrér'
   recorded_true: 'Bogført'
   recorded_false: 'Ikke bogført'
-  recorded: Bogført
-  created_by: Opretter
+  recorded: 'Bogført'
+  created_by: 'Opretter'
   invoice_entry_receiver_acccount: 'Til konto'
   invoice_entry_material_number: 'Materialenummer'
   invoice_entry_product: 'Vare'
@@ -147,7 +147,29 @@ invoices:
   invoice_entry_price: 'Pris pr. stk. (DKK)'
   invoice_entry_total_price: 'Samlet pris (DKK)'
   action_create_new_invoice_entry: 'Opret ny fakturalinje'
-  invoice_entries: Fakturalinjer
+  invoice_entries: 'Fakturalinjer'
+  back_to_invoice: 'Tilbage til faktura'
+  entry_new: 'Opret ny fakturalinje'
+  entry_edit: 'Redigér fakturalinje'
+  entry_for_invoice: 'For faktura: %invoice%'
+  name: 'Navn'
+  description: 'Beskrivelse'
+  project: 'Projekt'
+  client: 'Kundekonto'
+  default_material_number: 'Forudvalgt "Materialenummer"'
+  default_receiver_account: 'Forudvalgt "Til konto"'
+  payer_account: 'Betales af konto'
+  period_from: 'Periode fra'
+  period_to: 'Periode til'
+  period_from_helptext: 'Dette felt skal udfyldes på eksterne fakturaer.'
+  period_to_helptext: 'Dette felt skal udfyldes på eksterne fakturaer.'
+  name_helptext: 'Vælg faktuens navn.'
+  description_helptext: 'Indsættes i tekstfeltet i fakturaen.'
+  project_helptext: 'Vælg projekt.'
+  client_helptext: 'Vælg hvilken kundekonto fakturaen skal udstedes til.'
+  default_material_number_helptext: 'Vælg forudvalgt "Materialenummer". Det bliver sat automatisk i alle fakturaindgange.'
+  default_receiver_account_helptext: 'Vælg forudvalgt "Til konto". Det bliver sat automatisk i alle fakturaindgange.'
+  payer_account_helptext: 'Hvis valgt indsættes følgende først i tekstfeltet i fakturaen: "Betales af [KONTO]".'
 
 material_number_enum:
   internal: "Interne: 103361"

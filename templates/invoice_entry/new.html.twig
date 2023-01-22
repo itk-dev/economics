@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New InvoiceEntry{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'invoices.entry_new'|trans }}</h1>
+
+    <h3 class="subheading">{{ 'invoices.entry_for_invoice'|trans({'%invoice%': invoice.name}) }}</h3>
+
+    {{ include('invoice_entry/_form.html.twig') }}
+
+    <a href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+{% endblock %}

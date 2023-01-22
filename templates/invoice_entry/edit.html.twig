@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit InvoiceEntry{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'invoices.entry_edit'|trans }}</h1>
+
+    <h3 class="subheading">{{ 'invoices.entry_for_invoice'|trans({'%invoice%': invoice.name}) }}</h3>
+
+    {{ include('invoice_entry/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice' }}</a>
+
+    {{ include('invoice_entry/_delete_form.html.twig') }}
+{% endblock %}

@@ -18,44 +18,85 @@ class InvoiceType extends AbstractType
         $builder
             ->add('name',  null, [
                 'required' => true,
-                'attr' => ['class' => 'form-element']
+                'label' => 'invoices.name',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => ['class' => 'form-element'],
+                'help' => 'invoices.name_helptext',
             ])
             ->add('description', TextareaType::class, [
                 'required' => true,
-                'attr' => ['class' => 'form-element', 'rows' => 4]
+                'label' => 'invoices.description',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => ['class' => 'form-element', 'rows' => 4],
+                'help' => 'invoices.description_helptext',
             ])
             ->add('project',  null, [
                 'required' => true,
-                'attr' => ['class' => 'form-element']
+                'label' => 'invoices.project',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => ['class' => 'form-element'],
+                'help' => 'invoices.project_helptext',
             ])
             ->add('client',  null, [
-                'attr' => ['class' => 'form-element']
+                'label' => 'invoices.client',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => ['class' => 'form-element'],
+                'help' => 'invoices.client_helptext',
             ])
             ->add('payerAccount',  null, [
-                'attr' => ['class' => 'form-element']
+                'required' => false,
+                'label' => 'invoices.payer_account',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => ['class' => 'form-element'],
+                'help' => 'invoices.payer_account_helptext',
             ])
             ->add('defaultReceiverAccount',  null, [
-                'attr' => ['class' => 'form-element']
+                'required' => false,
+                'label' => 'invoices.default_receiver_account',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => ['class' => 'form-element'],
+                'help' => 'invoices.default_receiver_account_helptext',
             ])
             ->add('defaultMaterialNumber',  EnumType::class, [
                 'class' => MaterialNumberEnum::class,
+                'required' => false,
+                'label' => 'invoices.default_material_number',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => ['class' => 'form-element'],
+                'help' => 'invoices.default_material_number_helptext',
                 'choice_label' => fn ($choice) => match ($choice) {
                     MaterialNumberEnum::NONE => '',
                     MaterialNumberEnum::INTERNAL => 'material_number_enum.internal',
                     MaterialNumberEnum::EXTERNAL_WITH_MOMS => 'material_number_enum.external_with_moms',
                     MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS => 'material_number_enum.external_without_moms',
                 },
-                'attr' => ['class' => 'form-element']
             ])
             ->add('periodFrom',  DateTimeType::class, [
+                'required' => false,
+                'label' => 'invoices.period_from',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'help' => 'invoices.period_from_helptext',
                 'widget' => 'single_text',
                 'html5' => true,
                 'attr' => ['class' => 'form-element']
             ])
             ->add('periodTo',  DateTimeType::class, [
+                'required' => false,
+                'label' => 'invoices.period_to',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => ['class' => 'form-element'],
+                'help' => 'invoices.period_to_helptext',
                 'widget' => 'single_text',
                 'html5' => true,
-                'attr' => ['class' => 'form-element']
             ])
         ;
     }
