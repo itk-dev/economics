@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\ClientTypeEnum;
 use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -109,7 +110,7 @@ class Client
         return $this->psp;
     }
 
-    public function setPsp(string $psp): self
+    public function setPsp(?string $psp): self
     {
         $this->psp = $psp;
 

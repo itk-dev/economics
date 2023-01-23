@@ -3,12 +3,11 @@
 namespace App\Service;
 
 use App\Entity\Client;
-use App\Entity\ClientTypeEnum;
 use App\Entity\Project;
+use App\Enum\ClientTypeEnum;
 use App\Repository\ClientRepository;
 use App\Repository\ProjectRepository;
 use App\Service\ProjectTracker\ApiServiceInterface;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class BillingService
@@ -24,10 +23,10 @@ class BillingService
     public function syncProjects($progressCallback): void
     {
         // Get all projects from ApiService.
-        $trackerProjects = $this->apiService->getAllProjects();
+        $allProjectData = $this->apiService->getAllProjectData();
 
-        foreach ($trackerProjects as $trackerProject) {
-            $project = $this->projectRepository->findOneBy(['projectTrackerId' => $trackerProject->id]);
+        foreach ($allProjectData as $projectDatum) {
+            $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId]);
 
             if (!$project) {
                 $project = new Project();
@@ -36,52 +35,34 @@ class BillingService
                 $this->entityManager->persist($project);
             }
 
-            $project->setName($trackerProject->name);
-            $project->setProjectTrackerId($trackerProject->id);
-            $project->setProjectTrackerKey($trackerProject->key);
-            $project->setProjectTrackerProjectUrl($trackerProject->self);
+            $project->setName($projectDatum->name);
+            $project->setProjectTrackerId($projectDatum->projectTrackerId);
+            $project->setProjectTrackerKey($projectDatum->projectTrackerKey);
+            $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
             $project->setUpdatedBy('sync');
             $project->setUpdatedAt(new \DateTime());
 
-            $accountIds = $this->apiService->getAccountIdsByProject($trackerProject->id);
+            $projectClientData = $this->apiService->getClientDataForProject($projectDatum->projectTrackerId);
 
-            foreach($accountIds as $accountId) {
-                $account = $this->apiService->getAccount($accountId);
-
-                $client = $this->clientRepository->findOneBy(['projectTrackerId' => $accountId]);
+            foreach($projectClientData as $clientData) {
+                $client = $this->clientRepository->findOneBy(['projectTrackerId' => $clientData->projectTrackerId]);
 
                 if (!$client) {
                     $client = new Client();
-                    $client->setProjectTrackerId($accountId);
+                    $client->setProjectTrackerId($clientData->projectTrackerId);
                     $this->entityManager->persist($client);
                 }
 
-                $client->setName($account->name);
-                $client->setContact($account->contact->name ?? null);
-                $client->setAccount($account->customer->key ?? null);
+                $client->setName($clientData->name);
+                $client->setContact($clientData->contact);
+                $client->setAccount($clientData->account);
+                $client->setType($clientData->type);
+                $client->setPsp($clientData->psp);
+                $client->setEan($clientData->ean);
+                $client->setStandardPrice($clientData->standardPrice);
 
                 if (!$client->getProjects()->contains($client)) {
                     $client->addProject($project);
-                }
-
-                switch ($account->category->name ?? null) {
-                    case 'INTERN':
-                        $client->setType(ClientTypeEnum::INTERNAL);
-                        $client->setPsp($account->key);
-                        break;
-                    case 'EKSTERN':
-                        $client->setType(ClientTypeEnum::EXTERNAL);
-                        $client->setEan($account->key);
-                        break;
-                }
-
-                $rateTable = $this->apiService->getRateTableByAccount($accountId);
-
-                foreach ($rateTable->rates as $rate) {
-                    if ('DEFAULT_RATE' === ($rate->link->type ?? '')) {
-                        $client->setStandardPrice($rate->amount ?? null);
-                        break;
-                    }
                 }
             }
 

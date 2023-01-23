@@ -31,7 +31,7 @@ class SyncProjectsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->progressStart(277);
+        $io->progressStart();
         $this->billingService->syncProjects(function() use ($io) {
             $io->progressAdvance();
         });

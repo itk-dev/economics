@@ -2,7 +2,10 @@
 
 namespace App\Service\ProjectTracker;
 
+use App\Enum\ClientTypeEnum;
 use App\Exception\ApiServiceException;
+use App\Model\Invoices\ClientData;
+use App\Model\Invoices\ProjectData;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
@@ -1020,5 +1023,72 @@ class JiraApiService implements ApiServiceInterface
         }
 
         return false;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function getClientDataForProject(string $projectId): array
+    {
+        $clients = [];
+
+        $accountIds = $this->getAccountIdsByProject($projectId);
+
+        foreach($accountIds as $accountId) {
+            $account = $this->getAccount($accountId);
+
+            $client = new ClientData();
+
+            $client->projectTrackerId = $accountId;
+            $client->name = $account->name;
+            $client->contact = $account->contact->name ?? null;
+            $client->account = $account->customer->key ?? null;
+
+            switch ($account->category->name ?? null) {
+                case 'INTERN':
+                    $client->type = ClientTypeEnum::INTERNAL;
+                    $client->psp = $account->key;
+                    break;
+                case 'EKSTERN':
+                    $client->type = ClientTypeEnum::EXTERNAL;
+                    $client->ean = $account->key;
+                    break;
+            }
+
+            $rateTable = $this->getRateTableByAccount($accountId);
+
+            foreach ($rateTable->rates as $rate) {
+                if ('DEFAULT_RATE' === ($rate->link->type ?? '')) {
+                    $client->standardPrice = $rate->amount ?? null;
+                    break;
+                }
+            }
+
+            $clients[] = $client;
+        }
+
+        return $clients;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function getAllProjectData(): array
+    {
+        $projects = [];
+
+        $trackerProjects = $this->getAllProjects();
+
+        foreach ($trackerProjects as $trackerProject) {
+            $project = new ProjectData();
+            $project->name = $trackerProject->name;
+            $project->projectTrackerId = $trackerProject->id;
+            $project->projectTrackerKey = $trackerProject->key;
+            $project->projectTrackerProjectUrl = $trackerProject->self;
+
+            $projects[] = $project;
+        }
+
+        return $projects;
     }
 }

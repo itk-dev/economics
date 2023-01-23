@@ -2,6 +2,8 @@
 
 namespace App\Service\ProjectTracker;
 
+use App\Model\Invoices\ClientData;
+use App\Model\Invoices\ProjectData;
 use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
 
@@ -48,4 +50,14 @@ interface ApiServiceInterface
     public function getPlanningData(): PlanningData;
 
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
+
+    /**
+     * @return array<ClientData>
+     */
+    public function getClientDataForProject(string $projectId): array;
+
+    /**
+     * @return array<ProjectData>
+     */
+    public function getAllProjectData(): array;
 }
