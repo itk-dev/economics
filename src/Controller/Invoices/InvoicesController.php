@@ -29,9 +29,7 @@ class InvoicesController extends AbstractController
         $form = $this->createForm(InvoiceFilterType::class, $invoiceFilterData);
         $form->handleRequest($request);
 
-        if (isset($invoiceFilterData->recorded)) {
-            $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $invoiceFilterData->recorded);
-        }
+        $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $invoiceFilterData->recorded ?? false);
 
         if (isset($invoiceFilterData->createdBy)) {
             $qb->andWhere('invoice.createdBy LIKE :createdBy')->setParameter('createdBy', $invoiceFilterData->createdBy);
@@ -40,7 +38,7 @@ class InvoicesController extends AbstractController
         $pagination = $paginator->paginate(
             $qb,
             $request->query->getInt('page', 1),
-            3,
+            10,
             ['defaultSortFieldName' => 'invoice.createdAt', 'defaultSortDirection' => 'desc']
         );
 
