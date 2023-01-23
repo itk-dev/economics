@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\InvoiceEntryTypeEnum;
 use App\Repository\InvoiceEntryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -39,8 +40,11 @@ class InvoiceEntry
     #[ORM\Column(nullable: true)]
     private ?int $amount = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $totalPrice = null;
+
     #[ORM\Column(length: 255)]
-    private ?string $entryType = null;
+    private InvoiceEntryTypeEnum $entryType;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $materialNumber = null;
@@ -130,18 +134,6 @@ class InvoiceEntry
         return $this;
     }
 
-    public function getEntryType(): ?string
-    {
-        return $this->entryType;
-    }
-
-    public function setEntryType(string $entryType): self
-    {
-        $this->entryType = $entryType;
-
-        return $this;
-    }
-
     public function getMaterialNumber(): ?string
     {
         return $this->materialNumber;
@@ -182,5 +174,25 @@ class InvoiceEntry
         }
 
         return $this;
+    }
+
+    public function getEntryType(): InvoiceEntryTypeEnum
+    {
+        return $this->entryType;
+    }
+
+    public function setEntryType(InvoiceEntryTypeEnum $entryType): void
+    {
+        $this->entryType = $entryType;
+    }
+
+    public function getTotalPrice(): ?float
+    {
+        return $this->totalPrice;
+    }
+
+    public function setTotalPrice(?float $totalPrice): void
+    {
+        $this->totalPrice = $totalPrice;
     }
 }

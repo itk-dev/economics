@@ -3,9 +3,10 @@
 namespace App\Service;
 
 use App\Entity\Client;
+use App\Entity\Invoice;
 use App\Entity\Project;
-use App\Enum\ClientTypeEnum;
 use App\Repository\ClientRepository;
+use App\Repository\InvoiceRepository;
 use App\Repository\ProjectRepository;
 use App\Service\ProjectTracker\ApiServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,8 +17,22 @@ class BillingService
         private readonly ApiServiceInterface $apiService,
         private readonly ProjectRepository $projectRepository,
         private readonly ClientRepository $clientRepository,
+        private readonly InvoiceRepository $invoiceRepository,
         private readonly EntityManagerInterface $entityManager,
     ){
+    }
+
+    public function updateInvoiceTotalPrice(Invoice $invoice): void
+    {
+        $totalPrice = 0;
+
+        foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+            $totalPrice += ($invoiceEntry->getTotalPrice() ?? 0);
+        }
+
+        $invoice->setTotalPrice($totalPrice);
+
+        $this->invoiceRepository->save($invoice, true);
     }
 
     public function syncProjects($progressCallback): void

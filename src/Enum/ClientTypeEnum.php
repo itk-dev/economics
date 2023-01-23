@@ -4,6 +4,6 @@ namespace App\Enum;
 
 enum ClientTypeEnum: string
 {
-    case INTERNAL = 'INTERNAL';
-    case EXTERNAL = 'EXTERNAL';
+    case INTERNAL = 'internal';
+    case EXTERNAL = 'external';
 }

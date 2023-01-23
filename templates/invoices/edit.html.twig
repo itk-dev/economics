@@ -36,8 +36,8 @@
                     <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
                     <li class="list-group-item border-bottom">
                         {{ 'invoices.client_type'|trans }}:
-                        {{ invoice.client.type.value == 'INTERNAL' ? 'invoices.client_type_internal'|trans : '' }}
-                        {{ invoice.client.type.value == 'EXTERNAL' ? 'invoices.client_type_external'|trans : '' }}
+                        {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
+                        {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
                     </li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_account'|trans }}: {{ invoice.client.account }}</li>
                     {% if invoice.client.psp is defined and invoice.client.psp is not null %}
@@ -64,6 +64,7 @@
                 <th class="table-th">{{ 'invoices.invoice_entry_amount'|trans }}</th>
                 <th class="table-th">{{ 'invoices.invoice_entry_price'|trans }}</th>
                 <th class="table-th">{{ 'invoices.invoice_entry_total_price'|trans }}</th>
+                <th class="table-th">{{ 'invoices.invoice_entry_type'|trans }}</th>
                 <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
             </tr>
             </thead>
@@ -75,18 +76,33 @@
                     <td class="table-td">{{ invoiceEntry.product }}</td>
                     <td class="table-td">{{ invoiceEntry.amount }}</td>
                     <td class="table-td">{{ invoiceEntry.price }}</td>
-                    <td class="table-td">{{ invoiceEntry.price * invoiceEntry.amount }}</td>
+                    <td class="table-td">{{ invoiceEntry.totalPrice }}</td>
+                    <td class="table-td">
+                        {{ invoiceEntry.entryType.value == 'manual' ? 'invoices.invoice_entry_type_manual'|trans : '' }}
+                        {{ invoiceEntry.entryType.value == 'worklog' ? 'invoices.invoice_entry_type_worklog'|trans : '' }}
+                    </td>
                     <td class="table-td">
                         <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
                     </td>
                 </tr>
+            {% endfor %}
+            {% if invoice.invoiceEntries.count == 0 %}
+                <tr class="table-tr">
+                    <td colspan="8" class="table-td">{{ 'invoices.list_no_records_found'|trans }}</td>
+                </tr>
             {% else %}
                 <tr class="table-tr">
-                    <td colspan="7" class="table-td">{{ 'invoices.list_no_records_found'|trans }}</td>
+                    <td colspan="5" class="table-td"></td>
+                    <td class="table-td">{{ invoice.totalPrice }}</td>
+                    <td></td>
+                    <td></td>
                 </tr>
-            {% endfor %}
+            {% endif %}
             <tr class="table-tr">
-                <td colspan="7" class="table-td"><a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id}) }}">{{ 'invoices.action_create_new_invoice_entry'|trans }}</a>
+                <td colspan="8" class="table-td">
+                    <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
+                    <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
+                </td>
             </tr>
             </tbody>
         </table>

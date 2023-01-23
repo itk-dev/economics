@@ -173,6 +173,11 @@ invoices:
   client_type_internal: 'Intern'
   client_type_external: 'Ekstern'
   client_ean: 'EAN'
+  invoice_entry_type: 'Type'
+  invoice_entry_type_manual: 'Manuel'
+  invoice_entry_type_worklog: 'Worklog'
+  action_create_new_invoice_entry_worklog: 'Tilføj worklog linje'
+  action_create_new_invoice_entry_manual: 'Tilføj manuel linje'
 
 material_number_enum:
   internal: "Interne: 103361"

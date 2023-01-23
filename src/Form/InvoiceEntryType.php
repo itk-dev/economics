@@ -32,10 +32,6 @@ class InvoiceEntryType extends AbstractType
                 'required' => true,
                 'attr' => ['class' => 'form-element']
             ])
-            ->add('entryType',  null, [
-                'required' => true,
-                'attr' => ['class' => 'form-element']
-            ])
             ->add('materialNumber',  null, [
                 'required' => true,
                 'attr' => ['class' => 'form-element']

@@ -9,6 +9,7 @@ use App\Form\Invoices\InvoiceType;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceRepository;
+use App\Service\BillingService;
 use Doctrine\ORM\EntityRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -74,7 +75,7 @@ class InvoicesController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
+    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
     {
         $form = $this->createForm(InvoiceType::class, $invoice);
 
@@ -94,6 +95,8 @@ class InvoicesController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $invoice->setUpdatedAt(new \DateTime());
             $invoiceRepository->save($invoice, true);
+
+            $billingService->updateInvoiceTotalPrice($invoice);
 
             return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);
         }
