@@ -34,9 +34,18 @@
                     <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
-                    <li class="list-group-item border-bottom">{{ 'invoices.client_type'|trans }}: {{ invoice.client.type }}</li>
+                    <li class="list-group-item border-bottom">
+                        {{ 'invoices.client_type'|trans }}:
+                        {{ invoice.client.type.value == 'INTERNAL' ? 'invoices.client_type_internal'|trans : '' }}
+                        {{ invoice.client.type.value == 'EXTERNAL' ? 'invoices.client_type_external'|trans : '' }}
+                    </li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_account'|trans }}: {{ invoice.client.account }}</li>
-                    <li class="list-group-item">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
+                    {% if invoice.client.psp is defined and invoice.client.psp is not null %}
+                        <li class="list-group-item">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
+                    {% endif %}
+                    {% if invoice.client.ean is defined and invoice.client.ean is not null %}
+                        <li class="list-group-item">{{ 'invoices.client_ean'|trans }}: {{ invoice.client.ean }}</li>
+                    {% endif %}
                 {% else %}
                     <li class="list-group-item">{{ 'invoices.no_client'|trans }}</li>
                 {% endif %}

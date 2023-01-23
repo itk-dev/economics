@@ -18,26 +18,32 @@ class Client
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $contact = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $standardPrice = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?ClientTypeEnum $type = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $account = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $psp = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $ean = null;
 
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Invoice::class)]
     private Collection $invoices;
 
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'clients')]
     private Collection $projects;
+
+    #[ORM\Column]
+    private int $projectTrackerId;
 
     public function __construct()
     {
@@ -67,7 +73,7 @@ class Client
         return $this->contact;
     }
 
-    public function setContact(string $contact): self
+    public function setContact(?string $contact): self
     {
         $this->contact = $contact;
 
@@ -86,24 +92,12 @@ class Client
         return $this;
     }
 
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
     public function getAccount(): ?string
     {
         return $this->account;
     }
 
-    public function setAccount(string $account): self
+    public function setAccount(?string $account): self
     {
         $this->account = $account;
 
@@ -177,5 +171,40 @@ class Client
         }
 
         return $this;
+    }
+
+    public function getProjectTrackerId(): int
+    {
+        return $this->projectTrackerId;
+    }
+
+    public function setProjectTrackerId(int $projectTrackerId): void
+    {
+        $this->projectTrackerId = $projectTrackerId;
+    }
+
+    public function getType(): ?ClientTypeEnum
+    {
+        return $this->type;
+    }
+
+    public function setType(?ClientTypeEnum $type): void
+    {
+        $this->type = $type;
+    }
+
+    public function getEan(): ?string
+    {
+        return $this->ean;
+    }
+
+    public function setEan(?string $ean): void
+    {
+        $this->ean = $ean;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getName();
     }
 }

@@ -7,8 +7,11 @@ use App\Form\Invoices\InvoiceFilterType;
 use App\Form\Invoices\InvoiceNewType;
 use App\Form\Invoices\InvoiceType;
 use App\Model\Invoices\InvoiceFilterData;
+use App\Repository\ClientRepository;
 use App\Repository\InvoiceRepository;
+use Doctrine\ORM\EntityRepository;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -76,6 +79,18 @@ class InvoicesController extends AbstractController
     public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         $form = $this->createForm(InvoiceType::class, $invoice);
+
+        if ($invoice->getProject()) {
+            $form->add('client',  null, [
+                'label' => 'invoices.client',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => ['class' => 'form-element'],
+                'help' => 'invoices.client_helptext',
+                'choices' => $invoice->getProject()->getClients(),
+            ]);
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
