@@ -7,9 +7,9 @@ use DateTime;
 
 class InvoiceEntryWorklogsFilterData
 {
-    public ?bool $isBilled;
-    public ?DateTime $periodFrom;
-    public ?DateTime $periodTo;
-    public ?string $worker;
-    public ?Version $version;
+    public ?bool $isBilled = null;
+    public ?DateTime $periodFrom = null;
+    public ?DateTime $periodTo = null;
+    public ?string $worker = null;
+    public ?Version $version = null;
 }

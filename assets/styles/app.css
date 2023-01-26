@@ -177,7 +177,15 @@
     }
 
     .table-tr-alt {
-        @apply bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700;
+        @apply bg-gray-200 border-b dark:bg-gray-800 dark:border-gray-700;
+    }
+
+    .table-tr-disabled {
+        @apply bg-gray-500 border-gray-600 border-b dark:bg-gray-500 dark:border-gray-400 text-white;
+    }
+
+    .table-tr-disabled-alt {
+        @apply bg-amber-500/75 border-amber-600/75 border-b dark:bg-amber-500/75 dark:border-amber-400/75 text-white;
     }
 
     .pagination-ul {

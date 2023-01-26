@@ -13,9 +13,13 @@ use App\Repository\WorklogRepository;
 use Exception;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\JsonException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/invoices/{invoice}/entries')]
 class InvoiceEntryWorklogController extends AbstractController
@@ -52,5 +56,35 @@ class InvoiceEntryWorklogController extends AbstractController
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
         ]);
+    }
+
+    #[Route('/{invoiceEntry}/select_worklogs', name: 'app_invoice_entry_select_worklogs', methods: ['POST'])]
+    public function selectWorklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, TranslatorInterface $translator): Response
+    {
+        $worklogSelections = $request->toArray();
+
+        foreach ($worklogSelections as $worklogSelection) {
+            $worklog = $worklogRepository->find($worklogSelection['id']);
+
+            if ($worklog->isBilled()) {
+                return new JsonResponse(['message' => $translator->trans('worklog.error_already_billed')], 400);
+            }
+
+            if ($worklogSelection['checked']) {
+                if ($worklog->getInvoiceEntry() !== null && $worklog->getInvoiceEntry() !== $invoiceEntry) {
+                    return new JsonResponse(['message' =>  $translator->trans('worklog.error_added_to_other_invoice_entry')], 400);
+                }
+
+                $worklog->setInvoiceEntry($invoiceEntry);
+            } else {
+                if ($worklog->getInvoiceEntry() === $invoiceEntry) {
+                    $worklog->setInvoiceEntry(null);
+                }
+            }
+
+            $worklogRepository->save($worklog, true);
+        }
+
+        return new Response(200);
     }
 }

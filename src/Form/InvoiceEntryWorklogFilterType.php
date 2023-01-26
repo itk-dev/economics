@@ -18,11 +18,11 @@ class InvoiceEntryWorklogFilterType extends AbstractType
         $builder
             ->add('isBilled',  ChoiceType::class, [
                 'required' => false,
-                'label' => 'worklogs.is_billed',
+                'label' => 'worklog.is_billed',
                 'label_attr' => ['class' => 'label'],
                 'choices' => [
-                    'worklogs.is_billed_false' => false,
-                    'worklogs.is_billed_true' => true,
+                    'worklog.is_billed_false' => false,
+                    'worklog.is_billed_true' => true,
                 ],
                 'help' => 'worklog.is_billed_helptext',
                 'attr' => ['class' => 'form-element']

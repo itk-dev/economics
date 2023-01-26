@@ -207,16 +207,25 @@ accounts:
   value_helptext: 'Vælg kontoens værdi, som sættes ind i fakturaen.'
   delete: 'Slet konto'
 
-worklogs:
-  title: 'Tilføj worklogs til fakturalinje'
-
 worklog:
+  title: 'Tilføj worklogs til fakturalinje'
   name: 'Worklog'
   is_billed: 'Faktureret'
   epic: 'Epic'
   version: 'Version'
   worker: 'Arbejder'
-  time_spent: 'Timer brugt'
+  time_spent: 'Timer'
   date: 'Dato'
   is_billed_true: 'Ja'
   is_billed_false: 'Nej'
+  period_from: "Periode fra"
+  period_to: "Periode til"
+  is_billed_helptext: ''
+  period_from_helptext: ''
+  period_to_helptext: ''
+  worker_helptext: ''
+  version_helptext: ''
+  owned_by_other: 'Ejet'
+  action_save: 'Gem valgte worklogs'
+  error_already_billed: 'Fejl: Indeholder worklog der allerede er faktureret. Prøv at genindlæse siden...'
+  error_added_to_other_invoice_entry: 'Fejl: Indeholder worklog der er bundet til anden fakturaindgang. Prøv at genindlæse siden...'

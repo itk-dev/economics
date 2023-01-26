@@ -47,7 +47,7 @@ class WorklogRepository extends ServiceEntityRepository
 
         $qb->where('worklog.project = :project')->setParameter('project', $project);
 
-        if ($filterData->isBilled) {
+        if (isset($filterData->isBilled) && $filterData->isBilled) {
             $qb->andWhere('worklog.isBilled = 1');
         }
 
@@ -63,7 +63,7 @@ class WorklogRepository extends ServiceEntityRepository
             $qb->andWhere('worklog.started <= :periodTo')->setParameter('periodTo', $filterData->periodTo);
         }
 
-        if ($filterData->version) {
+        if (isset($filterData->version)) {
             $qb->andWhere(':version MEMBER OF worklog.versions')
                 ->setParameter('version', $filterData->version);
         }
