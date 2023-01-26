@@ -6,8 +6,14 @@
     <h1 class="page-title">{{ 'invoices.entry_new'|trans }}</h1>
 
     <h3 class="subheading">{{ 'invoices.entry_for_invoice'|trans({'%invoice%': invoice.name}) }}</h3>
+    <h3 class="subheading">{{ 'invoices.invoice_entry_type_heading'|trans({'%type%': invoice_entry.entryType.value}) }}</h3>
 
-    {{ include('invoice_entry/_form.html.twig') }}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="button mt-3">{{ 'invoices.action_save_invoice_entry'|trans }}</button>
+    {{ form_end(form) }}
 
-    <a href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+    </div>
 {% endblock %}

@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Project;
 use App\Entity\Worklog;
+use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,5 +39,35 @@ class WorklogRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findByFilterData(Project $project, InvoiceEntryWorklogsFilterData $filterData): iterable
+    {
+        $qb = $this->createQueryBuilder('worklog');
+
+        $qb->where('worklog.project = :project')->setParameter('project', $project);
+
+        if ($filterData->isBilled) {
+            $qb->andWhere('worklog.isBilled = 1');
+        }
+
+        if (isset($filterData->worker)) {
+            $qb->andWhere('worklog.worker LIKE :worker')->setParameter('worker', "%".$filterData->worker."%");
+        }
+
+        if (isset($filterData->periodFrom)) {
+            $qb->andWhere('worklog.started >= :periodFrom')->setParameter('periodFrom', $filterData->periodFrom);
+        }
+
+        if (isset($filterData->periodTo)) {
+            $qb->andWhere('worklog.started <= :periodTo')->setParameter('periodTo', $filterData->periodTo);
+        }
+
+        if ($filterData->version) {
+            $qb->andWhere(':version MEMBER OF worklog.versions')
+                ->setParameter('version', $filterData->version);
+        }
+
+        return $qb->getQuery()->execute();
     }
 }

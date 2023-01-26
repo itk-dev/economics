@@ -2,15 +2,22 @@
 
 namespace App\Model\Invoices;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class ProjectData
+class WorklogData
 {
-    public string $name;
     public string $projectTrackerId;
-    public string $projectTrackerKey;
-    public string $projectTrackerProjectUrl;
+    public string $comment;
+    public string $worker;
+    public int $timeSpentSeconds;
+    public DateTime $started;
+    public string $issueName;
+    public string $projectTrackerIssueId;
+    public string $projectTrackerIssueKey;
+    public ?string $epicName;
+    public ?string $epicKey;
     /** @var Collection<VersionData> */
     public Collection $versions;
 

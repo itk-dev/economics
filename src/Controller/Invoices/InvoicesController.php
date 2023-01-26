@@ -96,6 +96,7 @@ class InvoicesController extends AbstractController
             $invoice->setUpdatedAt(new \DateTime());
             $invoiceRepository->save($invoice, true);
 
+            // TODO: Handle this with a doctrine event listener instead.
             $billingService->updateInvoiceTotalPrice($invoice);
 
             return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);

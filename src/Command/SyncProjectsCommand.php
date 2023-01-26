@@ -14,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:sync-projects',
-    description: 'Add a short description for your command',
+    description: 'Sync projects',
 )]
 class SyncProjectsCommand extends Command
 {
@@ -31,11 +31,15 @@ class SyncProjectsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->progressStart();
-        $this->billingService->syncProjects(function() use ($io) {
-            $io->progressAdvance();
+        $this->billingService->syncProjects(function($i, $length) use ($io) {
+            if ($i == 0) {
+                $io->progressStart($length);
+            } else if ($i >= $length - 1) {
+                $io->progressFinish();
+            } else {
+                $io->progressAdvance();
+            }
         });
-        $io->progressFinish();
 
         return Command::SUCCESS;
     }

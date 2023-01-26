@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\InvoiceEntryTypeEnum;
+use App\Enum\MaterialNumberEnum;
 use App\Repository\InvoiceEntryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,9 +26,12 @@ class InvoiceEntry
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
 
+    // TODO: Remove since it is unused.
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
+    // TODO: Rename to legacy field.
+    // TODO: Add migration from account to receiverAccount.
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $account = null;
 
@@ -35,10 +39,10 @@ class InvoiceEntry
     private ?string $product = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $price = null;
+    private ?float $price = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $amount = null;
+    private ?float $amount = null;
 
     #[ORM\Column(nullable: true)]
     private ?float $totalPrice = null;
@@ -47,10 +51,13 @@ class InvoiceEntry
     private InvoiceEntryTypeEnum $entryType;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $materialNumber = null;
+    private ?MaterialNumberEnum $materialNumber = null;
 
     #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: Worklog::class)]
     private Collection $worklogs;
+
+    #[ORM\ManyToOne(inversedBy: 'invoiceEntries')]
+    private ?Account $receiverAccount = null;
 
     public function __construct()
     {
@@ -110,36 +117,36 @@ class InvoiceEntry
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(?int $price): self
+    public function setPrice(?float $price): self
     {
         $this->price = $price;
 
         return $this;
     }
 
-    public function getAmount(): ?int
+    public function getAmount(): ?float
     {
         return $this->amount;
     }
 
-    public function setAmount(?int $amount): self
+    public function setAmount(?float $amount): self
     {
         $this->amount = $amount;
 
         return $this;
     }
 
-    public function getMaterialNumber(): ?string
+    public function getMaterialNumber(): ?MaterialNumberEnum
     {
         return $this->materialNumber;
     }
 
-    public function setMaterialNumber(?string $materialNumber): self
+    public function setMaterialNumber(?MaterialNumberEnum $materialNumber): self
     {
         $this->materialNumber = $materialNumber;
 
@@ -194,5 +201,17 @@ class InvoiceEntry
     public function setTotalPrice(?float $totalPrice): void
     {
         $this->totalPrice = $totalPrice;
+    }
+
+    public function getReceiverAccount(): ?Account
+    {
+        return $this->receiverAccount;
+    }
+
+    public function setReceiverAccount(?Account $receiverAccount): self
+    {
+        $this->receiverAccount = $receiverAccount;
+
+        return $this;
     }
 }

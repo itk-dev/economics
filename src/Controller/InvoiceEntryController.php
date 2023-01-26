@@ -6,6 +6,7 @@ use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Form\InvoiceEntryType;
+use App\Form\InvoiceEntryWorklogType;
 use App\Repository\InvoiceEntryRepository;
 use App\Service\BillingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,18 +23,30 @@ class InvoiceEntryController extends AbstractController
         $invoiceEntry = new InvoiceEntry();
         $invoiceEntry->setInvoice($invoice);
         $invoiceEntry->setEntryType($type);
+        $invoiceEntry->setAccount($invoice->getDefaultReceiverAccount()->getValue());
+        $invoiceEntry->setMaterialNumber($invoice->getDefaultMaterialNumber());
 
-        $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry);
+        $client = $invoice->getClient();
+
+        if ($client) {
+            $invoiceEntry->setPrice($client->getStandardPrice());
+        }
+
+        if ($type == InvoiceEntryTypeEnum::WORKLOG) {
+            $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry);
+        } else {
+            $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry);
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $invoiceEntry->setCreatedAt(new \DateTime());
             $invoiceEntry->setUpdatedAt(new \DateTime());
-            $invoiceEntry->setTotalPrice(($invoiceEntry->getPrice() ?? 0) * ($invoiceEntry->getAmount()));
-
             $invoiceEntryRepository->save($invoiceEntry, true);
 
-            $billingService->updateInvoiceTotalPrice($invoiceEntry->getInvoice());
+            // TODO: Handle this with a doctrine event listener instead.
+            $billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
             return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
         }
@@ -48,16 +61,20 @@ class InvoiceEntryController extends AbstractController
     #[Route('/{id}/edit', name: 'app_invoice_entry_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
     {
-        $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry);
+        if ($invoiceEntry->getEntryType() == InvoiceEntryTypeEnum::WORKLOG) {
+            $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry);
+        } else {
+            $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry);
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $invoiceEntry->setUpdatedAt(new \DateTime());
-            $invoiceEntry->setTotalPrice(($invoiceEntry->getPrice() ?? 0) * ($invoiceEntry->getAmount()));
-
             $invoiceEntryRepository->save($invoiceEntry, true);
 
-            $billingService->updateInvoiceTotalPrice($invoiceEntry->getInvoice());
+            // TODO: Handle this with a doctrine event listener instead.
+            $billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
             return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
         }
@@ -73,9 +90,11 @@ class InvoiceEntryController extends AbstractController
     public function delete(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
     {
         if ($this->isCsrfTokenValid('delete'.$invoiceEntry->getId(), $request->request->get('_token'))) {
+            $invoice = $invoiceEntry->getInvoice();
             $invoiceEntryRepository->remove($invoiceEntry, true);
 
-            $billingService->updateInvoiceTotalPrice($invoiceEntry->getInvoice());
+            // TODO: Handle this with a doctrine event listener instead.
+            $billingService->updateInvoiceTotalPrice($invoice);
         }
 
         return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);

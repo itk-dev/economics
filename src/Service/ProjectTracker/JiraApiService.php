@@ -6,6 +6,8 @@ use App\Enum\ClientTypeEnum;
 use App\Exception\ApiServiceException;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\ProjectData;
+use App\Model\Invoices\VersionData;
+use App\Model\Invoices\WorklogData;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
@@ -18,6 +20,7 @@ use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintStateEnum;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -1080,15 +1083,86 @@ class JiraApiService implements ApiServiceInterface
         $trackerProjects = $this->getAllProjects();
 
         foreach ($trackerProjects as $trackerProject) {
-            $project = new ProjectData();
-            $project->name = $trackerProject->name;
-            $project->projectTrackerId = $trackerProject->id;
-            $project->projectTrackerKey = $trackerProject->key;
-            $project->projectTrackerProjectUrl = $trackerProject->self;
+            $project = $this->getProject($trackerProject->id);
+            $projectVersions = $project->versions ?? [];
 
-            $projects[] = $project;
+            $projectData = new ProjectData();
+            $projectData->name = $trackerProject->name;
+            $projectData->projectTrackerId = $trackerProject->id;
+            $projectData->projectTrackerKey = $trackerProject->key;
+            $projectData->projectTrackerProjectUrl = $trackerProject->self;
+
+            foreach ($projectVersions as $projectVersion) {
+                $projectData->versions->add(new VersionData($projectVersion->id, $projectVersion->name));
+            }
+
+            $projects[] = $projectData;
         }
 
         return $projects;
+    }
+
+    /**
+     * Get all worklogs for project.
+     *
+     * @param $projectId
+     * @param string $from
+     * @param string $to
+     *
+     * @return mixed
+     * @throws ApiServiceException
+     */
+    public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01')
+    {
+        $worklogs = $this->post('rest/tempo-timesheets/4/worklogs/search', [
+            'from' => $from,
+            'to' => $to,
+            'projectId' => [$projectId],
+        ]);
+
+        return $worklogs;
+    }
+
+    /**
+     * @throws ApiServiceException
+     * @throws \Exception
+     */
+    public function getWorklogDataForProject(string $projectId): array
+    {
+        $worklogsResult = [];
+
+        $project = $this->getProject($projectId);
+        $versions = $project->versions ?? [];
+
+        $worklogs = $this->getProjectWorklogs($projectId);
+
+        foreach ($worklogs as $worklog) {
+            $worklogData = new WorklogData();
+            $worklogData->projectTrackerId = $worklog->tempoWorklogId;
+            $worklogData->worker = $worklog->worker;
+            $worklogData->timeSpentSeconds = $worklog->timeSpentSeconds;
+            $worklogData->comment = $worklog->comment;
+            $worklogData->issueName = $worklog->issue->summary;
+            $worklogData->projectTrackerIssueId = $worklog->issue->id;
+            $worklogData->projectTrackerIssueKey = $worklog->issue->key;
+            $worklogData->epicKey = $worklog->issue->epicKey ?? '';
+            $worklogData->epicName = $worklog->issue->epicIssue->summary ?? '';
+            $worklogData->started = new DateTime($worklog->started);
+
+            foreach ($worklog->issue->versions ?? [] as $versionKey) {
+                $versionsFound = array_filter($versions, function ($v) use ($versionKey) {
+                   return $v->id  == $versionKey;
+                });
+
+                if (count($versionsFound) == 1) {
+                    $version = array_pop($versionsFound);
+                    $worklogData->versions->add(new VersionData($version->id, $version->name));
+                }
+            }
+
+            $worklogsResult[] = $worklogData;
+        }
+
+        return $worklogsResult;
     }
 }

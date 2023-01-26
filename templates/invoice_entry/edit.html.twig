@@ -1,15 +1,34 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit InvoiceEntry{% endblock %}
+{% block title %}{{ 'invoices.entry_edit'|trans }}{% endblock %}
 
 {% block content %}
     <h1 class="page-title">{{ 'invoices.entry_edit'|trans }}</h1>
 
-    <h3 class="subheading">{{ 'invoices.entry_for_invoice'|trans({'%invoice%': invoice.name}) }}</h3>
+    {{ form_start(form) }}
+    <div class="grid-split">
+        <div>
+            {{ form_widget(form) }}
+            <div class="actions-right">
+                <button class="button mt-3">{{ 'invoices.action_save_invoice_entry'|trans }}</button>
+            </div>
+        </div>
+        <div style="padding-top: 24px">
+            <ul class="list-group margin-bottom">
+                <li class="list-group-item border-bottom text-bold">{{ 'invoices.entry_for_invoice'|trans({'%invoice%': invoice.name}) }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.id'|trans }}: {{ invoice.id }}</li>
+                <li class="list-group-item{{ invoice_entry.entryType.value == 'worklog' ? ' border-bottom' : '' }}">{{ 'invoices.invoice_entry_type_heading'|trans({'%type%': invoice_entry.entryType.value}) }}</li>
+                {% if invoice_entry.entryType.value == 'worklog' %}
+                    <li class="list-group-item">{{ 'invoice_entry.amount'|trans }}: {{ invoice_entry.amount }}</li>
+                    <li class="list-group-item"><a class="link" href="{{ path('app_invoice_entry_worklogs', {'invoice': invoice.id, 'invoiceEntry': invoice_entry.id}) }}">{{ 'invoices.add_worklogs'|trans }}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {{ form_end(form) }}
 
-    {{ include('invoice_entry/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice' }}</a>
-
-    {{ include('invoice_entry/_delete_form.html.twig') }}
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+        {{ include('invoice_entry/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

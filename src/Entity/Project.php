@@ -38,10 +38,18 @@ class Project
     #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'projects')]
     private Collection $clients;
 
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Version::class)]
+    private Collection $versions;
+
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Worklog::class)]
+    private Collection $worklogs;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
         $this->clients = new ArrayCollection();
+        $this->versions = new ArrayCollection();
+        $this->worklogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -146,6 +154,63 @@ class Project
     public function removeClient(Client $client): self
     {
         $this->clients->removeElement($client);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Version>
+     */
+    public function getVersions(): Collection
+    {
+        return $this->versions;
+    }
+
+    public function addVersion(Version $version): self
+    {
+        if (!$this->versions->contains($version)) {
+            $this->versions->add($version);
+            $version->addProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVersion(Version $version): self
+    {
+        if ($this->versions->removeElement($version)) {
+            $version->removeProject($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Worklog>
+     */
+    public function getWorklogs(): Collection
+    {
+        return $this->worklogs;
+    }
+
+    public function addWorklog(Worklog $worklog): self
+    {
+        if (!$this->worklogs->contains($worklog)) {
+            $this->worklogs->add($worklog);
+            $worklog->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWorklog(Worklog $worklog): self
+    {
+        if ($this->worklogs->removeElement($worklog)) {
+            // set the owning side to null (unless already changed)
+            if ($worklog->getProject() === $this) {
+                $worklog->setProject(null);
+            }
+        }
 
         return $this;
     }

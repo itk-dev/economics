@@ -151,7 +151,7 @@ invoices:
   back_to_invoice: 'Tilbage til faktura'
   entry_new: 'Opret ny fakturalinje'
   entry_edit: 'Redigér fakturalinje'
-  entry_for_invoice: 'For faktura: %invoice%'
+  entry_for_invoice: 'Faktura: %invoice%'
   name: 'Navn'
   description: 'Beskrivelse'
   project: 'Projekt'
@@ -178,6 +178,14 @@ invoices:
   invoice_entry_type_worklog: 'Worklog'
   action_create_new_invoice_entry_worklog: 'Tilføj worklog linje'
   action_create_new_invoice_entry_manual: 'Tilføj manuel linje'
+  action_delete_invoice_entry: 'Slet fakturalinje'
+  action_save_invoice_entry: 'Gem fakturalinje'
+  invoice_entry_material_number_helptext: 'Vælg materialenummer for fakturalinjen.'
+  invoice_entry_receiver_account_helptext: 'Vælg hvilken konto der skal modtage beløbet i fakturalinjen.'
+  invoice_entry_product_helptext: 'Beskriv fakturalinjen.'
+  invoice_entry_price_helptext: 'Vælg prisen pr. stk.'
+  invoice_entry_amount_helptext: 'Vælg antal.'
+  invoice_entry_type_heading: 'Type: %type%'
 
 material_number_enum:
   internal: "Interne: 103361"
@@ -198,3 +206,17 @@ accounts:
   name_helptext: 'Vælg et navn'
   value_helptext: 'Vælg kontoens værdi, som sættes ind i fakturaen.'
   delete: 'Slet konto'
+
+worklogs:
+  title: 'Tilføj worklogs til fakturalinje'
+
+worklog:
+  name: 'Worklog'
+  is_billed: 'Faktureret'
+  epic: 'Epic'
+  version: 'Version'
+  worker: 'Arbejder'
+  time_spent: 'Timer brugt'
+  date: 'Dato'
+  is_billed_true: 'Ja'
+  is_billed_false: 'Nej'

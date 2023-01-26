@@ -4,6 +4,7 @@ namespace App\Service\ProjectTracker;
 
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\ProjectData;
+use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
 
@@ -60,4 +61,7 @@ interface ApiServiceInterface
      * @return array<ProjectData>
      */
     public function getAllProjectData(): array;
+
+    /** @return array<WorklogData> */
+    public function getWorklogDataForProject(string $projectId): array;
 }
