@@ -70,7 +70,7 @@ class Invoice
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $periodTo = null;
 
-    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceEntry::class)]
+    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceEntry::class, cascade: ['remove'])]
     private Collection $invoiceEntries;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]

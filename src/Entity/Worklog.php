@@ -25,7 +25,7 @@ class Worklog
     private ?int $worklogId = null;
 
     #[ORM\ManyToOne(inversedBy: 'worklogs')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?InvoiceEntry $invoiceEntry = null;
 
     #[ORM\Column(nullable: true)]
