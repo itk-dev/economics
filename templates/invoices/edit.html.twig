@@ -90,7 +90,7 @@
                 <tr class="table-tr">
                     <td colspan="8" class="table-td">{{ 'invoices.list_no_records_found'|trans }}</td>
                 </tr>
-            {% else %}
+            {% elseif invoice.totalPrice %}
                 <tr class="table-tr">
                     <td colspan="5" class="table-td"></td>
                     <td class="table-td">{{ invoice.totalPrice }}</td>

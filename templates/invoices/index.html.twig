@@ -26,23 +26,24 @@
             </tr>
         </thead>
         <tbody>
-        {% for index, invoice in invoices %}
-            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-                <td class="table-td">{{ invoice.id }}</td>
-                <td class="table-td">{{ invoice.name }}</td>
-                <td class="table-td">{{ invoice.project }}</td>
-                <td class="table-td">{{ invoice.createdBy }}</td>
-                <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d') : '' }}</td>
-                <td class="table-td">{{ invoice.totalPrice }}</td>
-                <td class="table-td">
-                    <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
-                </td>
-            </tr>
-        {% else %}
+            {% for index, invoice in invoices %}
+                <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                    <td class="table-td">{{ invoice.id }}</td>
+                    <td class="table-td">{{ invoice.name }}</td>
+                    <td class="table-td">{{ invoice.project }}</td>
+                    <td class="table-td">{{ invoice.createdBy }}</td>
+                    <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d') : '' }}</td>
+                    <td class="table-td">{{ invoice.totalPrice }}</td>
+                    <td class="table-td">
+                        <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            {% if invoices.count = 0 %}
             <tr class="table-tr">
                 <td colspan="7">{{ 'invoices.list_no_records_found'|trans }}</td>
             </tr>
-        {% endfor %}
+            {% endif %}
             <tr class="table-tr">
                 <td class="table-td" colspan="2"><a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>
                 <td class="table-td" colspan="5" class="text-right">

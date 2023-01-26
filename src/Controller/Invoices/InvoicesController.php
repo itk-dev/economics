@@ -16,6 +16,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/invoices')]
@@ -93,6 +94,10 @@ class InvoicesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($invoice->isRecorded()) {
+                throw new HttpException(400, "Invoice is recorded, cannot be edited.");
+            }
+
             $invoice->setUpdatedAt(new \DateTime());
             $invoiceRepository->save($invoice, true);
 
@@ -113,6 +118,10 @@ class InvoicesController extends AbstractController
     {
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$invoice->getId(), $token)) {
+            if ($invoice->isRecorded()) {
+                throw new HttpException(400, "Invoice is recorded, cannot be deleted.");
+            }
+
             $invoiceRepository->remove($invoice, true);
         }
 
