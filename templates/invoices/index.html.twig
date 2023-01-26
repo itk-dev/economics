@@ -39,10 +39,10 @@
                     </td>
                 </tr>
             {% endfor %}
-            {% if invoices.count = 0 %}
-            <tr class="table-tr">
-                <td colspan="7">{{ 'invoices.list_no_records_found'|trans }}</td>
-            </tr>
+            {% if invoices is empty %}
+                <tr class="table-tr">
+                    <td colspan="7">{{ 'invoices.list_no_records_found'|trans }}</td>
+                </tr>
             {% endif %}
             <tr class="table-tr">
                 <td class="table-td" colspan="2"><a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>

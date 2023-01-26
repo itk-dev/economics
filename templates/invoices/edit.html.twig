@@ -86,7 +86,7 @@
                     </td>
                 </tr>
             {% endfor %}
-            {% if invoice.invoiceEntries.count == 0 %}
+            {% if invoice.invoiceEntries is empty %}
                 <tr class="table-tr">
                     <td colspan="8" class="table-td">{{ 'invoices.list_no_records_found'|trans }}</td>
                 </tr>
