@@ -8,6 +8,7 @@ use App\Entity\InvoiceEntry;
 use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worklog;
+use App\Enum\InvoiceEntryTypeEnum;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
@@ -15,11 +16,8 @@ use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use App\Service\ProjectTracker\ApiServiceInterface;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use phpDocumentor\Reflection\Types\Collection;
 
 class BillingService
 {
@@ -95,8 +93,17 @@ class BillingService
 
     public function updateInvoiceEntryTotalPrice(InvoiceEntry $invoiceEntry): void
     {
-        $invoiceEntry->setTotalPrice(($invoiceEntry->getPrice() ?? 0) * ($invoiceEntry->getAmount()));
+        if ($invoiceEntry->getEntryType() === InvoiceEntryTypeEnum::WORKLOG) {
+            $amountSeconds = 0;
 
+            foreach ($invoiceEntry->getWorklogs() as $worklog) {
+                $amountSeconds += $worklog->getTimeSpentSeconds() ?? 0;
+            }
+
+            $invoiceEntry->setAmount($amountSeconds / 3600);
+        }
+
+        $invoiceEntry->setTotalPrice(($invoiceEntry->getPrice() ?? 0) * ($invoiceEntry->getAmount()));
         $this->invoiceEntryRepository->save($invoiceEntry, true);
 
         $this->updateInvoiceTotalPrice($invoiceEntry->getInvoice());

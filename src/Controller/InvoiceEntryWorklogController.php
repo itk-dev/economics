@@ -8,16 +8,14 @@ use App\Entity\Version;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
-use App\Repository\InvoiceEntryRepository;
 use App\Repository\WorklogRepository;
+use App\Service\BillingService;
 use Exception;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\JsonException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -59,7 +57,7 @@ class InvoiceEntryWorklogController extends AbstractController
     }
 
     #[Route('/{invoiceEntry}/select_worklogs', name: 'app_invoice_entry_select_worklogs', methods: ['POST'])]
-    public function selectWorklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, TranslatorInterface $translator): Response
+    public function selectWorklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, TranslatorInterface $translator, BillingService $billingService): Response
     {
         $worklogSelections = $request->toArray();
 
@@ -84,6 +82,8 @@ class InvoiceEntryWorklogController extends AbstractController
 
             $worklogRepository->save($worklog, true);
         }
+
+        $billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
         return new Response(200);
     }

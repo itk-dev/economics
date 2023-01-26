@@ -186,6 +186,7 @@ invoices:
   invoice_entry_price_helptext: 'Vælg prisen pr. stk.'
   invoice_entry_amount_helptext: 'Vælg antal.'
   invoice_entry_type_heading: 'Type: %type%'
+  add_worklogs: 'Vælg worklogs'
 
 material_number_enum:
   internal: "Interne: 103361"
@@ -229,3 +230,6 @@ worklog:
   action_save: 'Gem valgte worklogs'
   error_already_billed: 'Fejl: Indeholder worklog der allerede er faktureret. Prøv at genindlæse siden...'
   error_added_to_other_invoice_entry: 'Fejl: Indeholder worklog der er bundet til anden fakturaindgang. Prøv at genindlæse siden...'
+
+invoice_entry:
+  amount: 'Antal'
