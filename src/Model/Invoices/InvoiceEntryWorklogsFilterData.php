@@ -12,4 +12,5 @@ class InvoiceEntryWorklogsFilterData
     public ?DateTime $periodTo = null;
     public ?string $worker = null;
     public ?Version $version = null;
+    public ?bool $onlyAvailable = true;
 }

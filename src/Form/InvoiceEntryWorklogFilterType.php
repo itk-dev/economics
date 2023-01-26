@@ -55,6 +55,17 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                 'attr' => ['class' => 'form-element'],
                 'help' => 'worklog.worker_helptext',
             ])
+            ->add('onlyAvailable',  ChoiceType::class, [
+                'required' => true,
+                'label' => 'worklog.only_available',
+                'label_attr' => ['class' => 'label'],
+                'choices' => [
+                    'worklog.only_available_true' => true,
+                    'worklog.only_available_false' => false,
+                ],
+                'help' => 'worklog.only_available_helptext',
+                'attr' => ['class' => 'form-element']
+            ])
         ;
     }
 

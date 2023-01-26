@@ -19,8 +19,13 @@
                 <li class="list-group-item border-bottom">{{ 'invoices.id'|trans }}: {{ invoice.id }}</li>
                 <li class="list-group-item{{ invoice_entry.entryType.value == 'worklog' ? ' border-bottom' : '' }}">{{ 'invoices.invoice_entry_type_heading'|trans({'%type%': invoice_entry.entryType.value}) }}</li>
                 {% if invoice_entry.entryType.value == 'worklog' %}
-                    <li class="list-group-item">{{ 'invoice_entry.amount'|trans }}: {{ invoice_entry.amount }}</li>
-                    <li class="list-group-item"><a class="link" href="{{ path('app_invoice_entry_worklogs', {'invoice': invoice.id, 'invoiceEntry': invoice_entry.id}) }}">{{ 'invoices.add_worklogs'|trans }}</a></li>
+                    <li class="list-group-item border-bottom">{{ 'invoice_entry.amount'|trans }}: {{ invoice_entry.amount }}</li>
+                    <li class="list-group-item">
+                        {{ 'invoice_entry.amount_worklogs'|trans }}: {{ invoice_entry.worklogs.count }}
+                    </li>
+                    <li class="list-group-item">
+                        <a class="link" href="{{ path('app_invoice_entry_worklogs', {'invoice': invoice.id, 'invoiceEntry': invoice_entry.id}) }}">{{ 'invoices.add_worklogs'|trans }}</a>
+                    </li>
                 {% endif %}
             </ul>
         </div>

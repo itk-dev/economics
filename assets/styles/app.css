@@ -132,6 +132,10 @@
         @apply grid gap-3 mb-6 md:grid-cols-3;
     }
 
+    .worklogs-filter-form {
+        @apply grid gap-3 mb-6 md:grid-cols-4;
+    }
+
     .choices__list--dropdown .choices__item--selectable {
         padding: 1em !important;
     }
