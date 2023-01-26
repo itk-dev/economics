@@ -226,7 +226,7 @@ worklog:
   period_to_helptext: ''
   worker_helptext: ''
   version_helptext: ''
-  owned_by_other: 'Ejet'
+  owned_by_other: 'Anden faktura'
   action_save: 'Gem valgte worklogs'
   error_already_billed: 'Fejl: Indeholder worklog der allerede er faktureret. Prøv at genindlæse siden...'
   error_added_to_other_invoice_entry: 'Fejl: Indeholder worklog der er bundet til anden fakturaindgang. Prøv at genindlæse siden...'
