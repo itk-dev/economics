@@ -43,9 +43,9 @@
                 <td colspan="7">{{ 'invoices.list_no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
-            <tr>
-                <td colspan="2"><a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>
-                <td colspan="5" class="text-right">
+            <tr class="table-tr">
+                <td class="table-td" colspan="2"><a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>
+                <td class="table-td" colspan="5" class="text-right">
                     {{ knp_pagination_render(invoices) }}
                 </td>
             </tr>
