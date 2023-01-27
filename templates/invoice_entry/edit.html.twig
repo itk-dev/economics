@@ -9,9 +9,11 @@
     <div class="grid-split">
         <div>
             {{ form_widget(form) }}
+            {% if not invoice.recorded %}
             <div class="actions-right">
                 <button class="button mt-3">{{ 'invoices.action_save_invoice_entry'|trans }}</button>
             </div>
+            {% endif %}
         </div>
         <div style="padding-top: 24px">
             <ul class="list-group margin-bottom">
@@ -24,7 +26,11 @@
                         {{ 'invoice_entry.amount_worklogs'|trans }}: {{ invoice_entry.worklogs.count }}
                     </li>
                     <li class="list-group-item">
+                        {% if not invoice.recorded %}
                         <a class="link" href="{{ path('app_invoice_entry_worklogs', {'invoice': invoice.id, 'invoiceEntry': invoice_entry.id}) }}">{{ 'invoices.add_worklogs'|trans }}</a>
+                        {% else %}
+                            <a class="link" href="{{ path('app_invoice_entry_worklogs_show', {'invoice': invoice.id, 'invoiceEntry': invoice_entry.id}) }}">{{ 'invoices.show_worklogs'|trans }}</a>
+                        {% endif %}
                     </li>
                 {% endif %}
             </ul>
@@ -34,6 +40,8 @@
 
     <div class="bottom-actions">
         <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
-        {{ include('invoice_entry/_delete_form.html.twig') }}
+        {% if not invoice.recorded %}
+            {{ include('invoice_entry/_delete_form.html.twig') }}
+        {% endif %}
     </div>
 {% endblock %}

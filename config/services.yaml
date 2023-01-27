@@ -35,3 +35,7 @@ services:
             $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
             $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
             $sprintNameRegex: '%env(JIRA_API_SERVICE_SPRINT_NAME_REGEX)%'
+
+    App\Service\BillingService:
+        arguments:
+            $receiverAccount: '%env(APP_INVOICE_RECEIVER_ACCOUNT)%'

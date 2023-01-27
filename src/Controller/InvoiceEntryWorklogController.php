@@ -56,6 +56,22 @@ class InvoiceEntryWorklogController extends AbstractController
         ]);
     }
 
+    #[Route('/{invoiceEntry}/worklogs-show', name: 'app_invoice_entry_worklogs_show', methods: ['GET'])]
+    public function showWorklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository): Response
+    {
+        if ($invoiceEntry->getEntryType() != InvoiceEntryTypeEnum::WORKLOG) {
+            throw new Exception("Invoice entry is not a WORKLOG type.");
+        }
+
+        $worklogs = $worklogRepository->findBy(['invoiceEntry' => $invoiceEntry]);
+
+        return $this->render('invoice_entry/worklogs_show.html.twig', [
+            'invoice' => $invoice,
+            'invoiceEntry' => $invoiceEntry,
+            'worklogs' => $worklogs,
+        ]);
+    }
+
     #[Route('/{invoiceEntry}/select_worklogs', name: 'app_invoice_entry_select_worklogs', methods: ['POST'])]
     public function selectWorklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, TranslatorInterface $translator, BillingService $billingService): Response
     {

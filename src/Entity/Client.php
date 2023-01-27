@@ -46,6 +46,12 @@ class Client
     #[ORM\Column]
     private int $projectTrackerId;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $salesChannel = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $customerKey = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -207,5 +213,29 @@ class Client
     public function __toString(): string
     {
         return $this->getName();
+    }
+
+    public function getSalesChannel(): ?string
+    {
+        return $this->salesChannel;
+    }
+
+    public function setSalesChannel(?string $salesChannel): self
+    {
+        $this->salesChannel = $salesChannel;
+
+        return $this;
+    }
+
+    public function getCustomerKey(): ?string
+    {
+        return $this->customerKey;
+    }
+
+    public function setCustomerKey(?string $customerKey): self
+    {
+        $this->customerKey = $customerKey;
+
+        return $this;
     }
 }

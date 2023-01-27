@@ -12,6 +12,7 @@ use App\Service\BillingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/invoices/{invoice}/entries')]
@@ -20,6 +21,10 @@ class InvoiceEntryController extends AbstractController
     #[Route('/new/{type}', name: 'app_invoice_entry_new', methods: ['GET', 'POST'])]
     public function new(Request $request, Invoice $invoice, InvoiceEntryTypeEnum $type, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
     {
+        if ($invoice->isRecorded()) {
+            throw new HttpException(400, "Invoice is recorded. Cannot add invoice entries.");
+        }
+
         $invoiceEntry = new InvoiceEntry();
         $invoiceEntry->setInvoice($invoice);
         $invoiceEntry->setEntryType($type);
@@ -61,8 +66,13 @@ class InvoiceEntryController extends AbstractController
     #[Route('/{id}/edit', name: 'app_invoice_entry_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
     {
+        $options = [];
+        if ($invoice->isRecorded()) {
+            $options['disabled'] = true;
+        }
+
         if ($invoiceEntry->getEntryType() == InvoiceEntryTypeEnum::WORKLOG) {
-            $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry);
+            $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry, $options);
         } else {
             $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry);
         }
@@ -70,6 +80,10 @@ class InvoiceEntryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($invoice->isRecorded()) {
+                throw new HttpException(400, "Invoice is recorded. Cannot edit invoice entries.");
+            }
+
             $invoiceEntry->setUpdatedAt(new \DateTime());
             $invoiceEntryRepository->save($invoiceEntry, true);
 
@@ -89,6 +103,10 @@ class InvoiceEntryController extends AbstractController
     #[Route('/{id}', name: 'app_invoice_entry_delete', methods: ['POST'])]
     public function delete(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
     {
+        if ($invoice->isRecorded()) {
+            throw new HttpException(400, "Invoice is recorded. Cannot remove invoice entries.");
+        }
+
         if ($this->isCsrfTokenValid('delete'.$invoiceEntry->getId(), $request->request->get('_token'))) {
             $invoice = $invoiceEntry->getInvoice();
             $invoiceEntryRepository->remove($invoiceEntry, true);

@@ -12,15 +12,17 @@
             {{ form_row(form.description) }}
             {{ form_row(form.project) }}
             {{ form_row(form.client) }}
-            {{ form_row(form.defaultMaterialNumber) }}
             {{ form_row(form.periodFrom) }}
             {{ form_row(form.periodTo) }}
             {{ form_row(form.payerAccount) }}
+            {{ form_row(form.defaultMaterialNumber) }}
             {{ form_row(form.defaultReceiverAccount) }}
 
+            {% if not invoice.recorded %}
             <div class="actions-right">
                 <button class="button">{{ 'invoices.action_save'|trans }}</button>
             </div>
+            {% endif %}
         </div>
         <div style="padding-top: 24px">
             <ul class="list-group margin-bottom">
@@ -34,6 +36,8 @@
                     <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_sales_channel'|trans }}: {{ invoice.client.salesChannel }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_customer_key'|trans }}: {{ invoice.client.customerKey }}</li>
                     <li class="list-group-item border-bottom">
                         {{ 'invoices.client_type'|trans }}:
                         {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
@@ -50,6 +54,22 @@
                     <li class="list-group-item">{{ 'invoices.no_client'|trans }}</li>
                 {% endif %}
             </ul>
+            {% if invoice.recorded %}
+            <ul class="list-group margin-bottom">
+                <li class="list-group-item border-bottom text-bold">{{ 'invoices.locked_client_values'|trans }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.locked_type'|trans }}: {{ invoice.lockedType }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.locked_sales_channel'|trans }}: {{ invoice.lockedSalesChannel }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.locked_account_key'|trans }}: {{ invoice.lockedAccountKey }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.locked_contact_name'|trans }}: {{ invoice.lockedContactName }}</li>
+                <li class="list-group-item">{{ 'invoices.locked_customer_key'|trans }}: {{ invoice.lockedCustomerKey }}</li>
+            </ul>
+            {% endif %}
+            <div class="actions-right">
+                <a type="button" href="{{ path('app_invoices_show_export', {'id': invoice.id}) }}" class="button button-green">{{ 'invoices.action_show_export'|trans }}</a>
+                {% if not invoice.recorded %}
+                    <a type="button" href="{{ path('app_invoices_record', {'id': invoice.id}) }}" class="button button-warning">{{ 'invoices.action_record'|trans }}</a>
+                {% endif %}
+            </div>
         </div>
     </div>
     <div>
@@ -98,12 +118,14 @@
                     <td></td>
                 </tr>
             {% endif %}
+            {% if not invoice.recorded %}
             <tr class="table-tr">
                 <td colspan="8" class="table-td">
                     <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
                     <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
                 </td>
             </tr>
+            {% endif %}
             </tbody>
         </table>
     </div>
@@ -111,6 +133,8 @@
 
     <div class="bottom-actions">
         <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
+        {% if not invoice.recorded %}
         {{ include('invoices/_delete_form.html.twig') }}
+        {% endif %}
     </div>
 {% endblock %}

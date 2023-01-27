@@ -1045,7 +1045,9 @@ class JiraApiService implements ApiServiceInterface
             $client->projectTrackerId = $accountId;
             $client->name = $account->name;
             $client->contact = $account->contact->name ?? null;
-            $client->account = $account->customer->key ?? null;
+            $client->account = $account->key ?? null;
+            $client->customerKey = $account->customer->key ?? null;
+            $client->salesChannel = $account->category->key ?? null;
 
             switch ($account->category->name ?? null) {
                 case 'INTERN':
@@ -1112,15 +1114,13 @@ class JiraApiService implements ApiServiceInterface
      * @return mixed
      * @throws ApiServiceException
      */
-    public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01')
+    public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
     {
-        $worklogs = $this->post('rest/tempo-timesheets/4/worklogs/search', [
+        return $this->post('rest/tempo-timesheets/4/worklogs/search', [
             'from' => $from,
             'to' => $to,
             'projectId' => [$projectId],
         ]);
-
-        return $worklogs;
     }
 
     /**

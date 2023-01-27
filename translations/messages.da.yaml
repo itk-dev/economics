@@ -187,6 +187,29 @@ invoices:
   invoice_entry_amount_helptext: 'Vælg antal.'
   invoice_entry_type_heading: 'Type: %type%'
   add_worklogs: 'Vælg worklogs'
+  confirm_record_title: 'Bogfør faktura'
+  confirm_record_are_you_sure: 'Er du sikker på at du vil bogføre fakturaen "%invoiceName%"?'
+  confirm_record_cannot_be_undone: 'Når fakturaen er bogført kan den ikke ændres mere.'
+  record_save: 'Gennemfør valg'
+  record_invoice_false: 'Nej. Gå tilbage.'
+  record_invoice_true: 'Ja. Bogfør faktura.'
+  record_invoice: "Bogfør faktura?"
+  record_invoice_helptext: ''
+  cannot_record_errors_exist: 'Kan ikke bogføre faktura, idet der er fejl i klientkonto dataen:'
+  already_recorded: 'Fakturaen er allerede bogført'
+  action_show_export: 'Vis eksport'
+  action_record: 'Bogfør faktura'
+  locked_client_values: 'Låste fakturaværdier. Disse værdier bruges i fakturaen og ændres ikke selvom kundekontoen bliver opdateret.'
+  locked_type: 'Type'
+  locked_sales_channel: 'Salgskanal'
+  locked_account_key: 'Konto'
+  locked_contact_name: 'Kontakt'
+  locked_customer_key: 'Kundenøgle'
+  client_sales_channel: 'Salgskanal'
+  client_customer_key: 'Kundenøgle (TODO: Hvad er det rette navn for dette felt?)'
+  all_worklogs_will_be_marked_as_billed: 'Alle worklogs i fakturaen vil blive markeret som faktureret.'
+  show_worklogs: 'Vis worklogs'
+  export_title: 'Eksport'
 
 material_number_enum:
   internal: "Interne: 103361"
@@ -234,7 +257,13 @@ worklog:
   only_available_true: 'Ja'
   only_available: 'Kun "frie" worklogs'
   only_available_helptext: 'Worklogs der ikke er i en anden fakturalinje.'
+  title_show: 'Worklogs'
 
 invoice_entry:
   amount: 'Antal enheder'
   amount_worklogs: 'Antal worklogs tilkoblet'
+invoice_recordable:
+  error_no_client: 'Ingen klientkonto tilkoblet'
+  error_no_account: 'Ingen konto'
+  error_no_contact: 'Ingen kontakt'
+  error_no_type: 'Ingen type'
