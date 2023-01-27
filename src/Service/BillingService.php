@@ -269,8 +269,6 @@ class BillingService
     /**
      * Export the selected invoices (by id) to csv.
      *
-     * TODO: Fix deprecation issues.
-     *
      * @param array $invoiceIds array of invoice ids that should be exported
      *
      * @return Spreadsheet
@@ -323,48 +321,48 @@ class BillingService
 
             // Generate header line (H).
             // 1. "Linietype"
-            $sheet->setCellValueByColumnAndRow(1, $row, 'H');
+            $sheet->setCellValue([1, $row], 'H');
             // 2. "Ordregiver/Bestiller"
-            $sheet->setCellValueByColumnAndRow(2, $row, str_pad($customerKey, 10, '0', \STR_PAD_LEFT));
+            $sheet->setCellValue([2, $row], str_pad($customerKey, 10, '0', \STR_PAD_LEFT));
             // 4. "Fakturadato"
-            $sheet->setCellValueByColumnAndRow(4, $row, null !== $invoice->getRecordedDate() ? $invoice->getRecordedDate()->format('d.m.Y') : '');
+            $sheet->setCellValue([4, $row], null !== $invoice->getRecordedDate() ? $invoice->getRecordedDate()->format('d.m.Y') : '');
             // 5. "Bilagsdato"
-            $sheet->setCellValueByColumnAndRow(5, $row, $todayString);
+            $sheet->setCellValue([5, $row], $todayString);
             // 6. "Salgsorganisation"
-            $sheet->setCellValueByColumnAndRow(6, $row, '0020');
+            $sheet->setCellValue([6, $row], '0020');
             // 7. "Salgskanal"
-            $sheet->setCellValueByColumnAndRow(7, $row, $salesChannel);
+            $sheet->setCellValue([7, $row], $salesChannel);
             // 8. "Division"
-            $sheet->setCellValueByColumnAndRow(8, $row, '20');
+            $sheet->setCellValue([8, $row], '20');
             // 9. "Ordreart"
-            $sheet->setCellValueByColumnAndRow(9, $row, $internal ? 'ZIRA' : 'ZRA');
+            $sheet->setCellValue([9, $row], $internal ? 'ZIRA' : 'ZRA');
             // 15. "Kunderef.ID"
-            $sheet->setCellValueByColumnAndRow(15, $row, substr('Att: '.$contactName, 0, 35));
+            $sheet->setCellValue([15, $row], substr('Att: '.$contactName, 0, 35));
             // 16. "Toptekst, yderligere spec i det hvide felt på fakturaen"
-            $sheet->setCellValueByColumnAndRow(16, $row, substr($invoice->getDescription(), 0, 500));
+            $sheet->setCellValue([16, $row], substr($invoice->getDescription(), 0, 500));
             // 17. "Leverandør"
             if ($internal) {
-                $sheet->setCellValueByColumnAndRow(17, $row, str_pad($this->receiverAccount, 10, '0', \STR_PAD_LEFT));
+                $sheet->setCellValue([17, $row], str_pad($this->receiverAccount, 10, '0', \STR_PAD_LEFT));
             }
             // 18. "EAN nr."
             if (!$internal && 13 === \strlen($accountKey)) {
-                $sheet->setCellValueByColumnAndRow(18, $row, $accountKey);
+                $sheet->setCellValue([18, $row], $accountKey);
             }
 
             // External invoices.
             if (!$internal) {
                 // 38. Stiftelsesdato: dagsdato
-                $sheet->setCellValueByColumnAndRow(24, $row, $todayString);
+                $sheet->setCellValue([24, $row], $todayString);
                 // 39. Periode fra
-                $sheet->setCellValueByColumnAndRow(25, $row, $invoice->getPeriodFrom() ? $invoice->getPeriodFrom()->format('d.m.Y') : '');
+                $sheet->setCellValue([25, $row], $invoice->getPeriodFrom() ? $invoice->getPeriodFrom()->format('d.m.Y') : '');
                 // 40. Periode til
-                $sheet->setCellValueByColumnAndRow(26, $row, $invoice->getPeriodTo() ? $invoice->getPeriodTo()->format('d.m.Y') : '');
+                $sheet->setCellValue([26, $row], $invoice->getPeriodTo() ? $invoice->getPeriodTo()->format('d.m.Y') : '');
                 // 46. Fordringstype oprettelse/valg : KOCIVIL
-                $sheet->setCellValueByColumnAndRow(32, $row, 'KOCIVIL');
+                $sheet->setCellValue([32, $row], 'KOCIVIL');
                 // 49. Forfaldsdato: dagsdato
-                $sheet->setCellValueByColumnAndRow(35, $row, $todayString);
+                $sheet->setCellValue([35, $row], $todayString);
                 // 50. Henstand til: dagsdato + 30 dage. NB det må ikke være før faktura forfald. Skal være en bank dag.
-                $sheet->setCellValueByColumnAndRow(36, $row, $todayPlus30daysString);
+                $sheet->setCellValue([36, $row], $todayPlus30daysString);
             }
 
             ++$row;
@@ -383,19 +381,19 @@ class BillingService
 
                 // Generate invoice lines (L).
                 // 1. "Linietype"
-                $sheet->setCellValueByColumnAndRow(1, $row, 'L');
+                $sheet->setCellValue([1, $row], 'L');
                 // 2. "Materiale (vare)nr.
-                $sheet->setCellValueByColumnAndRow(2, $row, str_pad($materialNumber->value, 18, '0', \STR_PAD_LEFT));
+                $sheet->setCellValue([2, $row], str_pad($materialNumber->value, 18, '0', \STR_PAD_LEFT));
                 // 3. "Beskrivelse"
-                $sheet->setCellValueByColumnAndRow(3, $row, substr($product, 0, 40));
+                $sheet->setCellValue([3, $row], substr($product, 0, 40));
                 // 4. "Ordremængde"
-                $sheet->setCellValueByColumnAndRow(4, $row, number_format($amount, 3, ',', ''));
+                $sheet->setCellValue([4, $row], number_format($amount, 3, ',', ''));
                 // 5. "Beløb pr. enhed"
-                $sheet->setCellValueByColumnAndRow(5, $row, number_format($price, 2, ',', ''));
+                $sheet->setCellValue([5, $row], number_format($price, 2, ',', ''));
                 // 6. "Priser fra SAP"
-                $sheet->setCellValueByColumnAndRow(6, $row, 'NEJ');
+                $sheet->setCellValue([6, $row], 'NEJ');
                 // 7. "PSP-element nr."
-                $sheet->setCellValueByColumnAndRow(7, $row, $account);
+                $sheet->setCellValue([7, $row], $account);
 
                 ++$row;
             }
