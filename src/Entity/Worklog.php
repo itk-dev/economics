@@ -65,6 +65,12 @@ class Worklog
     #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $source = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $billedSeconds = null;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -254,6 +260,30 @@ class Worklog
     public function setProject(?Project $project): self
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    public function setSource(string $source): self
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
+    public function getBilledSeconds(): ?int
+    {
+        return $this->billedSeconds;
+    }
+
+    public function setBilledSeconds(?int $billedSeconds): self
+    {
+        $this->billedSeconds = $billedSeconds;
 
         return $this;
     }

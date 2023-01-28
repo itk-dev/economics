@@ -160,7 +160,7 @@ class InvoicesController extends AbstractController
 
         $writer = IOFactory::createWriter($spreadsheet, 'Html');
 
-        $html = $billingService->getOutputAsString($writer);
+        $html = $billingService->getSpreadsheetOutputAsString($writer);
 
         // Extract body content.
         $d = new \DOMDocument();

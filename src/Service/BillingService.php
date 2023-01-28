@@ -78,6 +78,15 @@ class BillingService
             $worklog->setProjectTrackerIssueKey($worklogDatum->projectTrackerIssueKey);
             $worklog->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
 
+            if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
+                $worklog->setIsBilled(true);
+                $worklog->setBilledSeconds($worklogDatum->timeSpentSeconds);
+            }
+
+            if ($worklog->getSource() == null) {
+                $worklog->setSource($this->apiService->getProjectTrackerIdentifier());
+            }
+
             foreach ($worklogDatum->versions as $versionData) {
                 $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
 
@@ -232,6 +241,7 @@ class BillingService
             if ($invoiceEntry->getEntryType() === InvoiceEntryTypeEnum::WORKLOG) {
                 foreach ($invoiceEntry->getWorklogs() as $worklog) {
                     $worklog->setIsBilled(true);
+                    $worklog->setBilledSeconds($worklog->getTimeSpentSeconds());
                 }
             }
         }
@@ -239,6 +249,7 @@ class BillingService
         $this->invoiceRepository->save($invoice, true);
     }
 
+    // TODO: Replace with exceptions.
     public function getInvoiceRecordableErrors(Invoice $invoice): array
     {
         $errors = [];
@@ -405,7 +416,7 @@ class BillingService
     /**
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function getOutputAsString(IWriter $writer): string
+    public function getSpreadsheetOutputAsString(IWriter $writer): string
     {
         $filesystem = new Filesystem();
         $tempFilename = $filesystem->tempnam(sys_get_temp_dir(), 'export_');

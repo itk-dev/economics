@@ -20,6 +20,7 @@ class WorklogData
     public ?string $epicKey;
     /** @var Collection<VersionData> */
     public Collection $versions;
+    public ?bool $projectTrackerIsBilled = null;
 
     public function __construct()
     {

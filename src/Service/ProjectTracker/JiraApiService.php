@@ -59,6 +59,11 @@ class JiraApiService implements ApiServiceInterface
     ) {
     }
 
+    public function getProjectTrackerIdentifier(): string
+    {
+        return "JIRA";
+    }
+
     /**
      * @throws ApiServiceException
      */
@@ -1148,6 +1153,10 @@ class JiraApiService implements ApiServiceInterface
             $worklogData->epicKey = $worklog->issue->epicKey ?? '';
             $worklogData->epicName = $worklog->issue->epicIssue->summary ?? '';
             $worklogData->started = new DateTime($worklog->started);
+
+            if (isset($worklog->attributes->_Billed_) && $worklog->attributes->_Billed_->key == '_Billed_') {
+                $worklogData->projectTrackerIsBilled = $worklog->attributes->_Billed_->value == 'true';
+            }
 
             foreach ($worklog->issue->versions ?? [] as $versionKey) {
                 $versionsFound = array_filter($versions, function ($v) use ($versionKey) {

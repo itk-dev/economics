@@ -10,6 +10,8 @@ use App\Model\SprintReport\SprintReportData;
 
 interface ApiServiceInterface
 {
+    public function getProjectTrackerIdentifier(): string;
+
     public function getAllAccounts(): mixed;
 
     public function getAllCustomers(): mixed;
