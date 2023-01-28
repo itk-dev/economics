@@ -3,21 +3,18 @@
 namespace App\Controller\Invoices;
 
 use App\Entity\Invoice;
-use App\Form\InvoiceRecordType;
 use App\Form\Invoices\InvoiceFilterType;
 use App\Form\Invoices\InvoiceNewType;
+use App\Form\Invoices\InvoiceRecordType;
 use App\Form\Invoices\InvoiceType;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Model\Invoices\InvoiceRecordData;
-use App\Repository\ClientRepository;
 use App\Repository\InvoiceRepository;
-use App\Service\BillingService;
-use Doctrine\ORM\EntityRepository;
+use App\Service\Invoices\BillingService;
 use DOMNode;
 use Exception;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

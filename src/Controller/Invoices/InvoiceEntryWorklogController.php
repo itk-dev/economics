@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Invoices;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Version;
 use App\Enum\InvoiceEntryTypeEnum;
-use App\Form\InvoiceEntryWorklogFilterType;
+use App\Form\Invoices\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\WorklogRepository;
-use App\Service\BillingService;
+use App\Service\Invoices\BillingService;
 use Exception;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Invoices;
 
 use App\Entity\Client;
 use App\Entity\Invoice;

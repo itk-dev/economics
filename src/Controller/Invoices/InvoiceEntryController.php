@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Invoices;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Enum\InvoiceEntryTypeEnum;
-use App\Form\InvoiceEntryType;
-use App\Form\InvoiceEntryWorklogType;
+use App\Form\Invoices\InvoiceEntryType;
+use App\Form\Invoices\InvoiceEntryWorklogType;
 use App\Repository\InvoiceEntryRepository;
-use App\Service\BillingService;
+use App\Service\Invoices\BillingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -94,7 +94,7 @@ navigation:
   invoices: Faktura
   planning: Planlægning
   sprint_report: Sprintrapport
-  title: Economics
+  title: 'Economics'
   accounts: Konto
 
 planning:
@@ -267,3 +267,8 @@ invoice_recordable:
   error_no_account: 'Ingen konto'
   error_no_contact: 'Ingen kontakt'
   error_no_type: 'Ingen type'
+
+title: 'Economics'
+
+home:
+  title: 'Forside'

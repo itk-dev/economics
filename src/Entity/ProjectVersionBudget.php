@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Entity\SprintReport;
+namespace App\Entity;
 
-use App\Repository\SprintReportBudgetRepository;
+use App\Repository\ProjectVersionBudgetRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: SprintReportBudgetRepository::class)]
-class SprintReportBudget
+#[ORM\Entity(repositoryClass: ProjectVersionBudgetRepository::class)]
+class ProjectVersionBudget
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
