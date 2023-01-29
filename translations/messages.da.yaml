@@ -275,3 +275,11 @@ title: 'Economics'
 
 home:
   title: 'Forside'
+  invoice: 'Faktura'
+  invoice_desctiption: 'Opret og rediger fakturaer baseret på opgaver og worklogs i Project Tracker.'
+  planning: 'Planlægning'
+  planning_description: 'Planlægningsoversigt baseret på opgaver i Project Tracker.'
+  sprint_report: 'Sprintrapport'
+  sprint_report_description: 'Opret sprintrapporter baseret på opgaver og worklogs i Project Tracker.'
+  create_project: 'Projektopretter'
+  create_project_description: 'Hjælper med at oprette projekter i Project Tracker.'
