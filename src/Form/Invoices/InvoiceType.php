@@ -32,14 +32,6 @@ class InvoiceType extends AbstractType
                 'attr' => ['class' => 'form-element', 'rows' => 4],
                 'help' => 'invoices.description_helptext',
             ])
-            ->add('project',  null, [
-                'required' => true,
-                'label' => 'invoices.project',
-                'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
-                'attr' => ['class' => 'form-element'],
-                'help' => 'invoices.project_helptext',
-            ])
             ->add('client',  null, [
                 'label' => 'invoices.client',
                 'label_attr' => ['class' => 'label'],

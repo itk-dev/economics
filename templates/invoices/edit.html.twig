@@ -10,7 +10,6 @@
         <div>
             {{ form_row(form.name) }}
             {{ form_row(form.description) }}
-            {{ form_row(form.project) }}
             {{ form_row(form.client) }}
             {{ form_row(form.periodFrom) }}
             {{ form_row(form.periodTo) }}
@@ -26,8 +25,9 @@
         </div>
         <div style="padding-top: 24px">
             <ul class="list-group margin-bottom">
-                <li class="list-group-item border-bottom text-bold">{{ 'invoices.invoice_for'|trans({'%project%': invoice.project.name, '%projectTrackerId%': invoice.project.projectTrackerId}) }}</li>
+                <li class="list-group-item border-bottom text-bold">{{ 'invoices.invoice_info'|trans }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.id'|trans }}: {{ invoice.id }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.project'|trans }}: {{ invoice.project }} ({{ invoice.project.projectTrackerId }})</li>
                 <li class="list-group-item">{{ 'invoices.status'|trans }}: {{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</li>
             </ul>
             <ul class="list-group margin-bottom">
