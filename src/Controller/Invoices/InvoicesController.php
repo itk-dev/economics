@@ -15,6 +15,7 @@ use DOMNode;
 use Exception;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -180,6 +181,40 @@ class InvoicesController extends AbstractController
             'html' => $mock->saveHTML(),
             'invoice' => $invoice,
         ]);
+    }
+
+    /**
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    #[Route('/{id}/export', name: 'app_invoices_export', methods: ['GET'])]
+    public function export(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    {
+        // Mark invoice as exported.
+        $invoice->setExportedDate(new \DateTime());
+        $invoiceRepository->save($invoice, true);
+
+        $spreadsheet = $billingService->exportInvoicesToSpreadsheet([$invoice->getId()]);
+
+        /** @var Csv $writer */
+        $writer = IOFactory::createWriter($spreadsheet, 'Csv');
+        $writer->setDelimiter(';');
+        $writer->setEnclosure('');
+        $writer->setLineEnding("\r\n");
+        $writer->setSheetIndex(0);
+
+        $csvOutput = $billingService->getSpreadsheetOutputAsString($writer);
+
+        // Change encoding to Windows-1252.
+        $csvOutputEncoded = mb_convert_encoding($csvOutput, 'Windows-1252');
+
+        $response = new Response($csvOutputEncoded);
+        $filename = 'invoices-'.date('d-m-Y').'.csv';
+
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        return $response;
     }
 
     #[Route('/{id}', name: 'app_invoices_delete', methods: ['POST'])]

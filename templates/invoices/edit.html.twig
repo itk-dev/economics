@@ -69,6 +69,9 @@
                 {% if not invoice.recorded %}
                     <a type="button" href="{{ path('app_invoices_record', {'id': invoice.id}) }}" class="button button-warning">{{ 'invoices.action_record'|trans }}</a>
                 {% endif %}
+                {% if invoice.recorded %}
+                    <a type="button" href="{{ path('app_invoices_export', {'id': invoice.id}) }}" class="button">{{ 'invoices.action_export'|trans }}</a>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -210,6 +210,7 @@ invoices:
   all_worklogs_will_be_marked_as_billed: 'Alle worklogs i fakturaen vil blive markeret som faktureret.'
   show_worklogs: 'Vis worklogs'
   export_title: 'Eksport'
+  action_export: 'Download .csv'
 
 material_number_enum:
   internal: "Interne: 103361"
