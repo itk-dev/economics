@@ -211,6 +211,7 @@ invoices:
   show_worklogs: 'Vis worklogs'
   export_title: 'Eksport'
   action_export: 'Download .csv'
+  back_to_invoice_entry: 'Tilbage til fakturalinje'
 
 material_number_enum:
   internal: "Interne: 103361"

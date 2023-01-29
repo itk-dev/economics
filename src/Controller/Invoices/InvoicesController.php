@@ -111,9 +111,7 @@ class InvoicesController extends AbstractController
 
             // TODO: Handle this with a doctrine event listener instead.
             $billingService->updateInvoiceTotalPrice($invoice);
-
-            return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);
-        }
+      }
 
         return $this->render('invoices/edit.html.twig', [
             'invoice' => $invoice,
