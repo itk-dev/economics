@@ -2,6 +2,7 @@
 
 namespace App\Service\Invoices;
 
+use App\Entity\Account;
 use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
@@ -10,6 +11,7 @@ use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
+use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
@@ -36,6 +38,7 @@ class BillingService
         private readonly WorklogRepository $worklogRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
+        private readonly AccountRepository $accountRepository,
         private readonly string $receiverAccount,
     ){
     }
@@ -136,6 +139,39 @@ class BillingService
         $invoice->setTotalPrice($totalPrice);
 
         $this->invoiceRepository->save($invoice, true);
+    }
+
+    public function syncAccounts(callable $progressCallback): void
+    {
+        $projectTrackerIdentifier = $this->apiService->getProjectTrackerIdentifier();
+
+        // Get all accounts from ApiService.
+        $allAccountData = $this->apiService->getAllAccountData();
+
+        foreach ($allAccountData as $index => $accountDatum) {
+            $account = $this->accountRepository->findBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
+
+            if (!$account) {
+                $account = new Account();
+                $account->setCreatedAt(new \DateTime());
+                $account->setCreatedBy('sync');
+                $account->setSource($projectTrackerIdentifier);
+            }
+
+            $account->setUpdatedBy('sync');
+            $account->setUpdatedAt(new \DateTime());
+
+            $account->setProjectTrackerId($accountDatum->projectTrackerId);
+            $account->setName($accountDatum->name);
+            $account->setValue($accountDatum->value);
+
+            $this->entityManager->flush();
+            $this->entityManager->clear();
+
+            $progressCallback($index, count($allAccountData));
+        }
+
+        $this->entityManager->flush();
     }
 
     public function syncProjects(callable $progressCallback): void

@@ -11,6 +11,7 @@
                 <th class="table-th">{{ 'accounts.id'|trans }}</th>
                 <th class="table-th">{{ 'accounts.name'|trans }}</th>
                 <th class="table-th">{{ 'accounts.value'|trans }}</th>
+                <th class="table-th">{{ 'accounts.source'|trans }}</th>
                 <th class="table-th">{{ 'accounts.actions'|trans }}</th>
             </tr>
         </thead>
@@ -20,8 +21,11 @@
                 <td class="table-td">{{ account.id }}</td>
                 <td class="table-td">{{ account.name }}</td>
                 <td class="table-td">{{ account.value }}</td>
+                <td class="table-td">{{ account.source ? account.source : 'accounts.manual'|trans }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_account_edit', {'id': account.id}) }}">{{ 'accounts.edit'|trans }}</a>
+                    {% if account.source is empty %}
+                        <a class="link" href="{{ path('app_account_edit', {'id': account.id}) }}">{{ 'accounts.edit'|trans }}</a>
+                    {% endif %}
                 </td>
             </tr>
         {% else %}

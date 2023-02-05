@@ -8,6 +8,7 @@ use App\Repository\AccountRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/account')]
@@ -34,23 +35,19 @@ class AccountController extends AbstractController
             return $this->redirectToRoute('app_account_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('account/new.html.twig', [
+        return $this->render('account/new.html.twig', [
             'account' => $account,
             'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_account_show', methods: ['GET'])]
-    public function show(Account $account): Response
-    {
-        return $this->render('account/show.html.twig', [
-            'account' => $account,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_account_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Account $account, AccountRepository $accountRepository): Response
     {
+        if ($account->getSource() || $account->getProjectTrackerId()) {
+            throw new HttpException(400, "Synced account, cannot be edited.");
+        }
+
         $form = $this->createForm(AccountType::class, $account);
         $form->handleRequest($request);
 
@@ -60,7 +57,7 @@ class AccountController extends AbstractController
             return $this->redirectToRoute('app_account_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('account/edit.html.twig', [
+        return $this->render('account/edit.html.twig', [
             'account' => $account,
             'form' => $form,
         ]);
@@ -69,6 +66,10 @@ class AccountController extends AbstractController
     #[Route('/{id}', name: 'app_account_delete', methods: ['POST'])]
     public function delete(Request $request, Account $account, AccountRepository $accountRepository): Response
     {
+        if ($account->getSource() || $account->getProjectTrackerId()) {
+            throw new HttpException(400, "Synced account, cannot be deleted.");
+        }
+
         if ($this->isCsrfTokenValid('delete'.$account->getId(), $request->request->get('_token'))) {
             $accountRepository->remove($account, true);
         }

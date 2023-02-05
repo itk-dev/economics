@@ -4,6 +4,7 @@ namespace App\Service\ProjectTracker;
 
 use App\Enum\ClientTypeEnum;
 use App\Exception\ApiServiceException;
+use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\VersionData;
@@ -1173,5 +1174,22 @@ class JiraApiService implements ApiServiceInterface
         }
 
         return $worklogsResult;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function getAllAccountData(): array
+    {
+        $accountsResult = [];
+
+        $accounts = $this->getAllAccounts();
+
+        foreach ($accounts as $account) {
+            $p = 1;
+            $accountData = new AccountData($account);
+        }
+
+        return $accountsResult;
     }
 }

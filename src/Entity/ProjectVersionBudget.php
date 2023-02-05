@@ -4,10 +4,15 @@ namespace App\Entity;
 
 use App\Repository\ProjectVersionBudgetRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Blameable\Traits\BlameableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ProjectVersionBudgetRepository::class)]
 class ProjectVersionBudget
 {
+    use BlameableEntity;
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

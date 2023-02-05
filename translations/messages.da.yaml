@@ -233,6 +233,9 @@ accounts:
   name_helptext: 'Vælg et navn'
   value_helptext: 'Vælg kontoens værdi, som sættes ind i fakturaen.'
   delete: 'Slet konto'
+  created_by: 'Oprettet af'
+  source: 'Kilde'
+  manual: 'Manuel'
 
 worklog:
   title: 'Tilføj worklogs til fakturalinje'
@@ -283,3 +286,5 @@ home:
   sprint_report_description: 'Opret sprintrapporter baseret på opgaver og worklogs i Project Tracker.'
   create_project: 'Projektopretter'
   create_project_description: 'Hjælper med at oprette projekter i Project Tracker.'
+  accounts: 'Kontoer'
+  account_details: 'Liste over kontoer'
