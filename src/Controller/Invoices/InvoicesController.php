@@ -2,6 +2,7 @@
 
 namespace App\Controller\Invoices;
 
+use App\Entity\Account;
 use App\Entity\Invoice;
 use App\Form\Invoices\InvoiceFilterType;
 use App\Form\Invoices\InvoiceNewType;
@@ -9,6 +10,7 @@ use App\Form\Invoices\InvoiceRecordType;
 use App\Form\Invoices\InvoiceType;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Model\Invoices\InvoiceRecordData;
+use App\Repository\AccountRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\Invoices\BillingService;
 use DOMNode;
@@ -17,6 +19,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -79,7 +82,7 @@ class InvoicesController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService, AccountRepository $accountRepository): Response
     {
         $options = [];
         if ($invoice->isRecorded()) {
@@ -87,6 +90,50 @@ class InvoicesController extends AbstractController
         }
 
         $form = $this->createForm(InvoiceType::class, $invoice, $options);
+
+        $accountChoices = $accountRepository->getAllChoices();
+
+        // Backwards compatible with JiraEconomics.
+        $paidByAccountChoices = $accountChoices;
+        if ($invoice->getPaidByAccount()) {
+            if (!in_array($invoice->getPaidByAccount(), $paidByAccountChoices)) {
+                $paidByAccountChoices[$invoice->getPaidByAccount()] = $invoice->getPaidByAccount();
+            }
+        }
+
+        // Backwards compatible with JiraEconomics.
+        $defaultReceiverAccountChoices = $accountChoices;
+        if ($invoice->getDefaultReceiverAccount()) {
+            if (!in_array($invoice->getDefaultReceiverAccount(), $defaultReceiverAccountChoices)) {
+                $defaultReceiverAccountChoices[$invoice->getDefaultReceiverAccount()] = $invoice->getDefaultReceiverAccount();
+            }
+        }
+
+        $form->add('paidByAccount',  ChoiceType::class, [
+            'required' => false,
+            'label' => 'invoices.paid_by_account',
+            'label_attr' => ['class' => 'label'],
+            'row_attr' => ['class' => 'form-row'],
+            'attr' => [
+                'class' => 'form-element',
+                'data-account-selector-target' => 'field',
+            ],
+            'choices' => $paidByAccountChoices,
+            'help' => 'invoices.payer_account_helptext',
+        ]);
+
+        $form->add('defaultReceiverAccount',  ChoiceType::class, [
+            'required' => false,
+            'label' => 'invoices.default_receiver_account',
+            'label_attr' => ['class' => 'label'],
+            'row_attr' => ['class' => 'form-row'],
+            'attr' => [
+                'class' => 'form-element',
+                'data-account-selector-target' => 'field',
+            ],
+            'choices' => $defaultReceiverAccountChoices,
+            'help' => 'invoices.default_receiver_account_helptext',
+        ]);
 
         if ($invoice->getProject()) {
             $form->add('client',  null, [

@@ -56,10 +56,10 @@ class Invoice
     private ?string $lockedSalesChannel = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $legacyPaidByAccount = null;
+    private ?string $paidByAccount = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $legacyDefaultPayToAccount = null;
+    private ?string $defaultReceiverAccount = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?MaterialNumberEnum $defaultMaterialNumber = null;
@@ -78,12 +78,6 @@ class Invoice
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     private ?Client $client = null;
-
-    #[ORM\ManyToOne(inversedBy: 'invoices')]
-    private ?Account $defaultReceiverAccount = null;
-
-    #[ORM\ManyToOne]
-    private ?Account $payerAccount = null;
 
     #[ORM\Column(nullable: true)]
     private ?float $totalPrice = null;
@@ -296,30 +290,6 @@ class Invoice
         return $this;
     }
 
-    public function getDefaultReceiverAccount(): ?Account
-    {
-        return $this->defaultReceiverAccount;
-    }
-
-    public function setDefaultReceiverAccount(?Account $defaultReceiverAccount): self
-    {
-        $this->defaultReceiverAccount = $defaultReceiverAccount;
-
-        return $this;
-    }
-
-    public function getPayerAccount(): ?Account
-    {
-        return $this->payerAccount;
-    }
-
-    public function setPayerAccount(?Account $payerAccount): self
-    {
-        $this->payerAccount = $payerAccount;
-
-        return $this;
-    }
-
     public function getLockedCustomerKey(): ?string
     {
         return $this->lockedCustomerKey;
@@ -350,5 +320,25 @@ class Invoice
         $this->totalPrice = $totalPrice;
 
         return $this;
+    }
+
+    public function getPaidByAccount(): ?string
+    {
+        return $this->paidByAccount;
+    }
+
+    public function setPaidByAccount(?string $paidByAccount): void
+    {
+        $this->paidByAccount = $paidByAccount;
+    }
+
+    public function getDefaultReceiverAccount(): ?string
+    {
+        return $this->defaultReceiverAccount;
+    }
+
+    public function setDefaultReceiverAccount(?string $defaultReceiverAccount): void
+    {
+        $this->defaultReceiverAccount = $defaultReceiverAccount;
     }
 }

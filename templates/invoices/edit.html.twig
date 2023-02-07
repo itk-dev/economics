@@ -7,13 +7,13 @@
 
     {{ form_start(form) }}
     <div class="grid-split">
-        <div>
+        <div {{ stimulus_controller('account-selector') }}>
             {{ form_row(form.name) }}
             {{ form_row(form.description) }}
             {{ form_row(form.client) }}
             {{ form_row(form.periodFrom) }}
             {{ form_row(form.periodTo) }}
-            {{ form_row(form.payerAccount) }}
+            {{ form_row(form.paidByAccount) }}
             {{ form_row(form.defaultMaterialNumber) }}
             {{ form_row(form.defaultReceiverAccount) }}
 

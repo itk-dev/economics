@@ -39,28 +39,19 @@ class AccountRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Account[] Returns an array of Account objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getAllChoices(): array
+    {
+        $accounts = $this->findAll();
 
-//    public function findOneBySomeField($value): ?Account
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $accountChoices = array_reduce($accounts, function (array $carry, Account $item) {
+            $name = $item->getName();
+            $value = $item->getValue();
+
+            $carry["$value: $name"] = $value;
+
+            return $carry;
+        }, []);
+
+        return $accountChoices;
+    }
 }

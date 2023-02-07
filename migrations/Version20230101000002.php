@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Cleanup project table.
  */
-final class Version20230115091120 extends AbstractMigration
+final class Version20230101000002 extends AbstractMigration
 {
     public function getDescription(): string
     {

@@ -158,7 +158,7 @@ invoices:
   client: 'Kundekonto'
   default_material_number: 'Forudvalgt "Materialenummer"'
   default_receiver_account: 'Forudvalgt "Til konto"'
-  payer_account: 'Betales af konto'
+  paid_by_account: 'Betales af konto'
   period_from: 'Periode fra'
   period_to: 'Periode til'
   period_from_helptext: 'Dette felt skal udfyldes på eksterne fakturaer.'

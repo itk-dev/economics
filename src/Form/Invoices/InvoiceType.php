@@ -5,6 +5,7 @@ namespace App\Form\Invoices;
 use App\Entity\Invoice;
 use App\Enum\MaterialNumberEnum;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -39,20 +40,26 @@ class InvoiceType extends AbstractType
                 'attr' => ['class' => 'form-element'],
                 'help' => 'invoices.client_helptext',
             ])
-            ->add('payerAccount',  null, [
+            ->add('paidByAccount',  ChoiceType::class, [
                 'required' => false,
-                'label' => 'invoices.payer_account',
+                'label' => 'invoices.paid_by_account',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-account-selector-target' => 'field',
+                ],
                 'help' => 'invoices.payer_account_helptext',
             ])
-            ->add('defaultReceiverAccount',  null, [
+            ->add('defaultReceiverAccount',  ChoiceType::class, [
                 'required' => false,
                 'label' => 'invoices.default_receiver_account',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-account-selector-target' => 'field',
+                ],
                 'help' => 'invoices.default_receiver_account_helptext',
             ])
             ->add('defaultMaterialNumber',  EnumType::class, [

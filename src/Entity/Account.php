@@ -26,23 +26,11 @@ class Account
     #[ORM\Column(length: 255)]
     private ?string $value = null;
 
-    #[ORM\OneToMany(mappedBy: 'defaultReceiverAccount', targetEntity: Invoice::class)]
-    private Collection $invoices;
-
-    #[ORM\OneToMany(mappedBy: 'receiverAccount', targetEntity: InvoiceEntry::class)]
-    private Collection $invoiceEntries;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;
 
     #[ORM\Column(length: 255)]
     private ?string $source = null;
-
-    public function __construct()
-    {
-        $this->invoices = new ArrayCollection();
-        $this->invoiceEntries = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -79,36 +67,6 @@ class Account
         $value = $this->getValue();
 
         return "$value: $name";
-    }
-
-    /**
-     * @return Collection<int, InvoiceEntry>
-     */
-    public function getInvoiceEntries(): Collection
-    {
-        return $this->invoiceEntries;
-    }
-
-    public function addInvoiceEntry(InvoiceEntry $invoiceEntry): self
-    {
-        if (!$this->invoiceEntries->contains($invoiceEntry)) {
-            $this->invoiceEntries->add($invoiceEntry);
-            $invoiceEntry->setReceiverAccount($this);
-        }
-
-        return $this;
-    }
-
-    public function removeInvoiceEntry(InvoiceEntry $invoiceEntry): self
-    {
-        if ($this->invoiceEntries->removeElement($invoiceEntry)) {
-            // set the owning side to null (unless already changed)
-            if ($invoiceEntry->getReceiverAccount() === $this) {
-                $invoiceEntry->setReceiverAccount(null);
-            }
-        }
-
-        return $this;
     }
 
     public function getProjectTrackerId(): ?string

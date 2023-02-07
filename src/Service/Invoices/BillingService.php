@@ -157,6 +157,8 @@ class BillingService
                 $account->setCreatedBy('sync');
                 $account->setSource($projectTrackerIdentifier);
                 $account->setProjectTrackerId($accountDatum->projectTrackerId);
+
+                $this->entityManager->persist($account);
             }
 
             $account->setUpdatedBy('sync');

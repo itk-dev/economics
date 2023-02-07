@@ -56,9 +56,6 @@ class InvoiceEntry
     #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
-    #[ORM\ManyToOne(inversedBy: 'invoiceEntries')]
-    private ?Account $receiverAccount = null;
-
     public function __construct()
     {
         $this->worklogs = new ArrayCollection();
