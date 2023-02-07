@@ -156,12 +156,12 @@ class BillingService
                 $account->setCreatedAt(new \DateTime());
                 $account->setCreatedBy('sync');
                 $account->setSource($projectTrackerIdentifier);
+                $account->setProjectTrackerId($accountDatum->projectTrackerId);
             }
 
             $account->setUpdatedBy('sync');
             $account->setUpdatedAt(new \DateTime());
 
-            $account->setProjectTrackerId($accountDatum->projectTrackerId);
             $account->setName($accountDatum->name);
             $account->setValue($accountDatum->value);
 

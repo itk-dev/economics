@@ -286,5 +286,5 @@ home:
   sprint_report_description: 'Opret sprintrapporter baseret på opgaver og worklogs i Project Tracker.'
   create_project: 'Projektopretter'
   create_project_description: 'Hjælper med at oprette projekter i Project Tracker.'
-  accounts: 'Kontoer'
-  account_details: 'Liste over kontoer'
+  accounts: 'Konto'
+  account_details: 'Liste over kontoer der bruges i faktura.'

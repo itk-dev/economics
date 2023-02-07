@@ -1186,8 +1186,17 @@ class JiraApiService implements ApiServiceInterface
         $accounts = $this->getAllAccounts();
 
         foreach ($accounts as $account) {
-            $p = 1;
-            $accountData = new AccountData($account);
+            $status = $account->status;
+            $id = $account->id;
+            $key = $account->key;
+            $category = $account->category->name ?? null;
+            $name = $account->name;
+
+            $keyStart = substr($key, 0, 2);
+
+            if ($status == 'OPEN' && $category == 'INTERN' && in_array($keyStart, ['XG', 'XD'])) {
+                $accountsResult[] = new AccountData($id, $name, $key);
+            }
         }
 
         return $accountsResult;
