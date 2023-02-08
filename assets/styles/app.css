@@ -276,4 +276,8 @@
     .form-choices input.choices__input.choices__input--cloned {
         @apply text-white bg-gray-50 border border-gray-300 text-gray-900 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white;
     }
+
+    .form-choices .choices[data-type*=select-one]::after {
+        @apply dark:border-t-gray-500;
+    }
 }
