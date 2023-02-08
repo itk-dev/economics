@@ -22,7 +22,7 @@ class InvoiceRecordType extends AbstractType
                     'invoices.record_invoice_true' => true,
                 ],
                 'help' => 'invoices.record_invoice_helptext',
-                'attr' => ['class' => 'form-element']
+                'attr' => ['class' => 'form-element'],
             ])
         ;
     }

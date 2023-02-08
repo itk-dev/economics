@@ -18,8 +18,6 @@ export default class extends Controller {
     }
 
     toggleAll() {
-        console.log("selectAll", this.selectAll);
-
         this.checkboxTargets.forEach((target) => {
             target.checked = this.selectAll;
         });

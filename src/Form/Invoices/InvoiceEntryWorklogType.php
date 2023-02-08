@@ -15,7 +15,7 @@ class InvoiceEntryWorklogType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('materialNumber',  EnumType::class, [
+            ->add('materialNumber', EnumType::class, [
                 'class' => MaterialNumberEnum::class,
                 'required' => true,
                 'attr' => ['class' => 'form-element'],
@@ -30,7 +30,7 @@ class InvoiceEntryWorklogType extends AbstractType
                     MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS => 'material_number_enum.external_without_moms',
                 },
             ])
-            ->add('account',  null, [
+            ->add('account', null, [
                 'required' => true,
                 'attr' => ['class' => 'form-element'],
                 'label' => 'invoices.invoice_entry_receiver_acccount',
@@ -38,7 +38,7 @@ class InvoiceEntryWorklogType extends AbstractType
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'invoices.invoice_entry_receiver_account_helptext',
             ])
-            ->add('product',  null, [
+            ->add('product', null, [
                 'required' => true,
                 'attr' => ['class' => 'form-element'],
                 'label' => 'invoices.invoice_entry_product',
@@ -46,7 +46,7 @@ class InvoiceEntryWorklogType extends AbstractType
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'invoices.invoice_entry_product_helptext',
             ])
-            ->add('price',  IntegerType::class, [
+            ->add('price', IntegerType::class, [
                 'required' => true,
                 'attr' => ['class' => 'form-element', 'min' => 0],
                 'label' => 'invoices.invoice_entry_price',

@@ -22,7 +22,7 @@ class InvoiceEntryController extends AbstractController
     public function new(Request $request, Invoice $invoice, InvoiceEntryTypeEnum $type, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
     {
         if ($invoice->isRecorded()) {
-            throw new HttpException(400, "Invoice is recorded. Cannot add invoice entries.");
+            throw new HttpException(400, 'Invoice is recorded. Cannot add invoice entries.');
         }
 
         $invoiceEntry = new InvoiceEntry();
@@ -37,7 +37,7 @@ class InvoiceEntryController extends AbstractController
             $invoiceEntry->setPrice($client->getStandardPrice());
         }
 
-        if ($type == InvoiceEntryTypeEnum::WORKLOG) {
+        if (InvoiceEntryTypeEnum::WORKLOG == $type) {
             $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry);
         } else {
             $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry);
@@ -71,7 +71,7 @@ class InvoiceEntryController extends AbstractController
             $options['disabled'] = true;
         }
 
-        if ($invoiceEntry->getEntryType() == InvoiceEntryTypeEnum::WORKLOG) {
+        if (InvoiceEntryTypeEnum::WORKLOG == $invoiceEntry->getEntryType()) {
             $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry, $options);
         } else {
             $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry);
@@ -81,7 +81,7 @@ class InvoiceEntryController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($invoice->isRecorded()) {
-                throw new HttpException(400, "Invoice is recorded. Cannot edit invoice entries.");
+                throw new HttpException(400, 'Invoice is recorded. Cannot edit invoice entries.');
             }
 
             $invoiceEntry->setUpdatedAt(new \DateTime());
@@ -102,10 +102,10 @@ class InvoiceEntryController extends AbstractController
     public function delete(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
     {
         if ($invoice->isRecorded()) {
-            throw new HttpException(400, "Invoice is recorded. Cannot remove invoice entries.");
+            throw new HttpException(400, 'Invoice is recorded. Cannot remove invoice entries.');
         }
 
-        if ($this->isCsrfTokenValid('delete'.$invoiceEntry->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$invoiceEntry->getId(), (string) $request->request->get('_token'))) {
             $invoice = $invoiceEntry->getInvoice();
             $invoiceEntryRepository->remove($invoiceEntry, true);
 

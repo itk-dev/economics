@@ -28,10 +28,10 @@ class SyncProjectsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $this->billingService->syncProjects(function($i, $length) use ($io) {
-            if ($i == 0) {
+        $this->billingService->syncProjects(function ($i, $length) use ($io) {
+            if (0 == $i) {
                 $io->progressStart($length);
-            } else if ($i >= $length - 1) {
+            } elseif ($i >= $length - 1) {
                 $io->progressFinish();
             } else {
                 $io->progressAdvance();

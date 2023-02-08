@@ -2,7 +2,6 @@
 
 namespace App\Controller\Invoices;
 
-use App\Entity\Account;
 use App\Entity\Invoice;
 use App\Form\Invoices\InvoiceFilterType;
 use App\Form\Invoices\InvoiceNewType;
@@ -13,8 +12,6 @@ use App\Model\Invoices\InvoiceRecordData;
 use App\Repository\AccountRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\Invoices\BillingService;
-use DOMNode;
-use Exception;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -109,7 +106,7 @@ class InvoicesController extends AbstractController
             }
         }
 
-        $form->add('paidByAccount',  ChoiceType::class, [
+        $form->add('paidByAccount', ChoiceType::class, [
             'required' => false,
             'label' => 'invoices.paid_by_account',
             'label_attr' => ['class' => 'label'],
@@ -122,7 +119,7 @@ class InvoicesController extends AbstractController
             'help' => 'invoices.payer_account_helptext',
         ]);
 
-        $form->add('defaultReceiverAccount',  ChoiceType::class, [
+        $form->add('defaultReceiverAccount', ChoiceType::class, [
             'required' => false,
             'label' => 'invoices.default_receiver_account',
             'label_attr' => ['class' => 'label'],
@@ -136,7 +133,7 @@ class InvoicesController extends AbstractController
         ]);
 
         if ($invoice->getProject()) {
-            $form->add('client',  null, [
+            $form->add('client', null, [
                 'label' => 'invoices.client',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
@@ -150,7 +147,7 @@ class InvoicesController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($invoice->isRecorded()) {
-                throw new HttpException(400, "Invoice is recorded, cannot be edited.");
+                throw new HttpException(400, 'Invoice is recorded, cannot be edited.');
             }
 
             $invoice->setUpdatedAt(new \DateTime());
@@ -158,7 +155,7 @@ class InvoicesController extends AbstractController
 
             // TODO: Handle this with a doctrine event listener instead.
             $billingService->updateInvoiceTotalPrice($invoice);
-      }
+        }
 
         return $this->render('invoices/edit.html.twig', [
             'invoice' => $invoice,
@@ -167,7 +164,7 @@ class InvoicesController extends AbstractController
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_invoices_record', methods: ['GET', 'POST'])]
     public function record(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
@@ -209,9 +206,9 @@ class InvoicesController extends AbstractController
         $d = new \DOMDocument();
         $mock = new \DOMDocument();
         $d->loadHTML($html);
-        /** @var DOMNode $body */
+        /** @var \DOMNode $body */
         $body = $d->getElementsByTagName('div')->item(0);
-        /** @var DOMNode $child */
+        /** @var \DOMNode $child */
         foreach ($body->childNodes as $child) {
             if (isset($child->tagName) && 'style' === $child->tagName) {
                 continue;
@@ -268,7 +265,7 @@ class InvoicesController extends AbstractController
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$invoice->getId(), $token)) {
             if ($invoice->isRecorded()) {
-                throw new HttpException(400, "Invoice is recorded, cannot be deleted.");
+                throw new HttpException(400, 'Invoice is recorded, cannot be deleted.');
             }
 
             $invoiceRepository->remove($invoice, true);

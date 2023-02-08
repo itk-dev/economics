@@ -2,7 +2,6 @@
 
 namespace App\Model\Invoices;
 
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -12,7 +11,7 @@ class WorklogData
     public string $comment;
     public string $worker;
     public int $timeSpentSeconds;
-    public DateTime $started;
+    public \DateTime $started;
     public string $issueName;
     public string $projectTrackerIssueId;
     public string $projectTrackerIssueKey;

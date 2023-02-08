@@ -21,7 +21,6 @@ use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintStateEnum;
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -62,7 +61,7 @@ class JiraApiService implements ApiServiceInterface
 
     public function getProjectTrackerIdentifier(): string
     {
-        return "JIRA";
+        return 'JIRA';
     }
 
     /**
@@ -296,7 +295,7 @@ class JiraApiService implements ApiServiceInterface
      *
      * @throws ApiServiceException
      */
-    public function getAccount(int $accountId): mixed
+    public function getAccount(string $accountId): mixed
     {
         return $this->get(self::API_PATH_ACCOUNT.$accountId.'/');
     }
@@ -304,7 +303,7 @@ class JiraApiService implements ApiServiceInterface
     /**
      * @throws ApiServiceException
      */
-    public function getRateTableByAccount(int $accountId): mixed
+    public function getRateTableByAccount(string $accountId): mixed
     {
         return $this->get(self::API_PATH_RATE_TABLE, [
             'scopeId' => $accountId,
@@ -315,12 +314,12 @@ class JiraApiService implements ApiServiceInterface
     /**
      * @throws ApiServiceException
      */
-    public function getAccountIdsByProject(int $projectId): mixed
+    public function getAccountIdsByProject(string $projectId): array
     {
         $projectLinks = $this->get(self::API_PATH_ACCOUNT_IDS_BY_PROJECT.$projectId);
 
         return array_reduce($projectLinks, function ($carry, $item) {
-            $carry[] = $item->accountId;
+            $carry[] = (string) $item->accountId;
 
             return $carry;
         }, []);
@@ -1043,7 +1042,7 @@ class JiraApiService implements ApiServiceInterface
 
         $accountIds = $this->getAccountIdsByProject($projectId);
 
-        foreach($accountIds as $accountId) {
+        foreach ($accountIds as $accountId) {
             $account = $this->getAccount($accountId);
 
             $client = new ClientData();
@@ -1118,6 +1117,7 @@ class JiraApiService implements ApiServiceInterface
      * @param string $to
      *
      * @return mixed
+     *
      * @throws ApiServiceException
      */
     public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
@@ -1153,20 +1153,24 @@ class JiraApiService implements ApiServiceInterface
             $worklogData->projectTrackerIssueKey = $worklog->issue->key;
             $worklogData->epicKey = $worklog->issue->epicKey ?? '';
             $worklogData->epicName = $worklog->issue->epicIssue->summary ?? '';
-            $worklogData->started = new DateTime($worklog->started);
+            $worklogData->started = new \DateTime($worklog->started);
 
-            if (isset($worklog->attributes->_Billed_) && $worklog->attributes->_Billed_->key == '_Billed_') {
-                $worklogData->projectTrackerIsBilled = $worklog->attributes->_Billed_->value == 'true';
+            if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
+                $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
             }
 
             foreach ($worklog->issue->versions ?? [] as $versionKey) {
+                /** @var array<\stdClass> $versionsFound */
                 $versionsFound = array_filter($versions, function ($v) use ($versionKey) {
-                   return $v->id  == $versionKey;
+                    return $v->id == $versionKey;
                 });
 
-                if (count($versionsFound) == 1) {
-                    $version = array_pop($versionsFound);
-                    $worklogData->versions->add(new VersionData($version->id, $version->name));
+                if (count($versionsFound) > 0) {
+                    $version = $versionsFound[0];
+
+                    if (isset($version->id) && isset($version->name)) {
+                        $worklogData->versions->add(new VersionData($version->id, $version->name));
+                    }
                 }
             }
 
@@ -1194,7 +1198,7 @@ class JiraApiService implements ApiServiceInterface
 
             $keyStart = substr($key, 0, 2);
 
-            if ($status == 'OPEN' && $category == 'INTERN' && in_array($keyStart, ['XG', 'XD'])) {
+            if ('OPEN' == $status && 'INTERN' == $category && in_array($keyStart, ['XG', 'XD'])) {
                 $accountsResult[] = new AccountData($id, $name, $key);
             }
         }

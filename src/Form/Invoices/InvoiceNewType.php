@@ -13,17 +13,17 @@ class InvoiceNewType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name',  null, [
+            ->add('name', null, [
                 'required' => true,
-                'attr' => ['class' => 'form-element']
+                'attr' => ['class' => 'form-element'],
             ])
             ->add('description', TextareaType::class, [
                 'required' => true,
-                'attr' => ['class' => 'form-element', 'rows' => 4]
+                'attr' => ['class' => 'form-element', 'rows' => 4],
             ])
-            ->add('project',  null, [
+            ->add('project', null, [
                 'required' => true,
-                'attr' => ['class' => 'form-element']
+                'attr' => ['class' => 'form-element'],
             ])
         ;
     }

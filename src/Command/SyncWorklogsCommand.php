@@ -19,7 +19,7 @@ class SyncWorklogsCommand extends Command
     public function __construct(
         private readonly BillingService $billingService,
         private readonly ProjectRepository $projectRepository,
-    ){
+    ) {
         parent::__construct($this->getName());
     }
 
@@ -39,17 +39,17 @@ class SyncWorklogsCommand extends Command
         foreach ($projects as $project) {
             $io->writeln("Processing worklogs for {$project->getName()}");
 
-            $this->billingService->syncWorklogsForProject($project->getId(), function($i, $length) use ($io) {
-                if ($i == 0) {
+            $this->billingService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
+                if (0 == $i) {
                     $io->progressStart($length);
-                } else if ($i >= $length - 1) {
+                } elseif ($i >= $length - 1) {
                     $io->progressFinish();
                 } else {
                     $io->progressAdvance();
                 }
             });
 
-            $io->writeln("");
+            $io->writeln('');
         }
 
         return Command::SUCCESS;

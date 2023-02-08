@@ -20,7 +20,6 @@ use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use App\Service\ProjectTracker\ApiServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
 use Symfony\Component\Filesystem\Filesystem;
@@ -40,17 +39,18 @@ class BillingService
         private readonly TranslatorInterface $translator,
         private readonly AccountRepository $accountRepository,
         private readonly string $receiverAccount,
-    ){
+    ) {
     }
 
     /**
      * @throws \Exception
      */
-    public function syncWorklogsForProject(string $projectId, callable $progressCallback = null): void {
+    public function syncWorklogsForProject(string $projectId, callable $progressCallback = null): void
+    {
         $project = $this->projectRepository->find($projectId);
 
         if (!$project) {
-            throw new Exception("Project not found");
+            throw new \Exception('Project not found');
         }
 
         $worklogData = $this->apiService->getWorklogDataForProject($project->getProjectTrackerId());
@@ -61,13 +61,13 @@ class BillingService
 
             if (!$worklog) {
                 $worklog = new Worklog();
-                $worklog->setCreatedBy("sync");
+                $worklog->setCreatedBy('sync');
                 $worklog->setCreatedAt(new \DateTime());
 
                 $this->entityManager->persist($worklog);
             }
 
-            $worklog->setUpdatedBy("sync");
+            $worklog->setUpdatedBy('sync');
             $worklog->setUpdatedAt(new \DateTime());
 
             $worklog->setWorklogId($worklogDatum->projectTrackerId);
@@ -86,24 +86,24 @@ class BillingService
                 $worklog->setBilledSeconds($worklogDatum->timeSpentSeconds);
             }
 
-            if ($worklog->getSource() == null) {
+            if (null == $worklog->getSource()) {
                 $worklog->setSource($this->apiService->getProjectTrackerIdentifier());
             }
 
             foreach ($worklogDatum->versions as $versionData) {
                 $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
 
-                if ($version !== null) {
+                if (null !== $version) {
                     $worklog->addVersion($version);
                 }
             }
 
             $project->addWorklog($worklog);
 
-            if ($progressCallback !== null) {
+            if (null !== $progressCallback) {
                 $progressCallback($worklogsAdded, count($worklogData));
 
-                $worklogsAdded++;
+                ++$worklogsAdded;
             }
         }
 
@@ -112,7 +112,7 @@ class BillingService
 
     public function updateInvoiceEntryTotalPrice(InvoiceEntry $invoiceEntry): void
     {
-        if ($invoiceEntry->getEntryType() === InvoiceEntryTypeEnum::WORKLOG) {
+        if (InvoiceEntryTypeEnum::WORKLOG === $invoiceEntry->getEntryType()) {
             $amountSeconds = 0;
 
             foreach ($invoiceEntry->getWorklogs() as $worklog) {
@@ -122,7 +122,7 @@ class BillingService
             $invoiceEntry->setAmount($amountSeconds / 3600);
         }
 
-        $invoiceEntry->setTotalPrice(($invoiceEntry->getPrice() ?? 0) * ($invoiceEntry->getAmount()));
+        $invoiceEntry->setTotalPrice(($invoiceEntry->getPrice() ?? 0) * $invoiceEntry->getAmount());
         $this->invoiceEntryRepository->save($invoiceEntry, true);
 
         $this->updateInvoiceTotalPrice($invoiceEntry->getInvoice());
@@ -187,7 +187,7 @@ class BillingService
             if (!$project) {
                 $project = new Project();
                 $project->setCreatedAt(new \DateTime());
-                $project->setCreatedBy("sync");
+                $project->setCreatedBy('sync');
                 $this->entityManager->persist($project);
             }
 
@@ -213,7 +213,7 @@ class BillingService
 
             $projectClientData = $this->apiService->getClientDataForProject($projectDatum->projectTrackerId);
 
-            foreach($projectClientData as $clientData) {
+            foreach ($projectClientData as $clientData) {
                 $client = $this->clientRepository->findOneBy(['projectTrackerId' => $clientData->projectTrackerId]);
 
                 if (!$client) {
@@ -247,7 +247,7 @@ class BillingService
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function recordInvoice(Invoice $invoice): void
     {
@@ -255,18 +255,18 @@ class BillingService
         $errors = $this->getInvoiceRecordableErrors($invoice);
 
         if ($invoice->isRecorded()) {
-            throw new Exception("Already recorded.");
+            throw new \Exception('Already recorded.');
         }
 
         if (!empty($errors)) {
-            throw new Exception("Cannot record invoices. Errors not handled.");
+            throw new \Exception('Cannot record invoices. Errors not handled.');
         }
 
         $client = $invoice->getClient();
 
         // Lock client values.
         // The locked type is handled this way to be backwards compatible with Jira Economics.
-        $invoice->setLockedType($client->getType() == ClientTypeEnum::INTERNAL ? 'INTERN' : 'EKSTERN');
+        $invoice->setLockedType(ClientTypeEnum::INTERNAL == $client->getType() ? 'INTERN' : 'EKSTERN');
         $invoice->setLockedSalesChannel($client->getSalesChannel());
         $invoice->setLockedCustomerKey($client->getCustomerKey());
         $invoice->setLockedContactName($client->getContact());
@@ -276,7 +276,7 @@ class BillingService
         $invoice->setRecordedDate(new \DateTime());
 
         foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
-            if ($invoiceEntry->getEntryType() === InvoiceEntryTypeEnum::WORKLOG) {
+            if (InvoiceEntryTypeEnum::WORKLOG === $invoiceEntry->getEntryType()) {
                 foreach ($invoiceEntry->getWorklogs() as $worklog) {
                     $worklog->setIsBilled(true);
                     $worklog->setBilledSeconds($worklog->getTimeSpentSeconds());
@@ -467,7 +467,7 @@ class BillingService
         $filesystem->remove($tempFilename);
 
         if (!$output) {
-            return "";
+            return '';
         }
 
         return $output;

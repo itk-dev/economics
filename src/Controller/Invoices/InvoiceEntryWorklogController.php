@@ -10,7 +10,6 @@ use App\Form\Invoices\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\WorklogRepository;
 use App\Service\Invoices\BillingService;
-use Exception;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,15 +24,15 @@ class InvoiceEntryWorklogController extends AbstractController
     #[Route('/{invoiceEntry}/worklogs', name: 'app_invoice_entry_worklogs', methods: ['GET', 'POST'])]
     public function worklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository): Response
     {
-        if ($invoiceEntry->getEntryType() != InvoiceEntryTypeEnum::WORKLOG) {
-            throw new Exception("Invoice entry is not a WORKLOG type.");
+        if (InvoiceEntryTypeEnum::WORKLOG != $invoiceEntry->getEntryType()) {
+            throw new \Exception('Invoice entry is not a WORKLOG type.');
         }
 
         $project = $invoice->getProject();
 
         $filterData = new InvoiceEntryWorklogsFilterData();
         $form = $this->createForm(InvoiceEntryWorklogFilterType::class, $filterData);
-        $form ->add('version',  EntityType::class, [
+        $form->add('version', EntityType::class, [
             'class' => Version::class,
             'required' => false,
             'label' => 'worklog.version',
@@ -59,8 +58,8 @@ class InvoiceEntryWorklogController extends AbstractController
     #[Route('/{invoiceEntry}/worklogs-show', name: 'app_invoice_entry_worklogs_show', methods: ['GET'])]
     public function showWorklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository): Response
     {
-        if ($invoiceEntry->getEntryType() != InvoiceEntryTypeEnum::WORKLOG) {
-            throw new Exception("Invoice entry is not a WORKLOG type.");
+        if (InvoiceEntryTypeEnum::WORKLOG != $invoiceEntry->getEntryType()) {
+            throw new \Exception('Invoice entry is not a WORKLOG type.');
         }
 
         $worklogs = $worklogRepository->findBy(['invoiceEntry' => $invoiceEntry]);
@@ -85,8 +84,8 @@ class InvoiceEntryWorklogController extends AbstractController
             }
 
             if ($worklogSelection['checked']) {
-                if ($worklog->getInvoiceEntry() !== null && $worklog->getInvoiceEntry() !== $invoiceEntry) {
-                    return new JsonResponse(['message' =>  $translator->trans('worklog.error_added_to_other_invoice_entry')], 400);
+                if (null !== $worklog->getInvoiceEntry() && $worklog->getInvoiceEntry() !== $invoiceEntry) {
+                    return new JsonResponse(['message' => $translator->trans('worklog.error_added_to_other_invoice_entry')], 400);
                 }
 
                 $worklog->setInvoiceEntry($invoiceEntry);

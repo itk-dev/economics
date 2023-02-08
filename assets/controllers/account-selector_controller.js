@@ -15,7 +15,7 @@ export default class extends Controller {
             const notDisabled = !target.disabled;
 
             if (notDisabled) {
-                new Choices(target, {maxItemCount: 1, allowHTML: true});
+                new Choices(target, {maxItemCount: 1, allowHTML: true, itemSelectText: ''});
             }
         });
     }

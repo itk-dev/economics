@@ -53,7 +53,7 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         if (isset($filterData->worker)) {
-            $qb->andWhere('worklog.worker LIKE :worker')->setParameter('worker', "%".$filterData->worker."%");
+            $qb->andWhere('worklog.worker LIKE :worker')->setParameter('worker', '%'.$filterData->worker.'%');
         }
 
         if (isset($filterData->periodFrom)) {
@@ -72,7 +72,7 @@ class WorklogRepository extends ServiceEntityRepository
         if (isset($filterData->onlyAvailable) && $filterData->onlyAvailable) {
             $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->isNull('worklog.invoiceEntry'),
-                $qb->expr()->eq('worklog.invoiceEntry',':invoiceEntry')
+                $qb->expr()->eq('worklog.invoiceEntry', ':invoiceEntry')
             ))->setParameter('invoiceEntry', $invoiceEntry);
         }
 

@@ -39,11 +39,12 @@ interface ApiServiceInterface
 
     public function createProjectBoard(string $type, mixed $project): void;
 
-    public function getAccount(int $accountId): mixed;
+    public function getAccount(string $accountId): mixed;
 
-    public function getRateTableByAccount(int $accountId): mixed;
+    public function getRateTableByAccount(string $accountId): mixed;
 
-    public function getAccountIdsByProject(int $projectId): mixed;
+    /** @return array<string> */
+    public function getAccountIdsByProject(string $projectId): array;
 
     public function getAllBoards(): mixed;
 
@@ -72,5 +73,4 @@ interface ApiServiceInterface
      * @return array<AccountData>
      */
     public function getAllAccountData(): array;
-
 }

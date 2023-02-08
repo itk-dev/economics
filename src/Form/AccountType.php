@@ -12,7 +12,7 @@ class AccountType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name',  null, [
+            ->add('name', null, [
                 'required' => false,
                 'label' => 'accounts.name',
                 'label_attr' => ['class' => 'label'],
@@ -20,7 +20,7 @@ class AccountType extends AbstractType
                 'attr' => ['class' => 'form-element'],
                 'help' => 'accounts.name_helptext',
             ])
-            ->add('value',  null, [
+            ->add('value', null, [
                 'required' => false,
                 'label' => 'accounts.value',
                 'label_attr' => ['class' => 'label'],

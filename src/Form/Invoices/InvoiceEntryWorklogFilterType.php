@@ -14,7 +14,7 @@ class InvoiceEntryWorklogFilterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('isBilled',  ChoiceType::class, [
+            ->add('isBilled', ChoiceType::class, [
                 'required' => false,
                 'label' => 'worklog.is_billed',
                 'label_attr' => ['class' => 'label'],
@@ -23,9 +23,9 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                     'worklog.is_billed_true' => true,
                 ],
                 'help' => 'worklog.is_billed_helptext',
-                'attr' => ['class' => 'form-element']
+                'attr' => ['class' => 'form-element'],
             ])
-            ->add('periodFrom',  DateTimeType::class, [
+            ->add('periodFrom', DateTimeType::class, [
                 'required' => false,
                 'label' => 'worklog.period_from',
                 'label_attr' => ['class' => 'label'],
@@ -33,9 +33,9 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                 'help' => 'worklog.period_from_helptext',
                 'widget' => 'single_text',
                 'html5' => true,
-                'attr' => ['class' => 'form-element']
+                'attr' => ['class' => 'form-element'],
             ])
-            ->add('periodTo',  DateTimeType::class, [
+            ->add('periodTo', DateTimeType::class, [
                 'required' => false,
                 'label' => 'worklog.period_to',
                 'label_attr' => ['class' => 'label'],
@@ -45,7 +45,7 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                 'widget' => 'single_text',
                 'html5' => true,
             ])
-            ->add('worker',  null, [
+            ->add('worker', null, [
                 'required' => false,
                 'label' => 'worklog.worker',
                 'label_attr' => ['class' => 'label'],
@@ -53,7 +53,7 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                 'attr' => ['class' => 'form-element'],
                 'help' => 'worklog.worker_helptext',
             ])
-            ->add('onlyAvailable',  ChoiceType::class, [
+            ->add('onlyAvailable', ChoiceType::class, [
                 'required' => true,
                 'label' => 'worklog.only_available',
                 'label_attr' => ['class' => 'label'],
@@ -62,7 +62,7 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                     'worklog.only_available_false' => false,
                 ],
                 'help' => 'worklog.only_available_helptext',
-                'attr' => ['class' => 'form-element']
+                'attr' => ['class' => 'form-element'],
             ])
         ;
     }
