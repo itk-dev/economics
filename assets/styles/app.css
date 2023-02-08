@@ -256,4 +256,24 @@
     .grid-split-three {
         @apply grid gap-12 md:grid-cols-3;
     }
+
+    .form-choices .choices {
+        @apply m-0;
+    }
+
+    .form-choices .choices__inner {
+        @apply text-white bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-1;
+    }
+
+    .form-choices .choices__list--single {
+        @apply p-0;
+    }
+
+    .form-choices .choices__list--dropdown.is-active {
+        @apply text-white bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+    }
+
+    .form-choices input.choices__input.choices__input--cloned {
+        @apply text-white bg-gray-50 border border-gray-300 text-gray-900 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white;
+    }
 }

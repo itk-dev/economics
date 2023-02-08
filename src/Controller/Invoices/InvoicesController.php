@@ -113,7 +113,7 @@ class InvoicesController extends AbstractController
             'required' => false,
             'label' => 'invoices.paid_by_account',
             'label_attr' => ['class' => 'label'],
-            'row_attr' => ['class' => 'form-row'],
+            'row_attr' => ['class' => 'form-row form-choices'],
             'attr' => [
                 'class' => 'form-element',
                 'data-account-selector-target' => 'field',
@@ -126,7 +126,7 @@ class InvoicesController extends AbstractController
             'required' => false,
             'label' => 'invoices.default_receiver_account',
             'label_attr' => ['class' => 'label'],
-            'row_attr' => ['class' => 'form-row'],
+            'row_attr' => ['class' => 'form-row form-choices'],
             'attr' => [
                 'class' => 'form-element',
                 'data-account-selector-target' => 'field',

@@ -14,11 +14,5 @@ export default class extends Controller {
         this.fieldTargets.forEach((target) => {
             new Choices(target, {maxItemCount: 1, allowHTML: true});
         });
-
-        fetch('/accounts/choices').then(
-            (resp) => resp.json()
-        ).then((choices) => {
-            console.log(choices);
-        });
     }
 }
