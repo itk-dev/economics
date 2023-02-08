@@ -12,7 +12,11 @@ export default class extends Controller {
 
     connect() {
         this.fieldTargets.forEach((target) => {
-            new Choices(target, {maxItemCount: 1, allowHTML: true});
+            const notDisabled = !target.disabled;
+
+            if (notDisabled) {
+                new Choices(target, {maxItemCount: 1, allowHTML: true});
+            }
         });
     }
 }
