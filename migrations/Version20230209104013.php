@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20230207104042 extends AbstractMigration
+final class Version20230209104013 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,7 +21,7 @@ final class Version20230207104042 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE account (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, value VARCHAR(255) NOT NULL, project_tracker_id VARCHAR(255) DEFAULT NULL, source VARCHAR(255) NOT NULL, created_by VARCHAR(255) DEFAULT NULL, updated_by VARCHAR(255) DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE client (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, contact VARCHAR(255) DEFAULT NULL, standard_price DOUBLE PRECISION DEFAULT NULL, type VARCHAR(255) DEFAULT NULL, account VARCHAR(255) DEFAULT NULL, psp VARCHAR(255) DEFAULT NULL, ean VARCHAR(255) DEFAULT NULL, project_tracker_id INT NOT NULL, sales_channel VARCHAR(255) DEFAULT NULL, customer_key VARCHAR(255) DEFAULT NULL, created_by VARCHAR(255) DEFAULT NULL, updated_by VARCHAR(255) DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE client (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, contact VARCHAR(255) DEFAULT NULL, standard_price DOUBLE PRECISION DEFAULT NULL, type VARCHAR(255) DEFAULT NULL, account VARCHAR(255) DEFAULT NULL, psp VARCHAR(255) DEFAULT NULL, ean VARCHAR(255) DEFAULT NULL, project_tracker_id VARCHAR(255) DEFAULT NULL, sales_channel VARCHAR(255) DEFAULT NULL, customer_key VARCHAR(255) DEFAULT NULL, created_by VARCHAR(255) DEFAULT NULL, updated_by VARCHAR(255) DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE project_client (project_id INT NOT NULL, client_id INT NOT NULL, INDEX IDX_D0E0EF1F166D1F9C (project_id), INDEX IDX_D0E0EF1F19EB6921 (client_id), PRIMARY KEY(project_id, client_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE project_version_budget (id INT AUTO_INCREMENT NOT NULL, project_id VARCHAR(255) NOT NULL, version_id VARCHAR(255) NOT NULL, budget DOUBLE PRECISION NOT NULL, created_by VARCHAR(255) DEFAULT NULL, updated_by VARCHAR(255) DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE version (id INT AUTO_INCREMENT NOT NULL, project_id INT NOT NULL, name VARCHAR(255) NOT NULL, project_tracker_id VARCHAR(255) NOT NULL, created_by VARCHAR(255) DEFAULT NULL, updated_by VARCHAR(255) DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, INDEX IDX_BF1CD3C3166D1F9C (project_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -35,6 +35,7 @@ final class Version20230207104042 extends AbstractMigration
         $this->addSql('ALTER TABLE invoice ADD CONSTRAINT FK_9065174419EB6921 FOREIGN KEY (client_id) REFERENCES client (id)');
         $this->addSql('CREATE INDEX IDX_9065174419EB6921 ON invoice (client_id)');
         $this->addSql('ALTER TABLE invoice_entry ADD total_price DOUBLE PRECISION DEFAULT NULL, CHANGE price price DOUBLE PRECISION DEFAULT NULL, CHANGE amount amount DOUBLE PRECISION DEFAULT NULL');
+        $this->addSql('ALTER TABLE project CHANGE project_tracker_id project_tracker_id VARCHAR(255) DEFAULT NULL');
         $this->addSql('ALTER TABLE worklog DROP FOREIGN KEY FK_524AFE2EA51E131A');
         $this->addSql('ALTER TABLE worklog ADD project_id INT DEFAULT NULL, ADD description VARCHAR(255) DEFAULT NULL, ADD worker VARCHAR(255) NOT NULL, ADD time_spent_seconds INT NOT NULL, ADD started DATETIME NOT NULL, ADD issue_name VARCHAR(255) NOT NULL, ADD project_tracker_issue_id VARCHAR(255) NOT NULL, ADD project_tracker_issue_key VARCHAR(255) NOT NULL, ADD epic_name VARCHAR(255) DEFAULT NULL, ADD epic_key VARCHAR(255) DEFAULT NULL, ADD source VARCHAR(255) NOT NULL, ADD billed_seconds INT DEFAULT NULL, CHANGE invoice_entry_id invoice_entry_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE worklog ADD CONSTRAINT FK_524AFE2E166D1F9C FOREIGN KEY (project_id) REFERENCES project (id)');
@@ -64,6 +65,7 @@ final class Version20230207104042 extends AbstractMigration
         $this->addSql('DROP INDEX IDX_524AFE2E166D1F9C ON worklog');
         $this->addSql('ALTER TABLE worklog DROP project_id, DROP description, DROP worker, DROP time_spent_seconds, DROP started, DROP issue_name, DROP project_tracker_issue_id, DROP project_tracker_issue_key, DROP epic_name, DROP epic_key, DROP source, DROP billed_seconds, CHANGE invoice_entry_id invoice_entry_id INT NOT NULL');
         $this->addSql('ALTER TABLE worklog ADD CONSTRAINT FK_524AFE2EA51E131A FOREIGN KEY (invoice_entry_id) REFERENCES invoice_entry (id)');
+        $this->addSql('ALTER TABLE project CHANGE project_tracker_id project_tracker_id INT NOT NULL');
         $this->addSql('ALTER TABLE invoice_entry DROP total_price, CHANGE price price NUMERIC(10, 2) DEFAULT NULL, CHANGE amount amount NUMERIC(10, 2) DEFAULT NULL');
     }
 }
