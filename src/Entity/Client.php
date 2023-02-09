@@ -48,8 +48,8 @@ class Client
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'clients')]
     private Collection $projects;
 
-    #[ORM\Column]
-    private int $projectTrackerId;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $projectTrackerId = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $salesChannel = null;
@@ -97,7 +97,7 @@ class Client
         return $this->standardPrice;
     }
 
-    public function setStandardPrice(float $standardPrice): self
+    public function setStandardPrice(?float $standardPrice): self
     {
         $this->standardPrice = $standardPrice;
 
@@ -185,12 +185,12 @@ class Client
         return $this;
     }
 
-    public function getProjectTrackerId(): int
+    public function getProjectTrackerId(): ?string
     {
         return $this->projectTrackerId;
     }
 
-    public function setProjectTrackerId(int $projectTrackerId): void
+    public function setProjectTrackerId(?string $projectTrackerId): void
     {
         $this->projectTrackerId = $projectTrackerId;
     }
@@ -217,7 +217,7 @@ class Client
 
     public function __toString(): string
     {
-        return $this->getName();
+        return $this->getName() ?? (string) $this->getId();
     }
 
     public function getSalesChannel(): ?string

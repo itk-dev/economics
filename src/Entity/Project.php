@@ -32,8 +32,8 @@ class Project
     #[ORM\Column(length: 255)]
     private ?string $projectTrackerKey;
 
-    #[ORM\Column]
-    private ?int $projectTrackerId;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $projectTrackerId;
 
     #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'projects')]
     private Collection $clients;
@@ -119,12 +119,12 @@ class Project
         $this->projectTrackerKey = $projectTrackerKey;
     }
 
-    public function getProjectTrackerId(): ?int
+    public function getProjectTrackerId(): ?string
     {
         return $this->projectTrackerId;
     }
 
-    public function setProjectTrackerId(?int $projectTrackerId): void
+    public function setProjectTrackerId(?string $projectTrackerId): void
     {
         $this->projectTrackerId = $projectTrackerId;
     }
@@ -170,7 +170,7 @@ class Project
     {
         if (!$this->versions->contains($version)) {
             $this->versions->add($version);
-            $version->addProject($this);
+            $version->setProject($this);
         }
 
         return $this;
@@ -179,7 +179,7 @@ class Project
     public function removeVersion(Version $version): self
     {
         if ($this->versions->removeElement($version)) {
-            $version->removeProject($this);
+            $version->setProject(null);
         }
 
         return $this;

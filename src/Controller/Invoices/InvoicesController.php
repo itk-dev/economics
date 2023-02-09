@@ -34,9 +34,9 @@ class InvoicesController extends AbstractController
         $form = $this->createForm(InvoiceFilterType::class, $invoiceFilterData);
         $form->handleRequest($request);
 
-        $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $invoiceFilterData->recorded ?? false);
+        $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $invoiceFilterData->recorded);
 
-        if (isset($invoiceFilterData->createdBy)) {
+        if (!empty($invoiceFilterData->createdBy)) {
             $qb->andWhere('invoice.createdBy LIKE :createdBy')->setParameter('createdBy', $invoiceFilterData->createdBy);
         }
 
@@ -92,17 +92,19 @@ class InvoicesController extends AbstractController
 
         // Backwards compatible with JiraEconomics.
         $paidByAccountChoices = $accountChoices;
-        if ($invoice->getPaidByAccount()) {
-            if (!in_array($invoice->getPaidByAccount(), $paidByAccountChoices)) {
-                $paidByAccountChoices[$invoice->getPaidByAccount()] = $invoice->getPaidByAccount();
+        $paidByAccountCurrentValue = $invoice->getPaidByAccount();
+        if (!empty($paidByAccountCurrentValue)) {
+            if (!in_array($paidByAccountCurrentValue, $paidByAccountChoices)) {
+                $paidByAccountChoices[$paidByAccountCurrentValue] = $paidByAccountCurrentValue;
             }
         }
 
         // Backwards compatible with JiraEconomics.
         $defaultReceiverAccountChoices = $accountChoices;
-        if ($invoice->getDefaultReceiverAccount()) {
-            if (!in_array($invoice->getDefaultReceiverAccount(), $defaultReceiverAccountChoices)) {
-                $defaultReceiverAccountChoices[$invoice->getDefaultReceiverAccount()] = $invoice->getDefaultReceiverAccount();
+        $defaultReceiverAccountCurrentValue = $invoice->getDefaultReceiverAccount();
+        if (!empty($defaultReceiverAccountCurrentValue)) {
+            if (!in_array($defaultReceiverAccountCurrentValue, $defaultReceiverAccountChoices)) {
+                $defaultReceiverAccountChoices[$defaultReceiverAccountCurrentValue] = $defaultReceiverAccountCurrentValue;
             }
         }
 
@@ -132,14 +134,18 @@ class InvoicesController extends AbstractController
             'help' => 'invoices.default_receiver_account_helptext',
         ]);
 
-        if ($invoice->getProject()) {
+        $project = $invoice->getProject();
+
+        if (!is_null($project)) {
+            $clients = $project->getClients();
+
             $form->add('client', null, [
                 'label' => 'invoices.client',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'attr' => ['class' => 'form-element'],
                 'help' => 'invoices.client_helptext',
-                'choices' => $invoice->getProject()->getClients(),
+                'choices' => $clients,
             ]);
         }
 
@@ -202,18 +208,22 @@ class InvoicesController extends AbstractController
 
         $html = $billingService->getSpreadsheetOutputAsString($writer);
 
+        if (empty($html)) {
+            $html = '<html lang="da" />';
+        }
+
         // Extract body content.
         $d = new \DOMDocument();
         $mock = new \DOMDocument();
         $d->loadHTML($html);
         /** @var \DOMNode $body */
         $body = $d->getElementsByTagName('div')->item(0);
-        /** @var \DOMNode $child */
+        /** @var \DOMElement $child */
         foreach ($body->childNodes as $child) {
-            if (isset($child->tagName) && 'style' === $child->tagName) {
+            if ('style' === $child->tagName) {
                 continue;
             }
-            if (isset($child->tagName) && 'table' === $child->tagName) {
+            if ('table' === $child->tagName) {
                 $child->setAttribute('class', 'table table-export');
             }
             $mock->appendChild($mock->importNode($child, true));

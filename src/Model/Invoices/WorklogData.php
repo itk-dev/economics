@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 
 class WorklogData
 {
-    public string $projectTrackerId;
+    public int $projectTrackerId;
     public string $comment;
     public string $worker;
     public int $timeSpentSeconds;
@@ -17,7 +17,7 @@ class WorklogData
     public string $projectTrackerIssueKey;
     public ?string $epicName;
     public ?string $epicKey;
-    /** @var Collection<VersionData> */
+    /** @var Collection<string, VersionData> */
     public Collection $versions;
     public ?bool $projectTrackerIsBilled = null;
 

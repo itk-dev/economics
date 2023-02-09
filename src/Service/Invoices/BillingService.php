@@ -53,7 +53,13 @@ class BillingService
             throw new \Exception('Project not found');
         }
 
-        $worklogData = $this->apiService->getWorklogDataForProject($project->getProjectTrackerId());
+        $projectTrackerId = $project->getProjectTrackerId();
+
+        if (null === $projectTrackerId) {
+            throw new \Exception('ProjectTrackerId not set');
+        }
+
+        $worklogData = $this->apiService->getWorklogDataForProject($projectTrackerId);
         $worklogsAdded = 0;
 
         foreach ($worklogData as $worklogDatum) {
@@ -125,7 +131,10 @@ class BillingService
         $invoiceEntry->setTotalPrice(($invoiceEntry->getPrice() ?? 0) * $invoiceEntry->getAmount());
         $this->invoiceEntryRepository->save($invoiceEntry, true);
 
-        $this->updateInvoiceTotalPrice($invoiceEntry->getInvoice());
+        $invoice = $invoiceEntry->getInvoice();
+        if (!is_null($invoice)) {
+            $this->updateInvoiceTotalPrice($invoice);
+        }
     }
 
     public function updateInvoiceTotalPrice(Invoice $invoice): void
@@ -149,7 +158,7 @@ class BillingService
         $allAccountData = $this->apiService->getAllAccountData();
 
         foreach ($allAccountData as $index => $accountDatum) {
-            $account = $this->accountRepository->findBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
+            $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
 
             if (!$account) {
                 $account = new Account();
@@ -203,9 +212,13 @@ class BillingService
 
                 if (!$version) {
                     $version = new Version();
+                    $version->setCreatedAt(new \DateTime());
+                    $version->setCreatedBy('sync');
                     $this->entityManager->persist($version);
                 }
 
+                $version->setUpdatedBy('sync');
+                $version->setUpdatedAt(new \DateTime());
                 $version->setName($versionData->name);
                 $version->setProjectTrackerId($versionData->projectTrackerId);
                 $version->setProject($project);
@@ -218,10 +231,14 @@ class BillingService
 
                 if (!$client) {
                     $client = new Client();
+                    $client->setCreatedAt(new \DateTime());
+                    $client->setCreatedBy('sync');
                     $client->setProjectTrackerId($clientData->projectTrackerId);
                     $this->entityManager->persist($client);
                 }
 
+                $client->setUpdatedBy('sync');
+                $client->setUpdatedAt(new \DateTime());
                 $client->setName($clientData->name);
                 $client->setContact($clientData->contact);
                 $client->setAccount($clientData->account);
@@ -264,6 +281,10 @@ class BillingService
 
         $client = $invoice->getClient();
 
+        if (is_null($client)) {
+            throw new \Exception('Client must be set');
+        }
+
         // Lock client values.
         // The locked type is handled this way to be backwards compatible with Jira Economics.
         $invoice->setLockedType(ClientTypeEnum::INTERNAL == $client->getType() ? 'INTERN' : 'EKSTERN');
@@ -292,13 +313,13 @@ class BillingService
     {
         $errors = [];
 
-        if (!$invoice->getClient()) {
+        $client = $invoice->getClient();
+
+        if (is_null($client)) {
             $errors[] = $this->translator->trans('invoice_recordable.error_no_client');
 
             return $errors;
         }
-
-        $client = $invoice->getClient();
 
         if (!$client->getAccount()) {
             $errors[] = $this->translator->trans('invoice_recordable.error_no_account');
@@ -321,6 +342,8 @@ class BillingService
      * @param array $invoiceIds array of invoice ids that should be exported
      *
      * @return Spreadsheet
+     *
+     * @throws \Exception
      */
     public function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet
     {
@@ -345,6 +368,10 @@ class BillingService
             } else {
                 // If the invoice has not been recorded yet.
                 $client = $invoice->getClient();
+
+                if (is_null($client)) {
+                    throw new \Exception('Client cannot be null.');
+                }
 
                 $internal = ClientTypeEnum::INTERNAL === $client->getType();
                 $customerKey = $client->getCustomerKey();
@@ -372,9 +399,10 @@ class BillingService
             // 1. "Linietype"
             $sheet->setCellValue([1, $row], 'H');
             // 2. "Ordregiver/Bestiller"
-            $sheet->setCellValue([2, $row], str_pad($customerKey, 10, '0', \STR_PAD_LEFT));
+            $sheet->setCellValue([2, $row], str_pad($customerKey ?? '', 10, '0', \STR_PAD_LEFT));
             // 4. "Fakturadato"
-            $sheet->setCellValue([4, $row], null !== $invoice->getRecordedDate() ? $invoice->getRecordedDate()->format('d.m.Y') : '');
+            $recordedDate = $invoice->getRecordedDate();
+            $sheet->setCellValue([4, $row], null !== $recordedDate ? $recordedDate->format('d.m.Y') : '');
             // 5. "Bilagsdato"
             $sheet->setCellValue([5, $row], $todayString);
             // 6. "Salgsorganisation"
@@ -388,13 +416,14 @@ class BillingService
             // 15. "Kunderef.ID"
             $sheet->setCellValue([15, $row], substr('Att: '.$contactName, 0, 35));
             // 16. "Toptekst, yderligere spec i det hvide felt på fakturaen"
-            $sheet->setCellValue([16, $row], substr($invoice->getDescription(), 0, 500));
+            $description = $invoice->getDescription() ?? '';
+            $sheet->setCellValue([16, $row], substr($description, 0, 500));
             // 17. "Leverandør"
             if ($internal) {
                 $sheet->setCellValue([17, $row], str_pad($this->receiverAccount, 10, '0', \STR_PAD_LEFT));
             }
             // 18. "EAN nr."
-            if (!$internal && 13 === \strlen($accountKey)) {
+            if (!$internal && 13 === \strlen($accountKey ?? '')) {
                 $sheet->setCellValue([18, $row], $accountKey);
             }
 
@@ -403,9 +432,11 @@ class BillingService
                 // 38. Stiftelsesdato: dagsdato
                 $sheet->setCellValue([24, $row], $todayString);
                 // 39. Periode fra
-                $sheet->setCellValue([25, $row], $invoice->getPeriodFrom() ? $invoice->getPeriodFrom()->format('d.m.Y') : '');
+                $periodFrom = $invoice->getPeriodFrom();
+                $sheet->setCellValue([25, $row], null !== $periodFrom ? $periodFrom->format('d.m.Y') : '');
                 // 40. Periode til
-                $sheet->setCellValue([26, $row], $invoice->getPeriodTo() ? $invoice->getPeriodTo()->format('d.m.Y') : '');
+                $periodTo = $invoice->getPeriodTo();
+                $sheet->setCellValue([26, $row], null !== $periodTo ? $periodTo->format('d.m.Y') : '');
                 // 46. Fordringstype oprettelse/valg : KOCIVIL
                 $sheet->setCellValue([32, $row], 'KOCIVIL');
                 // 49. Forfaldsdato: dagsdato

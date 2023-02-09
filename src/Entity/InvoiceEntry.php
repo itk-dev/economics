@@ -199,16 +199,4 @@ class InvoiceEntry
     {
         $this->totalPrice = $totalPrice;
     }
-
-    public function getReceiverAccount(): ?Account
-    {
-        return $this->receiverAccount;
-    }
-
-    public function setReceiverAccount(?Account $receiverAccount): self
-    {
-        $this->receiverAccount = $receiverAccount;
-
-        return $this;
-    }
 }

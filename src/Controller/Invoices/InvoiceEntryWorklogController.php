@@ -21,6 +21,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Route('/invoices/{invoice}/entries')]
 class InvoiceEntryWorklogController extends AbstractController
 {
+    /**
+     * @throws \Exception
+     */
     #[Route('/{invoiceEntry}/worklogs', name: 'app_invoice_entry_worklogs', methods: ['GET', 'POST'])]
     public function worklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository): Response
     {
@@ -30,8 +33,13 @@ class InvoiceEntryWorklogController extends AbstractController
 
         $project = $invoice->getProject();
 
+        if (is_null($project)) {
+            throw new \Exception('Project not set on invoice.');
+        }
+
         $filterData = new InvoiceEntryWorklogsFilterData();
         $form = $this->createForm(InvoiceEntryWorklogFilterType::class, $filterData);
+
         $form->add('version', EntityType::class, [
             'class' => Version::class,
             'required' => false,
@@ -40,7 +48,7 @@ class InvoiceEntryWorklogController extends AbstractController
             'row_attr' => ['class' => 'form-row'],
             'attr' => ['class' => 'form-element'],
             'help' => 'worklog.version_helptext',
-            'choices' => $invoice->getProject()->getVersions(),
+            'choices' => $project->getVersions(),
         ]);
 
         $form->handleRequest($request);
@@ -71,6 +79,9 @@ class InvoiceEntryWorklogController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     #[Route('/{invoiceEntry}/select_worklogs', name: 'app_invoice_entry_select_worklogs', methods: ['POST'])]
     public function selectWorklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, TranslatorInterface $translator, BillingService $billingService): Response
     {
@@ -78,6 +89,10 @@ class InvoiceEntryWorklogController extends AbstractController
 
         foreach ($worklogSelections as $worklogSelection) {
             $worklog = $worklogRepository->find($worklogSelection['id']);
+
+            if (!$worklog) {
+                throw new \Exception('Worklog not found');
+            }
 
             if ($worklog->isBilled()) {
                 return new JsonResponse(['message' => $translator->trans('worklog.error_already_billed')], 400);
@@ -100,6 +115,6 @@ class InvoiceEntryWorklogController extends AbstractController
 
         $billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
-        return new Response(200);
+        return new Response(null, 200);
     }
 }

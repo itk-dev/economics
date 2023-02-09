@@ -11,7 +11,7 @@ class ProjectData
     public string $projectTrackerId;
     public string $projectTrackerKey;
     public string $projectTrackerProjectUrl;
-    /** @var Collection<VersionData> */
+    /** @var Collection<string, VersionData> */
     public Collection $versions;
 
     public function __construct()

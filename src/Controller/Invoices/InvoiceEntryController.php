@@ -106,7 +106,6 @@ class InvoiceEntryController extends AbstractController
         }
 
         if ($this->isCsrfTokenValid('delete'.$invoiceEntry->getId(), (string) $request->request->get('_token'))) {
-            $invoice = $invoiceEntry->getInvoice();
             $invoiceEntryRepository->remove($invoiceEntry, true);
 
             // TODO: Handle this with a doctrine event listener instead.

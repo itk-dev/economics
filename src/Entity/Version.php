@@ -35,7 +35,6 @@ class Version
 
     public function __construct()
     {
-        $this->projects = new ArrayCollection();
         $this->worklogs = new ArrayCollection();
     }
 
@@ -106,6 +105,6 @@ class Version
 
     public function __toString(): string
     {
-        return $this->getName();
+        return $this->getName() ?? (string) $this->getId();
     }
 }

@@ -75,6 +75,7 @@ class InvoiceType extends AbstractType
                     MaterialNumberEnum::INTERNAL => 'material_number_enum.internal',
                     MaterialNumberEnum::EXTERNAL_WITH_MOMS => 'material_number_enum.external_with_moms',
                     MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS => 'material_number_enum.external_without_moms',
+                    default => null,
                 },
             ])
             ->add('periodFrom', DateTimeType::class, [
