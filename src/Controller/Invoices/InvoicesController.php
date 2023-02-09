@@ -34,8 +34,7 @@ class InvoicesController extends AbstractController
         $form = $this->createForm(InvoiceFilterType::class, $invoiceFilterData);
         $form->handleRequest($request);
 
-        $recorded = $invoiceFilterData->recorded ?? false;
-        $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $recorded);
+        $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $invoiceFilterData->recorded);
 
         if (!empty($invoiceFilterData->createdBy)) {
             $qb->andWhere('invoice.createdBy LIKE :createdBy')->setParameter('createdBy', $invoiceFilterData->createdBy);
