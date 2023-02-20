@@ -43,6 +43,29 @@ class BillingService
     }
 
     /**
+     * Migrate from invoice.customer_account_id to invoice.client.
+     */
+    public function migrateCustomers(): void
+    {
+        $invoices = $this->invoiceRepository->findAll();
+
+        /** @var Invoice $invoice */
+        foreach ($invoices as $invoice) {
+            $customerAccountId = $invoice->getCustomerAccountId();
+
+            if ($invoice->getClient() == null && $customerAccountId !== null) {
+                $client = $this->clientRepository->findOneBy(['projectTrackerId' => $invoice->getCustomerAccountId()]);
+
+                if ($client !== null) {
+                    $invoice->setClient($client);
+                }
+            }
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
      * @throws \Exception
      */
     public function syncWorklogsForProject(string $projectId, callable $progressCallback = null): void
