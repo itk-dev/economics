@@ -53,10 +53,10 @@ class BillingService
         foreach ($invoices as $invoice) {
             $customerAccountId = $invoice->getCustomerAccountId();
 
-            if ($invoice->getClient() == null && $customerAccountId !== null) {
+            if (null == $invoice->getClient() && null !== $customerAccountId) {
                 $client = $this->clientRepository->findOneBy(['projectTrackerId' => $invoice->getCustomerAccountId()]);
 
-                if ($client !== null) {
+                if (null !== $client) {
                     $invoice->setClient($client);
                 }
             }
