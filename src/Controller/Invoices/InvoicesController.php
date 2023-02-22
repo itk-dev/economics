@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/invoices')]
+#[Route('/admin/invoices')]
 class InvoicesController extends AbstractController
 {
     #[Route('/', name: 'app_invoices_index', methods: ['GET'])]

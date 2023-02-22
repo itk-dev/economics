@@ -288,3 +288,7 @@ home:
   create_project_description: 'Hjælper med at oprette projekter i Project Tracker.'
   accounts: 'Konto'
   account_details: 'Liste over kontoer der bruges i faktura.'
+
+frontpage:
+  title: 'Velkommen til Economics'
+  login: 'Log ind'

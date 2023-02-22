@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin/sprint-report')]
 class SprintReportController extends AbstractController
 {
     public function __construct(
@@ -24,7 +25,7 @@ class SprintReportController extends AbstractController
     ) {
     }
 
-    #[Route('/sprint-report', name: 'app_sprint_report')]
+    #[Route('/', name: 'app_sprint_report')]
     public function index(Request $request): Response
     {
         $reportData = null;
@@ -104,7 +105,7 @@ class SprintReportController extends AbstractController
         ]);
     }
 
-    #[Route('/sprint-report/budget', name: 'app_sprint_report_budget', methods: ['POST'])]
+    #[Route('/budget', name: 'app_sprint_report_budget', methods: ['POST'])]
     public function updateBudget(Request $request): Response
     {
         $data = $request->toArray();
@@ -125,7 +126,7 @@ class SprintReportController extends AbstractController
     /**
      * @throws MpdfException
      */
-    #[Route('/sprint-report/generate-pdf', name: 'app_sprint_report_pdf', methods: ['GET'])]
+    #[Route('/generate-pdf', name: 'app_sprint_report_pdf', methods: ['GET'])]
     public function generatePdf(Request $request)
     {
         $projectId = (string) $request->query->get('projectId');

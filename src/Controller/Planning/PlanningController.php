@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/admin/planning')]
 class PlanningController extends AbstractController
 {
     public function __construct(
@@ -17,7 +18,7 @@ class PlanningController extends AbstractController
     /**
      * @throws \Exception
      */
-    #[Route('/planning', name: 'app_planning')]
+    #[Route('/', name: 'app_planning')]
     public function index(): Response
     {
         $planningData = $this->apiService->getPlanningData();
