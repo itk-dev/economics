@@ -16,12 +16,16 @@ use App\Model\Planning\PlanningData;
 use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
 use App\Model\Planning\SprintSum;
+use App\Model\PruneUsers\UserData;
 use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
+
+use function Sodium\add;
+
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -47,6 +51,7 @@ class JiraApiService implements ApiServiceInterface
     private const API_PATH_EPIC = '/rest/agile/1.0/epic';
     private const API_PATH_RATE_TABLE = '/rest/tempo-accounts/1/ratetable';
     private const API_PATH_ACCOUNT_IDS_BY_PROJECT = '/rest/tempo-accounts/1/link/project/';
+    private const API_PATH_SEARCH_USERS = '/rest/api/2/user/search';
 
     public function __construct(
         protected readonly HttpClientInterface $projectTrackerApi,
@@ -62,6 +67,85 @@ class JiraApiService implements ApiServiceInterface
     public function getProjectTrackerIdentifier(): string
     {
         return 'JIRA';
+    }
+
+    public function getAllUserKeys(): array
+    {
+        $userKeys = [];
+
+        $startAt = 0;
+        while (true) {
+            $result = $this->get(self::API_PATH_SEARCH_USERS, [
+                'startAt' => $startAt,
+                'username' => '.',
+                'includeInactive' => false,
+            ]);
+
+            $userKeys = array_merge($userKeys, array_map(function ($el) {
+                return $el->key;
+            }, $result));
+
+            $startAt = $startAt + 50;
+
+            if (50 > count($result)) {
+                break;
+            }
+        }
+
+        return $userKeys;
+    }
+
+    public function getUser(string $key): UserData
+    {
+        $user = $this->get('/rest/api/2/user', [
+            'key' => $key,
+        ]);
+
+        $issues = $this->post(self::API_PATH_SEARCH, [
+            'jql' => 'reporter = "'.$user->name.'"',
+        ]);
+
+        $hasOpenIssues = false;
+
+        foreach ($issues->issues as $issue) {
+            $updatedDate = new \DateTime($issue->fields->updated);
+            $statusDone = 'done' == $issue->fields->status->statusCategory->key;
+
+            if ($statusDone) {
+                $fourWeeksAgo = (new \DateTime())->sub(new \DateInterval('P28D'));
+
+                // Grace period before anonymizing user.
+                if ($updatedDate > $fourWeeksAgo) {
+                    $hasOpenIssues = true;
+                    break;
+                }
+            } else {
+                $hasOpenIssues = true;
+            }
+        }
+
+        return new UserData(
+            $user->name,
+            $user->key,
+            $user->displayName,
+            $user->emailAddress,
+            $user->deleted,
+            $user->active,
+            $user->groups->size > 0,
+            $user->applicationRoles->size > 0,
+            $hasOpenIssues,
+        );
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function anonymizeUser(string $key): void
+    {
+        $this->post('/rest/api/2/user/anonymization', [
+            'userKey' => $key,
+            'newOwnerKey' => 'admin',
+        ]);
     }
 
     /**

@@ -7,6 +7,7 @@ use App\Model\Invoices\ClientData;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
+use App\Model\PruneUsers\UserData;
 use App\Model\SprintReport\SprintReportData;
 
 interface ApiServiceInterface
@@ -73,4 +74,10 @@ interface ApiServiceInterface
      * @return array<AccountData>
      */
     public function getAllAccountData(): array;
+
+    public function getAllUserKeys(): array;
+
+    public function getUser(string $key): UserData;
+
+    public function anonymizeUser(string $key): void;
 }
