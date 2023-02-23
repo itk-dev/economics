@@ -23,7 +23,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
 {
     /**
-     * AzureOIDCAuthenticator constructor
+     * AzureOIDCAuthenticator constructor.
      *
      * @param EntityManagerInterface $entityManager
      * @param UrlGeneratorInterface $router
@@ -39,7 +39,7 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
         parent::__construct($providerManager, $requestStack);
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public function authenticate(Request $request): Passport
     {
         try {
@@ -52,7 +52,7 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
 
             // Check if user exists already - if not create a user
             $user = $this->entityManager->getRepository(User::class)
-                ->findOneBy(['email'=> $email]);
+                ->findOneBy(['email' => $email]);
 
             if (null === $user) {
                 // Create the new user and persist it
@@ -73,7 +73,7 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
         }
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $p = 1;
@@ -81,7 +81,7 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
         return new RedirectResponse($this->router->generate('index'));
     }
 
-    /** @inheritDoc */
+    /** {@inheritDoc} */
     public function start(Request $request, AuthenticationException $authException = null): Response
     {
         $p = 1;
