@@ -44,12 +44,16 @@ class Project
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectBilling::class)]
+    private Collection $projectBillings;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
         $this->clients = new ArrayCollection();
         $this->versions = new ArrayCollection();
         $this->worklogs = new ArrayCollection();
+        $this->projectBillings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -209,6 +213,36 @@ class Project
             // set the owning side to null (unless already changed)
             if ($worklog->getProject() === $this) {
                 $worklog->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProjectBilling>
+     */
+    public function getProjectBillings(): Collection
+    {
+        return $this->projectBillings;
+    }
+
+    public function addProjectBilling(ProjectBilling $projectBilling): self
+    {
+        if (!$this->projectBillings->contains($projectBilling)) {
+            $this->projectBillings->add($projectBilling);
+            $projectBilling->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectBilling(ProjectBilling $projectBilling): self
+    {
+        if ($this->projectBillings->removeElement($projectBilling)) {
+            // set the owning side to null (unless already changed)
+            if ($projectBilling->getProject() === $this) {
+                $projectBilling->setProject(null);
             }
         }
 
