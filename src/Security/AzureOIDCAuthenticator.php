@@ -76,16 +76,12 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
     /** {@inheritDoc} */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        $p = 1;
-
         return new RedirectResponse($this->router->generate('index'));
     }
 
     /** {@inheritDoc} */
     public function start(Request $request, AuthenticationException $authException = null): Response
     {
-        $p = 1;
-
         return new RedirectResponse($this->router->generate('itkdev_openid_connect_login', [
             'providerKey' => 'user',
         ]));
