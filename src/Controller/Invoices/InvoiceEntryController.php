@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/invoices/{invoice}/entries')]
+#[Route('/admin/invoices/{invoice}/entries')]
 class InvoiceEntryController extends AbstractController
 {
     #[Route('/new/{type}', name: 'app_invoice_entry_new', methods: ['GET', 'POST'])]

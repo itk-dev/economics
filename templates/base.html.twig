@@ -14,13 +14,17 @@
         {% endblock %}
     </head>
     <body class="body">
+        {% block body %}
         <div class="container">
             <div class="flex flex-row flex-wrap py-4">
-                {% include 'components/navigation.html.twig' %}
+                {% block navigation %}
+                    {% include 'components/navigation.html.twig' %}
+                {% endblock %}
                 <main role="main" class="w-full sm:w-2/3 md:w-3/4 pt-1 px-2">
                     {% block content %}{% endblock %}
                 </main>
             </div>
         </div>
+        {% endblock %}
     </body>
 </html>

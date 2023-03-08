@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class CreateProjectController.
  */
+#[Route('/admin/create-project')]
 class CreateProjectController extends AbstractController
 {
     public function __construct(
@@ -22,7 +23,7 @@ class CreateProjectController extends AbstractController
     /**
      * Create a project and all related entities.
      */
-    #[Route('/create-project/new', name: 'create_project_form')]
+    #[Route('/new', name: 'create_project_form')]
     public function createProject(Request $request): Response
     {
         $form = $this->createForm(CreateProjectForm::class);
@@ -128,7 +129,7 @@ class CreateProjectController extends AbstractController
     /**
      * Receipt page displayed when a project was created.
      *
-     * @Route("/create-project/submitted", name="create_project_submitted")
+     * @Route("/submitted", name="create_project_submitted")
      */
     public function submitted(Request $request): Response
     {
