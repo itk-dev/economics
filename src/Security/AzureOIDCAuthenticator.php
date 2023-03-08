@@ -63,7 +63,6 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
             // Update/set user properties
             $user->setName($name);
             $user->setEmail($email);
-            $user->setRoles(['ROLE_USER']);
 
             $this->entityManager->flush();
 
