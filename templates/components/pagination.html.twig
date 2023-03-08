@@ -1,0 +1,43 @@
+{% if pageCount > 1 %}
+    <div class="mt-5 mb-5">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination-ul">
+                {% if first is defined and current != first %}
+                    <li>
+                        <a class="pagination-item" href="{{ path(route, query|merge({(pageParameterName): first})) }}">&lt;&lt;</a>
+                    </li>
+                {% endif %}
+
+                {% if previous is defined %}
+                    <li>
+                        <a class="pagination-item" rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})) }}">&lt;</a>
+                    </li>
+                {% endif %}
+
+                {% for page in pagesInRange %}
+                    {% if page != current %}
+                        <li>
+                            <a class="pagination-item" href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a class="pagination-current">{{ page }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if next is defined %}
+                    <li>
+                        <a class="pagination-item" rel="next" href="{{ path(route, query|merge({(pageParameterName): next})) }}">&gt;</a>
+                    </li>
+                {% endif %}
+
+                {% if last is defined and current != last %}
+                    <li>
+                        <a class="pagination-item" href="{{ path(route, query|merge({(pageParameterName): last})) }}">&gt;&gt;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endif %}

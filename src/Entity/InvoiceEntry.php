@@ -2,14 +2,21 @@
 
 namespace App\Entity;
 
+use App\Enum\InvoiceEntryTypeEnum;
+use App\Enum\MaterialNumberEnum;
 use App\Repository\InvoiceEntryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Blameable\Traits\BlameableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: InvoiceEntryRepository::class)]
 class InvoiceEntry
 {
+    use BlameableEntity;
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -19,9 +26,12 @@ class InvoiceEntry
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
 
+    // TODO: Remove since it is unused.
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
+    // TODO: Rename to legacy field.
+    // TODO: Add migration from account to receiverAccount.
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $account = null;
 
@@ -29,27 +39,26 @@ class InvoiceEntry
     private ?string $product = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $price = null;
+    private ?float $price = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $amount = null;
+    private ?float $amount = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $totalPrice = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $entryType = null;
+    private InvoiceEntryTypeEnum $entryType;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $materialNumber = null;
+    private ?MaterialNumberEnum $materialNumber = null;
 
     #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
-    #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: Expense::class)]
-    private Collection $expenses;
-
     public function __construct()
     {
         $this->worklogs = new ArrayCollection();
-        $this->expenses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,48 +114,36 @@ class InvoiceEntry
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getPrice(): ?float
     {
         return $this->price;
     }
 
-    public function setPrice(?int $price): self
+    public function setPrice(?float $price): self
     {
         $this->price = $price;
 
         return $this;
     }
 
-    public function getAmount(): ?int
+    public function getAmount(): ?float
     {
         return $this->amount;
     }
 
-    public function setAmount(?int $amount): self
+    public function setAmount(?float $amount): self
     {
         $this->amount = $amount;
 
         return $this;
     }
 
-    public function getEntryType(): ?string
-    {
-        return $this->entryType;
-    }
-
-    public function setEntryType(string $entryType): self
-    {
-        $this->entryType = $entryType;
-
-        return $this;
-    }
-
-    public function getMaterialNumber(): ?string
+    public function getMaterialNumber(): ?MaterialNumberEnum
     {
         return $this->materialNumber;
     }
 
-    public function setMaterialNumber(?string $materialNumber): self
+    public function setMaterialNumber(?MaterialNumberEnum $materialNumber): self
     {
         $this->materialNumber = $materialNumber;
 
@@ -183,33 +180,23 @@ class InvoiceEntry
         return $this;
     }
 
-    /**
-     * @return Collection<int, Expense>
-     */
-    public function getExpenses(): Collection
+    public function getEntryType(): InvoiceEntryTypeEnum
     {
-        return $this->expenses;
+        return $this->entryType;
     }
 
-    public function addExpense(Expense $expense): self
+    public function setEntryType(InvoiceEntryTypeEnum $entryType): void
     {
-        if (!$this->expenses->contains($expense)) {
-            $this->expenses->add($expense);
-            $expense->setInvoiceEntry($this);
-        }
-
-        return $this;
+        $this->entryType = $entryType;
     }
 
-    public function removeExpense(Expense $expense): self
+    public function getTotalPrice(): ?float
     {
-        if ($this->expenses->removeElement($expense)) {
-            // set the owning side to null (unless already changed)
-            if ($expense->getInvoiceEntry() === $this) {
-                $expense->setInvoiceEntry(null);
-            }
-        }
+        return $this->totalPrice;
+    }
 
-        return $this;
+    public function setTotalPrice(?float $totalPrice): void
+    {
+        $this->totalPrice = $totalPrice;
     }
 }

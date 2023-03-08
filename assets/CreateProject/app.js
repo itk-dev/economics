@@ -1,3 +1,4 @@
+// TODO: Rewrite to a stimulus controller.
 /**
  * Toggle new customer and account form element based on checkbox state
  */

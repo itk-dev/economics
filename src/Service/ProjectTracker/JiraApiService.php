@@ -2,7 +2,13 @@
 
 namespace App\Service\ProjectTracker;
 
+use App\Enum\ClientTypeEnum;
 use App\Exception\ApiServiceException;
+use App\Model\Invoices\AccountData;
+use App\Model\Invoices\ClientData;
+use App\Model\Invoices\ProjectData;
+use App\Model\Invoices\VersionData;
+use App\Model\Invoices\WorklogData;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
@@ -16,15 +22,11 @@ use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
-use Exception;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JiraApiService implements ApiServiceInterface
 {
+    private const PROJECT_TRACKER_IDENTIFIER = 'JIRA';
     private const CPB_ACCOUNT_MANAGER = 'anbjv';
     private const NO_SPRINT = 'NoSprint';
     private const API_PATH_SEARCH = '/rest/api/2/search';
@@ -52,6 +54,11 @@ class JiraApiService implements ApiServiceInterface
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
     ) {
+    }
+
+    public function getProjectTrackerIdentifier(): string
+    {
+        return self::PROJECT_TRACKER_IDENTIFIER;
     }
 
     /**
@@ -285,7 +292,7 @@ class JiraApiService implements ApiServiceInterface
      *
      * @throws ApiServiceException
      */
-    public function getAccount(int $accountId): mixed
+    public function getAccount(string $accountId): mixed
     {
         return $this->get(self::API_PATH_ACCOUNT.$accountId.'/');
     }
@@ -293,7 +300,7 @@ class JiraApiService implements ApiServiceInterface
     /**
      * @throws ApiServiceException
      */
-    public function getRateTableByAccount(int $accountId): mixed
+    public function getRateTableByAccount(string $accountId): mixed
     {
         return $this->get(self::API_PATH_RATE_TABLE, [
             'scopeId' => $accountId,
@@ -304,12 +311,12 @@ class JiraApiService implements ApiServiceInterface
     /**
      * @throws ApiServiceException
      */
-    public function getAccountIdsByProject(int $projectId): mixed
+    public function getAccountIdsByProject(string $projectId): array
     {
         $projectLinks = $this->get(self::API_PATH_ACCOUNT_IDS_BY_PROJECT.$projectId);
 
         return array_reduce($projectLinks, function ($carry, $item) {
-            $carry[] = $item->accountId;
+            $carry[] = (string) $item->accountId;
 
             return $carry;
         }, []);
@@ -402,7 +409,7 @@ class JiraApiService implements ApiServiceInterface
      * Create data for planning page.
      *
      * @throws ApiServiceException
-     * @throws Exception
+     * @throws \Exception
      */
     public function getPlanningData(): PlanningData
     {
@@ -452,9 +459,9 @@ class JiraApiService implements ApiServiceInterface
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issueData) {
                 if ('done' !== $issueData->fields->status->statusCategory->key) {
-                    $project = $issueData->fields->project;
-                    $projectKey = $project->key;
-                    $projectDisplayName = $project->name;
+                    $projectData = $issueData->fields->project;
+                    $projectKey = $projectData->key;
+                    $projectDisplayName = $projectData->name;
                     $remainingSeconds = $issueData->fields->timetracking->remainingEstimateSeconds ?? 0;
 
                     if (empty($issueData->fields->assignee)) {
@@ -497,10 +504,12 @@ class JiraApiService implements ApiServiceInterface
                         $assigneeProject->sprintSums->set($sprintId, new SprintSum($sprintId));
                     }
 
-                    /** @var SprintSum $sprintSum */
+                    /** @var SprintSum $projectSprintSum */
                     $projectSprintSum = $assigneeProject->sprintSums->get($sprintId);
-                    $projectSprintSum->sumSeconds += $remainingSeconds;
-                    $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
+                    if (isset($projectSprintSum)) {
+                        $projectSprintSum->sumSeconds += $remainingSeconds;
+                        $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
+                    }
 
                     $assigneeProject->issues->add(
                         new Issue(
@@ -564,6 +573,7 @@ class JiraApiService implements ApiServiceInterface
         }
 
         // Sort assignees by name.
+        /** @var \ArrayIterator $iterator */
         $iterator = $assignees->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
@@ -571,6 +581,7 @@ class JiraApiService implements ApiServiceInterface
         $planning->assignees = new ArrayCollection(iterator_to_array($iterator));
 
         // Sort projects by name.
+        /** @var \ArrayIterator $iterator */
         $iterator = $projects->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
@@ -671,6 +682,10 @@ class JiraApiService implements ApiServiceInterface
                     }
                 }
 
+                if (!isset($sprint['id']) || !isset($sprint['name']) || !isset($sprint['state'])) {
+                    continue;
+                }
+
                 $sprintState = SprintStateEnum::OTHER;
 
                 switch ($sprint['state']) {
@@ -698,7 +713,7 @@ class JiraApiService implements ApiServiceInterface
 
     /**
      * @throws ApiServiceException
-     * @throws Exception
+     * @throws \Exception
      */
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData
     {
@@ -735,12 +750,18 @@ class JiraApiService implements ApiServiceInterface
 
                     $epic = new SprintReportEpic($epicLinkId, $epicData->name);
                     $epics->set($epicLinkId, $epic);
+                } else {
+                    $epic = $epics->get($issueEntry->fields->{$customFieldEpicLinkId});
                 }
-
-                $issue->epic = $epics->get($issueEntry->fields->{$customFieldEpicLinkId});
             } else {
-                $issue->epic = $epics->get('NoEpic');
+                $epic = $epics->get('NoEpic');
             }
+
+            if (!$epic instanceof SprintReportEpic) {
+                continue;
+            }
+
+            $issue->epic = $epic;
 
             // Get sprint for issue.
             try {
@@ -782,10 +803,10 @@ class JiraApiService implements ApiServiceInterface
 
             // Accumulate spentSum.
             $spentSum = $spentSum + $issueEntry->fields->timespent;
-            $issue->epic->spentSum = $issue->epic->spentSum + $issueEntry->fields->timespent;
+            $issue->epic->spentSum += $issueEntry->fields->timespent;
 
             // Accumulate remainingSum.
-            if ('Done' !== !$issueEntry->fields->status->name && isset($issueEntry->fields->timetracking->remainingEstimateSeconds)) {
+            if ('Done' !== $issueEntry->fields->status->name && isset($issueEntry->fields->timetracking->remainingEstimateSeconds)) {
                 $remainingEstimateSeconds = $issueEntry->fields->timetracking->remainingEstimateSeconds;
                 $remainingSum = $remainingSum + $remainingEstimateSeconds;
 
@@ -808,6 +829,7 @@ class JiraApiService implements ApiServiceInterface
         }
 
         // Sort sprints by key.
+        /** @var \ArrayIterator $iterator */
         $iterator = $sprints->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->id) <=> mb_strtolower($b->id);
@@ -815,6 +837,7 @@ class JiraApiService implements ApiServiceInterface
         $sprints = new ArrayCollection(iterator_to_array($iterator));
 
         // Sort epics by name.
+        /** @var \ArrayIterator $iterator */
         $iterator = $epics->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->name) <=> mb_strtolower($b->name);
@@ -875,7 +898,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -919,7 +942,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -963,7 +986,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -1000,10 +1023,183 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
         return false;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function getClientDataForProject(string $projectId): array
+    {
+        $clients = [];
+
+        $accountIds = $this->getAccountIdsByProject($projectId);
+
+        foreach ($accountIds as $accountId) {
+            $account = $this->getAccount($accountId);
+
+            $client = new ClientData();
+
+            $client->projectTrackerId = $accountId;
+            $client->name = $account->name;
+            $client->contact = $account->contact->name ?? null;
+            $client->account = $account->key ?? null;
+            $client->customerKey = $account->customer->key ?? null;
+            $client->salesChannel = $account->category->key ?? null;
+
+            switch ($account->category->name ?? null) {
+                case 'INTERN':
+                    $client->type = ClientTypeEnum::INTERNAL;
+                    $client->psp = $account->key;
+                    break;
+                case 'EKSTERN':
+                    $client->type = ClientTypeEnum::EXTERNAL;
+                    $client->ean = $account->key;
+                    break;
+            }
+
+            $rateTable = $this->getRateTableByAccount($accountId);
+
+            foreach ($rateTable->rates as $rate) {
+                if ('DEFAULT_RATE' === ($rate->link->type ?? '')) {
+                    $client->standardPrice = $rate->amount ?? null;
+                    break;
+                }
+            }
+
+            $clients[] = $client;
+        }
+
+        return $clients;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function getAllProjectData(): array
+    {
+        $projects = [];
+
+        $trackerProjects = $this->getAllProjects();
+
+        foreach ($trackerProjects as $trackerProject) {
+            $project = $this->getProject($trackerProject->id);
+            $projectVersions = $project->versions ?? [];
+
+            $projectData = new ProjectData();
+            $projectData->name = $trackerProject->name;
+            $projectData->projectTrackerId = $trackerProject->id;
+            $projectData->projectTrackerKey = $trackerProject->key;
+            $projectData->projectTrackerProjectUrl = $trackerProject->self;
+
+            foreach ($projectVersions as $projectVersion) {
+                $projectData->versions->add(new VersionData($projectVersion->id, $projectVersion->name));
+            }
+
+            $projects[] = $projectData;
+        }
+
+        return $projects;
+    }
+
+    /**
+     * Get all worklogs for project.
+     *
+     * @param $projectId
+     * @param string $from
+     * @param string $to
+     *
+     * @return mixed
+     *
+     * @throws ApiServiceException
+     */
+    public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
+    {
+        return $this->post('rest/tempo-timesheets/4/worklogs/search', [
+            'from' => $from,
+            'to' => $to,
+            'projectId' => [$projectId],
+        ]);
+    }
+
+    /**
+     * @throws ApiServiceException
+     * @throws \Exception
+     */
+    public function getWorklogDataForProject(string $projectId): array
+    {
+        $worklogsResult = [];
+
+        $project = $this->getProject($projectId);
+        $versions = $project->versions ?? [];
+
+        $worklogs = $this->getProjectWorklogs($projectId);
+
+        foreach ($worklogs as $worklog) {
+            $worklogData = new WorklogData();
+            $worklogData->projectTrackerId = $worklog->tempoWorklogId;
+            $worklogData->worker = $worklog->worker;
+            $worklogData->timeSpentSeconds = $worklog->timeSpentSeconds;
+            $worklogData->comment = $worklog->comment;
+            $worklogData->issueName = $worklog->issue->summary;
+            $worklogData->projectTrackerIssueId = $worklog->issue->id;
+            $worklogData->projectTrackerIssueKey = $worklog->issue->key;
+            $worklogData->epicKey = $worklog->issue->epicKey ?? '';
+            $worklogData->epicName = $worklog->issue->epicIssue->summary ?? '';
+            $worklogData->started = new \DateTime($worklog->started);
+
+            if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
+                $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
+            }
+
+            foreach ($worklog->issue->versions ?? [] as $versionKey) {
+                /** @var array<\stdClass> $versionsFound */
+                $versionsFound = array_filter($versions, function ($v) use ($versionKey) {
+                    return $v->id == $versionKey;
+                });
+
+                if (count($versionsFound) > 0) {
+                    $version = $versionsFound[0];
+
+                    if (isset($version->id) && isset($version->name)) {
+                        $worklogData->versions->add(new VersionData($version->id, $version->name));
+                    }
+                }
+            }
+
+            $worklogsResult[] = $worklogData;
+        }
+
+        return $worklogsResult;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function getAllAccountData(): array
+    {
+        $accountsResult = [];
+
+        $accounts = $this->getAllAccounts();
+
+        foreach ($accounts as $account) {
+            $status = $account->status;
+            $id = $account->id;
+            $key = $account->key;
+            $category = $account->category->name ?? null;
+            $name = $account->name;
+
+            $keyStart = substr($key, 0, 2);
+
+            if ('OPEN' == $status && 'INTERN' == $category && in_array($keyStart, ['XG', 'XD'])) {
+                $accountsResult[] = new AccountData($id, $name, $key);
+            }
+        }
+
+        return $accountsResult;
     }
 }

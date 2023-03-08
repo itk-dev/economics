@@ -2,11 +2,17 @@
 
 namespace App\Service\ProjectTracker;
 
+use App\Model\Invoices\AccountData;
+use App\Model\Invoices\ClientData;
+use App\Model\Invoices\ProjectData;
+use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
 
 interface ApiServiceInterface
 {
+    public function getProjectTrackerIdentifier(): string;
+
     public function getAllAccounts(): mixed;
 
     public function getAllCustomers(): mixed;
@@ -33,11 +39,12 @@ interface ApiServiceInterface
 
     public function createProjectBoard(string $type, mixed $project): void;
 
-    public function getAccount(int $accountId): mixed;
+    public function getAccount(string $accountId): mixed;
 
-    public function getRateTableByAccount(int $accountId): mixed;
+    public function getRateTableByAccount(string $accountId): mixed;
 
-    public function getAccountIdsByProject(int $projectId): mixed;
+    /** @return array<string> */
+    public function getAccountIdsByProject(string $projectId): array;
 
     public function getAllBoards(): mixed;
 
@@ -48,4 +55,22 @@ interface ApiServiceInterface
     public function getPlanningData(): PlanningData;
 
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
+
+    /**
+     * @return array<ClientData>
+     */
+    public function getClientDataForProject(string $projectId): array;
+
+    /**
+     * @return array<ProjectData>
+     */
+    public function getAllProjectData(): array;
+
+    /** @return array<WorklogData> */
+    public function getWorklogDataForProject(string $projectId): array;
+
+    /**
+     * @return array<AccountData>
+     */
+    public function getAllAccountData(): array;
 }

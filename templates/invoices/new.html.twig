@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Invoice{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'invoices.create_new'|trans }}</h1>
+
+    {{ form_start(form) }}
+    <div>
+        {{ form_row(form.name) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.project) }}
+
+        <button class="button">{{ 'invoices.action_create'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
+    </div>
+{% endblock %}

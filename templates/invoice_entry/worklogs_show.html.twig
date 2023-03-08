@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'worklog.title'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'worklog.title_show'|trans }}</h1>
+
+    <div>
+        <form id="worklog-form">
+            <table class="table margin-bottom">
+                <thead class="table-thead">
+                <tr>
+                    <th class="table-th">{{ 'worklog.name'|trans }}</th>
+                    <th class="table-th">{{ 'worklog.is_billed'|trans }}</th>
+                    <th class="table-th">{{ 'worklog.epic'|trans }}</th>
+                    <th class="table-th">{{ 'worklog.version'|trans }}</th>
+                    <th class="table-th">{{ 'worklog.worker'|trans }}</th>
+                    <th class="table-th">{{ 'worklog.time_spent'|trans }}</th>
+                    <th class="table-th">{{ 'worklog.date'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for index, worklog in worklogs %}
+                    {% set ownedByInvoiceEntry = worklog.invoiceEntry == invoiceEntry %}
+                    {% set ownedByOtherInvoiceEntry = (not ownedByInvoiceEntry and worklog.invoiceEntry is not null) %}
+                    {% set disabled = worklog.isBilled or ownedByOtherInvoiceEntry %}
+
+                    <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}{{ disabled ? ' table-tr-disabled' : '' }}{{ ownedByOtherInvoiceEntry ? ' table-tr-disabled-alt' : '' }}">
+                        <td class="table-td">
+                            <div>
+                                <span>{{ worklog.description }}</span>
+                                <span> ({{ worklog.worklogId }})</span>
+                            </div>
+                            <div class="italic">
+                                <span>{{ worklog.issueName }}</span>
+                                <span> ({{ worklog.projectTrackerIssueKey }})</span>
+                            </div>
+                        </td>
+                        <td class="table-td">{{ worklog.isBilled ? 'worklog.is_billed_true'|trans : 'worklog.is_billed_false'|trans }}</td>
+                        <td class="table-td">{{ worklog.epicName }}</td>
+                        <td class="table-td">
+                            {% for version in worklog.versions %}{{ version.name }}{% endfor %}
+                        </td>
+                        <td class="table-td">{{ worklog.worker }}</td>
+                        <td class="table-td">{{ worklog.timeSpentSeconds / 60 / 60 }}</td>
+                        <td class="table-td">{{ worklog.started|date('Y-m-d') }}</td>
+                    </tr>
+                {% endfor %}
+                {% if worklogs is empty %}
+                    <tr class="table-tr">
+                        <td colspan="8" class="table-td">{{ 'invoices.list_no_records_found'|trans }}</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+    <div class="bottom-actions">
+        <a class="link"
+           href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}) }}">{{ 'invoices.back_to_invoice_entry'|trans }}</a>
+        <a class="link"
+           href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+    </div>
+{% endblock %}

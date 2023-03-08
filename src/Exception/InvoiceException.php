@@ -10,8 +10,6 @@
 
 namespace App\Exception;
 
-use Exception;
-
-class InvoiceException extends Exception
+class InvoiceException extends \Exception
 {
 }

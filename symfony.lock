@@ -47,6 +47,9 @@
             ".php-cs-fixer.dist.php"
         ]
     },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v6.1.0"
+    },
     "phpunit/phpunit": {
         "version": "9.5",
         "recipe": {
@@ -117,7 +120,7 @@
         ]
     },
     "symfony/maker-bundle": {
-        "version": "1.47",
+        "version": "1.48",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -202,9 +205,6 @@
             "config/packages/twig.yaml",
             "templates/base.html.twig"
         ]
-    },
-    "symfony/ux-react": {
-        "version": "v2.4.0"
     },
     "symfony/validator": {
         "version": "6.1",

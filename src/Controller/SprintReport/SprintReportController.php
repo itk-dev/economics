@@ -46,14 +46,18 @@ class SprintReportController extends AbstractController
             'choices' => $projectChoices,
             'required' => true,
             'label' => 'sprint_report.select_project',
-            'label_attr' => ['class' => 'form-label'],
+            'label_attr' => ['class' => 'label'],
             'attr' => [
                 'data-sprint-report-target' => 'project',
                 'data-action' => 'sprint-report#submitFormProjectId',
             ],
         ]);
 
-        $requestData = $request->get('sprint_report');
+        $requestData = $request->request->all();
+
+        if (isset($requestData['sprint_report'])) {
+            $requestData = $requestData['sprint_report'];
+        }
 
         if (!empty($requestData['projectId'])) {
             $project = $this->apiService->getProject($requestData['projectId']);
@@ -69,7 +73,7 @@ class SprintReportController extends AbstractController
                 'choices' => $versionChoices,
                 'required' => true,
                 'label' => 'sprint_report.select_version',
-                'label_attr' => ['class' => 'form-label'],
+                'label_attr' => ['class' => 'label'],
                 'attr' => [
                     'data-sprint-report-target' => 'version',
                     'data-action' => 'sprint-report#submitForm',
@@ -124,8 +128,8 @@ class SprintReportController extends AbstractController
     #[Route('/sprint-report/generate-pdf', name: 'app_sprint_report_pdf', methods: ['GET'])]
     public function generatePdf(Request $request)
     {
-        $projectId = $request->query->get('projectId');
-        $versionId = $request->query->get('versionId');
+        $projectId = (string) $request->query->get('projectId');
+        $versionId = (string) $request->query->get('versionId');
 
         $reportData = $this->apiService->getSprintReportData($projectId, $versionId);
 

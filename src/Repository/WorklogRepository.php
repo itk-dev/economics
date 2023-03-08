@@ -2,7 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\InvoiceEntry;
+use App\Entity\Project;
 use App\Entity\Worklog;
+use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -11,8 +14,8 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @method Worklog|null find($id, $lockMode = null, $lockVersion = null)
  * @method Worklog|null findOneBy(array $criteria, array $orderBy = null)
- * @method Worklog[]    findAll()
- * @method Worklog[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method findAll()
+ * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class WorklogRepository extends ServiceEntityRepository
 {
@@ -39,28 +42,40 @@ class WorklogRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Worklog[] Returns an array of Worklog objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('w')
-//            ->andWhere('w.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('w.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): iterable
+    {
+        $qb = $this->createQueryBuilder('worklog');
 
-//    public function findOneBySomeField($value): ?Worklog
-//    {
-//        return $this->createQueryBuilder('w')
-//            ->andWhere('w.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $qb->where('worklog.project = :project')->setParameter('project', $project);
+
+        if (isset($filterData->isBilled) && $filterData->isBilled) {
+            $qb->andWhere('worklog.isBilled = 1');
+        }
+
+        if (isset($filterData->worker)) {
+            $qb->andWhere('worklog.worker LIKE :worker')->setParameter('worker', '%'.$filterData->worker.'%');
+        }
+
+        if (isset($filterData->periodFrom)) {
+            $qb->andWhere('worklog.started >= :periodFrom')->setParameter('periodFrom', $filterData->periodFrom);
+        }
+
+        if (isset($filterData->periodTo)) {
+            $qb->andWhere('worklog.started <= :periodTo')->setParameter('periodTo', $filterData->periodTo);
+        }
+
+        if (isset($filterData->version)) {
+            $qb->andWhere(':version MEMBER OF worklog.versions')
+                ->setParameter('version', $filterData->version);
+        }
+
+        if (isset($filterData->onlyAvailable) && $filterData->onlyAvailable) {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('worklog.invoiceEntry'),
+                $qb->expr()->eq('worklog.invoiceEntry', ':invoiceEntry')
+            ))->setParameter('invoiceEntry', $invoiceEntry);
+        }
+
+        return $qb->getQuery()->execute();
+    }
 }

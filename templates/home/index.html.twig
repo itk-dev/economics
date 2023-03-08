@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'home.title'|trans }}
+{% endblock %}
+
+{% block content %}
+  <h1 class="page-title">{{ 'home.title'|trans }}</h1>
+
+  <div class="grid-split-three">
+    <div class="card">
+      <a href="{{ path("app_invoices_index") }}">
+        <h5 class="card-header">{{ 'home.invoice'|trans }}</h5>
+      </a>
+      <p class="card-text">{{ 'home.invoice_desctiption'|trans }}</p>
+      <a href="{{ path("app_invoices_index") }}" class="card-link">
+        {{ 'home.invoice'|trans }}
+      </a>
+    </div>
+    <div class="card">
+      <a href="{{ path("app_planning") }}">
+        <h5 class="card-header">{{ 'home.planning'|trans }}</h5>
+      </a>
+      <p class="card-text">{{ 'home.planning_description'|trans }}</p>
+      <a href="{{ path("app_planning") }}" class="card-link">
+        {{ 'home.planning'|trans }}
+      </a>
+    </div>
+    <div class="card">
+      <a href="{{ path("app_sprint_report") }}">
+        <h5 class="card-header">{{ 'home.sprint_report'|trans }}</h5>
+      </a>
+      <p class="card-text">{{ 'home.sprint_report_description'|trans }}</p>
+      <a href="{{ path("app_sprint_report") }}" class="card-link">
+        {{ 'home.sprint_report'|trans }}
+      </a>
+    </div>
+    <div class="card">
+      <a href="{{ path("create_project_form") }}">
+        <h5 class="card-header">{{ 'home.create_project'|trans }}</h5>
+      </a>
+      <p class="card-text">{{ 'home.create_project_description'|trans }}</p>
+      <a href="{{ path("app_sprint_report") }}" class="card-link">
+        {{ 'home.create_project'|trans }}
+      </a>
+    </div>
+  </div>
+{% endblock %}

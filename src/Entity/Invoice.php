@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\MaterialNumberEnum;
 use App\Repository\InvoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -28,9 +29,6 @@ class Invoice
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?int $projectId = null;
-
-    #[ORM\Column]
     private ?bool $recorded = null;
 
     #[ORM\Column(nullable: true)]
@@ -41,6 +39,9 @@ class Invoice
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $exportedDate = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lockedCustomerKey = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lockedContactName = null;
@@ -58,10 +59,10 @@ class Invoice
     private ?string $paidByAccount = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $defaultPayToAccount = null;
+    private ?string $defaultReceiverAccount = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $defaultMaterialNumber = null;
+    private ?MaterialNumberEnum $defaultMaterialNumber = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $periodFrom = null;
@@ -69,11 +70,17 @@ class Invoice
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $periodTo = null;
 
-    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceEntry::class)]
+    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceEntry::class, cascade: ['remove'])]
     private Collection $invoiceEntries;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     private ?Project $project = null;
+
+    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    private ?Client $client = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $totalPrice = null;
 
     public function __construct()
     {
@@ -105,18 +112,6 @@ class Invoice
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getProjectId(): ?int
-    {
-        return $this->projectId;
-    }
-
-    public function setProjectId(int $projectId): self
-    {
-        $this->projectId = $projectId;
 
         return $this;
     }
@@ -217,42 +212,6 @@ class Invoice
         return $this;
     }
 
-    public function getPaidByAccount(): ?string
-    {
-        return $this->paidByAccount;
-    }
-
-    public function setPaidByAccount(?string $paidByAccount): self
-    {
-        $this->paidByAccount = $paidByAccount;
-
-        return $this;
-    }
-
-    public function getDefaultPayToAccount(): ?string
-    {
-        return $this->defaultPayToAccount;
-    }
-
-    public function setDefaultPayToAccount(?string $defaultPayToAccount): self
-    {
-        $this->defaultPayToAccount = $defaultPayToAccount;
-
-        return $this;
-    }
-
-    public function getDefaultMaterialNumber(): ?string
-    {
-        return $this->defaultMaterialNumber;
-    }
-
-    public function setDefaultMaterialNumber(?string $defaultMaterialNumber): self
-    {
-        $this->defaultMaterialNumber = $defaultMaterialNumber;
-
-        return $this;
-    }
-
     public function getPeriodFrom(): ?\DateTimeInterface
     {
         return $this->periodFrom;
@@ -317,5 +276,69 @@ class Invoice
         $this->project = $project;
 
         return $this;
+    }
+
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(?Client $client): self
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    public function getLockedCustomerKey(): ?string
+    {
+        return $this->lockedCustomerKey;
+    }
+
+    public function setLockedCustomerKey(?string $lockedCustomerKey): void
+    {
+        $this->lockedCustomerKey = $lockedCustomerKey;
+    }
+
+    public function getDefaultMaterialNumber(): ?MaterialNumberEnum
+    {
+        return $this->defaultMaterialNumber;
+    }
+
+    public function setDefaultMaterialNumber(?MaterialNumberEnum $defaultMaterialNumber): void
+    {
+        $this->defaultMaterialNumber = $defaultMaterialNumber;
+    }
+
+    public function getTotalPrice(): ?float
+    {
+        return $this->totalPrice;
+    }
+
+    public function setTotalPrice(?float $totalPrice): self
+    {
+        $this->totalPrice = $totalPrice;
+
+        return $this;
+    }
+
+    public function getPaidByAccount(): ?string
+    {
+        return $this->paidByAccount;
+    }
+
+    public function setPaidByAccount(?string $paidByAccount): void
+    {
+        $this->paidByAccount = $paidByAccount;
+    }
+
+    public function getDefaultReceiverAccount(): ?string
+    {
+        return $this->defaultReceiverAccount;
+    }
+
+    public function setDefaultReceiverAccount(?string $defaultReceiverAccount): void
+    {
+        $this->defaultReceiverAccount = $defaultReceiverAccount;
     }
 }

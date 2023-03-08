@@ -17,7 +17,7 @@ class SprintReportType extends AbstractType
                 'placeholder' => 'sprint_report.select_an_option',
                 'required' => true,
                 'label' => 'sprint_report.select_project',
-                'label_attr' => ['class' => 'form-label'],
+                'label_attr' => ['class' => 'label'],
                 'disabled' => true,
                 'attr' => [
                     'data-sprint-report-target' => 'project',
@@ -28,7 +28,7 @@ class SprintReportType extends AbstractType
                 'placeholder' => 'sprint_report.select_an_option',
                 'required' => false,
                 'label' => 'sprint_report.select_version',
-                'label_attr' => ['class' => 'form-label'],
+                'label_attr' => ['class' => 'label'],
                 'disabled' => true,
                 'attr' => [
                     'data-sprint-report-target' => 'version',

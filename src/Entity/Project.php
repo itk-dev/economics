@@ -6,10 +6,15 @@ use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Blameable\Traits\BlameableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project
 {
+    use BlameableEntity;
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -22,14 +27,29 @@ class Project
     private Collection $invoices;
 
     #[ORM\Column(length: 255)]
-    private ?string $remoteKey = null;
+    private ?string $projectTrackerProjectUrl;
 
-    #[ORM\Column]
-    private ?int $remoteId = null;
+    #[ORM\Column(length: 255)]
+    private ?string $projectTrackerKey;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $projectTrackerId;
+
+    #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'projects')]
+    private Collection $clients;
+
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Version::class)]
+    private Collection $versions;
+
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Worklog::class)]
+    private Collection $worklogs;
 
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
+        $this->clients = new ArrayCollection();
+        $this->versions = new ArrayCollection();
+        $this->worklogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -79,26 +99,118 @@ class Project
         return $this;
     }
 
-    public function getRemoteKey(): ?string
+    public function getProjectTrackerProjectUrl(): ?string
     {
-        return $this->remoteKey;
+        return $this->projectTrackerProjectUrl;
     }
 
-    public function setRemoteKey(string $remoteKey): self
+    public function setProjectTrackerProjectUrl(?string $projectTrackerProjectUrl): void
     {
-        $this->remoteKey = $remoteKey;
+        $this->projectTrackerProjectUrl = $projectTrackerProjectUrl;
+    }
+
+    public function getProjectTrackerKey(): ?string
+    {
+        return $this->projectTrackerKey;
+    }
+
+    public function setProjectTrackerKey(?string $projectTrackerKey): void
+    {
+        $this->projectTrackerKey = $projectTrackerKey;
+    }
+
+    public function getProjectTrackerId(): ?string
+    {
+        return $this->projectTrackerId;
+    }
+
+    public function setProjectTrackerId(?string $projectTrackerId): void
+    {
+        $this->projectTrackerId = $projectTrackerId;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->name ?? $this->id);
+    }
+
+    /**
+     * @return Collection<int, Client>
+     */
+    public function getClients(): Collection
+    {
+        return $this->clients;
+    }
+
+    public function addClient(Client $client): self
+    {
+        if (!$this->clients->contains($client)) {
+            $this->clients->add($client);
+        }
 
         return $this;
     }
 
-    public function getRemoteId(): ?int
+    public function removeClient(Client $client): self
     {
-        return $this->remoteId;
+        $this->clients->removeElement($client);
+
+        return $this;
     }
 
-    public function setRemoteId(int $remoteId): self
+    /**
+     * @return Collection<int, Version>
+     */
+    public function getVersions(): Collection
     {
-        $this->remoteId = $remoteId;
+        return $this->versions;
+    }
+
+    public function addVersion(Version $version): self
+    {
+        if (!$this->versions->contains($version)) {
+            $this->versions->add($version);
+            $version->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVersion(Version $version): self
+    {
+        if ($this->versions->removeElement($version)) {
+            $version->setProject(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Worklog>
+     */
+    public function getWorklogs(): Collection
+    {
+        return $this->worklogs;
+    }
+
+    public function addWorklog(Worklog $worklog): self
+    {
+        if (!$this->worklogs->contains($worklog)) {
+            $this->worklogs->add($worklog);
+            $worklog->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWorklog(Worklog $worklog): self
+    {
+        if ($this->worklogs->removeElement($worklog)) {
+            // set the owning side to null (unless already changed)
+            if ($worklog->getProject() === $this) {
+                $worklog->setProject(null);
+            }
+        }
 
         return $this;
     }
