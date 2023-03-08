@@ -2,7 +2,7 @@ on: pull_request
 name: Review
 jobs:
   test-composer-install:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -50,7 +50,7 @@ jobs:
         run: composer normalize --dry-run
 
   php-cs-fixer:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -121,7 +121,7 @@ jobs:
         run: ./vendor/bin/psalm --no-cache
 
   changelog:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     name: Changelog should be updated
     strategy:
       fail-fast: false
@@ -138,7 +138,7 @@ jobs:
         run: git diff --exit-code origin/develop -- CHANGELOG.md && exit 1 || exit 0
 
   validate-doctrine-schema:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       DATABASE_URL: mysql://db:db@127.0.0.1:3306/db_test?serverVersion=mariadb-10.5.13
     strategy:
