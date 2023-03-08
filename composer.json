@@ -14,7 +14,6 @@
         "knplabs/knp-paginator-bundle": "^6.1",
         "mpdf/mpdf": "^v8.1.2",
         "phpoffice/phpspreadsheet": "^1.25",
-        "sensio/framework-extra-bundle": "^6.2",
         "symfony/console": "6.2.*",
         "symfony/dotenv": "6.2.*",
         "symfony/flex": "^2",
@@ -38,9 +37,9 @@
         "friendsoftwig/twigcs": "^6.0",
         "phpunit/phpunit": "^9.5",
         "symfony/debug-bundle": "6.2.*",
-        "symfony/maker-bundle": "^1.47",
+        "symfony/maker-bundle": "^1.48",
         "symfony/phpunit-bridge": "^6.2",
-        "vimeo/psalm": "^4.28"
+        "vimeo/psalm": "^5.0"
     },
     "replace": {
         "symfony/polyfill-ctype": "*",
