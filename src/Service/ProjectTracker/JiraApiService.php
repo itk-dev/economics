@@ -22,14 +22,11 @@ use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JiraApiService implements ApiServiceInterface
 {
+    private const PROJECT_TRACKER_IDENTIFIER = 'JIRA';
     private const CPB_ACCOUNT_MANAGER = 'anbjv';
     private const NO_SPRINT = 'NoSprint';
     private const API_PATH_SEARCH = '/rest/api/2/search';
@@ -61,7 +58,7 @@ class JiraApiService implements ApiServiceInterface
 
     public function getProjectTrackerIdentifier(): string
     {
-        return 'JIRA';
+        return self::PROJECT_TRACKER_IDENTIFIER;
     }
 
     /**
@@ -901,7 +898,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -945,7 +942,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -989,7 +986,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
@@ -1026,7 +1023,7 @@ class JiraApiService implements ApiServiceInterface
                     }
                     break;
             }
-        } catch (\Exception|ClientExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+        } catch (\Throwable $e) {
             throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
