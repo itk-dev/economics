@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project_billing.edit'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ projectBilling.name }}</h1>
+
+    {{ form(form) }}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_project_billing_index') }}">{{ 'project_billing.back_to_list'|trans }}</a>
+        {% if not projectBilling.recorded %}
+        {{ include('project_billing/_delete_form.html.twig') }}
+        {% endif %}
+    </div>
+{% endblock %}
