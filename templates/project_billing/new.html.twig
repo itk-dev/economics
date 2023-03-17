@@ -1,21 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Invoice{% endblock %}
+{% block title %}{{ 'project_billing.new'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ 'invoices.create_new'|trans }}</h1>
+    <h1 class="page-title">{{ 'project_billing.new'|trans }}</h1>
 
     {{ form_start(form) }}
     <div>
-        {{ form_row(form.name) }}
-        {{ form_row(form.description) }}
-        {{ form_row(form.project) }}
+        {{ form_rest(form) }}
 
-        <button class="button">{{ 'invoices.action_create'|trans }}</button>
+        <button class="button">{{ 'project_billing.action_create'|trans }}</button>
     </div>
     {{ form_end(form) }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_project_billing_index') }}">{{ 'project_billing.back_to_list'|trans }}</a>
     </div>
 {% endblock %}

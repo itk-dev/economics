@@ -20,29 +20,29 @@ class ProjectBillingType extends AbstractType
         $builder
             ->add('name', null, [
                 'required' => true,
-                'label' => 'invoices.name',
+                'label' => 'project_billing.name',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'attr' => ['class' => 'form-element'],
-                'help' => 'invoices.name_helptext',
+                'help' => 'project_billing.name_helptext',
             ])
-            ->add('periodFrom', DateTimeType::class, [
+            ->add('periodStart', DateTimeType::class, [
                 'required' => false,
-                'label' => 'invoices.period_from',
+                'label' => 'project_billing.period_start',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
-                'help' => 'invoices.period_from_helptext',
+                'help' => 'project_billing.period_start_helptext',
                 'widget' => 'single_text',
                 'html5' => true,
                 'attr' => ['class' => 'form-element'],
             ])
-            ->add('periodTo', DateTimeType::class, [
+            ->add('periodEnd', DateTimeType::class, [
                 'required' => false,
-                'label' => 'invoices.period_to',
+                'label' => 'project_billing.period_end',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'attr' => ['class' => 'form-element'],
-                'help' => 'invoices.period_to_helptext',
+                'help' => 'project_billing.period_end_helptext',
                 'widget' => 'single_text',
                 'html5' => true,
             ])
