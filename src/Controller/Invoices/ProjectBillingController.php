@@ -2,9 +2,14 @@
 
 namespace App\Controller\Invoices;
 
+use App\Entity\Invoice;
 use App\Entity\ProjectBilling;
+use App\Form\Invoices\InvoiceRecordType;
 use App\Form\Invoices\ProjectBillingType;
+use App\Model\Invoices\InvoiceRecordData;
+use App\Repository\InvoiceRepository;
 use App\Repository\ProjectBillingRepository;
+use App\Service\Invoices\BillingService;
 use HttpException;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,7 +48,10 @@ class ProjectBillingController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $projectBilling->setCreatedAt(new \DateTime());
             $projectBilling->setUpdatedAt(new \DateTime());
+            $projectBilling->setRecorded(false);
             $projectBillingRepository->save($projectBilling, true);
+
+
 
             return $this->redirectToRoute('app_project_billing_edit', [
                 'id' => $projectBilling->getId(),

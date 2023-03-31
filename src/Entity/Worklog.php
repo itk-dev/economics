@@ -71,6 +71,9 @@ class Worklog
     #[ORM\Column(nullable: true)]
     private ?int $billedSeconds = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $issueStatus = null;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -284,6 +287,18 @@ class Worklog
     public function setBilledSeconds(?int $billedSeconds): self
     {
         $this->billedSeconds = $billedSeconds;
+
+        return $this;
+    }
+
+    public function getIssueStatus(): ?string
+    {
+        return $this->issueStatus;
+    }
+
+    public function setIssueStatus(?string $issueStatus): self
+    {
+        $this->issueStatus = $issueStatus;
 
         return $this;
     }

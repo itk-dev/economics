@@ -45,6 +45,15 @@
       </a>
     </div>
     <div class="card">
+      <a href="{{ path("app_project_index") }}">
+        <h5 class="card-header">{{ 'home.projects'|trans }}</h5>
+      </a>
+      <p class="card-text">{{ 'home.projects_description'|trans }}</p>
+      <a href="{{ path("app_project_index") }}" class="card-link">
+        {{ 'home.projects'|trans }}
+      </a>
+    </div>
+    <div class="card">
       <a href="{{ path("create_project_form") }}">
         <h5 class="card-header">{{ 'home.create_project'|trans }}</h5>
       </a>

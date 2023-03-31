@@ -22,6 +22,7 @@ use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
+use stdClass;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JiraApiService implements ApiServiceInterface
@@ -1146,24 +1147,26 @@ class JiraApiService implements ApiServiceInterface
             $worklogData->timeSpentSeconds = $worklog->timeSpentSeconds;
             $worklogData->comment = $worklog->comment;
             $worklogData->issueName = $worklog->issue->summary;
+            $worklogData->issueStatus = $worklog->issue->issueStatus;
             $worklogData->projectTrackerIssueId = $worklog->issue->id;
             $worklogData->projectTrackerIssueKey = $worklog->issue->key;
             $worklogData->epicKey = $worklog->issue->epicKey ?? '';
             $worklogData->epicName = $worklog->issue->epicIssue->summary ?? '';
             $worklogData->started = new \DateTime($worklog->started);
 
+            // TODO: Is this synchronization relevant?
             if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
                 $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
             }
 
             foreach ($worklog->issue->versions ?? [] as $versionKey) {
-                /** @var array<\stdClass> $versionsFound */
+                /** @var array<stdClass> $versionsFound */
                 $versionsFound = array_filter($versions, function ($v) use ($versionKey) {
                     return $v->id == $versionKey;
                 });
 
                 if (count($versionsFound) > 0) {
-                    $version = $versionsFound[0];
+                    $version = array_values($versionsFound)[0];
 
                     if (isset($version->id) && isset($version->name)) {
                         $worklogData->versions->add(new VersionData($version->id, $version->name));

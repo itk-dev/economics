@@ -96,6 +96,8 @@ navigation:
   sprint_report: Sprintrapport
   title: 'Economics'
   accounts: Konto
+  project_billing: 'Projektfakturering'
+  projects: 'Projekter'
 
 planning:
   title: Planlægning
@@ -290,6 +292,8 @@ home:
   account_details: 'Liste over kontoer der bruges i faktura.'
   project_billing: 'Projektfakturering'
   project_billing_description: 'Fakturér alle kunder i et projekt for en given periode.'
+  projects: 'Projekter'
+  projects_description: 'Liste over projekter'
 
 frontpage:
   title: 'Velkommen til Economics'
@@ -297,7 +301,6 @@ frontpage:
 
 project_billing:
   title: 'Projektfakturering'
-  description: 'Her kan du generere en samlet fakturering for worklogs indenfor en given periode. Hver kunde bliver til en separat faktura. Projektfaktureringen kan så samles til en .csv fil.'
   list_id: '#'
   list_name: 'Navn'
   list_project: 'Projekt'
@@ -314,3 +317,12 @@ project_billing:
   action_create: 'Opret'
   name: 'Navn'
   name_helptext: 'Navn på projektfakturering'
+
+project:
+  title: 'Projekter'
+  include: 'Inkludér'
+  id: '#'
+  name: 'Navn'
+  project_tracker_key: 'Nøgle'
+  updated_at: 'Opdateret'
+  list_no_records_found: 'Ingen projekter fundet'

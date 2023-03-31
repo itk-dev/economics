@@ -280,4 +280,12 @@
     .form-choices .choices[data-type*=select-one]::after {
         @apply dark:border-t-gray-500;
     }
+
+    .toggle-text {
+        @apply ml-3 text-sm font-medium text-gray-900 dark:text-gray-300;
+    }
+
+    .toggle-label {
+        @apply relative inline-flex items-center cursor-pointer;
+    }
 }

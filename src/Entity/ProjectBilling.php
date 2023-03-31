@@ -40,6 +40,9 @@ class ProjectBilling
     #[ORM\Column]
     private ?bool $recorded = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -136,6 +139,18 @@ class ProjectBilling
     public function setRecorded(bool $recorded): self
     {
         $this->recorded = $recorded;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }

@@ -106,6 +106,7 @@ class BillingService
             $worklog->setEpicKey($worklogDatum->epicKey);
             $worklog->setEpicName($worklogDatum->epicName);
             $worklog->setIssueName($worklogDatum->issueName);
+            $worklog->setIssueStatus($worklogDatum->issueStatus);
             $worklog->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId);
             $worklog->setProjectTrackerIssueKey($worklogDatum->projectTrackerIssueKey);
             $worklog->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);

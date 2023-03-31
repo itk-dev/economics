@@ -29,12 +29,25 @@ The node container will watch for code changes in assets folder and recompile.
    ```shell
    bin/console app:sync-projects
    bin/console app:sync-accounts
-   bin/console app:sync-worklogs
    ```
 5. Run migrate-customer to migrate from invoice.customerAccountId to invoice.client
    ```shell
    bin/console app:migrate-customers
    ```
+6. Visit /admin/project and "include" the projects that should be synchronized in the installation.
+7. Synchronize worklogs
+   ```shell
+   bin/console app:sync-worklogs
+   ```
+
+## Production
+
+Run synchronization with a cron process with a given interval in the given order:
+ ```shell
+   bin/console app:sync-projects
+   bin/console app:sync-accounts
+   bin/console app:sync-worklogs
+```
 
 ## APIs
 

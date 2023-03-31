@@ -47,6 +47,9 @@ class Project
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectBilling::class)]
     private Collection $projectBillings;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $include = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -245,6 +248,18 @@ class Project
                 $projectBilling->setProject(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isInclude(): ?bool
+    {
+        return $this->include;
+    }
+
+    public function setInclude(?bool $include): self
+    {
+        $this->include = $include;
 
         return $this;
     }

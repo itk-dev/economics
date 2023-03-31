@@ -1,72 +1,52 @@
-import { Controller } from '@hotwired/stimulus';
+import {Controller} from '@hotwired/stimulus';
 
 /**
- * Toggle controller.
+ * Project include controller.
  *
- * Toggles 'hidden' class for parent and child targets.
+ * Creates a toggle
  */
 export default class extends Controller {
-    static targets = ['parent', 'child', 'button'];
+    static targets = ['checkbox', 'text'];
 
-    displayParent = false;
-    displayChildrenForParentIds = [];
+    updateUrl;
+    value;
 
     connect() {
-        this.parentTargets.forEach((target) => {
-            target.classList.add('hidden');
-        });
-        this.childTargets.forEach((target) => {
-            target.classList.add('hidden');
-        });
+        this.updateUrl = this.element.dataset.updateUrl;
+        this.value = this.checkboxTarget.checked;
     }
 
-    toggleParent(event) {
-        this.displayParent = !this.displayParent;
+    toggle() {
+        this.textTarget.innerText = '';
 
-        event.currentTarget.innerText = this.displayParent ? '-' : '+';
+        const value = this.checkboxTarget.checked;
 
-        if (this.displayParent) {
-            this.parentTargets.forEach((target) => {
-                target.classList.remove('hidden');
-            });
-        } else {
-            this.parentTargets.forEach((target) => {
-                target.classList.add('hidden');
-            });
-
-            this.displayChildrenForParentIds = [];
-
-            this.childTargets.forEach((target) => {
-                target.classList.add('hidden');
-            });
-
-            this.buttonTargets.forEach((target) => {
-                target.innerText = '+';
+        fetch(this.updateUrl, {
+            method: 'POST',
+            mode: 'same-origin',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
+            body: JSON.stringify({
+                value,
             })
-        }
-    }
-
-    toggleChild(event) {
-        const parentId = event.currentTarget.dataset.parentId;
-
-        if (this.displayChildrenForParentIds.includes(parentId)) {
-            this.displayChildrenForParentIds = this.displayChildrenForParentIds.filter((el) => el !== parentId);
-            event.currentTarget.innerText = '+';
-
-            this.childTargets.forEach((target) => {
-                if (target.dataset.parentId === parentId) {
-                    target.classList.add('hidden');
-                }
-            });
-        } else {
-            this.displayChildrenForParentIds.push(parentId);
-            event.currentTarget.innerText = '-';
-
-            this.childTargets.forEach((target) => {
-                if (target.dataset.parentId === parentId) {
-                    target.classList.remove('hidden');
-                }
-            });
-        }
+        }).then(async (resp) => {
+            if (!resp.ok) {
+                resp.json().then((err) => {
+                    this.checkboxTarget.checked = this.value;
+                    this.textTarget.innerText = 'failed: ' + err.message;
+                });
+            } else {
+                this.value = this.checkboxTarget.checked;
+            }
+        }).catch((err) => {
+            this.checkboxTarget.checked = this.value;
+            this.textTarget.innerText = 'failed' + err.message;
+        }).finally(() => {
+        });
     }
 }

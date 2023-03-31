@@ -13,6 +13,7 @@ class WorklogData
     public int $timeSpentSeconds;
     public \DateTime $started;
     public string $issueName;
+    public string $issueStatus;
     public string $projectTrackerIssueId;
     public string $projectTrackerIssueKey;
     public ?string $epicName;
