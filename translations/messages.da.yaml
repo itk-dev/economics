@@ -317,6 +317,18 @@ project_billing:
   action_create: 'Opret'
   name: 'Navn'
   name_helptext: 'Navn på projektfakturering'
+  invoices: 'Tilkoblede fakturaer'
+  action_delete: 'Slet projektfakturering'
+  field_name: 'Navn'
+  field_name_helptext: 'Skriv projektfaktureringens navn'
+  field_project: 'Projekt'
+  field_project_helptext: 'Vælg projek der skal projektfaktureres'
+  field_period_start: 'Fra'
+  field_period_start_helptext: 'Vælg hvor perioden skal starte'
+  field_period_end: 'Til'
+  field_period_end_helptext: 'Vælg hvor perioden skal strække sig til'
+  field_description: 'Beskrivelse'
+  field_description_help: 'Teksten sættes efter "Projektnavn: Accountnavn (faktureringsperiode)." i H på faktura.'
 
 project:
   title: 'Projekter'

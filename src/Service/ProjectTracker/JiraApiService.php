@@ -6,6 +6,9 @@ use App\Enum\ClientTypeEnum;
 use App\Exception\ApiServiceException;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
+use App\Model\Invoices\ProjectBillingInvoiceData;
+use App\Model\Invoices\ProjectBillingIssueData;
+use App\Model\Invoices\ProjectBillingData;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\VersionData;
 use App\Model\Invoices\WorklogData;
@@ -21,6 +24,8 @@ use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintStateEnum;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use stdClass;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -48,13 +53,14 @@ class JiraApiService implements ApiServiceInterface
 
     public function __construct(
         protected readonly HttpClientInterface $projectTrackerApi,
-        protected readonly array $customFieldMappings,
-        protected readonly string $defaultBoard,
-        protected readonly string $jiraUrl,
-        protected readonly float $weekGoalLow,
-        protected readonly float $weekGoalHigh,
-        protected readonly string $sprintNameRegex,
-    ) {
+        protected readonly array               $customFieldMappings,
+        protected readonly string              $defaultBoard,
+        protected readonly string              $jiraUrl,
+        protected readonly float               $weekGoalLow,
+        protected readonly float               $weekGoalHigh,
+        protected readonly string              $sprintNameRegex,
+    )
+    {
     }
 
     public function getProjectTrackerIdentifier(): string
@@ -110,7 +116,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getProject($key): mixed
     {
-        return $this->get(self::API_PATH_PROJECT_BY_ID.$key);
+        return $this->get(self::API_PATH_PROJECT_BY_ID . $key);
     }
 
     /**
@@ -226,7 +232,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getTimeTrackerAccount(string $key): mixed
     {
-        return $this->get(self::API_PATH_ACCOUNT_BY_KEY.$key);
+        return $this->get(self::API_PATH_ACCOUNT_BY_KEY . $key);
     }
 
     /**
@@ -265,15 +271,15 @@ class JiraApiService implements ApiServiceInterface
 
         // Create project filter.
         $filterResponse = $this->post(self::API_PATH_FILTER, [
-            'name' => 'Filter for Project: '.$project->name,
-            'description' => 'Project filter for '.$project->name,
-            'jql' => 'project = '.$project->key.' ORDER BY Rank ASC',
+            'name' => 'Filter for Project: ' . $project->name,
+            'description' => 'Project filter for ' . $project->name,
+            'jql' => 'project = ' . $project->key . ' ORDER BY Rank ASC',
             'favourite' => false,
             'editable' => false,
         ]);
 
         // Share project filter with project members.
-        $this->post(self::API_PATH_FILTER.'/'.$filterResponse->id.'/permission', [
+        $this->post(self::API_PATH_FILTER . '/' . $filterResponse->id . '/permission', [
             'type' => 'project',
             'projectId' => $project->id,
             'view' => true,
@@ -282,7 +288,7 @@ class JiraApiService implements ApiServiceInterface
 
         // Create board with project filter.
         $this->post(self::API_PATH_BOARD, [
-            'name' => 'Project: '.$project->name,
+            'name' => 'Project: ' . $project->name,
             'type' => $type,
             'filterId' => $filterResponse->id,
         ]);
@@ -295,7 +301,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAccount(string $accountId): mixed
     {
-        return $this->get(self::API_PATH_ACCOUNT.$accountId.'/');
+        return $this->get(self::API_PATH_ACCOUNT . $accountId . '/');
     }
 
     /**
@@ -314,10 +320,10 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAccountIdsByProject(string $projectId): array
     {
-        $projectLinks = $this->get(self::API_PATH_ACCOUNT_IDS_BY_PROJECT.$projectId);
+        $projectLinks = $this->get(self::API_PATH_ACCOUNT_IDS_BY_PROJECT . $projectId);
 
         return array_reduce($projectLinks, function ($carry, $item) {
-            $carry[] = (string) $item->accountId;
+            $carry[] = (string)$item->accountId;
 
             return $carry;
         }, []);
@@ -337,7 +343,7 @@ class JiraApiService implements ApiServiceInterface
      * Get all sprints for a given board.
      *
      * @param string $boardId board id
-     * @param string $state   sprint state. Defaults to future,active sprints.
+     * @param string $state sprint state. Defaults to future,active sprints.
      *
      * @throws ApiServiceException
      */
@@ -347,7 +353,7 @@ class JiraApiService implements ApiServiceInterface
 
         $startAt = 0;
         while (true) {
-            $result = $this->get(self::API_PATH_BOARD.'/'.$boardId.'/sprint', [
+            $result = $this->get(self::API_PATH_BOARD . '/' . $boardId . '/sprint', [
                 'startAt' => $startAt,
                 'maxResults' => 50,
                 'state' => $state,
@@ -367,7 +373,7 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Get all issues for given board and sprint.
      *
-     * @param string $boardId  id of the jira board to extract issues from
+     * @param string $boardId id of the jira board to extract issues from
      * @param string $sprintId id of the sprint to extract issues for
      *
      * @return array array of issues
@@ -390,7 +396,7 @@ class JiraApiService implements ApiServiceInterface
 
         $startAt = 0;
         while (true) {
-            $result = $this->get(self::API_PATH_BOARD.'/'.$boardId.'/sprint/'.$sprintId.'/issue', [
+            $result = $this->get(self::API_PATH_BOARD . '/' . $boardId . '/sprint/' . $sprintId . '/issue', [
                 'startAt' => $startAt,
                 'fields' => $fields,
             ]);
@@ -517,7 +523,7 @@ class JiraApiService implements ApiServiceInterface
                             $issueData->key,
                             $issueData->fields->summary,
                             isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
-                            $this->jiraUrl.'/browse/'.$issueData->key,
+                            $this->jiraUrl . '/browse/' . $issueData->key,
                             $sprintId
                         )
                     );
@@ -566,7 +572,7 @@ class JiraApiService implements ApiServiceInterface
                         $issueData->key,
                         $issueData->fields->summary,
                         isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
-                        $this->jiraUrl.'/browse/'.$issueData->key,
+                        $this->jiraUrl . '/browse/' . $issueData->key,
                         $sprintId
                     ));
                 }
@@ -599,7 +605,7 @@ class JiraApiService implements ApiServiceInterface
      */
     private function getCustomFieldId(string $fieldName): bool|string
     {
-        return isset($this->customFieldMappings[$fieldName]) ? 'customfield_'.$this->customFieldMappings[$fieldName] : false;
+        return isset($this->customFieldMappings[$fieldName]) ? 'customfield_' . $this->customFieldMappings[$fieldName] : false;
     }
 
     /**
@@ -637,7 +643,7 @@ class JiraApiService implements ApiServiceInterface
             $results = $this->get(
                 self::API_PATH_SEARCH,
                 [
-                    'jql' => 'fixVersion='.$versionId,
+                    'jql' => 'fixVersion=' . $versionId,
                     'project' => $projectId,
                     'maxResults' => 50,
                     'fields' => $fields,
@@ -729,7 +735,7 @@ class JiraApiService implements ApiServiceInterface
         $epics->set('NoEpic', new SprintReportEpic('NoEpic', 'Uden Epic'));
 
         // Get version and project.
-        $version = $this->get(self::API_PATH_VERSION.$versionId);
+        $version = $this->get(self::API_PATH_VERSION . $versionId);
         $project = $this->getProject($projectId);
 
         // Get customField for Jira.
@@ -747,7 +753,7 @@ class JiraApiService implements ApiServiceInterface
 
                 // Add to epics if not already added.
                 if (!$epics->containsKey($epicLinkId)) {
-                    $epicData = $this->get(self::API_PATH_EPIC.'/'.$epicLinkId);
+                    $epicData = $this->get(self::API_PATH_EPIC . '/' . $epicLinkId);
 
                     $epic = new SprintReportEpic($epicLinkId, $epicData->name);
                     $epics->set($epicLinkId, $epic);
@@ -798,7 +804,7 @@ class JiraApiService implements ApiServiceInterface
                     $worklogSprintId = $worklogSprint->id;
                 }
 
-                $newLoggedWork = (float) ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklogData->timeSpentSeconds;
+                $newLoggedWork = (float)($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklogData->timeSpentSeconds;
                 $issue->epic->loggedWork->set($worklogSprintId, $newLoggedWork);
             }
 
@@ -815,7 +821,7 @@ class JiraApiService implements ApiServiceInterface
 
                 if (!empty($issue->assignedToSprint)) {
                     $assignedToSprint = $issue->assignedToSprint;
-                    $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
+                    $newRemainingWork = (float)($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
                     $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
                     $issue->epic->plannedWorkSum = $issue->epic->plannedWorkSum + $remainingEstimateSeconds;
                 }
@@ -900,7 +906,7 @@ class JiraApiService implements ApiServiceInterface
                     break;
             }
         } catch (\Throwable $e) {
-            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+            throw new ApiServiceException($e->getMessage(), (int)$e->getCode(), $e);
         }
 
         return null;
@@ -944,7 +950,7 @@ class JiraApiService implements ApiServiceInterface
                     break;
             }
         } catch (\Throwable $e) {
-            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+            throw new ApiServiceException($e->getMessage(), (int)$e->getCode(), $e);
         }
 
         return null;
@@ -988,7 +994,7 @@ class JiraApiService implements ApiServiceInterface
                     break;
             }
         } catch (\Throwable $e) {
-            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+            throw new ApiServiceException($e->getMessage(), (int)$e->getCode(), $e);
         }
 
         return null;
@@ -1025,7 +1031,7 @@ class JiraApiService implements ApiServiceInterface
                     break;
             }
         } catch (\Throwable $e) {
-            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+            throw new ApiServiceException($e->getMessage(), (int)$e->getCode(), $e);
         }
 
         return false;
@@ -1204,5 +1210,99 @@ class JiraApiService implements ApiServiceInterface
         }
 
         return $accountsResult;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    public function getProjectBillingData(string $projectId, DateTimeInterface $startDate, DateTimeInterface $endDate): ProjectBillingData
+    {
+        $projectBillingData = new ProjectBillingData();
+
+        // Get customFields from Jira.
+        $accountFieldId = $this->getCustomFieldId('Account');
+
+        $issues = $this->getIssuesForProjectInterval($projectId,  $startDate, $endDate);
+
+        foreach ($issues as $issue) {
+            $accountApiData = $issue->fields->{$accountFieldId};
+
+            if ($accountApiData == null) {
+                continue;
+            }
+
+            $filteredInvoices = $projectBillingData->invoices->filter(
+                function (ProjectBillingInvoiceData $invoice) use ($accountApiData) {
+                    return $invoice->account->projectTrackerId == $accountApiData->id;
+                }
+            );
+
+            if ($filteredInvoices->count() == 1) {
+                $invoiceData = $filteredInvoices->first();
+            } else {
+                $accountData = new AccountData($accountApiData->id, $accountApiData->name, $accountApiData->key);
+                $invoiceData = new ProjectBillingInvoiceData($accountData);
+                $projectBillingData->invoices->add($invoiceData);
+            }
+
+            $issueData = new ProjectBillingIssueData(
+                $issue->fields->summary,
+                $issue->fields->status->statusCategory->key,
+                $issue->id,
+                $issue->key,
+            );
+            $invoiceData->issues->add($issueData);
+        }
+
+        return $projectBillingData;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    private function getIssuesForProjectInterval(string $projectId, DateTimeInterface $startDate, DateTimeInterface $endDate, bool $onlyClosedIssues = true): array
+    {
+        $issues = [];
+
+        // Get customFields from Jira.
+        $accountFieldId = $this->getCustomFieldId('Account');
+
+        // Get all issues for version.
+        $fields = [
+            'summary',
+            'status',
+            'resolutionDate',
+            $accountFieldId,
+        ];
+
+        $from = $startDate->format('Y/m/d');
+        $to = $endDate->format('Y/m/d');
+
+        $jql = "project=$projectId and (resolutiondate>=\"$from\") and (resolutiondate<=\"$to\")";
+
+        if ($onlyClosedIssues) {
+            $jql .= " and (status=lukket)";
+        }
+
+        $startAt = 0;
+
+        // Get issues for the given project in the given timeframe.
+        do {
+            $results = $this->post(
+                self::API_PATH_SEARCH,
+                [
+                    'startAt' => $startAt,
+                    'jql' => $jql,
+                    'maxResults' => 50,
+                    'fields' => $fields,
+                ]
+            );
+
+            $issues = array_merge($issues, $results->issues);
+
+            $startAt = $startAt + 50;
+        } while (isset($results->total) && $results->total > $startAt);
+
+        return $issues;
     }
 }

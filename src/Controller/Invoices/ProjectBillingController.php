@@ -2,19 +2,17 @@
 
 namespace App\Controller\Invoices;
 
-use App\Entity\Invoice;
 use App\Entity\ProjectBilling;
-use App\Form\Invoices\InvoiceRecordType;
 use App\Form\Invoices\ProjectBillingType;
-use App\Model\Invoices\InvoiceRecordData;
-use App\Repository\InvoiceRepository;
+use App\Message\CreateProjectBillingMessage;
+use App\Message\UpdateProjectBillingMessage;
 use App\Repository\ProjectBillingRepository;
-use App\Service\Invoices\BillingService;
 use HttpException;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin/project-billing')]
@@ -37,11 +35,12 @@ class ProjectBillingController extends AbstractController
         ]);
     }
 
-
     #[Route('/new', name: 'app_project_billing_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ProjectBillingRepository $projectBillingRepository): Response
+    public function new(Request $request, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
     {
         $projectBilling = new ProjectBilling();
+        $projectBilling->setDescription($this->getParameter('app.default_invoice_description') ?? '');
+
         $form = $this->createForm(ProjectBillingType::class, $projectBilling);
         $form->handleRequest($request);
 
@@ -51,7 +50,8 @@ class ProjectBillingController extends AbstractController
             $projectBilling->setRecorded(false);
             $projectBillingRepository->save($projectBilling, true);
 
-
+            // Emit create billing message.
+            $bus->dispatch(new CreateProjectBillingMessage($projectBilling->getId()));
 
             return $this->redirectToRoute('app_project_billing_edit', [
                 'id' => $projectBilling->getId(),
@@ -68,7 +68,7 @@ class ProjectBillingController extends AbstractController
      * @throws HttpException
      */
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository): Response
+    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
     {
         $form = $this->createForm(ProjectBillingType::class, $projectBilling);
         $form->handleRequest($request);
@@ -80,6 +80,9 @@ class ProjectBillingController extends AbstractController
 
             $projectBilling->setUpdatedAt(new \DateTime());
             $projectBillingRepository->save($projectBilling, true);
+
+            // Emit create billing message.
+            $bus->dispatch(new UpdateProjectBillingMessage($projectBilling->getId()));
 
             return $this->redirectToRoute('app_project_billing_edit', [
                 'id' => $projectBilling->getId(),

@@ -95,7 +95,7 @@
             {% for index, invoiceEntry in invoice.invoiceEntries %}
                 <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                     <td class="table-td">{{ invoiceEntry.account }}</td>
-                    <td class="table-td">{{ invoiceEntry.materialNumber.value }}</td>
+                    <td class="table-td">{{ invoiceEntry.materialNumber.value ?? '' }}</td>
                     <td class="table-td">{{ invoiceEntry.product }}</td>
                     <td class="table-td">{{ invoiceEntry.amount }}</td>
                     <td class="table-td">{{ invoiceEntry.price }}</td>

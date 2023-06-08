@@ -9,6 +9,7 @@ imports:
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.default_invoice_description: '%env(APP_INVOICE_DEFAULT_DESCRIPTION)%'
 
 services:
     # default configuration for services in *this* file
@@ -37,5 +38,9 @@ services:
             $sprintNameRegex: '%env(JIRA_API_SERVICE_SPRINT_NAME_REGEX)%'
 
     App\Service\Invoices\BillingService:
+        arguments:
+            $receiverAccount: '%env(APP_INVOICE_RECEIVER_ACCOUNT)%'
+
+    App\Service\Invoices\ProjectBillingService:
         arguments:
             $receiverAccount: '%env(APP_INVOICE_RECEIVER_ACCOUNT)%'
