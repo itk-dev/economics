@@ -16,7 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ProjectBillingService
 {
-    public const PROJECT_BILLING_NAME = 'projektfakturering';
+    public const PROJECT_BILLING_NAME = 'PF';
 
     public function __construct(
         private readonly ProjectBillingRepository $projectBillingRepository,
@@ -72,7 +72,7 @@ class ProjectBillingService
             $invoice->setRecorded(false);
             $invoice->setProject($projectBilling->getProject());
             $invoice->setProjectBilling($projectBilling);
-            $invoice->setDescription("Projektfakturering");
+            $invoice->setDescription($projectBilling->getDescription());
             $invoice->setName($projectBilling->getProject()->getName() . ": "  . $invoiceData->account->name . " (" . $projectBilling->getPeriodStart()->format("d/m/Y") . " - " .  $projectBilling->getPeriodEnd()->format("d/m/Y") . ")");
             $invoice->setPeriodFrom($projectBilling->getPeriodStart());
             $invoice->setPeriodTo($projectBilling->getPeriodEnd());

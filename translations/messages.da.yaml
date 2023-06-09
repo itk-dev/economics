@@ -215,6 +215,12 @@ invoices:
   action_export: 'Download .csv'
   back_to_invoice_entry: 'Tilbage til fakturalinje'
   invoice_info: 'Fakturainformation'
+  project_billing: 'PF'
+  include_project_billing: 'Projektfakturering'
+  with_project_billing: 'Inkludér'
+  without_project_billing: 'Udelad'
+  only_project_billing: 'Kun PF'
+  list_recorded: 'Bogført'
 
 material_number_enum:
   internal: "Interne: 103361"

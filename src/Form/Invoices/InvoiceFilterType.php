@@ -4,6 +4,7 @@ namespace App\Form\Invoices;
 
 use App\Model\Invoices\InvoiceFilterData;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -28,6 +29,17 @@ class InvoiceFilterType extends AbstractType
                 'required' => false,
                 'label' => 'invoices.created_by',
                 'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element'],
+            ])
+            ->add('projectBilling', ChoiceType::class, [
+                'required' => true,
+                'label' => 'invoices.include_project_billing',
+                'label_attr' => ['class' => 'label'],
+                'choices' => [
+                    'invoices.without_project_billing' => false,
+                    'invoices.with_project_billing' => null,
+                    'invoices.only_project_billing' => true,
+                ],
                 'attr' => ['class' => 'form-element'],
             ])
         ;

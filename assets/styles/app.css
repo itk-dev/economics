@@ -137,7 +137,7 @@
     }
 
     .invoices-filter-form {
-        @apply grid gap-3 mb-6 md:grid-cols-3;
+        @apply grid gap-3 mb-6 md:grid-cols-4;
     }
 
     .worklogs-filter-form {

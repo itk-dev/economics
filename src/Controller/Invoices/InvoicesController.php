@@ -40,6 +40,12 @@ class InvoicesController extends AbstractController
             $qb->andWhere('invoice.createdBy LIKE :createdBy')->setParameter('createdBy', $invoiceFilterData->createdBy);
         }
 
+        if ($invoiceFilterData->projectBilling) {
+            $qb->andWhere('invoice.projectBilling IS NOT NULL');
+        } else if ($invoiceFilterData->projectBilling === false) {
+            $qb->andWhere('invoice.projectBilling IS NULL');
+        }
+
         $pagination = $paginator->paginate(
             $qb,
             $request->query->getInt('page', 1),
@@ -156,6 +162,11 @@ class InvoicesController extends AbstractController
                 throw new HttpException(400, 'Invoice is recorded, cannot be edited.');
             }
 
+            if ($invoice->getProjectBilling() !== null) {
+                throw new HttpException(400, 'Invoice is a part of a project billing, cannot be edited.');
+            }
+
+
             $invoice->setUpdatedAt(new \DateTime());
             $invoiceRepository->save($invoice, true);
 
@@ -182,6 +193,10 @@ class InvoicesController extends AbstractController
         $errors = $billingService->getInvoiceRecordableErrors($invoice);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($invoice->getProjectBilling() !== null) {
+                throw new HttpException(400, 'Invoice is a part of a project billing, cannot be put on record.');
+            }
+
             if ($recordData->confirmed) {
                 $billingService->recordInvoice($invoice);
             }
@@ -218,13 +233,12 @@ class InvoicesController extends AbstractController
         $d->loadHTML($html);
         /** @var \DOMNode $body */
         $body = $d->getElementsByTagName('div')->item(0);
-        /** @var \DOMElement $child */
+
         foreach ($body->childNodes as $child) {
-            if ('style' === $child->tagName) {
-                continue;
-            }
-            if ('table' === $child->tagName) {
-                $child->setAttribute('class', 'table table-export');
+            if ($child instanceof \DOMElement) {
+                if ('table' == $child->tagName) {
+                    $child->setAttribute('class', 'table table-export');
+                }
             }
             $mock->appendChild($mock->importNode($child, true));
         }
@@ -241,6 +255,10 @@ class InvoicesController extends AbstractController
     #[Route('/{id}/export', name: 'app_invoices_export', methods: ['GET'])]
     public function export(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
     {
+        if ($invoice->getProjectBilling() !== null) {
+            throw new HttpException(400, 'Invoice is a part of a project billing, cannot be exported.');
+        }
+
         // Mark invoice as exported.
         $invoice->setExportedDate(new \DateTime());
         $invoiceRepository->save($invoice, true);
@@ -275,7 +293,11 @@ class InvoicesController extends AbstractController
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$invoice->getId(), $token)) {
             if ($invoice->isRecorded()) {
-                throw new HttpException(400, 'Invoice is recorded, cannot be deleted.');
+                throw new HttpException(400, 'Invoice is put on record, cannot be deleted.');
+            }
+
+            if ($invoice->getProjectBilling() !== null) {
+                throw new HttpException(400, 'Invoice is a part of a project billing, cannot be deleted.');
             }
 
             $invoiceRepository->remove($invoice, true);
