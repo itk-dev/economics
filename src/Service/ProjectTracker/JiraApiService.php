@@ -1281,7 +1281,7 @@ class JiraApiService implements ApiServiceInterface
         $jql = "project=$projectId and (resolutiondate>=\"$from\") and (resolutiondate<=\"$to\")";
 
         if ($onlyClosedIssues) {
-            $jql .= " and (status=lukket)";
+            $jql .= " and (status=Lukket)";
         }
 
         $startAt = 0;

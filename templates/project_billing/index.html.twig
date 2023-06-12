@@ -11,6 +11,7 @@
             <th class="table-th{% if projectBillings.isSorted('projectBilling.id') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_id'|trans, 'projectBilling.id') }}</th>
             <th class="table-th{% if projectBillings.isSorted('projectBilling.name') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_name'|trans, 'projectBilling.name') }}</th>
             <th class="table-th">{{ 'project_billing.list_project'|trans }}</th>
+            <th class="table-th">{{ 'project_billing.list_recorded'|trans }}</th>
             <th class="table-th{% if projectBillings.isSorted('projectBilling.createdBy') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_created_by'|trans, 'projectBilling.createdBy') }}</th>
             <th class="table-th{% if projectBillings.isSorted('projectBilling.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_updated_at'|trans, 'projectBilling.updatedAt') }}</th>
             <th class="table-th">{{ 'project_billing.list_actions'|trans }}</th>
@@ -22,6 +23,7 @@
                 <td class="table-td">{{ projectBilling.id }}</td>
                 <td class="table-td">{{ projectBilling.name }}</td>
                 <td class="table-td">{{ projectBilling.project }}</td>
+                <td class="table-td">{{ projectBilling.isRecorded ? 'project_billing.recorded'|trans : '' }}</td>
                 <td class="table-td">{{ projectBilling.createdBy }}</td>
                 <td class="table-td">{{ projectBilling.updatedAt ? projectBilling.updatedAt|date('Y-m-d') : '' }}</td>
                 <td class="table-td">

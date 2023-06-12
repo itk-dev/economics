@@ -31,7 +31,7 @@ class ProjectBillingType extends AbstractType
                 'help' => 'project_billing.field_project_helptext',
             ])
             ->add('periodStart', DateTimeType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'project_billing.field_period_start',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
@@ -41,7 +41,7 @@ class ProjectBillingType extends AbstractType
                 'attr' => ['class' => 'form-element'],
             ])
             ->add('periodEnd', DateTimeType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'project_billing.field_period_end',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],

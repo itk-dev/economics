@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project_billing.edit'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'project_billing.confirm_record_title'|trans }}</h1>
+
+    {% if projectBilling.recorded %}
+        <div class="alert-danger" role="alert">
+            <div>{{ 'project_billing.already_recorded'|trans }}</div>
+        </div>
+    {% else %}
+        {% if errors is empty %}
+            <div class="alert-warning" role="alert">
+                <div class="mb-5">{{ 'project_billing.confirm_record_are_you_sure'|trans({ '%projectBillingName%': projectBilling.name }) }}</div>
+                <div class="mb-5">{{ 'project_billing.all_worklogs_will_be_marked_as_billed'|trans }}</div>
+                <div>{{ 'project_billing.confirm_record_cannot_be_undone'|trans }}</div>
+            </div>
+
+            {{ form_start(form) }}
+            {{ form_rest(form) }}
+            <div class="mt-5">
+                <button class="button">{{ 'project_billing.record_save'|trans }}</button>
+            </div>
+            {{ form_end(form) }}
+        {% else %}
+            <h3 class="subheading">{{ 'project_billing.cannot_record_errors_exist'|trans }}</h3>
+            {% for error in errors %}
+                <div class="alert-danger" role="alert">
+                    <div>{{ error }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}) }}">{{ 'project_billing.back_to_invoice'|trans }}</a>
+    </div>
+{% endblock %}

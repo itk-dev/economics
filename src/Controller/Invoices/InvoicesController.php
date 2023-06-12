@@ -8,7 +8,7 @@ use App\Form\Invoices\InvoiceNewType;
 use App\Form\Invoices\InvoiceRecordType;
 use App\Form\Invoices\InvoiceType;
 use App\Model\Invoices\InvoiceFilterData;
-use App\Model\Invoices\InvoiceRecordData;
+use App\Model\Invoices\ConfirmData;
 use App\Repository\AccountRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\Invoices\BillingService;
@@ -186,7 +186,7 @@ class InvoicesController extends AbstractController
     #[Route('/{id}/record', name: 'app_invoices_record', methods: ['GET', 'POST'])]
     public function record(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
     {
-        $recordData = new InvoiceRecordData();
+        $recordData = new ConfirmData();
         $form = $this->createForm(InvoiceRecordType::class, $recordData);
         $form->handleRequest($request);
 

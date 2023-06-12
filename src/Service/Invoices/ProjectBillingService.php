@@ -4,6 +4,7 @@ namespace App\Service\Invoices;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
+use App\Entity\ProjectBilling;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
@@ -81,8 +82,6 @@ class ProjectBillingService
             $invoice->setUpdatedBy(self::PROJECT_BILLING_NAME);
             $invoice->setUpdatedAt(new \DateTime());
 
-            $projectBilling->addInvoice($invoice);
-
             // Find client.
             $client = $this->clientRepository->findOneBy(['name' => $invoiceData->account->name, 'account' => $invoiceData->account->value]);
 
@@ -96,12 +95,8 @@ class ProjectBillingService
             $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
             $invoice->setDefaultReceiverAccount($this->receiverAccount);
 
-            $this->entityManager->persist($invoice);
-
             foreach ($invoiceData->issues as $issueData) {
                 $invoiceEntry = new InvoiceEntry();
-                $invoiceEntry->setInvoice($invoice);
-                $invoice->addInvoiceEntry($invoiceEntry);
                 $invoiceEntry->setEntryType(InvoiceEntryTypeEnum::WORKLOG);
                 $invoiceEntry->setDescription("");
                 $invoiceEntry->setCreatedBy(self::PROJECT_BILLING_NAME);
@@ -126,10 +121,23 @@ class ProjectBillingService
                     }
                 }
 
+                if (count($invoiceEntry->getWorklogs()) == 0) {
+                    continue;
+                }
+
+                $invoiceEntry->setInvoice($invoice);
+                $invoice->addInvoiceEntry($invoiceEntry);
                 $this->entityManager->persist($invoiceEntry);
 
                 $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
             }
+
+            if (count($invoice->getInvoiceEntries()) == 0) {
+                continue;
+            }
+
+            $projectBilling->addInvoice($invoice);
+            $this->entityManager->persist($invoice);
         }
 
         $this->entityManager->flush();
@@ -139,5 +147,18 @@ class ProjectBillingService
         }
 
         $this->entityManager->flush();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function recordProjectBilling(ProjectBilling $projectBilling): void
+    {
+        foreach ($projectBilling->getInvoices() as $invoice) {
+            $this->billingService->recordInvoice($invoice);
+        }
+
+        $projectBilling->setRecorded(true);
+        $this->projectBillingRepository->save($projectBilling, true);
     }
 }

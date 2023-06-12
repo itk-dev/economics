@@ -8,20 +8,20 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class InvoiceRecordType extends AbstractType
+class ProjectBillingRecordType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('confirmed', ChoiceType::class, [
                 'required' => true,
-                'label' => 'invoices.record_invoice',
+                'label' => 'project_billing.record_project_billing',
                 'label_attr' => ['class' => 'label'],
                 'choices' => [
-                    'invoices.record_invoice_false' => false,
-                    'invoices.record_invoice_true' => true,
+                    'project_billing.record_project_billing_false' => false,
+                    'project_billing.record_project_billing_true' => true,
                 ],
-                'help' => 'invoices.record_invoice_helptext',
+                'help' => 'project_billing.record_project_billing_helptext',
                 'attr' => ['class' => 'form-element'],
             ])
         ;

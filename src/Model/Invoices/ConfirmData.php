@@ -2,7 +2,7 @@
 
 namespace App\Model\Invoices;
 
-class InvoiceRecordData
+class ConfirmData
 {
     public bool $confirmed = false;
 }

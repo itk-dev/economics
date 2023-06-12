@@ -299,7 +299,7 @@ home:
   project_billing: 'Projektfakturering'
   project_billing_description: 'Fakturér alle kunder i et projekt for en given periode.'
   projects: 'Projekter'
-  projects_description: 'Liste over projekter'
+  projects_description: 'Liste over projekter. Vælg hvilke skal vises i resten af systemet.'
 
 frontpage:
   title: 'Velkommen til Economics'
@@ -335,6 +335,24 @@ project_billing:
   field_period_end_helptext: 'Vælg hvor perioden skal strække sig til'
   field_description: 'Beskrivelse'
   field_description_help: 'Teksten sættes efter "Projektnavn: Accountnavn (faktureringsperiode)." i H på faktura.'
+  action_export: 'Eksportér'
+  action_record: 'Bogfør projektfakturering'
+  action_show_export: 'Vis eksport'
+  back_to_invoice: 'Tilbage til projektfakturering'
+  confirm_record_are_you_sure: 'Er du sikker på at du vil bogføre projektfaktureringen "%projectBillingName%"?'
+  all_worklogs_will_be_marked_as_billed: 'Alle worklogs og fakturaer i projektfaktureringen vil blive markeret som faktureret.'
+  confirm_record_cannot_be_undone: 'Når fakturaen er bogført kan den ikke ændres mere.'
+  confirm_record_title: 'Bogfør projektfaktureringen'
+  record_save: 'Gennemfør valg'
+  record_project_billing_false: 'Nej. Gå tilbage.'
+  record_project_billing_true: 'Ja. Bogfør projektfaktureringen.'
+  record_project_billing: "Bogfør projektfakturering?"
+  record_project_billing_helptext: ''
+  cannot_record_errors_exist: 'Kan ikke bogføre projektfaktureringen, idet der er fejl i dataen:'
+  already_recorded: 'Projektfaktureringen er allerede bogført'
+  export_title: 'Eksport'
+  recorded: 'Ja'
+  list_recorded: 'Bogført'
 
 project:
   title: 'Projekter'
