@@ -3,6 +3,7 @@
 namespace App\Form\Invoices;
 
 use App\Entity\ProjectBilling;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -29,6 +30,11 @@ class ProjectBillingType extends AbstractType
                 'row_attr' => ['class' => 'form-row'],
                 'attr' => ['class' => 'form-element'],
                 'help' => 'project_billing.field_project_helptext',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('p')
+                        ->where('p.include IS NOT NULL')
+                        ->orderBy('p.name', 'ASC');
+                },
             ])
             ->add('periodStart', DateTimeType::class, [
                 'required' => true,

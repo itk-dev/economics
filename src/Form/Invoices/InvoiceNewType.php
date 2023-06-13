@@ -3,6 +3,7 @@
 namespace App\Form\Invoices;
 
 use App\Entity\Invoice;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,6 +24,11 @@ class InvoiceNewType extends AbstractType
             ])
             ->add('project', null, [
                 'required' => true,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('p')
+                        ->where('p.include IS NOT NULL')
+                        ->orderBy('p.name', 'ASC');
+                },
                 'attr' => ['class' => 'form-element'],
             ])
         ;
