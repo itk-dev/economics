@@ -2,7 +2,6 @@
 
 namespace App\Controller\Invoices;
 
-use App\Entity\Invoice;
 use App\Entity\ProjectBilling;
 use App\Form\Invoices\ProjectBillingRecordType;
 use App\Form\Invoices\ProjectBillingType;
@@ -19,6 +18,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -46,7 +46,8 @@ class ProjectBillingController extends AbstractController
     public function new(Request $request, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
     {
         $projectBilling = new ProjectBilling();
-        $projectBilling->setDescription($this->getParameter('app.default_invoice_description') ?? '');
+        $defaultDescription = $this->getParameter('app.default_invoice_description');
+        $projectBilling->setDescription(is_string($defaultDescription) ? $defaultDescription : '');
 
         $form = $this->createForm(ProjectBillingType::class, $projectBilling);
         $form->handleRequest($request);
@@ -58,10 +59,13 @@ class ProjectBillingController extends AbstractController
             $projectBillingRepository->save($projectBilling, true);
 
             // Emit create billing message.
-            $bus->dispatch(new CreateProjectBillingMessage($projectBilling->getId()));
+            $id = $projectBilling->getId();
+            if (null !== $id) {
+                $bus->dispatch(new CreateProjectBillingMessage($id));
+            }
 
             return $this->redirectToRoute('app_project_billing_edit', [
-                'id' => $projectBilling->getId(),
+                'id' => $id,
             ], Response::HTTP_SEE_OTHER);
         }
 
@@ -71,9 +75,6 @@ class ProjectBillingController extends AbstractController
         ]);
     }
 
-    /**
-     * @throws \HttpException
-     */
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
     {
@@ -87,17 +88,20 @@ class ProjectBillingController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($projectBilling->isRecorded()) {
-                throw new \HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
             }
 
             $projectBilling->setUpdatedAt(new \DateTime());
             $projectBillingRepository->save($projectBilling, true);
 
             // Emit create billing message.
-            $bus->dispatch(new UpdateProjectBillingMessage($projectBilling->getId()));
+            $id = $projectBilling->getId();
+            if (null !== $id) {
+                $bus->dispatch(new UpdateProjectBillingMessage($id));
+            }
 
             return $this->redirectToRoute('app_project_billing_edit', [
-                'id' => $projectBilling->getId(),
+                'id' => $id,
             ], Response::HTTP_SEE_OTHER);
         }
 
@@ -107,16 +111,13 @@ class ProjectBillingController extends AbstractController
         ]);
     }
 
-    /**
-     * @throws \HttpException
-     */
     #[Route('/{id}', name: 'app_project_billing_delete', methods: ['POST'])]
     public function delete(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, InvoiceRepository $invoiceRepository): Response
     {
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$projectBilling->getId(), $token)) {
             if ($projectBilling->isRecorded()) {
-                throw new \HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
             }
 
             foreach ($projectBilling->getInvoices() as $invoice) {
@@ -125,7 +126,7 @@ class ProjectBillingController extends AbstractController
                 } else {
                     $invoiceName = $invoice->getName();
 
-                    throw new \HttpException(400, "Invoice \"$invoiceName\" is recorded, cannot be deleted.");
+                    throw new HttpException(400, "Invoice \"$invoiceName\" is recorded, cannot be deleted.");
                 }
             }
 
@@ -156,7 +157,6 @@ class ProjectBillingController extends AbstractController
         return $this->render('project_billing/record.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
-            'errors' => $errors ?? '',
         ]);
     }
 

@@ -14,6 +14,7 @@ use App\Repository\ProjectBillingRepository;
 use App\Repository\WorklogRepository;
 use App\Service\ProjectTracker\ApiServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
 class ProjectBillingService
 {
@@ -51,16 +52,38 @@ class ProjectBillingService
         $this->createProjectBilling($projectBillingId);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function createProjectBilling(int $projectBillingId): void
     {
         $projectBilling = $this->projectBillingRepository->find($projectBillingId);
 
+        // TODO: Replace with custom exception.
         if (null == $projectBilling) {
-            // TODO: Replace with custom exception.
             throw new \Exception('No project billing entity found.');
         }
 
-        $projectBillingData = $this->apiService->getProjectBillingData($projectBilling->getProject()->getProjectTrackerId(), $projectBilling->getPeriodStart(), $projectBilling->getPeriodEnd());
+        $project = $projectBilling->getProject();
+
+        if (null == $project) {
+            throw new \Exception('No project selected.');
+        }
+
+        $projectTrackerId = $project->getProjectTrackerId();
+
+        if (null == $projectTrackerId) {
+            throw new \Exception('No project.projectTrackerId.');
+        }
+
+        $periodStart = $projectBilling->getPeriodStart();
+        $periodEnd = $projectBilling->getPeriodEnd();
+
+        if (null == $periodStart || null == $periodEnd) {
+            throw new \Exception('project.periodStart or project.periodEnd cannot be null.');
+        }
+
+        $projectBillingData = $this->apiService->getProjectBillingData($projectTrackerId, $periodStart, $periodEnd);
 
         // For each invoiceData:
         // 1. Create an Invoice
@@ -74,9 +97,9 @@ class ProjectBillingService
             $invoice->setProject($projectBilling->getProject());
             $invoice->setProjectBilling($projectBilling);
             $invoice->setDescription($projectBilling->getDescription());
-            $invoice->setName($projectBilling->getProject()->getName().': '.$invoiceData->account->name.' ('.$projectBilling->getPeriodStart()->format('d/m/Y').' - '.$projectBilling->getPeriodEnd()->format('d/m/Y').')');
-            $invoice->setPeriodFrom($projectBilling->getPeriodStart());
-            $invoice->setPeriodTo($projectBilling->getPeriodEnd());
+            $invoice->setName($project->getName().': '.$invoiceData->account->name.' ('.$periodStart->format('d/m/Y').' - '.$periodEnd->format('d/m/Y').')');
+            $invoice->setPeriodFrom($periodStart);
+            $invoice->setPeriodTo($periodEnd);
             $invoice->setCreatedBy(self::PROJECT_BILLING_NAME);
             $invoice->setCreatedAt(new \DateTime());
             $invoice->setUpdatedBy(self::PROJECT_BILLING_NAME);
@@ -85,9 +108,12 @@ class ProjectBillingService
             // Find client.
             $client = $this->clientRepository->findOneBy(['name' => $invoiceData->account->name, 'account' => $invoiceData->account->value]);
 
-            if (null != $client) {
-                $invoice->setClient($client);
+            // Ignore invoices where there is not client.
+            if (null == $client) {
+                continue;
             }
+
+            $invoice->setClient($client);
 
             $internal = ClientTypeEnum::INTERNAL == $client->getType();
 

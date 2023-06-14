@@ -1234,6 +1234,7 @@ class JiraApiService implements ApiServiceInterface
             );
 
             if (1 == $filteredInvoices->count()) {
+                /** @var ProjectBillingInvoiceData $invoiceData */
                 $invoiceData = $filteredInvoices->first();
             } else {
                 $accountData = new AccountData($accountApiData->id, $accountApiData->name, $accountApiData->key);
@@ -1247,6 +1248,7 @@ class JiraApiService implements ApiServiceInterface
                 $issue->id,
                 $issue->key,
             );
+
             $invoiceData->issues->add($issueData);
         }
 
