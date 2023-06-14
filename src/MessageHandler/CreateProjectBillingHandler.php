@@ -4,7 +4,6 @@ namespace App\MessageHandler;
 
 use App\Message\CreateProjectBillingMessage;
 use App\Service\Invoices\ProjectBillingService;
-use Exception;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
@@ -15,7 +14,7 @@ class CreateProjectBillingHandler
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function __invoke(CreateProjectBillingMessage $message): void
     {

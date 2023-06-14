@@ -4,7 +4,6 @@ namespace App\Message;
 
 class CreateProjectBillingMessage
 {
-
     public function __construct(private int $projectBillingId)
     {
     }

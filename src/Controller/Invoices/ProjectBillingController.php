@@ -4,7 +4,6 @@ namespace App\Controller\Invoices;
 
 use App\Entity\Invoice;
 use App\Entity\ProjectBilling;
-use App\Form\Invoices\InvoiceRecordType;
 use App\Form\Invoices\ProjectBillingRecordType;
 use App\Form\Invoices\ProjectBillingType;
 use App\Message\CreateProjectBillingMessage;
@@ -14,7 +13,6 @@ use App\Repository\InvoiceRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\Invoices\BillingService;
 use App\Service\Invoices\ProjectBillingService;
-use HttpException;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -74,7 +72,7 @@ class ProjectBillingController extends AbstractController
     }
 
     /**
-     * @throws HttpException
+     * @throws \HttpException
      */
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
@@ -89,7 +87,7 @@ class ProjectBillingController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($projectBilling->isRecorded()) {
-                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new \HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
             }
 
             $projectBilling->setUpdatedAt(new \DateTime());
@@ -110,7 +108,7 @@ class ProjectBillingController extends AbstractController
     }
 
     /**
-     * @throws HttpException
+     * @throws \HttpException
      */
     #[Route('/{id}', name: 'app_project_billing_delete', methods: ['POST'])]
     public function delete(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, InvoiceRepository $invoiceRepository): Response
@@ -118,7 +116,7 @@ class ProjectBillingController extends AbstractController
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$projectBilling->getId(), $token)) {
             if ($projectBilling->isRecorded()) {
-                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new \HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
             }
 
             foreach ($projectBilling->getInvoices() as $invoice) {
@@ -127,7 +125,7 @@ class ProjectBillingController extends AbstractController
                 } else {
                     $invoiceName = $invoice->getName();
 
-                    throw new HttpException(400, "Invoice \"$invoiceName\" is recorded, cannot be deleted.");
+                    throw new \HttpException(400, "Invoice \"$invoiceName\" is recorded, cannot be deleted.");
                 }
             }
 
@@ -161,7 +159,6 @@ class ProjectBillingController extends AbstractController
             'errors' => $errors ?? '',
         ]);
     }
-
 
     /**
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
@@ -243,5 +240,4 @@ class ProjectBillingController extends AbstractController
 
         return $response;
     }
-
 }

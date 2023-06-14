@@ -9,8 +9,6 @@ use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
-use DateTime;
-use DateTimeInterface;
 
 interface ApiServiceInterface
 {
@@ -77,5 +75,5 @@ interface ApiServiceInterface
      */
     public function getAllAccountData(): array;
 
-    public function getProjectBillingData(string $projectId, DateTimeInterface $startDate, DateTimeInterface $endDate): ProjectBillingData;
+    public function getProjectBillingData(string $projectId, \DateTimeInterface $startDate, \DateTimeInterface $endDate): ProjectBillingData;
 }

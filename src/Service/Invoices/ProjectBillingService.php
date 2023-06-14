@@ -27,8 +27,8 @@ class ProjectBillingService
         private readonly WorklogRepository $worklogRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly string $receiverAccount,
-    )
-    {}
+    ) {
+    }
 
     /**
      * @throws \Exception
@@ -37,9 +37,9 @@ class ProjectBillingService
     {
         $projectBilling = $this->projectBillingRepository->find($projectBillingId);
 
-        if ($projectBilling == null) {
+        if (null == $projectBilling) {
             // TODO: Replace with custom exception.
-            throw new \Exception("No project billing entity found.");
+            throw new \Exception('No project billing entity found.');
         }
 
         foreach ($projectBilling->getInvoices() as $invoice) {
@@ -55,9 +55,9 @@ class ProjectBillingService
     {
         $projectBilling = $this->projectBillingRepository->find($projectBillingId);
 
-        if ($projectBilling == null) {
+        if (null == $projectBilling) {
             // TODO: Replace with custom exception.
-            throw new \Exception("No project billing entity found.");
+            throw new \Exception('No project billing entity found.');
         }
 
         $projectBillingData = $this->apiService->getProjectBillingData($projectBilling->getProject()->getProjectTrackerId(), $projectBilling->getPeriodStart(), $projectBilling->getPeriodEnd());
@@ -74,7 +74,7 @@ class ProjectBillingService
             $invoice->setProject($projectBilling->getProject());
             $invoice->setProjectBilling($projectBilling);
             $invoice->setDescription($projectBilling->getDescription());
-            $invoice->setName($projectBilling->getProject()->getName() . ": "  . $invoiceData->account->name . " (" . $projectBilling->getPeriodStart()->format("d/m/Y") . " - " .  $projectBilling->getPeriodEnd()->format("d/m/Y") . ")");
+            $invoice->setName($projectBilling->getProject()->getName().': '.$invoiceData->account->name.' ('.$projectBilling->getPeriodStart()->format('d/m/Y').' - '.$projectBilling->getPeriodEnd()->format('d/m/Y').')');
             $invoice->setPeriodFrom($projectBilling->getPeriodStart());
             $invoice->setPeriodTo($projectBilling->getPeriodEnd());
             $invoice->setCreatedBy(self::PROJECT_BILLING_NAME);
@@ -85,11 +85,11 @@ class ProjectBillingService
             // Find client.
             $client = $this->clientRepository->findOneBy(['name' => $invoiceData->account->name, 'account' => $invoiceData->account->value]);
 
-            if ($client != null) {
+            if (null != $client) {
                 $invoice->setClient($client);
             }
 
-            $internal = $client->getType() == ClientTypeEnum::INTERNAL;
+            $internal = ClientTypeEnum::INTERNAL == $client->getType();
 
             // TODO: MaterialNumberEnum::EXTERNAL_WITH_MOMS or MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS?
             $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
@@ -98,13 +98,13 @@ class ProjectBillingService
             foreach ($invoiceData->issues as $issueData) {
                 $invoiceEntry = new InvoiceEntry();
                 $invoiceEntry->setEntryType(InvoiceEntryTypeEnum::WORKLOG);
-                $invoiceEntry->setDescription("");
+                $invoiceEntry->setDescription('');
                 $invoiceEntry->setCreatedBy(self::PROJECT_BILLING_NAME);
                 $invoiceEntry->setCreatedAt(new \DateTime());
                 $invoiceEntry->setUpdatedBy(self::PROJECT_BILLING_NAME);
                 $invoiceEntry->setUpdatedAt(new \DateTime());
 
-                $product = $issueData->projectTrackerKey.":".preg_replace('/\(DEVSUPP-\d+\)/i', '', $issueData->name);
+                $product = $issueData->projectTrackerKey.':'.preg_replace('/\(DEVSUPP-\d+\)/i', '', $issueData->name);
                 $price = $client->getStandardPrice();
 
                 $invoiceEntry->setProduct($product);
@@ -121,7 +121,7 @@ class ProjectBillingService
                     }
                 }
 
-                if (count($invoiceEntry->getWorklogs()) == 0) {
+                if (0 == count($invoiceEntry->getWorklogs())) {
                     continue;
                 }
 
@@ -132,7 +132,7 @@ class ProjectBillingService
                 $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
             }
 
-            if (count($invoice->getInvoiceEntries()) == 0) {
+            if (0 == count($invoice->getInvoiceEntries())) {
                 continue;
             }
 

@@ -2,9 +2,6 @@
 
 namespace App\Model\Invoices;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
 class ProjectBillingIssueData
 {
     public readonly string $name;

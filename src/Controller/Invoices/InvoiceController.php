@@ -7,8 +7,8 @@ use App\Form\Invoices\InvoiceFilterType;
 use App\Form\Invoices\InvoiceNewType;
 use App\Form\Invoices\InvoiceRecordType;
 use App\Form\Invoices\InvoiceType;
-use App\Model\Invoices\InvoiceFilterData;
 use App\Model\Invoices\ConfirmData;
+use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\AccountRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\Invoices\BillingService;
@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/admin/invoices')]
-class InvoicesController extends AbstractController
+class InvoiceController extends AbstractController
 {
     #[Route('/', name: 'app_invoices_index', methods: ['GET'])]
     public function index(Request $request, InvoiceRepository $invoiceRepository, PaginatorInterface $paginator): Response
@@ -42,7 +42,7 @@ class InvoicesController extends AbstractController
 
         if ($invoiceFilterData->projectBilling) {
             $qb->andWhere('invoice.projectBilling IS NOT NULL');
-        } else if ($invoiceFilterData->projectBilling === false) {
+        } elseif (false === $invoiceFilterData->projectBilling) {
             $qb->andWhere('invoice.projectBilling IS NULL');
         }
 
@@ -162,10 +162,9 @@ class InvoicesController extends AbstractController
                 throw new HttpException(400, 'Invoice is recorded, cannot be edited.');
             }
 
-            if ($invoice->getProjectBilling() !== null) {
+            if (null !== $invoice->getProjectBilling()) {
                 throw new HttpException(400, 'Invoice is a part of a project billing, cannot be edited.');
             }
-
 
             $invoice->setUpdatedAt(new \DateTime());
             $invoiceRepository->save($invoice, true);
@@ -193,7 +192,7 @@ class InvoicesController extends AbstractController
         $errors = $billingService->getInvoiceRecordableErrors($invoice);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($invoice->getProjectBilling() !== null) {
+            if (null !== $invoice->getProjectBilling()) {
                 throw new HttpException(400, 'Invoice is a part of a project billing, cannot be put on record.');
             }
 
@@ -255,7 +254,7 @@ class InvoicesController extends AbstractController
     #[Route('/{id}/export', name: 'app_invoices_export', methods: ['GET'])]
     public function export(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
     {
-        if ($invoice->getProjectBilling() !== null) {
+        if (null !== $invoice->getProjectBilling()) {
             throw new HttpException(400, 'Invoice is a part of a project billing, cannot be exported.');
         }
 
@@ -296,7 +295,7 @@ class InvoicesController extends AbstractController
                 throw new HttpException(400, 'Invoice is put on record, cannot be deleted.');
             }
 
-            if ($invoice->getProjectBilling() !== null) {
+            if (null !== $invoice->getProjectBilling()) {
                 throw new HttpException(400, 'Invoice is a part of a project billing, cannot be deleted.');
             }
 
