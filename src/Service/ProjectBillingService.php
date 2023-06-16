@@ -81,6 +81,9 @@ class ProjectBillingService
 
         $projectBillingData = $this->apiService->getProjectBillingData($projectTrackerId, $periodStart, $periodEnd);
 
+        // TODO: Get data from database instead of project tracker.
+        // TODO: Expand worklog table with required fields.
+
         // For each invoiceData:
         // 1. Create an Invoice
         // 2. Foreach Issue in invoiceData:

@@ -12,7 +12,6 @@ use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\AccountRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
-use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

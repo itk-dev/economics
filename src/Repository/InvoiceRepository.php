@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Invoice;
 use App\Model\Invoices\InvoiceFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;

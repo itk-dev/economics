@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\ProjectBilling;
-use App\Model\Invoices\InvoiceFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
