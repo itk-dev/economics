@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\ProjectBilling;
+use App\Model\Invoices\InvoiceFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<ProjectBilling>
@@ -16,7 +19,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProjectBillingRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {
         parent::__construct($registry, ProjectBilling::class);
     }
@@ -39,28 +42,15 @@ class ProjectBillingRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return ProjectBilling[] Returns an array of ProjectBilling objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getFilteredPagination(int $page = 1): PaginationInterface
+    {
+        $qb = $this->createQueryBuilder('pb');
 
-//    public function findOneBySomeField($value): ?ProjectBilling
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $this->paginator->paginate(
+            $qb,
+            $page,
+            10,
+            ['defaultSortFieldName' => 'pb.createdAt', 'defaultSortDirection' => 'desc']
+        );
+    }
 }

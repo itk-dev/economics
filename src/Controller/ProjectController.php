@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Project;
 use App\Repository\ProjectRepository;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,16 +14,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProjectController extends AbstractController
 {
     #[Route('/', name: 'app_project_index', methods: ['GET'])]
-    public function index(Request $request, ProjectRepository $projectRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, ProjectRepository $projectRepository): Response
     {
-        $qb = $projectRepository->createQueryBuilder('project');
-
-        $pagination = $paginator->paginate(
-            $qb,
-            $request->query->getInt('page', 1),
-            10,
-            ['defaultSortFieldName' => 'project.id', 'defaultSortDirection' => 'asc']
-        );
+        $pagination = $projectRepository->getFilteredPagination($request->query->getInt('page', 1));
 
         return $this->render('project/index.html.twig', [
             'projects' => $pagination,

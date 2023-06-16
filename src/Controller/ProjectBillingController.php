@@ -12,7 +12,6 @@ use App\Repository\InvoiceRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\BillingService;
 use App\Service\ProjectBillingService;
-use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,16 +25,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProjectBillingController extends AbstractController
 {
     #[Route('/', name: 'app_project_billing_index', methods: ['GET'])]
-    public function index(Request $request, ProjectBillingRepository $projectBillingRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, ProjectBillingRepository $projectBillingRepository): Response
     {
-        $qb = $projectBillingRepository->createQueryBuilder('project_billing');
-
-        $pagination = $paginator->paginate(
-            $qb,
-            $request->query->getInt('page', 1),
-            10,
-            ['defaultSortFieldName' => 'project_billing.createdAt', 'defaultSortDirection' => 'desc']
-        );
+        $pagination = $projectBillingRepository->getFilteredPagination($request->query->getInt('page', 1));
 
         return $this->render('project_billing/index.html.twig', [
             'projectBillings' => $pagination,
