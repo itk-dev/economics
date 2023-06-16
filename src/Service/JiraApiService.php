@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\ProjectTracker;
+namespace App\Service;
 
 use App\Enum\ClientTypeEnum;
 use App\Exception\ApiServiceException;

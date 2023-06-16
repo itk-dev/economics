@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\SprintReport;
+namespace App\Service;
 
 use App\Entity\ProjectVersionBudget;
 use App\Repository\ProjectVersionBudgetRepository;

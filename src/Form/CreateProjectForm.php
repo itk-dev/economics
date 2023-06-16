@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Form\CreateProject;
+namespace App\Form;
 
 use App\Exception\ApiServiceException;
-use App\Service\ProjectTracker\JiraApiService;
+use App\Service\JiraApiService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

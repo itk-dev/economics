@@ -28,7 +28,7 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Service\ProjectTracker\JiraApiService:
+    App\Service\JiraApiService:
         arguments:
             $customFieldMappings: '%custom_fields%'
             $defaultBoard: '%env(JIRA_API_SERVICE_DEFAULT_BOARD)%'
@@ -37,10 +37,10 @@ services:
             $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
             $sprintNameRegex: '%env(JIRA_API_SERVICE_SPRINT_NAME_REGEX)%'
 
-    App\Service\Invoices\BillingService:
+    App\Service\BillingService:
         arguments:
             $receiverAccount: '%env(APP_INVOICE_RECEIVER_ACCOUNT)%'
 
-    App\Service\Invoices\ProjectBillingService:
+    App\Service\ProjectBillingService:
         arguments:
             $receiverAccount: '%env(APP_INVOICE_RECEIVER_ACCOUNT)%'

@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Controller\Invoices;
+namespace App\Controller;
 
 use App\Entity\ProjectBilling;
-use App\Form\Invoices\ProjectBillingRecordType;
-use App\Form\Invoices\ProjectBillingType;
+use App\Form\ProjectBillingRecordType;
+use App\Form\ProjectBillingType;
 use App\Message\CreateProjectBillingMessage;
 use App\Message\UpdateProjectBillingMessage;
 use App\Model\Invoices\ConfirmData;
 use App\Repository\InvoiceRepository;
 use App\Repository\ProjectBillingRepository;
-use App\Service\Invoices\BillingService;
-use App\Service\Invoices\ProjectBillingService;
+use App\Service\BillingService;
+use App\Service\ProjectBillingService;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;

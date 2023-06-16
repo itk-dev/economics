@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Invoices;
+namespace App\Form;
 
 use App\Entity\Invoice;
 use App\Enum\MaterialNumberEnum;

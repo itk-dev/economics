@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\ProjectTracker;
+namespace App\Service;
 
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;

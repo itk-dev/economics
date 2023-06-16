@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Controller\Invoices;
+namespace App\Controller;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Version;
 use App\Enum\InvoiceEntryTypeEnum;
-use App\Form\Invoices\InvoiceEntryWorklogFilterType;
+use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\WorklogRepository;
-use App\Service\Invoices\BillingService;
+use App\Service\BillingService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

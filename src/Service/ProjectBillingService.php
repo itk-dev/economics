@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Invoices;
+namespace App\Service;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
@@ -12,14 +12,10 @@ use App\Enum\MaterialNumberEnum;
 use App\Repository\ClientRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Repository\WorklogRepository;
-use App\Service\ProjectTracker\ApiServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 class ProjectBillingService
 {
-    public const PROJECT_BILLING_NAME = 'PF';
-
     public function __construct(
         private readonly ProjectBillingRepository $projectBillingRepository,
         private readonly BillingService $billingService,

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\SprintReport;
+namespace App\Form;
 
 use App\Model\SprintReport\SprintReportFormData;
 use Symfony\Component\Form\AbstractType;

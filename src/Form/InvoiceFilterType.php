@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Invoices;
+namespace App\Form;
 
 use App\Model\Invoices\InvoiceFilterData;
 use Symfony\Component\Form\AbstractType;

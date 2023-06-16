@@ -3,7 +3,7 @@
 namespace App\MessageHandler;
 
 use App\Message\CreateProjectBillingMessage;
-use App\Service\Invoices\ProjectBillingService;
+use App\Service\ProjectBillingService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]

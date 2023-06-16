@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Controller\Invoices;
+namespace App\Controller;
 
 use App\Entity\Invoice;
-use App\Form\Invoices\InvoiceFilterType;
-use App\Form\Invoices\InvoiceNewType;
-use App\Form\Invoices\InvoiceRecordType;
-use App\Form\Invoices\InvoiceType;
+use App\Form\InvoiceFilterType;
+use App\Form\InvoiceNewType;
+use App\Form\InvoiceRecordType;
+use App\Form\InvoiceType;
 use App\Model\Invoices\ConfirmData;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\AccountRepository;
 use App\Repository\InvoiceRepository;
-use App\Service\Invoices\BillingService;
+use App\Service\BillingService;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;

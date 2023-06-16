@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Controller\Planning;
+namespace App\Controller;
 
-use App\Service\ProjectTracker\ApiServiceInterface;
+use App\Service\ApiServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

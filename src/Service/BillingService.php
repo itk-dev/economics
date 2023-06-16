@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Invoices;
+namespace App\Service;
 
 use App\Entity\Account;
 use App\Entity\Client;
@@ -18,7 +18,6 @@ use App\Repository\InvoiceRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
-use App\Service\ProjectTracker\ApiServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;

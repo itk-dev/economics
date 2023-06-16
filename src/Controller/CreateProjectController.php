@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controller\CreateProject;
+namespace App\Controller;
 
-use App\Form\CreateProject\CreateProjectForm;
-use App\Service\ProjectTracker\ApiServiceInterface;
+use App\Form\CreateProjectForm;
+use App\Service\ApiServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

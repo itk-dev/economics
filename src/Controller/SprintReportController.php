@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controller\SprintReport;
+namespace App\Controller;
 
-use App\Form\SprintReport\SprintReportType;
+use App\Form\SprintReportType;
 use App\Model\SprintReport\SprintReportFormData;
-use App\Service\ProjectTracker\ApiServiceInterface;
-use App\Service\SprintReport\SprintReportService;
+use App\Service\ApiServiceInterface;
+use App\Service\SprintReportService;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
