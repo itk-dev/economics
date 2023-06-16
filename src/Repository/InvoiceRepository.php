@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
+use App\Model\Invoices\InvoiceFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -37,5 +39,24 @@ class InvoiceRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getFilteredQuery(InvoiceFilterData $invoiceFilterData): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('invoice');
+
+        $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $invoiceFilterData->recorded);
+
+        if (!empty($invoiceFilterData->createdBy)) {
+            $qb->andWhere('invoice.createdBy LIKE :createdBy')->setParameter('createdBy', $invoiceFilterData->createdBy);
+        }
+
+        if ($invoiceFilterData->projectBilling) {
+            $qb->andWhere('invoice.projectBilling IS NOT NULL');
+        } elseif (false === $invoiceFilterData->projectBilling) {
+            $qb->andWhere('invoice.projectBilling IS NULL');
+        }
+
+        return $qb;
     }
 }

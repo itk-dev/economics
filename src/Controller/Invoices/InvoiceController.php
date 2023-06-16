@@ -28,23 +28,11 @@ class InvoiceController extends AbstractController
     #[Route('/', name: 'app_invoices_index', methods: ['GET'])]
     public function index(Request $request, InvoiceRepository $invoiceRepository, PaginatorInterface $paginator): Response
     {
-        $qb = $invoiceRepository->createQueryBuilder('invoice');
-
         $invoiceFilterData = new InvoiceFilterData();
         $form = $this->createForm(InvoiceFilterType::class, $invoiceFilterData);
         $form->handleRequest($request);
 
-        $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $invoiceFilterData->recorded);
-
-        if (!empty($invoiceFilterData->createdBy)) {
-            $qb->andWhere('invoice.createdBy LIKE :createdBy')->setParameter('createdBy', $invoiceFilterData->createdBy);
-        }
-
-        if ($invoiceFilterData->projectBilling) {
-            $qb->andWhere('invoice.projectBilling IS NOT NULL');
-        } elseif (false === $invoiceFilterData->projectBilling) {
-            $qb->andWhere('invoice.projectBilling IS NULL');
-        }
+        $qb = $invoiceRepository->getFilteredQuery($invoiceFilterData);
 
         $pagination = $paginator->paginate(
             $qb,
@@ -176,7 +164,28 @@ class InvoiceController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'app_invoices_delete', methods: ['POST'])]
+    public function delete(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
+    {
+        $token = $request->request->get('_token');
+        if (is_string($token) && $this->isCsrfTokenValid('delete'.$invoice->getId(), $token)) {
+            if ($invoice->isRecorded()) {
+                throw new HttpException(400, 'Invoice is put on record, cannot be deleted.');
+            }
+
+            if (null !== $invoice->getProjectBilling()) {
+                throw new HttpException(400, 'Invoice is a part of a project billing, cannot be deleted.');
+            }
+
+            $invoiceRepository->remove($invoice, true);
+        }
+
+        return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);
+    }
+
     /**
+     * Put an invoice on record. After this invoice cannot be deleted.
+     *
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_invoices_record', methods: ['GET', 'POST'])]
@@ -208,6 +217,8 @@ class InvoiceController extends AbstractController
     }
 
     /**
+     * Show the invoice export data.
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/show-export', name: 'app_invoices_show_export', methods: ['GET'])]
@@ -246,11 +257,17 @@ class InvoiceController extends AbstractController
     }
 
     /**
+     * Export to a .csv file.
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/export', name: 'app_invoices_export', methods: ['GET'])]
     public function export(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
     {
+        if (!$invoice->isRecorded()) {
+            throw new HttpException(400, 'Invoice cannot be exported before it is on record.');
+        }
+
         if (null !== $invoice->getProjectBilling()) {
             throw new HttpException(400, 'Invoice is a part of a project billing, cannot be exported.');
         }
@@ -281,24 +298,5 @@ class InvoiceController extends AbstractController
         $response->headers->set('Cache-Control', 'max-age=0');
 
         return $response;
-    }
-
-    #[Route('/{id}', name: 'app_invoices_delete', methods: ['POST'])]
-    public function delete(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
-    {
-        $token = $request->request->get('_token');
-        if (is_string($token) && $this->isCsrfTokenValid('delete'.$invoice->getId(), $token)) {
-            if ($invoice->isRecorded()) {
-                throw new HttpException(400, 'Invoice is put on record, cannot be deleted.');
-            }
-
-            if (null !== $invoice->getProjectBilling()) {
-                throw new HttpException(400, 'Invoice is a part of a project billing, cannot be deleted.');
-            }
-
-            $invoiceRepository->remove($invoice, true);
-        }
-
-        return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);
     }
 }
