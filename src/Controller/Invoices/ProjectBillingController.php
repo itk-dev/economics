@@ -53,8 +53,6 @@ class ProjectBillingController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $projectBilling->setCreatedAt(new \DateTime());
-            $projectBilling->setUpdatedAt(new \DateTime());
             $projectBilling->setRecorded(false);
             $projectBillingRepository->save($projectBilling, true);
 
@@ -91,7 +89,6 @@ class ProjectBillingController extends AbstractController
                 throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
             }
 
-            $projectBilling->setUpdatedAt(new \DateTime());
             $projectBillingRepository->save($projectBilling, true);
 
             // Emit create billing message.

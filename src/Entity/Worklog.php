@@ -34,7 +34,7 @@ class Worklog
     #[ORM\ManyToMany(targetEntity: Version::class, mappedBy: 'worklogs')]
     private Collection $versions;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]

@@ -90,14 +90,9 @@ class BillingService
 
             if (!$worklog) {
                 $worklog = new Worklog();
-                $worklog->setCreatedBy('sync');
-                $worklog->setCreatedAt(new \DateTime());
 
                 $this->entityManager->persist($worklog);
             }
-
-            $worklog->setUpdatedBy('sync');
-            $worklog->setUpdatedAt(new \DateTime());
 
             $worklog->setWorklogId($worklogDatum->projectTrackerId);
             $worklog->setDescription($worklogDatum->comment);
@@ -186,16 +181,11 @@ class BillingService
 
             if (!$account) {
                 $account = new Account();
-                $account->setCreatedAt(new \DateTime());
-                $account->setCreatedBy('sync');
                 $account->setSource($projectTrackerIdentifier);
                 $account->setProjectTrackerId($accountDatum->projectTrackerId);
 
                 $this->entityManager->persist($account);
             }
-
-            $account->setUpdatedBy('sync');
-            $account->setUpdatedAt(new \DateTime());
 
             $account->setName($accountDatum->name);
             $account->setValue($accountDatum->value);
@@ -219,8 +209,6 @@ class BillingService
 
             if (!$project) {
                 $project = new Project();
-                $project->setCreatedAt(new \DateTime());
-                $project->setCreatedBy('sync');
                 $this->entityManager->persist($project);
             }
 
@@ -228,21 +216,15 @@ class BillingService
             $project->setProjectTrackerId($projectDatum->projectTrackerId);
             $project->setProjectTrackerKey($projectDatum->projectTrackerKey);
             $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
-            $project->setUpdatedBy('sync');
-            $project->setUpdatedAt(new \DateTime());
 
             foreach ($projectDatum->versions as $versionData) {
                 $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
 
                 if (!$version) {
                     $version = new Version();
-                    $version->setCreatedAt(new \DateTime());
-                    $version->setCreatedBy('sync');
                     $this->entityManager->persist($version);
                 }
 
-                $version->setUpdatedBy('sync');
-                $version->setUpdatedAt(new \DateTime());
                 $version->setName($versionData->name);
                 $version->setProjectTrackerId($versionData->projectTrackerId);
                 $version->setProject($project);
@@ -255,14 +237,10 @@ class BillingService
 
                 if (!$client) {
                     $client = new Client();
-                    $client->setCreatedAt(new \DateTime());
-                    $client->setCreatedBy('sync');
                     $client->setProjectTrackerId($clientData->projectTrackerId);
                     $this->entityManager->persist($client);
                 }
 
-                $client->setUpdatedBy('sync');
-                $client->setUpdatedAt(new \DateTime());
                 $client->setName($clientData->name);
                 $client->setContact($clientData->contact);
                 $client->setAccount($clientData->account);

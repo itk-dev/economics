@@ -1,6 +1,17 @@
 # Economics
 
-Integration with project/issue tracker to ease management.
+Integration with project/issue tracker to ease management. The worklogs
+and projects are synced from a project tracker (e.g. Jira).
+
+The project consists of the following parts:
+
+* Invoices: Create invoices for projects and clients. These can consist of manual
+invoice entries and invoice entries created from worklogs.
+* Project Billing: Automatically create invoices from a project for a given period.
+* Planning: Overview of planned work for the coming sprints.
+* Sprint Report: Detailed overview of the work for a given project/version.
+* Projects: Overview of which projects to work with in the system.
+* Project Creator: Create a new project in the Project Tracker.
 
 ## Development
 

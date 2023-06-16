@@ -68,8 +68,6 @@ class InvoiceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $invoice->setRecorded(false);
-            $invoice->setCreatedAt(new \DateTime());
-            $invoice->setUpdatedAt(new \DateTime());
             $invoice->setTotalPrice(0);
             $invoiceRepository->save($invoice, true);
 
@@ -166,7 +164,6 @@ class InvoiceController extends AbstractController
                 throw new HttpException(400, 'Invoice is a part of a project billing, cannot be edited.');
             }
 
-            $invoice->setUpdatedAt(new \DateTime());
             $invoiceRepository->save($invoice, true);
 
             // TODO: Handle this with a doctrine event listener instead.

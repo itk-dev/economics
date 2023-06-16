@@ -100,10 +100,6 @@ class ProjectBillingService
             $invoice->setName($project->getName().': '.$invoiceData->account->name.' ('.$periodStart->format('d/m/Y').' - '.$periodEnd->format('d/m/Y').')');
             $invoice->setPeriodFrom($periodStart);
             $invoice->setPeriodTo($periodEnd);
-            $invoice->setCreatedBy(self::PROJECT_BILLING_NAME);
-            $invoice->setCreatedAt(new \DateTime());
-            $invoice->setUpdatedBy(self::PROJECT_BILLING_NAME);
-            $invoice->setUpdatedAt(new \DateTime());
 
             // Find client.
             $client = $this->clientRepository->findOneBy(['name' => $invoiceData->account->name, 'account' => $invoiceData->account->value]);
@@ -125,10 +121,6 @@ class ProjectBillingService
                 $invoiceEntry = new InvoiceEntry();
                 $invoiceEntry->setEntryType(InvoiceEntryTypeEnum::WORKLOG);
                 $invoiceEntry->setDescription('');
-                $invoiceEntry->setCreatedBy(self::PROJECT_BILLING_NAME);
-                $invoiceEntry->setCreatedAt(new \DateTime());
-                $invoiceEntry->setUpdatedBy(self::PROJECT_BILLING_NAME);
-                $invoiceEntry->setUpdatedAt(new \DateTime());
 
                 $product = $issueData->projectTrackerKey.':'.preg_replace('/\(DEVSUPP-\d+\)/i', '', $issueData->name);
                 $price = $client->getStandardPrice();

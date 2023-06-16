@@ -46,8 +46,6 @@ class InvoiceEntryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $invoiceEntry->setCreatedAt(new \DateTime());
-            $invoiceEntry->setUpdatedAt(new \DateTime());
             $invoiceEntryRepository->save($invoiceEntry, true);
 
             // TODO: Handle this with a doctrine event listener instead.
@@ -84,7 +82,6 @@ class InvoiceEntryController extends AbstractController
                 throw new HttpException(400, 'Invoice is recorded. Cannot edit invoice entries.');
             }
 
-            $invoiceEntry->setUpdatedAt(new \DateTime());
             $invoiceEntryRepository->save($invoiceEntry, true);
 
             // TODO: Handle this with a doctrine event listener instead.
