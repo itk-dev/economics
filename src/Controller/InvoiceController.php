@@ -26,20 +26,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class InvoiceController extends AbstractController
 {
     #[Route('/', name: 'app_invoices_index', methods: ['GET'])]
-    public function index(Request $request, InvoiceRepository $invoiceRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, InvoiceRepository $invoiceRepository): Response
     {
         $invoiceFilterData = new InvoiceFilterData();
         $form = $this->createForm(InvoiceFilterType::class, $invoiceFilterData);
         $form->handleRequest($request);
 
-        $qb = $invoiceRepository->getFilteredQuery($invoiceFilterData);
-
-        $pagination = $paginator->paginate(
-            $qb,
-            $request->query->getInt('page', 1),
-            10,
-            ['defaultSortFieldName' => 'invoice.createdAt', 'defaultSortDirection' => 'desc']
-        );
+        $pagination = $invoiceRepository->getFilteredPagination($invoiceFilterData, $request->query->getInt('page', 1));
 
         return $this->render('invoices/index.html.twig', [
             'form' => $form,
