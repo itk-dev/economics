@@ -3,8 +3,6 @@
 namespace App\Service;
 
 use App\Entity\Account;
-use App\Repository\AccountRepository;
-use Doctrine\Common\Collections\Collection;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
@@ -13,9 +11,8 @@ use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\MaterialNumberEnum;
-use App\Model\Invoices\ProjectBillingData;
+use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
-use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Repository\WorklogRepository;
@@ -94,25 +91,27 @@ class ProjectBillingService
         // Create invoice
         //   Create an InvoiceEntry in the invoice
         //   Connect worklogs from the database to the invoice entry.
-        /** @var Collection<Issue> $issues */
         $issues = $this->issueRepository->getClosedIssuesFromInterval($project, $periodStart, $periodEnd);
 
         // TODO: Replace with Model.
         $invoices = [];
 
+        /** @var Issue $issue */
         foreach ($issues as $issue) {
             if (null !== $issue->getAccountId()) {
                 $accountId = $issue->getAccountId();
 
-                if (!isset($invoices[$accountId])) {
-                    $account = $this->accountRepository->findOneBy(['projectTrackerId' => $issue->getAccountId()]);
-                    $invoices[$accountId] = [
-                        'account' => $account,
-                        'issues' => [],
-                    ];
-                }
+                if (!is_null($accountId)) {
+                    if (!isset($invoices[$accountId])) {
+                        $account = $this->accountRepository->findOneBy(['projectTrackerId' => $issue->getAccountId()]);
+                        $invoices[$accountId] = [
+                            'account' => $account,
+                            'issues' => [],
+                        ];
+                    }
 
-                $invoices[$accountId]['issues'][] = $issue;
+                    $invoices[$accountId]['issues'][] = $issue;
+                }
             }
         }
 
@@ -151,7 +150,7 @@ class ProjectBillingService
                 $invoiceEntry->setEntryType(InvoiceEntryTypeEnum::WORKLOG);
                 $invoiceEntry->setDescription('');
 
-                $product = $issue->getProjectTrackerKey().':'.preg_replace('/\(DEVSUPP-\d+\)/i', '', $issue->getName());
+                $product = $issue->getProjectTrackerKey().':'.preg_replace('/\(DEVSUPP-\d+\)/i', '', $issue->getName() ?? '');
                 $price = $client->getStandardPrice();
 
                 $invoiceEntry->setProduct($product);

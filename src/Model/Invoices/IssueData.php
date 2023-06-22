@@ -2,7 +2,6 @@
 
 namespace App\Model\Invoices;
 
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -19,7 +18,7 @@ class IssueData
     public ?string $epicKey = null;
     /** @var Collection<string, VersionData> */
     public Collection $versions;
-    public ?DateTime $resolutionDate = null;
+    public ?\DateTime $resolutionDate = null;
     public string $projectId;
 
     public function __construct()

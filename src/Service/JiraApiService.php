@@ -7,9 +7,6 @@ use App\Exception\ApiServiceException;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\IssueData;
-use App\Model\Invoices\ProjectBillingData;
-use App\Model\Invoices\ProjectBillingInvoiceData;
-use App\Model\Invoices\ProjectBillingIssueData;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\VersionData;
 use App\Model\Invoices\WorklogData;
@@ -1178,12 +1175,6 @@ class JiraApiService implements ApiServiceInterface
             $name = $account->name;
 
             $accountsResult[] = new AccountData($id, $name, $key, $category, $status);
-
-/*            $keyStart = substr($key, 0, 2);
-
-            if ('OPEN' == $status && 'INTERN' == $category && in_array($keyStart, ['XG', 'XD'])) {
-            }
-*/
         }
 
         return $accountsResult;
@@ -1226,8 +1217,8 @@ class JiraApiService implements ApiServiceInterface
                 self::API_PATH_SEARCH,
                 [
                     'jql' => "project = $projectId",
-                    "maxResults" => 50,
-          //          'fields' => $fields,
+                    'maxResults' => 50,
+                    //          'fields' => $fields,
                     'startAt' => $startAt,
                 ]
             );

@@ -4,10 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Issue;
 use App\Entity\Project;
-use DateTimeInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Issue>
@@ -42,7 +40,7 @@ class IssueRepository extends ServiceEntityRepository
         }
     }
 
-    public function getClosedIssuesFromInterval(Project $project, DateTimeInterface $periodStart, DateTimeInterface $periodEnd)
+    public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
     {
         $qb = $this->createQueryBuilder('issue');
         $qb->andWhere($qb->expr()->eq('issue.project', $project->getId()));

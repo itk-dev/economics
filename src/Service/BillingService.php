@@ -29,20 +29,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class BillingService
 {
     public function __construct(
-        private readonly ApiServiceInterface    $apiService,
-        private readonly ProjectRepository      $projectRepository,
-        private readonly ClientRepository       $clientRepository,
-        private readonly InvoiceRepository      $invoiceRepository,
+        private readonly ApiServiceInterface $apiService,
+        private readonly ProjectRepository $projectRepository,
+        private readonly ClientRepository $clientRepository,
+        private readonly InvoiceRepository $invoiceRepository,
         private readonly InvoiceEntryRepository $invoiceEntryRepository,
-        private readonly VersionRepository      $versionRepository,
-        private readonly WorklogRepository      $worklogRepository,
-        private readonly IssueRepository        $issueRepository,
+        private readonly VersionRepository $versionRepository,
+        private readonly WorklogRepository $worklogRepository,
+        private readonly IssueRepository $issueRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TranslatorInterface    $translator,
-        private readonly AccountRepository      $accountRepository,
-        private readonly string                 $receiverAccount,
-    )
-    {
+        private readonly TranslatorInterface $translator,
+        private readonly AccountRepository $accountRepository,
+        private readonly string $receiverAccount,
+    ) {
     }
 
     /**
@@ -122,7 +121,7 @@ class BillingService
 
             if (null !== $progressCallback) {
                 $progressCallback($issuesProcessed, count($issueData));
-                $issuesProcessed++;
+                ++$issuesProcessed;
             }
         }
 
@@ -474,7 +473,7 @@ class BillingService
             // 9. "Ordreart"
             $sheet->setCellValue([9, $row], $internal ? 'ZIRA' : 'ZRA');
             // 15. "Kunderef.ID"
-            $sheet->setCellValue([15, $row], substr('Att: ' . $contactName, 0, 35));
+            $sheet->setCellValue([15, $row], substr('Att: '.$contactName, 0, 35));
             // 16. "Toptekst, yderligere spec i det hvide felt på fakturaen"
             $description = $invoice->getDescription() ?? '';
             $sheet->setCellValue([16, $row], substr($description, 0, 500));
