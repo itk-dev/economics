@@ -54,14 +54,14 @@
                                 <span> ({{ worklog.worklogId }})</span>
                             </div>
                             <div class="italic">
-                                <span>{{ worklog.issueName }}</span>
-                                <span> ({{ worklog.projectTrackerIssueKey }})</span>
+                                <span>{{ worklog.issue.name }}</span>
+                                <span> ({{ worklog.projectTrackerIssueId }})</span>
                             </div>
                         </td>
                         <td class="table-td">{{ worklog.isBilled ? 'worklog.is_billed_true'|trans : 'worklog.is_billed_false'|trans }}</td>
-                        <td class="table-td">{{ worklog.epicName }}</td>
+                        <td class="table-td">{{ worklog.issue.epicName }}</td>
                         <td class="table-td">
-                            {% for version in worklog.versions %}{{ version.name }}{% endfor %}
+                            {% for version in worklog.issue.versions %}{{ version.name }}{% endfor %}
                         </td>
                         <td class="table-td">{{ worklog.worker }}</td>
                         <td class="table-td">{{ worklog.timeSpentSeconds / 60 / 60 }}</td>

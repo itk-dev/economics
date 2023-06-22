@@ -2,14 +2,21 @@
 
 namespace App\Service;
 
+use App\Entity\Account;
+use App\Repository\AccountRepository;
+use Doctrine\Common\Collections\Collection;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
+use App\Entity\Issue;
 use App\Entity\ProjectBilling;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\MaterialNumberEnum;
+use App\Model\Invoices\ProjectBillingData;
 use App\Repository\ClientRepository;
+use App\Repository\InvoiceRepository;
+use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,9 +24,11 @@ use Doctrine\ORM\EntityManagerInterface;
 class ProjectBillingService
 {
     public function __construct(
+        private readonly AccountRepository $accountRepository,
         private readonly ProjectBillingRepository $projectBillingRepository,
         private readonly BillingService $billingService,
         private readonly ApiServiceInterface $apiService,
+        private readonly IssueRepository $issueRepository,
         private readonly ClientRepository $clientRepository,
         private readonly WorklogRepository $worklogRepository,
         private readonly EntityManagerInterface $entityManager,
@@ -79,29 +88,49 @@ class ProjectBillingService
             throw new \Exception('project.periodStart or project.periodEnd cannot be null.');
         }
 
-        $projectBillingData = $this->apiService->getProjectBillingData($projectTrackerId, $periodStart, $periodEnd);
+        // Find issues in interval
+        // Group by account
+        // Foreach Account
+        // Create invoice
+        //   Create an InvoiceEntry in the invoice
+        //   Connect worklogs from the database to the invoice entry.
+        /** @var Collection<Issue> $issues */
+        $issues = $this->issueRepository->getClosedIssuesFromInterval($project, $periodStart, $periodEnd);
 
-        // TODO: Get data from database instead of project tracker.
-        // TODO: Expand worklog table with required fields.
+        // TODO: Replace with Model.
+        $invoices = [];
 
-        // For each invoiceData:
-        // 1. Create an Invoice
-        // 2. Foreach Issue in invoiceData:
-        // 3.   Create an InvoiceEntry in the invoice
-        // 4.   Connect worklogs from the database to the invoice entry.
-        // 5. Set fields for invoice.
-        foreach ($projectBillingData->invoices as $invoiceData) {
+        foreach ($issues as $issue) {
+            if (null !== $issue->getAccountId()) {
+                $accountId = $issue->getAccountId();
+
+                if (!isset($invoices[$accountId])) {
+                    $account = $this->accountRepository->findOneBy(['projectTrackerId' => $issue->getAccountId()]);
+                    $invoices[$accountId] = [
+                        'account' => $account,
+                        'issues' => [],
+                    ];
+                }
+
+                $invoices[$accountId]['issues'][] = $issue;
+            }
+        }
+
+        foreach ($invoices as $invoiceArray) {
+            /** @var Account $account */
+            $account = $invoiceArray['account'];
+
             $invoice = new Invoice();
             $invoice->setRecorded(false);
             $invoice->setProject($projectBilling->getProject());
             $invoice->setProjectBilling($projectBilling);
             $invoice->setDescription($projectBilling->getDescription());
-            $invoice->setName($project->getName().': '.$invoiceData->account->name.' ('.$periodStart->format('d/m/Y').' - '.$periodEnd->format('d/m/Y').')');
+            $invoice->setName($project->getName().': '.$account->getName().' ('.$periodStart->format('d/m/Y').' - '.$periodEnd->format('d/m/Y').')');
             $invoice->setPeriodFrom($periodStart);
             $invoice->setPeriodTo($periodEnd);
 
             // Find client.
-            $client = $this->clientRepository->findOneBy(['name' => $invoiceData->account->name, 'account' => $invoiceData->account->value]);
+            $client = $this->clientRepository->findOneBy(['name' => $account->getName(), 'account' => $account->getValue()]);
 
             // Ignore invoices where there is not client.
             if (null == $client) {
@@ -116,12 +145,13 @@ class ProjectBillingService
             $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
             $invoice->setDefaultReceiverAccount($this->receiverAccount);
 
-            foreach ($invoiceData->issues as $issueData) {
+            /** @var Issue $issue */
+            foreach ($invoiceArray['issues'] as $issue) {
                 $invoiceEntry = new InvoiceEntry();
                 $invoiceEntry->setEntryType(InvoiceEntryTypeEnum::WORKLOG);
                 $invoiceEntry->setDescription('');
 
-                $product = $issueData->projectTrackerKey.':'.preg_replace('/\(DEVSUPP-\d+\)/i', '', $issueData->name);
+                $product = $issue->getProjectTrackerKey().':'.preg_replace('/\(DEVSUPP-\d+\)/i', '', $issue->getName());
                 $price = $client->getStandardPrice();
 
                 $invoiceEntry->setProduct($product);
@@ -129,7 +159,7 @@ class ProjectBillingService
                 $invoiceEntry->setMaterialNumber($invoice->getDefaultMaterialNumber());
                 $invoiceEntry->setAccount($invoice->getDefaultReceiverAccount());
 
-                $worklogs = $this->worklogRepository->findBy(['projectTrackerIssueId' => $issueData->projectTrackerId, 'invoiceEntry' => null]);
+                $worklogs = $issue->getWorklogs();
 
                 /** @var Worklog $worklog */
                 foreach ($worklogs as $worklog) {
@@ -145,8 +175,6 @@ class ProjectBillingService
                 $invoiceEntry->setInvoice($invoice);
                 $invoice->addInvoiceEntry($invoiceEntry);
                 $this->entityManager->persist($invoiceEntry);
-
-                $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
             }
 
             if (0 == count($invoice->getInvoiceEntries())) {
@@ -160,6 +188,10 @@ class ProjectBillingService
         $this->entityManager->flush();
 
         foreach ($projectBilling->getInvoices() as $invoice) {
+            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+                $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
+            }
+
             $this->billingService->updateInvoiceTotalPrice($invoice);
         }
 

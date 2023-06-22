@@ -50,6 +50,9 @@ class Project
     #[ORM\Column(nullable: true)]
     private ?bool $include = null;
 
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Issue::class)]
+    private Collection $issues;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -57,6 +60,7 @@ class Project
         $this->versions = new ArrayCollection();
         $this->worklogs = new ArrayCollection();
         $this->projectBillings = new ArrayCollection();
+        $this->issues = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -260,6 +264,36 @@ class Project
     public function setInclude(?bool $include): self
     {
         $this->include = $include;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Issue>
+     */
+    public function getIssues(): Collection
+    {
+        return $this->issues;
+    }
+
+    public function addIssue(Issue $issue): self
+    {
+        if (!$this->issues->contains($issue)) {
+            $this->issues->add($issue);
+            $issue->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIssue(Issue $issue): self
+    {
+        if ($this->issues->removeElement($issue)) {
+            // set the owning side to null (unless already changed)
+            if ($issue->getProject() === $this) {
+                $issue->setProject(null);
+            }
+        }
 
         return $this;
     }

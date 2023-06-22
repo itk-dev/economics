@@ -6,6 +6,7 @@ use App\Entity\Account;
 use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
+use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worklog;
@@ -15,6 +16,7 @@ use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
+use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
@@ -27,18 +29,20 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class BillingService
 {
     public function __construct(
-        private readonly ApiServiceInterface $apiService,
-        private readonly ProjectRepository $projectRepository,
-        private readonly ClientRepository $clientRepository,
-        private readonly InvoiceRepository $invoiceRepository,
+        private readonly ApiServiceInterface    $apiService,
+        private readonly ProjectRepository      $projectRepository,
+        private readonly ClientRepository       $clientRepository,
+        private readonly InvoiceRepository      $invoiceRepository,
         private readonly InvoiceEntryRepository $invoiceEntryRepository,
-        private readonly VersionRepository $versionRepository,
-        private readonly WorklogRepository $worklogRepository,
+        private readonly VersionRepository      $versionRepository,
+        private readonly WorklogRepository      $worklogRepository,
+        private readonly IssueRepository        $issueRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TranslatorInterface $translator,
-        private readonly AccountRepository $accountRepository,
-        private readonly string $receiverAccount,
-    ) {
+        private readonly TranslatorInterface    $translator,
+        private readonly AccountRepository      $accountRepository,
+        private readonly string                 $receiverAccount,
+    )
+    {
     }
 
     /**
@@ -58,6 +62,67 @@ class BillingService
                 if (null !== $client) {
                     $invoice->setClient($client);
                 }
+            }
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function syncIssuesForProject(string $projectId, callable $progressCallback = null): void
+    {
+        $project = $this->projectRepository->find($projectId);
+
+        if (!$project) {
+            throw new \Exception('Project not found');
+        }
+
+        $projectTrackerId = $project->getProjectTrackerId();
+
+        if (null === $projectTrackerId) {
+            throw new \Exception('ProjectTrackerId not set');
+        }
+
+        $issueData = $this->apiService->getIssuesDataForProject($projectTrackerId);
+        $issuesProcessed = 0;
+
+        foreach ($issueData as $issueDatum) {
+            $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
+
+            if (!$issue) {
+                $issue = new Issue();
+
+                $this->entityManager->persist($issue);
+            }
+
+            $issue->setName($issueDatum->name);
+            $issue->setAccountId($issueDatum->accountId);
+            $issue->setAccountKey($issueDatum->accountKey);
+            $issue->setEpicKey($issueDatum->epicKey);
+            $issue->setEpicName($issueDatum->epicName);
+            $issue->setProject($project);
+            $issue->setProjectTrackerId($issueDatum->projectTrackerId);
+            $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
+            $issue->setResolutionDate($issueDatum->resolutionDate);
+            $issue->setStatus($issueDatum->status);
+
+            if (null == $issue->getSource()) {
+                $issue->setSource($this->apiService->getProjectTrackerIdentifier());
+            }
+
+            foreach ($issueDatum->versions as $versionData) {
+                $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
+
+                if (null !== $version) {
+                    $issue->addVersion($version);
+                }
+            }
+
+            if (null !== $progressCallback) {
+                $progressCallback($issuesProcessed, count($issueData));
+                $issuesProcessed++;
             }
         }
 
@@ -97,13 +162,13 @@ class BillingService
             $worklog->setDescription($worklogDatum->comment);
             $worklog->setWorker($worklogDatum->worker);
             $worklog->setStarted($worklogDatum->started);
-            $worklog->setEpicKey($worklogDatum->epicKey);
-            $worklog->setEpicName($worklogDatum->epicName);
-            $worklog->setIssueName($worklogDatum->issueName);
-            $worklog->setIssueStatus($worklogDatum->issueStatus);
             $worklog->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId);
-            $worklog->setProjectTrackerIssueKey($worklogDatum->projectTrackerIssueKey);
             $worklog->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
+
+            if (null !== $worklog->getProjectTrackerIssueId()) {
+                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
+                $worklog->setIssue($issue);
+            }
 
             if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
                 $worklog->setIsBilled(true);
@@ -112,14 +177,6 @@ class BillingService
 
             if (null == $worklog->getSource()) {
                 $worklog->setSource($this->apiService->getProjectTrackerIdentifier());
-            }
-
-            foreach ($worklogDatum->versions as $versionData) {
-                $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
-
-                if (null !== $version) {
-                    $worklog->addVersion($version);
-                }
             }
 
             $project->addWorklog($worklog);
@@ -188,6 +245,8 @@ class BillingService
 
             $account->setName($accountDatum->name);
             $account->setValue($accountDatum->value);
+            $account->setStatus($accountDatum->status);
+            $account->setCategory($accountDatum->category);
 
             $this->entityManager->flush();
             $this->entityManager->clear();
@@ -415,7 +474,7 @@ class BillingService
             // 9. "Ordreart"
             $sheet->setCellValue([9, $row], $internal ? 'ZIRA' : 'ZRA');
             // 15. "Kunderef.ID"
-            $sheet->setCellValue([15, $row], substr('Att: '.$contactName, 0, 35));
+            $sheet->setCellValue([15, $row], substr('Att: ' . $contactName, 0, 35));
             // 16. "Toptekst, yderligere spec i det hvide felt på fakturaen"
             $description = $invoice->getDescription() ?? '';
             $sheet->setCellValue([16, $row], substr($description, 0, 500));

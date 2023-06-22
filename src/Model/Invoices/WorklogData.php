@@ -2,8 +2,7 @@
 
 namespace App\Model\Invoices;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use DateTime;
 
 class WorklogData
 {
@@ -11,19 +10,7 @@ class WorklogData
     public string $comment;
     public string $worker;
     public int $timeSpentSeconds;
-    public \DateTime $started;
-    public string $issueName;
-    public string $issueStatus;
-    public string $projectTrackerIssueId;
-    public string $projectTrackerIssueKey;
-    public ?string $epicName;
-    public ?string $epicKey;
-    /** @var Collection<string, VersionData> */
-    public Collection $versions;
+    public DateTime $started;
     public ?bool $projectTrackerIsBilled = null;
-
-    public function __construct()
-    {
-        $this->versions = new ArrayCollection();
-    }
+    public string $projectTrackerIssueId;
 }

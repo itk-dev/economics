@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
+use App\Model\Invoices\IssueData;
 use App\Model\Invoices\ProjectBillingData;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
@@ -70,10 +71,11 @@ interface ApiServiceInterface
     /** @return array<WorklogData> */
     public function getWorklogDataForProject(string $projectId): array;
 
+    /** @return array<IssueData> */
+    public function getIssuesDataForProject(string $projectId): array;
+
     /**
      * @return array<AccountData>
      */
     public function getAllAccountData(): array;
-
-    public function getProjectBillingData(string $projectId, \DateTimeInterface $startDate, \DateTimeInterface $endDate): ProjectBillingData;
 }

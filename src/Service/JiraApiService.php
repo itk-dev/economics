@@ -6,6 +6,7 @@ use App\Enum\ClientTypeEnum;
 use App\Exception\ApiServiceException;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
+use App\Model\Invoices\IssueData;
 use App\Model\Invoices\ProjectBillingData;
 use App\Model\Invoices\ProjectBillingInvoiceData;
 use App\Model\Invoices\ProjectBillingIssueData;
@@ -1125,6 +1126,7 @@ class JiraApiService implements ApiServiceInterface
         return $this->post('rest/tempo-timesheets/4/worklogs/search', [
             'from' => $from,
             'to' => $to,
+            'include' => ['ISSUE'],
             'projectId' => [$projectId],
         ]);
     }
@@ -1137,9 +1139,6 @@ class JiraApiService implements ApiServiceInterface
     {
         $worklogsResult = [];
 
-        $project = $this->getProject($projectId);
-        $versions = $project->versions ?? [];
-
         $worklogs = $this->getProjectWorklogs($projectId);
 
         foreach ($worklogs as $worklog) {
@@ -1148,32 +1147,12 @@ class JiraApiService implements ApiServiceInterface
             $worklogData->worker = $worklog->worker;
             $worklogData->timeSpentSeconds = $worklog->timeSpentSeconds;
             $worklogData->comment = $worklog->comment;
-            $worklogData->issueName = $worklog->issue->summary;
-            $worklogData->issueStatus = $worklog->issue->issueStatus;
-            $worklogData->projectTrackerIssueId = $worklog->issue->id;
-            $worklogData->projectTrackerIssueKey = $worklog->issue->key;
-            $worklogData->epicKey = $worklog->issue->epicKey ?? '';
-            $worklogData->epicName = $worklog->issue->epicIssue->summary ?? '';
             $worklogData->started = new \DateTime($worklog->started);
+            $worklogData->projectTrackerIssueId = $worklog->issue->id;
 
             // TODO: Is this synchronization relevant?
             if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
                 $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
-            }
-
-            foreach ($worklog->issue->versions ?? [] as $versionKey) {
-                /** @var array<\stdClass> $versionsFound */
-                $versionsFound = array_filter($versions, function ($v) use ($versionKey) {
-                    return $v->id == $versionKey;
-                });
-
-                if (count($versionsFound) > 0) {
-                    $version = array_values($versionsFound)[0];
-
-                    if (isset($version->id) && isset($version->name)) {
-                        $worklogData->versions->add(new VersionData($version->id, $version->name));
-                    }
-                }
             }
 
             $worklogsResult[] = $worklogData;
@@ -1198,11 +1177,13 @@ class JiraApiService implements ApiServiceInterface
             $category = $account->category->name ?? null;
             $name = $account->name;
 
-            $keyStart = substr($key, 0, 2);
+            $accountsResult[] = new AccountData($id, $name, $key, $category, $status);
+
+/*            $keyStart = substr($key, 0, 2);
 
             if ('OPEN' == $status && 'INTERN' == $category && in_array($keyStart, ['XG', 'XD'])) {
-                $accountsResult[] = new AccountData($id, $name, $key);
             }
+*/
         }
 
         return $accountsResult;
@@ -1211,88 +1192,43 @@ class JiraApiService implements ApiServiceInterface
     /**
      * @throws ApiServiceException
      */
-    public function getProjectBillingData(string $projectId, \DateTimeInterface $startDate, \DateTimeInterface $endDate): ProjectBillingData
-    {
-        $projectBillingData = new ProjectBillingData();
-
-        // Get customFields from Jira.
-        $accountFieldId = $this->getCustomFieldId('Account');
-
-        $issues = $this->getIssuesForProjectInterval($projectId, $startDate, $endDate);
-
-        foreach ($issues as $issue) {
-            $accountApiData = $issue->fields->{$accountFieldId};
-
-            if (null == $accountApiData) {
-                continue;
-            }
-
-            $filteredInvoices = $projectBillingData->invoices->filter(
-                function (ProjectBillingInvoiceData $invoice) use ($accountApiData) {
-                    return $invoice->account->projectTrackerId == $accountApiData->id;
-                }
-            );
-
-            if (1 == $filteredInvoices->count()) {
-                /** @var ProjectBillingInvoiceData $invoiceData */
-                $invoiceData = $filteredInvoices->first();
-            } else {
-                $accountData = new AccountData($accountApiData->id, $accountApiData->name, $accountApiData->key);
-                $invoiceData = new ProjectBillingInvoiceData($accountData);
-                $projectBillingData->invoices->add($invoiceData);
-            }
-
-            $issueData = new ProjectBillingIssueData(
-                $issue->fields->summary,
-                $issue->fields->status->statusCategory->key,
-                $issue->id,
-                $issue->key,
-            );
-
-            $invoiceData->issues->add($issueData);
-        }
-
-        return $projectBillingData;
-    }
-
-    /**
-     * @throws ApiServiceException
-     */
-    private function getIssuesForProjectInterval(string $projectId, \DateTimeInterface $startDate, \DateTimeInterface $endDate, bool $onlyClosedIssues = true): array
+    private function getProjectIssues($projectId): array
     {
         $issues = [];
 
         // Get customFields from Jira.
-        $accountFieldId = $this->getCustomFieldId('Account');
+        $customFieldEpicLink = $this->getCustomFieldId('Epic Link');
+        $customFieldAccount = $this->getCustomFieldId('Account');
 
         // Get all issues for version.
-        $fields = [
-            'summary',
-            'status',
-            'resolutionDate',
-            $accountFieldId,
-        ];
-
-        $from = $startDate->format('Y/m/d');
-        $to = $endDate->format('Y/m/d');
-
-        $jql = "project=$projectId and (resolutiondate>=\"$from\") and (resolutiondate<=\"$to\")";
-
-        if ($onlyClosedIssues) {
-            $jql .= ' and (status=Lukket)';
-        }
+        $fields = implode(
+            ',',
+            [
+                'timetracking',
+                'worklog',
+                'timespent',
+                'timeoriginalestimate',
+                'summary',
+                'assignee',
+                'status',
+                'resolutiondate',
+                'fixVersions',
+                $customFieldEpicLink,
+                $customFieldAccount,
+            ]
+        );
 
         $startAt = 0;
 
-        // Get issues for the given project in the given timeframe.
+        // Get issues for the given project and version.
         do {
-            $results = $this->post(
+            $results = $this->get(
                 self::API_PATH_SEARCH,
                 [
+                    'jql' => "project = $projectId",
+                    "maxResults" => 50,
+          //          'fields' => $fields,
                     'startAt' => $startAt,
-                    'jql' => $jql,
-                    'maxResults' => 50,
-                    'fields' => $fields,
                 ]
             );
 
@@ -1302,5 +1238,87 @@ class JiraApiService implements ApiServiceInterface
         } while (isset($results->total) && $results->total > $startAt);
 
         return $issues;
+    }
+
+    /**
+     * @throws ApiServiceException
+     * @throws \Exception
+     */
+    public function getIssuesDataForProject(string $projectId): array
+    {
+        // Get customFields from Jira.
+        $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
+        $customFieldAccount = $this->getCustomFieldId('Account');
+
+        $result = [];
+
+        $project = $this->getProject($projectId);
+        $versions = $project->versions ?? [];
+
+        $issues = $this->getProjectIssues($projectId);
+
+        $epicsRetrieved = [];
+
+        foreach ($issues as $issue) {
+            $fields = $issue->fields;
+
+            $issueData = new IssueData();
+            $issueData->name = $fields->summary;
+            $issueData->status = $fields->status->name;
+            $issueData->projectTrackerId = $issue->id;
+            $issueData->projectTrackerKey = $issue->key;
+            $issueData->resolutionDate = isset($fields->resolutiondate) ? new \DateTime($fields->resolutiondate) : null;
+
+            $issueData->accountId = $fields->{$customFieldAccount}->id ?? null;
+            $issueData->accountKey = $fields->{$customFieldAccount}->key ?? null;
+
+            if (isset($fields->{$customFieldEpicLinkId})) {
+                $epicKey = $fields->{$customFieldEpicLinkId};
+
+                if (isset($epicsRetrieved[$epicKey])) {
+                    $epicData = $epicsRetrieved[$epicKey];
+                } else {
+                    $epicData = $this->getIssue($epicKey);
+                    $epicsRetrieved[$epicKey] = $epicData;
+                }
+
+                $issueData->epicKey = $epicKey;
+                $issueData->epicName = $epicData->fields->summary ?? null;
+            }
+
+            foreach ($fields->fixVersions ?? [] as $fixVersion) {
+                /** @var array<\stdClass> $versionsFound */
+                $versionsFound = array_filter($versions, function ($v) use ($fixVersion) {
+                    return $v->id == $fixVersion->id;
+                });
+
+                if (count($versionsFound) > 0) {
+                    $versions = array_values($versionsFound);
+
+                    foreach ($versions as $version) {
+                        if (isset($version->id) && isset($version->name)) {
+                            $issueData->versions->add(new VersionData($version->id, $version->name));
+                        }
+                    }
+                }
+            }
+
+            $result[] = $issueData;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    private function getIssue(string $issueId): mixed
+    {
+        return $this->get("/rest/api/2/issue/$issueId");
+    }
+
+    private function getCustomFields(): mixed
+    {
+        return $this->get('/rest/api/2/customFields');
     }
 }
