@@ -65,7 +65,8 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         if (isset($filterData->version)) {
-            $qb->andWhere(':version MEMBER OF worklog.versions')
+            $qb->leftJoin('App\Entity\Issue', 'issue', 'WITH', 'issue.id = worklog.issue');
+            $qb->andWhere(':version MEMBER OF issue.versions')
                 ->setParameter('version', $filterData->version);
         }
 

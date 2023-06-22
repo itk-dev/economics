@@ -26,16 +26,16 @@ class Version
     #[ORM\Column(length: 255)]
     private ?string $projectTrackerId = null;
 
-    #[ORM\ManyToMany(targetEntity: Worklog::class, inversedBy: 'versions')]
-    private Collection $worklogs;
-
     #[ORM\ManyToOne(inversedBy: 'versions')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
 
+    #[ORM\ManyToMany(targetEntity: Issue::class, mappedBy: 'versions')]
+    private Collection $issues;
+
     public function __construct()
     {
-        $this->worklogs = new ArrayCollection();
+        $this->issues = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -67,30 +67,6 @@ class Version
         return $this;
     }
 
-    /**
-     * @return Collection<int, Worklog>
-     */
-    public function getWorklogs(): Collection
-    {
-        return $this->worklogs;
-    }
-
-    public function addWorklog(Worklog $worklog): self
-    {
-        if (!$this->worklogs->contains($worklog)) {
-            $this->worklogs->add($worklog);
-        }
-
-        return $this;
-    }
-
-    public function removeWorklog(Worklog $worklog): self
-    {
-        $this->worklogs->removeElement($worklog);
-
-        return $this;
-    }
-
     public function getProject(): ?Project
     {
         return $this->project;
@@ -106,5 +82,32 @@ class Version
     public function __toString(): string
     {
         return $this->getName() ?? (string) $this->getId();
+    }
+
+    /**
+     * @return Collection<int, Issue>
+     */
+    public function getIssues(): Collection
+    {
+        return $this->issues;
+    }
+
+    public function addIssue(Issue $issue): self
+    {
+        if (!$this->issues->contains($issue)) {
+            $this->issues->add($issue);
+            $issue->addVersion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIssue(Issue $issue): self
+    {
+        if ($this->issues->removeElement($issue)) {
+            $issue->removeVersion($this);
+        }
+
+        return $this;
     }
 }

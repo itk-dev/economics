@@ -9,6 +9,7 @@
     <div class="invoices-filter-form">
         {{ form_row(form.recorded) }}
         {{ form_row(form.createdBy) }}
+        {{ form_row(form.projectBilling) }}
         <button class="button m-5">{{ 'invoices.search'|trans }}</button>
     </div>
     {{ form_end(form) }}
@@ -41,7 +42,7 @@
             {% endfor %}
             {% if invoices is empty %}
                 <tr class="table-tr">
-                    <td colspan="7">{{ 'invoices.list_no_records_found'|trans }}</td>
+                    <td class="table-td" colspan="7">{{ 'invoices.list_no_records_found'|trans }}</td>
                 </tr>
             {% endif %}
             <tr class="table-tr">

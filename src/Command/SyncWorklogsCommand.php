@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Repository\ProjectRepository;
-use App\Service\Invoices\BillingService;
+use App\Service\BillingService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,7 +34,11 @@ class SyncWorklogsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $projects = $this->projectRepository->findAll();
+        $projects = $this->projectRepository->findBy(['include' => true]);
+
+        $numberOfProjects = count($projects);
+
+        $io->info("Processing worklogs for $numberOfProjects projects that are included (project.include)");
 
         foreach ($projects as $project) {
             $io->writeln("Processing worklogs for {$project->getName()}");

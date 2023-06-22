@@ -82,6 +82,9 @@ class Invoice
     #[ORM\Column(nullable: true)]
     private ?float $totalPrice = null;
 
+    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    private ?ProjectBilling $projectBilling = null;
+
     public function __construct()
     {
         $this->invoiceEntries = new ArrayCollection();
@@ -340,5 +343,17 @@ class Invoice
     public function setDefaultReceiverAccount(?string $defaultReceiverAccount): void
     {
         $this->defaultReceiverAccount = $defaultReceiverAccount;
+    }
+
+    public function getProjectBilling(): ?ProjectBilling
+    {
+        return $this->projectBilling;
+    }
+
+    public function setProjectBilling(?ProjectBilling $projectBilling): self
+    {
+        $this->projectBilling = $projectBilling;
+
+        return $this;
     }
 }

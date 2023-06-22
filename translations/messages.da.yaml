@@ -96,6 +96,8 @@ navigation:
   sprint_report: Sprintrapport
   title: 'Economics'
   accounts: Konto
+  project_billing: 'Projektfakturering'
+  projects: 'Projekter'
 
 planning:
   title: Planlægning
@@ -213,6 +215,12 @@ invoices:
   action_export: 'Download .csv'
   back_to_invoice_entry: 'Tilbage til fakturalinje'
   invoice_info: 'Fakturainformation'
+  project_billing: 'PF'
+  include_project_billing: 'Projektfakturering'
+  with_project_billing: 'Inkludér'
+  without_project_billing: 'Udelad'
+  only_project_billing: 'Kun PF'
+  list_recorded: 'Bogført'
 
 material_number_enum:
   internal: "Interne: 103361"
@@ -277,7 +285,7 @@ invoice_recordable:
 title: 'Economics'
 
 home:
-  title: 'Forside'
+  title: 'Hjem'
   invoice: 'Faktura'
   invoice_desctiption: 'Opret og rediger fakturaer baseret på opgaver og worklogs i Project Tracker.'
   planning: 'Planlægning'
@@ -288,7 +296,69 @@ home:
   create_project_description: 'Hjælper med at oprette projekter i Project Tracker.'
   accounts: 'Konto'
   account_details: 'Liste over kontoer der bruges i faktura.'
+  project_billing: 'Projektfakturering'
+  project_billing_description: 'Fakturér alle kunder i et projekt for en given periode.'
+  projects: 'Projekter'
+  projects_description: 'Liste over projekter. Vælg hvilke skal vises i resten af systemet.'
 
 frontpage:
   title: 'Velkommen til Economics'
   login: 'Log ind'
+
+project_billing:
+  title: 'Projektfakturering'
+  list_id: '#'
+  list_name: 'Navn'
+  list_project: 'Projekt'
+  list_created_by: 'Opretter'
+  list_updated_at: 'Dato'
+  list_actions: 'Handlinger'
+  action_edit: 'Redigér'
+  list_no_records_found: 'Ingen fundet'
+  action_create_new: 'Opret ny projektfakturering'
+  edit: 'Redigér projektfakturering'
+  new: 'Opret ny projektfakturering'
+  back_to_list: 'Tilbage til listen'
+  action_save: 'Gem'
+  action_create: 'Opret'
+  name: 'Navn'
+  name_helptext: 'Navn på projektfakturering'
+  invoices: 'Tilkoblede fakturaer'
+  action_delete: 'Slet projektfakturering'
+  field_name: 'Navn'
+  field_name_helptext: 'Skriv projektfaktureringens navn'
+  field_project: 'Projekt'
+  field_project_helptext: 'Vælg projek der skal projektfaktureres'
+  field_period_start: 'Fra'
+  field_period_start_helptext: 'Vælg hvor perioden skal starte'
+  field_period_end: 'Til'
+  field_period_end_helptext: 'Vælg hvor perioden skal strække sig til'
+  field_description: 'Beskrivelse'
+  field_description_help: 'Teksten sættes efter "Projektnavn: Accountnavn (faktureringsperiode)." i H på faktura.'
+  action_export: 'Eksportér'
+  action_record: 'Bogfør projektfakturering'
+  action_show_export: 'Vis eksport'
+  back_to_invoice: 'Tilbage til projektfakturering'
+  confirm_record_are_you_sure: 'Er du sikker på at du vil bogføre projektfaktureringen "%projectBillingName%"?'
+  all_worklogs_will_be_marked_as_billed: 'Alle worklogs og fakturaer i projektfaktureringen vil blive markeret som faktureret.'
+  confirm_record_cannot_be_undone: 'Når fakturaen er bogført kan den ikke ændres mere.'
+  confirm_record_title: 'Bogfør projektfaktureringen'
+  record_save: 'Gennemfør valg'
+  record_project_billing_false: 'Nej. Gå tilbage.'
+  record_project_billing_true: 'Ja. Bogfør projektfaktureringen.'
+  record_project_billing: "Bogfør projektfakturering?"
+  record_project_billing_helptext: ''
+  cannot_record_errors_exist: 'Kan ikke bogføre projektfaktureringen, idet der er fejl i dataen:'
+  already_recorded: 'Projektfaktureringen er allerede bogført'
+  export_title: 'Eksport'
+  recorded: 'Ja'
+  list_recorded: 'Bogført'
+
+project:
+  title: 'Projekter'
+  include: 'Inkludér'
+  id: '#'
+  name: 'Navn'
+  project_tracker_key: 'Nøgle'
+  updated_at: 'Opdateret'
+  list_no_records_found: 'Ingen projekter fundet'

@@ -44,12 +44,23 @@ class Project
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectBilling::class)]
+    private Collection $projectBillings;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $include = null;
+
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Issue::class)]
+    private Collection $issues;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
         $this->clients = new ArrayCollection();
         $this->versions = new ArrayCollection();
         $this->worklogs = new ArrayCollection();
+        $this->projectBillings = new ArrayCollection();
+        $this->issues = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -209,6 +220,78 @@ class Project
             // set the owning side to null (unless already changed)
             if ($worklog->getProject() === $this) {
                 $worklog->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProjectBilling>
+     */
+    public function getProjectBillings(): Collection
+    {
+        return $this->projectBillings;
+    }
+
+    public function addProjectBilling(ProjectBilling $projectBilling): self
+    {
+        if (!$this->projectBillings->contains($projectBilling)) {
+            $this->projectBillings->add($projectBilling);
+            $projectBilling->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectBilling(ProjectBilling $projectBilling): self
+    {
+        if ($this->projectBillings->removeElement($projectBilling)) {
+            // set the owning side to null (unless already changed)
+            if ($projectBilling->getProject() === $this) {
+                $projectBilling->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isInclude(): ?bool
+    {
+        return $this->include;
+    }
+
+    public function setInclude(?bool $include): self
+    {
+        $this->include = $include;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Issue>
+     */
+    public function getIssues(): Collection
+    {
+        return $this->issues;
+    }
+
+    public function addIssue(Issue $issue): self
+    {
+        if (!$this->issues->contains($issue)) {
+            $this->issues->add($issue);
+            $issue->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIssue(Issue $issue): self
+    {
+        if ($this->issues->removeElement($issue)) {
+            // set the owning side to null (unless already changed)
+            if ($issue->getProject() === $this) {
+                $issue->setProject(null);
             }
         }
 

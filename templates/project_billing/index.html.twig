@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project_billing.title'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'project_billing.title'|trans }}</h1>
+
+    <table class="table margin-bottom">
+        <thead class="table-thead">
+        <tr>
+            <th class="table-th{% if projectBillings.isSorted('projectBilling.id') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_id'|trans, 'projectBilling.id') }}</th>
+            <th class="table-th{% if projectBillings.isSorted('projectBilling.name') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_name'|trans, 'projectBilling.name') }}</th>
+            <th class="table-th">{{ 'project_billing.list_project'|trans }}</th>
+            <th class="table-th">{{ 'project_billing.list_recorded'|trans }}</th>
+            <th class="table-th{% if projectBillings.isSorted('projectBilling.createdBy') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_created_by'|trans, 'projectBilling.createdBy') }}</th>
+            <th class="table-th{% if projectBillings.isSorted('projectBilling.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_updated_at'|trans, 'projectBilling.updatedAt') }}</th>
+            <th class="table-th">{{ 'project_billing.list_actions'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, projectBilling in projectBillings %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ projectBilling.id }}</td>
+                <td class="table-td">{{ projectBilling.name }}</td>
+                <td class="table-td">{{ projectBilling.project }}</td>
+                <td class="table-td">{{ projectBilling.isRecorded ? 'project_billing.recorded'|trans : '' }}</td>
+                <td class="table-td">{{ projectBilling.createdBy }}</td>
+                <td class="table-td">{{ projectBilling.updatedAt ? projectBilling.updatedAt|date('Y-m-d') : '' }}</td>
+                <td class="table-td">
+                    <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}) }}">{{ 'project_billing.action_edit'|trans }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% if projectBillings is empty %}
+            <tr class="table-tr">
+                <td class="table-td" colspan="7">{{ 'project_billing.list_no_records_found'|trans }}</td>
+            </tr>
+        {% endif %}
+        <tr class="table-tr">
+            <td class="table-td" colspan="2"><a class="link" href="{{ path('app_project_billing_new') }}">{{ 'project_billing.action_create_new'|trans }}</a>
+            <td class="table-td" colspan="5" class="text-right">
+                {{ knp_pagination_render(projectBillings) }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project_billing.export_title'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'project_billing.export_title'|trans }}</h1>
+
+    <div>
+        {{ html|raw }}
+    </div>
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}) }}">{{ 'project_billing.back_to_invoice'|trans }}</a>
+    </div>
+{% endblock %}

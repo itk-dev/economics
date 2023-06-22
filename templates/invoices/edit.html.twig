@@ -17,7 +17,7 @@
             {{ form_row(form.defaultMaterialNumber) }}
             {{ form_row(form.defaultReceiverAccount) }}
 
-            {% if not invoice.recorded %}
+            {% if not invoice.recorded and invoice.projectBilling is null %}
             <div class="actions-right">
                 <button class="button">{{ 'invoices.action_save'|trans }}</button>
             </div>
@@ -27,6 +27,7 @@
             <ul class="list-group margin-bottom">
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.invoice_info'|trans }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.id'|trans }}: {{ invoice.id }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.created_by'|trans }}: {{ invoice.createdBy }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.project'|trans }}: {{ invoice.project }} ({{ invoice.project.projectTrackerId }})</li>
                 <li class="list-group-item">{{ 'invoices.status'|trans }}: {{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</li>
             </ul>
@@ -66,10 +67,10 @@
             {% endif %}
             <div class="actions-right">
                 <a type="button" href="{{ path('app_invoices_show_export', {'id': invoice.id}) }}" class="button button-green">{{ 'invoices.action_show_export'|trans }}</a>
-                {% if not invoice.recorded %}
+                {% if not invoice.recorded and invoice.projectBilling is null %}
                     <a type="button" href="{{ path('app_invoices_record', {'id': invoice.id}) }}" class="button button-warning">{{ 'invoices.action_record'|trans }}</a>
                 {% endif %}
-                {% if invoice.recorded %}
+                {% if invoice.recorded and invoice.projectBilling is null %}
                     <a type="button" href="{{ path('app_invoices_export', {'id': invoice.id}) }}" class="button">{{ 'invoices.action_export'|trans }}</a>
                 {% endif %}
             </div>
@@ -95,7 +96,7 @@
             {% for index, invoiceEntry in invoice.invoiceEntries %}
                 <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                     <td class="table-td">{{ invoiceEntry.account }}</td>
-                    <td class="table-td">{{ invoiceEntry.materialNumber.value }}</td>
+                    <td class="table-td">{{ invoiceEntry.materialNumber.value ?? '' }}</td>
                     <td class="table-td">{{ invoiceEntry.product }}</td>
                     <td class="table-td">{{ invoiceEntry.amount }}</td>
                     <td class="table-td">{{ invoiceEntry.price }}</td>
@@ -121,7 +122,7 @@
                     <td></td>
                 </tr>
             {% endif %}
-            {% if not invoice.recorded %}
+            {% if not invoice.recorded and invoice.projectBilling is null %}
             <tr class="table-tr">
                 <td colspan="8" class="table-td">
                     <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
@@ -136,7 +137,7 @@
 
     <div class="bottom-actions">
         <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
-        {% if not invoice.recorded %}
+        {% if not invoice.recorded and invoice.projectBilling is null  %}
         {{ include('invoices/_delete_form.html.twig') }}
         {% endif %}
     </div>

@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project_billing.edit'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'project_billing.edit'|trans }}</h1>
+
+    {{ form_start(form) }}
+    <div>
+        {{ form_rest(form) }}
+
+        {% if not projectBilling.recorded %}
+            <button class="button">{{ 'project_billing.action_save'|trans }}</button>
+        {% endif %}
+    </div>
+    {{ form_end(form) }}
+
+    <div class="actions-right">
+        <a type="button" href="{{ path('app_project_billing_show_export', {'id': 1}) }}" class="button button-green">{{ 'project_billing.action_show_export'|trans }}</a>
+        {% if not projectBilling.recorded %}
+            <a type="button" href="{{ path('app_project_billing_record', {'id': 1}) }}" class="button button-warning">{{ 'project_billing.action_record'|trans }}</a>
+        {% endif %}
+        {% if projectBilling.recorded %}
+            <a type="button" href="{{ path('app_project_billing_export', {'id': 1}) }}" class="button">{{ 'project_billing.action_export'|trans }}</a>
+        {% endif %}
+    </div>
+
+    {% set invoices = projectBilling.invoices %}
+
+    <h2 class="subheading">{{ 'project_billing.invoices'|trans }}</h2>
+
+    <table class="table margin-bottom">
+        <thead class="table-thead">
+        <tr>
+            <th class="table-th">{{ 'invoices.id'|trans }}</th>
+            <th class="table-th">{{ 'invoices.name'|trans }}</th>
+            <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
+            <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, invoice in invoices %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ invoice.id }}</td>
+                <td class="table-td">{{ invoice.name }}</td>
+                <td class="table-td">{{ invoice.totalPrice }}</td>
+                <td class="table-td">
+                    <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% if invoices is empty %}
+            <tr class="table-tr">
+                <td class="table-td" colspan="7">{{ 'invoices.list_no_records_found'|trans }}</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_project_billing_index') }}">{{ 'project_billing.back_to_list'|trans }}</a>
+        {% if not projectBilling.recorded %}
+            {{ include('project_billing/_delete_form.html.twig') }}
+        {% endif %}
+    </div>
+{% endblock %}

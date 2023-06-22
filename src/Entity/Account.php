@@ -30,6 +30,12 @@ class Account
     #[ORM\Column(length: 255)]
     private ?string $source = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $status = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $category = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -87,6 +93,30 @@ class Account
     public function setSource(string $source): self
     {
         $this->source = $source;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?string $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }

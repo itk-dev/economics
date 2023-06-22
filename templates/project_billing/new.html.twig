@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project_billing.new'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'project_billing.new'|trans }}</h1>
+
+    {{ form_start(form) }}
+    <div>
+        {{ form_rest(form) }}
+
+        <button class="button">{{ 'project_billing.action_create'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_project_billing_index') }}">{{ 'project_billing.back_to_list'|trans }}</a>
+    </div>
+{% endblock %}
