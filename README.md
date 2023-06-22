@@ -46,18 +46,17 @@ The node container will watch for code changes in assets folder and recompile.
    bin/console app:migrate-customers
    ```
 6. Visit /admin/project and "include" the projects that should be synchronized in the installation.
-7. Synchronize worklogs
+7. Synchronize issues and worklogs
    ```shell
+   bin/console app:sync-issues
    bin/console app:sync-worklogs
    ```
 
 ## Production
 
-Run synchronization with a cron process with a given interval in the given order:
+Run synchronization with a cron process with a given interval to synchronize with the project tracker:
  ```shell
-   bin/console app:sync-projects
-   bin/console app:sync-accounts
-   bin/console app:sync-worklogs
+   bin/console app:sync
 ```
 
 ## APIs
