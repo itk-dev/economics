@@ -43,6 +43,9 @@ class ProjectBilling
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $exportedDate = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -151,6 +154,18 @@ class ProjectBilling
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getExportedDate(): ?\DateTimeInterface
+    {
+        return $this->exportedDate;
+    }
+
+    public function setExportedDate(?\DateTimeInterface $exportedDate): self
+    {
+        $this->exportedDate = $exportedDate;
 
         return $this;
     }
