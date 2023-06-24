@@ -9,6 +9,7 @@ use App\Message\CreateProjectBillingMessage;
 use App\Message\UpdateProjectBillingMessage;
 use App\Model\Invoices\ConfirmData;
 use App\Repository\InvoiceRepository;
+use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\BillingService;
 use App\Service\ProjectBillingService;
@@ -66,7 +67,7 @@ class ProjectBillingController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
+    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, IssueRepository $issueRepository): Response
     {
         $options = [];
         if ($projectBilling->isRecorded()) {
@@ -75,6 +76,8 @@ class ProjectBillingController extends AbstractController
 
         $form = $this->createForm(ProjectBillingType::class, $projectBilling, $options);
         $form->handleRequest($request);
+
+        $issuesWithoutAccounts = $issueRepository->getIssuesNotIncludedInProjectBilling($projectBilling);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($projectBilling->isRecorded()) {
@@ -97,6 +100,7 @@ class ProjectBillingController extends AbstractController
         return $this->render('project_billing/edit.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
+            'issuesWithoutAccounts' => $issuesWithoutAccounts,
         ]);
     }
 
