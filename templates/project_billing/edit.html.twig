@@ -57,6 +57,31 @@
         </tbody>
     </table>
 
+    {% if issuesWithoutAccounts is not empty %}
+        <h2 class="subheading">{{ 'project_billing.issues_not_included'|trans }}</h2>
+
+        <div class="help-text mt-2 mb-5">{{ 'project_billing.issues_not_included_helptext'|trans }}</div>
+
+        <table class="table margin-bottom">
+            <thead class="table-thead">
+            <tr>
+                <th class="table-th">{{ 'project_billing.issue.key'|trans }}</th>
+                <th class="table-th">{{ 'project_billing.issue.name'|trans }}</th>
+                <th class="table-th">{{ 'project_billing.issue.status'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for index, issue in issuesWithoutAccounts %}
+                <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                    <td class="table-td">{{ issue.projectTrackerKey }}</td>
+                    <td class="table-td">{{ issue.name }}</td>
+                    <td class="table-td">{{ issue.status }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
     <div class="bottom-actions">
         <a class="link" href="{{ path('app_project_billing_index') }}">{{ 'project_billing.back_to_list'|trans }}</a>
         {% if not projectBilling.recorded %}
