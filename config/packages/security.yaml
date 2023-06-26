@@ -15,7 +15,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         admin:
-            pattern: ^/admin/.+$
+            pattern: ^/admin
             custom_authenticators:
                 - App\Security\AzureOIDCAuthenticator
             entry_point: App\Security\AzureOIDCAuthenticator
