@@ -353,6 +353,12 @@ project_billing:
   export_title: 'Eksport'
   recorded: 'Ja'
   list_recorded: 'Bogført'
+  issues_not_included: 'Opgaver der ikke er inkluderet fordi de mangler konto'
+  issues_not_included_helptext: 'Sæt konto på opgaven for få den med i projektfaktureringen. Synkronisér derefter projektet i "Projekter", og tryk derefter "Gem" på denne projektfaktureringen for at få opgaverne med.'
+  issue:
+    name: 'navn'
+    status: 'status'
+    key: 'nøgle'
 
 project:
   title: 'Projekter'

@@ -104,6 +104,11 @@ class ProjectBillingService
                 if (!is_null($accountId)) {
                     if (!isset($invoices[$accountId])) {
                         $account = $this->accountRepository->findOneBy(['projectTrackerId' => $issue->getAccountId()]);
+
+                        if (null == $account) {
+                            continue;
+                        }
+
                         $invoices[$accountId] = [
                             'account' => $account,
                             'issues' => [],

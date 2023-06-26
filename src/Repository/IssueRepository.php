@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Issue;
 use App\Entity\Project;
+use App\Entity\ProjectBilling;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -48,6 +49,21 @@ class IssueRepository extends ServiceEntityRepository
         $qb->andWhere('issue.resolutionDate <= :periodEnd');
         $qb->setParameter('periodStart', $periodStart);
         $qb->setParameter('periodEnd', $periodEnd);
+        $qb->andWhere('issue.status = :status');
+        $qb->setParameter('status', 'Lukket');
+
+        return $qb->getQuery()->execute();
+    }
+
+    public function getIssuesNotIncludedInProjectBilling(ProjectBilling $projectBilling)
+    {
+        $qb = $this->createQueryBuilder('issue');
+        $qb->andWhere($qb->expr()->eq('issue.project', $projectBilling->getProject()->getId()));
+        $qb->andWhere('issue.resolutionDate >= :periodStart');
+        $qb->andWhere('issue.resolutionDate <= :periodEnd');
+        $qb->setParameter('periodStart', $projectBilling->getPeriodStart());
+        $qb->setParameter('periodEnd', $projectBilling->getPeriodEnd());
+        $qb->andWhere('issue.accountId IS NULL');
         $qb->andWhere('issue.status = :status');
         $qb->setParameter('status', 'Lukket');
 

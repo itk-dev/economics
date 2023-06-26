@@ -9,6 +9,7 @@ use App\Message\CreateProjectBillingMessage;
 use App\Message\UpdateProjectBillingMessage;
 use App\Model\Invoices\ConfirmData;
 use App\Repository\InvoiceRepository;
+use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\BillingService;
 use App\Service\ProjectBillingService;
@@ -66,7 +67,7 @@ class ProjectBillingController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
+    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, IssueRepository $issueRepository): Response
     {
         $options = [];
         if ($projectBilling->isRecorded()) {
@@ -75,6 +76,8 @@ class ProjectBillingController extends AbstractController
 
         $form = $this->createForm(ProjectBillingType::class, $projectBilling, $options);
         $form->handleRequest($request);
+
+        $issuesWithoutAccounts = $issueRepository->getIssuesNotIncludedInProjectBilling($projectBilling);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($projectBilling->isRecorded()) {
@@ -97,6 +100,7 @@ class ProjectBillingController extends AbstractController
         return $this->render('project_billing/edit.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
+            'issuesWithoutAccounts' => $issuesWithoutAccounts,
         ]);
     }
 
@@ -126,6 +130,8 @@ class ProjectBillingController extends AbstractController
     }
 
     /**
+     * Put project billing on record.
+     *
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_project_billing_record', methods: ['GET', 'POST'])]
@@ -150,6 +156,8 @@ class ProjectBillingController extends AbstractController
     }
 
     /**
+     * Preview the export.
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/show-export', name: 'app_project_billing_show_export', methods: ['GET'])]
@@ -192,10 +200,12 @@ class ProjectBillingController extends AbstractController
     }
 
     /**
+     * Export the project billing to .csv.
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
-    public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
     {
         // Mark invoice as exported.
         foreach ($projectBilling->getInvoices() as $invoice) {
@@ -203,7 +213,8 @@ class ProjectBillingController extends AbstractController
             $invoiceRepository->save($invoice, true);
         }
 
-        // TODO: Set projectBilling.exportedDate
+        $projectBilling->setExportedDate(new \DateTime());
+        $projectBillingRepository->save($projectBilling, true);
 
         $ids = $projectBilling->getInvoices()->getKeys();
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
