@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Project;
 use App\Repository\ProjectRepository;
+use App\Service\BillingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,5 +33,24 @@ class ProjectController extends AbstractController
         $projectRepository->save($project, true);
 
         return new JsonResponse([$body], 200);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]
+    public function sync(Request $request, Project $project, BillingService $billingService): Response
+    {
+        $projectId = $project->getId();
+
+        if (null == $projectId) {
+            return new Response('Not found', 404);
+        }
+
+        $billingService->syncIssuesForProject($projectId);
+
+        $billingService->syncWorklogsForProject($projectId);
+
+        return new JsonResponse([], 200);
     }
 }
