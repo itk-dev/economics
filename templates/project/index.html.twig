@@ -13,6 +13,7 @@
             <th class="table-th{% if projects.isSorted('project.projectTrackerKey') %} sorted{% endif %}">{{ knp_pagination_sortable(projects, 'project.project_tracker_key'|trans, 'project.projectTrackerKey') }}</th>
             <th class="table-th{% if projects.isSorted('project.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(projects, 'project.updated_at'|trans, 'project.updatedAt') }}</th>
             <th class="table-th">{{ 'project.include'|trans }}</th>
+            <th class="table-th">{{ 'project.sync'|trans }}</th>
         </tr>
         </thead>
         <tbody>
@@ -30,6 +31,12 @@
                         <span class="toggle-text" {{ stimulus_target('toggle', 'text') }}></span>
                     </label>
                 </td>
+                <td class="table-td" {{ stimulus_controller('sync') }} data-update-url="{{ path('app_project_sync', { id: project.id }) }}">
+                    <button class="button" {{ stimulus_action('sync', 'sync') }} {{ stimulus_target('sync', 'button') }}>
+                        {{ 'project.sync_action'|trans }}
+                    </button>
+                    <span class="sync-text" {{ stimulus_target('sync', 'text') }}></span>
+                </td>
             </tr>
         {% endfor %}
         {% if projects is empty %}
@@ -38,7 +45,7 @@
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="5" class="text-right">
+            <td class="table-td" colspan="6" class="text-right">
                 {{ knp_pagination_render(projects) }}
             </td>
         </tr>

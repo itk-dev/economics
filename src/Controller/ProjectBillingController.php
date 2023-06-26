@@ -130,6 +130,8 @@ class ProjectBillingController extends AbstractController
     }
 
     /**
+     * Put project billing on record.
+     *
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_project_billing_record', methods: ['GET', 'POST'])]
@@ -154,6 +156,8 @@ class ProjectBillingController extends AbstractController
     }
 
     /**
+     * Preview the export.
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/show-export', name: 'app_project_billing_show_export', methods: ['GET'])]
@@ -196,10 +200,12 @@ class ProjectBillingController extends AbstractController
     }
 
     /**
+     * Export the project billing to .csv.
+     *
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
-    public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
     {
         // Mark invoice as exported.
         foreach ($projectBilling->getInvoices() as $invoice) {
@@ -207,7 +213,8 @@ class ProjectBillingController extends AbstractController
             $invoiceRepository->save($invoice, true);
         }
 
-        // TODO: Set projectBilling.exportedDate
+        $projectBilling->setExportedDate(new \DateTime());
+        $projectBillingRepository->save($projectBilling, true);
 
         $ids = $projectBilling->getInvoices()->getKeys();
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);

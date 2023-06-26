@@ -368,3 +368,5 @@ project:
   project_tracker_key: 'Nøgle'
   updated_at: 'Opdateret'
   list_no_records_found: 'Ingen projekter fundet'
+  sync: 'Synkronisér'
+  sync_action: 'Start'
