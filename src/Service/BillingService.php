@@ -70,7 +70,7 @@ class BillingService
     /**
      * @throws \Exception
      */
-    public function syncIssuesForProject(string $projectId, callable $progressCallback = null): void
+    public function syncIssuesForProject(int $projectId, callable $progressCallback = null): void
     {
         $project = $this->projectRepository->find($projectId);
 
@@ -131,7 +131,7 @@ class BillingService
     /**
      * @throws \Exception
      */
-    public function syncWorklogsForProject(string $projectId, callable $progressCallback = null): void
+    public function syncWorklogsForProject(int $projectId, callable $progressCallback = null): void
     {
         $project = $this->projectRepository->find($projectId);
 
