@@ -135,7 +135,7 @@ class ProjectBillingController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_project_billing_record', methods: ['GET', 'POST'])]
-    public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, ProjectBillingService $projectBillingService): Response
+    public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService): Response
     {
         $recordData = new ConfirmData();
         $form = $this->createForm(ProjectBillingRecordType::class, $recordData);
