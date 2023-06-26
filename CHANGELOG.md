@@ -12,4 +12,5 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Added Planning.
 * Added OIDC login.
 * Added Project Billing.
+* Added Project Billing exported date.
 * Added Project sync action.
