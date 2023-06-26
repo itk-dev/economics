@@ -203,6 +203,7 @@ class ProjectBillingController extends AbstractController
      * Export the project billing to .csv.
      *
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \Exception
      */
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
     public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
@@ -216,7 +217,10 @@ class ProjectBillingController extends AbstractController
         $projectBilling->setExportedDate(new \DateTime());
         $projectBillingRepository->save($projectBilling, true);
 
-        $ids = $projectBilling->getInvoices()->getKeys();
+        $ids = array_map(function ($invoice) {
+            return $invoice->getId();
+        }, $projectBilling->getInvoices()->toArray());
+
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
 
         /** @var Csv $writer */

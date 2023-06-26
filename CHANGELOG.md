@@ -15,3 +15,4 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Added list of issues not included because they lack account in project billing.
 * Added Project Billing exported date.
 * Added Project sync action.
+* Fixed path bugs.
