@@ -16,12 +16,12 @@
     {{ form_end(form) }}
 
     <div class="actions-right">
-        <a type="button" href="{{ path('app_project_billing_show_export', {'id': 1}) }}" class="button button-green">{{ 'project_billing.action_show_export'|trans }}</a>
+        <a type="button" href="{{ path('app_project_billing_show_export', {'id': projectBilling.id}) }}" class="button button-green">{{ 'project_billing.action_show_export'|trans }}</a>
         {% if not projectBilling.recorded %}
-            <a type="button" href="{{ path('app_project_billing_record', {'id': 1}) }}" class="button button-warning">{{ 'project_billing.action_record'|trans }}</a>
+            <a type="button" href="{{ path('app_project_billing_record', {'id': projectBilling.id}) }}" class="button button-warning">{{ 'project_billing.action_record'|trans }}</a>
         {% endif %}
         {% if projectBilling.recorded %}
-            <a type="button" href="{{ path('app_project_billing_export', {'id': 1}) }}" class="button">{{ 'project_billing.action_export'|trans }}</a>
+            <a type="button" href="{{ path('app_project_billing_export', {'id': projectBilling.id}) }}" class="button">{{ 'project_billing.action_export'|trans }}</a>
         {% endif %}
     </div>
 
