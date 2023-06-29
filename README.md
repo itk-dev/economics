@@ -19,7 +19,50 @@ Getting started:
 ```shell
 docker compose run node npm install
 docker compose up -d
+docker compose bin/console doctrine:migrations:migrate
 ```
+
+Set create .env.local with the following values set
+```shell
+###> Project tracker connection ###
+PROJECT_TRACKER_URL=<VALUE>
+PROJECT_TRACKER_USER=<VALUE>
+PROJECT_TRACKER_TOKEN=<VALUE>
+###< Project tracker connection ###
+
+###> itk-dev/openid-connect-bundle ###
+USER_OIDC_METADATA_URL=<VALUE>
+USER_OIDC_CLIENT_ID=<VALUE>
+USER_OIDC_CLIENT_SECRET=<VALUE>
+USER_OIDC_REDIRECT_URI=https://economics.local.itkdev.dk/openid-connect/generic
+###< itk-dev/openid-connect-bundle ###
+
+APP_INVOICE_RECEIVER_ACCOUNT=<VALUE>
+APP_INVOICE_DEFAULT_DESCRIPTION=<VALUE>
+
+JIRA_API_SERVICE_CUSTOM_FIELD_EPIC_LINK=<VALUE>
+JIRA_API_SERVICE_CUSTOM_FIELD_ACCOUNT=<VALUE>
+JIRA_API_SERVICE_CUSTOM_FIELD_SPRINT=<VALUE>
+JIRA_API_SERVICE_DEFAULT_BOARD=<VALUE>
+```
+
+Sync projects and accounts.
+
+```shell
+docker compose bin/console app:sync-projects
+docker compose bin/console app:sync-accounts
+```
+
+Visit /admin/project and "include" the projects that should be synchronized in the installation.
+
+Then sync issues and worklogs
+
+```shell
+docker compose bin/console app:sync-issues
+docker compose bin/console app:sync-worklogs
+```
+
+### Assets
 
 The node container will watch for code changes in assets folder and recompile.
 
@@ -53,6 +96,22 @@ The node container will watch for code changes in assets folder and recompile.
    ```
 
 ## Production
+
+### Deploy
+
+```shell
+composer install --no-dev -o
+bin/console doctrine:migrations:migrate
+```
+
+Build the assets locally
+```shell
+docker compose run --rm node npm run build
+```
+
+Copy the `/public/build` folder to the server.
+
+### Sync
 
 Run synchronization with a cron process with a given interval to synchronize with the project tracker:
  ```shell
