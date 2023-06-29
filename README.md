@@ -99,17 +99,18 @@ The node container will watch for code changes in assets folder and recompile.
 
 ### Deploy
 
-```shell
-composer install --no-dev -o
-bin/console doctrine:migrations:migrate
-```
-
 Build the assets locally
 ```shell
 docker compose run --rm node npm run build
 ```
 
 Copy the `/public/build` folder to the server.
+
+```shell
+docker compose up -d
+docker compose exec phpfpm composer install --no-dev -o
+docker compose exec phpfpm bin/console doctrine:migrations:migrate
+```
 
 ### Sync
 
