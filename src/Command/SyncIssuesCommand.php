@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:sync-issuesß',
+    name: 'app:sync-issues',
     description: 'Sync worklogs for all projects.',
 )]
 class SyncIssuesCommand extends Command
