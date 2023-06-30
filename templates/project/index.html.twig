@@ -5,6 +5,15 @@
 {% block content %}
     <h1 class="page-title">{{ 'project.title'|trans }}</h1>
 
+    {{ form_start(form) }}
+    <div class="invoices-filter-form">
+        {{ form_row(form.name) }}
+        {{ form_row(form.key) }}
+        {{ form_row(form.include) }}
+        <button class="button m-5">{{ 'project.search'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
     <table class="table margin-bottom">
         <thead class="table-thead">
         <tr>

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ProjectBilling;
+use App\Model\Invoices\ProjectBillingFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -41,9 +42,15 @@ class ProjectBillingRepository extends ServiceEntityRepository
         }
     }
 
-    public function getFilteredPagination(int $page = 1): PaginationInterface
+    public function getFilteredPagination(ProjectBillingFilterData $projectBillingFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('pb');
+
+        $qb->andWhere('pb.recorded = :recorded')->setParameter('recorded', $projectBillingFilterData->recorded);
+
+        if (!empty($projectBillingFilterData->createdBy)) {
+            $qb->andWhere('pb.createdBy LIKE :createdBy')->setParameter('createdBy', $projectBillingFilterData->createdBy);
+        }
 
         return $this->paginator->paginate(
             $qb,

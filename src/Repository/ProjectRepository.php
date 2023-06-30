@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Project;
+use App\Model\Invoices\ProjectFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -41,9 +42,23 @@ class ProjectRepository extends ServiceEntityRepository
         }
     }
 
-    public function getFilteredPagination(int $page = 1): PaginationInterface
+    public function getFilteredPagination(ProjectFilterData $projectFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('project');
+
+        if (!empty($projectFilterData->include)) {
+            $qb->andWhere('project.include = :include')->setParameter('include', $projectFilterData->include);
+        }
+
+        if (!empty($projectFilterData->name)) {
+            $name = $projectFilterData->name;
+            $qb->andWhere('project.name LIKE :name')->setParameter('name', "%$name%");
+        }
+
+        if (!empty($projectFilterData->key)) {
+            $key = $projectFilterData->key;
+            $qb->andWhere('project.projectTrackerKey LIKE :key')->setParameter('key', "%$key%");
+        }
 
         return $this->paginator->paginate(
             $qb,
