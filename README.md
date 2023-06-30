@@ -13,6 +13,36 @@ invoice entries and invoice entries created from worklogs.
 * Projects: Overview of which projects to work with in the system.
 * Project Creator: Create a new project in the Project Tracker.
 
+## Entity model
+
+```mermaid
+graph TD;
+   ProjectBilling-->Invoice;
+   ProjectBilling-->Project;
+   Invoice-->Project;
+   Invoice-->Client;
+   Invoice-->InvoiceEntry;
+   InvoiceEntry-->Worklog;
+   Issue-->Worklog;
+   Issue-->Project;
+   Issue-->Account;
+   Client-->Account;
+```
+
+The system is build around Invoices.
+Each invoice is connected to a project and consists of invoice entries.
+The output is a .csv file.
+
+Projects, clients, accounts, issues and worklogs are synchronized from a project tracker.
+
+Invoice entries can be manual entries or connected to a number of worklogs from 
+a project tracker.
+
+Project billing can create a number of invoices for a given project for a given project.
+Only issues from the project tracker that have a connected account will be included. This
+is used to create invoices for the Support project, where issues are billed to different
+accounts.
+
 ## Development
 
 Getting started:
