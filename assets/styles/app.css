@@ -288,4 +288,26 @@
     .toggle-label {
         @apply relative inline-flex items-center cursor-pointer;
     }
+
+    .selections .choices__list .choices__input {
+        color: black !important;
+    }
+
+    .selections .choices__inner,
+    .selections .choices__list {
+        @apply dark:bg-gray-900 dark:text-white bg-gray-50 text-black;
+    }
+
+    .selections .choices.is-disabled .choices__inner,
+    .selections .choices.is-disabled .choices__list {
+        @apply dark:bg-gray-600 dark:text-white bg-gray-50 text-black;
+    }
+
+    .selections .choices__item--choice {
+        @apply dark:bg-gray-900 dark:text-white bg-gray-50 text-black;
+    }
+
+    .selections .choices__item.choices__item--choice.choices__item--selectable.is-highlighted {
+        @apply dark:bg-gray-800 dark:text-white bg-gray-200 text-black;
+    }
 }
