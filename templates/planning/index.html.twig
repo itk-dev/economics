@@ -32,11 +32,13 @@
                 </tr>
             </thead>
             {% for assignee in assignees %}
-            <tbody {{ stimulus_controller('toggle') }}>
+            <tbody {{ stimulus_controller('toggle-parent-child') }}>
                 <tr class="table-row">
                     <td class="table-cell-heading">
                         {{ assignee.displayName }}
-                        <button class="float-right" type="button" data-action="toggle#toggleParent" data-toggle-target="button">+</button>
+                        <button class="float-right" type="button"
+                                {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
+                                data-toggle-target="button">+</button>
                     </td>
                     <td></td>
                     {% for sprint in sprints %}
@@ -51,9 +53,14 @@
                     {% endfor %}
                 </tr>
                 {% for project in assignee.projects %}
-                    <tr data-toggle-target="parent" class="table-row">
+                    <tr {{ stimulus_target('toggle-parent-child', 'parent') }} class="table-row">
                         <td class="table-cell"></td>
-                        <td class="table-cell-heading">{{ project.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ project.key }}">+</button></td>
+                        <td class="table-cell-heading">{{ project.displayName }}<span> </span>
+                            <button class="float-right" type="button"
+                                    {{ stimulus_action('toggle-parent-child', 'toggleChild')}}
+                                    {{ stimulus_target('toggle-parent-child', 'button')}}
+                                    data-parent-id="{{ project.key }}">+</button>
+                        </td>
                         {% for sprint in sprints %}
                             {% if project.sprintSums.containsKey(sprint.sprintId) %}
                                 <td class="table-cell-heading">
@@ -65,7 +72,7 @@
                         {% endfor %}
                     </tr>
                     {% for issue in project.issues %}
-                        <tr data-toggle-target="child" data-parent-id="{{ project.key }}">
+                        <tr {{ stimulus_target('toggle-parent-child', 'child') }} data-parent-id="{{ project.key }}">
                             <td class="table-cell"></td>
                             <td class="table-cell"><a href="{{ issue.link }}" class="link">{{ issue.key }}</a>: {{ issue.displayName }}</td>
                             {% for sprint in sprints %}
@@ -98,11 +105,13 @@
             </tr>
             </thead>
             {% for project in projects %}
-                <tbody {{ stimulus_controller('toggle') }}>
+                <tbody {{ stimulus_controller('toggle-parent-child') }}>
                 <tr class="table-row">
                     <td class="table-cell-heading">
-                        {{ project.displayName }}
-                        <button class="float-right" type="button" data-action="toggle#toggleParent" data-toggle-target="button" >+</button>
+                        {{ project.displayName }}<span> </span>
+                        <button class="float-right" type="button"
+                                {{ stimulus_action('toggle-parent-child', 'toggleParent')}}
+                                {{ stimulus_target('toggle-parent-child', 'button')}}>+</button>
                     </td>
                     <td></td>
                     {% for sprint in sprints %}
@@ -117,9 +126,15 @@
                     {% endfor %}
                 </tr>
                 {% for assignee in project.assignees %}
-                    <tr data-toggle-target="parent" class="table-row">
+                    <tr {{ stimulus_target('toggle-parent-child', 'parent')}} class="table-row">
                         <td class="table-cell"></td>
-                        <td class="table-cell-heading">{{ assignee.displayName }} <button class="float-right" type="button" data-action="toggle#toggleChild" data-toggle-target="button" data-parent-id="{{ assignee.key }}">+</button></td>
+                        <td class="table-cell-heading">
+                            {{ assignee.displayName }}<span> </span>
+                            <button class="float-right" type="button"
+                                    {{ stimulus_action('toggle-parent-child', 'toggleChild')}}
+                                    {{ stimulus_target('toggle-parent-child', 'button')}}
+                                    data-parent-id="{{ assignee.key }}">+</button>
+                        </td>
                         {% for sprint in sprints %}
                             {% if assignee.sprintSums.containsKey(sprint.sprintId) %}
                                 <td class="table-cell-heading">
@@ -131,7 +146,7 @@
                         {% endfor %}
                     </tr>
                     {% for issue in assignee.issues %}
-                        <tr data-toggle-target="child" data-parent-id="{{ assignee.key }}">
+                        <tr {{ stimulus_target('toggle-parent-child', 'child')}} data-parent-id="{{ assignee.key }}">
                             <td class="table-cell"></td>
                             <td class="table-cell"><a href="{{ issue.link }}" class="link">{{ issue.key }}</a>: {{ issue.displayName }}</td>
                             {% for sprint in sprints %}
