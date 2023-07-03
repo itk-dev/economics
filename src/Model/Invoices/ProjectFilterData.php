@@ -4,7 +4,7 @@ namespace App\Model\Invoices;
 
 class ProjectFilterData
 {
-    public ?string $name = '';
-    public ?string $key = '';
+    public ?string $name = null;
+    public ?string $key = null;
     public ?bool $include = null;
 }
