@@ -23,3 +23,4 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Updated docker files to newest version.
 * Fixed path bugs.
 * Fixed planning js.
+* Cleaned up config files.
