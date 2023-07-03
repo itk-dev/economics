@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Form\ProjectFilterType;
+use App\Model\Invoices\ProjectFilterData;
 use App\Repository\ProjectRepository;
 use App\Service\BillingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,10 +19,15 @@ class ProjectController extends AbstractController
     #[Route('/', name: 'app_project_index', methods: ['GET'])]
     public function index(Request $request, ProjectRepository $projectRepository): Response
     {
-        $pagination = $projectRepository->getFilteredPagination($request->query->getInt('page', 1));
+        $projectFilterData = new ProjectFilterData();
+        $form = $this->createForm(ProjectFilterType::class, $projectFilterData);
+        $form->handleRequest($request);
+
+        $pagination = $projectRepository->getFilteredPagination($projectFilterData, $request->query->getInt('page', 1));
 
         return $this->render('project/index.html.twig', [
             'projects' => $pagination,
+            'form' => $form,
         ]);
     }
 

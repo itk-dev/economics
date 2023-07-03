@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\ProjectBilling;
+use App\Form\ProjectBillingFilterType;
 use App\Form\ProjectBillingRecordType;
 use App\Form\ProjectBillingType;
 use App\Message\CreateProjectBillingMessage;
 use App\Message\UpdateProjectBillingMessage;
 use App\Model\Invoices\ConfirmData;
+use App\Model\Invoices\ProjectBillingFilterData;
 use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
@@ -28,10 +30,15 @@ class ProjectBillingController extends AbstractController
     #[Route('/', name: 'app_project_billing_index', methods: ['GET'])]
     public function index(Request $request, ProjectBillingRepository $projectBillingRepository): Response
     {
-        $pagination = $projectBillingRepository->getFilteredPagination($request->query->getInt('page', 1));
+        $projectBillingFilterData = new ProjectBillingFilterData();
+        $form = $this->createForm(ProjectBillingFilterType::class, $projectBillingFilterData);
+        $form->handleRequest($request);
+
+        $pagination = $projectBillingRepository->getFilteredPagination($projectBillingFilterData, $request->query->getInt('page', 1));
 
         return $this->render('project_billing/index.html.twig', [
             'projectBillings' => $pagination,
+            'form' => $form,
         ]);
     }
 

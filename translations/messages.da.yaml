@@ -359,6 +359,9 @@ project_billing:
     name: 'navn'
     status: 'status'
     key: 'nøgle'
+  search: 'Filtrér'
+  form_recorded: 'Bogført'
+  form_created_by: 'Opretter'
 
 project:
   title: 'Projekter'
@@ -370,3 +373,10 @@ project:
   list_no_records_found: 'Ingen projekter fundet'
   sync: 'Synkronisér'
   sync_action: 'Start'
+  search: 'messages'
+  include_null: ''
+  include_false: 'Inkluderet'
+  include_true: 'Ikke inkluderet'
+  form_name: 'Navn'
+  form_key: 'Nøgle'
+  form_include: 'Inkluderet'
