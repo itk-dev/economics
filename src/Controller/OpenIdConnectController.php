@@ -11,7 +11,7 @@ class OpenIdConnectController extends AbstractController
     #[Route('/openid-connect/generic', name: 'app_openid-connect_generic')]
     public function generic(): RedirectResponse
     {
-        return $this->redirectToRoute('admin');
+        return $this->redirectToRoute('index');
     }
 
     #[Route('/logout', name: 'app_logout', methods: ['GET'])]
