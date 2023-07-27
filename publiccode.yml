@@ -1,0 +1,89 @@
+# This repository adheres to the publiccode.yml standard by including this
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: "0.3"
+name: Economics
+developmentStatus: concept
+softwareType: standalone/web
+applicationSuite: Economics
+url: "https://github.com/itk-dev/economics"
+landingURL: "https://economics.itkdev.dk"
+softwareVersion: "1.0"
+releaseDate: "2023-07-20"
+platforms:
+  - web
+categories:
+  - content-management
+  - financial
+usedBy:
+  - Aarhus kommune
+intendedAudience:
+  scope:
+    - society
+  countries:
+    - da
+description:
+  en:
+    localisedName: Economics
+    shortDescription: >
+      Economics creates project invoices, sprint reports and overview of workload. All connected to Jira.
+    longDescription: >
+      This product is created for Jira and Tempo, but it is created so it should be possible to get time-registration and projects from other systems as it is modular. When working in teams and using Jira and Tempo, we have functions covering from planning teams and employees workload, overview of project status and when and in which fix versions the hours has been spend.
+    documentation: "https://github.com/itk-dev/economics"
+    apiDocumentation: "https://mosaic.srvitkstgweb01.itkdev.dk/api/v1"
+    features:
+      - Create invoice
+      - Create multiply invoices (across acounts)
+      - view sprint planning
+      - view sprint report
+      - List projects
+      - Create project
+legal:
+  license: MPL-2.0
+  mainCopyrightOwner: City of Aarhus
+  repoOwner: City of Aarhus
+maintenance:
+  type: "contract"
+  contractors:
+    - name: "ITK development"
+      email: "itkdev@aarhus.dk"
+      website: "https://privatecompany.com"
+      until: "2024-01-01"
+  contacts:
+    - name: ITK development
+      email: "itkdev@aarhus.dk"
+      affiliation: Aarhus kommune
+      phone: "+45 41854181"
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - da
+    - en
+dependsOn:
+  open:
+    - name: PHP
+      versionMin: ".1"
+      versionMax: "1.3"
+      optional: true
+    - name: PostgreSQL
+      version: "3.2"
+      optional: true
+  proprietary:
+    - name: Oracle
+      versionMin: "11.4"
+    - name: IBM SoftLayer
+it:
+  countryExtensionVersion: "0.2"
+  conforme:
+    lineeGuidaDesign: false
+    modelloInteroperabilita: false
+    misureMinimeSicurezza: true
+    gdpr: true
+  piattaforme:
+    spid: false
+    cie: false
+    anpr: false
+    pagopa: false
+  riuso:
+    codiceIPA:
