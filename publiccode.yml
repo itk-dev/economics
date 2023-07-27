@@ -8,7 +8,7 @@ developmentStatus: concept
 softwareType: standalone/web
 applicationSuite: Economics
 url: "https://github.com/itk-dev/economics"
-landingURL: "https://economics.itkdev.dk"
+landingURL: "https://stg.economics.itkdev.dk"
 softwareVersion: "1.0"
 releaseDate: "2023-07-20"
 platforms:
@@ -30,7 +30,6 @@ description:
     longDescription: >
       This product is created for Jira and Tempo, but it is created so it should be possible to get time-registration and projects from other systems as it is modular. When working in teams and using Jira and Tempo, we have functions covering from planning teams and employees workload, overview of project status and when and in which fix versions the hours has been spend.
     documentation: "https://github.com/itk-dev/economics"
-    apiDocumentation: "https://mosaic.srvitkstgweb01.itkdev.dk/api/v1"
     features:
       - Create invoice
       - Create multiply invoices (across acounts)
