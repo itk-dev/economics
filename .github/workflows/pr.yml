@@ -189,3 +189,14 @@ jobs:
 
       - name: Validate Doctrine schema
         run: APP_ENV=prod php bin/console doctrine:schema:validate
+
+
+  validate-publiccode:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Validate publiccode.yml
+        # https://github.com/italia/publiccode-parser-go#easy-validation-with-docker
+        run: docker run --interactive italia/publiccode-parser-go /dev/stdin < publiccode.yml
