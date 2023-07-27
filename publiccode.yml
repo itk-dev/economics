@@ -72,18 +72,14 @@ dependsOn:
     - name: Oracle
       versionMin: "11.4"
     - name: IBM SoftLayer
-it:
-  countryExtensionVersion: "0.2"
-  conforme:
-    lineeGuidaDesign: false
-    modelloInteroperabilita: false
-    misureMinimeSicurezza: true
+dk:
+  countryExtensionVersion: "0.1"
+  regulation:
+    designsystem: true
+    wag: false
     gdpr: true
-  piattaforme:
-    spid: false
-    # spid test
-    cie: false
-    anpr: false
-    pagopa: false
-  riuso:
-    codiceIPA:
+  platform:
+    mitid: false
+    betaling: false
+    cpropslag: false
+    digitalpost: false
