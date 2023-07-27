@@ -13,6 +13,7 @@ softwareVersion: "1.0"
 releaseDate: "2023-07-20"
 platforms:
   - web
+# https://docs.italia.it/italia/developers-italia/publiccodeyml-en/en/master/categories-list.html#categories-list
 categories:
   - content-management
 usedBy:
@@ -71,17 +72,3 @@ dependsOn:
     - name: Oracle
       versionMin: "11.4"
     - name: IBM SoftLayer
-it:
-  countryExtensionVersion: "0.2"
-  conforme:
-    lineeGuidaDesign: false
-    modelloInteroperabilita: false
-    misureMinimeSicurezza: true
-    gdpr: true
-  piattaforme:
-    spid: false
-    cie: false
-    anpr: false
-    pagopa: false
-  riuso:
-    codiceIPA:
