@@ -13,6 +13,7 @@ softwareVersion: "1.0"
 releaseDate: "2023-07-20"
 platforms:
   - web
+# https://docs.italia.it/italia/developers-italia/publiccodeyml-en/en/master/categories-list.html#categories-list
 categories:
   - content-management
 usedBy:
@@ -80,6 +81,7 @@ it:
     gdpr: true
   piattaforme:
     spid: false
+    # spid test
     cie: false
     anpr: false
     pagopa: false
