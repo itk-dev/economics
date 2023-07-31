@@ -276,6 +276,7 @@ worklog:
 invoice_entry:
   amount: 'Antal enheder'
   amount_worklogs: 'Antal worklogs tilkoblet'
+  new_worklog_information: 'Bemærk! Der kan først tilkobles worklogs efter linjen er gemt første gang.'
 invoice_recordable:
   error_no_client: 'Ingen klientkonto tilkoblet'
   error_no_account: 'Ingen konto'
