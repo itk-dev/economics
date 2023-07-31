@@ -102,6 +102,7 @@ class SprintReportController extends AbstractController
             'data' => $sprintReportFormData,
             'report' => $reportData,
             'budget' => $budget ?? null,
+            'budgetEndpoint' => $this->generateUrl('app_sprint_report_budget'),
         ]);
     }
 

@@ -30,3 +30,4 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Fixed sprint report.
 * Fixed planning js.
 * Cleaned up config files.
+* Fixed budget path.
