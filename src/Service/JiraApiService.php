@@ -461,7 +461,7 @@ class JiraApiService implements ApiServiceInterface
             foreach ($issues as $issueData) {
                 if ('done' !== $issueData->fields->status->statusCategory->key) {
                     $projectData = $issueData->fields->project;
-                    $projectKey = $projectData->key;
+                    $projectKey = (string) $projectData->key;
                     $projectDisplayName = $projectData->name;
                     $remainingSeconds = $issueData->fields->timetracking->remainingEstimateSeconds ?? 0;
 
@@ -469,7 +469,7 @@ class JiraApiService implements ApiServiceInterface
                         $assigneeKey = 'unassigned';
                         $assigneeDisplayName = 'Unassigned';
                     } else {
-                        $assigneeKey = $issueData->fields->assignee->key;
+                        $assigneeKey = (string) $issueData->fields->assignee->key;
                         $assigneeDisplayName = $issueData->fields->assignee->displayName;
                     }
 
@@ -667,7 +667,7 @@ class JiraApiService implements ApiServiceInterface
                 $replace = preg_replace(
                     ['/.*\[/', '/].*/'],
                     '',
-                    $sprintString
+                    (string) $sprintString
                 );
                 $fields = explode(',', $replace);
 
@@ -743,7 +743,7 @@ class JiraApiService implements ApiServiceInterface
 
             // Set issue epic.
             if (isset($issueEntry->fields->{$customFieldEpicLinkId})) {
-                $epicLinkId = $issueEntry->fields->{$customFieldEpicLinkId};
+                $epicLinkId = (string) $issueEntry->fields->{$customFieldEpicLinkId};
 
                 // Add to epics if not already added.
                 if (!$epics->containsKey($epicLinkId)) {
@@ -786,8 +786,8 @@ class JiraApiService implements ApiServiceInterface
                 $worklogSprints = array_filter($sprints->toArray(), function ($sprintEntry) use ($workLogStarted) {
                     /* @var SprintReportSprint $sprintEntry */
                     return
-                        $sprintEntry->startDateTimestamp <= $workLogStarted &&
-                        ($sprintEntry->completedDateTimstamp ?? $sprintEntry->endDateTimestamp) > $workLogStarted;
+                        $sprintEntry->startDateTimestamp <= $workLogStarted
+                        && ($sprintEntry->completedDateTimstamp ?? $sprintEntry->endDateTimestamp) > $workLogStarted;
                 });
 
                 $worklogSprintId = self::NO_SPRINT;
