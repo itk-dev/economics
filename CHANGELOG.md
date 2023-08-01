@@ -22,7 +22,7 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ### Changed
 
-* Updated docker files to newest version.
+* Updated docker files to the newest version.
 * Fixed path bugs.
 * Added filtering to lists.
 * Added entity model section to readme.
@@ -31,3 +31,4 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Cleaned up config files.
 * Updated to latest ITK logo
 * Upgraded to latest bundles.
+* Fixed budget path.
