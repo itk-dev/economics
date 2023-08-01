@@ -10,7 +10,11 @@ import 'choices.js/src/styles/choices.scss';
 export default class extends Controller {
     static targets = ['project', 'version', 'form', 'loading', 'content', 'select', 'budget', 'finishedPercentage', 'spentHours', 'projectTotalForecast', 'overUnderIndex', 'budgetSubmit'];
 
+    budgetEndpoint = null;
+
     connect() {
+        this.budgetEndpoint = this.element.dataset.budgetUpdateEndpoint;
+
         this.calculateForecasts = this.calculateForecasts.bind(this);
 
         // Initialize choices.js
@@ -50,7 +54,7 @@ export default class extends Controller {
         this.budgetSubmitTarget.setAttribute('disabled', 'disabled');
         this.budgetSubmitTarget.setAttribute('class', 'btn-disabled');
 
-        fetch('/sprint-report/budget', {
+        fetch(this.budgetEndpoint, {
             method: 'POST',
             mode: 'same-origin',
             cache: 'no-cache',
