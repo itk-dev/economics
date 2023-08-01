@@ -61,11 +61,13 @@ class CreateProjectController extends AbstractController
             if ($formData['form']['new_account']) {
                 // Add project ID if account key is municipality name.
                 if (!is_numeric($formData['form']['new_account_key'])) {
-                    $formData['form']['new_account_key'] = str_replace(
+                    /** @var string $accountKeyReplaced */
+                    $accountKeyReplaced = str_replace(
                         ' ',
                         '_',
                         $formData['form']['new_account_key']
-                    ).'-'.$newProjectKey;
+                    );
+                    $formData['form']['new_account_key'] = $accountKeyReplaced.'-'.$newProjectKey;
                 }
 
                 // Check for new customer.
