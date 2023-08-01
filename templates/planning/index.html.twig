@@ -32,13 +32,16 @@
                 </tr>
             </thead>
             {% for assignee in assignees %}
-            <tbody {{ stimulus_controller('toggle-parent-child') }}>
+            <tbody {{ stimulus_controller('toggle-parent-child') }} data-assignee="{{ assignee.key }}" {{ stimulus_target('toggle-parent-child', 'base') }}>
                 <tr class="table-row">
                     <td class="table-cell-heading">
                         {{ assignee.displayName }}
                         <button class="float-right" type="button"
                                 {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
                                 data-toggle-target="button">+</button>
+                        <button class="float-right" type="button"
+                                {{ stimulus_action('toggle-parent-child', 'toggleAssignee') }}
+                                data-toggle-target="button"><(/)></button>
                     </td>
                     <td></td>
                     {% for sprint in sprints %}
@@ -90,6 +93,10 @@
             </tbody>
             {% endfor %}
         </table>
+
+        <div {{ stimulus_controller('show-assignee') }}>
+
+        </div>
     </div>
 
     <h3 class="subheading">{{ 'planning.projects'|trans }}</h3>

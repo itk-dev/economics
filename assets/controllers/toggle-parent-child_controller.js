@@ -6,18 +6,57 @@ import { Controller } from '@hotwired/stimulus';
  * Toggles 'hidden' class for parent and child targets.
  */
 export default class extends Controller {
-    static targets = ['parent', 'child', 'button'];
+    static targets = ['parent', 'child', 'button', 'base'];
 
     displayParent = false;
     displayChildrenForParentIds = [];
 
     connect() {
+        this.hideHiddenAssignees();
+
         this.parentTargets.forEach((target) => {
             target.classList.add('hidden');
         });
+
         this.childTargets.forEach((target) => {
             target.classList.add('hidden');
         });
+    }
+
+    hideHiddenAssignees() {
+        const localStorageItem = localStorage.getItem('planningHiddenAssignees');
+        const hiddenAssignees = localStorageItem ? JSON.parse(localStorageItem) : [];
+
+        this.baseTargets.forEach((target) => {
+            if (hiddenAssignees.includes(target.dataset.assignee)) {
+                target.classList.add('hidden');
+            } else {
+                target.classList.remove('hidden');
+            }
+        })
+    }
+
+    toggleAssignee(event) {
+        const localStorageItem = localStorage.getItem('planningHiddenAssignees');
+        const hiddenAssignees = localStorageItem ? JSON.parse(localStorageItem) : [];
+
+        const assigneeKey = this.element.dataset.assignee;
+
+        if (assigneeKey === null) {
+            return;
+        }
+
+        let newHiddenAssignees = null;
+
+        if (hiddenAssignees.includes(assigneeKey)) {
+            newHiddenAssignees = hiddenAssignees.filter((value) => value !== assigneeKey);
+        } else {
+            newHiddenAssignees = [...hiddenAssignees, assigneeKey];
+        }
+
+        localStorage.setItem('planningHiddenAssignees', JSON.stringify(newHiddenAssignees));
+
+        this.hideHiddenAssignees();
     }
 
     toggleParent(event) {
