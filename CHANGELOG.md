@@ -17,6 +17,7 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Added list of issues not included because they lack account in project billing.
 * Added Project Billing exported date.
 * Added Project sync action.
+* Added help text to invoice entry (worklog) type.
 * Added publiccode.yml
 * Added OpenID Connect Controller
 
@@ -29,6 +30,8 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Fixed sprint report.
 * Fixed planning js.
 * Cleaned up config files.
+* Changed add worklogs button style.
+* Fixed filter function for worklogs.
 * Updated to latest ITK logo
 * Upgraded to latest bundles.
 * Fixed budget path.

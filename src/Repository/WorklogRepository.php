@@ -48,8 +48,8 @@ class WorklogRepository extends ServiceEntityRepository
 
         $qb->where('worklog.project = :project')->setParameter('project', $project);
 
-        if (isset($filterData->isBilled) && $filterData->isBilled) {
-            $qb->andWhere('worklog.isBilled = 1');
+        if (isset($filterData->isBilled)) {
+            $filterData->isBilled ? $qb->andWhere('worklog.isBilled = TRUE') : $qb->andWhere('worklog.isBilled = FALSE OR worklog.isBilled is NULL');
         }
 
         if (isset($filterData->worker)) {

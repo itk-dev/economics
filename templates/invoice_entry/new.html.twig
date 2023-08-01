@@ -8,6 +8,12 @@
     <h3 class="subheading">{{ 'invoices.entry_for_invoice'|trans({'%invoice%': invoice.name}) }}</h3>
     <h3 class="subheading">{{ 'invoices.invoice_entry_type_heading'|trans({'%type%': invoice_entry.entryType.value}) }}</h3>
 
+    {% if invoice_entry.entryType.value == 'worklog' %}
+        <div class="alert-warning" role="alert">
+            <div>{{ 'invoice_entry.new_worklog_information'|trans }}</div>
+        </div>
+    {% endif %}
+
     {{ form_start(form) }}
     {{ form_widget(form) }}
     <button class="button mt-3">{{ 'invoices.action_save_invoice_entry'|trans }}</button>
