@@ -36,3 +36,5 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Upgraded to latest bundles.
 * Fixed budget path.
 * Fixed planning js.
+* Fixed filtering issue with project overview.
+* Changed sprint report form to GET method.
