@@ -103,6 +103,7 @@ planning:
   title: Planlægning
   assignees: Brugere
   projects: Projekter
+  hidden-entries: 'Skjulte brugere'
 
 invoices:
   title: 'Faktura'
