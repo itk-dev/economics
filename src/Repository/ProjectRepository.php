@@ -46,16 +46,20 @@ class ProjectRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('project');
 
-        if (!empty($projectFilterData->include)) {
-            $qb->andWhere('project.include = :include')->setParameter('include', $projectFilterData->include);
+        if (!is_null($projectFilterData->include)) {
+            $qb->andWhere(
+                $projectFilterData->include
+                    ? 'project.include = TRUE'
+                    : 'project.include = FALSE OR project.include IS NULL'
+            );
         }
 
-        if (!empty($projectFilterData->name)) {
+        if (!is_null($projectFilterData->name)) {
             $name = $projectFilterData->name;
             $qb->andWhere('project.name LIKE :name')->setParameter('name', "%$name%");
         }
 
-        if (!empty($projectFilterData->key)) {
+        if (!is_null($projectFilterData->key)) {
             $key = $projectFilterData->key;
             $qb->andWhere('project.projectTrackerKey LIKE :key')->setParameter('key', "%$key%");
         }
