@@ -6,7 +6,7 @@ import { Controller } from '@hotwired/stimulus';
  * Toggles 'hidden' class for parent and child targets.
  */
 export default class extends Controller {
-    static targets = ['parent', 'child', 'button', 'base'];
+    static targets = ['parent', 'child', 'button'];
 
     displayParent = false;
     displayChildrenForParentIds = [];
