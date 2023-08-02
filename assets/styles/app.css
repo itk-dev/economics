@@ -132,10 +132,6 @@
         @apply invisible;
     }
 
-    .sprint-report-form {
-        @apply grid gap-3 mb-6 md:grid-cols-2;
-    }
-
     .invoices-filter-form {
         @apply grid gap-3 mb-6 md:grid-cols-4;
     }
@@ -148,7 +144,7 @@
         padding: 1em !important;
     }
 
-    .table-export td,tr {
+    .table-export td, tr {
         border: 1px solid gray;
         padding: 5px;
     }
@@ -323,5 +319,19 @@
         width: 16px;
         display: inline-block;
         margin-left: 10px;
+    }
+
+    .sprint-report-input {
+        background-color: transparent;
+        min-width: 200px;
+        border: 0;
+    }
+
+    .sprint-report-form .choices {
+        width: 300px;
+    }
+
+    .sprint-report-form {
+        @apply flex gap-3 mb-3;
     }
 }

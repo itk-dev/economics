@@ -16,7 +16,7 @@
                             for="input-budget">{{ 'sprint_report.sub.budget'|trans }}</label></td>
                 <td class="table-cell">
                     <form>
-                        <input type="number" id="input-budget" style="min-width: 200px; border: 0"
+                        <input type="number" id="input-budget" class="sprint-report-input"
                                value="{{ budget ? budget.budget : '' }}"
                                data-project-id="{{ data.projectId }}"
                                data-version-id="{{ data.versionId }}"
@@ -53,8 +53,8 @@
                 <td class="table-cell-heading"><label
                             for="input_finished_degree">{{ 'sprint_report.sub.finished_degree'|trans }}</label></td>
                 <td class="table-cell">
-                    <input type="number" id="input_finished_degree" data-sprint-report-target="finishedPercentage"
-                           max="100" min="0" style="width: 100%; border: 0;">
+                    <input type="number" id="input_finished_degree" class="sprint-report-input" data-sprint-report-target="finishedPercentage"
+                           max="100" min="0">
                 </td>
             </tr>
             <tr>

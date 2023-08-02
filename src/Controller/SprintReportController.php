@@ -31,7 +31,10 @@ class SprintReportController extends AbstractController
         $reportData = null;
         $sprintReportFormData = new SprintReportFormData();
 
-        $form = $this->createForm(SprintReportType::class, $sprintReportFormData);
+        $form = $this->createForm(SprintReportType::class, $sprintReportFormData, [
+            'action' => $this->generateUrl('app_sprint_report'),
+            'method' => 'GET',
+        ]);
 
         $projects = $this->apiService->getAllProjects();
 
@@ -54,7 +57,7 @@ class SprintReportController extends AbstractController
             ],
         ]);
 
-        $requestData = $request->request->all();
+        $requestData = $request->query->all();
 
         if (isset($requestData['sprint_report'])) {
             $requestData = $requestData['sprint_report'];
