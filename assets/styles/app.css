@@ -310,4 +310,14 @@
     .selections .choices__item.choices__item--choice.choices__item--selectable.is-highlighted {
         @apply dark:bg-gray-800 dark:text-white bg-gray-200 text-black;
     }
+
+    .planning-svg {
+        width: 16px;
+    }
+
+    .planning-hidden-svg {
+        width: 16px;
+        display: inline-block;
+        margin-left: 10px;
+    }
 }
