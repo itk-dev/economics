@@ -34,6 +34,8 @@ class SprintReportController extends AbstractController
         $form = $this->createForm(SprintReportType::class, $sprintReportFormData, [
             'action' => $this->generateUrl('app_sprint_report'),
             'method' => 'GET',
+            // Since this is only a filtering form, csrf is not needed.
+            'csrf_protection' => false,
         ]);
 
         $projects = $this->apiService->getAllProjects();
