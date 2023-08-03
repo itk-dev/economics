@@ -41,7 +41,15 @@
                         <td class="table-td">
                             {% if not disabled %}
                                 <label>
-                                    <input type="checkbox" data-id="{{ worklog.id }}" data-worklog-select-target="checkbox" value="{{ worklog.id }}" id="worklog-{{ worklog.id }}" {{ ownedByInvoiceEntry ? 'checked' : '' }}/>
+                                    <input
+                                            type="checkbox"
+                                            {{ stimulus_target('worklog-select', 'checkbox') }}
+                                            {{ stimulus_action('worklog-select', 'checkboxClick', 'click', {'id': worklog.id}) }}
+                                            data-id="{{ worklog.id }}"
+                                            value="{{ worklog.id }}"
+                                            id="worklog-{{ worklog.id }}"
+                                            {{ ownedByInvoiceEntry ? 'checked' : '' }}
+                                    />
                                 </label>
                             {% endif %}
                             {% if ownedByOtherInvoiceEntry %}

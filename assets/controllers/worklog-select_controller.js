@@ -8,6 +8,7 @@ export default class extends Controller {
     selectWorklogsEndpoint = null;
     selectAll = true;
     submitting = false;
+    dirtyWorklogs = new Set();
 
     connect() {
         this.selectWorklogsEndpoint = this.element.dataset.selectWorklogsEndpoint;
@@ -16,9 +17,15 @@ export default class extends Controller {
     toggleAll() {
         this.checkboxTargets.forEach((target) => {
             target.checked = this.selectAll;
+            this.dirtyWorklogs.add(target.element.dataset.id);
         });
 
         this.selectAll = !this.selectAll;
+    }
+
+    checkboxClick(event) {
+        const worklogId = event.params.id;
+        this.dirtyWorklogs.add(worklogId.toString());
     }
 
     async submitForm(event) {
@@ -32,14 +39,16 @@ export default class extends Controller {
         this.submitButtonTarget.classList.add('hidden');
         this.submitting = true;
 
-        const values = [];
-
-        this.checkboxTargets.forEach((target) => {
+        const values = this.checkboxTargets.reduce((accumulator, target) => {
             const id = target.dataset.id;
             const checked = target.checked;
 
-            values.push({id, checked});
-        });
+            if (this.dirtyWorklogs.has(id)) {
+                accumulator.push({id, checked});
+            }
+
+            return accumulator;
+        }, []);
 
         this.spinnerTarget.classList.remove('hidden');
         this.resultTarget.classList = ['hidden'];
