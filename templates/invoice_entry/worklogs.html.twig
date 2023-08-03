@@ -12,7 +12,7 @@
     </div>
     {{ form_end(form) }}
 
-    <div {{ stimulus_controller('worklog-select') }} data-invoice-entry-id="{{ invoiceEntry.id }}" data-invoice-id="{{ invoice.id }}">
+    <div {{ stimulus_controller('worklog-select') }} data-select-worklogs-endpoint="{{ selectWorklogsEndpoint }}">
         <form id="worklog-form">
             <table class="table margin-bottom">
                 <thead class="table-thead">

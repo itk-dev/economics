@@ -1,20 +1,16 @@
 import {Controller} from '@hotwired/stimulus';
-import Choices from "choices.js";
-import 'choices.js/src/styles/choices.scss';
 
 /**
  * Worklog select controller.
  */
 export default class extends Controller {
     static targets = ['checkbox', 'toggleAll', 'spinner', 'result', 'submitButton'];
-    invoiceEntryId = null;
-    invoiceId = null;
+    selectWorklogsEndpoint = null;
     selectAll = true;
     submitting = false;
 
     connect() {
-        this.invoiceEntryId = this.element.dataset.invoiceEntryId;
-        this.invoiceId = this.element.dataset.invoiceId;
+        this.selectWorklogsEndpoint = this.element.dataset.selectWorklogsEndpoint;
     }
 
     toggleAll() {
@@ -45,12 +41,10 @@ export default class extends Controller {
             values.push({id, checked});
         });
 
-        const url = `/invoices/${this.invoiceId}/entries/${this.invoiceEntryId}/select_worklogs`;
-
         this.spinnerTarget.classList.remove('hidden');
         this.resultTarget.classList = ['hidden'];
 
-        fetch(url, {
+        fetch(this.selectWorklogsEndpoint, {
             method: 'POST',
             mode: 'same-origin',
             cache: 'no-cache',

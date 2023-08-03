@@ -56,10 +56,11 @@ class InvoiceEntryWorklogController extends AbstractController
         $worklogs = $worklogRepository->findByFilterData($project, $invoiceEntry, $filterData);
 
         return $this->render('invoice_entry/worklogs.html.twig', [
-            'form' => $form,
+            'form' => $form->createView(),
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
+            'selectWorklogsEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', ['invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()]),
         ]);
     }
 
