@@ -27,16 +27,14 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
      *
      * @param EntityManagerInterface $entityManager
      * @param UrlGeneratorInterface $router
-     * @param RequestStack $requestStack
      * @param OpenIdConfigurationProviderManager $providerManager
      */
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly RequestStack $requestStack,
         private readonly UrlGeneratorInterface $router,
-        private readonly OpenIdConfigurationProviderManager $providerManager
+        OpenIdConfigurationProviderManager $providerManager
     ) {
-        parent::__construct($providerManager, $requestStack);
+        parent::__construct($providerManager);
     }
 
     /** {@inheritDoc} */
