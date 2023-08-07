@@ -12,4 +12,5 @@ itkdev_openid_connect:
         client_secret: '%env(string:USER_OIDC_CLIENT_SECRET)%'
         redirect_uri: '%env(string:USER_OIDC_REDIRECT_URI)%'
         #redirect_route: 'index'
+        allow_http: '%env(bool:USER_OIDC_ALLOW_HTTP)%'
         leeway: '%env(int:USER_OIDC_LEEWAY)%'
