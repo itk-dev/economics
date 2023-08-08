@@ -8,10 +8,10 @@ import 'choices.js/src/styles/choices.scss';
  * Loads choices from path.
  */
 export default class extends Controller {
-    static targets = ['field'];
+    static targets = ['choice'];
 
     connect() {
-        this.fieldTargets.forEach((target) => {
+        this.choiceTargets.forEach((target) => {
             const notDisabled = !target.disabled;
 
             if (notDisabled) {

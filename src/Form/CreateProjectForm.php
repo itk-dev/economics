@@ -115,7 +115,7 @@ class CreateProjectForm extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'form-element',
-                    'data-choices-target' => 'field',
+                    'data-create-project-target' => 'choice',
                 ],
                 'help_attr' => [
                     'class' => 'form-help',
@@ -133,7 +133,7 @@ class CreateProjectForm extends AbstractType
                 'choice_translation_domain' => false,
                 'attr' => [
                     'class' => 'form-element',
-                    'data-choices-target' => 'field',
+                    'data-create-project-target' => 'choice',
                 ],
                 'help_attr' => [
                     'class' => 'form-help',
@@ -226,7 +226,10 @@ class CreateProjectForm extends AbstractType
                 'choices' => $this->getCustomerChoices(),
                 'choice_translation_domain' => false,
                 'required' => false,
-                'attr' => ['class' => 'form-element js-select2'],
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-create-project-target' => 'choice',
+                ],
                 'help_attr' => [
                     'class' => 'form-help',
                 ],
