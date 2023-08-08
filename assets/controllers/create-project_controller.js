@@ -8,7 +8,7 @@ import 'choices.js/src/styles/choices.scss';
  * Loads choices from path.
  */
 export default class extends Controller {
-    static targets = ['choice'];
+    static targets = ['choice', 'account', 'customer', 'customerCheckbox'];
 
     connect() {
         this.choiceTargets.forEach((target) => {
@@ -18,29 +18,27 @@ export default class extends Controller {
                 new Choices(target, {maxItemCount: 1, allowHTML: true, itemSelectText: ''});
             }
         });
+    }
 
-        // TODO: Change to stimulus.
-        let checkboxCustomer = document.getElementById('create_project_form_new_customer');
-        let checkboxAccount = document.getElementById('create_project_form_new_account');
+    toggleNewAccount(event) {
+        const value = event.target.checked;
 
-        let accountElements = document.getElementsByClassName('form-group-account');
-        let customerElements = document.getElementsByClassName('form-group-customer');
+        for (let element of this.accountTargets) {
+            element.classList.toggle('hidden');
+        }
 
-        // Listen to account checkbox.
-        checkboxAccount.addEventListener('change', function() {
-            for (let element of accountElements) {
-                element.classList.toggle('hidden');
+        if (!value) {
+            this.customerCheckboxTarget.checked = false;
+
+            for (let element of this.customerTargets) {
+                element.classList.add('hidden');
             }
+        }
+    }
 
-            // Also toggle the customer checkbox.
-            checkboxCustomer.parentElement.classList.toggle('hidden');
-        });
-
-        // Listen to customer checkbox.
-        checkboxCustomer.addEventListener('change', function() {
-            for (let element of customerElements) {
-                element.classList.toggle('hidden');
-            }
-        });
+    toggleNewCustomer(event) {
+        for (let element of this.customerTargets) {
+            element.classList.toggle('hidden');
+        }
     }
 }
