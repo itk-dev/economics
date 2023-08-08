@@ -41,3 +41,4 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Fixed worklog select path.
 * Optimized worklog select javascript.
 * Fixed issues with create project.
+* Updated to authorization code flow.
