@@ -40,8 +40,6 @@ class CreateProjectController extends AbstractController
 
         // Handle form submission.
         if ($form->isSubmitted() && $form->isValid()) {
-            // Do stuff on submission.
-
             // Set selected team config.
             foreach ($formData['projectCategories'] as $team) {
                 if ($team->id === $formData['form']['team']) {
@@ -104,7 +102,7 @@ class CreateProjectController extends AbstractController
             $this->apiService->addProjectToTimeTrackerAccount($project, $account);
 
             // Create project board
-            if (!empty($formData['selectedTeamConfig']['board_template'])) {
+            if (!empty($formData['selectedTeamConfig']) && !empty($formData['selectedTeamConfig']['board_template'])) {
                 $this->apiService->createProjectBoard($formData['selectedTeamConfig']['board_template']['type'], $project);
             }
 
@@ -135,10 +133,29 @@ class CreateProjectController extends AbstractController
      */
     public function submitted(Request $request): Response
     {
+        $formData = $_SESSION['form_data'];
+
+        $jiraUrl = $this->getParameter('app.project_tracker_url');
+        $jiraUrl = is_string($jiraUrl) ? $jiraUrl : '';
+        $tempoTeamId = $formData['selectedTeamConfig']['tempo_team_id'] ?? '';
+
         return $this->render(
             'create_project/submitted.html.twig',
             [
-                'form_data' => $_SESSION['form_data'],
+                'url' => "$jiraUrl/secure/Tempo.jspa#/teams/team/$tempoTeamId/" ?? null,
+                'projectName' => $formData['form']['project_name'] ?? null,
+                'projectKey' => $formData['form']['project_key'] ?? null,
+                'description' => $formData['form']['description'] ?? null,
+                'teamName' => $formData['form']['selectedTeamConfig']['team_name'] ?? null,
+                'account' => $formData['form']['account'] ?? null,
+                'newAccount' => $formData['form']['new_account'] ?? false,
+                'newAccountName' => $formData['form']['new_account_name'] ?? null,
+                'newAccountKey' => $formData['form']['new_account_key'] ?? null,
+                'newAccountContact' => $formData['form']['new_account_contact'] ?? null,
+                'newAccountCustomer' => $formData['form']['new_account_customer'] ?? null,
+                'newCustomer' => $formData['form']['new_customer'] ?? false,
+                'newCustomerName' => $formData['form']['new_customer_name'] ?? null,
+                'newCustomerKey' => $formData['form']['new_customer_key'] ?? null,
             ]
         );
     }
@@ -146,8 +163,7 @@ class CreateProjectController extends AbstractController
     /**
      * Create array of all project names and their keys.
      *
-     * @return array
-     *               All projects indexed by key
+     * @return array All projects indexed by key
      */
     private function allProjectsByKey(): array
     {

@@ -12,6 +12,7 @@ parameters:
         'Epic Link': '%env(JIRA_API_SERVICE_CUSTOM_FIELD_EPIC_LINK)%'
         'Account': '%env(JIRA_API_SERVICE_CUSTOM_FIELD_ACCOUNT)%'
         'Sprint': '%env(JIRA_API_SERVICE_CUSTOM_FIELD_SPRINT)%'
+    app.project_tracker_url: '%env(PROJECT_TRACKER_URL)%'
 
 services:
     # default configuration for services in *this* file
