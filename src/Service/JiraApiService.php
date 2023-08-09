@@ -57,6 +57,13 @@ class JiraApiService implements ApiServiceInterface
     ) {
     }
 
+    public function getEndpoints(): array
+    {
+        return [
+            'base' => $this->jiraUrl,
+        ];
+    }
+
     public function getProjectTrackerIdentifier(): string
     {
         return self::PROJECT_TRACKER_IDENTIFIER;

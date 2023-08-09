@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Regex;
 
-class CreateProjectForm extends AbstractType
+class CreateProjectType extends AbstractType
 {
     public function __construct(
         private readonly JiraApiService $apiService,
@@ -37,9 +37,7 @@ class CreateProjectForm extends AbstractType
         $builder
             ->add('project_name', TextType::class, [
                 'label' => 'create_project_form.project_name.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'constraints' => [
                     new NotNull(['groups' => 'base']),
                 ],
@@ -55,9 +53,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('project_key', TextType::class, [
                 'label' => 'create_project_form.project_key.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'constraints' => [
                     new NotNull(['groups' => 'base']),
                     new Regex([
@@ -83,9 +79,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'create_project_form.description.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'constraints' => [
                     new NotNull(['groups' => 'base']),
                 ],
@@ -102,9 +96,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('team', ChoiceType::class, [
                 'label' => 'create_project_form.team.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'choices' => $this->getTeamChoices(),
                 'choice_translation_domain' => false,
                 'constraints' => [
@@ -126,9 +118,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('account', ChoiceType::class, [
                 'label' => 'create_project_form.account.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'choices' => $this->getAccountChoices(),
                 'choice_translation_domain' => false,
                 'attr' => [
@@ -150,7 +140,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('new_account', CheckboxType::class, [
                 'label' => 'create_project_form.create_new_account.label',
-                'label_attr' => ['class' => 'form-label'],
+                'label_attr' => ['class' => 'label'],
                 'attr' => [
                     'class' => 'form-check-input',
                     'data-action' => 'change->create-project#toggleNewAccount',
@@ -165,9 +155,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('new_account_name', TextType::class, [
                 'label' => 'create_project_form.new_account_name.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'attr' => [
                     'class' => 'form-element',
                 ],
@@ -186,9 +174,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('new_account_key', TextType::class, [
                 'label' => 'create_project_form.new_account_key.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'attr' => [
                     'class' => 'form-element',
                 ],
@@ -207,9 +193,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('new_account_contact', TextType::class, [
                 'label' => 'create_project_form.new_account_contact.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'attr' => [
                     'class' => 'form-element',
                 ],
@@ -228,9 +212,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('new_account_customer', ChoiceType::class, [
                 'label' => 'create_project_form.new_account_customer.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'choices' => $this->getCustomerChoices(),
                 'choice_translation_domain' => false,
                 'required' => false,
@@ -255,9 +237,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('new_customer', CheckboxType::class, [
                 'label' => 'create_project_form.new_customer.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'attr' => [
                     'class' => 'form-check-input',
                     'data-create-project-target' => 'customerCheckbox',
@@ -276,9 +256,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('new_customer_name', TextType::class, [
                 'label' => 'create_project_form.new_customer_name.label',
-                'attr' => [
-                    'class' => 'form-element',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'required' => false,
                 'help_attr' => [
                     'class' => 'form-help',
@@ -294,9 +272,7 @@ class CreateProjectForm extends AbstractType
             ])
             ->add('new_customer_key', TextType::class, [
                 'label' => 'create_project_form.new_customer_key.label',
-                'label_attr' => [
-                    'class' => 'form-label',
-                ],
+                'label_attr' => ['class' => 'label'],
                 'attr' => [
                     'class' => 'form-element',
                 ],
