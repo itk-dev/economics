@@ -40,4 +40,5 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Changed sprint report form to GET method.
 * Fixed worklog select path.
 * Optimized worklog select javascript.
+* Fixed issues with create project. Javascript has been changed to use stimulus. Changed how session is accessed.
 * Updated to authorization code flow.

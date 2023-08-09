@@ -12,6 +12,8 @@ use App\Model\SprintReport\SprintReportData;
 
 interface ApiServiceInterface
 {
+    public function getEndpoints(): array;
+
     public function getProjectTrackerIdentifier(): string;
 
     public function getAllAccounts(): mixed;

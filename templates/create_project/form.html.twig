@@ -6,9 +6,8 @@
 
 {% block content %}
   <h1 class="page-title">{{ 'create_project_form.title'|trans }}</h1>
-  {{ form(form) }}
-{% endblock %}
 
-{% block javascripts %}
-  {{ encore_entry_script_tags('creteProject') }}
+  <div {{ stimulus_controller('create-project') }} class="selections">
+    {{ form(form) }}
+  </div>
 {% endblock %}
