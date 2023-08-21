@@ -334,4 +334,9 @@
     .sprint-report-form {
         @apply flex gap-3 mb-3;
     }
+
+    .sticky-row {
+        position: sticky;
+        bottom: 0;
+    }
 }
