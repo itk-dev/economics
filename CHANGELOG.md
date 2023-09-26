@@ -43,3 +43,4 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Fixed issues with create project. Javascript has been changed to use stimulus. Changed how session is accessed.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
+* Updated openid-connect to newest version.

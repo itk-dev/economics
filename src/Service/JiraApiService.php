@@ -365,7 +365,7 @@ class JiraApiService implements ApiServiceInterface
                 break;
             }
 
-            $startAt = $startAt + 50;
+            $startAt += 50;
         }
 
         return $sprints;
@@ -403,7 +403,7 @@ class JiraApiService implements ApiServiceInterface
             ]);
             $issues = array_merge($issues, $result->issues);
 
-            $startAt = $startAt + 50;
+            $startAt += 50;
 
             if ($startAt > $result->total) {
                 break;
@@ -654,7 +654,7 @@ class JiraApiService implements ApiServiceInterface
 
             $issues = array_merge($issues, $results->issues);
 
-            $startAt = $startAt + 50;
+            $startAt += 50;
         } while (isset($results->total) && $results->total > $startAt);
 
         return $issues;
@@ -810,27 +810,27 @@ class JiraApiService implements ApiServiceInterface
             }
 
             // Accumulate spentSum.
-            $spentSum = $spentSum + $issueEntry->fields->timespent;
+            $spentSum += $issueEntry->fields->timespent;
             $issue->epic->spentSum += $issueEntry->fields->timespent;
 
             // Accumulate remainingSum.
             if ('Done' !== $issueEntry->fields->status->name && isset($issueEntry->fields->timetracking->remainingEstimateSeconds)) {
                 $remainingEstimateSeconds = $issueEntry->fields->timetracking->remainingEstimateSeconds;
-                $remainingSum = $remainingSum + $remainingEstimateSeconds;
+                $remainingSum += $remainingEstimateSeconds;
 
-                $issue->epic->remainingSum = $issue->epic->remainingSum + $remainingEstimateSeconds;
+                $issue->epic->remainingSum += $remainingEstimateSeconds;
 
                 if (!empty($issue->assignedToSprint)) {
                     $assignedToSprint = $issue->assignedToSprint;
                     $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
                     $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
-                    $issue->epic->plannedWorkSum = $issue->epic->plannedWorkSum + $remainingEstimateSeconds;
+                    $issue->epic->plannedWorkSum += $remainingEstimateSeconds;
                 }
             }
 
             // Accumulate originalEstimateSum.
             if (isset($issueEntry->fields->timeoriginalestimate)) {
-                $issue->epic->originalEstimateSum = $issue->epic->originalEstimateSum + $issueEntry->fields->timeoriginalestimate;
+                $issue->epic->originalEstimateSum += $issueEntry->fields->timeoriginalestimate;
 
                 $sprintReportData->originalEstimateSum += $issueEntry->fields->timeoriginalestimate;
             }
@@ -1232,7 +1232,7 @@ class JiraApiService implements ApiServiceInterface
 
             $issues = array_merge($issues, $results->issues);
 
-            $startAt = $startAt + 50;
+            $startAt += 50;
         } while (isset($results->total) && $results->total > $startAt);
 
         return $issues;
