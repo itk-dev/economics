@@ -6,6 +6,12 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ## [Unreleased]
 
+## 1.0.2
+
+## Changed
+
+* Updated package-lock.json.
+
 ## 1.0.1
 
 ### Changed
