@@ -152,7 +152,7 @@ class CreateProjectController extends AbstractController
         return $this->render(
             'create_project/submitted.html.twig',
             [
-                'url' => "$url/secure/Tempo.jspa#/teams/team/$teamId/" ?? null,
+                'url' => !empty($url) && !empty($teamId) ? "$url/secure/Tempo.jspa#/teams/team/$teamId/" : null,
                 'projectName' => $formData['form']['project_name'] ?? null,
                 'projectKey' => $formData['form']['project_key'] ?? null,
                 'description' => $formData['form']['description'] ?? null,
