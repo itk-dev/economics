@@ -51,9 +51,9 @@ interface ApiServiceInterface
 
     public function getAllBoards(): mixed;
 
-    public function getAllSprints(string $boardId): array;
+    public function getAllSprints(): array;
 
-    public function getIssuesInSprint(string $boardId, string $sprintId): array;
+    public function getTicketsInSprint(string $sprintId): array;
 
     public function getPlanningData(): PlanningData;
 

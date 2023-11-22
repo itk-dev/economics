@@ -34,7 +34,7 @@ services:
         arguments:
             $customFieldMappings: '%app.jira_custom_fields%'
             $defaultBoard: '%env(JIRA_API_SERVICE_DEFAULT_BOARD)%'
-            $jiraUrl: '%env(PROJECT_TRACKER_URL)%'
+            $leantimeUrl: '%env(PROJECT_TRACKER_URL)%'
             $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
             $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
             $sprintNameRegex: '%env(JIRA_API_SERVICE_SPRINT_NAME_REGEX)%'
