@@ -350,6 +350,7 @@ class JiraApiService implements ApiServiceInterface
     public function getAllSprints(): array
     {
         $sprints = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.sprints.getAllSprints', ['projectId' => '6']);
+
         return $sprints;
     }
 
@@ -366,10 +367,10 @@ class JiraApiService implements ApiServiceInterface
     {
         $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', [
             'searchCriteria' => [
-                'sprint' => $sprintId
-            ]
+                'sprint' => $sprintId,
+            ],
         ]);
-            
+
         return $result;
     }
 
@@ -424,7 +425,7 @@ class JiraApiService implements ApiServiceInterface
 
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issueData) {
-                if ($issueData->status !== '0') {
+                if ('0' !== $issueData->status) {
                     $projectKey = (string) $issueData->projectId;
                     $projectDisplayName = $issueData->projectName;
                     $hoursRemaining = $issueData->hourRemaining;
@@ -434,7 +435,7 @@ class JiraApiService implements ApiServiceInterface
                         $assigneeDisplayName = 'Unassigned';
                     } else {
                         $assigneeKey = (string) $issueData->editorId;
-                        $assigneeDisplayName = $issueData->editorFirstname . " " . $issueData->editorLastname;
+                        $assigneeDisplayName = $issueData->editorFirstname.' '.$issueData->editorLastname;
                     }
 
                     // Add assignee if not already added.
@@ -830,12 +831,12 @@ class JiraApiService implements ApiServiceInterface
     {
         try {
             $response = $this->projectTrackerApi->request($type, $path,
-            ["json" => [
-                'jsonrpc' => '2.0',
-                'method' => $method,
-                'id' => '1',
-                'params' => $params,
-            ]]
+                ['json' => [
+                    'jsonrpc' => '2.0',
+                    'method' => $method,
+                    'id' => '1',
+                    'params' => $params,
+                ]]
             );
 
             $body = $response->getContent(false);
