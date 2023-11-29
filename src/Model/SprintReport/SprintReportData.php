@@ -6,8 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class SprintReportData
 {
-    /** @var ArrayCollection<string, SprintReportEpic> */
-    public ArrayCollection $epics;
+    /** @var ArrayCollection<string, SprintReportTag> */
+    public ArrayCollection $tags;
     /** @var ArrayCollection<string, SprintReportSprint> */
     public ArrayCollection $sprints;
     /** @var ArrayCollection<string, SprintReportIssue> */
@@ -17,12 +17,12 @@ class SprintReportData
     public float $remainingHours;
     public float $projectHours;
     public string $projectName;
-    public string $versionName;
+    public string $milestoneName;
     public float $originalEstimateSum = 0.0;
 
     public function __construct()
     {
-        $this->epics = new ArrayCollection();
+        $this->tags = new ArrayCollection();
         $this->sprints = new ArrayCollection();
         $this->issues = new ArrayCollection();
     }

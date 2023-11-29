@@ -5,5 +5,5 @@ namespace App\Model\SprintReport;
 class SprintReportFormData
 {
     public string $projectId;
-    public string $versionId;
+    public string $milestoneId;
 }

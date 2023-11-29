@@ -4,7 +4,7 @@ namespace App\Model\SprintReport;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-class SprintReportEpic
+class SprintReportTag
 {
     public readonly string $id;
     public readonly string $name;
