@@ -6,6 +6,8 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ## [Unreleased]
 
+* Updated api source to use Leantime
+* Modified getPlanningData to work with Leantime data
 * Modified getSprintReportData to work with Leantime data
 
 ## 1.0.2
