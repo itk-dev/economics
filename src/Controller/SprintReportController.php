@@ -43,7 +43,7 @@ class SprintReportController extends AbstractController
         $projectChoices = [];
 
         foreach ($projects as $project) {
-            $projectChoices[$project->name] = $project->key;
+            $projectChoices[$project->name] = $project->id;
         }
 
         // Override projectId with element with choices.
@@ -67,16 +67,17 @@ class SprintReportController extends AbstractController
 
         if (!empty($requestData['projectId'])) {
             $project = $this->apiService->getProject($requestData['projectId']);
+            $milestones = $this->apiService->getProjectMilestones($requestData['projectId']);
 
-            $versionChoices = [];
-            foreach ($project->versions as $version) {
-                $versionChoices[$version->name] = $version->id;
+            $milestoneChoices = [];
+            foreach ($milestones as $milestone) {
+                $milestoneChoices[$milestone->headline] = $milestone->id;
             }
 
-            // Override versionId with element with choices.
-            $form->add('versionId', ChoiceType::class, [
+            // Override milestoneId with element with choices.
+            $form->add('milestoneId', ChoiceType::class, [
                 'placeholder' => 'sprint_report.select_an_option',
-                'choices' => $versionChoices,
+                'choices' => $milestoneChoices,
                 'required' => true,
                 'label' => 'sprint_report.select_version',
                 'label_attr' => ['class' => 'label'],
@@ -93,12 +94,12 @@ class SprintReportController extends AbstractController
             $sprintReportFormData = $form->getData();
 
             $projectId = $form->get('projectId')->getData();
-            $versionId = $form->get('versionId')->getData();
+            $milestoneId = $form->get('milestoneId')->getData();
 
-            if (!empty($projectId) && !empty($versionId)) {
-                $reportData = $this->apiService->getSprintReportData($projectId, $versionId);
+            if (!empty($projectId) && !empty($milestoneId)) {
+                $reportData = $this->apiService->getSprintReportData($projectId, $milestoneId);
 
-                $budget = $this->sprintReportService->getBudget($projectId, $versionId);
+                $budget = $this->sprintReportService->getBudget($projectId, $milestoneId);
             }
         }
 

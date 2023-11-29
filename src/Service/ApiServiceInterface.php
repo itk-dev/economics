@@ -30,6 +30,10 @@ interface ApiServiceInterface
 
     public function getProject($key): mixed;
 
+    public function getProjectMilestones($key): mixed;
+
+    public function getMilestone($key): mixed;
+
     public function createProject(array $data): ?string;
 
     public function createTimeTrackerCustomer(string $name, string $key): mixed;
@@ -57,7 +61,7 @@ interface ApiServiceInterface
 
     public function getPlanningData(): PlanningData;
 
-    public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
+    public function getSprintReportData(string $projectId, string $milestoneId): SprintReportData;
 
     /**
      * @return array<ClientData>

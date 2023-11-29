@@ -24,7 +24,7 @@ class SprintReportType extends AbstractType
                     'data-action' => 'sprint-report#submitFormProjectId',
                 ],
             ])
-            ->add('versionId', ChoiceType::class, [
+            ->add('milestoneId', ChoiceType::class, [
                 'placeholder' => 'sprint_report.select_an_option',
                 'required' => false,
                 'label' => 'sprint_report.select_version',
