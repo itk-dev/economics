@@ -591,47 +591,6 @@ class JiraApiService implements ApiServiceInterface
     private function getIssuesForProjectMilestone($projectId, $milestoneId): array
     {
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'milestone' => $milestoneId]]);
-
-        // // Get customFields from Jira.
-        // $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
-        // $customFieldSprintId = $this->getCustomFieldId('Sprint');
-
-        // // Get all issues for version.
-        // $fields = implode(
-        //     ',',
-        //     [
-        //         'timetracking',
-        //         'worklog',
-        //         'timespent',
-        //         'timeoriginalestimate',
-        //         'summary',
-        //         'assignee',
-        //         'status',
-        //         'resolutionDate',
-        //         $customFieldEpicLinkId,
-        //         $customFieldSprintId,
-        //     ]
-        // );
-
-        // $startAt = 0;
-
-        // // Get issues for the given project and version.
-        // do {
-        //     $results = $this->get(
-        //         self::API_PATH_SEARCH,
-        //         [
-        //             'jql' => 'fixVersion='.$versionId,
-        //             'project' => $projectId,
-        //             'maxResults' => 50,
-        //             'fields' => $fields,
-        //             'startAt' => $startAt,
-        //         ]
-        //     );
-
-        //     $issues = array_merge($issues, $results->issues);
-
-        //     $startAt += 50;
-        // } while (isset($results->total) && $results->total > $startAt);
     }
 
     /**
@@ -667,58 +626,6 @@ class JiraApiService implements ApiServiceInterface
         } else {
             throw new ApiServiceException('Sprint not found', 404);
         }
-        // $customFieldSprintId = $this->getCustomFieldId('Sprint');
-
-        // Get sprints for issue.
-        // if (isset($issueEntry->fields->{$customFieldSprintId})) {
-        //     foreach ($issueEntry->fields->{$customFieldSprintId} as $sprintString) {
-        //         // Remove everything before and after brackets.
-        //         $replace = preg_replace(
-        //             ['/.*\[/', '/].*/'],
-        //             '',
-        //             (string) $sprintString
-        //         );
-        //         $fields = explode(',', $replace);
-
-        //         $sprint = [];
-
-        //         foreach ($fields as $field) {
-        //             $split = explode('=', $field);
-
-        //             if (count($split) > 1) {
-        //                 $value = '<null>' == $split[1] ? null : $split[1];
-
-        //                 $sprint[$split[0]] = $value;
-        //             }
-        //         }
-
-        //         if (!isset($sprint['id']) || !isset($sprint['name']) || !isset($sprint['state'])) {
-        //             continue;
-        //         }
-
-        //         $sprintState = SprintStateEnum::OTHER;
-
-        //         switch ($sprint['state']) {
-        //             case 'ACTIVE':
-        //                 $sprintState = SprintStateEnum::ACTIVE;
-        //                 break;
-        //             case 'FUTURE':
-        //                 $sprintState = SprintStateEnum::FUTURE;
-        //                 break;
-        //         }
-
-        //         return new SprintReportSprint(
-        //             $sprint['id'],
-        //             $sprint['name'],
-        //             $sprintState,
-        //             $sprint['startDate'] ? strtotime($sprint['startDate']) : null,
-        //             $sprint['endDate'] ? strtotime($sprint['endDate']) : null,
-        //             $sprint['completeDate'] ? strtotime($sprint['completeDate']) : null,
-        //         );
-        //     }
-        // }
-
-        // throw new ApiServiceException('Sprint not found', 404);
     }
 
     /**
