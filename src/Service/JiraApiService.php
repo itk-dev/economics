@@ -18,9 +18,9 @@ use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
 use App\Model\Planning\SprintSum;
 use App\Model\SprintReport\SprintReportData;
-use App\Model\SprintReport\SprintReportTag;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
+use App\Model\SprintReport\SprintReportTag;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -48,9 +48,9 @@ class JiraApiService implements ApiServiceInterface
 
     private const API_PATH_JSONRPC = '/api/jsonrpc/';
 
-    private const PAST = "PAST";
-    private const PRESENT = "PRESENT";
-    private const FUTURE = "FUTURE";
+    private const PAST = 'PAST';
+    private const PRESENT = 'PRESENT';
+    private const FUTURE = 'FUTURE';
 
     public function __construct(
         protected readonly HttpClientInterface $projectTrackerApi,
@@ -110,7 +110,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAllProjects(): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.projects.getAll", []);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
     }
 
     /**
@@ -123,7 +123,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getProject($key): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.projects.getProject", ["id" => $key]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getProject', ['id' => $key]);
     }
 
     /**
@@ -136,13 +136,12 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getMilestone($key): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.tickets.getTicket", ["id" => $key]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getTicket', ['id' => $key]);
     }
-
 
     public function getProjectMilestones($key): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.tickets.getAllMilestones", ["searchCriteria" => ["currentProject" => $key, "type" => "milestone"]]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAllMilestones', ['searchCriteria' => ['currentProject' => $key, 'type' => 'milestone']]);
     }
 
     /**
@@ -373,6 +372,7 @@ class JiraApiService implements ApiServiceInterface
     public function getAllSprints(): array
     {
         $sprints = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.sprints.getAllSprints', ['projectId' => '6']);
+
         return $sprints;
     }
 
@@ -389,10 +389,10 @@ class JiraApiService implements ApiServiceInterface
     {
         $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', [
             'searchCriteria' => [
-                'sprint' => $sprintId
-            ]
+                'sprint' => $sprintId,
+            ],
         ]);
-            
+
         return $result;
     }
 
@@ -447,7 +447,7 @@ class JiraApiService implements ApiServiceInterface
 
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issueData) {
-                if ($issueData->status !== '0') {
+                if ('0' !== $issueData->status) {
                     $projectKey = (string) $issueData->projectId;
                     $projectDisplayName = $issueData->projectName;
                     $hoursRemaining = $issueData->hourRemaining;
@@ -457,7 +457,7 @@ class JiraApiService implements ApiServiceInterface
                         $assigneeDisplayName = 'Unassigned';
                     } else {
                         $assigneeKey = (string) $issueData->editorId;
-                        $assigneeDisplayName = $issueData->editorFirstname . " " . $issueData->editorLastname;
+                        $assigneeDisplayName = $issueData->editorFirstname.' '.$issueData->editorLastname;
                     }
 
                     // Add assignee if not already added.
@@ -590,7 +590,7 @@ class JiraApiService implements ApiServiceInterface
      */
     private function getIssuesForProjectMilestone($projectId, $milestoneId): array
     {
-        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.tickets.getAll", ["searchCriteria" => ["currentProject" => $projectId, "milestone" => $milestoneId]]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'milestone' => $milestoneId]]);
 
         // // Get customFields from Jira.
         // $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
@@ -632,7 +632,6 @@ class JiraApiService implements ApiServiceInterface
 
         //     $startAt += 50;
         // } while (isset($results->total) && $results->total > $startAt);
-
     }
 
     /**
@@ -640,22 +639,22 @@ class JiraApiService implements ApiServiceInterface
      */
     private function getIssueSprint($issueEntry): SprintReportSprint
     {
-        $sprint = $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.sprints.getSprint", ["id" => $issueEntry->sprint]);
+        $sprint = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.sprints.getSprint', ['id' => $issueEntry->sprint]);
 
         if ($sprint) {
             $sprintState = SprintStateEnum::OTHER;
             $sprintTemporal = $this->getDateSpanTemporal($sprint->startDate, $sprint->endDate);
-       
+
             switch ($sprintTemporal) {
                 case self::PAST:
                     $sprintState = SprintStateEnum::OTHER;
-                break;
+                    break;
                 case self::PRESENT:
                     $sprintState = SprintStateEnum::ACTIVE;
-                break;
+                    break;
                 case self::FUTURE:
                     $sprintState = SprintStateEnum::FUTURE;
-                break;
+                    break;
             }
 
             return new SprintReportSprint(
@@ -804,9 +803,8 @@ class JiraApiService implements ApiServiceInterface
             $spentSum += $issueEntry->bookedHours;
             $issue->tag->spentSum += $issueEntry->bookedHours;
 
-
             // Accumulate remainingSum.
-            if ("0" !== $issueEntry->status && isset($issueEntry->hourRemaining)) {
+            if ('0' !== $issueEntry->status && isset($issueEntry->hourRemaining)) {
                 $remainingEstimateSeconds = $issueEntry->hourRemaining;
                 $remainingSum += $remainingEstimateSeconds;
 
@@ -818,7 +816,6 @@ class JiraApiService implements ApiServiceInterface
                     $issue->tag->remainingWork->set($assignedToSprint->id, $newRemainingWork);
                     $issue->tag->plannedWorkSum += $remainingEstimateSeconds;
                 }
-
             }
             // Accumulate originalEstimateSum.
             if (isset($issueEntry->planHours)) {
@@ -826,7 +823,7 @@ class JiraApiService implements ApiServiceInterface
 
                 $sprintReportData->originalEstimateSum += $issueEntry->planHours;
             }
-            $issueCount++;
+            ++$issueCount;
         }
 
         // Sort sprints by key.
@@ -867,15 +864,14 @@ class JiraApiService implements ApiServiceInterface
      */
     private function request(string $path, string $type, string $method, array $params = []): mixed
     {
-       
         try {
             $response = $this->projectTrackerApi->request($type, $path,
-            ["json" => [
-                'jsonrpc' => '2.0',
-                'method' => $method,
-                'id' => '1',
-                'params' => $params,
-            ]]
+                ['json' => [
+                    'jsonrpc' => '2.0',
+                    'method' => $method,
+                    'id' => '1',
+                    'params' => $params,
+                ]]
             );
 
             $body = $response->getContent(false);
@@ -1036,7 +1032,7 @@ class JiraApiService implements ApiServiceInterface
 
     public function getTimesheetsForTicket($ticketId): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.timesheets.getAll", ["invEmpl" => "-1", "invComp" => "-1", "paid" => "-1", "ticketFilter" => $ticketId]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'ticketFilter' => $ticketId]);
     }
 
     /**
@@ -1193,6 +1189,7 @@ class JiraApiService implements ApiServiceInterface
     {
         return $this->get('/rest/api/2/customFields');
     }
+
     private function getDateSpanTemporal($startDate, $endDate): string
     {
         $currentDate = time();
@@ -1200,21 +1197,23 @@ class JiraApiService implements ApiServiceInterface
         $endDate = strtotime($endDate);
         if ($startDate < $currentDate && $endDate > $currentDate) {
             return self::PRESENT;
-        } else if ($startDate < $currentDate && $endDate < $currentDate) {
+        } elseif ($startDate < $currentDate && $endDate < $currentDate) {
             return self::PAST;
         } else {
             return self::FUTURE;
         }
     }
-    private function tagToId($tag) {
+
+    private function tagToId($tag)
+    {
         // Use md5 hash function to generate a fixed-length hash
         $hash = md5($tag);
-    
+
         // Extract three unique numbers from the hash
         $num1 = hexdec(substr($hash, 0, 8)) % 1000;
         $num2 = hexdec(substr($hash, 8, 8)) % 1000;
         $num3 = hexdec(substr($hash, 16, 8)) % 1000;
-    
+
         return "$num1$num2$num3";
     }
 }
