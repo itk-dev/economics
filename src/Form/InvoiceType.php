@@ -6,7 +6,7 @@ use App\Entity\Invoice;
 use App\Enum\MaterialNumberEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -78,7 +78,7 @@ class InvoiceType extends AbstractType
                     default => null,
                 },
             ])
-            ->add('periodFrom', DateTimeType::class, [
+            ->add('periodFrom', DateType::class, [
                 'required' => false,
                 'label' => 'invoices.period_from',
                 'label_attr' => ['class' => 'label'],
@@ -88,7 +88,7 @@ class InvoiceType extends AbstractType
                 'html5' => true,
                 'attr' => ['class' => 'form-element'],
             ])
-            ->add('periodTo', DateTimeType::class, [
+            ->add('periodTo', DateType::class, [
                 'required' => false,
                 'label' => 'invoices.period_to',
                 'label_attr' => ['class' => 'label'],

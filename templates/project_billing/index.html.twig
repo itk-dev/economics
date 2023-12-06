@@ -3,6 +3,7 @@
 {% block title %}{{ 'project_billing.title'|trans }}{% endblock %}
 
 {% block content %}
+    <a class="link" href="{{ path('app_project_billing_new') }}" style="float: right">{{ 'project_billing.action_create_new'|trans }}</a>
     <h1 class="page-title">{{ 'project_billing.title'|trans }}</h1>
 
     {{ form_start(form) }}
