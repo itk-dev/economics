@@ -31,8 +31,8 @@ class Project extends AbstractBaseEntity
     #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'projects')]
     private Collection $clients;
 
-    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Version::class)]
-    private Collection $versions;
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Milestone::class)]
+    private Collection $milestones;
 
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Worklog::class)]
     private Collection $worklogs;
@@ -50,7 +50,7 @@ class Project extends AbstractBaseEntity
     {
         $this->invoices = new ArrayCollection();
         $this->clients = new ArrayCollection();
-        $this->versions = new ArrayCollection();
+        $this->milestones = new ArrayCollection();
         $this->worklogs = new ArrayCollection();
         $this->projectBillings = new ArrayCollection();
         $this->issues = new ArrayCollection();
@@ -158,27 +158,27 @@ class Project extends AbstractBaseEntity
     }
 
     /**
-     * @return Collection<int, Version>
+     * @return Collection<int, Milestone>
      */
-    public function getVersions(): Collection
+    public function getMilestones(): Collection
     {
-        return $this->versions;
+        return $this->milestones;
     }
 
-    public function addVersion(Version $version): self
+    public function addMilestone(Milestone $milestone): self
     {
-        if (!$this->versions->contains($version)) {
-            $this->versions->add($version);
-            $version->setProject($this);
+        if (!$this->milestones->contains($milestone)) {
+            $this->milestones->add($milestone);
+            $milestone->setProject($this);
         }
 
         return $this;
     }
 
-    public function removeVersion(Version $version): self
+    public function removemilestone(Milestone $milestone): self
     {
-        if ($this->versions->removeElement($version)) {
-            $version->setProject(null);
+        if ($this->milestones->removeElement($milestone)) {
+            $milestone->setProject(null);
         }
 
         return $this;

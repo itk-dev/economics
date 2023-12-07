@@ -84,7 +84,7 @@ class Version extends AbstractBaseEntity
     {
         if (!$this->issues->contains($issue)) {
             $this->issues->add($issue);
-            $issue->addVersion($this);
+            $issue->addMilestone($this);
         }
 
         return $this;
@@ -93,7 +93,7 @@ class Version extends AbstractBaseEntity
     public function removeIssue(Issue $issue): self
     {
         if ($this->issues->removeElement($issue)) {
-            $issue->removeVersion($this);
+            $issue->removeMilestone($this);
         }
 
         return $this;

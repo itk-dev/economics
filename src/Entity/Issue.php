@@ -33,13 +33,13 @@ class Issue extends AbstractBaseEntity
     private ?string $projectTrackerKey = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $epicKey = null;
+    private ?string $tagKey = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $epicName = null;
+    private ?string $tagName = null;
 
-    #[ORM\ManyToMany(targetEntity: Version::class, inversedBy: 'issues')]
-    private Collection $versions;
+    #[ORM\ManyToMany(targetEntity: Milestone::class, inversedBy: 'issues')]
+    private Collection $milestones;
 
     #[ORM\OneToMany(mappedBy: 'issue', targetEntity: Worklog::class)]
     private Collection $worklogs;
@@ -52,7 +52,7 @@ class Issue extends AbstractBaseEntity
 
     public function __construct()
     {
-        $this->versions = new ArrayCollection();
+        $this->milestones = new ArrayCollection();
         $this->worklogs = new ArrayCollection();
     }
 
@@ -128,50 +128,50 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
-    public function getEpicKey(): ?string
+    public function getTagKey(): ?string
     {
-        return $this->epicKey;
+        return $this->tagKey;
     }
 
-    public function setEpicKey(?string $epicKey): self
+    public function setTagKey(?string $tagKey): self
     {
-        $this->epicKey = $epicKey;
+        $this->tagKey = $tagKey;
 
         return $this;
     }
 
-    public function getEpicName(): ?string
+    public function getTagName(): ?string
     {
-        return $this->epicName;
+        return $this->tagName;
     }
 
-    public function setEpicName(?string $epicName): self
+    public function setTagName(?string $tagName): self
     {
-        $this->epicName = $epicName;
+        $this->tagName = $tagName;
 
         return $this;
     }
 
     /**
-     * @return Collection<int, Version>
+     * @return Collection<int, Milestone>
      */
-    public function getVersions(): Collection
+    public function getMilestones(): Collection
     {
-        return $this->versions;
+        return $this->milestones;
     }
 
-    public function addVersion(Version $version): self
+    public function addMilestone(Milestone $milestone): self
     {
-        if (!$this->versions->contains($version)) {
-            $this->versions->add($version);
+        if (!$this->milestones->contains($milestone)) {
+            $this->milestones->add($milestone);
         }
 
         return $this;
     }
 
-    public function removeVersion(Version $version): self
+    public function removeMilestone(Milestone $milestone): self
     {
-        $this->versions->removeElement($version);
+        $this->milestones->removeElement($milestone);
 
         return $this;
     }
