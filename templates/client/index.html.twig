@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'client.title'|trans }}{% endblock %}
+
+{% block content %}
+ <h1 class="page-title">{{ 'client.title'|trans }}</h1>
+
+    <table class="table margin-bottom">
+        <thead  class="table-thead">
+            <tr>
+                <th class="table-th">Id</th>
+                <th class="table-th">Name</th>
+                <th class="table-th">Contact</th>
+                <th class="table-th">StandardPrice</th>
+                <th class="table-th">Type</th>
+                <th class="table-th">Account</th>
+                <th class="table-th">Psp</th>
+                <th class="table-th">Ean</th>
+                <th class="table-th">ProjectTrackerId</th>
+                <th class="table-th">SalesChannel</th>
+                <th class="table-th">CustomerKey</th>
+                <th class="table-th">CreatedBy</th>
+                <th class="table-th">UpdatedBy</th>
+                <th class="table-th">CreatedAt</th>
+                <th class="table-th">UpdatedAt</th>
+                <th class="table-th">actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for index, client in clients %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ client.id }}</td>
+                <td class="table-td">{{ client.name }}</td>
+                <td class="table-td">{{ client.contact }}</td>
+                <td class="table-td">{{ client.standardPrice }}</td>
+                <td class="table-td">{{ client.type }}</td>
+                <td class="table-td">{{ client.account }}</td>
+                <td class="table-td">{{ client.psp }}</td>
+                <td class="table-td">{{ client.ean }}</td>
+                <td class="table-td">{{ client.projectTrackerId }}</td>
+                <td class="table-td">{{ client.salesChannel }}</td>
+                <td class="table-td">{{ client.customerKey }}</td>
+                <td class="table-td">{{ client.createdBy }}</td>
+                <td class="table-td">{{ client.updatedBy }}</td>
+                <td class="table-td">{{ client.createdAt ? client.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td class="table-td">{{ client.updatedAt ? client.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td class="table-td">
+                    <a href="{{ path('app_client_show', {'id': client.id}) }}">show</a>
+                    <a href="{{ path('app_client_edit', {'id': client.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="16">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="button" href="{{ path('app_client_new') }}">Create new</a>
+{% endblock %}
