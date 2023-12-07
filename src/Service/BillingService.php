@@ -4,13 +4,23 @@ namespace App\Service;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
+use App\Entity\Issue;
+use App\Entity\Milestone;
+use App\Entity\Project;
+use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Exception\EconomicsException;
 use App\Exception\InvoiceAlreadyOnRecordException;
+use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Repository\IssueRepository;
+use App\Repository\ProjectRepository;
+use App\Repository\MilestoneRepository;
+use App\Repository\WorklogRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpSpreadsheetException;
@@ -24,7 +34,14 @@ class BillingService
     public function __construct(
         private readonly InvoiceRepository $invoiceRepository,
         private readonly InvoiceEntryRepository $invoiceEntryRepository,
+        private readonly MilestoneRepository $milestoneRepository,
+        private readonly WorklogRepository $worklogRepository,
+        private readonly IssueRepository $issueRepository,
+        private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
+        private readonly ClientRepository $clientRepository,
+        private readonly ProjectRepository $projectRepository,
+        private readonly ApiServiceInterface $apiService,
         private readonly string $invoiceSupplierAccount,
     ) {
     }
@@ -32,6 +49,149 @@ class BillingService
     /**
      * Update total price for invoice entry by multiplying amount with price.
      */
+    public function migrateCustomers(): void
+    {
+        $invoices = $this->invoiceRepository->findAll();
+
+        /** @var Invoice $invoice */
+        foreach ($invoices as $invoice) {
+            $customerAccountId = $invoice->getCustomerAccountId();
+
+            if (null == $invoice->getClient() && null !== $customerAccountId) {
+                $client = $this->clientRepository->findOneBy(['projectTrackerId' => $invoice->getCustomerAccountId()]);
+
+                if (null !== $client) {
+                    $invoice->setClient($client);
+                }
+            }
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function syncIssuesForProject(int $projectId, callable $progressCallback = null): void
+    {
+        $project = $this->projectRepository->find($projectId);
+
+        if (!$project) {
+            throw new \Exception('Project not found');
+        }
+
+        $projectTrackerId = $project->getProjectTrackerId();
+
+        if (null === $projectTrackerId) {
+            throw new \Exception('ProjectTrackerId not set');
+        }
+
+        $issueData = $this->apiService->getIssuesDataForProject($projectTrackerId);
+        $issuesProcessed = 0;
+
+        foreach ($issueData as $issueDatum) {
+            $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
+
+            if (!$issue) {
+                $issue = new Issue();
+
+                $this->entityManager->persist($issue);
+            }
+
+            $issue->setName($issueDatum->name);
+            $issue->setAccountId($issueDatum->accountId);
+            $issue->setAccountKey($issueDatum->accountKey);
+            $issue->setTagKey($issueDatum->tagKey);
+            $issue->setTagName($issueDatum->tagName);
+            $issue->setProject($project);
+            $issue->setProjectTrackerId($issueDatum->projectTrackerId);
+            $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
+            $issue->setResolutionDate($issueDatum->resolutionDate);
+            $issue->setStatus($issueDatum->status);
+
+            if (null == $issue->getSource()) {
+                $issue->setSource($this->apiService->getProjectTrackerIdentifier());
+            }
+
+            foreach ($issueDatum->milestones as $milestoneData) {
+                $milestone = $this->milestoneRepository->findOneBy(['projectTrackerId' => $milestoneData->projectTrackerId]);
+
+                if (null !== $milestone) {
+                    $issue->addMilestone($milestone);
+                }
+            }
+
+            if (null !== $progressCallback) {
+                $progressCallback($issuesProcessed, count($issueData));
+                ++$issuesProcessed;
+            }
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function syncWorklogsForProject(int $projectId, callable $progressCallback = null): void
+    {
+        $project = $this->projectRepository->find($projectId);
+        
+        if (!$project) {
+            throw new \Exception('Project not found');
+        }
+
+        $projectTrackerId = $project->getProjectTrackerId();
+
+        if (null === $projectTrackerId) {
+            throw new \Exception('ProjectTrackerId not set');
+        }
+
+        $worklogData = $this->apiService->getWorklogDataForProject($projectTrackerId);
+        $worklogsAdded = 0;
+
+        foreach ($worklogData as $worklogDatum) {
+            $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
+
+            if (!$worklog) {
+                $worklog = new Worklog();
+
+                $this->entityManager->persist($worklog);
+            }
+
+            $worklog->setWorklogId($worklogDatum->projectTrackerId);
+            $worklog->setDescription($worklogDatum->comment);
+            $worklog->setWorker($worklogDatum->worker);
+            $worklog->setStarted($worklogDatum->started);
+            $worklog->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId);
+            $worklog->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
+
+            if (null !== $worklog->getProjectTrackerIssueId()) {
+                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
+                $worklog->setIssue($issue);
+            }
+
+            if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
+                $worklog->setIsBilled(true);
+                $worklog->setBilledSeconds($worklogDatum->timeSpentSeconds);
+            }
+
+            if (null == $worklog->getSource()) {
+                $worklog->setSource($this->apiService->getProjectTrackerIdentifier());
+            }
+
+            $project->addWorklog($worklog);
+
+            if (null !== $progressCallback) {
+                $progressCallback($worklogsAdded, count($worklogData));
+
+                ++$worklogsAdded;
+            }
+        }
+
+        $this->entityManager->flush();
+    }
+
     public function updateInvoiceEntryTotalPrice(InvoiceEntry $invoiceEntry): void
     {
         if (InvoiceEntryTypeEnum::WORKLOG === $invoiceEntry->getEntryType()) {
@@ -67,6 +227,105 @@ class BillingService
         $invoice->setTotalPrice($totalPrice);
 
         $this->invoiceRepository->save($invoice, true);
+    }
+
+    public function syncAccounts(callable $progressCallback): void
+    {
+        return;
+        // $projectTrackerIdentifier = $this->apiService->getProjectTrackerIdentifier();
+
+        // // Get all accounts from ApiService.
+        // $allAccountData = $this->apiService->getAllAccountData();
+
+        // foreach ($allAccountData as $index => $accountDatum) {
+        //     $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
+
+        //     if (!$account) {
+        //         $account = new Account();
+        //         $account->setSource($projectTrackerIdentifier);
+        //         $account->setProjectTrackerId($accountDatum->projectTrackerId);
+
+        //         $this->entityManager->persist($account);
+        //     }
+
+        //     $account->setName($accountDatum->name);
+        //     $account->setValue($accountDatum->value);
+        //     $account->setStatus($accountDatum->status);
+        //     $account->setCategory($accountDatum->category);
+
+        //     $this->entityManager->flush();
+        //     $this->entityManager->clear();
+
+        //     $progressCallback($index, count($allAccountData));
+        // }
+
+        // $this->entityManager->flush();
+    }
+
+    public function syncProjects(callable $progressCallback): void
+    {
+        // Get all projects from ApiService.
+        $allProjectData = $this->apiService->getAllProjectData();
+
+        foreach ($allProjectData as $index => $projectDatum) {
+            $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId]);
+            if (!$project) {
+                $project = new Project();
+                $this->entityManager->persist($project);
+            }
+
+            $project->setName($projectDatum->name);
+            $project->setProjectTrackerId($projectDatum->projectTrackerId);
+            $project->setProjectTrackerKey($projectDatum->projectTrackerKey);
+            $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
+
+            foreach ($projectDatum->milestones as $milestoneData) {
+                
+                $milestone = $this->milestoneRepository->findOneBy(['projectTrackerId' => $milestoneData->projectTrackerId]);
+
+                if (!$milestone) {
+                    $milestone = new Milestone();
+                    $this->entityManager->persist($milestone);
+                }
+
+                $milestone->setName($milestoneData->name);
+                $milestone->setProjectTrackerId($milestoneData->projectTrackerId);
+                $milestone->setProject($project);
+            }
+
+            // $projectClientData = $this->apiService->getClientDataForProject($projectDatum->projectTrackerId);
+
+            // foreach ($projectClientData as $clientData) {
+            //     $client = $this->clientRepository->findOneBy(['projectTrackerId' => $clientData->projectTrackerId]);
+
+            //     if (!$client) {
+            //         $client = new Client();
+            //         $client->setProjectTrackerId($clientData->projectTrackerId);
+            //         $this->entityManager->persist($client);
+            //     }
+
+            //     $client->setName($clientData->name);
+            //     $client->setContact($clientData->contact);
+            //     $client->setAccount($clientData->account);
+            //     $client->setType($clientData->type);
+            //     $client->setPsp($clientData->psp);
+            //     $client->setEan($clientData->ean);
+            //     $client->setStandardPrice($clientData->standardPrice);
+            //     $client->setCustomerKey($clientData->customerKey);
+            //     $client->setSalesChannel($clientData->salesChannel);
+
+            //     if (!$client->getProjects()->contains($client)) {
+            //         $client->addProject($project);
+            //     }
+            // }
+
+            $this->entityManager->flush();
+            $this->entityManager->clear();
+
+            $progressCallback($index, count($allProjectData));
+        }
+
+        $this->entityManager->flush();
     }
 
     /**
