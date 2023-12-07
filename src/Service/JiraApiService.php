@@ -10,7 +10,7 @@ use App\Model\Invoices\ClientData;
 use App\Model\Invoices\IssueData;
 use App\Model\Invoices\PagedResult;
 use App\Model\Invoices\ProjectData;
-use App\Model\Invoices\VersionData;
+use App\Model\Invoices\MilestoneData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
@@ -776,19 +776,16 @@ class JiraApiService implements DataProviderServiceInterface
         $projects = [];
 
         $trackerProjects = $this->getAllProjects();
-
         foreach ($trackerProjects as $trackerProject) {
-            $project = $this->getProject($trackerProject->id);
-            $projectVersions = $project->versions ?? [];
-
+            $projectMilestones = $this->getProjectMilestones($trackerProject->id) ?? [];
             $projectData = new ProjectData();
             $projectData->name = $trackerProject->name;
             $projectData->projectTrackerId = $trackerProject->id;
-            $projectData->projectTrackerKey = $trackerProject->key;
-            $projectData->projectTrackerProjectUrl = $trackerProject->self;
+            $projectData->projectTrackerKey = "";
+            $projectData->projectTrackerProjectUrl = "";
 
-            foreach ($projectVersions as $projectVersion) {
-                $projectData->versions->add(new VersionData($projectVersion->id, $projectVersion->name));
+            foreach ($projectMilestones as $projectMilestone) {
+                $projectData->milestones->add(new MilestoneData($projectMilestone->id, $projectMilestone->headline));
             }
 
             $projects[] = $projectData;
@@ -810,12 +807,7 @@ class JiraApiService implements DataProviderServiceInterface
      */
     public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
     {
-        return $this->post('rest/tempo-timesheets/4/worklogs/search', [
-            'from' => $from,
-            'to' => $to,
-            'include' => ['ISSUE'],
-            'projectId' => [$projectId],
-        ]);
+        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.timesheets.getAll", ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'projectId' => $projectId]);
     }
 
     public function getWorklogDataForProject(string $projectId): array
@@ -826,17 +818,17 @@ class JiraApiService implements DataProviderServiceInterface
 
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
-            $worklogData->projectTrackerId = $worklog->tempoWorklogId;
-            $worklogData->worker = $worklog->worker;
-            $worklogData->timeSpentSeconds = $worklog->timeSpentSeconds;
-            $worklogData->comment = $worklog->comment;
-            $worklogData->started = new \DateTime($worklog->started);
-            $worklogData->projectTrackerIssueId = $worklog->issue->id;
+            $worklogData->projectTrackerId = $worklog->id;
+            $worklogData->worker = $worklog->userId;
+            $worklogData->timeSpentSeconds = $worklog->hours;
+            $worklogData->comment = $worklog->description ?? "";
+            $worklogData->started = new \DateTime($worklog->workDate);
+            $worklogData->projectTrackerIssueId = $worklog->ticketId;
 
             // TODO: Is this synchronization relevant?
-            if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
-                $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
-            }
+            // if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
+            //     $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
+            // }
 
             $worklogsResult[] = $worklogData;
         }
@@ -861,6 +853,58 @@ class JiraApiService implements DataProviderServiceInterface
         }
 
         return $accountsResult;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    private function getProjectIssues($projectId): array
+    {
+        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.tickets.getAll", ['searchCriteria' => ['currentProject' => $projectId]]);
+        // $issues = [];
+
+        // // Get customFields from Jira.
+        // $customFieldEpicLink = $this->getCustomFieldId('Epic Link');
+        // $customFieldAccount = $this->getCustomFieldId('Account');
+
+        // // Get all issues for version.
+        // $fields = implode(
+        //     ',',
+        //     [
+        //         'timetracking',
+        //         'worklog',
+        //         'timespent',
+        //         'timeoriginalestimate',
+        //         'summary',
+        //         'assignee',
+        //         'status',
+        //         'resolutiondate',
+        //         'fixVersions',
+        //         $customFieldEpicLink,
+        //         $customFieldAccount,
+        //     ]
+        // );
+
+        // $startAt = 0;
+
+        // // Get issues for the given project and version.
+        // do {
+        //     $results = $this->get(
+        //         self::API_PATH_SEARCH,
+        //         [
+        //             'jql' => "project = $projectId",
+        //             'maxResults' => 50,
+        //             //          'fields' => $fields,
+        //             'startAt' => $startAt,
+        //         ]
+        //     );
+
+        //     $issues = array_merge($issues, $results->issues);
+
+        //     $startAt += 50;
+        // } while (isset($results->total) && $results->total > $startAt);
+
+        // return $issues;
     }
 
     /**
