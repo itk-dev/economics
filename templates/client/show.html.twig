@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Client{% endblock %}
+
+{% block body %}
+    <h1>Client</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ client.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ client.name }}</td>
+            </tr>
+            <tr>
+                <th>Contact</th>
+                <td>{{ client.contact }}</td>
+            </tr>
+            <tr>
+                <th>StandardPrice</th>
+                <td>{{ client.standardPrice }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ client.type }}</td>
+            </tr>
+            <tr>
+                <th>Account</th>
+                <td>{{ client.account }}</td>
+            </tr>
+            <tr>
+                <th>Psp</th>
+                <td>{{ client.psp }}</td>
+            </tr>
+            <tr>
+                <th>Ean</th>
+                <td>{{ client.ean }}</td>
+            </tr>
+            <tr>
+                <th>ProjectTrackerId</th>
+                <td>{{ client.projectTrackerId }}</td>
+            </tr>
+            <tr>
+                <th>SalesChannel</th>
+                <td>{{ client.salesChannel }}</td>
+            </tr>
+            <tr>
+                <th>CustomerKey</th>
+                <td>{{ client.customerKey }}</td>
+            </tr>
+            <tr>
+                <th>CreatedBy</th>
+                <td>{{ client.createdBy }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedBy</th>
+                <td>{{ client.updatedBy }}</td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ client.createdAt ? client.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ client.updatedAt ? client.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_client_index') }}">back to list</a>
+
+    <a href="{{ path('app_client_edit', {'id': client.id}) }}">edit</a>
+
+    {{ include('client/_delete_form.html.twig') }}
+{% endblock %}
