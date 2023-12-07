@@ -2,7 +2,7 @@
 
 namespace App\Model\Invoices;
 
-class VersionData
+class MilestoneData
 {
     public readonly string $projectTrackerId;
     public readonly string $name;

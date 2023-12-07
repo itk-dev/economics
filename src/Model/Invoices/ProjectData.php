@@ -12,10 +12,10 @@ class ProjectData
     public string $projectTrackerKey;
     public string $projectTrackerProjectUrl;
     /** @var Collection<string, VersionData> */
-    public Collection $versions;
+    public Collection $milestones;
 
     public function __construct()
     {
-        $this->versions = new ArrayCollection();
+        $this->milestones = new ArrayCollection();
     }
 }

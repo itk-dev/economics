@@ -14,15 +14,15 @@ class IssueData
     public string $projectTrackerKey;
     public ?string $accountId = null;
     public ?string $accountKey = null;
-    public ?string $epicName = null;
-    public ?string $epicKey = null;
-    /** @var Collection<string, VersionData> */
-    public Collection $versions;
+    public ?string $tagName = null;
+    public ?string $tagKey = null;
+    /** @var Collection<string, MilestoneData> */
+    public Collection $milestones;
     public ?\DateTime $resolutionDate = null;
     public string $projectId;
 
     public function __construct()
     {
-        $this->versions = new ArrayCollection();
+        $this->milestones = new ArrayCollection();
     }
 }
