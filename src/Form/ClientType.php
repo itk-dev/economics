@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Client;
 use Symfony\Component\Form\AbstractType;
+use App\Repository\InvoiceRepository;
+use App\Service\JiraApiService;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -12,6 +14,11 @@ use Symfony\Component\Validator\Constraints\NotNull;
 
 class ClientType extends AbstractType
 {
+    public function __construct(
+        private readonly JiraApiService $apiService,
+        private readonly InvoiceRepository $invoiceRepository,
+    ) {
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -148,30 +155,7 @@ class ClientType extends AbstractType
                 'help' => 'create_client_form.client_projectTrackerId.help',
                 'required' => true,
                 'row_attr' => ['class' => 'form-element-wrapper'],
-            ])
-            // ->add('salesChannel', TextType::class, [
-            //     'label' => 'create_client_form.client_salesChannel.label',
-            //     'label_attr' => ['class' => 'label'],
-            //     'constraints' => [
-            //         new NotNull(['groups' => 'base']),
-            //     ],
-            //     'attr' => [
-            //         'class' => 'form-element',
-            //     ],
-            //     'help_attr' => [
-            //         'class' => 'form-help',
-            //     ],
-            //     'help' => 'create_client_form.client_salesChannel.help',
-            //     'required' => true,
-            //     'row_attr' => ['class' => 'form-element-wrapper'],
-            // ])
-            // ->add('customerKey')
-            // ->add('createdBy')
-            // ->add('updatedBy')
-            // ->add('createdAt')
-            // ->add('updatedAt')
-            // ->add('projects')
-        ;
+            ]);
     }
 
         /**
@@ -187,6 +171,7 @@ class ClientType extends AbstractType
 
         return ['-- Select --' => null];
     }
+  
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
