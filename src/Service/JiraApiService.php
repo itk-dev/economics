@@ -18,14 +18,14 @@ use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
 use App\Model\Planning\SprintSum;
 use App\Model\SprintReport\SprintReportData;
+use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
-use App\Model\SprintReport\SprintReportTag;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class JiraApiService implements ApiServiceInterface
+class JiraApiService implements JiraApiServiceInterface
 {
     private const PROJECT_TRACKER_IDENTIFIER = 'JIRA';
     private const CPB_ACCOUNT_MANAGER = 'anbjv';
@@ -46,17 +46,11 @@ class JiraApiService implements ApiServiceInterface
     private const API_PATH_RATE_TABLE = '/rest/tempo-accounts/1/ratetable';
     private const API_PATH_ACCOUNT_IDS_BY_PROJECT = '/rest/tempo-accounts/1/link/project/';
 
-    private const API_PATH_JSONRPC = '/api/jsonrpc/';
-
-    private const PAST = 'PAST';
-    private const PRESENT = 'PRESENT';
-    private const FUTURE = 'FUTURE';
-
     public function __construct(
         protected readonly HttpClientInterface $projectTrackerApi,
         protected readonly array $customFieldMappings,
         protected readonly string $defaultBoard,
-        protected readonly string $leantimeUrl,
+        protected readonly string $jiraUrl,
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
@@ -66,7 +60,7 @@ class JiraApiService implements ApiServiceInterface
     public function getEndpoints(): array
     {
         return [
-            'base' => $this->leantimeUrl,
+            'base' => $this->jiraUrl,
         ];
     }
 
@@ -110,7 +104,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getAllProjects(): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
+        return $this->get(self::API_PATH_PROJECT);
     }
 
     /**
@@ -123,25 +117,7 @@ class JiraApiService implements ApiServiceInterface
      */
     public function getProject($key): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getProject', ['id' => $key]);
-    }
-
-    /**
-     * Get milestone.
-     *
-     * @param $key
-     *   A milestone key or id
-     *
-     * @throws ApiServiceException
-     */
-    public function getMilestone($key): mixed
-    {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getTicket', ['id' => $key]);
-    }
-
-    public function getProjectMilestones($key): mixed
-    {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAllMilestones', ['searchCriteria' => ['currentProject' => $key, 'type' => 'milestone']]);
+        return $this->get(self::API_PATH_PROJECT_BY_ID.$key);
     }
 
     /**
@@ -367,11 +343,30 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Get all sprints for a given board.
      *
+     * @param string $boardId board id
+     * @param string $state sprint state. Defaults to future,active sprints.
+     *
      * @throws ApiServiceException
      */
-    public function getAllSprints(): array
+    public function getAllSprints(string $boardId, string $state = 'future,active'): array
     {
-        $sprints = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.sprints.getAllSprints', ['projectId' => '6']);
+        $sprints = [];
+
+        $startAt = 0;
+        while (true) {
+            $result = $this->get(self::API_PATH_BOARD.'/'.$boardId.'/sprint', [
+                'startAt' => $startAt,
+                'maxResults' => 50,
+                'state' => $state,
+            ]);
+            $sprints = array_merge($sprints, $result->values);
+
+            if ($result->isLast) {
+                break;
+            }
+
+            $startAt += 50;
+        }
 
         return $sprints;
     }
@@ -379,21 +374,43 @@ class JiraApiService implements ApiServiceInterface
     /**
      * Get all issues for given board and sprint.
      *
+     * @param string $boardId id of the jira board to extract issues from
      * @param string $sprintId id of the sprint to extract issues for
      *
      * @return array array of issues
      *
      * @throws ApiServiceException
      */
-    public function getTicketsInSprint(string $sprintId): array
+    public function getIssuesInSprint(string $boardId, string $sprintId): array
     {
-        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', [
-            'searchCriteria' => [
-                'sprint' => $sprintId,
-            ],
-        ]);
+        $issues = [];
+        $fields = implode(
+            ',',
+            [
+                'timetracking',
+                'summary',
+                'status',
+                'assignee',
+                'project',
+            ]
+        );
 
-        return $result;
+        $startAt = 0;
+        while (true) {
+            $result = $this->get(self::API_PATH_BOARD.'/'.$boardId.'/sprint/'.$sprintId.'/issue', [
+                'startAt' => $startAt,
+                'fields' => $fields,
+            ]);
+            $issues = array_merge($issues, $result->issues);
+
+            $startAt += 50;
+
+            if ($startAt > $result->total) {
+                break;
+            }
+        }
+
+        return $issues;
     }
 
     /**
@@ -409,9 +426,11 @@ class JiraApiService implements ApiServiceInterface
         $projects = $planning->projects;
         $sprints = $planning->sprints;
 
+        $boardId = $this->defaultBoard;
+
         $sprintIssues = [];
 
-        $allSprints = $this->getAllSprints();
+        $allSprints = $this->getAllSprints($boardId);
 
         foreach ($allSprints as $sprintData) {
             // Expected sprint name examples:
@@ -430,6 +449,7 @@ class JiraApiService implements ApiServiceInterface
             } else {
                 $weeks = 1;
             }
+
             $sprint = new Sprint(
                 $sprintData->id,
                 $weeks,
@@ -437,27 +457,27 @@ class JiraApiService implements ApiServiceInterface
                 $this->weekGoalHigh * $weeks,
                 $sprintData->name,
             );
-
             $sprints->add($sprint);
 
-            $issues = $this->getTicketsInSprint($sprintData->id);
+            $issues = $this->getIssuesInSprint($boardId, $sprintData->id);
 
             $sprintIssues[$sprintData->id] = $issues;
         }
 
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issueData) {
-                if ('0' !== $issueData->status) {
-                    $projectKey = (string) $issueData->projectId;
-                    $projectDisplayName = $issueData->projectName;
-                    $hoursRemaining = $issueData->hourRemaining;
+                if ('done' !== $issueData->fields->status->statusCategory->key) {
+                    $projectData = $issueData->fields->project;
+                    $projectKey = (string) $projectData->key;
+                    $projectDisplayName = $projectData->name;
+                    $remainingSeconds = $issueData->fields->timetracking->remainingEstimateSeconds ?? 0;
 
-                    if (empty($issueData->editorId)) {
+                    if (empty($issueData->fields->assignee)) {
                         $assigneeKey = 'unassigned';
                         $assigneeDisplayName = 'Unassigned';
                     } else {
-                        $assigneeKey = (string) $issueData->editorId;
-                        $assigneeDisplayName = $issueData->editorFirstname.' '.$issueData->editorLastname;
+                        $assigneeKey = (string) $issueData->fields->assignee->key;
+                        $assigneeDisplayName = $issueData->fields->assignee->displayName;
                     }
 
                     // Add assignee if not already added.
@@ -475,7 +495,8 @@ class JiraApiService implements ApiServiceInterface
 
                     /** @var SprintSum $sprintSum */
                     $sprintSum = $assignee->sprintSums->get($sprintId);
-                    $sprintSum->sumHours += $hoursRemaining;
+                    $sprintSum->sumSeconds += $remainingSeconds;
+                    $sprintSum->sumHours = $sprintSum->sumSeconds / (60 * 60);
 
                     // Add assignee project if not already added.
                     if (!$assignee->projects->containsKey($projectKey)) {
@@ -494,15 +515,16 @@ class JiraApiService implements ApiServiceInterface
                     /** @var SprintSum $projectSprintSum */
                     $projectSprintSum = $assigneeProject->sprintSums->get($sprintId);
                     if (isset($projectSprintSum)) {
-                        $projectSprintSum->sumHours += $hoursRemaining;
+                        $projectSprintSum->sumSeconds += $remainingSeconds;
+                        $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
                     }
 
                     $assigneeProject->issues->add(
                         new Issue(
-                            $issueData->id,
-                            $issueData->description,
-                            isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                            $this->leantimeUrl.'/dashboard/home#/tickets/showTicket/'.$issueData->id,
+                            $issueData->key,
+                            $issueData->fields->summary,
+                            isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
+                            $this->jiraUrl.'/browse/'.$issueData->key,
                             $sprintId
                         )
                     );
@@ -525,7 +547,8 @@ class JiraApiService implements ApiServiceInterface
 
                     /** @var SprintSum $projectSprintSum */
                     $projectSprintSum = $project->sprintSums->get($sprintId);
-                    $projectSprintSum->sumHours += $hoursRemaining;
+                    $projectSprintSum->sumSeconds += $remainingSeconds;
+                    $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
 
                     if (!$project->assignees->containsKey($assigneeKey)) {
                         $project->assignees->set($assigneeKey, new AssigneeProject(
@@ -543,13 +566,14 @@ class JiraApiService implements ApiServiceInterface
 
                     /** @var SprintSum $projectAssigneeSprintSum */
                     $projectAssigneeSprintSum = $projectAssignee->sprintSums->get($sprintId);
-                    $projectAssigneeSprintSum->sumHours += $hoursRemaining;
+                    $projectAssigneeSprintSum->sumSeconds += $remainingSeconds;
+                    $projectAssigneeSprintSum->sumHours = $projectAssigneeSprintSum->sumSeconds / (60 * 60);
 
                     $projectAssignee->issues->add(new Issue(
-                        $issueData->id,
-                        $issueData->description,
-                        isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                        $this->leantimeUrl.'/dashboard/home#/tickets/showTicket/'.$issueData->id,
+                        $issueData->key,
+                        $issueData->fields->summary,
+                        isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
+                        $this->jiraUrl.'/browse/'.$issueData->key,
                         $sprintId
                     ));
                 }
@@ -588,9 +612,52 @@ class JiraApiService implements ApiServiceInterface
     /**
      * @throws ApiServiceException
      */
-    private function getIssuesForProjectMilestone($projectId, $milestoneId): array
+    private function getIssuesForProjectVersion($projectId, $versionId): array
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'milestone' => $milestoneId]]);
+        $issues = [];
+
+        // Get customFields from Jira.
+        $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
+        $customFieldSprintId = $this->getCustomFieldId('Sprint');
+
+        // Get all issues for version.
+        $fields = implode(
+            ',',
+            [
+                'timetracking',
+                'worklog',
+                'timespent',
+                'timeoriginalestimate',
+                'summary',
+                'assignee',
+                'status',
+                'resolutionDate',
+                $customFieldEpicLinkId,
+                $customFieldSprintId,
+            ]
+        );
+
+        $startAt = 0;
+
+        // Get issues for the given project and version.
+        do {
+            $results = $this->get(
+                self::API_PATH_SEARCH,
+                [
+                    'jql' => 'fixVersion='.$versionId,
+                    'project' => $projectId,
+                    'maxResults' => 50,
+                    'fields' => $fields,
+                    'startAt' => $startAt,
+                ]
+            );
+
+            $issues = array_merge($issues, $results->issues);
+
+            $startAt += 50;
+        } while (isset($results->total) && $results->total > $startAt);
+
+        return $issues;
     }
 
     /**
@@ -598,77 +665,111 @@ class JiraApiService implements ApiServiceInterface
      */
     private function getIssueSprint($issueEntry): SprintReportSprint
     {
-        $sprint = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.sprints.getSprint', ['id' => $issueEntry->sprint]);
+        $customFieldSprintId = $this->getCustomFieldId('Sprint');
 
-        if ($sprint) {
-            $sprintState = SprintStateEnum::OTHER;
-            $sprintTemporal = $this->getDateSpanTemporal($sprint->startDate, $sprint->endDate);
+        // Get sprints for issue.
+        if (isset($issueEntry->fields->{$customFieldSprintId})) {
+            foreach ($issueEntry->fields->{$customFieldSprintId} as $sprintString) {
+                // Remove everything before and after brackets.
+                $replace = preg_replace(
+                    ['/.*\[/', '/].*/'],
+                    '',
+                    (string) $sprintString
+                );
+                $fields = explode(',', $replace);
 
-            switch ($sprintTemporal) {
-                case self::PAST:
-                    $sprintState = SprintStateEnum::OTHER;
-                    break;
-                case self::PRESENT:
-                    $sprintState = SprintStateEnum::ACTIVE;
-                    break;
-                case self::FUTURE:
-                    $sprintState = SprintStateEnum::FUTURE;
-                    break;
+                $sprint = [];
+
+                foreach ($fields as $field) {
+                    $split = explode('=', $field);
+
+                    if (count($split) > 1) {
+                        $value = '<null>' == $split[1] ? null : $split[1];
+
+                        $sprint[$split[0]] = $value;
+                    }
+                }
+
+                if (!isset($sprint['id']) || !isset($sprint['name']) || !isset($sprint['state'])) {
+                    continue;
+                }
+
+                $sprintState = SprintStateEnum::OTHER;
+
+                switch ($sprint['state']) {
+                    case 'ACTIVE':
+                        $sprintState = SprintStateEnum::ACTIVE;
+                        break;
+                    case 'FUTURE':
+                        $sprintState = SprintStateEnum::FUTURE;
+                        break;
+                }
+
+                return new SprintReportSprint(
+                    $sprint['id'],
+                    $sprint['name'],
+                    $sprintState,
+                    $sprint['startDate'] ? strtotime($sprint['startDate']) : null,
+                    $sprint['endDate'] ? strtotime($sprint['endDate']) : null,
+                    $sprint['completeDate'] ? strtotime($sprint['completeDate']) : null,
+                );
             }
-
-            return new SprintReportSprint(
-                $sprint->id,
-                $sprint->name,
-                $sprintState,
-                $sprint->startDate ? strtotime($sprint->startDate) : null,
-                $sprint->endDate ? strtotime($sprint->endDate) : null,
-            );
-        } else {
-            throw new ApiServiceException('Sprint not found', 404);
         }
+
+        throw new ApiServiceException('Sprint not found', 404);
     }
 
     /**
      * @throws ApiServiceException
      * @throws \Exception
      */
-    public function getSprintReportData(string $projectId, string $milestoneId): SprintReportData
+    public function getSprintReportData(string $projectId, string $versionId): SprintReportData
     {
         $sprintReportData = new SprintReportData();
-        $tags = $sprintReportData->tags;
+        $epics = $sprintReportData->epics;
         $issues = $sprintReportData->issues;
         $sprints = $sprintReportData->sprints;
 
         $spentSum = 0;
         $remainingSum = 0;
 
-        $tags->set('noTag', new SprintReportTag('noTag', 'Uden Tag'));
+        $epics->set('NoEpic', new SprintReportEpic('NoEpic', 'Uden Epic'));
 
         // Get version and project.
-        $milestone = $this->getMilestone($milestoneId);
+        $version = $this->get(self::API_PATH_VERSION.$versionId);
         $project = $this->getProject($projectId);
 
-        $issueEntries = $this->getIssuesForProjectMilestone($projectId, $milestoneId);
+        // Get customField for Jira.
+        $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
 
-        $issueCount = 1;
+        $issueEntries = $this->getIssuesForProjectVersion($projectId, $versionId);
+
         foreach ($issueEntries as $issueEntry) {
             $issue = new SprintReportIssue();
             $issues->add($issue);
 
-            // Set issue tag.
-            if (isset($issueEntry->tags)) {
-                $tagId = $this->tagToId($issueEntry->tags);
-                $tag = new SprintReportTag($tagId, $issueEntry->tags);
-                $tags->set($tagId, $tag);
+            // Set issue epic.
+            if (isset($issueEntry->fields->{$customFieldEpicLinkId})) {
+                $epicLinkId = (string) $issueEntry->fields->{$customFieldEpicLinkId};
+
+                // Add to epics if not already added.
+                if (!$epics->containsKey($epicLinkId)) {
+                    $epicData = $this->get(self::API_PATH_EPIC.'/'.$epicLinkId);
+
+                    $epic = new SprintReportEpic($epicLinkId, $epicData->name);
+                    $epics->set($epicLinkId, $epic);
+                } else {
+                    $epic = $epics->get($issueEntry->fields->{$customFieldEpicLinkId});
+                }
             } else {
-                $tag = $tags->get('NoTag');
+                $epic = $epics->get('NoEpic');
             }
 
-            if (!$tag instanceof SprintReportTag) {
+            if (!$epic instanceof SprintReportEpic) {
                 continue;
             }
 
-            $issue->tag = $tag;
+            $issue->epic = $epic;
 
             // Get sprint for issue.
             try {
@@ -677,6 +778,7 @@ class JiraApiService implements ApiServiceInterface
                 if (!$sprints->containsKey($issueSprint->id)) {
                     $sprints->set($issueSprint->id, $issueSprint);
                 }
+
                 // Set which sprint the issue is assigned to.
                 if (SprintStateEnum::ACTIVE === $issueSprint->state || SprintStateEnum::FUTURE === $issueSprint->state) {
                     $issue->assignedToSprint = $issueSprint;
@@ -684,10 +786,9 @@ class JiraApiService implements ApiServiceInterface
             } catch (ApiServiceException) {
                 // Ignore if sprint is not found.
             }
-            $worklogs = $this->getTimesheetsForTicket($issueEntry->id);
 
-            foreach ($worklogs as $worklog) {
-                $workLogStarted = strtotime($worklog->workDate);
+            foreach ($issueEntry->fields->worklog->worklogs as $worklogData) {
+                $workLogStarted = strtotime($worklogData->started);
 
                 $worklogSprints = array_filter($sprints->toArray(), function ($sprintEntry) use ($workLogStarted) {
                     /* @var SprintReportSprint $sprintEntry */
@@ -700,37 +801,39 @@ class JiraApiService implements ApiServiceInterface
 
                 if (!empty($worklogSprints)) {
                     $worklogSprint = array_pop($worklogSprints);
+
                     $worklogSprintId = $worklogSprint->id;
                 }
-                $newLoggedWork = (float) ($issue->tag->loggedWork->containsKey($worklogSprintId) ? $issue->tag->loggedWork->get($worklogSprintId) : 0) + $worklog->hours;
-                $issue->tag->loggedWork->set($worklogSprintId, $newLoggedWork);
+
+                $newLoggedWork = (float) ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklogData->timeSpentSeconds;
+                $issue->epic->loggedWork->set($worklogSprintId, $newLoggedWork);
             }
 
             // Accumulate spentSum.
-            $spentSum += $issueEntry->bookedHours;
-            $issue->tag->spentSum += $issueEntry->bookedHours;
+            $spentSum += $issueEntry->fields->timespent;
+            $issue->epic->spentSum += $issueEntry->fields->timespent;
 
             // Accumulate remainingSum.
-            if ('0' !== $issueEntry->status && isset($issueEntry->hourRemaining)) {
-                $remainingEstimateSeconds = $issueEntry->hourRemaining;
+            if ('Done' !== $issueEntry->fields->status->name && isset($issueEntry->fields->timetracking->remainingEstimateSeconds)) {
+                $remainingEstimateSeconds = $issueEntry->fields->timetracking->remainingEstimateSeconds;
                 $remainingSum += $remainingEstimateSeconds;
 
-                $issue->tag->remainingSum += $remainingEstimateSeconds;
+                $issue->epic->remainingSum += $remainingEstimateSeconds;
 
                 if (!empty($issue->assignedToSprint)) {
                     $assignedToSprint = $issue->assignedToSprint;
-                    $newRemainingWork = (float) ($issue->tag->remainingWork->containsKey($assignedToSprint->id) ? $issue->tag->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
-                    $issue->tag->remainingWork->set($assignedToSprint->id, $newRemainingWork);
-                    $issue->tag->plannedWorkSum += $remainingEstimateSeconds;
+                    $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
+                    $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
+                    $issue->epic->plannedWorkSum += $remainingEstimateSeconds;
                 }
             }
-            // Accumulate originalEstimateSum.
-            if (isset($issueEntry->planHours)) {
-                $issue->tag->originalEstimateSum += $issueEntry->planHours;
 
-                $sprintReportData->originalEstimateSum += $issueEntry->planHours;
+            // Accumulate originalEstimateSum.
+            if (isset($issueEntry->fields->timeoriginalestimate)) {
+                $issue->epic->originalEstimateSum += $issueEntry->fields->timeoriginalestimate;
+
+                $sprintReportData->originalEstimateSum += $issueEntry->fields->timeoriginalestimate;
             }
-            ++$issueCount;
         }
 
         // Sort sprints by key.
@@ -743,49 +846,49 @@ class JiraApiService implements ApiServiceInterface
 
         // Sort epics by name.
         /** @var \ArrayIterator $iterator */
-        $iterator = $tags->getIterator();
+        $iterator = $epics->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->name) <=> mb_strtolower($b->name);
         });
-        $tags = new ArrayCollection(iterator_to_array($iterator));
+        $epics = new ArrayCollection(iterator_to_array($iterator));
+
         // Calculate spent, remaining hours.
-        $spentHours = $spentSum;
-        $remainingHours = $remainingSum;
+        $spentHours = $spentSum / 3600;
+        $remainingHours = $remainingSum / 3600;
 
         $sprintReportData->projectName = $project->name;
-        $sprintReportData->milestoneName = $milestone->headline;
+        $sprintReportData->versionName = $version->name;
         $sprintReportData->remainingHours = $remainingHours;
         $sprintReportData->spentHours = $spentHours;
         $sprintReportData->spentSum = $spentSum;
         $sprintReportData->projectHours = $spentHours + $remainingHours;
-        $sprintReportData->tags = $tags;
+        $sprintReportData->epics = $epics;
         $sprintReportData->sprints = $sprints;
 
         return $sprintReportData;
     }
 
     /**
-     * Get from Leantime.
+     * Get from Jira.
+     *
+     * @TODO: Wrap the call in request function, they are 99% the same code.
      *
      * @throws ApiServiceException
      */
-    private function request(string $path, string $type, string $method, array $params = []): mixed
+    private function get(string $path, array $query = []): mixed
     {
         try {
-            $response = $this->projectTrackerApi->request($type, $path,
-                ['json' => [
-                    'jsonrpc' => '2.0',
-                    'method' => $method,
-                    'id' => '1',
-                    'params' => $params,
-                ]]
+            $response = $this->projectTrackerApi->request('GET', $path,
+                [
+                    'query' => $query,
+                ]
             );
 
             $body = $response->getContent(false);
             switch ($response->getStatusCode()) {
                 case 200:
                     if ($body) {
-                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR)->result;
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
                     }
                     break;
                 case 400:
@@ -808,6 +911,131 @@ class JiraApiService implements ApiServiceInterface
         }
 
         return null;
+    }
+
+    /**
+     * Post to Jira.
+     *
+     * @throws ApiServiceException
+     */
+    private function post(string $path, array $data): mixed
+    {
+        try {
+            $response = $this->projectTrackerApi->request('POST', $path,
+                [
+                    'json' => $data,
+                ]
+            );
+
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                case 201:
+                    if ($body) {
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                    }
+                    break;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+        } catch (\Throwable $e) {
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+        }
+
+        return null;
+    }
+
+    /**
+     * Put to Jira.
+     *
+     * @throws ApiServiceException
+     */
+    private function put(string $path, array $data): mixed
+    {
+        try {
+            $response = $this->projectTrackerApi->request('PUT', $path,
+                [
+                    'json' => $data,
+                ]
+            );
+
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                case 201:
+                    if ($body) {
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                    }
+                    break;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+        } catch (\Throwable $e) {
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+        }
+
+        return null;
+    }
+
+    /**
+     * Delete in Jira.
+     *
+     * @throws ApiServiceException
+     */
+    private function delete(string $path): bool
+    {
+        try {
+            $response = $this->projectTrackerApi->request('DELETE', $path);
+
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                case 204:
+                    return true;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+        } catch (\Throwable $e) {
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+        }
+
+        return false;
     }
 
     /**
@@ -935,11 +1163,6 @@ class JiraApiService implements ApiServiceInterface
         }
 
         return $worklogsResult;
-    }
-
-    public function getTimesheetsForTicket($ticketId): mixed
-    {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'ticketFilter' => $ticketId]);
     }
 
     /**
@@ -1095,32 +1318,5 @@ class JiraApiService implements ApiServiceInterface
     private function getCustomFields(): mixed
     {
         return $this->get('/rest/api/2/customFields');
-    }
-
-    private function getDateSpanTemporal($startDate, $endDate): string
-    {
-        $currentDate = time();
-        $startDate = strtotime($startDate);
-        $endDate = strtotime($endDate);
-        if ($startDate < $currentDate && $endDate > $currentDate) {
-            return self::PRESENT;
-        } elseif ($startDate < $currentDate && $endDate < $currentDate) {
-            return self::PAST;
-        } else {
-            return self::FUTURE;
-        }
-    }
-
-    private function tagToId($tag)
-    {
-        // Use md5 hash function to generate a fixed-length hash
-        $hash = md5($tag);
-
-        // Extract three unique numbers from the hash
-        $num1 = hexdec(substr($hash, 0, 8)) % 1000;
-        $num2 = hexdec(substr($hash, 8, 8)) % 1000;
-        $num3 = hexdec(substr($hash, 16, 8)) % 1000;
-
-        return "$num1$num2$num3";
     }
 }

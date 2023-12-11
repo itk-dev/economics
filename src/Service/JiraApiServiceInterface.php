@@ -10,7 +10,7 @@ use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
 
-interface ApiServiceInterface
+interface JiraApiServiceInterface
 {
     public function getEndpoints(): array;
 
@@ -55,9 +55,9 @@ interface ApiServiceInterface
 
     public function getAllBoards(): mixed;
 
-    public function getAllSprints(): array;
+    public function getAllSprints(string $boardId): array;
 
-    public function getTicketsInSprint(string $sprintId): array;
+    public function getIssuesInSprint(string $boardId, string $sprintId): array;
 
     public function getPlanningData(): PlanningData;
 

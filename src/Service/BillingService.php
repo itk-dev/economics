@@ -29,7 +29,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class BillingService
 {
     public function __construct(
-        private readonly ApiServiceInterface $apiService,
+        private readonly JiraApiServiceInterface $jiraApiService,
+        private readonly LeantimeApiServiceInterface $leantimeApiService,
         private readonly ProjectRepository $projectRepository,
         private readonly ClientRepository $clientRepository,
         private readonly InvoiceRepository $invoiceRepository,
@@ -84,7 +85,7 @@ class BillingService
             throw new \Exception('ProjectTrackerId not set');
         }
 
-        $issueData = $this->apiService->getIssuesDataForProject($projectTrackerId);
+        $issueData = $this->jiraApiService->getIssuesDataForProject($projectTrackerId);
         $issuesProcessed = 0;
 
         foreach ($issueData as $issueDatum) {
@@ -108,7 +109,7 @@ class BillingService
             $issue->setStatus($issueDatum->status);
 
             if (null == $issue->getSource()) {
-                $issue->setSource($this->apiService->getProjectTrackerIdentifier());
+                $issue->setSource($this->jiraApiService->getProjectTrackerIdentifier());
             }
 
             foreach ($issueDatum->versions as $versionData) {
@@ -145,7 +146,7 @@ class BillingService
             throw new \Exception('ProjectTrackerId not set');
         }
 
-        $worklogData = $this->apiService->getWorklogDataForProject($projectTrackerId);
+        $worklogData = $this->jiraApiService->getWorklogDataForProject($projectTrackerId);
         $worklogsAdded = 0;
 
         foreach ($worklogData as $worklogDatum) {
@@ -175,7 +176,7 @@ class BillingService
             }
 
             if (null == $worklog->getSource()) {
-                $worklog->setSource($this->apiService->getProjectTrackerIdentifier());
+                $worklog->setSource($this->jiraApiService->getProjectTrackerIdentifier());
             }
 
             $project->addWorklog($worklog);
@@ -226,10 +227,10 @@ class BillingService
 
     public function syncAccounts(callable $progressCallback): void
     {
-        $projectTrackerIdentifier = $this->apiService->getProjectTrackerIdentifier();
+        $projectTrackerIdentifier = $this->jiraApiService->getProjectTrackerIdentifier();
 
         // Get all accounts from ApiService.
-        $allAccountData = $this->apiService->getAllAccountData();
+        $allAccountData = $this->jiraApiService->getAllAccountData();
 
         foreach ($allAccountData as $index => $accountDatum) {
             $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
@@ -256,10 +257,38 @@ class BillingService
         $this->entityManager->flush();
     }
 
+    public function syncClients(callable $progressCallback): array
+    {
+        $clientData = $this->jiraApiService->getAllCustomers();
+        exit('<pre>'.print_r($clientData, true).'</pre>');
+        // $projectClientData = $this->jiraApiService->getClientDataForProject($projectDatum->projectTrackerId);
+
+        // foreach ($projectClientData as $clientData) {
+        //     $client = $this->clientRepository->findOneBy(['projectTrackerId' => $clientData->projectTrackerId]);
+
+        //     if (!$client) {
+        //         $client = new Client();
+        //         $client->setProjectTrackerId($clientData->projectTrackerId);
+        //         $this->entityManager->persist($client);
+        //     }
+
+        //     $client->setName($clientData->name);
+        //     $client->setContact($clientData->contact);
+        //     $client->setAccount($clientData->account);
+        //     $client->setType($clientData->type);
+        //     $client->setPsp($clientData->psp);
+        //     $client->setEan($clientData->ean);
+        //     $client->setStandardPrice($clientData->standardPrice);
+        //     $client->setCustomerKey($clientData->customerKey);
+        //     $client->setSalesChannel($clientData->salesChannel);
+
+        // }
+    }
+
     public function syncProjects(callable $progressCallback): void
     {
         // Get all projects from ApiService.
-        $allProjectData = $this->apiService->getAllProjectData();
+        $allProjectData = $this->jiraApiService->getAllProjectData();
 
         foreach ($allProjectData as $index => $projectDatum) {
             $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId]);
@@ -285,32 +314,6 @@ class BillingService
                 $version->setName($versionData->name);
                 $version->setProjectTrackerId($versionData->projectTrackerId);
                 $version->setProject($project);
-            }
-
-            $projectClientData = $this->apiService->getClientDataForProject($projectDatum->projectTrackerId);
-
-            foreach ($projectClientData as $clientData) {
-                $client = $this->clientRepository->findOneBy(['projectTrackerId' => $clientData->projectTrackerId]);
-
-                if (!$client) {
-                    $client = new Client();
-                    $client->setProjectTrackerId($clientData->projectTrackerId);
-                    $this->entityManager->persist($client);
-                }
-
-                $client->setName($clientData->name);
-                $client->setContact($clientData->contact);
-                $client->setAccount($clientData->account);
-                $client->setType($clientData->type);
-                $client->setPsp($clientData->psp);
-                $client->setEan($clientData->ean);
-                $client->setStandardPrice($clientData->standardPrice);
-                $client->setCustomerKey($clientData->customerKey);
-                $client->setSalesChannel($clientData->salesChannel);
-
-                if (!$client->getProjects()->contains($client)) {
-                    $client->addProject($project);
-                }
             }
 
             $this->entityManager->flush();
