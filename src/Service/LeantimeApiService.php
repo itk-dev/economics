@@ -2,17 +2,16 @@
 
 namespace App\Service;
 
-use App\Model\Planning\Issue;
-use App\Model\Planning\Sprint;
-use App\Model\Planning\Project;
-use App\Model\Planning\Assignee;
-use App\Model\Planning\SprintSum;
-use App\Model\Planning\PlanningData;
 use App\Exception\ApiServiceException;
+use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
+use App\Model\Planning\Issue;
+use App\Model\Planning\PlanningData;
+use App\Model\Planning\Project;
+use App\Model\Planning\Sprint;
+use App\Model\Planning\SprintSum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-
 
 class LeantimeApiService implements LeantimeApiServiceInterface
 {
@@ -63,7 +62,6 @@ class LeantimeApiService implements LeantimeApiServiceInterface
 
         return $result;
     }
-
 
     /**
      * Create data for planning page.

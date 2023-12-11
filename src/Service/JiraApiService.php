@@ -47,7 +47,7 @@ class JiraApiService implements JiraApiServiceInterface
     private const API_PATH_ACCOUNT_IDS_BY_PROJECT = '/rest/tempo-accounts/1/link/project/';
 
     public function __construct(
-        protected readonly HttpClientInterface $projectTrackerApi,
+        protected readonly HttpClientInterface $jiraProjectTrackerApi,
         protected readonly array $customFieldMappings,
         protected readonly string $defaultBoard,
         protected readonly string $jiraUrl,
@@ -259,31 +259,6 @@ class JiraApiService implements JiraApiServiceInterface
     }
 
     /**
-     * Get all sprints for a given board.
-     *
-     * @throws ApiServiceException
-     */
-    public function getAllSprints(): array
-    {
-        return [];
-    }
-
-
-    /**
-     * Get all issues for given board and sprint.
-     *
-     * @param string $sprintId id of the sprint to extract issues for
-     *
-     * @return array array of issues
-     *
-     * @throws ApiServiceException
-     */
-    public function getTicketsInSprint(string $sprintId): array
-    {
-        return [];
-    }
-
-    /**
      * Create project board.
      *
      * @throws ApiServiceException
@@ -363,6 +338,37 @@ class JiraApiService implements JiraApiServiceInterface
     public function getAllBoards(): mixed
     {
         return $this->get(self::API_PATH_BOARD);
+    }
+
+    /**
+     * Get all sprints for a given board.
+     *
+     * @param string $boardId board id
+     * @param string $state sprint state. Defaults to future,active sprints.
+     *
+     * @throws ApiServiceException
+     */
+    public function getAllSprints(string $boardId, string $state = 'future,active'): array
+    {
+        $sprints = [];
+
+        $startAt = 0;
+        while (true) {
+            $result = $this->get(self::API_PATH_BOARD.'/'.$boardId.'/sprint', [
+                'startAt' => $startAt,
+                'maxResults' => 50,
+                'state' => $state,
+            ]);
+            $sprints = array_merge($sprints, $result->values);
+
+            if ($result->isLast) {
+                break;
+            }
+
+            $startAt += 50;
+        }
+
+        return $sprints;
     }
 
     /**
@@ -872,7 +878,7 @@ class JiraApiService implements JiraApiServiceInterface
     private function get(string $path, array $query = []): mixed
     {
         try {
-            $response = $this->projectTrackerApi->request('GET', $path,
+            $response = $this->jiraProjectTrackerApi->request('GET', $path,
                 [
                     'query' => $query,
                 ]
@@ -915,7 +921,7 @@ class JiraApiService implements JiraApiServiceInterface
     private function post(string $path, array $data): mixed
     {
         try {
-            $response = $this->projectTrackerApi->request('POST', $path,
+            $response = $this->jiraProjectTrackerApi->request('POST', $path,
                 [
                     'json' => $data,
                 ]
@@ -959,7 +965,7 @@ class JiraApiService implements JiraApiServiceInterface
     private function put(string $path, array $data): mixed
     {
         try {
-            $response = $this->projectTrackerApi->request('PUT', $path,
+            $response = $this->jiraProjectTrackerApi->request('PUT', $path,
                 [
                     'json' => $data,
                 ]
@@ -1003,7 +1009,7 @@ class JiraApiService implements JiraApiServiceInterface
     private function delete(string $path): bool
     {
         try {
-            $response = $this->projectTrackerApi->request('DELETE', $path);
+            $response = $this->jiraProjectTrackerApi->request('DELETE', $path);
 
             $body = $response->getContent(false);
             switch ($response->getStatusCode()) {

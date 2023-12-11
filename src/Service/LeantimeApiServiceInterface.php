@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Service;
+
 use App\Model\Planning\PlanningData;
 
 interface LeantimeApiServiceInterface
@@ -12,5 +13,4 @@ interface LeantimeApiServiceInterface
     public function getTicketsInSprint(string $sprintId): array;
 
     public function getPlanningData(): PlanningData;
-
 }

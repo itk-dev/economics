@@ -51,6 +51,10 @@ interface JiraApiServiceInterface
 
     public function getAllBoards(): mixed;
 
+    public function getAllSprints(string $boardId): array;
+
+    public function getIssuesInSprint(string $boardId, string $sprintId): array;
+
     public function getPlanningData(): PlanningData;
 
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
