@@ -25,7 +25,7 @@ use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class JiraApiService implements ApiServiceInterface
+class JiraApiService implements JiraApiServiceInterface
 {
     private const PROJECT_TRACKER_IDENTIFIER = 'JIRA';
     private const CPB_ACCOUNT_MANAGER = 'anbjv';
@@ -46,13 +46,11 @@ class JiraApiService implements ApiServiceInterface
     private const API_PATH_RATE_TABLE = '/rest/tempo-accounts/1/ratetable';
     private const API_PATH_ACCOUNT_IDS_BY_PROJECT = '/rest/tempo-accounts/1/link/project/';
 
-    private const API_PATH_JSONRPC = '/api/jsonrpc/';
-
     public function __construct(
         protected readonly HttpClientInterface $projectTrackerApi,
         protected readonly array $customFieldMappings,
         protected readonly string $defaultBoard,
-        protected readonly string $leantimeUrl,
+        protected readonly string $jiraUrl,
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
@@ -62,7 +60,7 @@ class JiraApiService implements ApiServiceInterface
     public function getEndpoints(): array
     {
         return [
-            'base' => $this->leantimeUrl,
+            'base' => $this->jiraUrl,
         ];
     }
 
@@ -261,6 +259,31 @@ class JiraApiService implements ApiServiceInterface
     }
 
     /**
+     * Get all sprints for a given board.
+     *
+     * @throws ApiServiceException
+     */
+    public function getAllSprints(): array
+    {
+        return [];
+    }
+
+
+    /**
+     * Get all issues for given board and sprint.
+     *
+     * @param string $sprintId id of the sprint to extract issues for
+     *
+     * @return array array of issues
+     *
+     * @throws ApiServiceException
+     */
+    public function getTicketsInSprint(string $sprintId): array
+    {
+        return [];
+    }
+
+    /**
      * Create project board.
      *
      * @throws ApiServiceException
@@ -343,35 +366,45 @@ class JiraApiService implements ApiServiceInterface
     }
 
     /**
-     * Get all sprints for a given board.
-     *
-     * @throws ApiServiceException
-     */
-    public function getAllSprints(): array
-    {
-        $sprints = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.sprints.getAllSprints', ['projectId' => '6']);
-
-        return $sprints;
-    }
-
-    /**
      * Get all issues for given board and sprint.
      *
+     * @param string $boardId id of the jira board to extract issues from
      * @param string $sprintId id of the sprint to extract issues for
      *
      * @return array array of issues
      *
      * @throws ApiServiceException
      */
-    public function getTicketsInSprint(string $sprintId): array
+    public function getIssuesInSprint(string $boardId, string $sprintId): array
     {
-        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', [
-            'searchCriteria' => [
-                'sprint' => $sprintId,
-            ],
-        ]);
+        $issues = [];
+        $fields = implode(
+            ',',
+            [
+                'timetracking',
+                'summary',
+                'status',
+                'assignee',
+                'project',
+            ]
+        );
 
-        return $result;
+        $startAt = 0;
+        while (true) {
+            $result = $this->get(self::API_PATH_BOARD.'/'.$boardId.'/sprint/'.$sprintId.'/issue', [
+                'startAt' => $startAt,
+                'fields' => $fields,
+            ]);
+            $issues = array_merge($issues, $result->issues);
+
+            $startAt += 50;
+
+            if ($startAt > $result->total) {
+                break;
+            }
+        }
+
+        return $issues;
     }
 
     /**
@@ -387,9 +420,11 @@ class JiraApiService implements ApiServiceInterface
         $projects = $planning->projects;
         $sprints = $planning->sprints;
 
+        $boardId = $this->defaultBoard;
+
         $sprintIssues = [];
 
-        $allSprints = $this->getAllSprints();
+        $allSprints = $this->getAllSprints($boardId);
 
         foreach ($allSprints as $sprintData) {
             // Expected sprint name examples:
@@ -408,6 +443,7 @@ class JiraApiService implements ApiServiceInterface
             } else {
                 $weeks = 1;
             }
+
             $sprint = new Sprint(
                 $sprintData->id,
                 $weeks,
@@ -415,27 +451,27 @@ class JiraApiService implements ApiServiceInterface
                 $this->weekGoalHigh * $weeks,
                 $sprintData->name,
             );
-
             $sprints->add($sprint);
 
-            $issues = $this->getTicketsInSprint($sprintData->id);
+            $issues = $this->getIssuesInSprint($boardId, $sprintData->id);
 
             $sprintIssues[$sprintData->id] = $issues;
         }
 
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issueData) {
-                if ('0' !== $issueData->status) {
-                    $projectKey = (string) $issueData->projectId;
-                    $projectDisplayName = $issueData->projectName;
-                    $hoursRemaining = $issueData->hourRemaining;
+                if ('done' !== $issueData->fields->status->statusCategory->key) {
+                    $projectData = $issueData->fields->project;
+                    $projectKey = (string) $projectData->key;
+                    $projectDisplayName = $projectData->name;
+                    $remainingSeconds = $issueData->fields->timetracking->remainingEstimateSeconds ?? 0;
 
-                    if (empty($issueData->editorId)) {
+                    if (empty($issueData->fields->assignee)) {
                         $assigneeKey = 'unassigned';
                         $assigneeDisplayName = 'Unassigned';
                     } else {
-                        $assigneeKey = (string) $issueData->editorId;
-                        $assigneeDisplayName = $issueData->editorFirstname.' '.$issueData->editorLastname;
+                        $assigneeKey = (string) $issueData->fields->assignee->key;
+                        $assigneeDisplayName = $issueData->fields->assignee->displayName;
                     }
 
                     // Add assignee if not already added.
@@ -453,7 +489,8 @@ class JiraApiService implements ApiServiceInterface
 
                     /** @var SprintSum $sprintSum */
                     $sprintSum = $assignee->sprintSums->get($sprintId);
-                    $sprintSum->sumHours += $hoursRemaining;
+                    $sprintSum->sumSeconds += $remainingSeconds;
+                    $sprintSum->sumHours = $sprintSum->sumSeconds / (60 * 60);
 
                     // Add assignee project if not already added.
                     if (!$assignee->projects->containsKey($projectKey)) {
@@ -472,15 +509,16 @@ class JiraApiService implements ApiServiceInterface
                     /** @var SprintSum $projectSprintSum */
                     $projectSprintSum = $assigneeProject->sprintSums->get($sprintId);
                     if (isset($projectSprintSum)) {
-                        $projectSprintSum->sumHours += $hoursRemaining;
+                        $projectSprintSum->sumSeconds += $remainingSeconds;
+                        $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
                     }
 
                     $assigneeProject->issues->add(
                         new Issue(
-                            $issueData->id,
-                            $issueData->description,
-                            isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                            $this->leantimeUrl.'/tickets/showTicket/'.$issueData->id,
+                            $issueData->key,
+                            $issueData->fields->summary,
+                            isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
+                            $this->jiraUrl.'/browse/'.$issueData->key,
                             $sprintId
                         )
                     );
@@ -503,7 +541,8 @@ class JiraApiService implements ApiServiceInterface
 
                     /** @var SprintSum $projectSprintSum */
                     $projectSprintSum = $project->sprintSums->get($sprintId);
-                    $projectSprintSum->sumHours += $hoursRemaining;
+                    $projectSprintSum->sumSeconds += $remainingSeconds;
+                    $projectSprintSum->sumHours = $projectSprintSum->sumSeconds / (60 * 60);
 
                     if (!$project->assignees->containsKey($assigneeKey)) {
                         $project->assignees->set($assigneeKey, new AssigneeProject(
@@ -521,13 +560,14 @@ class JiraApiService implements ApiServiceInterface
 
                     /** @var SprintSum $projectAssigneeSprintSum */
                     $projectAssigneeSprintSum = $projectAssignee->sprintSums->get($sprintId);
-                    $projectAssigneeSprintSum->sumHours += $hoursRemaining;
+                    $projectAssigneeSprintSum->sumSeconds += $remainingSeconds;
+                    $projectAssigneeSprintSum->sumHours = $projectAssigneeSprintSum->sumSeconds / (60 * 60);
 
                     $projectAssignee->issues->add(new Issue(
-                        $issueData->id,
-                        $issueData->description,
-                        isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                        $this->leantimeUrl.'/tickets/showTicket/'.$issueData->id,
+                        $issueData->key,
+                        $issueData->fields->summary,
+                        isset($issueData->fields->timetracking->remainingEstimateSeconds) ? $remainingSeconds / (60 * 60) : null,
+                        $this->jiraUrl.'/browse/'.$issueData->key,
                         $sprintId
                     ));
                 }
@@ -823,27 +863,26 @@ class JiraApiService implements ApiServiceInterface
     }
 
     /**
-     * Get from Leantime.
+     * Get from Jira.
+     *
+     * @TODO: Wrap the call in request function, they are 99% the same code.
      *
      * @throws ApiServiceException
      */
-    private function request(string $path, string $type, string $method, array $params = []): mixed
+    private function get(string $path, array $query = []): mixed
     {
         try {
-            $response = $this->projectTrackerApi->request($type, $path,
-                ['json' => [
-                    'jsonrpc' => '2.0',
-                    'method' => $method,
-                    'id' => '1',
-                    'params' => $params,
-                ]]
+            $response = $this->projectTrackerApi->request('GET', $path,
+                [
+                    'query' => $query,
+                ]
             );
 
             $body = $response->getContent(false);
             switch ($response->getStatusCode()) {
                 case 200:
                     if ($body) {
-                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR)->result;
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
                     }
                     break;
                 case 400:
@@ -866,6 +905,131 @@ class JiraApiService implements ApiServiceInterface
         }
 
         return null;
+    }
+
+    /**
+     * Post to Jira.
+     *
+     * @throws ApiServiceException
+     */
+    private function post(string $path, array $data): mixed
+    {
+        try {
+            $response = $this->projectTrackerApi->request('POST', $path,
+                [
+                    'json' => $data,
+                ]
+            );
+
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                case 201:
+                    if ($body) {
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                    }
+                    break;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+        } catch (\Throwable $e) {
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+        }
+
+        return null;
+    }
+
+    /**
+     * Put to Jira.
+     *
+     * @throws ApiServiceException
+     */
+    private function put(string $path, array $data): mixed
+    {
+        try {
+            $response = $this->projectTrackerApi->request('PUT', $path,
+                [
+                    'json' => $data,
+                ]
+            );
+
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                case 201:
+                    if ($body) {
+                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                    }
+                    break;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+        } catch (\Throwable $e) {
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+        }
+
+        return null;
+    }
+
+    /**
+     * Delete in Jira.
+     *
+     * @throws ApiServiceException
+     */
+    private function delete(string $path): bool
+    {
+        try {
+            $response = $this->projectTrackerApi->request('DELETE', $path);
+
+            $body = $response->getContent(false);
+            switch ($response->getStatusCode()) {
+                case 200:
+                case 204:
+                    return true;
+                case 400:
+                case 401:
+                case 403:
+                case 409:
+                    if ($body) {
+                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+                        if (!empty($error->errorMessages)) {
+                            $msg = array_pop($error->errorMessages);
+                        } else {
+                            $msg = $error->errors->projectKey;
+                        }
+                        throw new ApiServiceException($msg);
+                    }
+                    break;
+            }
+        } catch (\Throwable $e) {
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+        }
+
+        return false;
     }
 
     /**
