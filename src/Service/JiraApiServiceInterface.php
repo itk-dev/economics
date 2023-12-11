@@ -8,7 +8,6 @@ use App\Model\Invoices\IssueData;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
-use App\Model\SprintReport\SprintReportData;
 
 interface JiraApiServiceInterface
 {
@@ -29,10 +28,6 @@ interface JiraApiServiceInterface
     public function getPermissionsList(): array;
 
     public function getProject($key): mixed;
-
-    public function getProjectMilestones($key): mixed;
-
-    public function getMilestone($key): mixed;
 
     public function createProject(array $data): ?string;
 
@@ -60,8 +55,6 @@ interface JiraApiServiceInterface
     public function getIssuesInSprint(string $boardId, string $sprintId): array;
 
     public function getPlanningData(): PlanningData;
-
-    public function getSprintReportData(string $projectId, string $milestoneId): SprintReportData;
 
     /**
      * @return array<ClientData>

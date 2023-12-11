@@ -10,12 +10,21 @@ use App\Model\Planning\PlanningData;
 use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
 use App\Model\Planning\SprintSum;
+use App\Model\SprintReport\SprintReportData;
+use App\Model\SprintReport\SprintReportIssue;
+use App\Model\SprintReport\SprintReportSprint;
+use App\Model\SprintReport\SprintReportTag;
+use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LeantimeApiService implements LeantimeApiServiceInterface
 {
     private const API_PATH_JSONRPC = '/api/jsonrpc/';
+    private const NO_SPRINT = 'NoSprint';
+    private const PAST = 'PAST';
+    private const PRESENT = 'PRESENT';
+    private const FUTURE = 'FUTURE';
 
     public function __construct(
         protected readonly HttpClientInterface $leantimeProjectTrackerApi,
@@ -31,6 +40,47 @@ class LeantimeApiService implements LeantimeApiServiceInterface
         return [
             'base' => $this->leantimeUrl,
         ];
+    }
+
+    /**
+     * Get all projects, including archived.
+     *
+     * @throws ApiServiceException
+     */
+    public function getAllProjects(): mixed
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
+    }
+
+    /**
+     * Get project.
+     *
+     * @param $key
+     *   A project key or id
+     *
+     * @throws ApiServiceException
+     */
+    public function getProject($key): mixed
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getProject', ['id' => $key]);
+    }
+
+    /**
+     * Get milestone.
+     *
+     * @param $key
+     *   A milestone key or id
+     *
+     * @throws ApiServiceException
+     */
+    public function getMilestone($key): mixed
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getTicket', ['id' => $key]);
+    }
+
+    public function getProjectMilestones($key): mixed
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAllMilestones', ['searchCriteria' => ['currentProject' => $key, 'type' => 'milestone']]);
     }
 
     /**
@@ -61,6 +111,41 @@ class LeantimeApiService implements LeantimeApiServiceInterface
         ]);
 
         return $result;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    private function getIssueSprint($issueEntry): SprintReportSprint
+    {
+        $sprint = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.sprints.getSprint', ['id' => $issueEntry->sprint]);
+
+        if ($sprint) {
+            $sprintState = SprintStateEnum::OTHER;
+            $sprintTemporal = $this->getDateSpanTemporal($sprint->startDate, $sprint->endDate);
+
+            switch ($sprintTemporal) {
+                case self::PAST:
+                    $sprintState = SprintStateEnum::OTHER;
+                    break;
+                case self::PRESENT:
+                    $sprintState = SprintStateEnum::ACTIVE;
+                    break;
+                case self::FUTURE:
+                    $sprintState = SprintStateEnum::FUTURE;
+                    break;
+            }
+
+            return new SprintReportSprint(
+                $sprint->id,
+                $sprint->name,
+                $sprintState,
+                $sprint->startDate ? strtotime($sprint->startDate) : null,
+                $sprint->endDate ? strtotime($sprint->endDate) : null,
+            );
+        } else {
+            throw new ApiServiceException('Sprint not found', 404);
+        }
     }
 
     /**
@@ -242,6 +327,155 @@ class LeantimeApiService implements LeantimeApiServiceInterface
         return $planning;
     }
 
+    public function getTimesheetsForTicket($ticketId): mixed
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'ticketFilter' => $ticketId]);
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    private function getIssuesForProjectMilestone($projectId, $milestoneId): array
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'milestone' => $milestoneId]]);
+    }
+
+    /**
+     * @throws ApiServiceException
+     * @throws \Exception
+     */
+    public function getSprintReportData(string $projectId, string $milestoneId): SprintReportData
+    {
+        $sprintReportData = new SprintReportData();
+        $tags = $sprintReportData->tags;
+        $issues = $sprintReportData->issues;
+        $sprints = $sprintReportData->sprints;
+
+        $spentSum = 0;
+        $remainingSum = 0;
+
+        $tags->set('noTag', new SprintReportTag('noTag', 'Uden Tag'));
+
+        // Get version and project.
+        $milestone = $this->getMilestone($milestoneId);
+        $project = $this->getProject($projectId);
+
+        $issueEntries = $this->getIssuesForProjectMilestone($projectId, $milestoneId);
+
+        $issueCount = 1;
+        foreach ($issueEntries as $issueEntry) {
+            $issue = new SprintReportIssue();
+            $issues->add($issue);
+
+            // Set issue tag.
+            if (isset($issueEntry->tags)) {
+                $tagId = $this->tagToId($issueEntry->tags);
+                $tag = new SprintReportTag($tagId, $issueEntry->tags);
+                $tags->set($tagId, $tag);
+            } else {
+                $tag = $tags->get('NoTag');
+            }
+
+            if (!$tag instanceof SprintReportTag) {
+                continue;
+            }
+
+            $issue->tag = $tag;
+
+            // Get sprint for issue.
+            try {
+                $issueSprint = $this->getIssueSprint($issueEntry);
+
+                if (!$sprints->containsKey($issueSprint->id)) {
+                    $sprints->set($issueSprint->id, $issueSprint);
+                }
+                // Set which sprint the issue is assigned to.
+                if (SprintStateEnum::ACTIVE === $issueSprint->state || SprintStateEnum::FUTURE === $issueSprint->state) {
+                    $issue->assignedToSprint = $issueSprint;
+                }
+            } catch (ApiServiceException) {
+                // Ignore if sprint is not found.
+            }
+            $worklogs = $this->getTimesheetsForTicket($issueEntry->id);
+
+            foreach ($worklogs as $worklog) {
+                $workLogStarted = strtotime($worklog->workDate);
+
+                $worklogSprints = array_filter($sprints->toArray(), function ($sprintEntry) use ($workLogStarted) {
+                    /* @var SprintReportSprint $sprintEntry */
+                    return
+                        $sprintEntry->startDateTimestamp <= $workLogStarted
+                        && ($sprintEntry->completedDateTimstamp ?? $sprintEntry->endDateTimestamp) > $workLogStarted;
+                });
+
+                $worklogSprintId = self::NO_SPRINT;
+
+                if (!empty($worklogSprints)) {
+                    $worklogSprint = array_pop($worklogSprints);
+                    $worklogSprintId = $worklogSprint->id;
+                }
+                $newLoggedWork = (float) ($issue->tag->loggedWork->containsKey($worklogSprintId) ? $issue->tag->loggedWork->get($worklogSprintId) : 0) + $worklog->hours;
+                $issue->tag->loggedWork->set($worklogSprintId, $newLoggedWork);
+            }
+
+            // Accumulate spentSum.
+            $spentSum += $issueEntry->bookedHours;
+            $issue->tag->spentSum += $issueEntry->bookedHours;
+
+            // Accumulate remainingSum.
+            if ('0' !== $issueEntry->status && isset($issueEntry->hourRemaining)) {
+                $remainingEstimateSeconds = $issueEntry->hourRemaining;
+                $remainingSum += $remainingEstimateSeconds;
+
+                $issue->tag->remainingSum += $remainingEstimateSeconds;
+
+                if (!empty($issue->assignedToSprint)) {
+                    $assignedToSprint = $issue->assignedToSprint;
+                    $newRemainingWork = (float) ($issue->tag->remainingWork->containsKey($assignedToSprint->id) ? $issue->tag->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
+                    $issue->tag->remainingWork->set($assignedToSprint->id, $newRemainingWork);
+                    $issue->tag->plannedWorkSum += $remainingEstimateSeconds;
+                }
+            }
+            // Accumulate originalEstimateSum.
+            if (isset($issueEntry->planHours)) {
+                $issue->tag->originalEstimateSum += $issueEntry->planHours;
+
+                $sprintReportData->originalEstimateSum += $issueEntry->planHours;
+            }
+            ++$issueCount;
+        }
+
+        // Sort sprints by key.
+        /** @var \ArrayIterator $iterator */
+        $iterator = $sprints->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return mb_strtolower($a->id) <=> mb_strtolower($b->id);
+        });
+        $sprints = new ArrayCollection(iterator_to_array($iterator));
+
+        // Sort epics by name.
+        /** @var \ArrayIterator $iterator */
+        $iterator = $tags->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return mb_strtolower($a->name) <=> mb_strtolower($b->name);
+        });
+        $tags = new ArrayCollection(iterator_to_array($iterator));
+        // Calculate spent, remaining hours.
+        $spentHours = $spentSum;
+        $remainingHours = $remainingSum;
+
+        $sprintReportData->projectName = $project->name;
+        $sprintReportData->milestoneName = $milestone->headline;
+        $sprintReportData->remainingHours = $remainingHours;
+        $sprintReportData->spentHours = $spentHours;
+        $sprintReportData->spentSum = $spentSum;
+        $sprintReportData->projectHours = $spentHours + $remainingHours;
+        $sprintReportData->tags = $tags;
+        $sprintReportData->sprints = $sprints;
+
+        return $sprintReportData;
+    }
+
     /**
      * Get from Leantime.
      *
@@ -285,5 +519,32 @@ class LeantimeApiService implements LeantimeApiServiceInterface
         }
 
         return null;
+    }
+
+    private function getDateSpanTemporal($startDate, $endDate): string
+    {
+        $currentDate = time();
+        $startDate = strtotime($startDate);
+        $endDate = strtotime($endDate);
+        if ($startDate < $currentDate && $endDate > $currentDate) {
+            return self::PRESENT;
+        } elseif ($startDate < $currentDate && $endDate < $currentDate) {
+            return self::PAST;
+        } else {
+            return self::FUTURE;
+        }
+    }
+
+    private function tagToId($tag)
+    {
+        // Use md5 hash function to generate a fixed-length hash
+        $hash = md5($tag);
+
+        // Extract three unique numbers from the hash
+        $num1 = hexdec(substr($hash, 0, 8)) % 1000;
+        $num2 = hexdec(substr($hash, 8, 8)) % 1000;
+        $num3 = hexdec(substr($hash, 16, 8)) % 1000;
+
+        return "$num1$num2$num3";
     }
 }
