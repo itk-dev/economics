@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Form\SprintReportType;
 use App\Model\SprintReport\SprintReportFormData;
-use App\Service\ApiServiceInterface;
+use App\Service\JiraApiServiceInterface;
 use App\Service\SprintReportService;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SprintReportController extends AbstractController
 {
     public function __construct(
-        private readonly ApiServiceInterface $apiService,
+        private readonly JiraApiServiceInterface $apiService,
         private readonly SprintReportService $sprintReportService,
     ) {
     }
