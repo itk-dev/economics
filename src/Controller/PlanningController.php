@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\LeantimeApiService;
+use App\Service\ProjectTrackerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class PlanningController extends AbstractController
 {
     public function __construct(
-        private readonly LeantimeApiService $leantimeApiService
+        private readonly ProjectTrackerInterface $projectTracker
     ) {
     }
 
@@ -21,7 +21,7 @@ class PlanningController extends AbstractController
     #[Route('/', name: 'app_planning')]
     public function index(): Response
     {
-        $planningData = $this->leantimeApiService->getPlanningData();
+        $planningData = $this->projectTracker->getPlanningData();
 
         return $this->render('planning/index.html.twig', [
             'controller_name' => 'PlanningController',
