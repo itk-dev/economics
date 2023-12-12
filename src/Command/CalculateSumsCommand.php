@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Invoice;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -37,9 +38,13 @@ class CalculateSumsCommand extends Command
 
         $io->progressStart(count($invoices));
 
+        /** @var Invoice $invoice */
         foreach ($invoices as $invoice) {
             $io->progressAdvance();
-            $this->billingService->updateInvoiceTotalPrice($invoice);
+
+            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+                $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
+            }
         }
 
         $io->progressFinish();
