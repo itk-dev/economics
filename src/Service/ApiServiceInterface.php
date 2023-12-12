@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use App\Model\Invoices\IssueData;
-use App\Model\Invoices\ClientData;
 use App\Model\Invoices\AccountData;
+use App\Model\Invoices\ClientData;
+use App\Model\Invoices\IssueData;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
@@ -84,6 +84,8 @@ interface ApiServiceInterface
     public function getAllAccountData(): array;
 
     public function getAllProjectsV2(): SprintReportProjects;
+
     public function getProjectV2(string $projectId): SprintReportProject;
+
     public function getProjectVersions(string $projectId): SprintReportVersions;
 }

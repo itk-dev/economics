@@ -28,9 +28,11 @@ interface ProjectTrackerInterface
 
     // public function getTimesheetsForTicket($ticketId): mixed;
 
-    public function getSprintReportData(string $projectId, string $milestoneId): SprintReportData;
+    public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
 
     public function getAllProjectsV2(): SprintReportProjects;
+
     public function getProjectV2(string $projectId): SprintReportProject;
+
     public function getProjectVersions(string $projectId): SprintReportVersions;
 }
