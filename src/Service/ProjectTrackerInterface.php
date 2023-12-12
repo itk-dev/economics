@@ -6,7 +6,7 @@ use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
 
 interface ProjectTrackerInterface
-{    
+{
     public function getEndpoints(): array;
 
     public function getAllProjects(): mixed;
