@@ -11,6 +11,7 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Added create new buttons to top of invoices and project billing lists.
 * Added command to recalculate sums for all invoices.
 * Changed datetime form fields to date.
+* Fixed select all on worklog list.
 
 ## 1.0.2
 

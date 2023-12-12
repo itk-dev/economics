@@ -17,7 +17,7 @@ export default class extends Controller {
     toggleAll() {
         this.checkboxTargets.forEach((target) => {
             target.checked = this.selectAll;
-            this.dirtyWorklogs.add(target.element.dataset.id);
+            this.dirtyWorklogs.add(target.dataset.id);
         });
 
         this.selectAll = !this.selectAll;
