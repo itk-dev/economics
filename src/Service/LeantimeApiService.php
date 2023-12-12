@@ -13,7 +13,7 @@ use App\Model\Planning\SprintSum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class LeantimeApiService implements LeantimeApiServiceInterface
+class LeantimeApiService implements ProjectTrackerInterface
 {
     private const API_PATH_JSONRPC = '/api/jsonrpc/';
 

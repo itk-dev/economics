@@ -10,7 +10,7 @@ use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
 
-interface JiraApiServiceInterface
+interface ApiServiceInterface
 {
     public function getEndpoints(): array;
 

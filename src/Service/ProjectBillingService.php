@@ -24,7 +24,7 @@ class ProjectBillingService
         private readonly AccountRepository $accountRepository,
         private readonly ProjectBillingRepository $projectBillingRepository,
         private readonly BillingService $billingService,
-        private readonly JiraApiServiceInterface $apiService,
+        private readonly ApiServiceInterface $apiService,
         private readonly IssueRepository $issueRepository,
         private readonly ClientRepository $clientRepository,
         private readonly WorklogRepository $worklogRepository,

@@ -2,16 +2,16 @@
 
 namespace App\Controller;
 
-use App\Service\LeantimeApiServiceInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\LeantimeApiService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/planning')]
 class PlanningController extends AbstractController
 {
     public function __construct(
-        private readonly LeantimeApiServiceInterface $leantimeApiService
+        private readonly LeantimeApiService $leantimeApiService
     ) {
     }
 

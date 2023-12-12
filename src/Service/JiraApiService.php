@@ -25,7 +25,7 @@ use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class JiraApiService implements JiraApiServiceInterface
+class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
 {
     private const PROJECT_TRACKER_IDENTIFIER = 'JIRA';
     private const CPB_ACCOUNT_MANAGER = 'anbjv';

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Form\CreateProjectType;
-use App\Service\JiraApiServiceInterface;
+use App\Service\ApiServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,14 +18,14 @@ class CreateProjectController extends AbstractController
     private const SESSION_KEY = 'create_project_form_data';
 
     public function __construct(
-        private readonly JiraApiServiceInterface $jiraApiService
+        private readonly ApiServiceInterface $apiService
     ) {
     }
 
     /**
      * Create a project and all related entities.
      *
-     * TODO: Refactor code to move Jira specifics into JiraApiService.
+     * TODO: Refactor code to move Jira specifics into apiService.
      */
     #[Route('/new', name: 'create_project_form')]
     public function createProject(Request $request): Response
@@ -36,9 +36,9 @@ class CreateProjectController extends AbstractController
         // Set form data.
         $formData = [
             'form' => $form->getData(),
-            'projects' => $this->jiraApiService->getAllProjects(),
-            'accounts' => $this->jiraApiService->getAllAccounts(),
-            'projectCategories' => $this->jiraApiService->getAllProjectCategories(),
+            'projects' => $this->apiService->getAllProjects(),
+            'accounts' => $this->apiService->getAllAccounts(),
+            'projectCategories' => $this->apiService->getAllProjectCategories(),
             'allTeamsConfig' => (array) $this->getParameter('teamconfig'),
         ];
 
@@ -52,11 +52,11 @@ class CreateProjectController extends AbstractController
             }
 
             // Create project.
-            $newProjectKey = $this->jiraApiService->createProject($formData);
+            $newProjectKey = $this->apiService->createProject($formData);
             if (!$newProjectKey) {
                 exit('Error: No project was created.');
             } else {
-                $project = $this->jiraApiService->getProject($newProjectKey);
+                $project = $this->apiService->getProject($newProjectKey);
             }
 
             // Check for new account.
@@ -75,7 +75,7 @@ class CreateProjectController extends AbstractController
                 // Check for new customer.
                 if ($formData['form']['new_customer']) {
                     // Create customer.
-                    $customer = $this->jiraApiService->createTimeTrackerCustomer($formData['form']['new_customer_name'], $formData['form']['new_customer_key']);
+                    $customer = $this->apiService->createTimeTrackerCustomer($formData['form']['new_customer_name'], $formData['form']['new_customer_key']);
 
                     // Set customer key from new customer.
                     $formData['form']['new_account_customer'] = $customer->key;
@@ -91,7 +91,7 @@ class CreateProjectController extends AbstractController
                 }
 
                 // Create account if new account is selected.
-                $account = $this->jiraApiService->createTimeTrackerAccount(
+                $account = $this->apiService->createTimeTrackerAccount(
                     $formData['form']['new_account_name'],
                     $formData['form']['new_account_key'],
                     $formData['form']['new_account_customer'],
@@ -99,15 +99,15 @@ class CreateProjectController extends AbstractController
                 );
             } else {
                 // Set account key from selected account in form.
-                $account = $this->jiraApiService->getTimeTrackerAccount($formData['form']['account']);
+                $account = $this->apiService->getTimeTrackerAccount($formData['form']['account']);
             }
 
             // Add project to tempo account
-            $this->jiraApiService->addProjectToTimeTrackerAccount($project, $account);
+            $this->apiService->addProjectToTimeTrackerAccount($project, $account);
 
             // Create project board
             if (!empty($formData['selectedTeamConfig']) && !empty($formData['selectedTeamConfig']['board_template'])) {
-                $this->jiraApiService->createProjectBoard($formData['selectedTeamConfig']['board_template']['type'], $project);
+                $this->apiService->createProjectBoard($formData['selectedTeamConfig']['board_template']['type'], $project);
             }
 
             $session = $request->getSession();
@@ -133,7 +133,7 @@ class CreateProjectController extends AbstractController
     /**
      * Receipt page displayed when a project was created.
      *
-     * TODO: Refactor code to move Jira specifics into JiraApiService.
+     * TODO: Refactor code to move Jira specifics into apiService.
      *
      * @Route("/submitted", name="create_project_submitted")
      */
@@ -144,7 +144,7 @@ class CreateProjectController extends AbstractController
         $formData = $session->get(self::SESSION_KEY);
         $session->remove(self::SESSION_KEY);
 
-        $endpoints = $this->jiraApiService->getEndpoints();
+        $endpoints = $this->apiService->getEndpoints();
         $url = $endpoints['base'];
         $url = is_string($url) ? $url : '';
         $teamId = $formData['selectedTeamConfig']['tempo_team_id'] ?? '';
@@ -178,7 +178,7 @@ class CreateProjectController extends AbstractController
     private function allProjectsByKey(): array
     {
         $projects = [];
-        $allProjects = $this->jiraApiService->getAllProjects();
+        $allProjects = $this->apiService->getAllProjects();
         foreach ($allProjects as $project) {
             $projects[$project->key] = [
                 'key' => $project->key,
