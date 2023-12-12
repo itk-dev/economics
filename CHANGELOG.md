@@ -6,6 +6,8 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ## [Unreleased]
 
+## 1.0.3
+
 * Changed redirect after create a manual invoice entry.
 * Removed export options when client is not set.
 * Added create new buttons to top of invoices and project billing lists.
