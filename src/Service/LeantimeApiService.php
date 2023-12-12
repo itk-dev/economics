@@ -2,19 +2,20 @@
 
 namespace App\Service;
 
-use App\Exception\ApiServiceException;
-use App\Model\Planning\Assignee;
-use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
-use App\Model\Planning\PlanningData;
-use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
+use App\Model\Planning\Project;
+use App\Model\Planning\Assignee;
 use App\Model\Planning\SprintSum;
-use App\Model\SprintReport\SprintReportData;
-use App\Model\SprintReport\SprintReportIssue;
-use App\Model\SprintReport\SprintReportSprint;
+use App\Model\Planning\PlanningData;
+use App\Exception\ApiServiceException;
+use App\Model\Planning\AssigneeProject;
 use App\Model\SprintReport\SprintReportTag;
 use App\Model\SprintReport\SprintStateEnum;
+use App\Model\SprintReport\SprintReportData;
+use App\Model\SprintReport\SprintReportEpic;
+use App\Model\SprintReport\SprintReportIssue;
+use App\Model\SprintReport\SprintReportSprint;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -142,6 +143,7 @@ class LeantimeApiService implements ProjectTrackerInterface
                 $sprintState,
                 $sprint->startDate ? strtotime($sprint->startDate) : null,
                 $sprint->endDate ? strtotime($sprint->endDate) : null,
+                NULL,
             );
         } else {
             throw new ApiServiceException('Sprint not found', 404);
@@ -347,14 +349,14 @@ class LeantimeApiService implements ProjectTrackerInterface
     public function getSprintReportData(string $projectId, string $milestoneId): SprintReportData
     {
         $sprintReportData = new SprintReportData();
-        $tags = $sprintReportData->tags;
+        $epics = $sprintReportData->epics;
         $issues = $sprintReportData->issues;
         $sprints = $sprintReportData->sprints;
 
         $spentSum = 0;
         $remainingSum = 0;
 
-        $tags->set('noTag', new SprintReportTag('noTag', 'Uden Tag'));
+        $epics->set('noEpic', new SprintReportEpic('noEpic', 'Uden Tag'));
 
         // Get version and project.
         $milestone = $this->getMilestone($milestoneId);
@@ -370,17 +372,17 @@ class LeantimeApiService implements ProjectTrackerInterface
             // Set issue tag.
             if (isset($issueEntry->tags)) {
                 $tagId = $this->tagToId($issueEntry->tags);
-                $tag = new SprintReportTag($tagId, $issueEntry->tags);
-                $tags->set($tagId, $tag);
+                $tag = new SprintReportEpic($tagId, $issueEntry->tags);
+                $epics->set($tagId, $tag);
             } else {
-                $tag = $tags->get('NoTag');
+                $tag = $epics->get('noEpic');
             }
 
-            if (!$tag instanceof SprintReportTag) {
+            if (!$tag instanceof SprintReportEpic) {
                 continue;
             }
 
-            $issue->tag = $tag;
+            $issue->epic = $tag;
 
             // Get sprint for issue.
             try {
@@ -414,31 +416,31 @@ class LeantimeApiService implements ProjectTrackerInterface
                     $worklogSprint = array_pop($worklogSprints);
                     $worklogSprintId = $worklogSprint->id;
                 }
-                $newLoggedWork = (float) ($issue->tag->loggedWork->containsKey($worklogSprintId) ? $issue->tag->loggedWork->get($worklogSprintId) : 0) + $worklog->hours;
-                $issue->tag->loggedWork->set($worklogSprintId, $newLoggedWork);
+                $newLoggedWork = (float) ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklog->hours;
+                $issue->epic->loggedWork->set($worklogSprintId, $newLoggedWork);
             }
 
             // Accumulate spentSum.
             $spentSum += $issueEntry->bookedHours;
-            $issue->tag->spentSum += $issueEntry->bookedHours;
+            $issue->epic->spentSum += $issueEntry->bookedHours;
 
             // Accumulate remainingSum.
             if ('0' !== $issueEntry->status && isset($issueEntry->hourRemaining)) {
                 $remainingEstimateSeconds = $issueEntry->hourRemaining;
                 $remainingSum += $remainingEstimateSeconds;
 
-                $issue->tag->remainingSum += $remainingEstimateSeconds;
+                $issue->epic->remainingSum += $remainingEstimateSeconds;
 
                 if (!empty($issue->assignedToSprint)) {
                     $assignedToSprint = $issue->assignedToSprint;
-                    $newRemainingWork = (float) ($issue->tag->remainingWork->containsKey($assignedToSprint->id) ? $issue->tag->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
-                    $issue->tag->remainingWork->set($assignedToSprint->id, $newRemainingWork);
-                    $issue->tag->plannedWorkSum += $remainingEstimateSeconds;
+                    $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
+                    $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
+                    $issue->epic->plannedWorkSum += $remainingEstimateSeconds;
                 }
             }
             // Accumulate originalEstimateSum.
             if (isset($issueEntry->planHours)) {
-                $issue->tag->originalEstimateSum += $issueEntry->planHours;
+                $issue->epic->originalEstimateSum += $issueEntry->planHours;
 
                 $sprintReportData->originalEstimateSum += $issueEntry->planHours;
             }
@@ -455,22 +457,22 @@ class LeantimeApiService implements ProjectTrackerInterface
 
         // Sort epics by name.
         /** @var \ArrayIterator $iterator */
-        $iterator = $tags->getIterator();
+        $iterator = $epics->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->name) <=> mb_strtolower($b->name);
         });
-        $tags = new ArrayCollection(iterator_to_array($iterator));
+        $epics = new ArrayCollection(iterator_to_array($iterator));
         // Calculate spent, remaining hours.
         $spentHours = $spentSum;
         $remainingHours = $remainingSum;
 
         $sprintReportData->projectName = $project->name;
-        $sprintReportData->milestoneName = $milestone->headline;
+        $sprintReportData->versionName = $milestone->headline;
         $sprintReportData->remainingHours = $remainingHours;
         $sprintReportData->spentHours = $spentHours;
         $sprintReportData->spentSum = $spentSum;
         $sprintReportData->projectHours = $spentHours + $remainingHours;
-        $sprintReportData->tags = $tags;
+        $sprintReportData->epics = $epics;
         $sprintReportData->sprints = $sprints;
 
         return $sprintReportData;

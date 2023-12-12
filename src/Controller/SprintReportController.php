@@ -68,17 +68,17 @@ class SprintReportController extends AbstractController
 
         if (!empty($requestData['projectId'])) {
             $project = $this->projectTracker->getProject($requestData['projectId']);
-            $milestones = $this->projectTracker->getProjectMilestones($requestData['projectId']);
+            $versions = $this->projectTracker->getProjectMilestones($requestData['projectId']);
 
-            $milestoneChoices = [];
-            foreach ($milestones as $milestone) {
-                $milestoneChoices[$milestone->headline] = $milestone->id;
+            $versionChoices = [];
+            foreach ($versions as $version) {
+                $versionChoices[$version->headline] = $version->id;
             }
 
-            // Override milestoneId with element with choices.
-            $form->add('milestoneId', ChoiceType::class, [
+            // Override versionId with element with choices.
+            $form->add('versionId', ChoiceType::class, [
                 'placeholder' => 'sprint_report.select_an_option',
-                'choices' => $milestoneChoices,
+                'choices' => $versionChoices,
                 'required' => true,
                 'label' => 'sprint_report.select_version',
                 'label_attr' => ['class' => 'label'],
@@ -95,12 +95,12 @@ class SprintReportController extends AbstractController
             $sprintReportFormData = $form->getData();
 
             $projectId = $form->get('projectId')->getData();
-            $milestoneId = $form->get('milestoneId')->getData();
+            $versionId = $form->get('versionId')->getData();
 
-            if (!empty($projectId) && !empty($milestoneId)) {
-                $reportData = $this->projectTracker->getSprintReportData($projectId, $milestoneId);
+            if (!empty($projectId) && !empty($versionId)) {
+                $reportData = $this->projectTracker->getSprintReportData($projectId, $versionId);
 
-                $budget = $this->sprintReportService->getBudget($projectId, $milestoneId);
+                $budget = $this->sprintReportService->getBudget($projectId, $versionId);
             }
         }
 

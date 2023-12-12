@@ -8,7 +8,7 @@
         </tr>
         <tr>
             <td class="table-cell-heading">{{ 'sprint_report.sub.version'|trans }}</td>
-            <td class="table-cell">{{ report.milestoneName }}</td>
+            <td class="table-cell">{{ report.versionName }}</td>
         </tr>
         {% if budget is defined %}
             <tr>
@@ -83,12 +83,12 @@
         </tr>
         </thead>
         <tbody>
-        {% for tag in report.tags %}
+        {% for epic in report.epics %}
             <tr>
-                <td class="table-cell">{{ tag.name }}</td>
-                <td class="table-cell">{{ tag.originalEstimateSum }}</td>
-                <td class="table-cell">{{ tag.remainingSum }}</td>
-                <td class="table-cell">{{ tag.spentSum }}</td>
+                <td class="table-cell">{{ epic.name }}</td>
+                <td class="table-cell">{{ epic.originalEstimateSum }}</td>
+                <td class="table-cell">{{ epic.remainingSum }}</td>
+                <td class="table-cell">{{ epic.spentSum }}</td>
             </tr>
         {% endfor %}
         <tr>
@@ -119,21 +119,21 @@
         </tr>
         </thead>
         <tbody>
-        {% for tag in report.tags %}
+        {% for epic in report.epics %}
             <tr>
-                <td class="table-cell">{{ tag.name }}</td>
-                <td class="table-cell">{{ tag.originalEstimateSum }}</td>
-                <td class="table-cell">{{ tag.spentSum }}</td>
+                <td class="table-cell">{{ epic.name }}</td>
+                <td class="table-cell">{{ epic.originalEstimateSum }}</td>
+                <td class="table-cell">{{ epic.spentSum }}</td>
                 <td class="table-cell">
-                    {% if tag.loggedWork.containsKey('NoSprint') %}
-                        {{ tag.loggedWork.get('NoSprint') }}
+                    {% if epic.loggedWork.containsKey('NoSprint') %}
+                        {{ epic.loggedWork.get('NoSprint') }}
                     {% endif %}
                 </td>
                 {% for sprint in report.sprints %}
                     {% if sprint.state != 'FUTURE' %}
                         <td class="table-cell">
-                            {% if tag.loggedWork.containsKey(sprint.id) %}
-                                {{ tag.loggedWork.get(sprint.id) }}
+                            {% if epic.loggedWork.containsKey(sprint.id) %}
+                                {{ epic.loggedWork.get(sprint.id) }}
                             {% endif %}
                         </td>
                     {% endif %}
@@ -161,17 +161,17 @@
         </tr>
         </thead>
         <tbody>
-        {% for tag in report.tags %}
+        {% for epic in report.epics %}
             <tr>
-                <td class="table-cell">{{ tag.name }}</td>
-                <td class="table-cell">{{ tag.originalEstimateSum }}</td>
-                <td class="table-cell">{{ tag.remainingSum }}</td>
-                <td class="table-cell">{{ tag.plannedWorkSum}}</td>
+                <td class="table-cell">{{ epic.name }}</td>
+                <td class="table-cell">{{ epic.originalEstimateSum }}</td>
+                <td class="table-cell">{{ epic.remainingSum }}</td>
+                <td class="table-cell">{{ epic.plannedWorkSum}}</td>
                 {% for sprint in report.sprints %}
                     {% if sprint.state == 'FUTURE' or sprint.state == 'ACTIVE' %}
                         <td class="table-cell">
-                            {% if tag.remainingWork.containsKey(sprint.id) %}
-                                {{ tag.remainingWork.get(sprint.id) }}
+                            {% if epic.remainingWork.containsKey(sprint.id) %}
+                                {{ epic.remainingWork.get(sprint.id) }}
                             {% endif %}
                         </td>
                     {% endif %}
