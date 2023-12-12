@@ -25,7 +25,7 @@ class CreateProjectController extends AbstractController
     /**
      * Create a project and all related entities.
      *
-     * TODO: Refactor code to move Jira specifics into apiService.
+     * TODO: Refactor code to move Jira specifics into JiraApiService.
      */
     #[Route('/new', name: 'create_project_form')]
     public function createProject(Request $request): Response
@@ -133,7 +133,7 @@ class CreateProjectController extends AbstractController
     /**
      * Receipt page displayed when a project was created.
      *
-     * TODO: Refactor code to move Jira specifics into apiService.
+     * TODO: Refactor code to move Jira specifics into JiraApiService.
      *
      * @Route("/submitted", name="create_project_submitted")
      */
