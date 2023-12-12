@@ -14,12 +14,11 @@ final class Version20230101000001 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Removes unused tables.';
     }
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE expense DROP FOREIGN KEY FK_2D3A8DA6A51E131A');
         $this->addSql('ALTER TABLE debtor_user DROP FOREIGN KEY FK_CB4B6CA3A76ED395');
         $this->addSql('ALTER TABLE debtor_user DROP FOREIGN KEY FK_CB4B6CA3B043EC6B');
@@ -29,11 +28,16 @@ final class Version20230101000001 extends AbstractMigration
         $this->addSql('DROP TABLE fos_user');
         $this->addSql('DROP TABLE debtor_user');
         $this->addSql('DROP TABLE expense');
+
+        $this->addSql('ALTER TABLE project DROP avatar_url');
+        $this->addSql('ALTER TABLE project CHANGE url project_tracker_project_url VARCHAR(255) NOT NULL');
+        $this->addSql('ALTER TABLE project CHANGE jira_key project_tracker_key VARCHAR(255) NOT NULL');
+        $this->addSql('ALTER TABLE project CHANGE jira_id project_tracker_id INT NOT NULL');
+        $this->addSql('ALTER TABLE invoice CHANGE default_pay_to_account default_receiver_account VARCHAR(255) DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE expense (id INT AUTO_INCREMENT NOT NULL, invoice_entry_id INT DEFAULT NULL, is_billed TINYINT(1) NOT NULL, expense_id INT NOT NULL, created_by VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, updated_by VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, INDEX IDX_2D3A8DA6A51E131A (invoice_entry_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
         $this->addSql('CREATE TABLE expense_category (id INT NOT NULL, name VARCHAR(255) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, unit_price NUMERIC(16, 4) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
         $this->addSql('CREATE TABLE debtor (id INT AUTO_INCREMENT NOT NULL, number INT NOT NULL, label VARCHAR(255) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
@@ -43,5 +47,10 @@ final class Version20230101000001 extends AbstractMigration
         $this->addSql('ALTER TABLE expense ADD CONSTRAINT FK_2D3A8DA6A51E131A FOREIGN KEY (invoice_entry_id) REFERENCES invoice_entry (id)');
         $this->addSql('ALTER TABLE debtor_user ADD CONSTRAINT FK_CB4B6CA3A76ED395 FOREIGN KEY (user_id) REFERENCES fos_user (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE debtor_user ADD CONSTRAINT FK_CB4B6CA3B043EC6B FOREIGN KEY (debtor_id) REFERENCES debtor (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE project ADD avatar_url VARCHAR(255) NOT NULL');
+        $this->addSql('ALTER TABLE project CHANGE project_tracker_project_url url VARCHAR(255) NOT NULL');
+        $this->addSql('ALTER TABLE project CHANGE project_tracker_key jira_key VARCHAR(255) NOT NULL');
+        $this->addSql('ALTER TABLE project CHANGE project_tracker_id jira_id INT NOT NULL');
+        $this->addSql('ALTER TABLE invoice CHANGE default_receiver_account default_pay_to_account VARCHAR(255) DEFAULT NULL');
     }
 }
