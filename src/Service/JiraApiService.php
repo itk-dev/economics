@@ -3,25 +3,28 @@
 namespace App\Service;
 
 use App\Enum\ClientTypeEnum;
-use App\Exception\ApiServiceException;
-use App\Model\Invoices\AccountData;
-use App\Model\Invoices\ClientData;
+use App\Model\Planning\Issue;
+use App\Model\Planning\Sprint;
+use App\Model\Planning\Project;
+use App\Model\Planning\Assignee;
 use App\Model\Invoices\IssueData;
+use App\Model\Planning\SprintSum;
+use App\Model\Invoices\ClientData;
+use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\VersionData;
 use App\Model\Invoices\WorklogData;
-use App\Model\Planning\Assignee;
-use App\Model\Planning\AssigneeProject;
-use App\Model\Planning\Issue;
 use App\Model\Planning\PlanningData;
-use App\Model\Planning\Project;
-use App\Model\Planning\Sprint;
-use App\Model\Planning\SprintSum;
+use App\Exception\ApiServiceException;
+use App\Model\Planning\AssigneeProject;
+use App\Model\SprintReport\SprintStateEnum;
 use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
-use App\Model\SprintReport\SprintStateEnum;
+use App\Model\SprintReport\SprintReportProject;
+use App\Model\SprintReport\SprintReportProjects;
+use App\Model\SprintReport\SprintReportVersions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -130,7 +133,38 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return $this->get(self::API_PATH_MY_PERMISSIONS);
     }
 
-    /**
+  /**
+   * Get all projects, including archived.
+   *
+   * @throws ApiServiceException
+   * 
+   * @return SprintReportProjects array of SprintReportProjects
+   */
+  public function getAllProjectsV2(): SprintReportProjects
+  {
+    return new SprintReportProjects();
+  }
+  
+     /**
+   * Get projectV2.
+   *
+   * @param $key
+   *   A project key or id
+   *
+   * @throws ApiServiceException
+   * 
+   * @return SprintReportProject SprintReportProject
+   */
+  public function getProjectV2(string $projectId): SprintReportProject {
+    return new SprintReportProject("", "");
+  }
+
+  public function getProjectVersions(string $projectId): SprintReportVersions 
+  {
+    return new SprintReportVersions();
+  }
+
+  /**
      * Get list of allowed permissions for current user.
      *
      * @throws ApiServiceException

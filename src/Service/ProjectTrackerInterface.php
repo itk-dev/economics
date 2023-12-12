@@ -4,6 +4,9 @@ namespace App\Service;
 
 use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
+use App\Model\SprintReport\SprintReportProject;
+use App\Model\SprintReport\SprintReportProjects;
+use App\Model\SprintReport\SprintReportVersions;
 
 interface ProjectTrackerInterface
 {
@@ -26,4 +29,8 @@ interface ProjectTrackerInterface
     // public function getTimesheetsForTicket($ticketId): mixed;
 
     public function getSprintReportData(string $projectId, string $milestoneId): SprintReportData;
+
+    public function getAllProjectsV2(): SprintReportProjects;
+    public function getProjectV2(string $projectId): SprintReportProject;
+    public function getProjectVersions(string $projectId): SprintReportVersions;
 }
