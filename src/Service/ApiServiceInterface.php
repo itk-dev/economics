@@ -8,6 +8,7 @@ use App\Model\Invoices\IssueData;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
+use App\Model\SprintReport\SprintReportData;
 
 interface ApiServiceInterface
 {
@@ -55,6 +56,8 @@ interface ApiServiceInterface
     public function getIssuesInSprint(string $boardId, string $sprintId): array;
 
     public function getPlanningData(): PlanningData;
+
+    public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
 
     /**
      * @return array<ClientData>
