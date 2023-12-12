@@ -38,11 +38,11 @@ class SprintReportController extends AbstractController
             'csrf_protection' => false,
         ]);
 
-        $projects = $this->projectTracker->getAllProjects();
+        $projectCollection = $this->projectTracker->getAllProjectsV2();
 
         $projectChoices = [];
 
-        foreach ($projects as $project) {
+        foreach ($projectCollection->projects as $project) {
             $projectChoices[$project->name] = $project->id;
         }
 
@@ -66,11 +66,11 @@ class SprintReportController extends AbstractController
         }
 
         if (!empty($requestData['projectId'])) {
-            $project = $this->projectTracker->getProject($requestData['projectId']);
-            $versions = $this->projectTracker->getProjectMilestones($requestData['projectId']);
+            $project = $this->projectTracker->getProjectV2($requestData['projectId']);
+            $versionCollection = $this->projectTracker->getProjectVersions($requestData['projectId']);
 
             $versionChoices = [];
-            foreach ($versions as $version) {
+            foreach ($versionCollection->versions as $version) {
                 $versionChoices[$version->headline] = $version->id;
             }
 
