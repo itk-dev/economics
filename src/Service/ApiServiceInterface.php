@@ -9,7 +9,7 @@ use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
 
-interface JiraApiServiceInterface
+interface ApiServiceInterface
 {
     public function getEndpoints(): array;
 

@@ -4,7 +4,8 @@ namespace App\Controller;
 
 use App\Form\SprintReportType;
 use App\Model\SprintReport\SprintReportFormData;
-use App\Service\LeantimeApiServiceInterface;
+use App\Service\ApiServiceInterface;
+use App\Service\ProjectTrackerInterface;
 use App\Service\SprintReportService;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
@@ -20,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SprintReportController extends AbstractController
 {
     public function __construct(
-        private readonly LeantimeApiServiceInterface $leantimeApiService,
+        private readonly ProjectTrackerInterface $projectTracker,
         private readonly SprintReportService $sprintReportService,
     ) {
     }
@@ -38,7 +39,7 @@ class SprintReportController extends AbstractController
             'csrf_protection' => false,
         ]);
 
-        $projects = $this->leantimeApiService->getAllProjects();
+        $projects = $this->projectTracker->getAllProjects();
 
         $projectChoices = [];
 
@@ -66,8 +67,8 @@ class SprintReportController extends AbstractController
         }
 
         if (!empty($requestData['projectId'])) {
-            $project = $this->leantimeApiService->getProject($requestData['projectId']);
-            $milestones = $this->leantimeApiService->getProjectMilestones($requestData['projectId']);
+            $project = $this->projectTracker->getProject($requestData['projectId']);
+            $milestones = $this->projectTracker->getProjectMilestones($requestData['projectId']);
 
             $milestoneChoices = [];
             foreach ($milestones as $milestone) {
@@ -97,7 +98,7 @@ class SprintReportController extends AbstractController
             $milestoneId = $form->get('milestoneId')->getData();
 
             if (!empty($projectId) && !empty($milestoneId)) {
-                $reportData = $this->leantimeApiService->getSprintReportData($projectId, $milestoneId);
+                $reportData = $this->projectTracker->getSprintReportData($projectId, $milestoneId);
 
                 $budget = $this->sprintReportService->getBudget($projectId, $milestoneId);
             }
@@ -139,7 +140,7 @@ class SprintReportController extends AbstractController
         $projectId = (string) $request->query->get('projectId');
         $versionId = (string) $request->query->get('versionId');
 
-        $reportData = $this->leantimeApiService->getSprintReportData($projectId, $versionId);
+        $reportData = $this->projectTracker->getSprintReportData($projectId, $versionId);
 
         $html = $this->renderView('sprint_report/pdf.html.twig', [
             'report' => $reportData,
