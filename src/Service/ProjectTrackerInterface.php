@@ -10,7 +10,6 @@ use App\Model\SprintReport\SprintReportVersions;
 
 interface ProjectTrackerInterface
 {
-
     public function getPlanningData(): PlanningData;
 
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
