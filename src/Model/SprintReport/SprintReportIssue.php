@@ -5,5 +5,5 @@ namespace App\Model\SprintReport;
 class SprintReportIssue
 {
     public SprintReportSprint $assignedToSprint;
-    public SprintReportTag $tag;
+    public SprintReportEpic $epic;
 }
