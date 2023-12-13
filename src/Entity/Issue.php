@@ -38,8 +38,8 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $tagName = null;
 
-    #[ORM\ManyToMany(targetEntity: Milestone::class, inversedBy: 'issues')]
-    private Collection $milestones;
+    #[ORM\ManyToMany(targetEntity: Version::class, inversedBy: 'issues')]
+    private Collection $versions;
 
     #[ORM\OneToMany(mappedBy: 'issue', targetEntity: Worklog::class)]
     private Collection $worklogs;
@@ -52,7 +52,7 @@ class Issue extends AbstractBaseEntity
 
     public function __construct()
     {
-        $this->milestones = new ArrayCollection();
+        $this->versions = new ArrayCollection();
         $this->worklogs = new ArrayCollection();
     }
 
@@ -153,25 +153,25 @@ class Issue extends AbstractBaseEntity
     }
 
     /**
-     * @return Collection<int, Milestone>
+     * @return Collection<int, Version>
      */
-    public function getMilestones(): Collection
+    public function getVersions(): Collection
     {
-        return $this->milestones;
+        return $this->versions;
     }
 
-    public function addMilestone(Milestone $milestone): self
+    public function addVersion(Version $version): self
     {
-        if (!$this->milestones->contains($milestone)) {
-            $this->milestones->add($milestone);
+        if (!$this->versions->contains($version)) {
+            $this->versions->add($version);
         }
 
         return $this;
     }
 
-    public function removeMilestone(Milestone $milestone): self
+    public function removeVersion(Version $version): self
     {
-        $this->milestones->removeElement($milestone);
+        $this->versions->removeElement($version);
 
         return $this;
     }
