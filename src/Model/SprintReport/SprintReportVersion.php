@@ -5,11 +5,13 @@ namespace App\Model\SprintReport;
 class SprintReportVersion
 {
     public string $id;
-    public string $headline;
+    public string $name;
+    public string $projectTrackerId;
 
-    public function __construct(string $id, string $headline)
+    public function __construct(string $id, string $name, string $projectTrackerId)
     {
         $this->id = $id;
-        $this->headline = $headline;
+        $this->name = $name;
+        $this->projectTrackerId = $projectTrackerId;
     }
 }
