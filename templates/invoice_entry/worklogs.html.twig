@@ -82,10 +82,14 @@
                     </tr>
                 {% endif %}
                 <tr class="table-tr sticky-row">
-                    <td colspan="8" class="table-td">
+                    <td colspan="4" class="table-td">
                         <button type="submit" class="button mr-5" data-action="worklog-select#submitForm" data-worklog-select-target="submitButton">{{ 'worklog.action_save'|trans }}</button>
                         <span class="hidden" data-worklog-select-target="spinner">loading...</span>
                         <span class="hidden" data-worklog-select-target="result"></span>
+                    </td>
+                    <td colspan="4">
+                        <a class="link" style="float: right; margin-right: 2em" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+                        <a class="link" style="float: right; margin-right: 2em" href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}) }}">{{ 'invoices.back_to_invoice_entry'|trans }}</a>
                     </td>
                 </tr>
                 </tbody>

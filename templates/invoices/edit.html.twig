@@ -66,12 +66,20 @@
             </ul>
             {% endif %}
             <div class="actions-right">
-                <a type="button" href="{{ path('app_invoices_show_export', {'id': invoice.id}) }}" class="button button-green">{{ 'invoices.action_show_export'|trans }}</a>
-                {% if not invoice.recorded and invoice.projectBilling is null %}
-                    <a type="button" href="{{ path('app_invoices_record', {'id': invoice.id}) }}" class="button button-warning">{{ 'invoices.action_record'|trans }}</a>
-                {% endif %}
-                {% if invoice.recorded and invoice.projectBilling is null %}
-                    <a type="button" href="{{ path('app_invoices_export', {'id': invoice.id}) }}" class="button">{{ 'invoices.action_export'|trans }}</a>
+                {% if invoice.client is not null %}
+                    <a type="button" href="{{ path('app_invoices_show_export', {'id': invoice.id}) }}" class="button button-green">{{ 'invoices.action_show_export'|trans }}</a>
+                    {% if not invoice.recorded and invoice.projectBilling is null %}
+                        <a type="button" href="{{ path('app_invoices_record', {'id': invoice.id}) }}" class="button button-warning">{{ 'invoices.action_record'|trans }}</a>
+                    {% endif %}
+                    {% if invoice.recorded and invoice.projectBilling is null %}
+                        <a type="button" href="{{ path('app_invoices_export', {'id': invoice.id}) }}" class="button">{{ 'invoices.action_export'|trans }}</a>
+                    {% endif %}
+                {% else %}
+                    <div class="alert-info" role="alert">
+                        <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"></path>
+                        </svg> {{ 'invoices.export_only_available_when_mandatory_fields_are_set'|trans }}
+                    </div>
                 {% endif %}
             </div>
         </div>
