@@ -15,19 +15,22 @@ use App\Model\Invoices\WorklogData;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
-use App\Model\Planning\PlanningData;
-use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
+use App\Model\Planning\Project;
 use App\Model\Planning\SprintSum;
+use App\Model\Planning\PlanningData;
+use App\Model\Invoices\IssueDataCollection;
+use App\Model\SprintReport\SprintStateEnum;
 use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
+use App\Model\Invoices\ProjectDataCollection;
+use App\Model\Invoices\WorklogDataCollection;
 use App\Model\SprintReport\SprintReportIssue;
+use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintReportProject;
 use App\Model\SprintReport\SprintReportProjects;
-use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintReportVersion;
 use App\Model\SprintReport\SprintReportVersions;
-use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -110,6 +113,121 @@ class JiraApiService implements DataProviderServiceInterface
         }
 
         return $sprintReportVersions;
+    }
+
+    public function createProject(array $data): ?string
+    {
+        $projectKey = strtoupper($data['form']['project_key']);
+        $project = [
+            'key' => $projectKey,
+            'name' => $data['form']['project_name'],
+            'projectTypeKey' => 'software',
+            'projectTemplateKey' => 'com.pyxis.greenhopper.jira:basic-software-development-template',
+            'description' => $data['form']['description'],
+            'lead' => $data['selectedTeamConfig']['team_lead'],
+            'assigneeType' => 'UNASSIGNED',
+            'avatarId' => 10324, // Default avatar image
+            'permissionScheme' => $data['selectedTeamConfig']['permission_scheme'],
+            'notificationScheme' => 10000, // Default Notification Scheme
+            'workflowSchemeId' => $data['selectedTeamConfig']['workflow_scheme'],
+            'categoryId' => $data['selectedTeamConfig']['project_category'],
+        ];
+        
+        $response = $this->post(self::API_PATH_PROJECT, $project);
+
+        return $response->key == $projectKey ? $projectKey : null;
+    }
+
+    public function createTimeTrackerCustomer(string $name, string $key): mixed
+    {
+        return $this->post(self::API_PATH_CUSTOMERS,
+            [
+                'isNew' => 1,
+                'name' => $name,
+                'key' => $key,
+            ]
+        );
+    }
+
+    public function createTimeTrackerAccount(string $name, string $key, string $customerKey, string $contactUsername): mixed
+    {
+        return $this->post(self::API_PATH_ACCOUNT,
+            [
+                'name' => $name,
+                'key' => $key,
+                'status' => 'OPEN',
+                'category' => [
+                    'key' => 'DRIFT',
+                ],
+                'customer' => [
+                    'key' => $customerKey,
+                ],
+                'contact' => [
+                    'username' => $contactUsername,
+                ],
+                'lead' => [
+                    'username' => $this::CPB_ACCOUNT_MANAGER,
+                ],
+            ]
+        );
+    }
+
+    public function getTimeTrackerAccount(string $key): mixed
+    {
+        return $this->get(self::API_PATH_ACCOUNT_BY_KEY.$key);
+    }
+
+    public function addProjectToTimeTrackerAccount(mixed $project, mixed $account): void
+    {
+        $this->post(self::API_PATH_LINK_PROJECT_TO_ACCOUNT, [
+            'scopeType' => 'PROJECT',
+            'defaultAccount' => 'true',
+            'linkType' => 'MANUAL',
+            'key' => $project->key,
+            'accountId' => $account->id,
+            'scope' => $project->id,
+        ]);
+    }
+
+    public function getClientData(): ClientData
+    {
+        return new ClientData();
+    }
+    /**
+     * Create project board.
+     *
+     * @throws ApiServiceException
+     */
+    public function createProjectBoard(string $type, mixed $project): void
+    {
+        // If no template is configured don't create a board.
+        if (empty($this->formData['selectedTeamConfig']['board_template'])) {
+            return;
+        }
+
+        // Create project filter.
+        $filterResponse = $this->post(self::API_PATH_FILTER, [
+            'name' => 'Filter for Project: '.$project->name,
+            'description' => 'Project filter for '.$project->name,
+            'jql' => 'project = '.$project->key.' ORDER BY Rank ASC',
+            'favourite' => false,
+            'editable' => false,
+        ]);
+
+        // Share project filter with project members.
+        $this->post(self::API_PATH_FILTER.'/'.$filterResponse->id.'/permission', [
+            'type' => 'project',
+            'projectId' => $project->id,
+            'view' => true,
+            'edit' => false,
+        ]);
+
+        // Create board with project filter.
+        $this->post(self::API_PATH_BOARD, [
+            'name' => 'Project: '.$project->name,
+            'type' => $type,
+            'filterId' => $filterResponse->id,
+        ]);
     }
 
     public function getAccount(string $accountId): mixed
@@ -771,6 +889,14 @@ class JiraApiService implements DataProviderServiceInterface
         return $clients;
     }
 
+    public function getClientDataForProjectV2(): ClientData
+    {
+        return new ClientData();
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
     public function getAllProjectData(): array
     {
         $projects = [];
@@ -836,6 +962,14 @@ class JiraApiService implements DataProviderServiceInterface
         return $worklogsResult;
     }
 
+    public function getWorklogDataForProjectV2(string $projectId): WorklogDataCollection
+    {
+        return new WorklogDataCollection();
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
     public function getAllAccountData(): array
     {
         $accountsResult = [];
@@ -978,6 +1112,86 @@ class JiraApiService implements DataProviderServiceInterface
         }
 
         return new PagedResult($result, $startAt, $maxResults, $pagedResult['total']);
+    }
+
+    /**
+     * @throws ApiServiceException
+     * @throws \Exception
+     */
+    public function getIssuesDataForProject(string $projectId): array
+    {
+        // Get customFields from Jira.
+        $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
+        $customFieldAccount = $this->getCustomFieldId('Account');
+
+        $result = [];
+
+        $project = $this->getProject($projectId);
+        $versions = $project->versions ?? [];
+
+        $issues = $this->getProjectIssues($projectId);
+
+        $epicsRetrieved = [];
+
+        foreach ($issues as $issue) {
+            $fields = $issue->fields;
+
+            $issueData = new IssueData();
+            $issueData->name = $fields->summary;
+            $issueData->status = $fields->status->name;
+            $issueData->projectTrackerId = $issue->id;
+            $issueData->projectTrackerKey = $issue->key;
+            $issueData->resolutionDate = isset($fields->resolutiondate) ? new \DateTime($fields->resolutiondate) : null;
+
+            $issueData->accountId = $fields->{$customFieldAccount}->id ?? null;
+            $issueData->accountKey = $fields->{$customFieldAccount}->key ?? null;
+
+            if (isset($fields->{$customFieldEpicLinkId})) {
+                $epicKey = $fields->{$customFieldEpicLinkId};
+
+                if (isset($epicsRetrieved[$epicKey])) {
+                    $epicData = $epicsRetrieved[$epicKey];
+                } else {
+                    $epicData = $this->getIssue($epicKey);
+                    $epicsRetrieved[$epicKey] = $epicData;
+                }
+
+                $issueData->epicKey = $epicKey;
+                $issueData->epicName = $epicData->fields->summary ?? null;
+            }
+
+            foreach ($fields->fixVersions ?? [] as $fixVersion) {
+                /** @var array<\stdClass> $versionsFound */
+                $versionsFound = array_filter($versions, function ($v) use ($fixVersion) {
+                    return $v->id == $fixVersion->id;
+                });
+
+                if (count($versionsFound) > 0) {
+                    $versions = array_values($versionsFound);
+
+                    foreach ($versions as $version) {
+                        if (isset($version->id) && isset($version->name)) {
+                            $issueData->versions->add(new VersionData($version->id, $version->name));
+                        }
+                    }
+                }
+        
+            }
+
+            $result[] = $issueData;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @throws ApiServiceException
+     * @throws \Exception
+     */
+
+    public function getProjectIssuesV2(string $projectId): IssueDataCollection
+    {
+        return new issueDataCollection();
     }
 
     /**
