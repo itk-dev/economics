@@ -5,8 +5,10 @@ namespace App\Service;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
-use App\Entity\Milestone;
+use App\Entity\Client;
+use App\Entity\Account;
 use App\Entity\Project;
+use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
@@ -17,9 +19,11 @@ use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Repository\IssueRepository;
+use App\Repository\AccountRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\MilestoneRepository;
+use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
+use App\Service\ProjectTrackerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -32,9 +36,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class BillingService
 {
     public function __construct(
+        private readonly ProjectTrackerInterface $projectTracker,
         private readonly InvoiceRepository $invoiceRepository,
         private readonly InvoiceEntryRepository $invoiceEntryRepository,
-        private readonly MilestoneRepository $milestoneRepository,
+        private readonly VersionRepository $versionRepository,
         private readonly WorklogRepository $worklogRepository,
         private readonly IssueRepository $issueRepository,
         private readonly EntityManagerInterface $entityManager,
@@ -86,10 +91,10 @@ class BillingService
             throw new \Exception('ProjectTrackerId not set');
         }
 
-        $issueData = $this->apiService->getIssuesDataForProject($projectTrackerId);
+        $issueDataCollection = $this->projectTracker->getProjectIssuesV2($projectTrackerId);
         $issuesProcessed = 0;
 
-        foreach ($issueData as $issueDatum) {
+        foreach ($issueDataCollection->issueData as $issueDatum) {
             $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
 
             if (!$issue) {
@@ -97,12 +102,11 @@ class BillingService
 
                 $this->entityManager->persist($issue);
             }
-
             $issue->setName($issueDatum->name);
             $issue->setAccountId($issueDatum->accountId);
             $issue->setAccountKey($issueDatum->accountKey);
-            $issue->setTagKey($issueDatum->tagKey);
-            $issue->setTagName($issueDatum->tagName);
+            $issue->setepicKey($issueDatum->epicKey);
+            $issue->setEpicName($issueDatum->epicName);
             $issue->setProject($project);
             $issue->setProjectTrackerId($issueDatum->projectTrackerId);
             $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
@@ -110,19 +114,21 @@ class BillingService
             $issue->setStatus($issueDatum->status);
 
             if (null == $issue->getSource()) {
-                $issue->setSource($this->apiService->getProjectTrackerIdentifier());
+                $issue->setSource($this->projectTracker->getProjectTrackerIdentifier());
             }
-
-            foreach ($issueDatum->milestones as $milestoneData) {
-                $milestone = $this->milestoneRepository->findOneBy(['projectTrackerId' => $milestoneData->projectTrackerId]);
-
-                if (null !== $milestone) {
-                    $issue->addMilestone($milestone);
+            if (!is_null($issueDatum->versions)) {
+                foreach ($issueDatum->versions as $versionData) {
+                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
+    
+                    if (null !== $version) {
+                        $issue->addVersion($version);
+                    }
                 }
             }
+            
 
             if (null !== $progressCallback) {
-                $progressCallback($issuesProcessed, count($issueData));
+                $progressCallback($issuesProcessed, count($issueDataCollection->issueData));
                 ++$issuesProcessed;
             }
         }
@@ -147,10 +153,10 @@ class BillingService
             throw new \Exception('ProjectTrackerId not set');
         }
 
-        $worklogData = $this->apiService->getWorklogDataForProject($projectTrackerId);
+        $worklogDataCollection = $this->projectTracker->getWorklogDataForProjectV2($projectTrackerId);
         $worklogsAdded = 0;
 
-        foreach ($worklogData as $worklogDatum) {
+        foreach ($worklogDataCollection->worklogData as $worklogDatum) {
             $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
 
             if (!$worklog) {
@@ -177,13 +183,13 @@ class BillingService
             }
 
             if (null == $worklog->getSource()) {
-                $worklog->setSource($this->apiService->getProjectTrackerIdentifier());
+                $worklog->setSource($this->projectTracker->getProjectTrackerIdentifier());
             }
 
             $project->addWorklog($worklog);
 
             if (null !== $progressCallback) {
-                $progressCallback($worklogsAdded, count($worklogData));
+                $progressCallback($worklogsAdded, count($worklogDataCollection->worklogData));
 
                 ++$worklogsAdded;
             }
@@ -265,10 +271,11 @@ class BillingService
     public function syncProjects(callable $progressCallback): void
     {
         // Get all projects from ApiService.
-        $allProjectData = $this->apiService->getAllProjectData();
+        $projectDataCollection = $this->projectTracker->getAllProjectDataV2();
 
-        foreach ($allProjectData as $index => $projectDatum) {
+        foreach ($projectDataCollection->projectData as $index => $projectDatum) {
             $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId]);
+
             if (!$project) {
                 $project = new Project();
                 $this->entityManager->persist($project);
@@ -279,21 +286,19 @@ class BillingService
             $project->setProjectTrackerKey($projectDatum->projectTrackerKey);
             $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
 
-            foreach ($projectDatum->milestones as $milestoneData) {
-                
-                $milestone = $this->milestoneRepository->findOneBy(['projectTrackerId' => $milestoneData->projectTrackerId]);
+            foreach ($projectDatum->versions as $versionData) {
+                $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
 
-                if (!$milestone) {
-                    $milestone = new Milestone();
-                    $this->entityManager->persist($milestone);
+                if (!$version) {
+                    $version = new Version();
+                    $this->entityManager->persist($version);
                 }
-
-                $milestone->setName($milestoneData->name);
-                $milestone->setProjectTrackerId($milestoneData->projectTrackerId);
-                $milestone->setProject($project);
+                $version->setName($versionData->name);
+                $version->setProjectTrackerId($versionData->projectTrackerId);
+                $version->setProject($project);
             }
 
-            // $projectClientData = $this->apiService->getClientDataForProject($projectDatum->projectTrackerId);
+            // $projectClientData = $this->projectTracker->getClientDataForProject($projectDatum->projectTrackerId);
 
             // foreach ($projectClientData as $clientData) {
             //     $client = $this->clientRepository->findOneBy(['projectTrackerId' => $clientData->projectTrackerId]);
@@ -322,7 +327,7 @@ class BillingService
             $this->entityManager->flush();
             $this->entityManager->clear();
 
-            $progressCallback($index, count($allProjectData));
+            $progressCallback($index, count($projectDataCollection->projectData));
         }
 
         $this->entityManager->flush();
