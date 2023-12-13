@@ -33,10 +33,10 @@ class Issue extends AbstractBaseEntity
     private ?string $projectTrackerKey = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $tagKey = null;
+    private ?string $epicKey = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $tagName = null;
+    private ?string $epicName = null;
 
     #[ORM\ManyToMany(targetEntity: Version::class, inversedBy: 'issues')]
     private Collection $versions;
@@ -128,26 +128,26 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
-    public function getTagKey(): ?string
+    public function getepicKey(): ?string
     {
-        return $this->tagKey;
+        return $this->epicKey;
     }
 
-    public function setTagKey(?string $tagKey): self
+    public function setepicKey(?string $epicKey): self
     {
-        $this->tagKey = $tagKey;
+        $this->epicKey = $epicKey;
 
         return $this;
     }
 
-    public function getTagName(): ?string
+    public function getepicName(): ?string
     {
-        return $this->tagName;
+        return $this->epicName;
     }
 
-    public function setTagName(?string $tagName): self
+    public function setepicName(?string $epicName): self
     {
-        $this->tagName = $tagName;
+        $this->epicName = $epicName;
 
         return $this;
     }
