@@ -55,9 +55,11 @@ docker compose bin/console doctrine:migrations:migrate
 Set create .env.local with the following values set
 ```shell
 ###> Project tracker connection ###
-PROJECT_TRACKER_URL=<VALUE>
-PROJECT_TRACKER_USER=<VALUE>
-PROJECT_TRACKER_TOKEN=<VALUE>
+JIRA_PROJECT_TRACKER_URL=<VALUE>
+JIRA_PROJECT_TRACKER_USER=<VALUE>
+JIRA_PROJECT_TRACKER_TOKEN=<VALUE>
+LEANTIME_PROJECT_TRACKER_URL=<VALUE>
+LEANTIME_PROJECT_TRACKER_TOKEN=<VALUE>
 ###< Project tracker connection ###
 
 ###> itk-dev/openid-connect-bundle ###

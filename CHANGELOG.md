@@ -6,6 +6,9 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 
 ## [Unreleased]
 
+* Updated api source to use Leantime
+* Modified getPlanningData to work with Leantime data
+
 ## 1.0.4
 
 * Fixed command to recalculate sums for all invoices by first calculating invoice entries.
