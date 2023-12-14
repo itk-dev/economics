@@ -19,8 +19,7 @@
         </div>
 
         {% if report is defined and report is not null %}
-        {# @TODO is version id critical here? #} {# , versionId: data.versionId #}
-            <a type="button" class="button" href="{{ path('app_sprint_report_pdf', {projectId: data.projectId}) }}">{{ 'sprint_report.render_as_pdf'|trans }}</a>
+            <a type="button" class="button" href="{{ path('app_sprint_report_pdf', {projectId: data.projectId, versionId: data.versionId}) }}">{{ 'sprint_report.render_as_pdf'|trans }}</a>
         {% endif %}
 
         <div class="hidden" id="report" {{ stimulus_target('sprint-report', 'content') }}>
@@ -30,4 +29,3 @@
         </div>
     </div>
 {% endblock %}
-
