@@ -124,7 +124,6 @@ class BillingService
                     }
                 }
             }
-            
 
             if (null !== $progressCallback) {
                 $progressCallback($issuesProcessed, count($issueDataCollection->issueData));
