@@ -22,15 +22,14 @@ use App\Model\Invoices\VersionData;
 use App\Model\Planning\PlanningData;
 use App\Model\Invoices\IssueDataCollection;
 use App\Model\SprintReport\SprintStateEnum;
-use App\Model\SprintReport\SprintReportData;
-use App\Model\SprintReport\SprintReportEpic;
 use App\Model\Invoices\ProjectDataCollection;
 use App\Model\Invoices\WorklogDataCollection;
+use App\Model\SprintReport\SprintReportData;
+use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
-use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintReportProject;
 use App\Model\SprintReport\SprintReportProjects;
-use App\Model\SprintReport\SprintReportVersion;
+use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintReportVersions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -133,7 +132,7 @@ class JiraApiService implements DataProviderServiceInterface
             'workflowSchemeId' => $data['selectedTeamConfig']['workflow_scheme'],
             'categoryId' => $data['selectedTeamConfig']['project_category'],
         ];
-        
+
         $response = $this->post(self::API_PATH_PROJECT, $project);
 
         return $response->key == $projectKey ? $projectKey : null;
@@ -194,6 +193,7 @@ class JiraApiService implements DataProviderServiceInterface
     {
         return new ClientData();
     }
+
     /**
      * Create project board.
      *
@@ -890,11 +890,6 @@ class JiraApiService implements DataProviderServiceInterface
         return $clients;
     }
 
-    public function getClientDataForProjectV2(): ClientData
-    {
-        return new ClientData();
-    }
-
     /**
      * @throws ApiServiceException
      */
@@ -903,16 +898,19 @@ class JiraApiService implements DataProviderServiceInterface
         $projects = [];
 
         $trackerProjects = $this->getAllProjects();
+
         foreach ($trackerProjects as $trackerProject) {
-            $projectMilestones = $this->getProjectVersions($trackerProject->id) ?? [];
-            $projectData = new projectData();
+            $project = $this->getProject($trackerProject->id);
+            $projectVersions = $project->versions ?? [];
+
+            $projectData = new ProjectData();
             $projectData->name = $trackerProject->name;
             $projectData->projectTrackerId = $trackerProject->id;
-            $projectData->projectTrackerKey = "";
-            $projectData->projectTrackerProjectUrl = "";
+            $projectData->projectTrackerKey = $trackerProject->key;
+            $projectData->projectTrackerProjectUrl = $trackerProject->self;
 
-            foreach ($projectMilestones as $projectMilestone) {
-                $projectData->versions->add(new VersionData($projectMilestone->id, $projectMilestone->headline));
+            foreach ($projectVersions as $projectVersion) {
+                $projectData->versions->add(new VersionData($projectVersion->id, $projectVersion->name));
             }
 
             $projects[] = $projectData;
@@ -1175,12 +1173,11 @@ class JiraApiService implements DataProviderServiceInterface
                     $versions = array_values($versionsFound);
 
                     foreach ($versions as $version) {
-                        if (isset($version->id) && isset($version->name)) {
+                        if (isset($issueData->versions) && isset($version->id) && isset($version->name)) {
                             $issueData->versions->add(new VersionData($version->id, $version->name));
                         }
                     }
                 }
-        
             }
 
             $result[] = $issueData;
@@ -1193,7 +1190,6 @@ class JiraApiService implements DataProviderServiceInterface
      * @throws ApiServiceException
      * @throws \Exception
      */
-
     public function getProjectIssuesV2(string $projectId): IssueDataCollection
     {
         return new issueDataCollection();
