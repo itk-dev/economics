@@ -23,7 +23,6 @@ use App\Repository\AccountRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
-use App\Service\ProjectTrackerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -119,7 +118,7 @@ class BillingService
             if (!is_null($issueDatum->versions)) {
                 foreach ($issueDatum->versions as $versionData) {
                     $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
-    
+
                     if (null !== $version) {
                         $issue->addVersion($version);
                     }
@@ -142,7 +141,7 @@ class BillingService
     public function syncWorklogsForProject(int $projectId, callable $progressCallback = null): void
     {
         $project = $this->projectRepository->find($projectId);
-        
+
         if (!$project) {
             throw new \Exception('Project not found');
         }
@@ -237,35 +236,34 @@ class BillingService
 
     public function syncAccounts(callable $progressCallback): void
     {
-        return;
-        // $projectTrackerIdentifier = $this->apiService->getProjectTrackerIdentifier();
+        $projectTrackerIdentifier = $this->projectTracker->getProjectTrackerIdentifier();
 
-        // // Get all accounts from ApiService.
-        // $allAccountData = $this->apiService->getAllAccountData();
+        // Get all accounts from ApiService.
+        $allAccountData = $this->projectTracker->getAllAccountData();
 
-        // foreach ($allAccountData as $index => $accountDatum) {
-        //     $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
+        foreach ($allAccountData as $index => $accountDatum) {
+            $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
 
-        //     if (!$account) {
-        //         $account = new Account();
-        //         $account->setSource($projectTrackerIdentifier);
-        //         $account->setProjectTrackerId($accountDatum->projectTrackerId);
+            if (!$account) {
+                $account = new Account();
+                $account->setSource($projectTrackerIdentifier);
+                $account->setProjectTrackerId($accountDatum->projectTrackerId);
 
-        //         $this->entityManager->persist($account);
-        //     }
+                $this->entityManager->persist($account);
+            }
 
-        //     $account->setName($accountDatum->name);
-        //     $account->setValue($accountDatum->value);
-        //     $account->setStatus($accountDatum->status);
-        //     $account->setCategory($accountDatum->category);
+            $account->setName($accountDatum->name);
+            $account->setValue($accountDatum->value);
+            $account->setStatus($accountDatum->status);
+            $account->setCategory($accountDatum->category);
 
-        //     $this->entityManager->flush();
-        //     $this->entityManager->clear();
+            $this->entityManager->flush();
+            $this->entityManager->clear();
 
-        //     $progressCallback($index, count($allAccountData));
-        // }
+            $progressCallback($index, count($allAccountData));
+        }
 
-        // $this->entityManager->flush();
+        $this->entityManager->flush();
     }
 
     public function syncProjects(callable $progressCallback): void
