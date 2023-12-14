@@ -1,31 +1,31 @@
 import {Controller} from '@hotwired/stimulus';
 
 /**
- * Worklog select controller.
+ * Entry select controller.
  */
 export default class extends Controller {
     static targets = ['checkbox', 'toggleAll', 'spinner', 'result', 'submitButton'];
-    selectWorklogsEndpoint = null;
+    submitEndpoint = null;
     selectAll = true;
     submitting = false;
-    dirtyWorklogs = new Set();
+    dirtyEntrys = new Set();
 
     connect() {
-        this.selectWorklogsEndpoint = this.element.dataset.selectWorklogsEndpoint;
+        this.submitEndpoint = this.element.dataset.submitEndpoint;
     }
 
     toggleAll() {
         this.checkboxTargets.forEach((target) => {
             target.checked = this.selectAll;
-            this.dirtyWorklogs.add(target.dataset.id);
+            this.dirtyEntrys.add(target.dataset.id);
         });
 
         this.selectAll = !this.selectAll;
     }
 
     checkboxClick(event) {
-        const worklogId = event.params.id;
-        this.dirtyWorklogs.add(worklogId.toString());
+        const entryId = event.params.id;
+        this.dirtyEntrys.add(entryId.toString());
     }
 
     async submitFormRedirectWithIds(event) {
@@ -36,7 +36,7 @@ export default class extends Controller {
             const id = target.dataset.id;
             const checked = target.checked;
 
-            if (this.dirtyWorklogs.has(id) && checked) {
+            if (this.dirtyEntrys.has(id) && checked) {
                 accumulator.push(id);
             }
 
@@ -47,7 +47,7 @@ export default class extends Controller {
             ids: values
         })
 
-        window.location.href = (this.selectWorklogsEndpoint + "?" + params);
+        window.location.href = (this.submitEndpoint + "?" + params);
     }
 
     async submitForm(event) {
@@ -65,7 +65,7 @@ export default class extends Controller {
             const id = target.dataset.id;
             const checked = target.checked;
 
-            if (this.dirtyWorklogs.has(id)) {
+            if (this.dirtyEntrys.has(id)) {
                 accumulator.push({id, checked});
             }
 
@@ -75,7 +75,7 @@ export default class extends Controller {
         this.spinnerTarget.classList.remove('hidden');
         this.resultTarget.classList = ['hidden'];
 
-        fetch(this.selectWorklogsEndpoint, {
+        fetch(this.submitEndpoint, {
             method: 'POST',
             mode: 'same-origin',
             cache: 'no-cache',

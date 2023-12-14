@@ -19,15 +19,15 @@
     {% set recordedInvoices = invoiceFilterData.recorded %}
     {% set numberOfColumns = recordedInvoices ? 8 : 7 %}
 
-    <div {{ stimulus_controller('worklog-select') }} data-select-worklogs-endpoint="{{ selectWorklogsEndpoint }}">
-        <form id="worklog-form">
+    <div {{ stimulus_controller('entry-select') }} data-submit-endpoint="{{ submitEndpoint }}">
+        <form id="entry-form">
             <table class="table margin-bottom">
                 <thead class="table-thead">
                 <tr>
                     {% if recordedInvoices %}
                         <th class="table-th">
                             <label>
-                                <input type="checkbox" data-action="worklog-select#toggleAll">
+                                <input type="checkbox" data-action="entry-select#toggleAll">
                             </label>
                         </th>
                     {% endif %}
@@ -48,11 +48,11 @@
                                 <label>
                                     <input
                                             type="checkbox"
-                                            {{ stimulus_target('worklog-select', 'checkbox') }}
-                                            {{ stimulus_action('worklog-select', 'checkboxClick', 'click', {'id': invoice.id}) }}
+                                            {{ stimulus_target('entry-select', 'checkbox') }}
+                                            {{ stimulus_action('entry-select', 'checkboxClick', 'click', {'id': invoice.id}) }}
                                             data-id="{{ invoice.id }}"
                                             value="{{ invoice.id }}"
-                                            id="'worklog-select-{{ invoice.id }}"
+                                            id="'entry-select-{{ invoice.id }}"
                                             {{ false ? 'checked' : '' }}
                                     />
                                 </label>
@@ -84,7 +84,7 @@
                     </td>
                     <td class="table-td" colspan="2">
                         {% if recordedInvoices %}
-                            <button type="submit" class="button" data-action="worklog-select#submitFormRedirectWithIds" data-worklog-select-target="submitButton">{{ 'invoices.action_export_selected'|trans }}</button>
+                            <button type="submit" class="button" data-action="entry-select#submitFormRedirectWithIds" data-entry-select-target="submitButton">{{ 'invoices.action_export_selected'|trans }}</button>
                         {% endif %}
                     </td>
                     <td class="table-td" colspan="{{ numberOfColumns - 4 }}" class="text-right">

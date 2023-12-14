@@ -37,7 +37,7 @@ class InvoiceController extends AbstractController
             'form' => $form,
             'invoices' => $pagination,
             'invoiceFilterData' => $invoiceFilterData,
-            'selectWorklogsEndpoint' => $this->generateUrl('app_invoices_export_selection'),
+            'submitEndpoint' => $this->generateUrl('app_invoices_export_selection'),
         ]);
     }
 
