@@ -46,7 +46,10 @@ class InvoiceEntryWorklogController extends AbstractController
             'label' => 'worklog.version',
             'label_attr' => ['class' => 'label'],
             'row_attr' => ['class' => 'form-row'],
-            'attr' => ['class' => 'form-element'],
+            'attr' => [
+                'class' => 'form-element',
+                'data-choices-target' => 'choices',
+            ],
             'help' => 'worklog.version_helptext',
             'choices' => $project->getVersions(),
         ]);
