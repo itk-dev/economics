@@ -475,17 +475,17 @@ class LeantimeApiService implements ProjectTrackerInterface
                     $worklogSprint = array_pop($worklogSprints);
                     $worklogSprintId = $worklogSprint->id;
                 }
-                $newLoggedWork = (float) ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklog->hours;
+                $newLoggedWork = (float) ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + ($worklog->hours * 60 * 60);
                 $issue->epic->loggedWork->set($worklogSprintId, $newLoggedWork);
             }
 
             // Accumulate spentSum.
-            $spentSum += $issueEntry->bookedHours;
-            $issue->epic->spentSum += $issueEntry->bookedHours;
+            $spentSum += ($issueEntry->bookedHours * 60 * 60);
+            $issue->epic->spentSum += ($issueEntry->bookedHours * 60 * 60);
 
             // Accumulate remainingSum.
             if ('0' !== $issueEntry->status && isset($issueEntry->hourRemaining)) {
-                $remainingEstimateSeconds = $issueEntry->hourRemaining;
+                $remainingEstimateSeconds = ($issueEntry->hourRemaining * 60 * 60);
                 $remainingSum += $remainingEstimateSeconds;
 
                 $issue->epic->remainingSum += $remainingEstimateSeconds;
@@ -499,9 +499,9 @@ class LeantimeApiService implements ProjectTrackerInterface
             }
             // Accumulate originalEstimateSum.
             if (isset($issueEntry->planHours)) {
-                $issue->epic->originalEstimateSum += $issueEntry->planHours;
+                $issue->epic->originalEstimateSum += ($issueEntry->planHours * 60 * 60);
 
-                $sprintReportData->originalEstimateSum += $issueEntry->planHours;
+                $sprintReportData->originalEstimateSum += ($issueEntry->planHours * 60 * 60);
             }
             ++$issueCount;
         }
@@ -522,8 +522,8 @@ class LeantimeApiService implements ProjectTrackerInterface
         });
         $epics = new ArrayCollection(iterator_to_array($iterator));
         // Calculate spent, remaining hours.
-        $spentHours = $spentSum;
-        $remainingHours = $remainingSum;
+        $spentHours = $spentSum / 3600;
+        $remainingHours = $remainingSum / 3600;
 
         $sprintReportData->projectName = $project->name;
         $sprintReportData->versionName = $milestone->headline;
