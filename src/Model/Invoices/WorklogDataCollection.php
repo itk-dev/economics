@@ -9,7 +9,6 @@ class WorklogDataCollection
 {
     /** @var Collection<string, WorklogData> */
     public Collection $worklogData;
- 
 
     public function __construct()
     {

@@ -9,7 +9,6 @@ class ProjectDataCollection
 {
     /** @var Collection<string, ProjectData> */
     public Collection $projectData;
- 
 
     public function __construct()
     {
