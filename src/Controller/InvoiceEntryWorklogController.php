@@ -8,10 +8,12 @@ use App\Entity\Version;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
+use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillingService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +27,7 @@ class InvoiceEntryWorklogController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{invoiceEntry}/worklogs', name: 'app_invoice_entry_worklogs', methods: ['GET', 'POST'])]
-    public function worklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository): Response
+    public function worklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, IssueRepository $issueRepository): Response
     {
         if (InvoiceEntryTypeEnum::WORKLOG != $invoiceEntry->getEntryType()) {
             throw new \Exception('Invoice entry is not a WORKLOG type.');
@@ -52,6 +54,28 @@ class InvoiceEntryWorklogController extends AbstractController
             ],
             'help' => 'worklog.version_helptext',
             'choices' => $project->getVersions(),
+        ]);
+
+        $epics = $issueRepository->findEpicsByProject($project);
+        $epicChoices = array_reduce($epics, function ($carry, $item) {
+            if (isset($item['epicName']) && isset($item['epicKey'])) {
+                $carry[$item['epicName']] = $item['epicKey'];
+            }
+
+            return $carry;
+        }, []);
+
+        $form->add('epic', ChoiceType::class, [
+            'required' => false,
+            'label' => 'worklog.epic',
+            'label_attr' => ['class' => 'label'],
+            'row_attr' => ['class' => 'form-row'],
+            'attr' => [
+                'class' => 'form-element',
+                'data-choices-target' => 'choices',
+            ],
+            'help' => 'worklog.epic_helptext',
+            'choices' => $epicChoices,
         ]);
 
         $form->handleRequest($request);
