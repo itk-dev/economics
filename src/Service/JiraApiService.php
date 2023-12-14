@@ -18,6 +18,7 @@ use App\Model\Planning\Issue;
 use App\Model\Planning\Sprint;
 use App\Model\Planning\Project;
 use App\Model\Planning\SprintSum;
+use App\Model\Invoices\VersionData;
 use App\Model\Planning\PlanningData;
 use App\Model\Invoices\IssueDataCollection;
 use App\Model\SprintReport\SprintStateEnum;
@@ -903,15 +904,15 @@ class JiraApiService implements DataProviderServiceInterface
 
         $trackerProjects = $this->getAllProjects();
         foreach ($trackerProjects as $trackerProject) {
-            $projectMilestones = $this->getProjectMilestones($trackerProject->id) ?? [];
-            $projectData = new ProjectData();
+            $projectMilestones = $this->getProjectVersions($trackerProject->id) ?? [];
+            $projectData = new projectData();
             $projectData->name = $trackerProject->name;
             $projectData->projectTrackerId = $trackerProject->id;
             $projectData->projectTrackerKey = "";
             $projectData->projectTrackerProjectUrl = "";
 
             foreach ($projectMilestones as $projectMilestone) {
-                $projectData->milestones->add(new MilestoneData($projectMilestone->id, $projectMilestone->headline));
+                $projectData->versions->add(new VersionData($projectMilestone->id, $projectMilestone->headline));
             }
 
             $projects[] = $projectData;
@@ -933,7 +934,12 @@ class JiraApiService implements DataProviderServiceInterface
      */
     public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.timesheets.getAll", ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'projectId' => $projectId]);
+        return $this->post('rest/tempo-timesheets/4/worklogs/search', [
+            'from' => $from,
+            'to' => $to,
+            'include' => ['ISSUE'],
+            'projectId' => [$projectId],
+        ]);
     }
 
     public function getWorklogDataForProject(string $projectId): array
@@ -944,17 +950,17 @@ class JiraApiService implements DataProviderServiceInterface
 
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
-            $worklogData->projectTrackerId = $worklog->id;
-            $worklogData->worker = $worklog->userId;
-            $worklogData->timeSpentSeconds = $worklog->hours;
-            $worklogData->comment = $worklog->description ?? "";
-            $worklogData->started = new \DateTime($worklog->workDate);
-            $worklogData->projectTrackerIssueId = $worklog->ticketId;
+            $worklogData->projectTrackerId = $worklog->tempoWorklogId;
+            $worklogData->worker = $worklog->worker;
+            $worklogData->timeSpentSeconds = $worklog->timeSpentSeconds;
+            $worklogData->comment = $worklog->comment;
+            $worklogData->started = new \DateTime($worklog->started);
+            $worklogData->projectTrackerIssueId = $worklog->issue->id;
 
             // TODO: Is this synchronization relevant?
-            // if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
-            //     $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
-            // }
+            if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
+                $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
+            }
 
             $worklogsResult[] = $worklogData;
         }
@@ -994,51 +1000,50 @@ class JiraApiService implements DataProviderServiceInterface
      */
     private function getProjectIssues($projectId): array
     {
-        return $this->request(self::API_PATH_JSONRPC, "POST", "leantime.rpc.tickets.getAll", ['searchCriteria' => ['currentProject' => $projectId]]);
-        // $issues = [];
+        $issues = [];
 
-        // // Get customFields from Jira.
-        // $customFieldEpicLink = $this->getCustomFieldId('Epic Link');
-        // $customFieldAccount = $this->getCustomFieldId('Account');
+        // Get customFields from Jira.
+        $customFieldEpicLink = $this->getCustomFieldId('Epic Link');
+        $customFieldAccount = $this->getCustomFieldId('Account');
 
-        // // Get all issues for version.
-        // $fields = implode(
-        //     ',',
-        //     [
-        //         'timetracking',
-        //         'worklog',
-        //         'timespent',
-        //         'timeoriginalestimate',
-        //         'summary',
-        //         'assignee',
-        //         'status',
-        //         'resolutiondate',
-        //         'fixVersions',
-        //         $customFieldEpicLink,
-        //         $customFieldAccount,
-        //     ]
-        // );
+        // Get all issues for version.
+        $fields = implode(
+            ',',
+            [
+                'timetracking',
+                'worklog',
+                'timespent',
+                'timeoriginalestimate',
+                'summary',
+                'assignee',
+                'status',
+                'resolutiondate',
+                'fixVersions',
+                $customFieldEpicLink,
+                $customFieldAccount,
+            ]
+        );
 
-        // $startAt = 0;
+        $startAt = 0;
 
-        // // Get issues for the given project and version.
-        // do {
-        //     $results = $this->get(
-        //         self::API_PATH_SEARCH,
-        //         [
-        //             'jql' => "project = $projectId",
-        //             'maxResults' => 50,
-        //             //          'fields' => $fields,
-        //             'startAt' => $startAt,
-        //         ]
-        //     );
+        // Get issues for the given project and version.
+        do {
+            $results = $this->get(
+                self::API_PATH_SEARCH,
+                [
+                    'jql' => "project = $projectId",
+                    'maxResults' => 50,
+                    //          'fields' => $fields,
+                    'startAt' => $startAt,
+                ]
+            );
 
-        //     $issues = array_merge($issues, $results->issues);
+            $issues = array_merge($issues, $results->issues);
 
-        //     $startAt += 50;
-        // } while (isset($results->total) && $results->total > $startAt);
+            $startAt += 50;
+        } while (isset($results->total) && $results->total > $startAt);
 
-        // return $issues;
+        return $issues;
     }
 
     /**

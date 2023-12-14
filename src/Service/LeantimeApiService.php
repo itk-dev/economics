@@ -15,7 +15,6 @@ use App\Model\Invoices\VersionData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
 use App\Repository\ClientRepository;
-use App\Model\Invoices\MilestoneData;
 use App\Exception\ApiServiceException;
 use App\Model\Planning\AssigneeProject;
 use Doctrine\ORM\EntityManagerInterface;
