@@ -6,7 +6,7 @@ use App\Entity\InvoiceEntry;
 use App\Enum\MaterialNumberEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -47,21 +47,23 @@ class InvoiceEntryType extends AbstractType
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'invoices.invoice_entry_product_helptext',
             ])
-            ->add('price', IntegerType::class, [
+            ->add('price', NumberType::class, [
                 'required' => true,
                 'attr' => ['class' => 'form-element', 'min' => 0],
                 'label' => 'invoices.invoice_entry_price',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'invoices.invoice_entry_price_helptext',
+                'html5' => true,
             ])
-            ->add('amount', IntegerType::class, [
+            ->add('amount', NumberType::class, [
                 'required' => true,
                 'attr' => ['class' => 'form-element', 'min' => 0],
                 'label' => 'invoices.invoice_entry_amount',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'invoices.invoice_entry_amount_helptext',
+                'html5' => true,
             ])
         ;
     }
