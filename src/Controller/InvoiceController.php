@@ -12,6 +12,7 @@ use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\AccountRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
+use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -302,14 +303,20 @@ class InvoiceController extends AbstractController
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/export-selection', name: 'app_invoices_export_selection', methods: ['GET'])]
-    public function exportSelection(Request $request, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function exportSelection(Request $request, InvoiceRepository $invoiceRepository, BillingService $billingService, EntityManagerInterface $entityManager): Response
     {
-        $ids = explode(",", $request->query->get('ids'));
+        $queryIds = $request->query->get('ids');
+
+        $ids = [];
+
+        if (is_string($queryIds)) {
+            $ids = explode(',', $queryIds);
+        }
 
         foreach ($ids as $id) {
             $invoice = $invoiceRepository->find($id);
 
-            if ($invoice != null) {
+            if (null != $invoice) {
                 if (!$invoice->isRecorded()) {
                     throw new HttpException(400, 'Invoice cannot be exported before it is on record.');
                 }
@@ -317,12 +324,14 @@ class InvoiceController extends AbstractController
                 if (null !== $invoice->getProjectBilling()) {
                     throw new HttpException(400, 'Invoice is a part of a project billing, cannot be exported.');
                 }
-            }
 
-            // Mark invoice as exported.
-            $invoice->setExportedDate(new \DateTime());
-            $invoiceRepository->save($invoice, false);
+                // Mark invoice as exported.
+                $invoice->setExportedDate(new \DateTime());
+                $invoiceRepository->save($invoice);
+            }
         }
+
+        $entityManager->flush();
 
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
 
