@@ -28,6 +28,28 @@ export default class extends Controller {
         this.dirtyWorklogs.add(worklogId.toString());
     }
 
+    async submitFormRedirectWithIds(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const values = this.checkboxTargets.reduce((accumulator, target) => {
+            const id = target.dataset.id;
+            const checked = target.checked;
+
+            if (this.dirtyWorklogs.has(id) && checked) {
+                accumulator.push(id);
+            }
+
+            return accumulator;
+        }, []);
+
+        let params = new URLSearchParams({
+            ids: values
+        })
+
+        window.location.href = (this.selectWorklogsEndpoint + "?" + params);
+    }
+
     async submitForm(event) {
         event.preventDefault();
         event.stopPropagation();

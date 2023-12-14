@@ -36,6 +36,8 @@ class InvoiceController extends AbstractController
         return $this->render('invoices/index.html.twig', [
             'form' => $form,
             'invoices' => $pagination,
+            'invoiceFilterData' => $invoiceFilterData,
+            'selectWorklogsEndpoint' => $this->generateUrl('app_invoices_export_selection'),
         ]);
     }
 
@@ -269,6 +271,60 @@ class InvoiceController extends AbstractController
         $invoiceRepository->save($invoice, true);
 
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet([$invoice->getId()]);
+
+        /** @var Csv $writer */
+        $writer = IOFactory::createWriter($spreadsheet, 'Csv');
+        $writer->setDelimiter(';');
+        $writer->setEnclosure('');
+        $writer->setLineEnding("\r\n");
+        $writer->setSheetIndex(0);
+
+        $csvOutput = $billingService->getSpreadsheetOutputAsString($writer);
+
+        // Change encoding to Windows-1252.
+        $csvOutputEncoded = mb_convert_encoding($csvOutput, 'Windows-1252');
+
+        $response = new Response($csvOutputEncoded);
+        $filename = 'invoices-'.date('d-m-Y').'.csv';
+
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        return $response;
+    }
+
+    /**
+     * Export a selection of invoices to a .csv file.
+     *
+     * The ids of the invoices should be supplied as id query params to the request.
+     *
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    #[Route('/export-selection', name: 'app_invoices_export_selection', methods: ['GET'])]
+    public function exportSelection(Request $request, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    {
+        $ids = explode(",", $request->query->get('ids'));
+
+        foreach ($ids as $id) {
+            $invoice = $invoiceRepository->find($id);
+
+            if ($invoice != null) {
+                if (!$invoice->isRecorded()) {
+                    throw new HttpException(400, 'Invoice cannot be exported before it is on record.');
+                }
+
+                if (null !== $invoice->getProjectBilling()) {
+                    throw new HttpException(400, 'Invoice is a part of a project billing, cannot be exported.');
+                }
+            }
+
+            // Mark invoice as exported.
+            $invoice->setExportedDate(new \DateTime());
+            $invoiceRepository->save($invoice, false);
+        }
+
+        $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
 
         /** @var Csv $writer */
         $writer = IOFactory::createWriter($spreadsheet, 'Csv');
