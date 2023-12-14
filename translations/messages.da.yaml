@@ -223,6 +223,7 @@ invoices:
   only_project_billing: 'Kun PF'
   list_recorded: 'Bogført'
   export_only_available_when_mandatory_fields_are_set: 'Eksport kun muligt når der er sat en kundekonto'
+  action_export_selected: 'Eksporter valg'
 
 material_number_enum:
   internal: "Interne: 103361"
@@ -279,6 +280,7 @@ invoice_entry:
   amount: 'Antal enheder'
   amount_worklogs: 'Antal worklogs tilkoblet'
   new_worklog_information: 'Bemærk! Der kan først tilkobles worklogs efter linjen er gemt første gang.'
+
 invoice_recordable:
   error_no_client: 'Ingen klientkonto tilkoblet'
   error_no_account: 'Ingen konto'

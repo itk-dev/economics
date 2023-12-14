@@ -3,7 +3,8 @@
 {% block title %}{{ 'invoices.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_invoices_new') }}" style="float: right">{{ 'invoices.action_create_new'|trans }}</a>
+    <a class="link" href="{{ path('app_invoices_new') }}"
+       style="float: right">{{ 'invoices.action_create_new'|trans }}</a>
     <h1 class="page-title">{{ 'invoices.title'|trans }}</h1>
 
     {{ form_start(form) }}
@@ -15,43 +16,83 @@
     </div>
     {{ form_end(form) }}
 
-    <table class="table margin-bottom">
-        <thead class="table-thead">
-            <tr>
-                <th class="table-th{% if invoices.isSorted('invoice.id') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_id'|trans, 'invoice.id') }}</th>
-                <th class="table-th{% if invoices.isSorted('invoice.name') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_name'|trans, 'invoice.name') }}</th>
-                <th class="table-th">{{ 'invoices.list_project'|trans }}</th>
-                <th class="table-th{% if invoices.isSorted('invoice.createdBy') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_created_by'|trans, 'invoice.createdBy') }}</th>
-                <th class="table-th{% if invoices.isSorted('invoice.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_updated_at'|trans, 'invoice.updatedAt') }}</th>
-                <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
-                <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for index, invoice in invoices %}
-                <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-                    <td class="table-td">{{ invoice.id }}</td>
-                    <td class="table-td">{{ invoice.name }}</td>
-                    <td class="table-td">{{ invoice.project }}</td>
-                    <td class="table-td">{{ invoice.createdBy }}</td>
-                    <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d') : '' }}</td>
-                    <td class="table-td">{{ invoice.totalPrice }}</td>
-                    <td class="table-td">
-                        <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
+    {% set recordedInvoices = invoiceFilterData.recorded %}
+    {% set numberOfColumns = recordedInvoices ? 8 : 7 %}
+
+    <div {{ stimulus_controller('entry-select') }} data-submit-endpoint="{{ submitEndpoint }}">
+        <form id="entry-form">
+            <table class="table margin-bottom">
+                <thead class="table-thead">
+                <tr>
+                    {% if recordedInvoices %}
+                        <th class="table-th">
+                            <label>
+                                <input type="checkbox" data-action="entry-select#toggleAll">
+                            </label>
+                        </th>
+                    {% endif %}
+                    <th class="table-th{% if invoices.isSorted('invoice.id') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_id'|trans, 'invoice.id') }}</th>
+                    <th class="table-th{% if invoices.isSorted('invoice.name') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_name'|trans, 'invoice.name') }}</th>
+                    <th class="table-th">{{ 'invoices.list_project'|trans }}</th>
+                    <th class="table-th{% if invoices.isSorted('invoice.createdBy') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_created_by'|trans, 'invoice.createdBy') }}</th>
+                    <th class="table-th{% if invoices.isSorted('invoice.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_updated_at'|trans, 'invoice.updatedAt') }}</th>
+                    <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
+                    <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for index, invoice in invoices %}
+                    <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                        {% if recordedInvoices %}
+                            <td class="table-td">
+                                <label>
+                                    <input
+                                            type="checkbox"
+                                            {{ stimulus_target('entry-select', 'checkbox') }}
+                                            {{ stimulus_action('entry-select', 'checkboxClick', 'click', {'id': invoice.id}) }}
+                                            data-id="{{ invoice.id }}"
+                                            value="{{ invoice.id }}"
+                                            id="'entry-select-{{ invoice.id }}"
+                                            {{ false ? 'checked' : '' }}
+                                    />
+                                </label>
+                            </td>
+                        {% endif %}
+                        <td class="table-td">{{ invoice.id }}</td>
+                        <td class="table-td">{{ invoice.name }}</td>
+                        <td class="table-td">{{ invoice.project }}</td>
+                        <td class="table-td">{{ invoice.createdBy }}</td>
+                        <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d') : '' }}</td>
+                        <td class="table-td">{{ invoice.totalPrice }}</td>
+                        <td class="table-td">
+                            <a class="link"
+                               href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                {% if invoices is empty %}
+                    <tr class="table-tr">
+                        <td class="table-td"
+                            colspan="{{ numberOfColumns }}">{{ 'invoices.list_no_records_found'|trans }}</td>
+                    </tr>
+                {% endif %}
+                <tr class="table-tr">
+                    <td class="table-td" colspan="2">
+                        <a class="link" href="{{ path('app_invoices_new') }}">
+                            {{ 'invoices.action_create_new'|trans }}
+                        </a>
+                    </td>
+                    <td class="table-td" colspan="2">
+                        {% if recordedInvoices %}
+                            <button type="submit" class="button" data-action="entry-select#submitFormRedirectWithIds" data-entry-select-target="submitButton">{{ 'invoices.action_export_selected'|trans }}</button>
+                        {% endif %}
+                    </td>
+                    <td class="table-td" colspan="{{ numberOfColumns - 4 }}" class="text-right">
+                        {{ knp_pagination_render(invoices) }}
                     </td>
                 </tr>
-            {% endfor %}
-            {% if invoices is empty %}
-                <tr class="table-tr">
-                    <td class="table-td" colspan="7">{{ 'invoices.list_no_records_found'|trans }}</td>
-                </tr>
-            {% endif %}
-            <tr class="table-tr">
-                <td class="table-td" colspan="2"><a class="link" href="{{ path('app_invoices_new') }}">{{ 'invoices.action_create_new'|trans }}</a>
-                <td class="table-td" colspan="5" class="text-right">
-                    {{ knp_pagination_render(invoices) }}
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </form>
+    </div>
 {% endblock %}
