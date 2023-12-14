@@ -10,6 +10,7 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Modified getPlanningData to work with Leantime data
 * Changed amount and price field to NumberType instead of IntegerType.
 * Added export more options to recorded invoices overview.
+* Fixed issue with issue version sync.
 
 ## 1.0.4
 

@@ -1250,9 +1250,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
 
         $result = [];
 
-        $project = $this->getProject($projectId);
-        $versions = $project->versions ?? [];
-
         $issues = $this->getProjectIssues($projectId);
 
         $epicsRetrieved = [];
@@ -1285,20 +1282,7 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
             }
 
             foreach ($fields->fixVersions ?? [] as $fixVersion) {
-                /** @var array<\stdClass> $versionsFound */
-                $versionsFound = array_filter($versions, function ($v) use ($fixVersion) {
-                    return $v->id == $fixVersion->id;
-                });
-
-                if (count($versionsFound) > 0) {
-                    $versions = array_values($versionsFound);
-
-                    foreach ($versions as $version) {
-                        if (isset($version->id) && isset($version->name)) {
-                            $issueData->versions->add(new VersionData($version->id, $version->name));
-                        }
-                    }
-                }
+                $issueData->versions->add(new VersionData($fixVersion->id, $fixVersion->name));
             }
 
             $result[] = $issueData;
