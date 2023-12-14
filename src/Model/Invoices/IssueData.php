@@ -37,17 +37,17 @@ class IssueData {
    * @param string            $projectId
    */
   public function __construct(
-    ?string $name,
-    ?string $status,
-    ?string $projectTrackerId,
-    ?string $projectTrackerKey,
+    ?string $name = null,
+    ?string $status = null,
+    ?string $projectTrackerId = null,
+    ?string $projectTrackerKey = null,
     ?string $accountId = null,
     ?string $accountKey = null,
     ?string $epicName = null,
     ?string $epicKey = null,
     ?Collection $versions = null,
     ?\DateTime $resolutionDate = null,
-    ?string $projectId
+    ?string $projectId = null
   ) {
     $this->name = $name;
     $this->status = $status;

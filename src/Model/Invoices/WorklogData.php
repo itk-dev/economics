@@ -13,13 +13,13 @@ class WorklogData
     public string $projectTrackerIssueId;
 
     public function __construct(
-        int $projectTrackerId,
-        string $comment,
-        string $worker,
-        int $timeSpentSeconds,
-        \DateTime $started,
-        ?bool $projectTrackerIsBilled,
-        string $projectTrackerIssueId
+        int $projectTrackerId = null,
+        string $comment = null,
+        string $worker = null,
+        int $timeSpentSeconds = null,
+        \DateTime $started = null,
+        ?bool $projectTrackerIsBilled = null,
+        string $projectTrackerIssueId = null
     ) {
         $this->projectTrackerId = $projectTrackerId;
         $this->comment = $comment;
