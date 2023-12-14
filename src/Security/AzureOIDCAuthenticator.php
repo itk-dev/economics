@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use ItkDev\OpenIdConnect\Exception\ItkOpenIdConnectException;
 use ItkDev\OpenIdConnectBundle\Exception\InvalidProviderException;
@@ -31,6 +32,7 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly UrlGeneratorInterface $router,
+        private readonly UserRepository $userRepository,
         OpenIdConfigurationProviderManager $providerManager
     ) {
         parent::__construct($providerManager);
@@ -48,8 +50,7 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
             $email = $claims['upn'];
 
             // Check if user exists already - if not create a user
-            $user = $this->entityManager->getRepository(User::class)
-                ->findOneBy(['email' => $email]);
+            $user = $this->userRepository->findOneBy(['email' => $email]);
 
             if (null === $user) {
                 // Create the new user and persist it

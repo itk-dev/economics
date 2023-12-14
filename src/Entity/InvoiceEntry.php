@@ -12,16 +12,8 @@ use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: InvoiceEntryRepository::class)]
-class InvoiceEntry
+class InvoiceEntry extends AbstractBaseEntity
 {
-    use BlameableEntity;
-    use TimestampableEntity;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\ManyToOne(inversedBy: 'invoiceEntries')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
@@ -59,11 +51,6 @@ class InvoiceEntry
     public function __construct()
     {
         $this->worklogs = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getInvoice(): ?Invoice

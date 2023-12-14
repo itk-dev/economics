@@ -9,16 +9,8 @@ use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: WorklogRepository::class)]
-class Worklog
+class Worklog extends AbstractBaseEntity
 {
-    use BlameableEntity;
-    use TimestampableEntity;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column]
     private ?int $worklogId = null;
 
@@ -57,11 +49,6 @@ class Worklog
 
     #[ORM\Column(length: 255)]
     private ?string $projectTrackerIssueId = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getWorklogId(): ?int
     {
