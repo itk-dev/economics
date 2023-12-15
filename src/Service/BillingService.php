@@ -216,7 +216,7 @@ class BillingService
             }
 
             // Flush and clear for each batch.
-            if (0 == $worklogsAdded % self::BATCH_SIZE) {
+            if (0 === $worklogsAdded % self::BATCH_SIZE) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
             }
