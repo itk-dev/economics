@@ -284,7 +284,7 @@ class BillingService
             $account->setCategory($accountDatum->category);
 
             // Flush and clear for each batch.
-            if (0 == intval($index) % self::BATCH_SIZE) {
+            if (0 === intval($index) % self::BATCH_SIZE) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
             }
