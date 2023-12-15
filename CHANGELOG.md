@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added choices.js to dropdowns with many options.
+* Added epic filter to worklog selection page.
+* Removed time from period selections on worklog selection page.
+
 ## [1.1.0] - 2023-12-14
 
 * Updated api source to use Leantime
