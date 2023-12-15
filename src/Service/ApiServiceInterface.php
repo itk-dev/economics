@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\IssueData;
+use App\Model\Invoices\PagedResult;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
@@ -75,7 +76,7 @@ interface ApiServiceInterface
     /** @return array<IssueData> */
     public function getIssuesDataForProject(string $projectId): array;
 
-    public function getIssuesDataForProjectPaged(string $projectId, int $startAt = 0, $maxResults = 50): array;
+    public function getIssuesDataForProjectPaged(string $projectId, int $startAt = 0, $maxResults = 50): PagedResult;
 
     /**
      * @return array<AccountData>

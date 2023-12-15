@@ -7,6 +7,7 @@ use App\Exception\ApiServiceException;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\IssueData;
+use App\Model\Invoices\PagedResult;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\VersionData;
 use App\Model\Invoices\WorklogData;
@@ -1283,7 +1284,7 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         ];
     }
 
-    public function getIssuesDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): array
+    public function getIssuesDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
     {
         // Get customFields from Jira.
         $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
@@ -1331,12 +1332,7 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
             $result[] = $issueData;
         }
 
-        return [
-            'issues' => $result,
-            'startAt' => $startAt,
-            'maxResults' => $maxResults,
-            'total' => $pagedResult['total'],
-        ];
+        return new PagedResult($result, $startAt, $maxResults, $pagedResult['total']);
     }
 
     /**

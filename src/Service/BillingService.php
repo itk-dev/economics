@@ -99,9 +99,9 @@ class BillingService
             }
 
             $pagedIssueData = $this->apiService->getIssuesDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
-            $total = $pagedIssueData['total'];
+            $total = $pagedIssueData->total;
 
-            $issueData = $pagedIssueData['issues'];
+            $issueData = $pagedIssueData->items;
 
             foreach ($issueData as $issueDatum) {
                 $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
