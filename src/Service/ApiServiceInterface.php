@@ -75,6 +75,8 @@ interface ApiServiceInterface
     /** @return array<IssueData> */
     public function getIssuesDataForProject(string $projectId): array;
 
+    public function getIssuesDataForProjectPaged(string $projectId, int $startAt = 0, $maxResults = 50): array;
+
     /**
      * @return array<AccountData>
      */

@@ -28,6 +28,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BillingService
 {
+    private const BATCH_SIZE = 200;
+    private const MAX_RESULTS = 50;
+
     public function __construct(
         private readonly ApiServiceInterface $apiService,
         private readonly ProjectRepository $projectRepository,
@@ -84,48 +87,68 @@ class BillingService
             throw new \Exception('ProjectTrackerId not set');
         }
 
-        $issueData = $this->apiService->getIssuesDataForProject($projectTrackerId);
         $issuesProcessed = 0;
 
-        foreach ($issueData as $issueDatum) {
-            $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
+        $startAt = 0;
 
-            if (!$issue) {
-                $issue = new Issue();
+        do {
+            $project = $this->projectRepository->find($projectId);
 
-                $this->entityManager->persist($issue);
+            if (!$project) {
+                throw new \Exception('Project not found');
             }
 
-            $issue->setName($issueDatum->name);
-            $issue->setAccountId($issueDatum->accountId);
-            $issue->setAccountKey($issueDatum->accountKey);
-            $issue->setEpicKey($issueDatum->epicKey);
-            $issue->setEpicName($issueDatum->epicName);
-            $issue->setProject($project);
-            $issue->setProjectTrackerId($issueDatum->projectTrackerId);
-            $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
-            $issue->setResolutionDate($issueDatum->resolutionDate);
-            $issue->setStatus($issueDatum->status);
+            $pagedIssueData = $this->apiService->getIssuesDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
+            $total = $pagedIssueData['total'];
 
-            if (null == $issue->getSource()) {
-                $issue->setSource($this->apiService->getProjectTrackerIdentifier());
-            }
+            $issueData = $pagedIssueData['issues'];
 
-            foreach ($issueDatum->versions as $versionData) {
-                $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
+            foreach ($issueData as $issueDatum) {
+                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
 
-                if (null !== $version) {
-                    $issue->addVersion($version);
+                if (!$issue) {
+                    $issue = new Issue();
+
+                    $this->entityManager->persist($issue);
+                }
+
+                $issue->setName($issueDatum->name);
+                $issue->setAccountId($issueDatum->accountId);
+                $issue->setAccountKey($issueDatum->accountKey);
+                $issue->setEpicKey($issueDatum->epicKey);
+                $issue->setEpicName($issueDatum->epicName);
+                $issue->setProject($project);
+                $issue->setProjectTrackerId($issueDatum->projectTrackerId);
+                $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
+                $issue->setResolutionDate($issueDatum->resolutionDate);
+                $issue->setStatus($issueDatum->status);
+
+                if (null == $issue->getSource()) {
+                    $issue->setSource($this->apiService->getProjectTrackerIdentifier());
+                }
+
+                foreach ($issueDatum->versions as $versionData) {
+                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
+
+                    if (null !== $version) {
+                        $issue->addVersion($version);
+                    }
+                }
+
+                if (null !== $progressCallback) {
+                    $progressCallback($issuesProcessed, $total);
+                    ++$issuesProcessed;
                 }
             }
 
-            if (null !== $progressCallback) {
-                $progressCallback($issuesProcessed, count($issueData));
-                ++$issuesProcessed;
-            }
-        }
+            $startAt += self::MAX_RESULTS;
+
+            $this->entityManager->flush();
+            $this->entityManager->clear();
+        } while ($startAt < $total);
 
         $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     /**
@@ -149,6 +172,12 @@ class BillingService
         $worklogsAdded = 0;
 
         foreach ($worklogData as $worklogDatum) {
+            $project = $this->projectRepository->find($projectId);
+
+            if (!$project) {
+                throw new \Exception('Project not found');
+            }
+
             $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
 
             if (!$worklog) {
@@ -185,9 +214,16 @@ class BillingService
 
                 ++$worklogsAdded;
             }
+
+            // Flush and clear for each batch.
+            if (0 == $worklogsAdded % self::BATCH_SIZE) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
         }
 
         $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     public function updateInvoiceEntryTotalPrice(InvoiceEntry $invoiceEntry): void
@@ -247,13 +283,17 @@ class BillingService
             $account->setStatus($accountDatum->status);
             $account->setCategory($accountDatum->category);
 
-            $this->entityManager->flush();
-            $this->entityManager->clear();
+            // Flush and clear for each batch.
+            if (0 == intval($index) % self::BATCH_SIZE) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
 
             $progressCallback($index, count($allAccountData));
         }
 
         $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     public function syncProjects(callable $progressCallback): void
@@ -313,13 +353,17 @@ class BillingService
                 }
             }
 
-            $this->entityManager->flush();
-            $this->entityManager->clear();
+            // Flush and clear for each batch.
+            if (0 == intval($index) % self::BATCH_SIZE) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
 
             $progressCallback($index, count($allProjectData));
         }
 
         $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     /**
