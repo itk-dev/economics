@@ -7,6 +7,7 @@ use App\Exception\ApiServiceException;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\IssueData;
+use App\Model\Invoices\PagedResult;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\VersionData;
 use App\Model\Invoices\WorklogData;
@@ -1236,6 +1237,102 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         } while (isset($results->total) && $results->total > $startAt);
 
         return $issues;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    private function getProjectIssuesPaged($projectId, $startAt, $maxResults = 50): array
+    {
+        // Get customFields from Jira.
+        $customFieldEpicLink = $this->getCustomFieldId('Epic Link');
+        $customFieldAccount = $this->getCustomFieldId('Account');
+
+        // Get all issues for version.
+        $fields = implode(
+            ',',
+            [
+                'timetracking',
+                'worklog',
+                'timespent',
+                'timeoriginalestimate',
+                'summary',
+                'assignee',
+                'status',
+                'resolutiondate',
+                'fixVersions',
+                $customFieldEpicLink,
+                $customFieldAccount,
+            ]
+        );
+
+        $results = $this->get(
+            self::API_PATH_SEARCH,
+            [
+                'jql' => "project = $projectId",
+                'maxResults' => $maxResults,
+                // 'fields' => $fields,
+                'startAt' => $startAt,
+            ]
+        );
+
+        return [
+            'issues' => $results->issues,
+            'total' => $results->total,
+            'startAt' => $startAt,
+            'maxResults' => $maxResults,
+        ];
+    }
+
+    public function getIssuesDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
+    {
+        // Get customFields from Jira.
+        $customFieldEpicLinkId = $this->getCustomFieldId('Epic Link');
+        $customFieldAccount = $this->getCustomFieldId('Account');
+
+        $result = [];
+
+        $pagedResult = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
+
+        $issues = $pagedResult['issues'];
+
+        $epicsRetrieved = [];
+
+        foreach ($issues as $issue) {
+            $fields = $issue->fields;
+
+            $issueData = new IssueData();
+            $issueData->name = $fields->summary;
+            $issueData->status = $fields->status->name;
+            $issueData->projectTrackerId = $issue->id;
+            $issueData->projectTrackerKey = $issue->key;
+            $issueData->resolutionDate = isset($fields->resolutiondate) ? new \DateTime($fields->resolutiondate) : null;
+
+            $issueData->accountId = $fields->{$customFieldAccount}->id ?? null;
+            $issueData->accountKey = $fields->{$customFieldAccount}->key ?? null;
+
+            if (isset($fields->{$customFieldEpicLinkId})) {
+                $epicKey = $fields->{$customFieldEpicLinkId};
+
+                if (isset($epicsRetrieved[$epicKey])) {
+                    $epicData = $epicsRetrieved[$epicKey];
+                } else {
+                    $epicData = $this->getIssue($epicKey);
+                    $epicsRetrieved[$epicKey] = $epicData;
+                }
+
+                $issueData->epicKey = $epicKey;
+                $issueData->epicName = $epicData->fields->summary ?? null;
+            }
+
+            foreach ($fields->fixVersions ?? [] as $fixVersion) {
+                $issueData->versions->add(new VersionData($fixVersion->id, $fixVersion->name));
+            }
+
+            $result[] = $issueData;
+        }
+
+        return new PagedResult($result, $startAt, $maxResults, $pagedResult['total']);
     }
 
     /**
