@@ -6,7 +6,7 @@
     <h1 class="page-title">{{ 'worklog.title'|trans }}</h1>
 
     {{ form_start(form) }}
-    <div class="worklogs-filter-form">
+    <div class="worklogs-filter-form selections" {{ stimulus_controller('choices') }}>
         {{ form_rest(form) }}
         <button class="button m-5">{{ 'invoices.search'|trans }}</button>
     </div>

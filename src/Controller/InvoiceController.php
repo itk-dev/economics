@@ -102,6 +102,7 @@ class InvoiceController extends AbstractController
             'row_attr' => ['class' => 'form-row form-choices'],
             'attr' => [
                 'class' => 'form-element',
+                'data-choices-target' => 'choices',
                 'data-account-selector-target' => 'field',
             ],
             'choices' => $paidByAccountChoices,
@@ -115,6 +116,7 @@ class InvoiceController extends AbstractController
             'row_attr' => ['class' => 'form-row form-choices'],
             'attr' => [
                 'class' => 'form-element',
+                'data-choices-target' => 'choices',
                 'data-account-selector-target' => 'field',
             ],
             'choices' => $defaultReceiverAccountChoices,
@@ -130,7 +132,10 @@ class InvoiceController extends AbstractController
                 'label' => 'invoices.client',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-choices-target' => 'choices',
+                ],
                 'help' => 'invoices.client_helptext',
                 'choices' => $clients,
             ]);

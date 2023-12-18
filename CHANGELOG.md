@@ -8,12 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2023-12-18
+
+* Added choices.js to dropdowns with many options.
+* Added epic filter to worklog selection page.
+* Removed time from period selections on worklog selection page.
+* Optimized sync memory usage.
+
 ## [1.1.0] - 2023-12-14
 
 * Updated api source to use Leantime
 * Modified getPlanningData to work with Leantime data
 * Changed amount and price field to NumberType instead of IntegerType.
 * Added export more options to recorded invoices overview.
+* Fixed issue with issue version sync.
 
 ## [1.0.4]
 

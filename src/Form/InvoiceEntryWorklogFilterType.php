@@ -5,7 +5,7 @@ namespace App\Form;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -25,7 +25,7 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                 'help' => 'worklog.is_billed_helptext',
                 'attr' => ['class' => 'form-element'],
             ])
-            ->add('periodFrom', DateTimeType::class, [
+            ->add('periodFrom', DateType::class, [
                 'required' => false,
                 'label' => 'worklog.period_from',
                 'label_attr' => ['class' => 'label'],
@@ -35,7 +35,7 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                 'html5' => true,
                 'attr' => ['class' => 'form-element'],
             ])
-            ->add('periodTo', DateTimeType::class, [
+            ->add('periodTo', DateType::class, [
                 'required' => false,
                 'label' => 'worklog.period_to',
                 'label_attr' => ['class' => 'label'],
