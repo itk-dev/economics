@@ -62,7 +62,7 @@
                         <td class="table-td">{{ invoice.name }}</td>
                         <td class="table-td">{{ invoice.project }}</td>
                         <td class="table-td">{{ invoice.createdBy }}</td>
-                        <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('d.m.Y') : '' }}</td>
+                        <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date : '' }}</td>
                         <td class="table-td">{{ invoice.totalPrice }}</td>
                         <td class="table-td">
                             <a class="link"

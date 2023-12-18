@@ -34,7 +34,7 @@
                 <td class="table-td">{{ projectBilling.project }}</td>
                 <td class="table-td">{{ projectBilling.isRecorded ? 'project_billing.recorded'|trans : '' }}</td>
                 <td class="table-td">{{ projectBilling.createdBy }}</td>
-                <td class="table-td">{{ projectBilling.updatedAt ? projectBilling.updatedAt|date('d.m.Y') : '' }}</td>
+                <td class="table-td">{{ projectBilling.updatedAt ? projectBilling.updatedAt|date : '' }}</td>
                 <td class="table-td">
                     <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}) }}">{{ 'project_billing.action_edit'|trans }}</a>
                 </td>

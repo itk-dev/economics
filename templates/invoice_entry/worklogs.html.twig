@@ -73,7 +73,7 @@
                         </td>
                         <td class="table-td">{{ worklog.worker }}</td>
                         <td class="table-td">{{ worklog.timeSpentSeconds / 60 / 60 }}</td>
-                        <td class="table-td">{{ worklog.started|date('d.m.Y') }}</td>
+                        <td class="table-td">{{ worklog.started|date }}</td>
                     </tr>
                 {% endfor %}
                 {% if worklogs is empty %}
