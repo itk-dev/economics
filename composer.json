@@ -13,7 +13,7 @@
         "gedmo/doctrine-extensions": "^3.9",
         "itk-dev/openid-connect-bundle": "^3.0",
         "knplabs/knp-paginator-bundle": "^6.1",
-        "mpdf/mpdf": "^v8.1.2",
+        "mpdf/mpdf": "^8.1.2",
         "phpoffice/phpspreadsheet": "^1.25",
         "stof/doctrine-extensions-bundle": "^1.7",
         "symfony/console": "~6.4.0",
@@ -72,9 +72,9 @@
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
+            "ergebnis/composer-normalize": true,
             "symfony/flex": true,
-            "symfony/runtime": true,
-            "ergebnis/composer-normalize": true
+            "symfony/runtime": true
         },
         "optimize-autoloader": true,
         "preferred-install": {
