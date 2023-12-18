@@ -68,10 +68,18 @@ class WorklogRepository extends ServiceEntityRepository
             $qb->andWhere('worklog.started <= :periodTo')->setParameter('periodTo', $filterData->periodTo);
         }
 
-        if (isset($filterData->version)) {
+        if (isset($filterData->version) || isset($filterData->epic)) {
             $qb->leftJoin('App\Entity\Issue', 'issue', 'WITH', 'issue.id = worklog.issue');
+        }
+
+        if (isset($filterData->version)) {
             $qb->andWhere(':version MEMBER OF issue.versions')
                 ->setParameter('version', $filterData->version);
+        }
+
+        if (isset($filterData->epic)) {
+            $qb->andWhere(':epic = issue.epicKey')
+                ->setParameter('epic', $filterData->epic);
         }
 
         if (isset($filterData->onlyAvailable) && $filterData->onlyAvailable) {

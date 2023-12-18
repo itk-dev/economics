@@ -6,20 +6,20 @@
     <h1 class="page-title">{{ 'worklog.title'|trans }}</h1>
 
     {{ form_start(form) }}
-    <div class="worklogs-filter-form">
+    <div class="worklogs-filter-form selections" {{ stimulus_controller('choices') }}>
         {{ form_rest(form) }}
         <button class="button m-5">{{ 'invoices.search'|trans }}</button>
     </div>
     {{ form_end(form) }}
 
-    <div {{ stimulus_controller('worklog-select') }} data-select-worklogs-endpoint="{{ selectWorklogsEndpoint }}">
-        <form id="worklog-form">
+    <div {{ stimulus_controller('entry-select') }} data-submit-endpoint="{{ submitEndpoint }}">
+        <form id="entry-form">
             <table class="table margin-bottom">
                 <thead class="table-thead">
                 <tr>
                     <th class="table-th">
                         <label>
-                            <input type="checkbox" data-action="worklog-select#toggleAll">
+                            <input type="checkbox" data-action="entry-select#toggleAll">
                         </label>
                     </th>
                     <th class="table-th">{{ 'worklog.name'|trans }}</th>
@@ -43,11 +43,11 @@
                                 <label>
                                     <input
                                             type="checkbox"
-                                            {{ stimulus_target('worklog-select', 'checkbox') }}
-                                            {{ stimulus_action('worklog-select', 'checkboxClick', 'click', {'id': worklog.id}) }}
+                                            {{ stimulus_target('entry-select', 'checkbox') }}
+                                            {{ stimulus_action('entry-select', 'checkboxClick', 'click', {'id': worklog.id}) }}
                                             data-id="{{ worklog.id }}"
                                             value="{{ worklog.id }}"
-                                            id="worklog-{{ worklog.id }}"
+                                            id="entry-{{ worklog.id }}"
                                             {{ ownedByInvoiceEntry ? 'checked' : '' }}
                                     />
                                 </label>
@@ -83,9 +83,9 @@
                 {% endif %}
                 <tr class="table-tr sticky-row">
                     <td colspan="4" class="table-td">
-                        <button type="submit" class="button mr-5" data-action="worklog-select#submitForm" data-worklog-select-target="submitButton">{{ 'worklog.action_save'|trans }}</button>
-                        <span class="hidden" data-worklog-select-target="spinner">loading...</span>
-                        <span class="hidden" data-worklog-select-target="result"></span>
+                        <button type="submit" class="button mr-5" data-action="entry-select#submitForm" data-entry-select-target="submitButton">{{ 'worklog.action_save'|trans }}</button>
+                        <span class="hidden" data-entry-select-target="spinner">loading...</span>
+                        <span class="hidden" data-entry-select-target="result"></span>
                     </td>
                     <td colspan="4">
                         <a class="link" style="float: right; margin-right: 2em" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>

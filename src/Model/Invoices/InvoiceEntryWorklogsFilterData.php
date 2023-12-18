@@ -12,4 +12,5 @@ class InvoiceEntryWorklogsFilterData
     public ?string $worker = null;
     public ?Version $version = null;
     public ?bool $onlyAvailable = true;
+    public ?string $epic = null;
 }

@@ -1,19 +1,34 @@
-# CHANGELOG
+<!-- markdownlint-disable MD024 -->
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
-See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information about writing changes to this log.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [1.1.1] - 2023-12-18
+
+* Added choices.js to dropdowns with many options.
+* Added epic filter to worklog selection page.
+* Removed time from period selections on worklog selection page.
+* Optimized sync memory usage.
+
+## [1.1.0] - 2023-12-14
+
 * Updated api source to use Leantime
 * Modified getPlanningData to work with Leantime data
+* Changed amount and price field to NumberType instead of IntegerType.
+* Added export more options to recorded invoices overview.
+* Fixed issue with issue version sync.
 
-## 1.0.4
+## [1.0.4]
 
-* Fixed command to recalculate sums for all invoices by first calculating invoice entries.
+* Fixed command to recalculate sums for all invoices by first calculating
+  invoice entries.
 
-## 1.0.3
+## [1.0.3]
 
 * Changed redirect after create a manual invoice entry.
 * Removed export options when client is not set.
@@ -22,20 +37,20 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Changed datetime form fields to date.
 * Fixed select all on worklog list.
 
-## 1.0.2
+## [1.0.2]
 
-## Changed
+### Changed
 
 * Updated package-lock.json.
 
-## 1.0.1
+## [1.0.1]
 
 ### Changed
 
 * Updated openid-connect to newest version.
 * Updated docker-compose files to newest version.
 
-## 1.0.0
+## [1.0.0]
 
 ### Added
 
@@ -71,6 +86,15 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Changed sprint report form to GET method.
 * Fixed worklog select path.
 * Optimized worklog select javascript.
-* Fixed issues with create project. Javascript has been changed to use stimulus. Changed how session is accessed.
+* Fixed issues with create project. Javascript has been changed to use stimulus.
+  Changed how session is accessed.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
+
+[Unreleased]: https://github.com/itk-dev/economics/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/itk-dev/economics/compare/1.0.4...1.1.0
+[1.0.4]: https://github.com/itk-dev/economics/compare/1.0.3...1.0.4
+[1.0.3]: https://github.com/itk-dev/economics/compare/1.0.2...1.0.3
+[1.0.2]: https://github.com/itk-dev/economics/compare/1.0.1...1.0.2
+[1.0.1]: https://github.com/itk-dev/economics/compare/1.0.0...1.0.1
+[1.0.0]: https://github.com/itk-dev/economics/releases/tag/1.0.0
