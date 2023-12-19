@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Invoice;
+use App\Entity\InvoiceEntry;
 use App\Form\InvoiceFilterType;
 use App\Form\InvoiceNewType;
 use App\Form\InvoiceRecordType;
@@ -161,6 +162,11 @@ class InvoiceController extends AbstractController
         return $this->render('invoices/edit.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
+            'invoiceTotalAmount' => array_reduce($invoice->getInvoiceEntries()->toArray(), function ($carry, InvoiceEntry $item) {
+                $carry += $item->getAmount();
+
+                return $carry;
+            }, 0.0),
         ]);
     }
 

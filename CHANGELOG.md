@@ -18,6 +18,8 @@ complete process.
 * Added epic filter to worklog selection page.
 * Removed time from period selections on worklog selection page.
 * Optimized sync memory usage.
+* Aligned date formats.
+* Added total amount to invoice.
 
 ## [1.1.0]
 
