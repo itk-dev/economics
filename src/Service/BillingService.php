@@ -12,6 +12,7 @@ use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
+use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
@@ -369,17 +370,17 @@ class BillingService
     /**
      * @throws \Exception
      */
-    public function recordInvoice(Invoice $invoice): void
+    public function recordInvoice(Invoice $invoice, bool $flush = true): void
     {
+        if ($invoice->isRecorded()) {
+            throw new InvoiceAlreadyOnRecordException('Invoice is already on record.');
+        }
+
         // Make sure client is set.
         $errors = $this->getInvoiceRecordableErrors($invoice);
 
-        if ($invoice->isRecorded()) {
-            throw new \Exception('Already recorded.');
-        }
-
         if (!empty($errors)) {
-            throw new \Exception('Cannot record invoices. Errors not handled.');
+            throw new \Exception('Cannot record invoice ' . $invoice->getName() .'('. $invoice->getId().'). Errors not handled: ' . json_encode($errors));
         }
 
         $client = $invoice->getClient();
@@ -408,7 +409,7 @@ class BillingService
             }
         }
 
-        $this->invoiceRepository->save($invoice, true);
+        $this->invoiceRepository->save($invoice, $flush);
     }
 
     // TODO: Replace with exceptions.

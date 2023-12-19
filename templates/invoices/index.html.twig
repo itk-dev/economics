@@ -17,7 +17,7 @@
     {{ form_end(form) }}
 
     {% set recordedInvoices = invoiceFilterData.recorded %}
-    {% set numberOfColumns = recordedInvoices ? 8 : 7 %}
+    {% set numberOfColumns = recordedInvoices ? 9 : 7 %}
 
     <div {{ stimulus_controller('entry-select') }} data-submit-endpoint="{{ submitEndpoint }}">
         <form id="entry-form">
@@ -37,6 +37,9 @@
                     <th class="table-th{% if invoices.isSorted('invoice.createdBy') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_created_by'|trans, 'invoice.createdBy') }}</th>
                     <th class="table-th{% if invoices.isSorted('invoice.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_updated_at'|trans, 'invoice.updatedAt') }}</th>
                     <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
+                    {% if recordedInvoices %}
+                        <th class="table-th{% if invoices.isSorted('invoice.exportedDate') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_exported_date'|trans, 'invoice.exportedDate') }}</th>
+                    {% endif %}
                     <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
                 </tr>
                 </thead>
@@ -64,9 +67,17 @@
                         <td class="table-td">{{ invoice.createdBy }}</td>
                         <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date('Y-m-d') : '' }}</td>
                         <td class="table-td">{{ invoice.totalPrice }}</td>
+                        {% if recordedInvoices %}
+                            <td class="table-td">{{ invoice.exportedDate ? invoice.exportedDate|date('Y-m-d') : '' }}</td>
+                        {% endif %}
                         <td class="table-td">
-                            <a class="link"
-                               href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
+                            <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">
+                                {% if recordedInvoices %}
+                                    {{ 'invoices.action_view'|trans }}
+                                {% else %}
+                                    {{ 'invoices.action_edit'|trans }}
+                                {% endif %}
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
