@@ -224,6 +224,8 @@ invoices:
   list_recorded: 'Bogført'
   export_only_available_when_mandatory_fields_are_set: 'Eksport kun muligt når der er sat en kundekonto'
   action_export_selected: 'Eksporter valg'
+  action_view: 'Se'
+  list_exported_date: 'Eksportdato'
 
 material_number_enum:
   internal: "Interne: 103361"
