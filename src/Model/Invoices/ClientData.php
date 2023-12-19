@@ -16,4 +16,6 @@ class ClientData
     public ?string $psp = null;
     public ?string $ean = null;
     public ?string $salesChannel = null;
+    public ?string $projectLeadName = null;
+    public ?string $projectLeadMail = null;
 }
