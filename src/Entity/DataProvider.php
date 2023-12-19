@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ProjectTrackerRepository;
+use App\Repository\DataProviderRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ProjectTrackerRepository::class)]
-class ProjectTracker extends AbstractBaseEntity
+#[ORM\Entity(repositoryClass: DataProviderRepository::class)]
+class DataProvider extends AbstractBaseEntity
 {
     #[ORM\Column(length: 255, unique: true)]
     private ?string $name = null;
@@ -15,7 +15,10 @@ class ProjectTracker extends AbstractBaseEntity
     private ?string $url = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $basicAuth = null;
+    private ?string $secret = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $class = null;
 
     public function getName(): ?string
     {
@@ -41,14 +44,26 @@ class ProjectTracker extends AbstractBaseEntity
         return $this;
     }
 
-    public function getBasicAuth(): ?string
+    public function getSecret(): ?string
     {
-        return $this->basicAuth;
+        return $this->secret;
     }
 
-    public function setBasicAuth(?string $basicAuth): static
+    public function setSecret(?string $secret): static
     {
-        $this->basicAuth = $basicAuth;
+        $this->secret = $secret;
+
+        return $this;
+    }
+
+    public function getClass(): ?string
+    {
+        return $this->class;
+    }
+
+    public function setClass(string $class): static
+    {
+        $this->class = $class;
 
         return $this;
     }

@@ -30,7 +30,15 @@ services:
     
     # Select active project tracker implementation
     # App\Service\ProjectTrackerInterface: '@App\Service\LeantimeApiService'
-    App\Service\ProjectTrackerInterface: '@App\Service\JiraApiService'
+    App\Service\DataProviderInterface: '@App\Service\JiraApiService'
+
+    App\Service\DataProviderService:
+        arguments:
+            $customFieldMappings: '%app.jira_custom_fields%'
+            $defaultBoard: '%env(JIRA_API_SERVICE_DEFAULT_BOARD)%'
+            $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
+            $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
+            $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

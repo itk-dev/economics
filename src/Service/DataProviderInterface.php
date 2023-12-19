@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Model\Planning\PlanningData;
 
-interface ProjectTrackerInterface
+interface DataProviderInterface
 {
     public function getPlanningData(): PlanningData;
 }

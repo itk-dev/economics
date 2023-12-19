@@ -8,6 +8,7 @@ use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
 use App\Entity\Project;
+use App\Entity\DataProvider;
 use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
@@ -34,16 +35,17 @@ class BillingService
     public function __construct(
         private readonly ApiServiceInterface $apiService,
         private readonly ProjectRepository $projectRepository,
-        private readonly ClientRepository $clientRepository,
-        private readonly InvoiceRepository $invoiceRepository,
+        private readonly ClientRepository       $clientRepository,
+        private readonly InvoiceRepository      $invoiceRepository,
         private readonly InvoiceEntryRepository $invoiceEntryRepository,
-        private readonly VersionRepository $versionRepository,
-        private readonly WorklogRepository $worklogRepository,
-        private readonly IssueRepository $issueRepository,
+        private readonly VersionRepository      $versionRepository,
+        private readonly WorklogRepository      $worklogRepository,
+        private readonly IssueRepository        $issueRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TranslatorInterface $translator,
-        private readonly AccountRepository $accountRepository,
-        private readonly string $receiverAccount,
+        private readonly TranslatorInterface    $translator,
+        private readonly AccountRepository      $accountRepository,
+        private readonly string                 $receiverAccount,
+        private readonly DataProviderService    $projectTrackerService,
     ) {
     }
 
@@ -260,12 +262,14 @@ class BillingService
         $this->invoiceRepository->save($invoice, true);
     }
 
-    public function syncAccounts(callable $progressCallback): void
+    public function syncAccounts(callable $progressCallback, DataProvider $projectTracker): void
     {
-        $projectTrackerIdentifier = $this->apiService->getProjectTrackerIdentifier();
+        $apiService = $this->projectTrackerService->getService($projectTracker);
+
+        $projectTrackerIdentifier = $apiService->getProjectTrackerIdentifier();
 
         // Get all accounts from ApiService.
-        $allAccountData = $this->apiService->getAllAccountData();
+        $allAccountData = $apiService->getAllAccountData();
 
         foreach ($allAccountData as $index => $accountDatum) {
             $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
