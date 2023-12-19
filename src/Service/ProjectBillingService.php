@@ -11,6 +11,7 @@ use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\MaterialNumberEnum;
+use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\IssueRepository;
@@ -208,8 +209,15 @@ class ProjectBillingService
     public function recordProjectBilling(ProjectBilling $projectBilling): void
     {
         foreach ($projectBilling->getInvoices() as $invoice) {
-            $this->billingService->recordInvoice($invoice);
+            try {
+                $this->billingService->recordInvoice($invoice, false);
+            } catch (InvoiceAlreadyOnRecordException) {
+                // Ignore if invoice is already on record.
+            }
         }
+
+        // Persist the changes to invoices.
+        $this->entityManager->flush();
 
         $projectBilling->setRecorded(true);
         $this->projectBillingRepository->save($projectBilling, true);
