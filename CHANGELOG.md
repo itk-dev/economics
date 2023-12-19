@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Changed how project billing is put on record, to allow for finishing a partially
 complete process.
 * Added exported date to invoices overview.
+* Changed project billing period to date fields.
+* Aligned date formats.
+* Added total amount to invoice.
 
 ## [1.1.1]
 
@@ -18,8 +21,6 @@ complete process.
 * Added epic filter to worklog selection page.
 * Removed time from period selections on worklog selection page.
 * Optimized sync memory usage.
-* Aligned date formats.
-* Added total amount to invoice.
 
 ## [1.1.0]
 
