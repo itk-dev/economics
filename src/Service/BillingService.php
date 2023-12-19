@@ -380,7 +380,7 @@ class BillingService
         $errors = $this->getInvoiceRecordableErrors($invoice);
 
         if (!empty($errors)) {
-            throw new \Exception('Cannot record invoice ' . $invoice->getName() .'('. $invoice->getId().'). Errors not handled: ' . json_encode($errors));
+            throw new \Exception('Cannot record invoice '.$invoice->getName().'('.$invoice->getId().'). Errors not handled: '.json_encode($errors));
         }
 
         $client = $invoice->getClient();
