@@ -36,7 +36,7 @@ class InvoiceType extends AbstractType
             ->add('client', null, [
                 'label' => 'invoices.client',
                 'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
                 'attr' => ['class' => 'form-element'],
                 'help' => 'invoices.client_helptext',
             ])
