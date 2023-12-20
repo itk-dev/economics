@@ -18,6 +18,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -168,6 +169,28 @@ class InvoiceController extends AbstractController
                 return $carry;
             }, 0.0),
         ]);
+    }
+
+    #[Route('/{id}/generate-description', name: 'app_invoices_generate_description', methods: ['GET'])]
+    public function generateDescription(Invoice $invoice, $defaultInvoiceDescriptionTemplate): JsonResponse
+    {
+        $description = $defaultInvoiceDescriptionTemplate;
+
+        // Default description.
+        if (!empty($invoice->getClient())) {
+            $projectLeadName = $invoice->getClient()?->getProjectLeadName() ?? null;
+            $projectLeadMail = $invoice->getClient()?->getProjectLeadMail() ?? null;
+
+            if ($projectLeadName) {
+                $description = str_replace('%name%', $projectLeadName, $description);
+            }
+
+            if ($projectLeadMail) {
+                $description = str_replace('%email%', $projectLeadMail, $description);
+            }
+        }
+
+        return new JsonResponse(['description' => $description]);
     }
 
     #[Route('/{id}', name: 'app_invoices_delete', methods: ['POST'])]

@@ -26,11 +26,11 @@ class InvoiceType extends AbstractType
                 'help' => 'invoices.name_helptext',
             ])
             ->add('description', TextareaType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => 'invoices.description',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
-                'attr' => ['class' => 'form-element', 'rows' => 4],
+                'attr' => ['class' => 'form-element', 'data-generate-description-target' => 'description', 'rows' => 4],
                 'help' => 'invoices.description_helptext',
             ])
             ->add('client', null, [

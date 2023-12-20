@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * Added project lead to client when syncing projects.
+* Remove description from create invoice page.
+* Added generate description button to invoice when client is set.
 
 ## [1.1.2]
 

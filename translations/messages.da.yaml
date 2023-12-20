@@ -226,6 +226,7 @@ invoices:
   action_export_selected: 'Eksporter valg'
   action_view: 'Se'
   list_exported_date: 'Eksportdato'
+  generate_description: 'Autoudfyld'
 
 material_number_enum:
   internal: "Interne: 103361"

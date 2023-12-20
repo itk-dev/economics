@@ -9,7 +9,12 @@
     <div class="grid-split selections" {{ stimulus_controller('choices') }}>
         <div>
             {{ form_row(form.name) }}
-            {{ form_row(form.description) }}
+            <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {'id': invoice.id}) }}">
+                {% if invoice.client %}
+                    <button type="button" class="link" style="font-size: .8em; float: right" {{ stimulus_action('generate-description', 'generate') }}>{{ 'invoices.generate_description'|trans }}</button>
+                {% endif %}
+                {{ form_row(form.description) }}
+            </div>
             {{ form_row(form.client) }}
             {{ form_row(form.periodFrom) }}
             {{ form_row(form.periodTo) }}
