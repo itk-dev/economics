@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added default account to invoices from environment variable.
 * Added check for invoice entries with amount 0 when putting invoice on record.
 * Fixed issue with receiver account for project billing.
+* Fixed invoices overview sorting. Changed default sorting for invoices on record as by exportedDate.
 * RELEASE NOTES:
   * Change name APP_INVOICE_RECEIVER_ACCOUNT to APP_INVOICE_SUPPLIER_ACCOUNT in `.env.local`
   * Set APP_INVOICE_RECEIVER_DEFAULT_ACCOUNT in `.env.local`
