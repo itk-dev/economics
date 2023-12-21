@@ -16,7 +16,6 @@ use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
-use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ProjectBillingService
