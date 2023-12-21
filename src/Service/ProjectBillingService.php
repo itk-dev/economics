@@ -25,12 +25,10 @@ class ProjectBillingService
         private readonly AccountRepository $accountRepository,
         private readonly ProjectBillingRepository $projectBillingRepository,
         private readonly BillingService $billingService,
-        private readonly ApiServiceInterface $apiService,
         private readonly IssueRepository $issueRepository,
         private readonly ClientRepository $clientRepository,
-        private readonly WorklogRepository $worklogRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly string $receiverAccount,
+        private readonly string $invoiceDefaultReceiverAccount,
     ) {
     }
 
@@ -148,7 +146,7 @@ class ProjectBillingService
 
             // TODO: MaterialNumberEnum::EXTERNAL_WITH_MOMS or MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS?
             $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
-            $invoice->setDefaultReceiverAccount($this->receiverAccount);
+            $invoice->setDefaultReceiverAccount($this->invoiceDefaultReceiverAccount);
 
             /** @var Issue $issue */
             foreach ($invoiceArray['issues'] as $issue) {

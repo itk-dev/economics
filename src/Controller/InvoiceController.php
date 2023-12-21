@@ -45,15 +45,15 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/new', name: 'app_invoices_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, InvoiceRepository $invoiceRepository, string $defaultInvoiceAccount): Response
+    public function new(Request $request, InvoiceRepository $invoiceRepository, string $invoiceDefaultReceiverAccount): Response
     {
         $invoice = new Invoice();
         $form = $this->createForm(InvoiceNewType::class, $invoice);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if (!empty($defaultInvoiceAccount)) {
-                $invoice->setDefaultReceiverAccount($defaultInvoiceAccount);
+            if (!empty($invoiceDefaultReceiverAccount)) {
+                $invoice->setDefaultReceiverAccount($invoiceDefaultReceiverAccount);
             }
 
             $invoice->setRecorded(false);
