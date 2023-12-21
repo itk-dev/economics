@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * Changed InvoiceEntry material number and account to be set only at the invoice level.
+* Added default account to invoices from environment variable.
 
 ## [1.1.2]
 
