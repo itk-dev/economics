@@ -172,7 +172,7 @@ invoices:
   client_helptext: 'Vælg hvilken kundekonto fakturaen skal udstedes til.'
   default_material_number_helptext: 'Vælg forudvalgt "Materialenummer". Det bliver sat automatisk i alle fakturaindgange.'
   default_receiver_account_helptext: 'Vælg forudvalgt "Til konto". Det bliver sat automatisk i alle fakturaindgange.'
-  payer_account_helptext: 'Anvendes kun når der er tale om ITK projekt posteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: "Betales af [KONTO]".'
+  payer_account_helptext: 'Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: "Betales af [KONTO]".'
   client_type_internal: 'Intern'
   client_type_external: 'Ekstern'
   client_ean: 'EAN'
