@@ -11,6 +11,7 @@ use App\Form\InvoiceType;
 use App\Model\Invoices\ConfirmData;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\AccountRepository;
+use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,7 +68,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService, AccountRepository $accountRepository): Response
+    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
         if ($invoice->isRecorded()) {
@@ -155,13 +156,26 @@ class InvoiceController extends AbstractController
 
             $invoiceRepository->save($invoice, true);
 
+            // Update values in invoice entries.
+            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+                $invoiceEntry->setMaterialNumber($invoice->getDefaultMaterialNumber());
+                $invoiceEntry->setAccount($invoice->getDefaultReceiverAccount());
+                $invoiceEntryRepository->save($invoiceEntry, true);
+            }
+
             // TODO: Handle this with a doctrine event listener instead.
             $billingService->updateInvoiceTotalPrice($invoice);
         }
 
+        // Only allow adding entries when material number and receiver account have been set.
+        $allowAddingEntries = !empty($invoice->getDefaultReceiverAccount())
+            && !empty($invoice->getDefaultMaterialNumber())
+            && !empty($invoice->getDefaultMaterialNumber()->value);
+
         return $this->render('invoices/edit.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
+            'allowAddingEntries' => $allowAddingEntries,
             'invoiceTotalAmount' => array_reduce($invoice->getInvoiceEntries()->toArray(), function ($carry, InvoiceEntry $item) {
                 $carry += $item->getAmount();
 

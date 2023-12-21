@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Changed InvoiceEntry material number and account to be set only at the invoice level.
+
 ## [1.1.2]
 
 * Changed how project billing is put on record, to allow for finishing a partially
