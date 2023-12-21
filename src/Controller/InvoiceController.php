@@ -109,7 +109,6 @@ class InvoiceController extends AbstractController
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
-                'data-account-selector-target' => 'field',
             ],
             'choices' => $paidByAccountChoices,
             'help' => 'invoices.payer_account_helptext',
@@ -123,7 +122,6 @@ class InvoiceController extends AbstractController
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
-                'data-account-selector-target' => 'field',
             ],
             'choices' => $defaultReceiverAccountChoices,
             'help' => 'invoices.default_receiver_account_helptext',
@@ -213,7 +211,7 @@ class InvoiceController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_invoices_record', methods: ['GET', 'POST'])]
-    public function record(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function record(Request $request, Invoice $invoice, BillingService $billingService): Response
     {
         $recordData = new ConfirmData();
         $form = $this->createForm(InvoiceRecordType::class, $recordData);
@@ -224,6 +222,12 @@ class InvoiceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             if (null !== $invoice->getProjectBilling()) {
                 throw new HttpException(400, 'Invoice is a part of a project billing, cannot be put on record.');
+            }
+
+            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+                if (empty($invoiceEntry->getAmount())) {
+                    throw new HttpException(400, 'Invoice cannot be put on record, when it contains invoice entries where amount is not set.');
+                }
             }
 
             if ($recordData->confirmed) {
@@ -246,7 +250,7 @@ class InvoiceController extends AbstractController
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/show-export', name: 'app_invoices_show_export', methods: ['GET'])]
-    public function showExport(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function showExport(Invoice $invoice, BillingService $billingService): Response
     {
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet([$invoice->getId()]);
 
@@ -286,7 +290,7 @@ class InvoiceController extends AbstractController
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/export', name: 'app_invoices_export', methods: ['GET'])]
-    public function export(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function export(Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
     {
         if (!$invoice->isRecorded()) {
             throw new HttpException(400, 'Invoice cannot be exported before it is on record.');
