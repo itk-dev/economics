@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * RELEASE NOTES:
   * Change name APP_INVOICE_RECEIVER_ACCOUNT to APP_INVOICE_SUPPLIER_ACCOUNT in `.env.local`
   * Set APP_INVOICE_RECEIVER_DEFAULT_ACCOUNT in `.env.local`
+  * Set APP_PROJECT_BILLING_DEFAULT_DESCRIPTION in `.env.local`
 
 ## [1.1.2]
 
