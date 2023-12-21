@@ -174,24 +174,16 @@ class InvoiceController extends AbstractController
     #[Route('/{id}/generate-description', name: 'app_invoices_generate_description', methods: ['GET'])]
     public function generateDescription(Invoice $invoice, $defaultInvoiceDescriptionTemplate): JsonResponse
     {
-        $description = $defaultInvoiceDescriptionTemplate;
-
-        // Default description.
         $client = $invoice->getClient();
-        if (!empty($client)) {
-            $projectLeadName = $client->getProjectLeadName() ?? null;
-            $projectLeadMail = $client->getProjectLeadMail() ?? null;
 
-            if ($projectLeadName) {
-                $description = str_replace('%name%', $projectLeadName, $description);
-            }
+        if (!empty($client) && !(empty($client->getProjectLeadName())) && !empty($client->getProjectLeadMail())) {
+            $description = $defaultInvoiceDescriptionTemplate;
 
-            if ($projectLeadMail) {
-                $description = str_replace('%email%', $projectLeadMail, $description);
-            }
+            $description = str_replace('%name%', $client->getProjectLeadName() ?? '', $description);
+            $description = str_replace('%email%', $client->getProjectLeadMail() ?? '', $description);
         }
 
-        return new JsonResponse(['description' => $description]);
+        return new JsonResponse(['description' => $description ?? null]);
     }
 
     #[Route('/{id}', name: 'app_invoices_delete', methods: ['POST'])]

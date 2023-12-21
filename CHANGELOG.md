@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added generate description button to invoice when client is set.
 * Fixed texts.
 * Fixed classes for choices.js fields and disabled state.
+* Added project lead to invoice edit page.
 
 ## [1.1.2]
 

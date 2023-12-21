@@ -167,7 +167,7 @@ invoices:
   period_from_helptext: 'Dette felt skal udfyldes på eksterne fakturaer.'
   period_to_helptext: 'Dette felt skal udfyldes på eksterne fakturaer.'
   name_helptext: 'Vælg faktuens navn.'
-  description_helptext: 'Indsættes i tekstfeltet i fakturaen.'
+  description_helptext: 'Indsættes i tekstfeltet i fakturaen. Autoudfyld er tilgængelig, hvis der er valgt en kundekonto med en project lead.'
   project_helptext: 'Vælg projekt.'
   client_helptext: 'Vælg hvilken kundekonto fakturaen skal udstedes til.'
   default_material_number_helptext: 'Vælg forudvalgt "Materialenummer". Det bliver sat automatisk i alle fakturaindgange.'
@@ -227,6 +227,7 @@ invoices:
   action_view: 'Se'
   list_exported_date: 'Eksportdato'
   generate_description: 'Autoudfyld'
+  client_project_lead: 'Project Lead'
 
 material_number_enum:
   internal: "Interne: 103361"

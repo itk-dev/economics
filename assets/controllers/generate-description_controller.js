@@ -25,7 +25,9 @@ export default class extends Controller {
                 const target = this.descriptionTarget;
 
                 resp.json().then((data) => {
-                    target.value = data.description;
+                    if (data.description !== null) {
+                        target.value = data.description;
+                    }
                 });
             }
         });
