@@ -177,9 +177,10 @@ class InvoiceController extends AbstractController
         $description = $defaultInvoiceDescriptionTemplate;
 
         // Default description.
-        if (!empty($invoice->getClient())) {
-            $projectLeadName = $invoice->getClient()?->getProjectLeadName() ?? null;
-            $projectLeadMail = $invoice->getClient()?->getProjectLeadMail() ?? null;
+        $client = $invoice->getClient();
+        if (!empty($client)) {
+            $projectLeadName = $client->getProjectLeadName() ?? null;
+            $projectLeadMail = $client->getProjectLeadMail() ?? null;
 
             if ($projectLeadName) {
                 $description = str_replace('%name%', $projectLeadName, $description);
