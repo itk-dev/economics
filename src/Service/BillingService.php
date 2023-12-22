@@ -70,7 +70,8 @@ class BillingService
     }
 
     /**
-     * @throws \Exception
+     * @throws InvoiceAlreadyOnRecordException
+     * @throws EconomicsException
      */
     public function recordInvoice(Invoice $invoice, bool $flush = true): void
     {
@@ -82,13 +83,17 @@ class BillingService
         $errors = $this->getInvoiceRecordableErrors($invoice);
 
         if (!empty($errors)) {
-            throw new \Exception('Cannot record invoice '.$invoice->getName().'('.$invoice->getId().'). Errors not handled: '.json_encode($errors));
+            throw new EconomicsException($this->translator->trans('exception.billing_cannot_put_invoice_on_record_errors_found', [
+                '%invoiceName%' => $invoice->getName(),
+                '%invoiceId%' => $invoice->getId(),
+                '%errors%' => json_encode($errors),
+            ]));
         }
 
         $client = $invoice->getClient();
 
         if (is_null($client)) {
-            throw new \Exception('Client must be set');
+            throw new EconomicsException($this->translator->trans('exception.invoice_client_must_be_set'));
         }
 
         // Lock client values.

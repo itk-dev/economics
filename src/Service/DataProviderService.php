@@ -178,7 +178,7 @@ class DataProviderService
             $project = $this->projectRepository->find($projectId);
 
             if (!$project) {
-                throw new \Exception('Project not found');
+                throw new EconomicsException($this->translator->trans('exception.project_not_found'));
             }
 
             $pagedIssueData = $this->apiService->getIssuesDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);

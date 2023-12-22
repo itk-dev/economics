@@ -23,10 +23,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/project-billing')]
 class ProjectBillingController extends AbstractController
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+    ) {
+    }
+
     #[Route('/', name: 'app_project_billing_index', methods: ['GET'])]
     public function index(Request $request, ProjectBillingRepository $projectBillingRepository): Response
     {
@@ -72,6 +78,9 @@ class ProjectBillingController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, IssueRepository $issueRepository): Response
     {
@@ -87,7 +96,7 @@ class ProjectBillingController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($projectBilling->isRecorded()) {
-                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new EconomicsException($this->translator->trans('exception.project_billing_on_record_cannot_edit'), 400);
             }
 
             $projectBillingRepository->save($projectBilling, true);
@@ -110,22 +119,23 @@ class ProjectBillingController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}', name: 'app_project_billing_delete', methods: ['POST'])]
     public function delete(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, InvoiceRepository $invoiceRepository): Response
     {
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$projectBilling->getId(), $token)) {
             if ($projectBilling->isRecorded()) {
-                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new EconomicsException($this->translator->trans('exception.project_billing_on_record_cannot_delete'), 400);
             }
 
             foreach ($projectBilling->getInvoices() as $invoice) {
                 if (!$invoice->isRecorded()) {
                     $invoiceRepository->remove($invoice);
                 } else {
-                    $invoiceName = $invoice->getName();
-
-                    throw new HttpException(400, "Invoice \"$invoiceName\" is recorded, cannot be deleted.");
+                    throw new EconomicsException($this->translator->trans('exception.project_billing_invoice_on_record_cannot_delete', ['%invoiceId%' => $invoice->getId()]), 400);
                 }
             }
 

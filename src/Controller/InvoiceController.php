@@ -20,7 +20,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -78,6 +77,9 @@ class InvoiceController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
@@ -156,11 +158,11 @@ class InvoiceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($invoice->isRecorded()) {
-                throw new HttpException(400, 'Invoice is recorded, cannot be edited.');
+                throw new EconomicsException($this->translator->trans('exception.invoices_on_record_cannot_edit'), 400);
             }
 
             if (null !== $invoice->getProjectBilling()) {
-                throw new HttpException(400, 'Invoice is a part of a project billing, cannot be edited.');
+                throw new EconomicsException($this->translator->trans('exception.invoices_part_of_project_billing_cannot_edit'), 400);
             }
 
             $invoiceRepository->save($invoice, true);

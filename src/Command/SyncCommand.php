@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Exception\EconomicsException;
 use App\Repository\ProjectRepository;
 use App\Service\DataProviderService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -28,7 +29,7 @@ class SyncCommand extends Command
     }
 
     /**
-     * @throws \Exception
+     * @throws EconomicsException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

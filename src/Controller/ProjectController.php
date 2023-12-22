@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Exception\EconomicsException;
 use App\Form\ProjectFilterType;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\ProjectRepository;
@@ -43,7 +44,7 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @throws \Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]
     public function sync(Project $project, DataProviderService $dataProviderService): Response
