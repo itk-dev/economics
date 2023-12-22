@@ -10,8 +10,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class FrontpageController extends AbstractController
 {
     #[Route('/', name: 'app_frontpage_index')]
-    public function index(Request $request): Response
+    public function index(): Response
     {
-        return $this->render('index.html.twig', []);
+        return $this->render('index.html.twig');
     }
 }

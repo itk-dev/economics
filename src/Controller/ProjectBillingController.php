@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ProjectBilling;
+use App\Exception\EconomicsException;
 use App\Form\ProjectBillingFilterType;
 use App\Form\ProjectBillingRecordType;
 use App\Form\ProjectBillingType;
@@ -164,7 +165,7 @@ class ProjectBillingController extends AbstractController
     /**
      * Preview the export.
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/show-export', name: 'app_project_billing_show_export', methods: ['GET'])]
     public function showExport(Request $request, ProjectBilling $projectBilling, BillingService $billingService): Response
@@ -173,46 +174,21 @@ class ProjectBillingController extends AbstractController
             return $invoice->getId();
         }, $projectBilling->getInvoices()->toArray());
 
-        $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
-
-        $writer = IOFactory::createWriter($spreadsheet, 'Html');
-
-        $html = $billingService->getSpreadsheetOutputAsString($writer);
-
-        if (empty($html)) {
-            $html = '<html lang="da" />';
-        }
-
-        // Extract body content.
-        $d = new \DOMDocument();
-        $mock = new \DOMDocument();
-        $d->loadHTML($html);
-        /** @var \DOMNode $body */
-        $body = $d->getElementsByTagName('div')->item(0);
-
-        foreach ($body->childNodes as $child) {
-            if ($child instanceof \DOMElement) {
-                if ('table' == $child->tagName) {
-                    $child->setAttribute('class', 'table table-export');
-                }
-            }
-            $mock->appendChild($mock->importNode($child, true));
-        }
+        $html = $billingService->generateSpreadsheetHtml($ids);
 
         return $this->render('project_billing/export_show.html.twig', [
-            'html' => $mock->saveHTML(),
             'projectBilling' => $projectBilling,
+            'html' => $html,
         ]);
     }
 
     /**
      * Export the project billing to .csv.
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @throws \Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
-    public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
+    public function export(ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
     {
         // Mark invoice as exported.
         foreach ($projectBilling->getInvoices() as $invoice) {
@@ -227,27 +203,6 @@ class ProjectBillingController extends AbstractController
             return $invoice->getId();
         }, $projectBilling->getInvoices()->toArray());
 
-        $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
-
-        /** @var Csv $writer */
-        $writer = IOFactory::createWriter($spreadsheet, 'Csv');
-        $writer->setDelimiter(';');
-        $writer->setEnclosure('');
-        $writer->setLineEnding("\r\n");
-        $writer->setSheetIndex(0);
-
-        $csvOutput = $billingService->getSpreadsheetOutputAsString($writer);
-
-        // Change encoding to Windows-1252.
-        $csvOutputEncoded = mb_convert_encoding($csvOutput, 'Windows-1252');
-
-        $response = new Response($csvOutputEncoded);
-        $filename = 'invoices-'.date('d-m-Y').'.csv';
-
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
-        return $response;
+        return $billingService->generateSpreadsheetCsvResponse($ids);
     }
 }

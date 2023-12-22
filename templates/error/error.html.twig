@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  {{ 'error.title'|trans }}
+{% endblock %}
+
+{% block content %}
+  <h1 class="page-title">{{ 'error.title'|trans }}</h1>
+
+  <h3 class="subheading">{{ 'error.code'|trans }}</h3>
+  {{ code }}
+
+  <h3 class="subheading">{{ 'error.message'|trans }}</h3>
+  {{ message }}
+{% endblock %}

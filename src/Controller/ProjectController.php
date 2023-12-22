@@ -7,6 +7,7 @@ use App\Form\ProjectFilterType;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\ProjectRepository;
 use App\Service\BillingService;
+use App\Service\DataProviderService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,7 +47,7 @@ class ProjectController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]
-    public function sync(Request $request, Project $project, BillingService $billingService): Response
+    public function sync(Project $project, DataProviderService $dataProviderService): Response
     {
         $projectId = $project->getId();
 
@@ -54,9 +55,9 @@ class ProjectController extends AbstractController
             return new Response('Not found', 404);
         }
 
-        $billingService->syncIssuesForProject($projectId);
+        $dataProviderService->syncIssuesForProject($projectId);
 
-        $billingService->syncWorklogsForProject($projectId);
+        $dataProviderService->syncWorklogsForProject($projectId);
 
         return new JsonResponse([], 200);
     }

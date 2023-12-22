@@ -389,3 +389,20 @@ project:
   form_key: 'Nøgle'
   form_include: 'Inkluderet'
   information: 'Kun inkluderede projekter bliver vist og synkroniseret i resten af system.'
+
+exception:
+  invoices_record_entry_amount_not_set: 'Faktura can ikke bogføres, da den indeholder fakturalinjer hvor antal ikke er sat. Se: %invoiceEntryUrl%.'
+  invoices_record_part_of_project_billing: 'Fakturaen er en del af en projektfakturering og kan kun bogføres separat.'
+  invoices_export_must_be_on_record: 'Faktura skal være en bogført før den kan eksporteres til .csv.'
+  invoices_export_part_of_project_billing: 'Faktura kan ikke eksporteres da den er en del af en projektfakturering.'
+  invoices_export_failure: 'Eksport fejlede.'
+  invoices_delete_on_record: 'Faktura kan ikke slettes, da den er bogført.'
+  invoices_delete_part_of_project_billing: 'Faktura kan ikke slettes, da den er en del af projektfakturering.'
+  invoices_export_failure_could_not_generate_html: 'Faktura kan ikke eksporteres. HTML eksport fejlede.'
+  project_not_found: 'messages'
+  project_tracker_id_not_set: 'messages'
+
+error:
+  title: 'Der opstod en fejl'
+  code: 'Fejlkode'
+  message: 'Besked'
