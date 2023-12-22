@@ -6,18 +6,18 @@ use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
-use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Exception\EconomicsException;
+use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpSpreadsheetException;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpSpreadsheetException;
 
 class BillingService
 {
@@ -145,7 +145,7 @@ class BillingService
     /**
      * Create a spreadsheet response from an array of invoice ids.
      *
-     * @param array $ids Array of invoice ids.
+     * @param array $ids array of invoice ids
      *
      * @throws EconomicsException
      */
@@ -175,10 +175,7 @@ class BillingService
 
             return $response;
         } catch (PhpSpreadsheetException) {
-            throw new EconomicsException(
-                $this->translator->trans('exception.invoices_export_failure'),
-                400
-            );
+            throw new EconomicsException($this->translator->trans('exception.invoices_export_failure'), 400);
         }
     }
 
@@ -219,18 +216,12 @@ class BillingService
             $html = $mock->saveHTML();
 
             if (!$html) {
-                throw new EconomicsException(
-                    $this->translator->trans('exception.invoices_export_failure_could_not_generate_html'),
-                    400
-                );
+                throw new EconomicsException($this->translator->trans('exception.invoices_export_failure_could_not_generate_html'), 400);
             }
 
             return $html;
         } catch (PhpSpreadsheetException) {
-            throw new EconomicsException(
-                $this->translator->trans('exception.invoices_export_failure'),
-                400
-            );
+            throw new EconomicsException($this->translator->trans('exception.invoices_export_failure'), 400);
         }
     }
 
@@ -240,6 +231,7 @@ class BillingService
      * @param array $invoiceIds array of invoice ids that should be exported
      *
      * @return Spreadsheet
+     *
      * @throws EconomicsException
      */
     private function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet

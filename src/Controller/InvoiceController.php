@@ -16,7 +16,6 @@ use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +24,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpSpreadsheetException;
 
 #[Route('/admin/invoices')]
 class InvoiceController extends AbstractController
@@ -33,7 +31,8 @@ class InvoiceController extends AbstractController
     public function __construct(
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
-    ) {}
+    ) {
+    }
 
     #[Route('/', name: 'app_invoices_index', methods: ['GET'])]
     public function index(Request $request, InvoiceRepository $invoiceRepository): Response
@@ -203,17 +202,11 @@ class InvoiceController extends AbstractController
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$invoice->getId(), $token)) {
             if ($invoice->isRecorded()) {
-                throw new EconomicsException(
-                    $this->translator->trans('exception.invoices_delete_on_record'),
-                    400
-                );
+                throw new EconomicsException($this->translator->trans('exception.invoices_delete_on_record'), 400);
             }
 
             if (null !== $invoice->getProjectBilling()) {
-                throw new EconomicsException(
-                    $this->translator->trans('exception.invoices_delete_part_of_project_billing'),
-                    400
-                );
+                throw new EconomicsException($this->translator->trans('exception.invoices_delete_part_of_project_billing'), 400);
             }
 
             $invoiceRepository->remove($invoice, true);
@@ -238,20 +231,12 @@ class InvoiceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (null !== $invoice->getProjectBilling()) {
-                throw new EconomicsException(
-                    $this->translator->trans('exception.invoices_record_part_of_project_billing'),
-                    400
-                );
+                throw new EconomicsException($this->translator->trans('exception.invoices_record_part_of_project_billing'), 400);
             }
 
             foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
                 if (empty($invoiceEntry->getAmount())) {
-                    throw new EconomicsException(
-                        $this->translator->trans('exception.invoices_record_entry_amount_not_set', [
-                            '%invoiceEntryUrl%' => $this->generateUrl('app_invoice_entry_edit', ['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                        ]),
-                        400
-                    );
+                    throw new EconomicsException($this->translator->trans('exception.invoices_record_entry_amount_not_set', ['%invoiceEntryUrl%' => $this->generateUrl('app_invoice_entry_edit', ['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], UrlGeneratorInterface::ABSOLUTE_URL)]), 400);
                 }
             }
 
@@ -294,17 +279,11 @@ class InvoiceController extends AbstractController
     public function export(Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         if (!$invoice->isRecorded()) {
-            throw new EconomicsException(
-                $this->translator->trans('exception.invoices_export_must_be_on_record'),
-                400
-            );
+            throw new EconomicsException($this->translator->trans('exception.invoices_export_must_be_on_record'), 400);
         }
 
         if (null !== $invoice->getProjectBilling()) {
-            throw new EconomicsException(
-                $this->translator->trans('exception.invoices_export_part_of_project_billing'),
-                400
-            );
+            throw new EconomicsException($this->translator->trans('exception.invoices_export_part_of_project_billing'), 400);
         }
 
         // Mark invoice as exported.
@@ -318,6 +297,7 @@ class InvoiceController extends AbstractController
      * Export a selection of invoices to a .csv file.
      *
      * The ids of the invoices should be supplied as id query params to the request.
+     *
      * @throws EconomicsException
      */
     #[Route('/export-selection', name: 'app_invoices_export_selection', methods: ['GET'])]
@@ -336,17 +316,11 @@ class InvoiceController extends AbstractController
 
             if (null != $invoice) {
                 if (!$invoice->isRecorded()) {
-                    throw new EconomicsException(
-                        $this->translator->trans('exception.invoices_export_must_be_on_record'),
-                        400
-                    );
+                    throw new EconomicsException($this->translator->trans('exception.invoices_export_must_be_on_record'), 400);
                 }
 
                 if (null !== $invoice->getProjectBilling()) {
-                    throw new EconomicsException(
-                        $this->translator->trans('exception.invoices_export_part_of_project_billing'),
-                        400
-                    );
+                    throw new EconomicsException($this->translator->trans('exception.invoices_export_part_of_project_billing'), 400);
                 }
 
                 // Mark invoice as exported.

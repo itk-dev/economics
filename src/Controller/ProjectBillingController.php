@@ -16,7 +16,6 @@ use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\BillingService;
 use App\Service\ProjectBillingService;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

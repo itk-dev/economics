@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Repository\ProjectRepository;
-use App\Service\BillingService;
 use App\Service\DataProviderService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

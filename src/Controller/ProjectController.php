@@ -6,7 +6,6 @@ use App\Entity\Project;
 use App\Form\ProjectFilterType;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\ProjectRepository;
-use App\Service\BillingService;
 use App\Service\DataProviderService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

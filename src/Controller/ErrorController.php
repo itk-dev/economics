@@ -6,11 +6,10 @@ use App\Exception\EconomicsException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Throwable;
 
 class ErrorController extends AbstractController
 {
-    public function show(Throwable $exception): Response
+    public function show(\Throwable $exception): Response
     {
         $code = $exception->getCode();
 
