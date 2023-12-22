@@ -83,11 +83,7 @@ class BillingService
         $errors = $this->getInvoiceRecordableErrors($invoice);
 
         if (!empty($errors)) {
-            throw new EconomicsException($this->translator->trans('exception.billing_cannot_put_invoice_on_record_errors_found', [
-                '%invoiceName%' => $invoice->getName(),
-                '%invoiceId%' => $invoice->getId(),
-                '%errors%' => json_encode($errors),
-            ]));
+            throw new EconomicsException($this->translator->trans('exception.billing_cannot_put_invoice_on_record_errors_found', ['%invoiceName%' => $invoice->getName(), '%invoiceId%' => $invoice->getId(), '%errors%' => json_encode($errors)]));
         }
 
         $client = $invoice->getClient();
