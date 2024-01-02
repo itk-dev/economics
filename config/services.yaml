@@ -31,8 +31,8 @@ services:
             - '../src/Kernel.php'
     
     # Select active project tracker implementation
-    # App\Service\ProjectTrackerInterface: '@App\Service\LeantimeApiService'
-    App\Service\ProjectTrackerInterface: '@App\Service\JiraApiService'
+    App\Service\ProjectTrackerInterface: '@App\Service\LeantimeApiService'
+    # App\Service\ProjectTrackerInterface: '@App\Service\JiraApiService'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

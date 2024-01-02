@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed texts.
 * Fixed classes for choices.js fields and disabled state.
 * Added project lead to invoice edit page.
+* Added Leantime specific header to api service.
 
 ## [1.1.2]
 
@@ -30,6 +31,7 @@ complete process.
 * Added epic filter to worklog selection page.
 * Removed time from period selections on worklog selection page.
 * Optimized sync memory usage.
+* Composer update to Symfony 6.4.
 
 ## [1.1.0]
 
