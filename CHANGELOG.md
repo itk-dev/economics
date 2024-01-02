@@ -8,12 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added Leantime specific header to api service.
+
+## [1.1.2]
+
+* Changed how project billing is put on record, to allow for finishing a partially
+complete process.
+* Added exported date to invoices overview.
+* Changed project billing period to date fields.
+* Aligned date formats.
+* Added total amount to invoice.
+
+## [1.1.1]
+
 * Added choices.js to dropdowns with many options.
 * Added epic filter to worklog selection page.
 * Removed time from period selections on worklog selection page.
-* Added Leantime specific header to api service.
+* Optimized sync memory usage.
 
-## [1.1.0] - 2023-12-14
+## [1.1.0]
 
 * Updated api source to use Leantime
 * Modified getPlanningData to work with Leantime data
@@ -37,20 +50,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.2]
 
-### Changed
-
 * Updated package-lock.json.
 
 ## [1.0.1]
-
-### Changed
 
 * Updated openid-connect to newest version.
 * Updated docker-compose files to newest version.
 
 ## [1.0.0]
-
-### Added
 
 * Added Billing.
 * Added migration path from JiraEconomics.
@@ -64,9 +71,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added help text to invoice entry (worklog) type.
 * Added publiccode.yml
 * Added OpenID Connect Controller
-
-### Changed
-
 * Updated docker files to the newest version.
 * Fixed path bugs.
 * Added filtering to lists.
@@ -89,7 +93,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/1.1.2...HEAD
+[1.1.2]: https://github.com/itk-dev/economics/compare/1.1.1...1.1.2
+[1.1.1]: https://github.com/itk-dev/economics/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/itk-dev/economics/compare/1.0.4...1.1.0
 [1.0.4]: https://github.com/itk-dev/economics/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/itk-dev/economics/compare/1.0.2...1.0.3

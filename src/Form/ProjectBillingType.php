@@ -5,7 +5,7 @@ namespace App\Form;
 use App\Entity\ProjectBilling;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,7 +36,7 @@ class ProjectBillingType extends AbstractType
                         ->orderBy('p.name', 'ASC');
                 },
             ])
-            ->add('periodStart', DateTimeType::class, [
+            ->add('periodStart', DateType::class, [
                 'required' => true,
                 'label' => 'project_billing.field_period_start',
                 'label_attr' => ['class' => 'label'],
@@ -46,7 +46,7 @@ class ProjectBillingType extends AbstractType
                 'html5' => true,
                 'attr' => ['class' => 'form-element'],
             ])
-            ->add('periodEnd', DateTimeType::class, [
+            ->add('periodEnd', DateType::class, [
                 'required' => true,
                 'label' => 'project_billing.field_period_end',
                 'label_attr' => ['class' => 'label'],

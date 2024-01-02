@@ -12,6 +12,7 @@ use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
+use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
@@ -28,6 +29,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BillingService
 {
+    private const BATCH_SIZE = 200;
+    private const MAX_RESULTS = 50;
+
     public function __construct(
         private readonly ApiServiceInterface $apiService,
         private readonly ProjectRepository $projectRepository,
@@ -84,48 +88,68 @@ class BillingService
             throw new \Exception('ProjectTrackerId not set');
         }
 
-        $issueData = $this->apiService->getIssuesDataForProject($projectTrackerId);
         $issuesProcessed = 0;
 
-        foreach ($issueData as $issueDatum) {
-            $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
+        $startAt = 0;
 
-            if (!$issue) {
-                $issue = new Issue();
+        do {
+            $project = $this->projectRepository->find($projectId);
 
-                $this->entityManager->persist($issue);
+            if (!$project) {
+                throw new \Exception('Project not found');
             }
 
-            $issue->setName($issueDatum->name);
-            $issue->setAccountId($issueDatum->accountId);
-            $issue->setAccountKey($issueDatum->accountKey);
-            $issue->setEpicKey($issueDatum->epicKey);
-            $issue->setEpicName($issueDatum->epicName);
-            $issue->setProject($project);
-            $issue->setProjectTrackerId($issueDatum->projectTrackerId);
-            $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
-            $issue->setResolutionDate($issueDatum->resolutionDate);
-            $issue->setStatus($issueDatum->status);
+            $pagedIssueData = $this->apiService->getIssuesDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
+            $total = $pagedIssueData->total;
 
-            if (null == $issue->getSource()) {
-                $issue->setSource($this->apiService->getProjectTrackerIdentifier());
-            }
+            $issueData = $pagedIssueData->items;
 
-            foreach ($issueDatum->versions as $versionData) {
-                $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
+            foreach ($issueData as $issueDatum) {
+                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
 
-                if (null !== $version) {
-                    $issue->addVersion($version);
+                if (!$issue) {
+                    $issue = new Issue();
+
+                    $this->entityManager->persist($issue);
+                }
+
+                $issue->setName($issueDatum->name);
+                $issue->setAccountId($issueDatum->accountId);
+                $issue->setAccountKey($issueDatum->accountKey);
+                $issue->setEpicKey($issueDatum->epicKey);
+                $issue->setEpicName($issueDatum->epicName);
+                $issue->setProject($project);
+                $issue->setProjectTrackerId($issueDatum->projectTrackerId);
+                $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
+                $issue->setResolutionDate($issueDatum->resolutionDate);
+                $issue->setStatus($issueDatum->status);
+
+                if (null == $issue->getSource()) {
+                    $issue->setSource($this->apiService->getProjectTrackerIdentifier());
+                }
+
+                foreach ($issueDatum->versions as $versionData) {
+                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
+
+                    if (null !== $version) {
+                        $issue->addVersion($version);
+                    }
+                }
+
+                if (null !== $progressCallback) {
+                    $progressCallback($issuesProcessed, $total);
+                    ++$issuesProcessed;
                 }
             }
 
-            if (null !== $progressCallback) {
-                $progressCallback($issuesProcessed, count($issueData));
-                ++$issuesProcessed;
-            }
-        }
+            $startAt += self::MAX_RESULTS;
+
+            $this->entityManager->flush();
+            $this->entityManager->clear();
+        } while ($startAt < $total);
 
         $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     /**
@@ -149,6 +173,12 @@ class BillingService
         $worklogsAdded = 0;
 
         foreach ($worklogData as $worklogDatum) {
+            $project = $this->projectRepository->find($projectId);
+
+            if (!$project) {
+                throw new \Exception('Project not found');
+            }
+
             $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
 
             if (!$worklog) {
@@ -185,9 +215,16 @@ class BillingService
 
                 ++$worklogsAdded;
             }
+
+            // Flush and clear for each batch.
+            if (0 === $worklogsAdded % self::BATCH_SIZE) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
         }
 
         $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     public function updateInvoiceEntryTotalPrice(InvoiceEntry $invoiceEntry): void
@@ -247,13 +284,17 @@ class BillingService
             $account->setStatus($accountDatum->status);
             $account->setCategory($accountDatum->category);
 
-            $this->entityManager->flush();
-            $this->entityManager->clear();
+            // Flush and clear for each batch.
+            if (0 === intval($index) % self::BATCH_SIZE) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
 
             $progressCallback($index, count($allAccountData));
         }
 
         $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     public function syncProjects(callable $progressCallback): void
@@ -313,29 +354,33 @@ class BillingService
                 }
             }
 
-            $this->entityManager->flush();
-            $this->entityManager->clear();
+            // Flush and clear for each batch.
+            if (0 === intval($index) % self::BATCH_SIZE) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
+            }
 
             $progressCallback($index, count($allProjectData));
         }
 
         $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 
     /**
      * @throws \Exception
      */
-    public function recordInvoice(Invoice $invoice): void
+    public function recordInvoice(Invoice $invoice, bool $flush = true): void
     {
+        if ($invoice->isRecorded()) {
+            throw new InvoiceAlreadyOnRecordException('Invoice is already on record.');
+        }
+
         // Make sure client is set.
         $errors = $this->getInvoiceRecordableErrors($invoice);
 
-        if ($invoice->isRecorded()) {
-            throw new \Exception('Already recorded.');
-        }
-
         if (!empty($errors)) {
-            throw new \Exception('Cannot record invoices. Errors not handled.');
+            throw new \Exception('Cannot record invoice '.$invoice->getName().'('.$invoice->getId().'). Errors not handled: '.json_encode($errors));
         }
 
         $client = $invoice->getClient();
@@ -364,7 +409,7 @@ class BillingService
             }
         }
 
-        $this->invoiceRepository->save($invoice, true);
+        $this->invoiceRepository->save($invoice, $flush);
     }
 
     // TODO: Replace with exceptions.
