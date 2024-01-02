@@ -41,8 +41,12 @@
                     <li class="list-group-item border-bottom">{{ 'invoices.client_customer_key'|trans }}: {{ invoice.client.customerKey }}</li>
                     <li class="list-group-item border-bottom">
                         {{ 'invoices.client_type'|trans }}:
-                        {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
-                        {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
+                        {% if invoice.client.type is not null %}
+                            {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
+                            {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
+                        {% else %}
+                            {{ 'invoices.client_type_is_null'|trans }}
+                        {% endif %}
                     </li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_account'|trans }}: {{ invoice.client.account }}</li>
                     {% if invoice.client.psp is defined and invoice.client.psp is not null %}

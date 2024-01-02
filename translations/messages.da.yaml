@@ -226,6 +226,7 @@ invoices:
   action_export_selected: 'Eksporter valg'
   action_view: 'Se'
   list_exported_date: 'Eksportdato'
+  client_type_is_null: ''
 
 material_number_enum:
   internal: "Interne: 103361"
@@ -369,6 +370,10 @@ project_billing:
   search: 'Filtrér'
   form_recorded: 'Bogført'
   form_created_by: 'Opretter'
+  existing_errors_before_on_record: 'Følgende fejl skal rettes før projektfakturering kan bogføres.'
+  on_record_errors_invoice_id: 'Faktura ID'
+  on_record_errors_error: 'Fejlbesked'
+  on_record_errors_invoice_link: 'Link til faktura'
 
 project:
   title: 'Projekter'
