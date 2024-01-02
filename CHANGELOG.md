@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Change name APP_INVOICE_RECEIVER_ACCOUNT to APP_INVOICE_SUPPLIER_ACCOUNT in `.env.local`
   * Set APP_INVOICE_RECEIVER_DEFAULT_ACCOUNT in `.env.local`
   * Set APP_PROJECT_BILLING_DEFAULT_DESCRIPTION in `.env.local`
+* Changed monolog config to ignore deprecations.
 * Added Leantime specific header to api service.
 
 ## [1.1.2]
@@ -34,6 +35,7 @@ complete process.
 * Added epic filter to worklog selection page.
 * Removed time from period selections on worklog selection page.
 * Optimized sync memory usage.
+* Composer update to Symfony 6.4.
 
 ## [1.1.0]
 
