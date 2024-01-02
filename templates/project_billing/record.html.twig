@@ -11,32 +11,34 @@
         </div>
     {% else %}
         {% if invoiceErrors|length > 0 %}
-            <h3>{{ 'project_billing.existing_errors_before_on_record'|trans }}</h3>
-            <table class="table">
-                <thead class="table-thead">
-                <th class="table-th">
-                    {{ 'project_billing.on_record_errors_invoice_id'|trans }}
-                </th>
-                <th class="table-th">
-                    {{ 'project_billing.on_record_errors_invoice_link'|trans }}
-                </th>
-                <th class="table-th">
-                    {{ 'project_billing.on_record_errors_error'|trans }}
-                </th>
-                </thead>
-                <tbody>
-                {% for key, invoiceError in invoiceErrors %}
-                    {% set invoiceUrl = absolute_url(path('app_invoices_edit', {'id': key} )) %}
-                    {% for error in invoiceError %}
-                        <tr class="table-tr">
-                            <td class="table-td"><strong>{{ key }}</strong></td>
-                            <td class="table-td"><a href="{{ invoiceUrl }}">{{ invoiceUrl }}</a></td>
-                            <td class="table-td">{{ error }}</td>
-                        </tr>
+            <div class="alert-danger" role="alert">
+                <h3 class="subheading">{{ 'project_billing.existing_errors_before_on_record'|trans }}</h3>
+                <table class="table">
+                    <thead class="table-thead">
+                    <th class="table-th">
+                        {{ 'project_billing.on_record_errors_invoice_id'|trans }}
+                    </th>
+                    <th class="table-th">
+                        {{ 'project_billing.on_record_errors_invoice_link'|trans }}
+                    </th>
+                    <th class="table-th">
+                        {{ 'project_billing.on_record_errors_error'|trans }}
+                    </th>
+                    </thead>
+                    <tbody>
+                    {% for key, invoiceError in invoiceErrors %}
+                        {% set invoiceUrl = absolute_url(path('app_invoices_edit', {'id': key} )) %}
+                        {% for error in invoiceError %}
+                            <tr class="table-tr">
+                                <td class="table-td"><strong>{{ key }}</strong></td>
+                                <td class="table-td"><a href="{{ invoiceUrl }}">{{ invoiceUrl }}</a></td>
+                                <td class="table-td">{{ error }}</td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         {% else %}
             <div class="alert-warning" role="alert">
                 <div class="mb-5">{{ 'project_billing.confirm_record_are_you_sure'|trans({ '%projectBillingName%': projectBilling.name }) }}</div>
