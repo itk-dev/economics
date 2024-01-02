@@ -25,6 +25,7 @@ complete process.
 * Added epic filter to worklog selection page.
 * Removed time from period selections on worklog selection page.
 * Optimized sync memory usage.
+* Composer update to Symfony 6.4.
 
 ## [1.1.0]
 
