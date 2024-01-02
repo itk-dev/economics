@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Set APP_PROJECT_BILLING_DEFAULT_DESCRIPTION in `.env.local`
 * Changed monolog config to ignore deprecations.
 * Added Leantime specific header to api service.
+* Make sure all issues are selected in project billing period.
 
 ## [1.1.2]
 
