@@ -198,7 +198,7 @@ invoices:
   record_invoice_true: 'Ja. Bogfør faktura.'
   record_invoice: "Bogfør faktura?"
   record_invoice_helptext: ''
-  cannot_record_errors_exist: 'Kan ikke bogføre faktura, idet der er fejl i klientkonto dataen:'
+  cannot_record_errors_exist: 'Kan ikke bogføre faktura, idet der er fejl i data:'
   already_recorded: 'Fakturaen er allerede bogført'
   action_show_export: 'Vis eksport'
   action_record: 'Bogfør faktura'
@@ -289,6 +289,7 @@ invoice_recordable:
   error_no_account: 'Ingen konto'
   error_no_contact: 'Ingen kontakt'
   error_no_type: 'Ingen type'
+  error_empty_invoice_entry: 'Fakturaindgangen med id: %invoiceEntryId% har et tomt antal'
 
 title: 'Economics'
 

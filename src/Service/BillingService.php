@@ -419,22 +419,26 @@ class BillingService
 
         $client = $invoice->getClient();
 
+        foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+            if ($invoiceEntry->getAmount() == 0) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_empty_invoice_entry', ['%invoiceEntryId%' => $invoiceEntry->getId()]);
+            }
+        }
+
         if (is_null($client)) {
             $errors[] = $this->translator->trans('invoice_recordable.error_no_client');
+        } else {
+            if (!$client->getAccount()) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_no_account');
+            }
 
-            return $errors;
-        }
+            if (!$client->getContact()) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_no_contact');
+            }
 
-        if (!$client->getAccount()) {
-            $errors[] = $this->translator->trans('invoice_recordable.error_no_account');
-        }
-
-        if (!$client->getContact()) {
-            $errors[] = $this->translator->trans('invoice_recordable.error_no_contact');
-        }
-
-        if (!$client->getType()) {
-            $errors[] = $this->translator->trans('invoice_recordable.error_no_type');
+            if (!$client->getType()) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_no_type');
+            }
         }
 
         return $errors;
