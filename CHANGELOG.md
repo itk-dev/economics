@@ -9,6 +9,20 @@ See [keep a changelog](https://keepachangelog.com/en/1.0.0/) for information abo
 * Updated api source to use Leantime
 * Modified getPlanningData to work with Leantime data
 * Modified getSprintReportData to work with Leantime data
+* Added Leantime specific header to api service.
+
+## 1.0.4
+
+* Fixed command to recalculate sums for all invoices by first calculating invoice entries.
+
+## 1.0.3
+
+* Changed redirect after create a manual invoice entry.
+* Removed export options when client is not set.
+* Added create new buttons to top of invoices and project billing lists.
+* Added command to recalculate sums for all invoices.
+* Changed datetime form fields to date.
+* Fixed select all on worklog list.
 
 ## 1.0.2
 

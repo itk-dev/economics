@@ -24,7 +24,8 @@ framework:
                 auth_basic: '%env(JIRA_PROJECT_TRACKER_USER)%:%env(JIRA_PROJECT_TRACKER_TOKEN)%'
             leantime.project.tracker.api:
                 base_uri: '%env(LEANTIME_PROJECT_TRACKER_URL)%'
-                auth_basic: '%env(LEANTIME_PROJECT_TRACKER_TOKEN)%'
+                headers: 
+                    x-api-key: '%env(LEANTIME_PROJECT_TRACKER_TOKEN)%'
 
 when@test:
     framework:

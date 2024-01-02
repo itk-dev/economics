@@ -51,6 +51,10 @@ class InvoiceEntryController extends AbstractController
             // TODO: Handle this with a doctrine event listener instead.
             $billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
+            if (InvoiceEntryTypeEnum::MANUAL == $invoiceEntry->getEntryType()) {
+                return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+            }
+
             return $this->redirectToRoute('app_invoice_entry_edit', ['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], Response::HTTP_SEE_OTHER);
         }
 
