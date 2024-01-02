@@ -58,11 +58,13 @@ class InvoiceRepository extends ServiceEntityRepository
             $qb->andWhere('invoice.projectBilling IS NULL');
         }
 
+        $defaultSortField = $invoiceFilterData->recorded ? 'invoice.exportedDate' : 'invoice.updatedAt';
+
         return $this->paginator->paginate(
             $qb,
             $page,
             10,
-            ['defaultSortFieldName' => 'invoice.createdAt', 'defaultSortDirection' => 'desc']
+            ['defaultSortFieldName' => $defaultSortField, 'defaultSortDirection' => 'desc']
         );
     }
 }
