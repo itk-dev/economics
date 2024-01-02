@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * Added Leantime specific header to api service.
+* Added checks for errors before allowing putting project billing on record
+* Added error check for invoice entries with 0 amounts
 
 ## [1.1.2]
 

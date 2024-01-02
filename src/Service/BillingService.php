@@ -420,7 +420,7 @@ class BillingService
         $client = $invoice->getClient();
 
         foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
-            if ($invoiceEntry->getAmount() == 0) {
+            if (0 == $invoiceEntry->getAmount()) {
                 $errors[] = $this->translator->trans('invoice_recordable.error_empty_invoice_entry', ['%invoiceEntryId%' => $invoiceEntry->getId()]);
             }
         }

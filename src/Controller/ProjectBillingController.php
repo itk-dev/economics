@@ -153,14 +153,15 @@ class ProjectBillingController extends AbstractController
         foreach ($projectBilling->getInvoices() as $invoice) {
             $errors = $billingService->getInvoiceRecordableErrors($invoice);
 
-            if (count($errors) > 0) {
-                $invoiceErrors[$invoice->getId()] = $errors;
+            $invoiceId = $invoice->getId();
+            if (count($errors) > 0 && null != $invoiceId) {
+                $invoiceErrors[$invoiceId] = $errors;
             }
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (count($invoiceErrors) > 0) {
-                throw new HttpException(400, "Errors exist. Cannot put on record.");
+                throw new HttpException(400, 'Errors exist. Cannot put on record.');
             }
 
             if ($recordData->confirmed) {
