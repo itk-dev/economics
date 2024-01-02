@@ -55,8 +55,8 @@ class IssueRepository extends ServiceEntityRepository
 
     public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
     {
-        $from = new \DateTime($periodStart->format("Y-m-d")." 00:00:00");
-        $to = new \DateTime($periodEnd->format("Y-m-d")." 23:59:59");
+        $from = new \DateTime($periodStart->format('Y-m-d').' 00:00:00');
+        $to = new \DateTime($periodEnd->format('Y-m-d').' 23:59:59');
 
         $qb = $this->createQueryBuilder('issue');
         $qb->andWhere($qb->expr()->eq('issue.project', $project->getId()));
@@ -72,8 +72,8 @@ class IssueRepository extends ServiceEntityRepository
 
     public function getIssuesNotIncludedInProjectBilling(ProjectBilling $projectBilling)
     {
-        $from = new \DateTime($projectBilling->getPeriodStart()->format("Y-m-d")." 00:00:00");
-        $to = new \DateTime($projectBilling->getPeriodEnd()->format("Y-m-d")." 23:59:59");
+        $from = new \DateTime($projectBilling->getPeriodStart()->format('Y-m-d').' 00:00:00');
+        $to = new \DateTime($projectBilling->getPeriodEnd()->format('Y-m-d').' 23:59:59');
 
         $qb = $this->createQueryBuilder('issue');
         $qb->andWhere($qb->expr()->eq('issue.project', $projectBilling->getProject()->getId()));
