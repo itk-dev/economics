@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Invoice;
 use App\Entity\ProjectBilling;
+use App\Exception\EconomicsException;
 use App\Form\ProjectBillingFilterType;
 use App\Form\ProjectBillingRecordType;
 use App\Form\ProjectBillingType;
@@ -16,18 +17,21 @@ use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\BillingService;
 use App\Service\ProjectBillingService;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/project-billing')]
 class ProjectBillingController extends AbstractController
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+    ) {
+    }
+
     #[Route('/', name: 'app_project_billing_index', methods: ['GET'])]
     public function index(Request $request, ProjectBillingRepository $projectBillingRepository): Response
     {
@@ -73,6 +77,9 @@ class ProjectBillingController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, IssueRepository $issueRepository): Response
     {
@@ -88,7 +95,7 @@ class ProjectBillingController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($projectBilling->isRecorded()) {
-                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new EconomicsException($this->translator->trans('exception.project_billing_on_record_cannot_edit'), 400);
             }
 
             $projectBillingRepository->save($projectBilling, true);
@@ -111,22 +118,23 @@ class ProjectBillingController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}', name: 'app_project_billing_delete', methods: ['POST'])]
     public function delete(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, InvoiceRepository $invoiceRepository): Response
     {
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$projectBilling->getId(), $token)) {
             if ($projectBilling->isRecorded()) {
-                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new EconomicsException($this->translator->trans('exception.project_billing_on_record_cannot_delete'), 400);
             }
 
             foreach ($projectBilling->getInvoices() as $invoice) {
                 if (!$invoice->isRecorded()) {
                     $invoiceRepository->remove($invoice);
                 } else {
-                    $invoiceName = $invoice->getName();
-
-                    throw new HttpException(400, "Invoice \"$invoiceName\" is recorded, cannot be deleted.");
+                    throw new EconomicsException($this->translator->trans('exception.project_billing_invoice_on_record_cannot_delete', ['%invoiceId%' => $invoice->getId()]), 400);
                 }
             }
 
@@ -161,7 +169,7 @@ class ProjectBillingController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (count($invoiceErrors) > 0) {
-                throw new HttpException(400, 'Errors exist. Cannot put on record.');
+                throw new EconomicsException($this->translator->trans('exception.invoice_errors_exit_cannot_put_on_record'), 400);
             }
 
             if ($recordData->confirmed) {
@@ -181,7 +189,7 @@ class ProjectBillingController extends AbstractController
     /**
      * Preview the export.
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/show-export', name: 'app_project_billing_show_export', methods: ['GET'])]
     public function showExport(Request $request, ProjectBilling $projectBilling, BillingService $billingService): Response
@@ -190,43 +198,18 @@ class ProjectBillingController extends AbstractController
             return $invoice->getId();
         }, $projectBilling->getInvoices()->toArray());
 
-        $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
-
-        $writer = IOFactory::createWriter($spreadsheet, 'Html');
-
-        $html = $billingService->getSpreadsheetOutputAsString($writer);
-
-        if (empty($html)) {
-            $html = '<html lang="da" />';
-        }
-
-        // Extract body content.
-        $d = new \DOMDocument();
-        $mock = new \DOMDocument();
-        $d->loadHTML($html);
-        /** @var \DOMNode $body */
-        $body = $d->getElementsByTagName('div')->item(0);
-
-        foreach ($body->childNodes as $child) {
-            if ($child instanceof \DOMElement) {
-                if ('table' == $child->tagName) {
-                    $child->setAttribute('class', 'table table-export');
-                }
-            }
-            $mock->appendChild($mock->importNode($child, true));
-        }
+        $html = $billingService->generateSpreadsheetHtml($ids);
 
         return $this->render('project_billing/export_show.html.twig', [
-            'html' => $mock->saveHTML(),
             'projectBilling' => $projectBilling,
+            'html' => $html,
         ]);
     }
 
     /**
      * Export the project billing to .csv.
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @throws \Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
     public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
@@ -252,27 +235,6 @@ class ProjectBillingController extends AbstractController
             return $invoice->getId();
         }, $invoices->toArray());
 
-        $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
-
-        /** @var Csv $writer */
-        $writer = IOFactory::createWriter($spreadsheet, 'Csv');
-        $writer->setDelimiter(';');
-        $writer->setEnclosure('');
-        $writer->setLineEnding("\r\n");
-        $writer->setSheetIndex(0);
-
-        $csvOutput = $billingService->getSpreadsheetOutputAsString($writer);
-
-        // Change encoding to Windows-1252.
-        $csvOutputEncoded = mb_convert_encoding($csvOutput, 'Windows-1252');
-
-        $response = new Response($csvOutputEncoded);
-        $filename = 'invoices-'.date('d-m-Y').'.csv';
-
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
-        return $response;
+        return $billingService->generateSpreadsheetCsvResponse($ids);
     }
 }

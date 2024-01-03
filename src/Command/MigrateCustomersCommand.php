@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Service\BillingService;
+use App\Service\DataProviderService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class MigrateCustomersCommand extends Command
 {
-    public function __construct(private readonly BillingService $billingService)
+    public function __construct(private readonly DataProviderService $dataProviderService)
     {
         parent::__construct($this->getName());
     }
@@ -29,7 +29,7 @@ class MigrateCustomersCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         if ($io->confirm('Are you sure?')) {
-            $this->billingService->migrateCustomers();
+            $this->dataProviderService->migrateCustomers();
         }
 
         $io->success('invoice.customerAccountId migrated to invoice.client');

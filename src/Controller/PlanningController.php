@@ -15,9 +15,6 @@ class PlanningController extends AbstractController
     ) {
     }
 
-    /**
-     * @throws \Exception
-     */
     #[Route('/', name: 'app_planning')]
     public function index(): Response
     {

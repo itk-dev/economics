@@ -2,8 +2,9 @@
 
 namespace App\Command;
 
+use App\Exception\EconomicsException;
 use App\Repository\ProjectRepository;
-use App\Service\BillingService;
+use App\Service\DataProviderService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class SyncCommand extends Command
 {
     public function __construct(
-        private readonly BillingService $billingService,
+        private readonly DataProviderService $dataProviderService,
         private readonly ProjectRepository $projectRepository,
     ) {
         parent::__construct($this->getName());
@@ -28,7 +29,7 @@ class SyncCommand extends Command
     }
 
     /**
-     * @throws \Exception
+     * @throws EconomicsException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -38,7 +39,7 @@ class SyncCommand extends Command
 
         $io->info('Processing projects');
 
-        $this->billingService->syncProjects(function ($i, $length) use ($io) {
+        $this->dataProviderService->syncProjects(function ($i, $length) use ($io) {
             if (0 == $i) {
                 $io->progressStart($length);
             } elseif ($i >= $length - 1) {
@@ -50,7 +51,7 @@ class SyncCommand extends Command
 
         $io->info('Processing accounts');
 
-        $this->billingService->syncAccounts(function ($i, $length) use ($io) {
+        $this->dataProviderService->syncAccounts(function ($i, $length) use ($io) {
             if (0 == $i) {
                 $io->progressStart($length);
             } elseif ($i >= $length - 1) {
@@ -65,7 +66,7 @@ class SyncCommand extends Command
         foreach ($projects as $project) {
             $io->writeln("Processing issues for {$project->getName()}");
 
-            $this->billingService->syncIssuesForProject($project->getId(), function ($i, $length) use ($io) {
+            $this->dataProviderService->syncIssuesForProject($project->getId(), function ($i, $length) use ($io) {
                 if (0 == $i) {
                     $io->progressStart($length);
                 } elseif ($i >= $length - 1) {
@@ -83,7 +84,7 @@ class SyncCommand extends Command
         foreach ($projects as $project) {
             $io->writeln("Processing worklogs for {$project->getName()}");
 
-            $this->billingService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
+            $this->dataProviderService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
                 if (0 == $i) {
                     $io->progressStart($length);
                 } elseif ($i >= $length - 1) {
