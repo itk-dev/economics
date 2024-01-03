@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New PriceList{% endblock %}
+
+{% block body %}
+    <h1 class="page-title">{{ 'price_list.new'|trans }}</h1>
+
+    {{ form_start(form) }}
+    <div>
+        {{ form_rest(form) }}
+
+        <button class="button">{{ 'price_list.action_create'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
+<div class="bottom-actions">
+        <a class="link" href="{{ path('app_price_list_index') }}">{{ 'price_list.back_to_list'|trans }}</a>
+    </div>
+
+{% endblock %}

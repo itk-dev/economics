@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PriceList index{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'pricelist.title'|trans }}</h1>
+
+    <table class="table margin-bottom">
+        <thead  class="table-thead">
+            <tr>
+                <th class="table-th">Id</th>
+                <th class="table-th">actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for index, price_list in price_lists %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td>{{ price_list.id }}</td>
+                <td class="table-td">
+                    <a href="{{ path('app_price_list_show', {'id': price_list.id}) }}">show</a>
+                    <a href="{{ path('app_price_list_edit', {'id': price_list.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="button" href="{{ path('app_price_list_new') }}">Create new</a>
+{% endblock %}
