@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed invoices overview sorting. Changed default sorting for invoices on record as by exportedDate.
 * Changed monolog config to ignore deprecations.
 * Added Leantime specific header to api service.
+* Added option to only export internal or external invoices from project billing. 
 
 
 * RELEASE NOTES:

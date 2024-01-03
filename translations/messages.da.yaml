@@ -229,6 +229,7 @@ invoices:
   generate_description: 'Autoudfyld'
   client_project_lead: 'Project Lead'
   required_fields_not_set_for_creating_entries: '"Til konto" og "Materialenummer" skal være valgt før der kan oprettes fakturalinjer.'
+  type: 'Kundekonto type'
 
 material_number_enum:
   internal: "Interne: 103361"
@@ -373,6 +374,8 @@ project_billing:
   search: 'Filtrér'
   form_recorded: 'Bogført'
   form_created_by: 'Opretter'
+  action_record_internal: 'Eksportér interne'
+  action_record_external: 'Eksportér eksterne'
 
 project:
   title: 'Projekter'
