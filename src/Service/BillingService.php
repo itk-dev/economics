@@ -348,6 +348,8 @@ class BillingService
                 $client->setStandardPrice($clientData->standardPrice);
                 $client->setCustomerKey($clientData->customerKey);
                 $client->setSalesChannel($clientData->salesChannel);
+                $client->setProjectLeadName($clientData->projectLeadName);
+                $client->setProjectLeadMail($clientData->projectLeadMail);
 
                 if (!$client->getProjects()->contains($client)) {
                     $client->addProject($project);

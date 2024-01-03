@@ -1059,6 +1059,8 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
             $client->account = $account->key ?? null;
             $client->customerKey = $account->customer->key ?? null;
             $client->salesChannel = $account->category->key ?? null;
+            $client->projectLeadName = $account->lead->displayName ?? null;
+            $client->projectLeadMail = $account->lead->emailAddress ?? null;
 
             switch ($account->category->name ?? null) {
                 case 'INTERN':
