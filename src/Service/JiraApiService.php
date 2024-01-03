@@ -111,18 +111,18 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
    
     public function getAllProjectsV2(): SprintReportProjects
     {
-        return new SprintReportProjects();
+        throw new ApiServiceException('Method not implemented', 404);
     }
 
     
     public function getProjectV2(string $projectId): SprintReportProject
     {
-        return new SprintReportProject('', '');
+        throw new ApiServiceException('Method not implemented', 404);
     }
 
     public function getProjectVersions(string $projectId): SprintReportVersions
     {
-        return new SprintReportVersions();
+        throw new ApiServiceException('Method not implemented', 404);
     }
 
     
@@ -800,7 +800,7 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
     private function get(string $path, array $query = []): mixed
     {
         try {
-            $response = $this->projectTrackerApi->request('GET', $path,
+            $response = $this->jiraProjectTrackerApi->request('GET', $path,
                 [
                     'query' => $query,
                 ]
@@ -843,7 +843,7 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
     private function post(string $path, array $data): mixed
     {
         try {
-            $response = $this->projectTrackerApi->request('POST', $path,
+            $response = $this->jiraProjectTrackerApi->request('POST', $path,
                 [
                     'json' => $data,
                 ]
@@ -887,7 +887,7 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
     private function put(string $path, array $data): mixed
     {
         try {
-            $response = $this->projectTrackerApi->request('PUT', $path,
+            $response = $this->jiraProjectTrackerApi->request('PUT', $path,
                 [
                     'json' => $data,
                 ]
@@ -931,7 +931,7 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
     private function delete(string $path): bool
     {
         try {
-            $response = $this->projectTrackerApi->request('DELETE', $path);
+            $response = $this->jiraProjectTrackerApi->request('DELETE', $path);
 
             $body = $response->getContent(false);
             switch ($response->getStatusCode()) {
