@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Changed monolog config to ignore deprecations.
 * Added Leantime specific header to api service.
 * Added option to only export internal or external invoices from project billing. 
+* Changed monolog config to ignore deprecations.
+* Added Leantime specific header to api service.
+* Added checks for errors before allowing putting project billing on record
+* Added error check for invoice entries with 0 amounts
 
 
 * RELEASE NOTES:

@@ -142,13 +142,28 @@ class ProjectBillingController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_project_billing_record', methods: ['GET', 'POST'])]
-    public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService): Response
+    public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService, BillingService $billingService): Response
     {
         $recordData = new ConfirmData();
         $form = $this->createForm(ProjectBillingRecordType::class, $recordData);
         $form->handleRequest($request);
 
+        $invoiceErrors = [];
+
+        foreach ($projectBilling->getInvoices() as $invoice) {
+            $errors = $billingService->getInvoiceRecordableErrors($invoice);
+
+            $invoiceId = $invoice->getId();
+            if (count($errors) > 0 && null != $invoiceId) {
+                $invoiceErrors[$invoiceId] = $errors;
+            }
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
+            if (count($invoiceErrors) > 0) {
+                throw new HttpException(400, 'Errors exist. Cannot put on record.');
+            }
+
             if ($recordData->confirmed) {
                 $projectBillingService->recordProjectBilling($projectBilling);
             }
@@ -159,6 +174,7 @@ class ProjectBillingController extends AbstractController
         return $this->render('project_billing/record.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
+            'invoiceErrors' => $invoiceErrors,
         ]);
     }
 

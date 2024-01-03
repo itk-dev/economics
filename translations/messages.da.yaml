@@ -198,7 +198,7 @@ invoices:
   record_invoice_true: 'Ja. Bogfør faktura.'
   record_invoice: "Bogfør faktura?"
   record_invoice_helptext: ''
-  cannot_record_errors_exist: 'Kan ikke bogføre faktura, idet der er fejl i klientkonto dataen:'
+  cannot_record_errors_exist: 'Kan ikke bogføre faktura, idet der er fejl i data:'
   already_recorded: 'Fakturaen er allerede bogført'
   action_show_export: 'Vis eksport'
   action_record: 'Bogfør faktura'
@@ -226,6 +226,7 @@ invoices:
   action_export_selected: 'Eksporter valg'
   action_view: 'Se'
   list_exported_date: 'Eksportdato'
+  client_type_is_null: ''
   generate_description: 'Autoudfyld'
   client_project_lead: 'Project Lead'
   required_fields_not_set_for_creating_entries: '"Til konto" og "Materialenummer" skal være valgt før der kan oprettes fakturalinjer.'
@@ -293,6 +294,7 @@ invoice_recordable:
   error_no_account: 'Ingen konto'
   error_no_contact: 'Ingen kontakt'
   error_no_type: 'Ingen type'
+  error_empty_invoice_entry: 'Fakturaindgangen med id: %invoiceEntryId% har et tomt antal'
 
 title: 'Economics'
 
@@ -374,6 +376,10 @@ project_billing:
   search: 'Filtrér'
   form_recorded: 'Bogført'
   form_created_by: 'Opretter'
+  existing_errors_before_on_record: 'Følgende fejl skal rettes før projektfakturering kan bogføres.'
+  on_record_errors_invoice_id: 'Faktura ID'
+  on_record_errors_error: 'Fejlbesked'
+  on_record_errors_invoice_link: 'Link til faktura'
   action_record_internal: 'Eksportér interne'
   action_record_external: 'Eksportér eksterne'
 
