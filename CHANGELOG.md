@@ -8,18 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added project lead to client when syncing projects.
+* Remove description from create invoice page.
+* Added generate description button to invoice when client is set.
+* Fixed texts.
+* Fixed classes for choices.js fields and disabled state.
+* Added project lead to invoice edit page.
 * Changed InvoiceEntry material number and account to be set only at the invoice level.
 * Added default account to invoices from environment variable.
 * Added check for invoice entries with amount 0 when putting invoice on record.
 * Fixed issue with receiver account for project billing.
 * Fixed invoices overview sorting. Changed default sorting for invoices on record as by exportedDate.
-* RELEASE NOTES:
-  * Change name APP_INVOICE_RECEIVER_ACCOUNT to APP_INVOICE_SUPPLIER_ACCOUNT in `.env.local`
-  * Set APP_INVOICE_RECEIVER_DEFAULT_ACCOUNT in `.env.local`
-  * Set APP_PROJECT_BILLING_DEFAULT_DESCRIPTION in `.env.local`
 * Changed monolog config to ignore deprecations.
 * Added Leantime specific header to api service.
+* Added option to only export internal or external invoices from project billing. 
+* Added checks for errors before allowing putting project billing on record
+* Added error check for invoice entries with 0 amounts
 * Make sure all issues are selected in project billing period.
+
+
+* RELEASE NOTES:
+  * Change name APP_INVOICE_RECEIVER_ACCOUNT to APP_INVOICE_SUPPLIER_ACCOUNT in `.env.local`
+  * Set APP_INVOICE_DESCRIPTION_TEMPLATE in `.env.local`
+  * Set APP_INVOICE_RECEIVER_DEFAULT_ACCOUNT in `.env.local`
+  * Set APP_PROJECT_BILLING_DEFAULT_DESCRIPTION in `.env.local`
 
 ## [1.1.2]
 

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Invoice;
 use App\Entity\ProjectBilling;
 use App\Form\ProjectBillingFilterType;
 use App\Form\ProjectBillingRecordType;
@@ -141,13 +142,28 @@ class ProjectBillingController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_project_billing_record', methods: ['GET', 'POST'])]
-    public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService): Response
+    public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService, BillingService $billingService): Response
     {
         $recordData = new ConfirmData();
         $form = $this->createForm(ProjectBillingRecordType::class, $recordData);
         $form->handleRequest($request);
 
+        $invoiceErrors = [];
+
+        foreach ($projectBilling->getInvoices() as $invoice) {
+            $errors = $billingService->getInvoiceRecordableErrors($invoice);
+
+            $invoiceId = $invoice->getId();
+            if (count($errors) > 0 && null != $invoiceId) {
+                $invoiceErrors[$invoiceId] = $errors;
+            }
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
+            if (count($invoiceErrors) > 0) {
+                throw new HttpException(400, 'Errors exist. Cannot put on record.');
+            }
+
             if ($recordData->confirmed) {
                 $projectBillingService->recordProjectBilling($projectBilling);
             }
@@ -158,6 +174,7 @@ class ProjectBillingController extends AbstractController
         return $this->render('project_billing/record.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
+            'invoiceErrors' => $invoiceErrors,
         ]);
     }
 
@@ -214,8 +231,16 @@ class ProjectBillingController extends AbstractController
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
     public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
     {
+        $invoices = $projectBilling->getInvoices();
+
+        // Filter invoices by client.type if type query parameter is set.
+        $type = $request->query->get('type');
+        if (null !== $type) {
+            $invoices = $invoices->filter(fn (Invoice $invoice) => $invoice->getClient()?->getType()?->value == $type);
+        }
+
         // Mark invoice as exported.
-        foreach ($projectBilling->getInvoices() as $invoice) {
+        foreach ($invoices as $invoice) {
             $invoice->setExportedDate(new \DateTime());
             $invoiceRepository->save($invoice, true);
         }
@@ -225,7 +250,7 @@ class ProjectBillingController extends AbstractController
 
         $ids = array_map(function ($invoice) {
             return $invoice->getId();
-        }, $projectBilling->getInvoices()->toArray());
+        }, $invoices->toArray());
 
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
 
