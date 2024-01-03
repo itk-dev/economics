@@ -17,7 +17,6 @@ use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\BillingService;
 use App\Service\ProjectBillingService;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -170,7 +169,7 @@ class ProjectBillingController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (count($invoiceErrors) > 0) {
-                throw new HttpException(400, 'Errors exist. Cannot put on record.');
+                throw new EconomicsException($this->translator->trans('exception.invoice_errors_exit_cannot_put_on_record'), 400);
             }
 
             if ($recordData->confirmed) {
@@ -213,7 +212,7 @@ class ProjectBillingController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
-    public function export(ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
+    public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
     {
         $invoices = $projectBilling->getInvoices();
 

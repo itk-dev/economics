@@ -430,6 +430,7 @@ exception:
   project_billing_period_cannot_be_null: 'Perioden skal være valgt.'
   billing_cannot_put_invoice_on_record_errors_found: 'Kan ikke bogføre fakturaen %invoiceName% (%invoiceId%). Følgende fejl er ikke håndteret: %errors%'
   invoice_client_must_be_set: 'Kundekonto skal være valgt.'
+  invoice_errors_exit_cannot_put_on_record: 'Der er problemer med projektfaktureringen. Kan ikke bogføre den.'
 
 error:
   title: 'Der opstod en fejl'
