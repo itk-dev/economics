@@ -210,26 +210,4 @@ interface ApiServiceInterface
      * @throws ApiServiceException
      */
     public function getAllAccountData(): array;
- /**
-     * Get all projects, including archived.
-     *
-     * @return SprintReportProjects array of SprintReportProjects
-     *
-     * @throws ApiServiceException
-     */
-    public function getAllProjectsV2(): SprintReportProjects;
-
-    /**
-     * Get projectV2.
-     *
-     * @param $key
-     *   A project key or id
-     *
-     * @return SprintReportProject SprintReportProject
-     *
-     * @throws ApiServiceException
-     */
-    public function getProjectV2(string $projectId): SprintReportProject;
-
-    public function getProjectVersions(string $projectId): SprintReportVersions;
 }
