@@ -18,6 +18,7 @@ use App\Service\BillingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -144,7 +145,7 @@ class InvoiceController extends AbstractController
             $form->add('client', null, [
                 'label' => 'invoices.client',
                 'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
                 'attr' => [
                     'class' => 'form-element',
                     'data-choices-target' => 'choices',
@@ -193,6 +194,21 @@ class InvoiceController extends AbstractController
                 return $carry;
             }, 0.0),
         ]);
+    }
+
+    #[Route('/{id}/generate-description', name: 'app_invoices_generate_description', methods: ['GET'])]
+    public function generateDescription(Invoice $invoice, $defaultInvoiceDescriptionTemplate): JsonResponse
+    {
+        $client = $invoice->getClient();
+
+        if (!empty($client) && !(empty($client->getProjectLeadName())) && !empty($client->getProjectLeadMail())) {
+            $description = $defaultInvoiceDescriptionTemplate;
+
+            $description = str_replace('%name%', $client->getProjectLeadName() ?? '', $description);
+            $description = str_replace('%email%', $client->getProjectLeadMail() ?? '', $description);
+        }
+
+        return new JsonResponse(['description' => $description ?? null]);
     }
 
     /**

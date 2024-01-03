@@ -10,7 +10,11 @@ export default class extends Controller {
 
     connect() {
         this.choicesTargets.forEach((target) => {
-            new Choices(target, {allowHTML: true, itemSelectText: ''});
+            const notDisabled = !target.disabled;
+
+            if (notDisabled) {
+                new Choices(target, {allowHTML: true, itemSelectText: ''});
+            }
         })
     }
 }

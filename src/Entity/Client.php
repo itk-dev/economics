@@ -57,6 +57,12 @@ class Client
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerKey = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $projectLeadName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $projectLeadMail = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -240,6 +246,30 @@ class Client
     public function setCustomerKey(?string $customerKey): self
     {
         $this->customerKey = $customerKey;
+
+        return $this;
+    }
+
+    public function getProjectLeadName(): ?string
+    {
+        return $this->projectLeadName;
+    }
+
+    public function setProjectLeadName(?string $projectLeadName): static
+    {
+        $this->projectLeadName = $projectLeadName;
+
+        return $this;
+    }
+
+    public function getProjectLeadMail(): ?string
+    {
+        return $this->projectLeadMail;
+    }
+
+    public function setProjectLeadMail(?string $projectLeadMail): static
+    {
+        $this->projectLeadMail = $projectLeadMail;
 
         return $this;
     }

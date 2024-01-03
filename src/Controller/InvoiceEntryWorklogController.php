@@ -53,7 +53,7 @@ class InvoiceEntryWorklogController extends AbstractController
             'required' => false,
             'label' => 'worklog.version',
             'label_attr' => ['class' => 'label'],
-            'row_attr' => ['class' => 'form-row'],
+            'row_attr' => ['class' => 'form-row form-choices'],
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
@@ -75,7 +75,7 @@ class InvoiceEntryWorklogController extends AbstractController
             'required' => false,
             'label' => 'worklog.epic',
             'label_attr' => ['class' => 'label'],
-            'row_attr' => ['class' => 'form-row'],
+            'row_attr' => ['class' => 'form-row form-choices'],
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
