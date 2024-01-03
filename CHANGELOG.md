@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added checks for errors before allowing putting project billing on record
 * Added error check for invoice entries with 0 amounts
 * Make sure all issues are selected in project billing period.
+* Refactored error handling.
 
 
 * RELEASE NOTES:
