@@ -10,9 +10,6 @@ use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
-use App\Model\SprintReport\SprintReportProject;
-use App\Model\SprintReport\SprintReportProjects;
-use App\Model\SprintReport\SprintReportVersions;
 
 interface ApiServiceInterface
 {
@@ -70,7 +67,7 @@ interface ApiServiceInterface
      */
     public function getProject($key): mixed;
 
-     /**
+    /**
      * Create a jira project.
      *
      * See https://docs.atlassian.com/software/jira/docs/api/REST/9.3.0/#api/2/project-createProject
@@ -95,14 +92,14 @@ interface ApiServiceInterface
      */
     public function getTimeTrackerAccount(string $key): mixed;
 
-     /**
+    /**
      * Create a Jira account.
      *
      * @throws ApiServiceException
      */
     public function createTimeTrackerAccount(string $name, string $key, string $customerKey, string $contactUsername): mixed;
 
-     /**
+    /**
      * Create a project link to account.
      *
      * @param mixed $project
@@ -183,12 +180,14 @@ interface ApiServiceInterface
 
     /**
      * @return array<ClientData>
+     *
      * @throws ApiServiceException
      */
     public function getClientDataForProject(string $projectId): array;
 
     /**
      * @return array<ProjectData>
+     *
      * @throws ApiServiceException
      */
     public function getAllProjectData(): array;
@@ -207,6 +206,7 @@ interface ApiServiceInterface
 
     /**
      * @return array<AccountData>
+     *
      * @throws ApiServiceException
      */
     public function getAllAccountData(): array;
