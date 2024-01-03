@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Invoice;
 use App\Entity\ProjectBilling;
 use App\Form\ProjectBillingFilterType;
 use App\Form\ProjectBillingRecordType;
@@ -230,8 +231,16 @@ class ProjectBillingController extends AbstractController
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
     public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
     {
+        $invoices = $projectBilling->getInvoices();
+
+        // Filter invoices by client.type if type query parameter is set.
+        $type = $request->query->get('type');
+        if (null !== $type) {
+            $invoices = $invoices->filter(fn (Invoice $invoice) => $invoice->getClient()?->getType()?->value == $type);
+        }
+
         // Mark invoice as exported.
-        foreach ($projectBilling->getInvoices() as $invoice) {
+        foreach ($invoices as $invoice) {
             $invoice->setExportedDate(new \DateTime());
             $invoiceRepository->save($invoice, true);
         }
@@ -241,7 +250,7 @@ class ProjectBillingController extends AbstractController
 
         $ids = array_map(function ($invoice) {
             return $invoice->getId();
-        }, $projectBilling->getInvoices()->toArray());
+        }, $invoices->toArray());
 
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
 

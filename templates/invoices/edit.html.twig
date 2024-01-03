@@ -9,7 +9,12 @@
     <div class="grid-split selections" {{ stimulus_controller('choices') }}>
         <div>
             {{ form_row(form.name) }}
-            {{ form_row(form.description) }}
+            <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {'id': invoice.id}) }}">
+                {% if invoice.client and invoice.client.projectLeadName and invoice.client.projectLeadMail %}
+                    <button type="button" class="link" style="font-size: .8em; float: right" {{ stimulus_action('generate-description', 'generate') }}>{{ 'invoices.generate_description'|trans }}</button>
+                {% endif %}
+                {{ form_row(form.description) }}
+            </div>
             {{ form_row(form.client) }}
             {{ form_row(form.periodFrom) }}
             {{ form_row(form.periodTo) }}
@@ -35,6 +40,7 @@
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.client_information'|trans }}</li>
                 {% if invoice.client != null %}
                     <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_project_lead'|trans }}: {{ invoice.client.projectLeadName }} ({{ invoice.client.projectLeadMail }})</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_sales_channel'|trans }}: {{ invoice.client.salesChannel }}</li>

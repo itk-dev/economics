@@ -167,12 +167,12 @@ invoices:
   period_from_helptext: 'Dette felt skal udfyldes på eksterne fakturaer.'
   period_to_helptext: 'Dette felt skal udfyldes på eksterne fakturaer.'
   name_helptext: 'Vælg faktuens navn.'
-  description_helptext: 'Indsættes i tekstfeltet i fakturaen.'
+  description_helptext: 'Indsættes i tekstfeltet i fakturaen. Autoudfyld er tilgængelig, hvis der er valgt en kundekonto med en project lead.'
   project_helptext: 'Vælg projekt.'
   client_helptext: 'Vælg hvilken kundekonto fakturaen skal udstedes til.'
+  payer_account_helptext: 'Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: "Betales af [KONTO]".'
   default_material_number_helptext: 'Dette bliver sat automatisk i alle fakturaindgange.'
   default_receiver_account_helptext: 'Dette bliver sat automatisk i alle fakturaindgange.'
-  payer_account_helptext: 'Hvis valgt indsættes følgende først i tekstfeltet i fakturaen: "Betales af [KONTO]".'
   client_type_internal: 'Intern'
   client_type_external: 'Ekstern'
   client_ean: 'EAN'
@@ -227,7 +227,10 @@ invoices:
   action_view: 'Se'
   list_exported_date: 'Eksportdato'
   client_type_is_null: ''
+  generate_description: 'Autoudfyld'
+  client_project_lead: 'Project Lead'
   required_fields_not_set_for_creating_entries: '"Til konto" og "Materialenummer" skal være valgt før der kan oprettes fakturalinjer.'
+  type: 'Kundekonto type'
 
 material_number_enum:
   internal: "Interne: 103361"
@@ -270,6 +273,7 @@ worklog:
   period_to_helptext: ''
   worker_helptext: ''
   version_helptext: ''
+  epic_helptext: ''
   owned_by_other: 'Anden faktura'
   action_save: 'Gem valgte worklogs'
   error_already_billed: 'Fejl: Indeholder worklog der allerede er faktureret. Prøv at genindlæse siden...'
@@ -376,6 +380,8 @@ project_billing:
   on_record_errors_invoice_id: 'Faktura ID'
   on_record_errors_error: 'Fejlbesked'
   on_record_errors_invoice_link: 'Link til faktura'
+  action_record_internal: 'Eksportér interne'
+  action_record_external: 'Eksportér eksterne'
 
 project:
   title: 'Projekter'

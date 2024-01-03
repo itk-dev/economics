@@ -21,6 +21,8 @@
             <a type="button" href="{{ path('app_project_billing_record', {'id': projectBilling.id}) }}" class="button button-warning">{{ 'project_billing.action_record'|trans }}</a>
         {% endif %}
         {% if projectBilling.recorded %}
+            <a type="button" href="{{ path('app_project_billing_export', {'id': projectBilling.id, 'type': 'internal'}) }}" class="button button-warning">{{ 'project_billing.action_record_internal'|trans }}</a>
+            <a type="button" href="{{ path('app_project_billing_export', {'id': projectBilling.id, 'type': 'external'}) }}" class="button button-warning">{{ 'project_billing.action_record_external'|trans }}</a>
             <a type="button" href="{{ path('app_project_billing_export', {'id': projectBilling.id}) }}" class="button">{{ 'project_billing.action_export'|trans }}</a>
         {% endif %}
     </div>
@@ -34,6 +36,7 @@
         <tr>
             <th class="table-th">{{ 'invoices.id'|trans }}</th>
             <th class="table-th">{{ 'invoices.name'|trans }}</th>
+            <th class="table-th">{{ 'invoices.type'|trans }}</th>
             <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
             <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
         </tr>
@@ -43,6 +46,12 @@
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                 <td class="table-td">{{ invoice.id }}</td>
                 <td class="table-td">{{ invoice.name }}</td>
+                <td class="table-td">
+                    {% if invoice.client.type != null %}
+                        {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
+                        {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
+                    {% endif %}
+                </td>
                 <td class="table-td">{{ invoice.totalPrice }}</td>
                 <td class="table-td">
                     <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>

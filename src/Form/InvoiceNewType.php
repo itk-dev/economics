@@ -5,7 +5,6 @@ namespace App\Form;
 use App\Entity\Invoice;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,10 +16,6 @@ class InvoiceNewType extends AbstractType
             ->add('name', null, [
                 'required' => true,
                 'attr' => ['class' => 'form-element'],
-            ])
-            ->add('description', TextareaType::class, [
-                'required' => true,
-                'attr' => ['class' => 'form-element', 'rows' => 4],
             ])
             ->add('project', null, [
                 'required' => true,
