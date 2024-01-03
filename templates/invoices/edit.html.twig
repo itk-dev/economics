@@ -90,6 +90,7 @@
             </div>
         </div>
     </div>
+
     <div>
         <h3 class="subheading">{{ 'invoices.invoice_entries'|trans }}</h3>
 
@@ -141,8 +142,16 @@
             {% if not invoice.recorded and invoice.projectBilling is null %}
             <tr class="table-tr">
                 <td colspan="8" class="table-td">
-                    <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
-                    <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
+                    {% if allowAddingEntries %}
+                        <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
+                        <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
+                    {% else %}
+                        <div class="alert-info" role="alert">
+                            <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"></path>
+                            </svg> {{ 'invoices.required_fields_not_set_for_creating_entries'|trans }}
+                        </div>
+                    {% endif %}
                 </td>
             </tr>
             {% endif %}
@@ -153,8 +162,8 @@
 
     <div class="bottom-actions">
         <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
-        {% if not invoice.recorded and invoice.projectBilling is null  %}
-        {{ include('invoices/_delete_form.html.twig') }}
+        {% if not invoice.recorded and invoice.projectBilling is null %}
+            {{ include('invoices/_delete_form.html.twig') }}
         {% endif %}
     </div>
 {% endblock %}

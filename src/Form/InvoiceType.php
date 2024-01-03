@@ -47,7 +47,6 @@ class InvoiceType extends AbstractType
                 'row_attr' => ['class' => 'form-row form-choices'],
                 'attr' => [
                     'class' => 'form-element',
-                    'data-account-selector-target' => 'field',
                 ],
                 'help' => 'invoices.payer_account_helptext',
             ])
@@ -58,7 +57,6 @@ class InvoiceType extends AbstractType
                 'row_attr' => ['class' => 'form-row form-choices'],
                 'attr' => [
                     'class' => 'form-element',
-                    'data-account-selector-target' => 'field',
                 ],
                 'help' => 'invoices.default_receiver_account_helptext',
             ])

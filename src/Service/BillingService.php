@@ -44,7 +44,7 @@ class BillingService
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
         private readonly AccountRepository $accountRepository,
-        private readonly string $receiverAccount,
+        private readonly string $invoiceSupplierAccount,
     ) {
     }
 
@@ -526,7 +526,7 @@ class BillingService
             $sheet->setCellValue([16, $row], substr($description, 0, 500));
             // 17. "Leverandør"
             if ($internal) {
-                $sheet->setCellValue([17, $row], str_pad($this->receiverAccount, 10, '0', \STR_PAD_LEFT));
+                $sheet->setCellValue([17, $row], str_pad($this->invoiceSupplierAccount, 10, '0', \STR_PAD_LEFT));
             }
             // 18. "EAN nr."
             if (!$internal && 13 === \strlen($accountKey ?? '')) {
