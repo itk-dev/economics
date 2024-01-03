@@ -43,11 +43,10 @@ class ProjectBillingController extends AbstractController
     }
 
     #[Route('/new', name: 'app_project_billing_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
+    public function new(Request $request, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, string $projectBillingDefaultDescription): Response
     {
         $projectBilling = new ProjectBilling();
-        $defaultDescription = $this->getParameter('app.default_invoice_description');
-        $projectBilling->setDescription(is_string($defaultDescription) ? $defaultDescription : '');
+        $projectBilling->setDescription($projectBillingDefaultDescription);
 
         $form = $this->createForm(ProjectBillingType::class, $projectBilling);
         $form->handleRequest($request);

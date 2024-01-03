@@ -11,6 +11,7 @@ use App\Form\InvoiceType;
 use App\Model\Invoices\ConfirmData;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\AccountRepository;
+use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -44,13 +45,17 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/new', name: 'app_invoices_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, InvoiceRepository $invoiceRepository): Response
+    public function new(Request $request, InvoiceRepository $invoiceRepository, string $invoiceDefaultReceiverAccount): Response
     {
         $invoice = new Invoice();
         $form = $this->createForm(InvoiceNewType::class, $invoice);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if (!empty($invoiceDefaultReceiverAccount)) {
+                $invoice->setDefaultReceiverAccount($invoiceDefaultReceiverAccount);
+            }
+
             $invoice->setRecorded(false);
             $invoice->setTotalPrice(0);
             $invoiceRepository->save($invoice, true);
@@ -67,7 +72,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService, AccountRepository $accountRepository): Response
+    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
         if ($invoice->isRecorded()) {
@@ -104,7 +109,6 @@ class InvoiceController extends AbstractController
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
-                'data-account-selector-target' => 'field',
             ],
             'choices' => $paidByAccountChoices,
             'help' => 'invoices.payer_account_helptext',
@@ -118,7 +122,6 @@ class InvoiceController extends AbstractController
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
-                'data-account-selector-target' => 'field',
             ],
             'choices' => $defaultReceiverAccountChoices,
             'help' => 'invoices.default_receiver_account_helptext',
@@ -155,13 +158,26 @@ class InvoiceController extends AbstractController
 
             $invoiceRepository->save($invoice, true);
 
+            // Update values in invoice entries.
+            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+                $invoiceEntry->setMaterialNumber($invoice->getDefaultMaterialNumber());
+                $invoiceEntry->setAccount($invoice->getDefaultReceiverAccount());
+                $invoiceEntryRepository->save($invoiceEntry, true);
+            }
+
             // TODO: Handle this with a doctrine event listener instead.
             $billingService->updateInvoiceTotalPrice($invoice);
         }
 
+        // Only allow adding entries when material number and receiver account have been set.
+        $allowAddingEntries = !empty($invoice->getDefaultReceiverAccount())
+            && !empty($invoice->getDefaultMaterialNumber())
+            && !empty($invoice->getDefaultMaterialNumber()->value);
+
         return $this->render('invoices/edit.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
+            'allowAddingEntries' => $allowAddingEntries,
             'invoiceTotalAmount' => array_reduce($invoice->getInvoiceEntries()->toArray(), function ($carry, InvoiceEntry $item) {
                 $carry += $item->getAmount();
 
@@ -195,7 +211,7 @@ class InvoiceController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_invoices_record', methods: ['GET', 'POST'])]
-    public function record(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function record(Request $request, Invoice $invoice, BillingService $billingService): Response
     {
         $recordData = new ConfirmData();
         $form = $this->createForm(InvoiceRecordType::class, $recordData);
@@ -206,6 +222,12 @@ class InvoiceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             if (null !== $invoice->getProjectBilling()) {
                 throw new HttpException(400, 'Invoice is a part of a project billing, cannot be put on record.');
+            }
+
+            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+                if (empty($invoiceEntry->getAmount())) {
+                    throw new HttpException(400, 'Invoice cannot be put on record, when it contains invoice entries where amount is not set.');
+                }
             }
 
             if ($recordData->confirmed) {
@@ -228,7 +250,7 @@ class InvoiceController extends AbstractController
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/show-export', name: 'app_invoices_show_export', methods: ['GET'])]
-    public function showExport(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function showExport(Invoice $invoice, BillingService $billingService): Response
     {
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet([$invoice->getId()]);
 
@@ -268,7 +290,7 @@ class InvoiceController extends AbstractController
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     #[Route('/{id}/export', name: 'app_invoices_export', methods: ['GET'])]
-    public function export(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function export(Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
     {
         if (!$invoice->isRecorded()) {
             throw new HttpException(400, 'Invoice cannot be exported before it is on record.');
