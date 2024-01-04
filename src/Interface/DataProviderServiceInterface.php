@@ -11,8 +11,6 @@ use App\Model\Planning\PlanningData;
 
 interface DataProviderServiceInterface
 {
-    public function getProjectTrackerIdentifier(): string;
-
     public function getPlanningData(): PlanningData;
 
     /**

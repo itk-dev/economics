@@ -51,12 +51,12 @@ class SprintReportController extends AbstractController
             'csrf_protection' => false,
         ]);
 
-        $projects = $this->service->getAllProjects();
+        $projectCollection = $this->service->getSprintReportProjects();
 
         $projectChoices = [];
 
-        foreach ($projects as $project) {
-            $projectChoices[$project->name] = $project->key;
+        foreach ($projectCollection->projects as $project) {
+            $projectChoices[$project->name] = $project->id;
         }
 
         // Override projectId with element with choices.
@@ -79,11 +79,11 @@ class SprintReportController extends AbstractController
         }
 
         if (!empty($requestData['projectId'])) {
-            $project = $this->service->getProject($requestData['projectId']);
+            $versionCollection = $this->service->getSprintReportProjectVersions($requestData['projectId']);
 
             $versionChoices = [];
-            foreach ($project->versions as $version) {
-                $versionChoices[$version->name] = $version->id;
+            foreach ($versionCollection->versions as $version) {
+                $versionChoices[$version->headline] = $version->id;
             }
 
             // Override versionId with element with choices.
