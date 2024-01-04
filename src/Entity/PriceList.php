@@ -26,6 +26,7 @@ class PriceList
     {
         return $this->name;
     }
+
     public function getPrice(): ?int
     {
         return $this->price;

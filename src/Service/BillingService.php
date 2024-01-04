@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
+use App\Entity\Account;
+use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
-use App\Entity\Client;
-use App\Entity\Account;
 use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worklog;
@@ -17,13 +17,12 @@ use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Repository\IssueRepository;
-use App\Repository\AccountRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpSpreadsheetException;
@@ -90,7 +89,7 @@ class BillingService
             throw new \Exception('ProjectTrackerId not set');
         }
 
-        $issueDataCollection = $this->projectTracker->getProjectIssuesV2($projectTrackerId);
+        $issueDataCollection = $this->projectTracker->getIssueDataCollection($projectTrackerId);
         $issuesProcessed = 0;
 
         foreach ($issueDataCollection->issueData as $issueDatum) {

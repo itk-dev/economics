@@ -8,22 +8,20 @@ use App\Interface\DataProviderServiceInterface;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\IssueData;
+use App\Model\Invoices\IssueDataCollection;
 use App\Model\Invoices\PagedResult;
 use App\Model\Invoices\ProjectData;
-use App\Model\Invoices\MilestoneData;
+use App\Model\Invoices\ProjectDataCollection;
+use App\Model\Invoices\VersionData;
 use App\Model\Invoices\WorklogData;
+use App\Model\Invoices\WorklogDataCollection;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
-use App\Model\Planning\Sprint;
-use App\Model\Planning\Project;
-use App\Model\Planning\SprintSum;
-use App\Model\Invoices\VersionData;
 use App\Model\Planning\PlanningData;
-use App\Model\Invoices\IssueDataCollection;
-use App\Model\SprintReport\SprintStateEnum;
-use App\Model\Invoices\ProjectDataCollection;
-use App\Model\Invoices\WorklogDataCollection;
+use App\Model\Planning\Project;
+use App\Model\Planning\Sprint;
+use App\Model\Planning\SprintSum;
 use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
@@ -31,6 +29,7 @@ use App\Model\SprintReport\SprintReportProject;
 use App\Model\SprintReport\SprintReportProjects;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintReportVersions;
+use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -97,7 +96,7 @@ class JiraApiService implements DataProviderServiceInterface
         return $sprintReportProjects;
     }
 
-    public function getSprintReportProjectVersions(string $projectId): SprintReportVersions
+    public function getSprintReportVersions(string $projectId): SprintReportVersions
     {
         $sprintReportVersions = new SprintReportVersions();
         $project = $this->getProject($projectId);
@@ -1190,9 +1189,9 @@ class JiraApiService implements DataProviderServiceInterface
      * @throws ApiServiceException
      * @throws \Exception
      */
-    public function getProjectIssuesV2(string $projectId): IssueDataCollection
+    public function getIssueDataCollection(string $projectId): IssueDataCollection
     {
-        return new issueDataCollection();
+        throw new ApiServiceException('Method not implemented', 501);
     }
 
     /**

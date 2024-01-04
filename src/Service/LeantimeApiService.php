@@ -78,7 +78,7 @@ class LeantimeApiService implements ProjectTrackerInterface
      *
      * @throws ApiServiceException
      */
-    public function getAllProjectsV2(): SprintReportProjects
+    public function getSprintReportProjects(): SprintReportProjects
     {
         $sprintReportProjects = new SprintReportProjects();
         $projects = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
@@ -104,7 +104,7 @@ class LeantimeApiService implements ProjectTrackerInterface
      *
      * @throws ApiServiceException
      */
-    public function getProjectV2(string $projectId): SprintReportProject
+    public function getSprintReportProject(string $projectId): SprintReportProject
     {
         $project = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getProject', ['id' => $projectId]);
 
@@ -115,7 +115,7 @@ class LeantimeApiService implements ProjectTrackerInterface
         return $sprintReportProject;
     }
 
-    public function getProjectIssuesV2(string $projectId): IssueDataCollection
+    public function getIssueDataCollection(string $projectId): IssueDataCollection
     {
         $issueDataCollection = new IssueDataCollection();
         $issues = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId]]);
@@ -193,7 +193,7 @@ class LeantimeApiService implements ProjectTrackerInterface
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getTicket', ['id' => $key]);
     }
 
-    public function getProjectVersions(string $projectId): SprintReportVersions
+    public function getSprintReportVersions(string $projectId): SprintReportVersions
     {
         $sprintReportVersions = new SprintReportVersions();
         $projectVersions = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAllMilestones', ['searchCriteria' => ['currentProject' => $projectId, 'type' => 'milestone']]);
@@ -521,11 +521,12 @@ class LeantimeApiService implements ProjectTrackerInterface
             $issue = new SprintReportIssue();
             $issues->add($issue);
 
-            // Set issue tag.
+            /* Tags are stored as a comma seperated string.
+            In our implementation of Leantime, tickets are only supposed to have one tag.
+            Tickets with multiple tags will not break, but it would look wierd in the report. */
             if (isset($issueEntry->tags)) {
-                $tagId = $this->tagToId($issueEntry->tags);
-                $tag = new SprintReportEpic($tagId, $issueEntry->tags);
-                $epics->set($tagId, $tag);
+                $tag = new SprintReportEpic($issueEntry->tags, $issueEntry->tags);
+                $epics->set($issueEntry->tags, $tag);
             } else {
                 $tag = $epics->get('noEpic');
             }
@@ -568,17 +569,17 @@ class LeantimeApiService implements ProjectTrackerInterface
                     $worklogSprint = array_pop($worklogSprints);
                     $worklogSprintId = $worklogSprint->id;
                 }
-                $newLoggedWork = (float) ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + $worklog->hours;
+                $newLoggedWork = (float) ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + ($worklog->hours * 60 * 60);
                 $issue->epic->loggedWork->set($worklogSprintId, $newLoggedWork);
             }
 
             // Accumulate spentSum.
-            $spentSum += $issueEntry->bookedHours;
-            $issue->epic->spentSum += $issueEntry->bookedHours;
+            $spentSum += ($issueEntry->bookedHours * 60 * 60);
+            $issue->epic->spentSum += ($issueEntry->bookedHours * 60 * 60);
 
             // Accumulate remainingSum.
             if ('0' !== $issueEntry->status && isset($issueEntry->hourRemaining)) {
-                $remainingEstimateSeconds = $issueEntry->hourRemaining;
+                $remainingEstimateSeconds = ($issueEntry->hourRemaining * 60 * 60);
                 $remainingSum += $remainingEstimateSeconds;
 
                 $issue->epic->remainingSum += $remainingEstimateSeconds;
@@ -592,9 +593,9 @@ class LeantimeApiService implements ProjectTrackerInterface
             }
             // Accumulate originalEstimateSum.
             if (isset($issueEntry->planHours)) {
-                $issue->epic->originalEstimateSum += $issueEntry->planHours;
+                $issue->epic->originalEstimateSum += ($issueEntry->planHours * 60 * 60);
 
-                $sprintReportData->originalEstimateSum += $issueEntry->planHours;
+                $sprintReportData->originalEstimateSum += ($issueEntry->planHours * 60 * 60);
             }
             ++$issueCount;
         }
@@ -615,8 +616,8 @@ class LeantimeApiService implements ProjectTrackerInterface
         });
         $epics = new ArrayCollection(iterator_to_array($iterator));
         // Calculate spent, remaining hours.
-        $spentHours = $spentSum;
-        $remainingHours = $remainingSum;
+        $spentHours = $spentSum / 3600;
+        $remainingHours = $remainingSum / 3600;
 
         $sprintReportData->projectName = $project->name;
         $sprintReportData->versionName = $milestone->headline;
