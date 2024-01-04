@@ -40,7 +40,6 @@ class SprintReportController extends AbstractController
     #[Route('/', name: 'app_sprint_report')]
     public function index(Request $request): Response
     {
-
         $reportData = null;
         $sprintReportFormData = new SprintReportFormData();
 
