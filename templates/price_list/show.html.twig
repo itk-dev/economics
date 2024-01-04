@@ -2,7 +2,7 @@
 
 {% block title %}PriceList{% endblock %}
 
-{% block body %}
+{% block content %}
     <h1>PriceList</h1>
 
     <table class="table">
@@ -10,6 +10,14 @@
             <tr>
                 <th>Id</th>
                 <td>{{ price_list.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ price_list.name }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ price_list.price }}</td>
             </tr>
         </tbody>
     </table>

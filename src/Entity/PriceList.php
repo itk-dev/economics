@@ -13,8 +13,10 @@ class PriceList
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(nullable: true)]
     private ?float $price = null;
 
     public function getId(): ?int
@@ -22,13 +24,26 @@ class PriceList
         return $this->id;
     }
 
-    public function getName(): ?int
+    public function getName(): ?string
     {
         return $this->name;
     }
+    public function setName(string $name): self
+    {
+        $this->name = $name;
 
-    public function getPrice(): ?int
+        return $this;
+    }
+
+    public function getPrice(): ?float
     {
         return $this->price;
+    }
+
+    public function setPrice(?float $price): self
+    {
+        $this->price = $price;
+
+        return $this;
     }
 }

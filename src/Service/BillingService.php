@@ -14,6 +14,7 @@ use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Exception\EconomicsException;
 use App\Exception\InvoiceAlreadyOnRecordException;
+use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
@@ -45,6 +46,7 @@ class BillingService
         private readonly ClientRepository $clientRepository,
         private readonly ProjectRepository $projectRepository,
         private readonly ApiServiceInterface $apiService,
+        private readonly AccountRepository $accountRepository,
         private readonly string $invoiceSupplierAccount,
     ) {
     }
