@@ -67,23 +67,6 @@ class LeantimeApiService implements DataProviderServiceInterface
         throw new \Exception("Not implemented");
     }
 
-    public function getEndpoints(): array
-    {
-        return [
-            'base' => $this->leantimeUrl,
-        ];
-    }
-
-    /**
-     * Get all projects, including archived.
-     *
-     * @throws ApiServiceException
-     */
-    public function getAllProjects(): mixed
-    {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
-    }
-
     /**
      * Get all projects, including archived.
      *
@@ -109,26 +92,6 @@ class LeantimeApiService implements DataProviderServiceInterface
     }
 
     /**
-     * getSprintReportProject.
-     *
-     * @param $key
-     *   A project key or id
-     *
-     * @return SprintReportProject SprintReportProject
-     *
-     * @throws ApiServiceException
-     */
-    public function getSprintReportProject(string $projectId): SprintReportProject
-    {
-        $project = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getProject', ['id' => $projectId]);
-
-        return new SprintReportProject(
-            $project->id,
-            $project->name
-        );
-    }
-
-    /**
      * Get project.
      *
      * @param $key
@@ -149,7 +112,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      *
      * @throws ApiServiceException
      */
-    public function getMilestone($key): mixed
+    private function getMilestone($key): mixed
     {
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getTicket', ['id' => $key]);
     }
@@ -423,14 +386,6 @@ class LeantimeApiService implements DataProviderServiceInterface
 
     /**
      * @throws ApiServiceException
-     */
-    private function getIssuesForProjectMilestone($projectId, $milestoneId): array
-    {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'milestone' => $milestoneId]]);
-    }
-
-    /**
-     * @throws ApiServiceException
      * @throws \Exception
      */
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData
@@ -564,6 +519,14 @@ class LeantimeApiService implements DataProviderServiceInterface
         $sprintReportData->sprints = $sprints;
 
         return $sprintReportData;
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
+    private function getIssuesForProjectMilestone($projectId, $milestoneId): array
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'milestone' => $milestoneId]]);
     }
 
     /**

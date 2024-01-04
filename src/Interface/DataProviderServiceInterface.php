@@ -8,6 +8,9 @@ use App\Model\Invoices\PagedResult;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Planning\PlanningData;
+use App\Model\SprintReport\SprintReportData;
+use App\Model\SprintReport\SprintReportProjects;
+use App\Model\SprintReport\SprintReportVersions;
 
 interface DataProviderServiceInterface
 {
@@ -32,4 +35,10 @@ interface DataProviderServiceInterface
 
     /** @return array<WorklogData> */
     public function getWorklogDataForProject(string $projectId): array;
+
+    public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
+
+    public function getSprintReportProjects(): SprintReportProjects;
+
+    public function getSprintReportProjectVersions(string $projectId): SprintReportVersions;
 }
