@@ -1107,7 +1107,7 @@ class JiraApiService implements DataProviderServiceInterface
             }
 
             foreach ($fields->fixVersions ?? [] as $fixVersion) {
-                $issueData->versions->add(new VersionData($fixVersion->id, $fixVersion->name));
+                $issueData->versions?->add(new VersionData($fixVersion->id, $fixVersion->name));
             }
 
             $result[] = $issueData;
