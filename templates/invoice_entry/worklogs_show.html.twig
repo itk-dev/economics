@@ -6,54 +6,52 @@
     <h1 class="page-title">{{ 'worklog.title_show'|trans }}</h1>
 
     <div>
-        <form id="worklog-form">
-            <table class="table margin-bottom">
-                <thead class="table-thead">
-                <tr>
-                    <th class="table-th">{{ 'worklog.name'|trans }}</th>
-                    <th class="table-th">{{ 'worklog.is_billed'|trans }}</th>
-                    <th class="table-th">{{ 'worklog.epic'|trans }}</th>
-                    <th class="table-th">{{ 'worklog.version'|trans }}</th>
-                    <th class="table-th">{{ 'worklog.worker'|trans }}</th>
-                    <th class="table-th">{{ 'worklog.time_spent'|trans }}</th>
-                    <th class="table-th">{{ 'worklog.date'|trans }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for index, worklog in worklogs %}
-                    {% set ownedByInvoiceEntry = worklog.invoiceEntry == invoiceEntry %}
-                    {% set ownedByOtherInvoiceEntry = (not ownedByInvoiceEntry and worklog.invoiceEntry is not null) %}
-                    {% set disabled = worklog.isBilled or ownedByOtherInvoiceEntry %}
+        <table class="table margin-bottom">
+            <thead class="table-thead">
+            <tr>
+                <th class="table-th">{{ 'worklog.name'|trans }}</th>
+                <th class="table-th">{{ 'worklog.is_billed'|trans }}</th>
+                <th class="table-th">{{ 'worklog.epic'|trans }}</th>
+                <th class="table-th">{{ 'worklog.version'|trans }}</th>
+                <th class="table-th">{{ 'worklog.worker'|trans }}</th>
+                <th class="table-th">{{ 'worklog.time_spent'|trans }}</th>
+                <th class="table-th">{{ 'worklog.date'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for index, worklog in worklogs %}
+                {% set ownedByInvoiceEntry = worklog.invoiceEntry == invoiceEntry %}
+                {% set ownedByOtherInvoiceEntry = (not ownedByInvoiceEntry and worklog.invoiceEntry is not null) %}
+                {% set disabled = worklog.isBilled or ownedByOtherInvoiceEntry %}
 
-                    <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}{{ disabled ? ' table-tr-disabled' : '' }}{{ ownedByOtherInvoiceEntry ? ' table-tr-disabled-alt' : '' }}">
-                        <td class="table-td">
-                            <div>
-                                <span>{{ worklog.description }}</span>
-                                <span> ({{ worklog.worklogId }})</span>
-                            </div>
-                            <div class="italic">
-                                <span>{{ worklog.issue.name }}</span>
-                                <span> ({{ worklog.issue.projectTrackerKey }})</span>
-                            </div>
-                        </td>
-                        <td class="table-td">{{ worklog.isBilled ? 'worklog.is_billed_true'|trans : 'worklog.is_billed_false'|trans }}</td>
-                        <td class="table-td">{{ worklog.issue.epicName }}</td>
-                        <td class="table-td">
-                            {% for version in worklog.issue.versions %}{{ version.name }}{% endfor %}
-                        </td>
-                        <td class="table-td">{{ worklog.worker }}</td>
-                        <td class="table-td">{{ worklog.timeSpentSeconds / 60 / 60 }}</td>
-                        <td class="table-td">{{ worklog.started|date('Y-m-d') }}</td>
-                    </tr>
-                {% endfor %}
-                {% if worklogs is empty %}
-                    <tr class="table-tr">
-                        <td colspan="8" class="table-td">{{ 'invoices.list_no_records_found'|trans }}</td>
-                    </tr>
-                {% endif %}
-                </tbody>
-            </table>
-        </form>
+                <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}{{ disabled ? ' table-tr-disabled' : '' }}{{ ownedByOtherInvoiceEntry ? ' table-tr-disabled-alt' : '' }}">
+                    <td class="table-td">
+                        <div>
+                            <span>{{ worklog.description }}</span>
+                            <span> ({{ worklog.worklogId }})</span>
+                        </div>
+                        <div class="italic">
+                            <span>{{ worklog.issue.name }}</span>
+                            <span> ({{ worklog.issue.projectTrackerKey }})</span>
+                        </div>
+                    </td>
+                    <td class="table-td">{{ worklog.isBilled ? 'worklog.is_billed_true'|trans : 'worklog.is_billed_false'|trans }}</td>
+                    <td class="table-td">{{ worklog.issue.epicName }}</td>
+                    <td class="table-td">
+                        {% for version in worklog.issue.versions %}{{ version.name }}{% endfor %}
+                    </td>
+                    <td class="table-td">{{ worklog.worker }}</td>
+                    <td class="table-td">{{ worklog.timeSpentSeconds / 60 / 60 }}</td>
+                    <td class="table-td">{{ worklog.started|date }}</td>
+                </tr>
+            {% endfor %}
+            {% if worklogs is empty %}
+                <tr class="table-tr">
+                    <td colspan="8" class="table-td">{{ 'invoices.list_no_records_found'|trans }}</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
     </div>
 
     <div class="bottom-actions">

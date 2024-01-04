@@ -3,10 +3,8 @@
 namespace App\Form;
 
 use App\Entity\InvoiceEntry;
-use App\Enum\MaterialNumberEnum;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\EnumType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,30 +13,6 @@ class InvoiceEntryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('materialNumber', EnumType::class, [
-                'class' => MaterialNumberEnum::class,
-                'required' => true,
-                'attr' => ['class' => 'form-element'],
-                'label' => 'invoices.invoice_entry_material_number',
-                'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
-                'help' => 'invoices.invoice_entry_material_number_helptext',
-                'choice_label' => fn ($choice) => match ($choice) {
-                    MaterialNumberEnum::NONE => '',
-                    MaterialNumberEnum::INTERNAL => 'material_number_enum.internal',
-                    MaterialNumberEnum::EXTERNAL_WITH_MOMS => 'material_number_enum.external_with_moms',
-                    MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS => 'material_number_enum.external_without_moms',
-                    default => null,
-                },
-            ])
-            ->add('account', null, [
-                'required' => true,
-                'attr' => ['class' => 'form-element'],
-                'label' => 'invoices.invoice_entry_receiver_acccount',
-                'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
-                'help' => 'invoices.invoice_entry_receiver_account_helptext',
-            ])
             ->add('product', null, [
                 'required' => true,
                 'attr' => ['class' => 'form-element'],
@@ -47,21 +21,23 @@ class InvoiceEntryType extends AbstractType
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'invoices.invoice_entry_product_helptext',
             ])
-            ->add('price', IntegerType::class, [
+            ->add('price', NumberType::class, [
                 'required' => true,
                 'attr' => ['class' => 'form-element', 'min' => 0],
                 'label' => 'invoices.invoice_entry_price',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'invoices.invoice_entry_price_helptext',
+                'html5' => true,
             ])
-            ->add('amount', IntegerType::class, [
+            ->add('amount', NumberType::class, [
                 'required' => true,
                 'attr' => ['class' => 'form-element', 'min' => 0],
                 'label' => 'invoices.invoice_entry_amount',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'invoices.invoice_entry_amount_helptext',
+                'html5' => true,
             ])
         ;
     }

@@ -6,10 +6,15 @@
     <h1 class="page-title">{{ invoice.name }}</h1>
 
     {{ form_start(form) }}
-    <div class="grid-split">
+    <div class="grid-split selections" {{ stimulus_controller('choices') }}>
         <div>
             {{ form_row(form.name) }}
-            {{ form_row(form.description) }}
+            <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {'id': invoice.id}) }}">
+                {% if invoice.client and invoice.client.projectLeadName and invoice.client.projectLeadMail %}
+                    <button type="button" class="link" style="font-size: .8em; float: right" {{ stimulus_action('generate-description', 'generate') }}>{{ 'invoices.generate_description'|trans }}</button>
+                {% endif %}
+                {{ form_row(form.description) }}
+            </div>
             {{ form_row(form.client) }}
             {{ form_row(form.periodFrom) }}
             {{ form_row(form.periodTo) }}
@@ -35,14 +40,19 @@
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.client_information'|trans }}</li>
                 {% if invoice.client != null %}
                     <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_project_lead'|trans }}: {{ invoice.client.projectLeadName }} ({{ invoice.client.projectLeadMail }})</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_sales_channel'|trans }}: {{ invoice.client.salesChannel }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_customer_key'|trans }}: {{ invoice.client.customerKey }}</li>
                     <li class="list-group-item border-bottom">
                         {{ 'invoices.client_type'|trans }}:
-                        {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
-                        {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
+                        {% if invoice.client.type is not null %}
+                            {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
+                            {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
+                        {% else %}
+                            {{ 'invoices.client_type_is_null'|trans }}
+                        {% endif %}
                     </li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_account'|trans }}: {{ invoice.client.account }}</li>
                     {% if invoice.client.psp is defined and invoice.client.psp is not null %}
@@ -84,6 +94,7 @@
             </div>
         </div>
     </div>
+
     <div>
         <h3 class="subheading">{{ 'invoices.invoice_entries'|trans }}</h3>
 
@@ -124,7 +135,9 @@
                 </tr>
             {% elseif invoice.totalPrice %}
                 <tr class="table-tr">
-                    <td colspan="5" class="table-td"></td>
+                    <td colspan="3" class="table-td"></td>
+                    <td class="table-td">{{ invoiceTotalAmount }}</td>
+                    <td class="table-td"></td>
                     <td class="table-td">{{ invoice.totalPrice }}</td>
                     <td></td>
                     <td></td>
@@ -133,8 +146,16 @@
             {% if not invoice.recorded and invoice.projectBilling is null %}
             <tr class="table-tr">
                 <td colspan="8" class="table-td">
-                    <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
-                    <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
+                    {% if allowAddingEntries %}
+                        <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
+                        <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
+                    {% else %}
+                        <div class="alert-info" role="alert">
+                            <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"></path>
+                            </svg> {{ 'invoices.required_fields_not_set_for_creating_entries'|trans }}
+                        </div>
+                    {% endif %}
                 </td>
             </tr>
             {% endif %}
@@ -145,8 +166,8 @@
 
     <div class="bottom-actions">
         <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
-        {% if not invoice.recorded and invoice.projectBilling is null  %}
-        {{ include('invoices/_delete_form.html.twig') }}
+        {% if not invoice.recorded and invoice.projectBilling is null %}
+            {{ include('invoices/_delete_form.html.twig') }}
         {% endif %}
     </div>
 {% endblock %}

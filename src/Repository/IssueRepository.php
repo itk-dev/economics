@@ -41,14 +41,29 @@ class IssueRepository extends ServiceEntityRepository
         }
     }
 
+    public function findEpicsByProject(Project $project): array
+    {
+        $qb = $this->createQueryBuilder('issue');
+
+        $qb->select('issue.epicName, issue.epicKey')
+            ->where('issue.project = :project')
+            ->setParameter('project', $project)
+            ->distinct();
+
+        return $qb->getQuery()->execute();
+    }
+
     public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
     {
+        $from = new \DateTime($periodStart->format('Y-m-d').' 00:00:00');
+        $to = new \DateTime($periodEnd->format('Y-m-d').' 23:59:59');
+
         $qb = $this->createQueryBuilder('issue');
         $qb->andWhere($qb->expr()->eq('issue.project', $project->getId()));
         $qb->andWhere('issue.resolutionDate >= :periodStart');
         $qb->andWhere('issue.resolutionDate <= :periodEnd');
-        $qb->setParameter('periodStart', $periodStart);
-        $qb->setParameter('periodEnd', $periodEnd);
+        $qb->setParameter('periodStart', $from);
+        $qb->setParameter('periodEnd', $to);
         $qb->andWhere('issue.status = :status');
         $qb->setParameter('status', 'Lukket');
 
@@ -57,12 +72,15 @@ class IssueRepository extends ServiceEntityRepository
 
     public function getIssuesNotIncludedInProjectBilling(ProjectBilling $projectBilling)
     {
+        $from = new \DateTime($projectBilling->getPeriodStart()->format('Y-m-d').' 00:00:00');
+        $to = new \DateTime($projectBilling->getPeriodEnd()->format('Y-m-d').' 23:59:59');
+
         $qb = $this->createQueryBuilder('issue');
         $qb->andWhere($qb->expr()->eq('issue.project', $projectBilling->getProject()->getId()));
         $qb->andWhere('issue.resolutionDate >= :periodStart');
         $qb->andWhere('issue.resolutionDate <= :periodEnd');
-        $qb->setParameter('periodStart', $projectBilling->getPeriodStart());
-        $qb->setParameter('periodEnd', $projectBilling->getPeriodEnd());
+        $qb->setParameter('periodStart', $from);
+        $qb->setParameter('periodEnd', $to);
         $qb->andWhere('issue.accountId IS NULL');
         $qb->andWhere('issue.status = :status');
         $qb->setParameter('status', 'Lukket');

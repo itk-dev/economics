@@ -11,12 +11,14 @@ use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\MaterialNumberEnum;
+use App\Exception\EconomicsException;
+use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
-use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProjectBillingService
 {
@@ -24,25 +26,23 @@ class ProjectBillingService
         private readonly AccountRepository $accountRepository,
         private readonly ProjectBillingRepository $projectBillingRepository,
         private readonly BillingService $billingService,
-        private readonly ApiServiceInterface $apiService,
         private readonly IssueRepository $issueRepository,
         private readonly ClientRepository $clientRepository,
-        private readonly WorklogRepository $worklogRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly string $receiverAccount,
+        private readonly TranslatorInterface $translator,
+        private readonly string $invoiceDefaultReceiverAccount,
     ) {
     }
 
     /**
-     * @throws \Exception
+     * @throws EconomicsException
      */
     public function updateProjectBilling(int $projectBillingId): void
     {
         $projectBilling = $this->projectBillingRepository->find($projectBillingId);
 
         if (null == $projectBilling) {
-            // TODO: Replace with custom exception.
-            throw new \Exception('No project billing entity found.');
+            throw new EconomicsException($this->translator->trans('exception.project_billing_no_entity_found'));
         }
 
         foreach ($projectBilling->getInvoices() as $invoice) {
@@ -55,34 +55,33 @@ class ProjectBillingService
     }
 
     /**
-     * @throws \Exception
+     * @throws EconomicsException
      */
     public function createProjectBilling(int $projectBillingId): void
     {
         $projectBilling = $this->projectBillingRepository->find($projectBillingId);
 
-        // TODO: Replace with custom exception.
         if (null == $projectBilling) {
-            throw new \Exception('No project billing entity found.');
+            throw new EconomicsException($this->translator->trans('exception.project_billing_no_entity_found'));
         }
 
         $project = $projectBilling->getProject();
 
         if (null == $project) {
-            throw new \Exception('No project selected.');
+            throw new EconomicsException($this->translator->trans('exception.project_billing_no_project_selected'));
         }
 
         $projectTrackerId = $project->getProjectTrackerId();
 
         if (null == $projectTrackerId) {
-            throw new \Exception('No project.projectTrackerId.');
+            throw new EconomicsException($this->translator->trans('exception.project_billing_no_project_project_tracker_id'));
         }
 
         $periodStart = $projectBilling->getPeriodStart();
         $periodEnd = $projectBilling->getPeriodEnd();
 
         if (null == $periodStart || null == $periodEnd) {
-            throw new \Exception('project.periodStart or project.periodEnd cannot be null.');
+            throw new EconomicsException($this->translator->trans('exception.project_billing_period_cannot_be_null'));
         }
 
         // Find issues in interval
@@ -147,7 +146,7 @@ class ProjectBillingService
 
             // TODO: MaterialNumberEnum::EXTERNAL_WITH_MOMS or MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS?
             $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
-            $invoice->setDefaultReceiverAccount($this->receiverAccount);
+            $invoice->setDefaultReceiverAccount($this->invoiceDefaultReceiverAccount);
 
             /** @var Issue $issue */
             foreach ($invoiceArray['issues'] as $issue) {
@@ -208,8 +207,15 @@ class ProjectBillingService
     public function recordProjectBilling(ProjectBilling $projectBilling): void
     {
         foreach ($projectBilling->getInvoices() as $invoice) {
-            $this->billingService->recordInvoice($invoice);
+            try {
+                $this->billingService->recordInvoice($invoice, false);
+            } catch (InvoiceAlreadyOnRecordException) {
+                // Ignore if invoice is already on record.
+            }
         }
+
+        // Persist the changes to invoices.
+        $this->entityManager->flush();
 
         $projectBilling->setRecorded(true);
         $this->projectBillingRepository->save($projectBilling, true);
