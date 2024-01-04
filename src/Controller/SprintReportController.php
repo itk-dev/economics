@@ -38,7 +38,7 @@ class SprintReportController extends AbstractController
             'csrf_protection' => false,
         ]);
 
-        $projectCollection = $this->projectTracker->getAllProjectsV2();
+        $projectCollection = $this->projectTracker->getSprintReportProjects();
 
         $projectChoices = [];
 
@@ -66,8 +66,8 @@ class SprintReportController extends AbstractController
         }
 
         if (!empty($requestData['projectId'])) {
-            $project = $this->projectTracker->getProjectV2($requestData['projectId']);
-            $versionCollection = $this->projectTracker->getProjectVersions($requestData['projectId']);
+            $project = $this->projectTracker->getSprintReportProject($requestData['projectId']);
+            $versionCollection = $this->projectTracker->getSprintReportProjectVersions($requestData['projectId']);
 
             $versionChoices = [];
             foreach ($versionCollection->versions as $version) {
