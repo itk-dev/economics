@@ -13,6 +13,7 @@ class SprintReportType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('dataProvider')
             ->add('projectId', ChoiceType::class, [
                 'placeholder' => 'sprint_report.select_an_option',
                 'required' => true,

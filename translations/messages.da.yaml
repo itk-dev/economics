@@ -56,6 +56,8 @@ create_project_submitted:
     text: For at knytte projektet til dit team skal du følge linket herunder og klikke "Add Project Link" under "Links to Projects", find og vælg dit nye projekt på listen.
 
 sprint_report:
+  data_provider_helptext: ''
+  data_provider: 'Vælg datakilde'
   select_project: Vælg projekt
   select_version: Vælg version
   select_an_option: Vælg en mulighed
@@ -90,19 +92,19 @@ sprint_report:
 
 navigation:
   home: Forside
-  create_project: Projektopretter
-  invoices: Faktura
-  planning: Planlægning
-  sprint_report: Sprintrapport
+  create_project: 'Projektopretter'
+  invoices: 'Faktura'
+  planning: 'Planlægning'
+  sprint_report: 'Sprintrapport'
   title: 'Economics'
-  accounts: Konto
+  accounts: 'Konto'
   project_billing: 'Projektfakturering'
   projects: 'Projekter'
 
 planning:
-  title: Planlægning
-  assignees: Brugere
-  projects: Projekter
+  title: 'Planlægning'
+  assignees: 'Brugere'
+  projects: 'Projekter'
   hidden-entries: 'Skjulte brugere'
 
 invoices:
