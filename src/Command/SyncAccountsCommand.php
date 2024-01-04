@@ -2,9 +2,8 @@
 
 namespace App\Command;
 
+use App\Exception\UnsupportedDataProviderException;
 use App\Repository\DataProviderRepository;
-use App\Service\BillingService;
-use App\Service\DataProviderService;
 use App\Service\DataSynchronizationService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -19,7 +18,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class SyncAccountsCommand extends Command
 {
     public function __construct(
-        private readonly DataProviderService $dataProviderService,
         private readonly DataSynchronizationService $dataSynchronizationService,
         private readonly DataProviderRepository $dataProviderRepository,
     ) {
@@ -30,6 +28,9 @@ class SyncAccountsCommand extends Command
     {
     }
 
+    /**
+     * @throws UnsupportedDataProviderException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

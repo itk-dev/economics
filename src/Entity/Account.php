@@ -2,14 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\DataProviderTrait;
 use App\Repository\AccountRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Blameable\Traits\BlameableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 class Account extends AbstractBaseEntity
 {
+    use DataProviderTrait;
+
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -18,9 +19,6 @@ class Account extends AbstractBaseEntity
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $source = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $status = null;
@@ -68,18 +66,6 @@ class Account extends AbstractBaseEntity
     public function setProjectTrackerId(?string $projectTrackerId): self
     {
         $this->projectTrackerId = $projectTrackerId;
-
-        return $this;
-    }
-
-    public function getSource(): ?string
-    {
-        return $this->source;
-    }
-
-    public function setSource(string $source): self
-    {
-        $this->source = $source;
 
         return $this;
     }

@@ -2,17 +2,18 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\DataProviderTrait;
 use App\Enum\ClientTypeEnum;
 use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Blameable\Traits\BlameableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client extends AbstractBaseEntity
 {
+    use DataProviderTrait;
+
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 

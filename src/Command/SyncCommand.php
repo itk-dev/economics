@@ -3,8 +3,11 @@
 namespace App\Command;
 
 use App\Exception\EconomicsException;
+use App\Exception\UnsupportedDataProviderException;
+use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Service\DataProviderService;
+use App\Service\DataSynchronizationService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,8 +21,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class SyncCommand extends Command
 {
     public function __construct(
-        private readonly DataProviderService $dataProviderService,
         private readonly ProjectRepository $projectRepository,
+        private readonly DataProviderRepository $dataProviderRepository,
+        private readonly DataSynchronizationService $dataSynchronizationService,
     ) {
         parent::__construct($this->getName());
     }
@@ -29,44 +33,19 @@ class SyncCommand extends Command
     }
 
     /**
+     * @throws UnsupportedDataProviderException
      * @throws EconomicsException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $projects = $this->projectRepository->findBy(['include' => true]);
-
         $io->info('Processing projects');
 
-        $this->dataProviderService->syncProjects(function ($i, $length) use ($io) {
-            if (0 == $i) {
-                $io->progressStart($length);
-            } elseif ($i >= $length - 1) {
-                $io->progressFinish();
-            } else {
-                $io->progressAdvance();
-            }
-        });
+        $dataProviders = $this->dataProviderRepository->findAll();
 
-        $io->info('Processing accounts');
-
-        $this->dataProviderService->syncAccounts(function ($i, $length) use ($io) {
-            if (0 == $i) {
-                $io->progressStart($length);
-            } elseif ($i >= $length - 1) {
-                $io->progressFinish();
-            } else {
-                $io->progressAdvance();
-            }
-        });
-
-        $io->info('Processing issues');
-
-        foreach ($projects as $project) {
-            $io->writeln("Processing issues for {$project->getName()}");
-
-            $this->dataProviderService->syncIssuesForProject($project->getId(), function ($i, $length) use ($io) {
+        foreach ($dataProviders as $dataProvider) {
+            $this->dataSynchronizationService->syncProjects(function ($i, $length) use ($io) {
                 if (0 == $i) {
                     $io->progressStart($length);
                 } elseif ($i >= $length - 1) {
@@ -74,27 +53,65 @@ class SyncCommand extends Command
                 } else {
                     $io->progressAdvance();
                 }
-            });
+            }, $dataProvider);
+        }
 
-            $io->writeln('');
+        $io->info('Processing accounts');
+
+        foreach ($dataProviders as $dataProvider) {
+            $this->dataSynchronizationService->syncAccounts(function ($i, $length) use ($io) {
+                if (0 == $i) {
+                    $io->progressStart($length);
+                } elseif ($i >= $length - 1) {
+                    $io->progressFinish();
+                } else {
+                    $io->progressAdvance();
+                }
+            }, $dataProvider);
+        }
+
+        $io->info('Processing issues');
+
+        foreach ($dataProviders as $dataProvider) {
+            $projects = $this->projectRepository->findBy(['include' => true, 'dataProviderId' => $dataProvider->getId()]);
+
+            foreach ($projects as $project) {
+                $io->writeln("Processing issues for {$project->getName()}");
+
+                $this->dataSynchronizationService->syncIssuesForProject($project->getId(), function ($i, $length) use ($io) {
+                    if (0 == $i) {
+                        $io->progressStart($length);
+                    } elseif ($i >= $length - 1) {
+                        $io->progressFinish();
+                    } else {
+                        $io->progressAdvance();
+                    }
+                }, $dataProvider);
+
+                $io->writeln('');
+            }
         }
 
         $io->info('Processing worklogs');
 
-        foreach ($projects as $project) {
-            $io->writeln("Processing worklogs for {$project->getName()}");
+        foreach ($dataProviders as $dataProvider) {
+            $projects = $this->projectRepository->findBy(['include' => true, 'dataProviderId' => $dataProvider->getId()]);
 
-            $this->dataProviderService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
-                if (0 == $i) {
-                    $io->progressStart($length);
-                } elseif ($i >= $length - 1) {
-                    $io->progressFinish();
-                } else {
-                    $io->progressAdvance();
-                }
-            });
+            foreach ($projects as $project) {
+                $io->writeln("Processing worklogs for {$project->getName()}");
 
-            $io->writeln('');
+                $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
+                    if (0 == $i) {
+                        $io->progressStart($length);
+                    } elseif ($i >= $length - 1) {
+                        $io->progressFinish();
+                    } else {
+                        $io->progressAdvance();
+                    }
+                }, $dataProvider);
+
+                $io->writeln('');
+            }
         }
 
         return Command::SUCCESS;

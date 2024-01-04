@@ -2,15 +2,16 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\DataProviderTrait;
 use App\Repository\WorklogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Blameable\Traits\BlameableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: WorklogRepository::class)]
 class Worklog extends AbstractBaseEntity
 {
+    use DataProviderTrait;
+
     #[ORM\Column]
     private ?int $worklogId = null;
 
@@ -36,9 +37,6 @@ class Worklog extends AbstractBaseEntity
     #[ORM\ManyToOne(inversedBy: 'worklogs')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $source = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $billedSeconds = null;
@@ -142,18 +140,6 @@ class Worklog extends AbstractBaseEntity
     public function setProject(?Project $project): self
     {
         $this->project = $project;
-
-        return $this;
-    }
-
-    public function getSource(): ?string
-    {
-        return $this->source;
-    }
-
-    public function setSource(string $source): self
-    {
-        $this->source = $source;
 
         return $this;
     }

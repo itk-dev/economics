@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Exception\ApiServiceException;
 use App\Interface\DataProviderServiceInterface;
+use App\Model\Invoices\PagedResult;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
@@ -294,6 +295,26 @@ class LeantimeApiService implements DataProviderServiceInterface
     }
 
     public function getClientDataForProject(string $projectId): array
+    {
+        throw new \Exception("Not implemented");
+    }
+
+    public function getProjectTrackerIdentifier(): string
+    {
+        throw new \Exception("Not implemented");
+    }
+
+    public function getAllAccountData(): array
+    {
+        throw new \Exception("Not implemented");
+    }
+
+    public function getIssuesDataForProjectPaged(string $projectId, int $startAt = 0, $maxResults = 50): PagedResult
+    {
+        throw new \Exception("Not implemented");
+    }
+
+    public function getWorklogDataForProject(string $projectId): array
     {
         throw new \Exception("Not implemented");
     }

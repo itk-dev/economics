@@ -3,8 +3,10 @@
 namespace App\Command;
 
 use App\Exception\EconomicsException;
+use App\Exception\UnsupportedDataProviderException;
+use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
-use App\Service\DataProviderService;
+use App\Service\DataSynchronizationService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,7 +20,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class SyncWorklogsCommand extends Command
 {
     public function __construct(
-        private readonly DataProviderService $dataProviderService,
+        private readonly DataProviderRepository $dataProviderRepository,
+        private readonly DataSynchronizationService $dataSynchronizationService,
         private readonly ProjectRepository $projectRepository,
     ) {
         parent::__construct($this->getName());
@@ -30,31 +33,36 @@ class SyncWorklogsCommand extends Command
 
     /**
      * @throws EconomicsException
+     * @throws UnsupportedDataProviderException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $projects = $this->projectRepository->findBy(['include' => true]);
+        $dataProviders = $this->dataProviderRepository->findAll();
 
-        $numberOfProjects = count($projects);
+        foreach ($dataProviders as $dataProvider) {
+            $projects = $this->projectRepository->findBy(['include' => true, 'dataProviderId' => $dataProvider->getId()]);
 
-        $io->info("Processing worklogs for $numberOfProjects projects that are included (project.include)");
+            $numberOfProjects = count($projects);
 
-        foreach ($projects as $project) {
-            $io->writeln("Processing worklogs for {$project->getName()}");
+            $io->info("Processing worklogs for $numberOfProjects projects that are included (project.include)");
 
-            $this->dataProviderService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
-                if (0 == $i) {
-                    $io->progressStart($length);
-                } elseif ($i >= $length - 1) {
-                    $io->progressFinish();
-                } else {
-                    $io->progressAdvance();
-                }
-            });
+            foreach ($projects as $project) {
+                $io->writeln("Processing worklogs for {$project->getName()}");
 
-            $io->writeln('');
+                $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
+                    if (0 == $i) {
+                        $io->progressStart($length);
+                    } elseif ($i >= $length - 1) {
+                        $io->progressFinish();
+                    } else {
+                        $io->progressAdvance();
+                    }
+                }, $dataProvider);
+
+                $io->writeln('');
+            }
         }
 
         return Command::SUCCESS;

@@ -20,10 +20,10 @@ class DataProvider extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $class = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?bool $enableClientSync = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?bool $enableAccountSync = null;
 
     public function getName(): ?string

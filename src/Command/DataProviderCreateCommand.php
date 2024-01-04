@@ -22,7 +22,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class DataProviderCreateCommand extends Command
 {
     public function __construct(
-        private readonly DataProviderService $projectTrackerService,
+        private readonly DataProviderService $dataProviderService,
     ) {
         parent::__construct($this->getName());
     }
@@ -37,12 +37,23 @@ class DataProviderCreateCommand extends Command
 
         $name = $io->ask("Name");
         $url = $io->ask("URL");
-        $basicAuth = $io->ask("Basic Auth");
+        $secret = $io->ask("Secret");
         $question = new Question('Implementation class');
         $question->setAutocompleterValues(DataProviderService::IMPLEMENTATIONS);
         $class = $io->askQuestion($question);
 
-        $this->projectTrackerService->createDataProvider($name, $class, $url, $basicAuth);
+        $dataProvider = $this->dataProviderService->createDataProvider($name, $class, $url, $secret, false, false);
+
+        $text = "Created the following data provider\n\n";
+        $text .= 'ID: '.$dataProvider->getId()."\n";
+        $text .= 'Name: '.$dataProvider->getName()."\n";
+        $text .= 'URL: '.$dataProvider->getUrl()."\n";
+        $text .= "Secret: ****\n";
+        $text .= "Class: ".$dataProvider->getClass()."\n";
+        $text .= "Enable client sync: ".$dataProvider->isEnableClientSync()."\n";
+        $text .= "Enable account sync: ".$dataProvider->isEnableAccountSync()."\n";
+
+        $io->info($text);
 
         return Command::SUCCESS;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\DataProviderTrait;
 use App\Repository\IssueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: IssueRepository::class)]
 class Issue extends AbstractBaseEntity
 {
+    use DataProviderTrait;
+
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -43,9 +46,6 @@ class Issue extends AbstractBaseEntity
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $resolutionDate = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $source = null;
 
     #[ORM\ManyToOne(inversedBy: 'issues')]
     private ?Project $project = null;
@@ -214,18 +214,6 @@ class Issue extends AbstractBaseEntity
     public function setResolutionDate(?\DateTimeInterface $resolutionDate): self
     {
         $this->resolutionDate = $resolutionDate;
-
-        return $this;
-    }
-
-    public function getSource(): ?string
-    {
-        return $this->source;
-    }
-
-    public function setSource(string $source): self
-    {
-        $this->source = $source;
 
         return $this;
     }

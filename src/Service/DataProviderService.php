@@ -74,15 +74,19 @@ class DataProviderService
         return $service;
     }
 
-    public function createDataProvider(string $name, string $class, string $url, string $secret): void
+    public function createDataProvider(string $name, string $class, string $url, string $secret, bool $enableClientSync = false, bool $enableAccountSync = false): DataProvider
     {
         $dataProvider = new DataProvider();
         $dataProvider->setName($name);
         $dataProvider->setUrl($url);
         $dataProvider->setSecret($secret);
         $dataProvider->setClass($class);
+        $dataProvider->setEnableClientSync($enableClientSync);
+        $dataProvider->setEnableAccountSync($enableAccountSync);
 
         $this->entityManager->persist($dataProvider);
         $this->entityManager->flush();
+
+        return $dataProvider;
     }
 }
