@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Form\SprintReportType;
 use App\Model\SprintReport\SprintReportFormData;
-use App\Service\ApiServiceInterface;
+use App\Service\ProjectTrackerInterface;
 use App\Service\SprintReportService;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SprintReportController extends AbstractController
 {
     public function __construct(
-        private readonly ApiServiceInterface $apiService,
+        private readonly ProjectTrackerInterface $projectTracker,
         private readonly SprintReportService $sprintReportService,
     ) {
     }
@@ -38,12 +38,12 @@ class SprintReportController extends AbstractController
             'csrf_protection' => false,
         ]);
 
-        $projects = $this->apiService->getAllProjects();
+        $projectCollection = $this->projectTracker->getSprintReportProjects();
 
         $projectChoices = [];
 
-        foreach ($projects as $project) {
-            $projectChoices[$project->name] = $project->key;
+        foreach ($projectCollection->projects as $project) {
+            $projectChoices[$project->name] = $project->id;
         }
 
         // Override projectId with element with choices.
@@ -66,11 +66,12 @@ class SprintReportController extends AbstractController
         }
 
         if (!empty($requestData['projectId'])) {
-            $project = $this->apiService->getProject($requestData['projectId']);
+            $project = $this->projectTracker->getSprintReportProject($requestData['projectId']);
+            $versionCollection = $this->projectTracker->getSprintReportProjectVersions($requestData['projectId']);
 
             $versionChoices = [];
-            foreach ($project->versions as $version) {
-                $versionChoices[$version->name] = $version->id;
+            foreach ($versionCollection->versions as $version) {
+                $versionChoices[$version->headline] = $version->id;
             }
 
             // Override versionId with element with choices.
@@ -96,7 +97,7 @@ class SprintReportController extends AbstractController
             $versionId = $form->get('versionId')->getData();
 
             if (!empty($projectId) && !empty($versionId)) {
-                $reportData = $this->apiService->getSprintReportData($projectId, $versionId);
+                $reportData = $this->projectTracker->getSprintReportData($projectId, $versionId);
 
                 $budget = $this->sprintReportService->getBudget($projectId, $versionId);
             }
@@ -138,7 +139,7 @@ class SprintReportController extends AbstractController
         $projectId = (string) $request->query->get('projectId');
         $versionId = (string) $request->query->get('versionId');
 
-        $reportData = $this->apiService->getSprintReportData($projectId, $versionId);
+        $reportData = $this->projectTracker->getSprintReportData($projectId, $versionId);
 
         $html = $this->renderView('sprint_report/pdf.html.twig', [
             'report' => $reportData,

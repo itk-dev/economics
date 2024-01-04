@@ -21,7 +21,10 @@ use App\Model\Planning\SprintSum;
 use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
+use App\Model\SprintReport\SprintReportProject;
+use App\Model\SprintReport\SprintReportProjects;
 use App\Model\SprintReport\SprintReportSprint;
+use App\Model\SprintReport\SprintReportVersions;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -70,72 +73,51 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return self::PROJECT_TRACKER_IDENTIFIER;
     }
 
-    /**
-     * @throws ApiServiceException
-     */
     public function getAllProjectCategories(): mixed
     {
         return $this->get(self::API_PATH_PROJECT_CATEGORIES);
     }
 
-    /**
-     * Get all accounts.
-     *
-     * @throws ApiServiceException
-     */
     public function getAllAccounts(): mixed
     {
         return $this->get(self::API_PATH_ACCOUNT);
     }
 
-    /**
-     * Get all accounts.
-     *
-     * @throws ApiServiceException
-     */
     public function getAllCustomers(): mixed
     {
         return $this->get(self::API_PATH_CUSTOMERS);
     }
 
-    /**
-     * Get all projects, including archived.
-     *
-     * @throws ApiServiceException
-     */
     public function getAllProjects(): mixed
     {
         return $this->get(self::API_PATH_PROJECT);
     }
 
-    /**
-     * Get project.
-     *
-     * @param $key
-     *   A project key or id
-     *
-     * @throws ApiServiceException
-     */
     public function getProject($key): mixed
     {
         return $this->get(self::API_PATH_PROJECT_BY_ID.$key);
     }
 
-    /**
-     * Get current user permissions.
-     *
-     * @throws ApiServiceException
-     */
     public function getCurrentUserPermissions(): mixed
     {
         return $this->get(self::API_PATH_MY_PERMISSIONS);
     }
 
-    /**
-     * Get list of allowed permissions for current user.
-     *
-     * @throws ApiServiceException
-     */
+    public function getSprintReportProjects(): SprintReportProjects
+    {
+        throw new ApiServiceException('Method not implemented', 501);
+    }
+
+    public function getSprintReportProject(string $projectId): SprintReportProject
+    {
+        throw new ApiServiceException('Method not implemented', 501);
+    }
+
+    public function getSprintReportProjectVersions(string $projectId): SprintReportVersions
+    {
+        throw new ApiServiceException('Method not implemented', 501);
+    }
+
     public function getPermissionsList(): array
     {
         $list = [];
@@ -151,15 +133,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return $list;
     }
 
-    /**
-     * Create a jira project.
-     *
-     * See https://docs.atlassian.com/software/jira/docs/api/REST/9.3.0/#api/2/project-createProject
-     *
-     * @return ?string
-     *
-     * @throws ApiServiceException
-     */
     public function createProject(array $data): ?string
     {
         $projectKey = strtoupper($data['form']['project_key']);
@@ -183,11 +156,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return $response->key == $projectKey ? $projectKey : null;
     }
 
-    /**
-     * Create a jira customer.
-     *
-     * @throws ApiServiceException
-     */
     public function createTimeTrackerCustomer(string $name, string $key): mixed
     {
         return $this->post(self::API_PATH_CUSTOMERS,
@@ -199,11 +167,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         );
     }
 
-    /**
-     * Create a Jira account.
-     *
-     * @throws ApiServiceException
-     */
     public function createTimeTrackerAccount(string $name, string $key, string $customerKey, string $contactUsername): mixed
     {
         return $this->post(self::API_PATH_ACCOUNT,
@@ -227,26 +190,11 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         );
     }
 
-    /**
-     * Get tempo account base on key.
-     *
-     * @throws ApiServiceException
-     */
     public function getTimeTrackerAccount(string $key): mixed
     {
         return $this->get(self::API_PATH_ACCOUNT_BY_KEY.$key);
     }
 
-    /**
-     * Create a project link to account.
-     *
-     * @param mixed $project
-     *                       The project that was created on form submit
-     * @param mixed $account
-     *                       The account that was created on form submit
-     *
-     * @throws ApiServiceException
-     */
     public function addProjectToTimeTrackerAccount(mixed $project, mixed $account): void
     {
         $this->post(self::API_PATH_LINK_PROJECT_TO_ACCOUNT, [
@@ -259,11 +207,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         ]);
     }
 
-    /**
-     * Create project board.
-     *
-     * @throws ApiServiceException
-     */
     public function createProjectBoard(string $type, mixed $project): void
     {
         // If no template is configured don't create a board.
@@ -296,19 +239,11 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         ]);
     }
 
-    /**
-     * Get account based on id.
-     *
-     * @throws ApiServiceException
-     */
     public function getAccount(string $accountId): mixed
     {
         return $this->get(self::API_PATH_ACCOUNT.$accountId.'/');
     }
 
-    /**
-     * @throws ApiServiceException
-     */
     public function getRateTableByAccount(string $accountId): mixed
     {
         return $this->get(self::API_PATH_RATE_TABLE, [
@@ -317,9 +252,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         ]);
     }
 
-    /**
-     * @throws ApiServiceException
-     */
     public function getAccountIdsByProject(string $projectId): array
     {
         $projectLinks = $this->get(self::API_PATH_ACCOUNT_IDS_BY_PROJECT.$projectId);
@@ -331,24 +263,11 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         }, []);
     }
 
-    /**
-     * Get all boards.
-     *
-     * @throws ApiServiceException
-     */
     public function getAllBoards(): mixed
     {
         return $this->get(self::API_PATH_BOARD);
     }
 
-    /**
-     * Get all sprints for a given board.
-     *
-     * @param string $boardId board id
-     * @param string $state sprint state. Defaults to future,active sprints.
-     *
-     * @throws ApiServiceException
-     */
     public function getAllSprints(string $boardId, string $state = 'future,active'): array
     {
         $sprints = [];
@@ -372,16 +291,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return $sprints;
     }
 
-    /**
-     * Get all issues for given board and sprint.
-     *
-     * @param string $boardId id of the jira board to extract issues from
-     * @param string $sprintId id of the sprint to extract issues for
-     *
-     * @return array array of issues
-     *
-     * @throws ApiServiceException
-     */
     public function getIssuesInSprint(string $boardId, string $sprintId): array
     {
         $issues = [];
@@ -414,12 +323,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return $issues;
     }
 
-    /**
-     * Create data for planning page.
-     *
-     * @throws ApiServiceException
-     * @throws \Exception
-     */
     public function getPlanningData(): PlanningData
     {
         $planning = new PlanningData();
@@ -720,10 +623,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         throw new ApiServiceException('Sprint not found', 404);
     }
 
-    /**
-     * @throws ApiServiceException
-     * @throws \Exception
-     */
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData
     {
         $sprintReportData = new SprintReportData();
@@ -1039,9 +938,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return false;
     }
 
-    /**
-     * @throws ApiServiceException
-     */
     public function getClientDataForProject(string $projectId): array
     {
         $clients = [];
@@ -1088,9 +984,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return $clients;
     }
 
-    /**
-     * @throws ApiServiceException
-     */
     public function getAllProjectData(): array
     {
         $projects = [];
@@ -1138,10 +1031,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         ]);
     }
 
-    /**
-     * @throws ApiServiceException
-     * @throws \Exception
-     */
     public function getWorklogDataForProject(string $projectId): array
     {
         $worklogsResult = [];
@@ -1168,9 +1057,6 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return $worklogsResult;
     }
 
-    /**
-     * @throws ApiServiceException
-     */
     public function getAllAccountData(): array
     {
         $accountsResult = [];
