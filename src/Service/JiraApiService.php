@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\Enum\ClientTypeEnum;
 use App\Exception\ApiServiceException;
-use App\Interface\ApiServiceInterface;
 use App\Interface\DataProviderServiceInterface;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
@@ -112,7 +111,6 @@ class JiraApiService implements DataProviderServiceInterface
 
         return $sprintReportVersions;
     }
-
 
     public function getAccount(string $accountId): mixed
     {

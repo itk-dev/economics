@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\DataProvider;
+use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Form\SprintReportType;
-use App\Interface\DataProviderServiceInterface;
 use App\Model\SprintReport\SprintReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
@@ -72,53 +72,56 @@ class SprintReportController extends AbstractController
 
         if (!empty($requestData['dataProvider'])) {
             $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
-            $service = $this->dataProviderService->getService($dataProvider);
 
-            $projectCollection = $service->getSprintReportProjects();
+            if (null != $dataProvider) {
+                $service = $this->dataProviderService->getService($dataProvider);
 
-            $projectChoices = [];
+                $projectCollection = $service->getSprintReportProjects();
 
-            foreach ($projectCollection->projects as $project) {
-                $projectChoices[$project->name] = $project->id;
-            }
+                $projectChoices = [];
 
-            // Override projectId with element with choices.
-            $form->add('projectId', ChoiceType::class, [
-                'placeholder' => 'sprint_report.select_an_option',
-                'choices' => $projectChoices,
-                'required' => false,
-                'label' => 'sprint_report.select_project',
-                'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row form-choices'],
-                'attr' => [
-                    'data-sprint-report-target' => 'project',
-                    'data-action' => 'sprint-report#submitFormProjectId',
-                    'data-choices-target' => 'choices',
-                ],
-            ]);
-
-            if (!empty($requestData['projectId'])) {
-                $versionCollection = $service->getSprintReportProjectVersions($requestData['projectId']);
-
-                $versionChoices = [];
-                foreach ($versionCollection->versions as $version) {
-                    $versionChoices[$version->headline] = $version->id;
+                foreach ($projectCollection->projects as $project) {
+                    $projectChoices[$project->name] = $project->id;
                 }
 
-                // Override versionId with element with choices.
-                $form->add('versionId', ChoiceType::class, [
+                // Override projectId with element with choices.
+                $form->add('projectId', ChoiceType::class, [
                     'placeholder' => 'sprint_report.select_an_option',
-                    'choices' => $versionChoices,
-                    'required' => true,
-                    'label' => 'sprint_report.select_version',
+                    'choices' => $projectChoices,
+                    'required' => false,
+                    'label' => 'sprint_report.select_project',
                     'label_attr' => ['class' => 'label'],
                     'row_attr' => ['class' => 'form-row form-choices'],
                     'attr' => [
+                        'data-sprint-report-target' => 'project',
+                        'data-action' => 'sprint-report#submitFormProjectId',
                         'data-choices-target' => 'choices',
-                        'data-sprint-report-target' => 'version',
-                        'data-action' => 'sprint-report#submitForm',
                     ],
                 ]);
+
+                if (!empty($requestData['projectId'])) {
+                    $versionCollection = $service->getSprintReportProjectVersions($requestData['projectId']);
+
+                    $versionChoices = [];
+                    foreach ($versionCollection->versions as $version) {
+                        $versionChoices[$version->headline] = $version->id;
+                    }
+
+                    // Override versionId with element with choices.
+                    $form->add('versionId', ChoiceType::class, [
+                        'placeholder' => 'sprint_report.select_an_option',
+                        'choices' => $versionChoices,
+                        'required' => true,
+                        'label' => 'sprint_report.select_version',
+                        'label_attr' => ['class' => 'label'],
+                        'row_attr' => ['class' => 'form-row form-choices'],
+                        'attr' => [
+                            'data-choices-target' => 'choices',
+                            'data-sprint-report-target' => 'version',
+                            'data-action' => 'sprint-report#submitForm',
+                        ],
+                    ]);
+                }
             }
         }
 
@@ -169,25 +172,36 @@ class SprintReportController extends AbstractController
 
     /**
      * @throws MpdfException
+     * @throws UnsupportedDataProviderException
+     * @throws EconomicsException
      */
     #[Route('/generate-pdf', name: 'app_sprint_report_pdf', methods: ['GET'])]
     public function generatePdf(Request $request): void
     {
         $projectId = (string) $request->query->get('projectId');
         $versionId = (string) $request->query->get('versionId');
+        $providerId = (int) $request->query->get('dataProviderId');
 
-        $reportData = $this->service->getSprintReportData($projectId, $versionId);
+        $dataProvider = $this->dataProviderRepository->find($providerId);
 
-        $html = $this->renderView('sprint_report/pdf.html.twig', [
-            'report' => $reportData,
-            'data' => [
-                'projectId' => $projectId,
-                'versionId' => $versionId,
-            ],
-        ]);
+        if (null != $dataProvider) {
+            $service = $this->dataProviderService->getService($dataProvider);
 
-        $mpdf = new Mpdf();
-        $mpdf->WriteHTML($html);
-        $mpdf->Output();
+            $reportData = $service->getSprintReportData($projectId, $versionId);
+
+            $html = $this->renderView('sprint_report/pdf.html.twig', [
+                'report' => $reportData,
+                'data' => [
+                    'projectId' => $projectId,
+                    'versionId' => $versionId,
+                ],
+            ]);
+
+            $mpdf = new Mpdf();
+            $mpdf->WriteHTML($html);
+            $mpdf->Output();
+        } else {
+            throw new EconomicsException('dataProviderId not set', 400);
+        }
     }
 }

@@ -34,37 +34,36 @@ class LeantimeApiService implements DataProviderServiceInterface
 
     public function __construct(
         protected readonly HttpClientInterface $leantimeProjectTrackerApi,
-        protected readonly string              $leantimeUrl,
-        protected readonly float               $weekGoalLow,
-        protected readonly float               $weekGoalHigh,
-        protected readonly string              $sprintNameRegex,
-    )
-    {
+        protected readonly string $leantimeUrl,
+        protected readonly float $weekGoalLow,
+        protected readonly float $weekGoalHigh,
+        protected readonly string $sprintNameRegex,
+    ) {
     }
 
     public function getAllProjectData(): array
     {
-        throw new \Exception("Not implemented");
+        throw new \Exception('Not implemented');
     }
 
     public function getClientDataForProject(string $projectId): array
     {
-        throw new \Exception("Not implemented");
+        throw new \Exception('Not implemented');
     }
 
     public function getAllAccountData(): array
     {
-        throw new \Exception("Not implemented");
+        throw new \Exception('Not implemented');
     }
 
     public function getIssuesDataForProjectPaged(string $projectId, int $startAt = 0, $maxResults = 50): PagedResult
     {
-        throw new \Exception("Not implemented");
+        throw new \Exception('Not implemented');
     }
 
     public function getWorklogDataForProject(string $projectId): array
     {
-        throw new \Exception("Not implemented");
+        throw new \Exception('Not implemented');
     }
 
     /**
@@ -252,7 +251,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         foreach ($sprintIssues as $sprintId => $issues) {
             foreach ($issues as $issueData) {
                 if ('0' !== $issueData->status) {
-                    $projectKey = (string)$issueData->projectId;
+                    $projectKey = (string) $issueData->projectId;
                     $projectDisplayName = $issueData->projectName;
                     $hoursRemaining = $issueData->hourRemaining;
 
@@ -260,8 +259,8 @@ class LeantimeApiService implements DataProviderServiceInterface
                         $assigneeKey = 'unassigned';
                         $assigneeDisplayName = 'Unassigned';
                     } else {
-                        $assigneeKey = (string)$issueData->editorId;
-                        $assigneeDisplayName = $issueData->editorFirstname . ' ' . $issueData->editorLastname;
+                        $assigneeKey = (string) $issueData->editorId;
+                        $assigneeDisplayName = $issueData->editorFirstname.' '.$issueData->editorLastname;
                     }
 
                     // Add assignee if not already added.
@@ -306,7 +305,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                             $issueData->id,
                             $issueData->description,
                             isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                            $this->leantimeUrl . '/tickets/showTicket/' . $issueData->id,
+                            $this->leantimeUrl.'/tickets/showTicket/'.$issueData->id,
                             $sprintId
                         )
                     );
@@ -353,7 +352,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                         $issueData->id,
                         $issueData->description,
                         isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                        $this->leantimeUrl . '/tickets/showTicket/' . $issueData->id,
+                        $this->leantimeUrl.'/tickets/showTicket/'.$issueData->id,
                         $sprintId
                     ));
                 }
@@ -459,7 +458,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                     $worklogSprint = array_pop($worklogSprints);
                     $worklogSprintId = $worklogSprint->id;
                 }
-                $newLoggedWork = (float)($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + ($worklog->hours * 60 * 60);
+                $newLoggedWork = (float) ($issue->epic->loggedWork->containsKey($worklogSprintId) ? $issue->epic->loggedWork->get($worklogSprintId) : 0) + ($worklog->hours * 60 * 60);
                 $issue->epic->loggedWork->set($worklogSprintId, $newLoggedWork);
             }
 
@@ -476,7 +475,7 @@ class LeantimeApiService implements DataProviderServiceInterface
 
                 if (!empty($issue->assignedToSprint)) {
                     $assignedToSprint = $issue->assignedToSprint;
-                    $newRemainingWork = (float)($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
+                    $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
                     $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
                     $issue->epic->plannedWorkSum += $remainingEstimateSeconds;
                 }
@@ -568,7 +567,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                     break;
             }
         } catch (\Throwable $e) {
-            throw new ApiServiceException($e->getMessage(), (int)$e->getCode(), $e);
+            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
         }
 
         return null;

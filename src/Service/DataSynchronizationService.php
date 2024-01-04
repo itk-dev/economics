@@ -128,6 +128,7 @@ class DataSynchronizationService
 
     /**
      * Synchronize accounts from DataProviders.
+     *
      * @throws UnsupportedDataProviderException
      */
     public function syncAccounts(callable $progressCallback, DataProvider $dataProvider): void

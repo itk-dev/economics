@@ -6,7 +6,6 @@ use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
-use App\Service\DataProviderService;
 use App\Service\DataSynchronizationService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

@@ -20,8 +20,7 @@ class SyncProjectsCommand extends Command
     public function __construct(
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly DataSynchronizationService $dataSynchronizationService,
-    )
-    {
+    ) {
         parent::__construct($this->getName());
     }
 

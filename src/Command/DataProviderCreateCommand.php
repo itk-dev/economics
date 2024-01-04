@@ -2,11 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\Invoice;
-use App\Repository\InvoiceRepository;
-use App\Service\BillingService;
-use App\Service\JiraApiService;
-use App\Service\LeantimeApiService;
 use App\Service\DataProviderService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -35,9 +30,9 @@ class DataProviderCreateCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $name = $io->ask("Name");
-        $url = $io->ask("URL");
-        $secret = $io->ask("Secret");
+        $name = $io->ask('Name');
+        $url = $io->ask('URL');
+        $secret = $io->ask('Secret');
         $question = new Question('Implementation class');
         $question->setAutocompleterValues(DataProviderService::IMPLEMENTATIONS);
         $class = $io->askQuestion($question);
@@ -49,9 +44,9 @@ class DataProviderCreateCommand extends Command
         $text .= 'Name: '.$dataProvider->getName()."\n";
         $text .= 'URL: '.$dataProvider->getUrl()."\n";
         $text .= "Secret: ****\n";
-        $text .= "Class: ".$dataProvider->getClass()."\n";
-        $text .= "Enable client sync: ".$dataProvider->isEnableClientSync()."\n";
-        $text .= "Enable account sync: ".$dataProvider->isEnableAccountSync()."\n";
+        $text .= 'Class: '.$dataProvider->getClass()."\n";
+        $text .= 'Enable client sync: '.$dataProvider->isEnableClientSync()."\n";
+        $text .= 'Enable account sync: '.$dataProvider->isEnableAccountSync()."\n";
 
         $io->info($text);
 

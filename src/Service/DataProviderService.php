@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\DataProvider;
+use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Interface\DataProviderServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,10 +24,12 @@ class DataProviderService
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws UnsupportedDataProviderException
+     * @throws EconomicsException
      */
     public function getService(DataProvider $dataProvider): DataProviderServiceInterface
     {
@@ -34,12 +37,15 @@ class DataProviderService
             throw new UnsupportedDataProviderException();
         }
 
-        $service = null;
+        $url = $dataProvider->getUrl();
+        if (null == $url) {
+            throw new EconomicsException('Data provider url is null');
+        }
 
         switch ($dataProvider->getClass()) {
             case JiraApiService::class:
                 $client = $this->httpClient->withOptions([
-                    'base_uri' => $dataProvider->getUrl(),
+                    'base_uri' => $url,
                     'auth_basic' => $dataProvider->getSecret(),
                 ]);
 
@@ -47,7 +53,7 @@ class DataProviderService
                     $client,
                     $this->customFieldMappings,
                     $this->defaultBoard,
-                    $dataProvider->getUrl(),
+                    $url,
                     $this->weekGoalLow,
                     $this->weekGoalHigh,
                     $this->sprintNameRegex,
@@ -55,7 +61,7 @@ class DataProviderService
                 break;
             case LeantimeApiService::class:
                 $client = $this->httpClient->withOptions([
-                    'base_uri' => $dataProvider->getUrl(),
+                    'base_uri' => $url,
                     'headers' => [
                         'x-api-key' => $dataProvider->getSecret(),
                     ],
@@ -63,12 +69,14 @@ class DataProviderService
 
                 $service = new LeantimeApiService(
                     $client,
-                    $dataProvider->getUrl(),
+                    $url,
                     $this->weekGoalLow,
                     $this->weekGoalHigh,
                     $this->sprintNameRegex,
                 );
                 break;
+            default:
+                throw new UnsupportedDataProviderException();
         }
 
         return $service;

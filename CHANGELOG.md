@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Make sure all issues are selected in project billing period.
 * Refactored error handling.
 * Added support for multiple data providers
+* Removed project creator for Jira.
 
 
 * RELEASE NOTES:

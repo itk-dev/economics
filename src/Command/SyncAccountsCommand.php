@@ -38,7 +38,7 @@ class SyncAccountsCommand extends Command
         $dataProviders = $this->dataProviderRepository->findAll();
 
         foreach ($dataProviders as $dataProvider) {
-            $io->info("Processing accounts in " . $dataProvider->getName());
+            $io->info('Processing accounts in '.$dataProvider->getName());
 
             $this->dataSynchronizationService->syncAccounts(function ($i, $length) use ($io) {
                 if (0 == $i) {

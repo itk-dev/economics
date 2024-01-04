@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Blameable\Traits\BlameableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
-use Doctrine\ORM\Mapping as ORM;
 
 abstract class AbstractBaseEntity
 {

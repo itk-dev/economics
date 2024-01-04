@@ -4,10 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Project;
 use App\Exception\EconomicsException;
+use App\Exception\UnsupportedDataProviderException;
 use App\Form\ProjectFilterType;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\ProjectRepository;
-use App\Service\DataProviderService;
+use App\Service\DataSynchronizationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,9 +46,10 @@ class ProjectController extends AbstractController
 
     /**
      * @throws EconomicsException
+     * @throws UnsupportedDataProviderException
      */
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]
-    public function sync(Project $project, DataProviderService $dataProviderService): Response
+    public function sync(Project $project, DataSynchronizationService $dataSynchronizationService): Response
     {
         $projectId = $project->getId();
 
@@ -55,9 +57,12 @@ class ProjectController extends AbstractController
             return new Response('Not found', 404);
         }
 
-        $dataProviderService->syncIssuesForProject($projectId);
+        $dataProvider = $project->getDataProvider();
 
-        $dataProviderService->syncWorklogsForProject($projectId);
+        if (null != $dataProvider) {
+            $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
+            $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
+        }
 
         return new JsonResponse([], 200);
     }

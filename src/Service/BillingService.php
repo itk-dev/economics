@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
-
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Exception\EconomicsException;

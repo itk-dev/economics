@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Service\DataProviderService;
 use App\Service\DataSynchronizationService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
