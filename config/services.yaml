@@ -32,9 +32,8 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-    
-    # Select active project tracker implementation
-    App\Interface\DataProviderServiceInterface: '@App\Service\JiraApiService'
+            - '../src/Service/JiraApiService.php'
+            - '../src/Service/LeantimeApiService.php'
 
     App\Service\DataProviderService:
         arguments:
@@ -43,21 +42,3 @@ services:
             $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
             $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
             $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
-
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
-    App\Service\JiraApiService:
-        arguments:
-            $customFieldMappings: '%app.jira_custom_fields%'
-            $defaultBoard: '%env(JIRA_API_SERVICE_DEFAULT_BOARD)%'
-            $jiraUrl: '%env(JIRA_PROJECT_TRACKER_URL)%'
-            $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
-            $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
-            $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
-
-    App\Service\LeantimeApiService:
-        arguments:
-            $leantimeUrl: '%env(LEANTIME_PROJECT_TRACKER_URL)%'
-            $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
-            $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
-            $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'

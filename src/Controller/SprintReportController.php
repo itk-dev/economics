@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Exception\UnsupportedDataProviderException;
 use App\Form\SprintReportType;
-use App\Interface\ApiServiceInterface;
+use App\Interface\DataProviderServiceInterface;
 use App\Model\SprintReport\SprintReportFormData;
+use App\Repository\DataProviderRepository;
+use App\Service\DataProviderService;
 use App\Service\SprintReportService;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
@@ -19,15 +22,25 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/admin/sprint-report')]
 class SprintReportController extends AbstractController
 {
+    private DataProviderServiceInterface $service;
+
+    /**
+     * @throws UnsupportedDataProviderException
+     */
     public function __construct(
-        private readonly ApiServiceInterface $apiService,
         private readonly SprintReportService $sprintReportService,
+        private readonly DataProviderService $dataProviderService,
+        private readonly DataProviderRepository $dataProviderRepository,
     ) {
+        // TODO: Data provider should be selectable.
+        $dataProvider = $this->dataProviderRepository->find(1);
+        $this->service = $this->dataProviderService->getService($dataProvider);
     }
 
     #[Route('/', name: 'app_sprint_report')]
     public function index(Request $request): Response
     {
+
         $reportData = null;
         $sprintReportFormData = new SprintReportFormData();
 
@@ -38,7 +51,7 @@ class SprintReportController extends AbstractController
             'csrf_protection' => false,
         ]);
 
-        $projects = $this->apiService->getAllProjects();
+        $projects = $this->service->getAllProjects();
 
         $projectChoices = [];
 
@@ -66,7 +79,7 @@ class SprintReportController extends AbstractController
         }
 
         if (!empty($requestData['projectId'])) {
-            $project = $this->apiService->getProject($requestData['projectId']);
+            $project = $this->service->getProject($requestData['projectId']);
 
             $versionChoices = [];
             foreach ($project->versions as $version) {
@@ -96,7 +109,7 @@ class SprintReportController extends AbstractController
             $versionId = $form->get('versionId')->getData();
 
             if (!empty($projectId) && !empty($versionId)) {
-                $reportData = $this->apiService->getSprintReportData($projectId, $versionId);
+                $reportData = $this->service->getSprintReportData($projectId, $versionId);
 
                 $budget = $this->sprintReportService->getBudget($projectId, $versionId);
             }
@@ -138,7 +151,7 @@ class SprintReportController extends AbstractController
         $projectId = (string) $request->query->get('projectId');
         $versionId = (string) $request->query->get('versionId');
 
-        $reportData = $this->apiService->getSprintReportData($projectId, $versionId);
+        $reportData = $this->service->getSprintReportData($projectId, $versionId);
 
         $html = $this->renderView('sprint_report/pdf.html.twig', [
             'report' => $reportData,
