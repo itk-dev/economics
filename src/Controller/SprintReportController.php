@@ -24,9 +24,6 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/admin/sprint-report')]
 class SprintReportController extends AbstractController
 {
-    /**
-     * @throws UnsupportedDataProviderException
-     */
     public function __construct(
         private readonly SprintReportService $sprintReportService,
         private readonly DataProviderService $dataProviderService,
@@ -36,6 +33,7 @@ class SprintReportController extends AbstractController
 
     /**
      * @throws UnsupportedDataProviderException
+     * @throws EconomicsException
      */
     #[Route('/', name: 'app_sprint_report')]
     public function index(Request $request): Response
