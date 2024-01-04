@@ -4,6 +4,8 @@ namespace App\Command;
 
 use App\Repository\DataProviderRepository;
 use App\Service\BillingService;
+use App\Service\DataProviderService;
+use App\Service\DataSynchronizationService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,8 +19,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class SyncAccountsCommand extends Command
 {
     public function __construct(
-        private readonly BillingService         $billingService,
-        private readonly DataProviderRepository $projectTrackerRepository,
+        private readonly DataProviderService $dataProviderService,
+        private readonly DataSynchronizationService $dataSynchronizationService,
+        private readonly DataProviderRepository $dataProviderRepository,
     ) {
         parent::__construct($this->getName());
     }
@@ -31,12 +34,12 @@ class SyncAccountsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $projectTrackers = $this->projectTrackerRepository->findAll();
+        $dataProviders = $this->dataProviderRepository->findAll();
 
-        foreach ($projectTrackers as $projectTracker) {
-            $io->info("Processing accounts in " . $projectTracker->getName());
+        foreach ($dataProviders as $dataProvider) {
+            $io->info("Processing accounts in " . $dataProvider->getName());
 
-            $this->billingService->syncAccounts(function ($i, $length) use ($io) {
+            $this->dataSynchronizationService->syncAccounts(function ($i, $length) use ($io) {
                 if (0 == $i) {
                     $io->progressStart($length);
                 } elseif ($i >= $length - 1) {
@@ -44,7 +47,7 @@ class SyncAccountsCommand extends Command
                 } else {
                     $io->progressAdvance();
                 }
-            }, $projectTracker);
+            }, $dataProvider);
         }
 
         return Command::SUCCESS;

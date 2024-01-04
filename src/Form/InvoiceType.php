@@ -26,17 +26,17 @@ class InvoiceType extends AbstractType
                 'help' => 'invoices.name_helptext',
             ])
             ->add('description', TextareaType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => 'invoices.description',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
-                'attr' => ['class' => 'form-element', 'rows' => 4],
+                'attr' => ['class' => 'form-element', 'data-generate-description-target' => 'description', 'rows' => 4],
                 'help' => 'invoices.description_helptext',
             ])
             ->add('client', null, [
                 'label' => 'invoices.client',
                 'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
                 'attr' => ['class' => 'form-element'],
                 'help' => 'invoices.client_helptext',
             ])
@@ -47,7 +47,6 @@ class InvoiceType extends AbstractType
                 'row_attr' => ['class' => 'form-row form-choices'],
                 'attr' => [
                     'class' => 'form-element',
-                    'data-account-selector-target' => 'field',
                 ],
                 'help' => 'invoices.payer_account_helptext',
             ])
@@ -58,7 +57,6 @@ class InvoiceType extends AbstractType
                 'row_attr' => ['class' => 'form-row form-choices'],
                 'attr' => [
                     'class' => 'form-element',
-                    'data-account-selector-target' => 'field',
                 ],
                 'help' => 'invoices.default_receiver_account_helptext',
             ])

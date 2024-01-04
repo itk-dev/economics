@@ -3,6 +3,7 @@ framework:
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true
     http_method_override: false
+    error_controller: App\Controller\ErrorController::show
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
     # Remove or comment this section to explicitly disable session support.
@@ -24,7 +25,8 @@ framework:
                 auth_basic: '%env(JIRA_PROJECT_TRACKER_USER)%:%env(JIRA_PROJECT_TRACKER_TOKEN)%'
             leantime.project.tracker.api:
                 base_uri: '%env(LEANTIME_PROJECT_TRACKER_URL)%'
-                auth_basic: '%env(LEANTIME_PROJECT_TRACKER_TOKEN)%'
+                headers: 
+                    x-api-key: '%env(LEANTIME_PROJECT_TRACKER_TOKEN)%'
 
 when@test:
     framework:

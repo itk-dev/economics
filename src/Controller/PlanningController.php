@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\DataProviderInterface;
+use App\Interface\DataProviderServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,13 +11,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlanningController extends AbstractController
 {
     public function __construct(
-        private readonly DataProviderInterface $projectTracker
+        private readonly DataProviderServiceInterface $projectTracker
     ) {
     }
 
-    /**
-     * @throws \Exception
-     */
     #[Route('/', name: 'app_planning')]
     public function index(): Response
     {

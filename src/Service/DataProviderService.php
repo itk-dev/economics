@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\DataProvider;
 use App\Exception\UnsupportedDataProviderException;
+use App\Interface\DataProviderServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -27,26 +28,26 @@ class DataProviderService
     /**
      * @throws UnsupportedDataProviderException
      */
-    public function getService(DataProvider $projectTracker): DataProviderInterface
+    public function getService(DataProvider $dataProvider): DataProviderServiceInterface
     {
-        if (!in_array($projectTracker->getClass(), self::IMPLEMENTATIONS)) {
+        if (!in_array($dataProvider->getClass(), self::IMPLEMENTATIONS)) {
             throw new UnsupportedDataProviderException();
         }
 
         $service = null;
 
-        switch ($projectTracker->getClass()) {
+        switch ($dataProvider->getClass()) {
             case JiraApiService::class:
                 $client = $this->httpClient->withOptions([
-                    'base_uri' => $projectTracker->getUrl(),
-                    'auth_basic' => $projectTracker->getSecret(),
+                    'base_uri' => $dataProvider->getUrl(),
+                    'auth_basic' => $dataProvider->getSecret(),
                 ]);
 
                 $service = new JiraApiService(
                     $client,
                     $this->customFieldMappings,
                     $this->defaultBoard,
-                    $projectTracker->getUrl(),
+                    $dataProvider->getUrl(),
                     $this->weekGoalLow,
                     $this->weekGoalHigh,
                     $this->sprintNameRegex,
@@ -54,16 +55,15 @@ class DataProviderService
                 break;
             case LeantimeApiService::class:
                 $client = $this->httpClient->withOptions([
-                    'base_uri' => $projectTracker->getUrl(),
+                    'base_uri' => $dataProvider->getUrl(),
                     'headers' => [
-                        // TODO: Introduce api key field to ProjectTracker
-                        'x-api-key' => $projectTracker->getSecret(),
+                        'x-api-key' => $dataProvider->getSecret(),
                     ],
                 ]);
 
                 $service = new LeantimeApiService(
                     $client,
-                    $projectTracker->getUrl(),
+                    $dataProvider->getUrl(),
                     $this->weekGoalLow,
                     $this->weekGoalHigh,
                     $this->sprintNameRegex,
@@ -74,17 +74,15 @@ class DataProviderService
         return $service;
     }
 
-    public function createProjectTracker(string $name, string $class, string $url, string $basicAuth): void
+    public function createDataProvider(string $name, string $class, string $url, string $secret): void
     {
-        $projectTracker = new DataProvider();
-        $projectTracker->setName($name);
-        $projectTracker->setUrl($url);
-        $projectTracker->setSecret($basicAuth);
-        $projectTracker->setClass($class);
+        $dataProvider = new DataProvider();
+        $dataProvider->setName($name);
+        $dataProvider->setUrl($url);
+        $dataProvider->setSecret($secret);
+        $dataProvider->setClass($class);
 
-        $this->entityManager->persist($projectTracker);
+        $this->entityManager->persist($dataProvider);
         $this->entityManager->flush();
     }
-
-
 }

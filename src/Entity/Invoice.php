@@ -68,7 +68,7 @@ class Invoice extends AbstractBaseEntity
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     private ?Project $project = null;
 
-    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'invoices')]
     private ?Client $client = null;
 
     #[ORM\Column(nullable: true)]

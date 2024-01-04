@@ -20,6 +20,12 @@ class DataProvider extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $class = null;
 
+    #[ORM\Column]
+    private ?bool $enableClientSync = null;
+
+    #[ORM\Column]
+    private ?bool $enableAccountSync = null;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -64,6 +70,30 @@ class DataProvider extends AbstractBaseEntity
     public function setClass(string $class): static
     {
         $this->class = $class;
+
+        return $this;
+    }
+
+    public function isEnableClientSync(): ?bool
+    {
+        return $this->enableClientSync;
+    }
+
+    public function setEnableClientSync(bool $enableClientSync): static
+    {
+        $this->enableClientSync = $enableClientSync;
+
+        return $this;
+    }
+
+    public function isEnableAccountSync(): ?bool
+    {
+        return $this->enableAccountSync;
+    }
+
+    public function setEnableAccountSync(bool $enableAccountSync): static
+    {
+        $this->enableAccountSync = $enableAccountSync;
 
         return $this;
     }

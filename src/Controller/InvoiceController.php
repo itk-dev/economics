@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Invoice;
+use App\Entity\InvoiceEntry;
+use App\Exception\EconomicsException;
 use App\Form\InvoiceFilterType;
 use App\Form\InvoiceNewType;
 use App\Form\InvoiceRecordType;
@@ -10,21 +12,28 @@ use App\Form\InvoiceType;
 use App\Model\Invoices\ConfirmData;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\AccountRepository;
+use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/invoices')]
 class InvoiceController extends AbstractController
 {
+    public function __construct(
+        private readonly BillingService $billingService,
+        private readonly TranslatorInterface $translator,
+    ) {
+    }
+
     #[Route('/', name: 'app_invoices_index', methods: ['GET'])]
     public function index(Request $request, InvoiceRepository $invoiceRepository): Response
     {
@@ -43,13 +52,17 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/new', name: 'app_invoices_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, InvoiceRepository $invoiceRepository): Response
+    public function new(Request $request, InvoiceRepository $invoiceRepository, string $invoiceDefaultReceiverAccount): Response
     {
         $invoice = new Invoice();
         $form = $this->createForm(InvoiceNewType::class, $invoice);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if (!empty($invoiceDefaultReceiverAccount)) {
+                $invoice->setDefaultReceiverAccount($invoiceDefaultReceiverAccount);
+            }
+
             $invoice->setRecorded(false);
             $invoice->setTotalPrice(0);
             $invoiceRepository->save($invoice, true);
@@ -65,8 +78,11 @@ class InvoiceController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService, AccountRepository $accountRepository): Response
+    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
         if ($invoice->isRecorded()) {
@@ -103,7 +119,6 @@ class InvoiceController extends AbstractController
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
-                'data-account-selector-target' => 'field',
             ],
             'choices' => $paidByAccountChoices,
             'help' => 'invoices.payer_account_helptext',
@@ -117,7 +132,6 @@ class InvoiceController extends AbstractController
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
-                'data-account-selector-target' => 'field',
             ],
             'choices' => $defaultReceiverAccountChoices,
             'help' => 'invoices.default_receiver_account_helptext',
@@ -131,7 +145,7 @@ class InvoiceController extends AbstractController
             $form->add('client', null, [
                 'label' => 'invoices.client',
                 'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
                 'attr' => [
                     'class' => 'form-element',
                     'data-choices-target' => 'choices',
@@ -145,36 +159,72 @@ class InvoiceController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($invoice->isRecorded()) {
-                throw new HttpException(400, 'Invoice is recorded, cannot be edited.');
+                throw new EconomicsException($this->translator->trans('exception.invoices_on_record_cannot_edit'), 400);
             }
 
             if (null !== $invoice->getProjectBilling()) {
-                throw new HttpException(400, 'Invoice is a part of a project billing, cannot be edited.');
+                throw new EconomicsException($this->translator->trans('exception.invoices_part_of_project_billing_cannot_edit'), 400);
             }
 
             $invoiceRepository->save($invoice, true);
 
+            // Update values in invoice entries.
+            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+                $invoiceEntry->setMaterialNumber($invoice->getDefaultMaterialNumber());
+                $invoiceEntry->setAccount($invoice->getDefaultReceiverAccount());
+                $invoiceEntryRepository->save($invoiceEntry, true);
+            }
+
             // TODO: Handle this with a doctrine event listener instead.
-            $billingService->updateInvoiceTotalPrice($invoice);
+            $this->billingService->updateInvoiceTotalPrice($invoice);
         }
+
+        // Only allow adding entries when material number and receiver account have been set.
+        $allowAddingEntries = !empty($invoice->getDefaultReceiverAccount())
+            && !empty($invoice->getDefaultMaterialNumber())
+            && !empty($invoice->getDefaultMaterialNumber()->value);
 
         return $this->render('invoices/edit.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
+            'allowAddingEntries' => $allowAddingEntries,
+            'invoiceTotalAmount' => array_reduce($invoice->getInvoiceEntries()->toArray(), function ($carry, InvoiceEntry $item) {
+                $carry += $item->getAmount();
+
+                return $carry;
+            }, 0.0),
         ]);
     }
 
+    #[Route('/{id}/generate-description', name: 'app_invoices_generate_description', methods: ['GET'])]
+    public function generateDescription(Invoice $invoice, $defaultInvoiceDescriptionTemplate): JsonResponse
+    {
+        $client = $invoice->getClient();
+
+        if (!empty($client) && !(empty($client->getProjectLeadName())) && !empty($client->getProjectLeadMail())) {
+            $description = $defaultInvoiceDescriptionTemplate;
+
+            $description = str_replace('%name%', $client->getProjectLeadName() ?? '', $description);
+            $description = str_replace('%email%', $client->getProjectLeadMail() ?? '', $description);
+        }
+
+        return new JsonResponse(['description' => $description ?? null]);
+    }
+
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}', name: 'app_invoices_delete', methods: ['POST'])]
     public function delete(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$invoice->getId(), $token)) {
             if ($invoice->isRecorded()) {
-                throw new HttpException(400, 'Invoice is put on record, cannot be deleted.');
+                throw new EconomicsException($this->translator->trans('exception.invoices_delete_on_record'), 400);
             }
 
             if (null !== $invoice->getProjectBilling()) {
-                throw new HttpException(400, 'Invoice is a part of a project billing, cannot be deleted.');
+                throw new EconomicsException($this->translator->trans('exception.invoices_delete_part_of_project_billing'), 400);
             }
 
             $invoiceRepository->remove($invoice, true);
@@ -186,24 +236,30 @@ class InvoiceController extends AbstractController
     /**
      * Put an invoice on record. After this invoice cannot be deleted.
      *
-     * @throws \Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/record', name: 'app_invoices_record', methods: ['GET', 'POST'])]
-    public function record(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function record(Request $request, Invoice $invoice): Response
     {
         $recordData = new ConfirmData();
         $form = $this->createForm(InvoiceRecordType::class, $recordData);
         $form->handleRequest($request);
 
-        $errors = $billingService->getInvoiceRecordableErrors($invoice);
+        $errors = $this->billingService->getInvoiceRecordableErrors($invoice);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (null !== $invoice->getProjectBilling()) {
-                throw new HttpException(400, 'Invoice is a part of a project billing, cannot be put on record.');
+                throw new EconomicsException($this->translator->trans('exception.invoices_record_part_of_project_billing'), 400);
+            }
+
+            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+                if (empty($invoiceEntry->getAmount())) {
+                    throw new EconomicsException($this->translator->trans('exception.invoices_record_entry_amount_not_set', ['%invoiceEntryUrl%' => $this->generateUrl('app_invoice_entry_edit', ['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], UrlGeneratorInterface::ABSOLUTE_URL)]), 400);
+                }
             }
 
             if ($recordData->confirmed) {
-                $billingService->recordInvoice($invoice);
+                $this->billingService->recordInvoice($invoice);
             }
 
             return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
@@ -219,85 +275,40 @@ class InvoiceController extends AbstractController
     /**
      * Show the invoice export data.
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/show-export', name: 'app_invoices_show_export', methods: ['GET'])]
-    public function showExport(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function showExport(Invoice $invoice): Response
     {
-        $spreadsheet = $billingService->exportInvoicesToSpreadsheet([$invoice->getId()]);
-
-        $writer = IOFactory::createWriter($spreadsheet, 'Html');
-
-        $html = $billingService->getSpreadsheetOutputAsString($writer);
-
-        if (empty($html)) {
-            $html = '<html lang="da" />';
-        }
-
-        // Extract body content.
-        $d = new \DOMDocument();
-        $mock = new \DOMDocument();
-        $d->loadHTML($html);
-        /** @var \DOMNode $body */
-        $body = $d->getElementsByTagName('div')->item(0);
-
-        foreach ($body->childNodes as $child) {
-            if ($child instanceof \DOMElement) {
-                if ('table' == $child->tagName) {
-                    $child->setAttribute('class', 'table table-export');
-                }
-            }
-            $mock->appendChild($mock->importNode($child, true));
-        }
+        $html = $this->billingService->generateSpreadsheetHtml([$invoice->getId()]);
 
         return $this->render('invoices/export_show.html.twig', [
-            'html' => $mock->saveHTML(),
             'invoice' => $invoice,
+            'html' => $html,
         ]);
     }
 
     /**
      * Export to a .csv file.
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/export', name: 'app_invoices_export', methods: ['GET'])]
-    public function export(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, BillingService $billingService): Response
+    public function export(Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         if (!$invoice->isRecorded()) {
-            throw new HttpException(400, 'Invoice cannot be exported before it is on record.');
+            throw new EconomicsException($this->translator->trans('exception.invoices_export_must_be_on_record'), 400);
         }
 
         if (null !== $invoice->getProjectBilling()) {
-            throw new HttpException(400, 'Invoice is a part of a project billing, cannot be exported.');
+            throw new EconomicsException($this->translator->trans('exception.invoices_export_part_of_project_billing'), 400);
         }
 
         // Mark invoice as exported.
         $invoice->setExportedDate(new \DateTime());
         $invoiceRepository->save($invoice, true);
 
-        $spreadsheet = $billingService->exportInvoicesToSpreadsheet([$invoice->getId()]);
-
-        /** @var Csv $writer */
-        $writer = IOFactory::createWriter($spreadsheet, 'Csv');
-        $writer->setDelimiter(';');
-        $writer->setEnclosure('');
-        $writer->setLineEnding("\r\n");
-        $writer->setSheetIndex(0);
-
-        $csvOutput = $billingService->getSpreadsheetOutputAsString($writer);
-
-        // Change encoding to Windows-1252.
-        $csvOutputEncoded = mb_convert_encoding($csvOutput, 'Windows-1252');
-
-        $response = new Response($csvOutputEncoded);
-        $filename = 'invoices-'.date('d-m-Y').'.csv';
-
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
-        return $response;
+        return $this->billingService->generateSpreadsheetCsvResponse([$invoice->getId()]);
     }
 
     /**
@@ -305,10 +316,10 @@ class InvoiceController extends AbstractController
      *
      * The ids of the invoices should be supplied as id query params to the request.
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws EconomicsException
      */
     #[Route('/export-selection', name: 'app_invoices_export_selection', methods: ['GET'])]
-    public function exportSelection(Request $request, InvoiceRepository $invoiceRepository, BillingService $billingService, EntityManagerInterface $entityManager): Response
+    public function exportSelection(Request $request, InvoiceRepository $invoiceRepository, EntityManagerInterface $entityManager): Response
     {
         $queryIds = $request->query->get('ids');
 
@@ -323,11 +334,11 @@ class InvoiceController extends AbstractController
 
             if (null != $invoice) {
                 if (!$invoice->isRecorded()) {
-                    throw new HttpException(400, 'Invoice cannot be exported before it is on record.');
+                    throw new EconomicsException($this->translator->trans('exception.invoices_export_must_be_on_record'), 400);
                 }
 
                 if (null !== $invoice->getProjectBilling()) {
-                    throw new HttpException(400, 'Invoice is a part of a project billing, cannot be exported.');
+                    throw new EconomicsException($this->translator->trans('exception.invoices_export_part_of_project_billing'), 400);
                 }
 
                 // Mark invoice as exported.
@@ -338,27 +349,6 @@ class InvoiceController extends AbstractController
 
         $entityManager->flush();
 
-        $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
-
-        /** @var Csv $writer */
-        $writer = IOFactory::createWriter($spreadsheet, 'Csv');
-        $writer->setDelimiter(';');
-        $writer->setEnclosure('');
-        $writer->setLineEnding("\r\n");
-        $writer->setSheetIndex(0);
-
-        $csvOutput = $billingService->getSpreadsheetOutputAsString($writer);
-
-        // Change encoding to Windows-1252.
-        $csvOutputEncoded = mb_convert_encoding($csvOutput, 'Windows-1252');
-
-        $response = new Response($csvOutputEncoded);
-        $filename = 'invoices-'.date('d-m-Y').'.csv';
-
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
-        return $response;
+        return $this->billingService->generateSpreadsheetCsvResponse($ids);
     }
 }

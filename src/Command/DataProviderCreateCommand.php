@@ -42,7 +42,7 @@ class DataProviderCreateCommand extends Command
         $question->setAutocompleterValues(DataProviderService::IMPLEMENTATIONS);
         $class = $io->askQuestion($question);
 
-        $this->projectTrackerService->createProjectTracker($name, $class, $url, $basicAuth);
+        $this->projectTrackerService->createDataProvider($name, $class, $url, $basicAuth);
 
         return Command::SUCCESS;
     }

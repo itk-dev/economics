@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Interface;
 
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;

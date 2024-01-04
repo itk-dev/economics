@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Enum\ClientTypeEnum;
 use App\Exception\ApiServiceException;
+use App\Interface\ApiServiceInterface;
+use App\Interface\DataProviderServiceInterface;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\IssueData;
@@ -26,7 +28,7 @@ use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class JiraApiService implements ApiServiceInterface, DataProviderInterface
+class JiraApiService implements ApiServiceInterface, DataProviderServiceInterface
 {
     private const PROJECT_TRACKER_IDENTIFIER = 'JIRA';
     private const CPB_ACCOUNT_MANAGER = 'anbjv';
@@ -1059,6 +1061,8 @@ class JiraApiService implements ApiServiceInterface, DataProviderInterface
             $client->account = $account->key ?? null;
             $client->customerKey = $account->customer->key ?? null;
             $client->salesChannel = $account->category->key ?? null;
+            $client->projectLeadName = $account->lead->displayName ?? null;
+            $client->projectLeadMail = $account->lead->emailAddress ?? null;
 
             switch ($account->category->name ?? null) {
                 case 'INTERN':

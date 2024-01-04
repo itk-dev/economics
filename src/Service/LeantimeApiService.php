@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Exception\ApiServiceException;
+use App\Interface\DataProviderServiceInterface;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
@@ -13,7 +14,7 @@ use App\Model\Planning\SprintSum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class LeantimeApiService implements DataProviderInterface
+class LeantimeApiService implements DataProviderServiceInterface
 {
     private const API_PATH_JSONRPC = '/api/jsonrpc/';
 
@@ -285,5 +286,15 @@ class LeantimeApiService implements DataProviderInterface
         }
 
         return null;
+    }
+
+    public function getAllProjectData(): array
+    {
+        throw new \Exception("Not implemented");
+    }
+
+    public function getClientDataForProject(string $projectId): array
+    {
+        throw new \Exception("Not implemented");
     }
 }

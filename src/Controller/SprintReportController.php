@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Form\SprintReportType;
+use App\Interface\ApiServiceInterface;
 use App\Model\SprintReport\SprintReportFormData;
-use App\Service\ApiServiceInterface;
 use App\Service\SprintReportService;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
@@ -133,7 +133,7 @@ class SprintReportController extends AbstractController
      * @throws MpdfException
      */
     #[Route('/generate-pdf', name: 'app_sprint_report_pdf', methods: ['GET'])]
-    public function generatePdf(Request $request)
+    public function generatePdf(Request $request): void
     {
         $projectId = (string) $request->query->get('projectId');
         $versionId = (string) $request->query->get('versionId');

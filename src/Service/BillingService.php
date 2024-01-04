@@ -2,232 +2,37 @@
 
 namespace App\Service;
 
-use App\Entity\Account;
-use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
-use App\Entity\Issue;
-use App\Entity\Project;
-use App\Entity\DataProvider;
-use App\Entity\Version;
-use App\Entity\Worklog;
+
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
-use App\Repository\AccountRepository;
-use App\Repository\ClientRepository;
+use App\Exception\EconomicsException;
+use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
-use App\Repository\IssueRepository;
-use App\Repository\ProjectRepository;
-use App\Repository\VersionRepository;
-use App\Repository\WorklogRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpSpreadsheetException;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BillingService
 {
-    private const BATCH_SIZE = 200;
-    private const MAX_RESULTS = 50;
-
     public function __construct(
-        private readonly ApiServiceInterface $apiService,
-        private readonly ProjectRepository $projectRepository,
-        private readonly ClientRepository       $clientRepository,
-        private readonly InvoiceRepository      $invoiceRepository,
+        private readonly InvoiceRepository $invoiceRepository,
         private readonly InvoiceEntryRepository $invoiceEntryRepository,
-        private readonly VersionRepository      $versionRepository,
-        private readonly WorklogRepository      $worklogRepository,
-        private readonly IssueRepository        $issueRepository,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly TranslatorInterface    $translator,
-        private readonly AccountRepository      $accountRepository,
-        private readonly string                 $receiverAccount,
-        private readonly DataProviderService    $projectTrackerService,
+        private readonly TranslatorInterface $translator,
+        private readonly string $invoiceSupplierAccount,
     ) {
     }
 
     /**
-     * Migrate from invoice.customer_account_id to invoice.client.
+     * Update total price for invoice entry by multiplying amount with price.
      */
-    public function migrateCustomers(): void
-    {
-        $invoices = $this->invoiceRepository->findAll();
-
-        /** @var Invoice $invoice */
-        foreach ($invoices as $invoice) {
-            $customerAccountId = $invoice->getCustomerAccountId();
-
-            if (null == $invoice->getClient() && null !== $customerAccountId) {
-                $client = $this->clientRepository->findOneBy(['projectTrackerId' => $invoice->getCustomerAccountId()]);
-
-                if (null !== $client) {
-                    $invoice->setClient($client);
-                }
-            }
-        }
-
-        $this->entityManager->flush();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function syncIssuesForProject(int $projectId, callable $progressCallback = null): void
-    {
-        $project = $this->projectRepository->find($projectId);
-
-        if (!$project) {
-            throw new \Exception('Project not found');
-        }
-
-        $projectTrackerId = $project->getProjectTrackerId();
-
-        if (null === $projectTrackerId) {
-            throw new \Exception('ProjectTrackerId not set');
-        }
-
-        $issuesProcessed = 0;
-
-        $startAt = 0;
-
-        do {
-            $project = $this->projectRepository->find($projectId);
-
-            if (!$project) {
-                throw new \Exception('Project not found');
-            }
-
-            $pagedIssueData = $this->apiService->getIssuesDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
-            $total = $pagedIssueData->total;
-
-            $issueData = $pagedIssueData->items;
-
-            foreach ($issueData as $issueDatum) {
-                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
-
-                if (!$issue) {
-                    $issue = new Issue();
-
-                    $this->entityManager->persist($issue);
-                }
-
-                $issue->setName($issueDatum->name);
-                $issue->setAccountId($issueDatum->accountId);
-                $issue->setAccountKey($issueDatum->accountKey);
-                $issue->setEpicKey($issueDatum->epicKey);
-                $issue->setEpicName($issueDatum->epicName);
-                $issue->setProject($project);
-                $issue->setProjectTrackerId($issueDatum->projectTrackerId);
-                $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
-                $issue->setResolutionDate($issueDatum->resolutionDate);
-                $issue->setStatus($issueDatum->status);
-
-                if (null == $issue->getSource()) {
-                    $issue->setSource($this->apiService->getProjectTrackerIdentifier());
-                }
-
-                foreach ($issueDatum->versions as $versionData) {
-                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
-
-                    if (null !== $version) {
-                        $issue->addVersion($version);
-                    }
-                }
-
-                if (null !== $progressCallback) {
-                    $progressCallback($issuesProcessed, $total);
-                    ++$issuesProcessed;
-                }
-            }
-
-            $startAt += self::MAX_RESULTS;
-
-            $this->entityManager->flush();
-            $this->entityManager->clear();
-        } while ($startAt < $total);
-
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function syncWorklogsForProject(int $projectId, callable $progressCallback = null): void
-    {
-        $project = $this->projectRepository->find($projectId);
-
-        if (!$project) {
-            throw new \Exception('Project not found');
-        }
-
-        $projectTrackerId = $project->getProjectTrackerId();
-
-        if (null === $projectTrackerId) {
-            throw new \Exception('ProjectTrackerId not set');
-        }
-
-        $worklogData = $this->apiService->getWorklogDataForProject($projectTrackerId);
-        $worklogsAdded = 0;
-
-        foreach ($worklogData as $worklogDatum) {
-            $project = $this->projectRepository->find($projectId);
-
-            if (!$project) {
-                throw new \Exception('Project not found');
-            }
-
-            $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
-
-            if (!$worklog) {
-                $worklog = new Worklog();
-
-                $this->entityManager->persist($worklog);
-            }
-
-            $worklog->setWorklogId($worklogDatum->projectTrackerId);
-            $worklog->setDescription($worklogDatum->comment);
-            $worklog->setWorker($worklogDatum->worker);
-            $worklog->setStarted($worklogDatum->started);
-            $worklog->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId);
-            $worklog->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
-
-            if (null !== $worklog->getProjectTrackerIssueId()) {
-                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
-                $worklog->setIssue($issue);
-            }
-
-            if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
-                $worklog->setIsBilled(true);
-                $worklog->setBilledSeconds($worklogDatum->timeSpentSeconds);
-            }
-
-            if (null == $worklog->getSource()) {
-                $worklog->setSource($this->apiService->getProjectTrackerIdentifier());
-            }
-
-            $project->addWorklog($worklog);
-
-            if (null !== $progressCallback) {
-                $progressCallback($worklogsAdded, count($worklogData));
-
-                ++$worklogsAdded;
-            }
-
-            // Flush and clear for each batch.
-            if (0 === $worklogsAdded % self::BATCH_SIZE) {
-                $this->entityManager->flush();
-                $this->entityManager->clear();
-            }
-        }
-
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
     public function updateInvoiceEntryTotalPrice(InvoiceEntry $invoiceEntry): void
     {
         if (InvoiceEntryTypeEnum::WORKLOG === $invoiceEntry->getEntryType()) {
@@ -249,6 +54,9 @@ class BillingService
         }
     }
 
+    /**
+     * Update total price for invoice by summing invoice entry total prices.
+     */
     public function updateInvoiceTotalPrice(Invoice $invoice): void
     {
         $totalPrice = 0;
@@ -262,134 +70,27 @@ class BillingService
         $this->invoiceRepository->save($invoice, true);
     }
 
-    public function syncAccounts(callable $progressCallback, DataProvider $projectTracker): void
-    {
-        $apiService = $this->projectTrackerService->getService($projectTracker);
-
-        $projectTrackerIdentifier = $apiService->getProjectTrackerIdentifier();
-
-        // Get all accounts from ApiService.
-        $allAccountData = $apiService->getAllAccountData();
-
-        foreach ($allAccountData as $index => $accountDatum) {
-            $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
-
-            if (!$account) {
-                $account = new Account();
-                $account->setSource($projectTrackerIdentifier);
-                $account->setProjectTrackerId($accountDatum->projectTrackerId);
-
-                $this->entityManager->persist($account);
-            }
-
-            $account->setName($accountDatum->name);
-            $account->setValue($accountDatum->value);
-            $account->setStatus($accountDatum->status);
-            $account->setCategory($accountDatum->category);
-
-            // Flush and clear for each batch.
-            if (0 === intval($index) % self::BATCH_SIZE) {
-                $this->entityManager->flush();
-                $this->entityManager->clear();
-            }
-
-            $progressCallback($index, count($allAccountData));
-        }
-
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
-    public function syncProjects(callable $progressCallback): void
-    {
-        // Get all projects from ApiService.
-        $allProjectData = $this->apiService->getAllProjectData();
-
-        foreach ($allProjectData as $index => $projectDatum) {
-            $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId]);
-
-            if (!$project) {
-                $project = new Project();
-                $this->entityManager->persist($project);
-            }
-
-            $project->setName($projectDatum->name);
-            $project->setProjectTrackerId($projectDatum->projectTrackerId);
-            $project->setProjectTrackerKey($projectDatum->projectTrackerKey);
-            $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
-
-            foreach ($projectDatum->versions as $versionData) {
-                $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
-
-                if (!$version) {
-                    $version = new Version();
-                    $this->entityManager->persist($version);
-                }
-
-                $version->setName($versionData->name);
-                $version->setProjectTrackerId($versionData->projectTrackerId);
-                $version->setProject($project);
-            }
-
-            $projectClientData = $this->apiService->getClientDataForProject($projectDatum->projectTrackerId);
-
-            foreach ($projectClientData as $clientData) {
-                $client = $this->clientRepository->findOneBy(['projectTrackerId' => $clientData->projectTrackerId]);
-
-                if (!$client) {
-                    $client = new Client();
-                    $client->setProjectTrackerId($clientData->projectTrackerId);
-                    $this->entityManager->persist($client);
-                }
-
-                $client->setName($clientData->name);
-                $client->setContact($clientData->contact);
-                $client->setAccount($clientData->account);
-                $client->setType($clientData->type);
-                $client->setPsp($clientData->psp);
-                $client->setEan($clientData->ean);
-                $client->setStandardPrice($clientData->standardPrice);
-                $client->setCustomerKey($clientData->customerKey);
-                $client->setSalesChannel($clientData->salesChannel);
-
-                if (!$client->getProjects()->contains($client)) {
-                    $client->addProject($project);
-                }
-            }
-
-            // Flush and clear for each batch.
-            if (0 === intval($index) % self::BATCH_SIZE) {
-                $this->entityManager->flush();
-                $this->entityManager->clear();
-            }
-
-            $progressCallback($index, count($allProjectData));
-        }
-
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
     /**
-     * @throws \Exception
+     * @throws InvoiceAlreadyOnRecordException
+     * @throws EconomicsException
      */
-    public function recordInvoice(Invoice $invoice): void
+    public function recordInvoice(Invoice $invoice, bool $flush = true): void
     {
+        if ($invoice->isRecorded()) {
+            throw new InvoiceAlreadyOnRecordException('Invoice is already on record.');
+        }
+
         // Make sure client is set.
         $errors = $this->getInvoiceRecordableErrors($invoice);
 
-        if ($invoice->isRecorded()) {
-            throw new \Exception('Already recorded.');
-        }
-
         if (!empty($errors)) {
-            throw new \Exception('Cannot record invoices. Errors not handled.');
+            throw new EconomicsException($this->translator->trans('exception.billing_cannot_put_invoice_on_record_errors_found', ['%invoiceName%' => $invoice->getName(), '%invoiceId%' => $invoice->getId(), '%errors%' => json_encode($errors)]));
         }
 
         $client = $invoice->getClient();
 
         if (is_null($client)) {
-            throw new \Exception('Client must be set');
+            throw new EconomicsException($this->translator->trans('exception.invoice_client_must_be_set'));
         }
 
         // Lock client values.
@@ -412,7 +113,7 @@ class BillingService
             }
         }
 
-        $this->invoiceRepository->save($invoice, true);
+        $this->invoiceRepository->save($invoice, $flush);
     }
 
     // TODO: Replace with exceptions.
@@ -422,25 +123,112 @@ class BillingService
 
         $client = $invoice->getClient();
 
+        foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+            if (0 == $invoiceEntry->getAmount()) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_empty_invoice_entry', ['%invoiceEntryId%' => $invoiceEntry->getId()]);
+            }
+        }
+
         if (is_null($client)) {
             $errors[] = $this->translator->trans('invoice_recordable.error_no_client');
+        } else {
+            if (!$client->getAccount()) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_no_account');
+            }
 
-            return $errors;
-        }
+            if (!$client->getContact()) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_no_contact');
+            }
 
-        if (!$client->getAccount()) {
-            $errors[] = $this->translator->trans('invoice_recordable.error_no_account');
-        }
-
-        if (!$client->getContact()) {
-            $errors[] = $this->translator->trans('invoice_recordable.error_no_contact');
-        }
-
-        if (!$client->getType()) {
-            $errors[] = $this->translator->trans('invoice_recordable.error_no_type');
+            if (!$client->getType()) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_no_type');
+            }
         }
 
         return $errors;
+    }
+
+    /**
+     * Create a spreadsheet response from an array of invoice ids.
+     *
+     * @param array $ids array of invoice ids
+     *
+     * @throws EconomicsException
+     */
+    public function generateSpreadsheetCsvResponse(array $ids): Response
+    {
+        try {
+            $spreadsheet = $this->exportInvoicesToSpreadsheet($ids);
+
+            /** @var Csv $writer */
+            $writer = IOFactory::createWriter($spreadsheet, 'Csv');
+            $writer->setDelimiter(';');
+            $writer->setEnclosure('');
+            $writer->setLineEnding("\r\n");
+            $writer->setSheetIndex(0);
+
+            $csvOutput = $this->getSpreadsheetOutputAsString($writer);
+
+            // Change encoding to Windows-1252.
+            $csvOutputEncoded = mb_convert_encoding($csvOutput, 'Windows-1252');
+
+            $response = new Response($csvOutputEncoded);
+            $filename = 'invoices-'.date('d-m-Y').'.csv';
+
+            $response->headers->set('Content-Type', 'text/csv');
+            $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
+            $response->headers->set('Cache-Control', 'max-age=0');
+
+            return $response;
+        } catch (PhpSpreadsheetException) {
+            throw new EconomicsException($this->translator->trans('exception.invoices_export_failure'), 400);
+        }
+    }
+
+    /**
+     * Create spreadsheet html from an array of invoice ids.
+     *
+     * @throws EconomicsException
+     */
+    public function generateSpreadsheetHtml(array $ids): bool|string
+    {
+        try {
+            $spreadsheet = $this->exportInvoicesToSpreadsheet($ids);
+
+            $writer = IOFactory::createWriter($spreadsheet, 'Html');
+
+            $html = $this->getSpreadsheetOutputAsString($writer);
+
+            if (empty($html)) {
+                $html = '<html lang="da" />';
+            }
+
+            // Extract body content.
+            $d = new \DOMDocument();
+            $mock = new \DOMDocument();
+            $d->loadHTML($html);
+            /** @var \DOMNode $body */
+            $body = $d->getElementsByTagName('div')->item(0);
+
+            foreach ($body->childNodes as $child) {
+                if ($child instanceof \DOMElement) {
+                    if ('table' == $child->tagName) {
+                        $child->setAttribute('class', 'table table-export');
+                    }
+                }
+                $mock->appendChild($mock->importNode($child, true));
+            }
+
+            $html = $mock->saveHTML();
+
+            if (!$html) {
+                throw new EconomicsException($this->translator->trans('exception.invoices_export_failure_could_not_generate_html'), 400);
+            }
+
+            return $html;
+        } catch (PhpSpreadsheetException) {
+            throw new EconomicsException($this->translator->trans('exception.invoices_export_failure'), 400);
+        }
     }
 
     /**
@@ -450,9 +238,9 @@ class BillingService
      *
      * @return Spreadsheet
      *
-     * @throws \Exception
+     * @throws EconomicsException
      */
-    public function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet
+    private function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -477,7 +265,7 @@ class BillingService
                 $client = $invoice->getClient();
 
                 if (is_null($client)) {
-                    throw new \Exception('Client cannot be null.');
+                    throw new EconomicsException('Client cannot be null.', 400);
                 }
 
                 $internal = ClientTypeEnum::INTERNAL === $client->getType();
@@ -527,7 +315,7 @@ class BillingService
             $sheet->setCellValue([16, $row], substr($description, 0, 500));
             // 17. "Leverandør"
             if ($internal) {
-                $sheet->setCellValue([17, $row], str_pad($this->receiverAccount, 10, '0', \STR_PAD_LEFT));
+                $sheet->setCellValue([17, $row], str_pad($this->invoiceSupplierAccount, 10, '0', \STR_PAD_LEFT));
             }
             // 18. "EAN nr."
             if (!$internal && 13 === \strlen($accountKey ?? '')) {
@@ -590,9 +378,9 @@ class BillingService
     }
 
     /**
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws PhpSpreadsheetException
      */
-    public function getSpreadsheetOutputAsString(IWriter $writer): string
+    private function getSpreadsheetOutputAsString(IWriter $writer): string
     {
         $filesystem = new Filesystem();
         $tempFilename = $filesystem->tempnam(sys_get_temp_dir(), 'export_');

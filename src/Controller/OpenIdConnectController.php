@@ -14,6 +14,9 @@ class OpenIdConnectController extends AbstractController
         return $this->redirectToRoute('index');
     }
 
+    /**
+     * @throws \Exception
+     */
     #[Route('/logout', name: 'app_logout', methods: ['GET'])]
     public function logout()
     {
