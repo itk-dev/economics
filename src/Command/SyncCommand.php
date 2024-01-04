@@ -73,7 +73,7 @@ class SyncCommand extends Command
         $io->info('Processing issues');
 
         foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProviderId' => $dataProvider->getId()]);
+            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
             foreach ($projects as $project) {
                 $io->writeln("Processing issues for {$project->getName()}");
@@ -95,7 +95,7 @@ class SyncCommand extends Command
         $io->info('Processing worklogs');
 
         foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProviderId' => $dataProvider->getId()]);
+            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
             foreach ($projects as $project) {
                 $io->writeln("Processing worklogs for {$project->getName()}");

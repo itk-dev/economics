@@ -54,10 +54,11 @@ class DataSynchronizationService
         $allProjectData = $service->getAllProjectData();
 
         foreach ($allProjectData as $index => $projectDatum) {
-            $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId]);
+            $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
 
             if (!$project) {
                 $project = new Project();
+                $project->setDataProvider($dataProvider);
                 $this->entityManager->persist($project);
             }
 
@@ -67,10 +68,11 @@ class DataSynchronizationService
             $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
 
             foreach ($projectDatum->versions as $versionData) {
-                $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
+                $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId, 'dataProvider' => $dataProvider]);
 
                 if (!$version) {
                     $version = new Version();
+                    $version->setDataProvider($dataProvider);
                     $this->entityManager->persist($version);
                 }
 
@@ -88,6 +90,7 @@ class DataSynchronizationService
 
                     if (!$client) {
                         $client = new Client();
+                        $client->setDataProvider($dataProvider);
                         $client->setProjectTrackerId($clientData->projectTrackerId);
                         $this->entityManager->persist($client);
                     }
@@ -132,17 +135,15 @@ class DataSynchronizationService
         if ($dataProvider->isEnableAccountSync()) {
             $service = $this->dataProviderService->getService($dataProvider);
 
-            $projectTrackerIdentifier = $service->getProjectTrackerIdentifier();
-
             // Get all accounts from ApiService.
             $allAccountData = $service->getAllAccountData();
 
             foreach ($allAccountData as $index => $accountDatum) {
-                $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'source' => $projectTrackerIdentifier]);
+                $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
 
                 if (!$account) {
                     $account = new Account();
-                    $account->setSource($projectTrackerIdentifier);
+                    $account->setDataProvider($dataProvider);
                     $account->setProjectTrackerId($accountDatum->projectTrackerId);
 
                     $this->entityManager->persist($account);
@@ -210,6 +211,7 @@ class DataSynchronizationService
 
                 if (!$issue) {
                     $issue = new Issue();
+                    $issue->setDataProvider($dataProvider);
 
                     $this->entityManager->persist($issue);
                 }
@@ -224,10 +226,6 @@ class DataSynchronizationService
                 $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
                 $issue->setResolutionDate($issueDatum->resolutionDate);
                 $issue->setStatus($issueDatum->status);
-
-                if (null == $issue->getSource()) {
-                    $issue->setSource($service->getProjectTrackerIdentifier());
-                }
 
                 foreach ($issueDatum->versions as $versionData) {
                     $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
@@ -289,6 +287,7 @@ class DataSynchronizationService
 
             if (!$worklog) {
                 $worklog = new Worklog();
+                $worklog->setDataProvider($dataProvider);
 
                 $this->entityManager->persist($worklog);
             }
@@ -308,10 +307,6 @@ class DataSynchronizationService
             if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
                 $worklog->setIsBilled(true);
                 $worklog->setBilledSeconds($worklogDatum->timeSpentSeconds);
-            }
-
-            if (null == $worklog->getSource()) {
-                $worklog->setSource($service->getProjectTrackerIdentifier());
             }
 
             $project->addWorklog($worklog);
