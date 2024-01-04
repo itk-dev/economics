@@ -53,7 +53,7 @@ class SprintReportController extends AbstractController
             'required' => false,
             'label' => 'sprint_report.data_provider',
         $projectCollection = $this->projectTracker->getSprintReportProjects();
-        
+
         $projectChoices = [];
 
         foreach ($projectCollection->projects as $project) {

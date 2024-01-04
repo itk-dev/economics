@@ -151,7 +151,7 @@ class LeantimeApiService implements ProjectTrackerInterface
             $projectData->projectTrackerKey = '';
             $projectData->projectTrackerProjectUrl = '';
 
-            $projectVersions = $this->getProjectVersions($project->id);
+            $projectVersions = $this->getSprintReportVersions($project->id);
             foreach ($projectVersions as $projectVersion) {
                 $projectData->versions?->add($projectVersion);
             }

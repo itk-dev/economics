@@ -71,7 +71,8 @@ class PriceListController extends AbstractController
     #[Route('/{id}', name: 'app_price_list_delete', methods: ['POST'])]
     public function delete(Request $request, PriceList $priceList, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$priceList->getId(), $request->request->get('_token'))) {
+        $token = $request->request->get('_token');
+        if (is_string($token) && $this->isCsrfTokenValid('delete'.$priceList->getId(), $token)) {
             $entityManager->remove($priceList);
             $entityManager->flush();
         }
