@@ -18,16 +18,6 @@ framework:
     php_errors:
         log: true
 
-    http_client:
-        scoped_clients:
-            jira.project.tracker.api:
-                base_uri: '%env(JIRA_PROJECT_TRACKER_URL)%'
-                auth_basic: '%env(JIRA_PROJECT_TRACKER_USER)%:%env(JIRA_PROJECT_TRACKER_TOKEN)%'
-            leantime.project.tracker.api:
-                base_uri: '%env(LEANTIME_PROJECT_TRACKER_URL)%'
-                headers: 
-                    x-api-key: '%env(LEANTIME_PROJECT_TRACKER_TOKEN)%'
-
 when@test:
     framework:
         test: true
