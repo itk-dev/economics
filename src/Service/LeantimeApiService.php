@@ -428,11 +428,12 @@ class LeantimeApiService implements ProjectTrackerInterface
             $issue = new SprintReportIssue();
             $issues->add($issue);
 
-            // Set issue tag.
+            /* Tags are stored as a comma seperated string. 
+            In our implementation of Leantime, tickets are only supposed to have one tag.
+            Tickets with multiple tags will not break, but it would look wierd in the report. */
             if (isset($issueEntry->tags)) {
-                $tagId = $this->tagToId($issueEntry->tags);
-                $tag = new SprintReportEpic($tagId, $issueEntry->tags);
-                $epics->set($tagId, $tag);
+                $tag = new SprintReportEpic($issueEntry->tags, $issueEntry->tags);
+                $epics->set($issueEntry->tags, $tag);
             } else {
                 $tag = $epics->get('noEpic');
             }
@@ -596,16 +597,4 @@ class LeantimeApiService implements ProjectTrackerInterface
         }
     }
 
-    private function tagToId($tag)
-    {
-        // Use md5 hash function to generate a fixed-length hash
-        $hash = md5($tag);
-
-        // Extract three unique numbers from the hash
-        $num1 = hexdec(substr($hash, 0, 8)) % 1000;
-        $num2 = hexdec(substr($hash, 8, 8)) % 1000;
-        $num3 = hexdec(substr($hash, 16, 8)) % 1000;
-
-        return "$num1$num2$num3";
-    }
 }
