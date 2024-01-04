@@ -14,9 +14,9 @@ interface ProjectTrackerInterface
 
     public function getSprintReportData(string $projectId, string $versionId): SprintReportData;
 
-    public function getAllProjectsV2(): SprintReportProjects;
+    public function getSprintReportProjects(): SprintReportProjects;
 
-    public function getProjectV2(string $projectId): SprintReportProject;
+    public function getSprintReportProject(string $projectId): SprintReportProject;
 
-    public function getProjectVersions(string $projectId): SprintReportVersions;
+    public function getSprintReportProjectVersions(string $projectId): SprintReportVersions;
 }
