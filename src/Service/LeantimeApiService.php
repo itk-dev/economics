@@ -63,7 +63,7 @@ class LeantimeApiService implements ProjectTrackerInterface
      *
      * @throws ApiServiceException
      */
-    public function getAllProjectsV2(): SprintReportProjects
+    public function getSprintReportProjects(): SprintReportProjects
     {
         $sprintReportProjects = new SprintReportProjects();
         $projects = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
@@ -81,7 +81,7 @@ class LeantimeApiService implements ProjectTrackerInterface
     }
 
     /**
-     * Get projectV2.
+     * getSprintReportProject.
      *
      * @param $key
      *   A project key or id
@@ -90,7 +90,7 @@ class LeantimeApiService implements ProjectTrackerInterface
      *
      * @throws ApiServiceException
      */
-    public function getProjectV2(string $projectId): SprintReportProject
+    public function getSprintReportProject(string $projectId): SprintReportProject
     {
         $project = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getProject', ['id' => $projectId]);
 
@@ -126,7 +126,7 @@ class LeantimeApiService implements ProjectTrackerInterface
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getTicket', ['id' => $key]);
     }
 
-    public function getProjectVersions(string $projectId): SprintReportVersions
+    public function getSprintReportProjectVersions(string $projectId): SprintReportVersions
     {
         $sprintReportVersions = new SprintReportVersions();
         $projectVersions = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAllMilestones', ['searchCriteria' => ['currentProject' => $projectId, 'type' => 'milestone']]);
@@ -428,7 +428,7 @@ class LeantimeApiService implements ProjectTrackerInterface
             $issue = new SprintReportIssue();
             $issues->add($issue);
 
-            /* Tags are stored as a comma seperated string. 
+            /* Tags are stored as a comma seperated string.
             In our implementation of Leantime, tickets are only supposed to have one tag.
             Tickets with multiple tags will not break, but it would look wierd in the report. */
             if (isset($issueEntry->tags)) {
@@ -596,5 +596,4 @@ class LeantimeApiService implements ProjectTrackerInterface
             return self::FUTURE;
         }
     }
-
 }

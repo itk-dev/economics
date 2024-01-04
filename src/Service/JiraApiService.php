@@ -102,17 +102,17 @@ class JiraApiService implements ApiServiceInterface, ProjectTrackerInterface
         return $this->get(self::API_PATH_MY_PERMISSIONS);
     }
 
-    public function getAllProjectsV2(): SprintReportProjects
+    public function getSprintReportProjects(): SprintReportProjects
     {
         throw new ApiServiceException('Method not implemented', 501);
     }
 
-    public function getProjectV2(string $projectId): SprintReportProject
+    public function getSprintReportProject(string $projectId): SprintReportProject
     {
         throw new ApiServiceException('Method not implemented', 501);
     }
 
-    public function getProjectVersions(string $projectId): SprintReportVersions
+    public function getSprintReportProjectVersions(string $projectId): SprintReportVersions
     {
         throw new ApiServiceException('Method not implemented', 501);
     }
