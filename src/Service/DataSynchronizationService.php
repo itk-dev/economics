@@ -14,6 +14,7 @@ use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
+use App\Repository\DataProviderRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
@@ -38,6 +39,7 @@ class DataSynchronizationService
         private readonly AccountRepository $accountRepository,
         private readonly InvoiceRepository $invoiceRepository,
         private readonly DataProviderService $dataProviderService,
+        private readonly DataProviderRepository $dataProviderRepository,
     ) {
     }
 
@@ -48,6 +50,8 @@ class DataSynchronizationService
      */
     public function syncProjects(callable $progressCallback, DataProvider $dataProvider): void
     {
+        $dataProviderId = $dataProvider->getId();
+
         $service = $this->dataProviderService->getService($dataProvider);
 
         // Get all projects from ApiService.
@@ -55,6 +59,7 @@ class DataSynchronizationService
 
         foreach ($allProjectData as $index => $projectDatum) {
             $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
+            $dataProvider = $this->dataProviderRepository->find($dataProviderId);
 
             if (!$project) {
                 $project = new Project();
@@ -82,7 +87,7 @@ class DataSynchronizationService
             }
 
             // Only synchronize clients if this is enabled.
-            if ($dataProvider->isEnableClientSync()) {
+            if (null != $dataProvider && $dataProvider->isEnableClientSync()) {
                 $projectClientData = $service->getClientDataForProject($projectDatum->projectTrackerId);
 
                 foreach ($projectClientData as $clientData) {
@@ -133,6 +138,8 @@ class DataSynchronizationService
      */
     public function syncAccounts(callable $progressCallback, DataProvider $dataProvider): void
     {
+        $dataProviderId = $dataProvider->getId();
+
         if ($dataProvider->isEnableAccountSync()) {
             $service = $this->dataProviderService->getService($dataProvider);
 
@@ -144,6 +151,7 @@ class DataSynchronizationService
 
                 if (!$account) {
                     $account = new Account();
+                    $dataProvider = $this->dataProviderRepository->find($dataProviderId);
                     $account->setDataProvider($dataProvider);
                     $account->setProjectTrackerId($accountDatum->projectTrackerId);
 
@@ -177,6 +185,8 @@ class DataSynchronizationService
      */
     public function syncIssuesForProject(int $projectId, callable $progressCallback = null, DataProvider $dataProvider): void
     {
+        $dataProviderId = $dataProvider->getId();
+
         $service = $this->dataProviderService->getService($dataProvider);
 
         $project = $this->projectRepository->find($projectId);
@@ -196,6 +206,7 @@ class DataSynchronizationService
         $startAt = 0;
 
         do {
+            $dataProvider = $this->dataProviderRepository->find($dataProviderId);
             $project = $this->projectRepository->find($projectId);
 
             if (!$project) {
@@ -260,6 +271,8 @@ class DataSynchronizationService
      */
     public function syncWorklogsForProject(int $projectId, callable $progressCallback = null, DataProvider $dataProvider): void
     {
+        $dataProviderId = $dataProvider->getId();
+
         $service = $this->dataProviderService->getService($dataProvider);
 
         $project = $this->projectRepository->find($projectId);
@@ -288,6 +301,9 @@ class DataSynchronizationService
 
             if (!$worklog) {
                 $worklog = new Worklog();
+
+                $dataProvider = $this->dataProviderRepository->find($dataProviderId);
+
                 $worklog->setDataProvider($dataProvider);
 
                 $this->entityManager->persist($worklog);
@@ -300,7 +316,7 @@ class DataSynchronizationService
             $worklog->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId);
             $worklog->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
 
-            if (null !== $worklog->getProjectTrackerIssueId()) {
+            if (null != $worklog->getProjectTrackerIssueId()) {
                 $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
                 $worklog->setIssue($issue);
             }

@@ -42,7 +42,7 @@ class SyncWorklogsCommand extends Command
         $dataProviders = $this->dataProviderRepository->findAll();
 
         foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProviderId' => $dataProvider->getId()]);
+            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
             $numberOfProjects = count($projects);
 
