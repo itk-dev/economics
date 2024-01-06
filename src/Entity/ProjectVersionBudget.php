@@ -4,20 +4,10 @@ namespace App\Entity;
 
 use App\Repository\ProjectVersionBudgetRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Blameable\Traits\BlameableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ProjectVersionBudgetRepository::class)]
-class ProjectVersionBudget
+class ProjectVersionBudget extends AbstractBaseEntity
 {
-    use BlameableEntity;
-    use TimestampableEntity;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column(length: 255)]
     private ?string $projectId = null;
 
@@ -26,11 +16,6 @@ class ProjectVersionBudget
 
     #[ORM\Column]
     private ?float $budget = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getProjectId(): ?string
     {
