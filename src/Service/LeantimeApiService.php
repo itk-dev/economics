@@ -554,7 +554,7 @@ class LeantimeApiService implements DataProviderServiceInterface
 
                 if (isset($data->error)) {
                     $message = $data->error->message;
-                    throw new ApiServiceException($message, (int) $data->error->code ?? 0);
+                    throw new ApiServiceException($message, $data->error->code);
                 }
 
                 return $data->result;
