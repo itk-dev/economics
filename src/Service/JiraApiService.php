@@ -28,6 +28,7 @@ use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportProject;
 use App\Model\SprintReport\SprintReportProjects;
 use App\Model\SprintReport\SprintReportSprint;
+use App\Model\SprintReport\SprintReportVersion;
 use App\Model\SprintReport\SprintReportVersions;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -35,12 +36,17 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JiraApiService implements DataProviderServiceInterface
 {
+    private const CPB_ACCOUNT_MANAGER = 'anbjv';
     private const NO_SPRINT = 'NoSprint';
     private const API_PATH_SEARCH = '/rest/api/2/search';
     private const API_PATH_VERSION = '/rest/api/2/version/';
     private const API_PATH_ACCOUNT = '/rest/tempo-accounts/1/account/';
+    private const API_PATH_ACCOUNT_BY_KEY = '/rest/tempo-accounts/1/account/key/';
+    private const API_PATH_CUSTOMERS = '/rest/tempo-accounts/1/customer/';
     private const API_PATH_PROJECT = '/rest/api/2/project';
     private const API_PATH_PROJECT_BY_ID = '/rest/api/2/project/';
+    private const API_PATH_LINK_PROJECT_TO_ACCOUNT = '/rest/tempo-accounts/1/link/';
+    private const API_PATH_FILTER = '/rest/api/2/filter';
     private const API_PATH_BOARD = '/rest/agile/1.0/board';
     private const API_PATH_EPIC = '/rest/agile/1.0/epic';
     private const API_PATH_RATE_TABLE = '/rest/tempo-accounts/1/ratetable';
@@ -85,12 +91,10 @@ class JiraApiService implements DataProviderServiceInterface
         $projects = $this->getAllProjects();
 
         foreach ($projects as $project) {
-            $sprintReportProjects->projects->add(
-                new SprintReportProject(
-                    $project->id,
-                    $project->name
-                )
-            );
+            $sprintReportProject = new SprintReportProject();
+            $sprintReportProject->id = $project->id;
+            $sprintReportProject->name = $project->name;
+            $sprintReportProjects->projects->add($sprintReportProject);
         }
 
         return $sprintReportProjects;
@@ -103,12 +107,12 @@ class JiraApiService implements DataProviderServiceInterface
         $projectVersions = $project->versions ?? [];
 
         foreach ($projectVersions as $projectVersion) {
-            $sprintReportVersions->versions->add(
-                new SprintReportVersion(
-                    $projectVersion->id,
-                    $projectVersion->name,
-                )
-            );
+            $sprintReportVersion = new SprintReportVersion();
+            $sprintReportVersion->id = $projectVersion->id;
+            $sprintReportVersion->name = $projectVersion->name;
+            $sprintReportVersion->projectTrackerId = $projectVersion->projectId;
+
+            $sprintReportVersions->versions->add($sprintReportVersion);
         }
 
         return $sprintReportVersions;
@@ -769,8 +773,8 @@ class JiraApiService implements DataProviderServiceInterface
                     'query' => $query,
                 ]
             );
-
             $body = $response->getContent(false);
+
             switch ($response->getStatusCode()) {
                 case 200:
                     if ($body) {
@@ -889,33 +893,27 @@ class JiraApiService implements DataProviderServiceInterface
         return $clients;
     }
 
-    /**
-     * @throws ApiServiceException
-     */
-    public function getAllProjectData(): array
+    public function getProjectDataCollection(): ProjectDataCollection
     {
-        $projects = [];
+        $projectDataCollection = new ProjectDataCollection();
+        $projects = $this->getAllProjects();
 
-        $trackerProjects = $this->getAllProjects();
-
-        foreach ($trackerProjects as $trackerProject) {
-            $project = $this->getProject($trackerProject->id);
-            $projectVersions = $project->versions ?? [];
-
+        foreach ($projects as $project) {
             $projectData = new ProjectData();
-            $projectData->name = $trackerProject->name;
-            $projectData->projectTrackerId = $trackerProject->id;
-            $projectData->projectTrackerKey = $trackerProject->key;
-            $projectData->projectTrackerProjectUrl = $trackerProject->self;
+            $projectData->name = $project->name;
+            $projectData->projectTrackerId = $project->id;
+            $projectData->projectTrackerKey = $project->key;
+            $projectData->projectTrackerProjectUrl = $project->self;
 
+            $projectVersions = $this->getSprintReportVersions($project->id);
             foreach ($projectVersions as $projectVersion) {
-                $projectData->versions->add(new VersionData($projectVersion->id, $projectVersion->name));
+                $projectData->versions?->add($projectVersion);
             }
 
-            $projects[] = $projectData;
+            $projectDataCollection->projectData->add($projectData);
         }
 
-        return $projects;
+        return $projectDataCollection;
     }
 
     /**
@@ -939,35 +937,30 @@ class JiraApiService implements DataProviderServiceInterface
         ]);
     }
 
-    public function getWorklogDataForProject(string $projectId): array
+    public function getWorklogDataCollection(string $projectId): WorklogDataCollection
     {
-        $worklogsResult = [];
-
+        $worklogDataCollection = new WorklogDataCollection();
         $worklogs = $this->getProjectWorklogs($projectId);
 
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
             $worklogData->projectTrackerId = $worklog->tempoWorklogId;
+            $worklogData->comment = $worklog->description;
             $worklogData->worker = $worklog->worker;
-            $worklogData->timeSpentSeconds = $worklog->timeSpentSeconds;
-            $worklogData->comment = $worklog->comment;
+            $worklogData->timeSpentSeconds = (int) $worklog->timeSpentSeconds;
             $worklogData->started = new \DateTime($worklog->started);
+            $worklogData->projectTrackerIsBilled = false;
             $worklogData->projectTrackerIssueId = $worklog->issue->id;
+
+            $worklogDataCollection->worklogData->add($worklogData);
 
             // TODO: Is this synchronization relevant?
             if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
                 $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
             }
-
-            $worklogsResult[] = $worklogData;
         }
 
-        return $worklogsResult;
-    }
-
-    public function getWorklogDataForProjectV2(string $projectId): WorklogDataCollection
-    {
-        return new WorklogDataCollection();
+        return $worklogDataCollection;
     }
 
     /**
