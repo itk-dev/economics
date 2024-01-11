@@ -52,7 +52,7 @@ class PlanningController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $service = $this->dataProviderService->getService($planningFormData->dataProvider);
-
+            
             $planningData = $service->getPlanningData();
         }
 

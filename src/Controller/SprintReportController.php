@@ -52,20 +52,6 @@ class SprintReportController extends AbstractController
             'class' => DataProvider::class,
             'required' => false,
             'label' => 'sprint_report.data_provider',
-        $projectCollection = $this->projectTracker->getSprintReportProjects();
-
-        $projectChoices = [];
-
-        foreach ($projectCollection->projects as $project) {
-            $projectChoices[$project->name] = $project->id;
-        }
-
-        // Override projectId with element with choices.
-        $form->add('projectId', ChoiceType::class, [
-            'placeholder' => 'sprint_report.select_an_option',
-            'choices' => $projectChoices,
-            'required' => true,
-            'label' => 'sprint_report.select_project',
             'label_attr' => ['class' => 'label'],
             'row_attr' => ['class' => 'form-row'],
             'attr' => [
@@ -82,9 +68,8 @@ class SprintReportController extends AbstractController
             $requestData = $requestData['sprint_report'];
         }
 
-        if (!empty($requestData['projectId'])) {
-            $project = $this->projectTracker->getSprintReportProject($requestData['projectId']);
-            $versionCollection = $this->projectTracker->getSprintReportVersions($requestData['projectId']);
+        if (!empty($requestData['dataProvider'])) {
+            $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
 
             if (null != $dataProvider) {
                 $service = $this->dataProviderService->getService($dataProvider);
@@ -113,11 +98,11 @@ class SprintReportController extends AbstractController
                 ]);
 
                 if (!empty($requestData['projectId'])) {
-                    $versionCollection = $service->getSprintReportProjectVersions($requestData['projectId']);
+                    $versionCollection = $service->getSprintReportVersions($requestData['projectId']);
 
                     $versionChoices = [];
                     foreach ($versionCollection->versions as $version) {
-                        $versionChoices[$version->headline] = $version->id;
+                        $versionChoices[$version->name] = $version->id;
                     }
 
                     // Override versionId with element with choices.

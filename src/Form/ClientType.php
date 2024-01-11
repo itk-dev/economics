@@ -3,8 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Client;
-use App\Repository\InvoiceRepository;
-use App\Service\JiraApiService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -14,12 +12,6 @@ use Symfony\Component\Validator\Constraints\NotNull;
 
 class ClientType extends AbstractType
 {
-    public function __construct(
-        private readonly JiraApiService $apiService,
-        private readonly InvoiceRepository $invoiceRepository,
-    ) {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
