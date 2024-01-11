@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Refactored error handling.
 * Added support for multiple data providers
 * Removed project creator for Jira.
+* Added client view.
+* Added account view.
+* Added pricelist view.
+* Added leantime support for projects and project sync.
 
 
 * RELEASE NOTES:
