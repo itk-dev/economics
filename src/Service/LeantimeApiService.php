@@ -3,8 +3,9 @@
 namespace App\Service;
 
 use App\Exception\ApiServiceException;
+use App\Interface\DataProviderServiceInterface;
 use App\Model\Invoices\IssueData;
-use App\Model\Invoices\IssueDataCollection;
+use App\Model\Invoices\PagedResult;
 use App\Model\Invoices\ProjectData;
 use App\Model\Invoices\ProjectDataCollection;
 use App\Model\Invoices\VersionData;
@@ -27,10 +28,9 @@ use App\Model\SprintReport\SprintReportVersion;
 use App\Model\SprintReport\SprintReportVersions;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class LeantimeApiService implements ProjectTrackerInterface
+class LeantimeApiService implements DataProviderServiceInterface
 {
     private const PROJECT_TRACKER_IDENTIFIER = 'LEANTIME';
     private const API_PATH_JSONRPC = '/api/jsonrpc/';
@@ -45,7 +45,6 @@ class LeantimeApiService implements ProjectTrackerInterface
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
-        protected readonly EntityManagerInterface $entityManager
     ) {
     }
 
@@ -69,6 +68,22 @@ class LeantimeApiService implements ProjectTrackerInterface
     public function getAllProjects(): mixed
     {
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
+    }
+
+    /**
+     * Get all worklogs for project.
+     *
+     * @param $projectId
+     * @param string $from
+     * @param string $to
+     *
+     * @return mixed
+     *
+     * @throws ApiServiceException
+     */
+    public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'id' => $projectId]);
     }
 
     /**
@@ -115,34 +130,45 @@ class LeantimeApiService implements ProjectTrackerInterface
         return $sprintReportProject;
     }
 
-    public function getIssueDataCollection(string $projectId): IssueDataCollection
+    /**
+     * @throws ApiServiceException
+     */
+    private function getProjectIssuesPaged($projectId, $startAt, $maxResults = 50): array
     {
-        $issueDataCollection = new IssueDataCollection();
-        $issues = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId]]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['currentProject' => $projectId]);
+    }
+
+    public function getIssuesDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
+    {
+        $result = [];
+
+        $issues = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
 
         foreach ($issues as $issue) {
             $issueData = new IssueData();
+
             $issueData->name = $issue->headline;
             $issueData->status = $issue->status;
             $issueData->projectTrackerId = $issue->id;
             $issueData->projectTrackerKey = '';
             $issueData->accountId = '';
             $issueData->accountKey = '';
-            $issueData->epicKey = $issue->tags ? $this->tagToId($issue->tags) : '';
+            $issueData->epicKey = $issue->tags ? $issue->tags : '';
             $issueData->epicName = $issue->tags ? $issue->tags : '';
-            $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
+            if ((bool) $issue->milestoneid && (bool) $issue->milestoneHeadline) {
+                $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
+            }
             $issueData->projectId = $issue->projectId;
-
-            $issueDataCollection->issueData->add($issueData);
+            $result[] = $issueData;
         }
 
-        return $issueDataCollection;
+        return new PagedResult($result, $startAt, $maxResults, count($issues));
     }
 
-    public function getAllProjectDataV2(): ProjectDataCollection
+    public function getProjectDataCollection(): ProjectDataCollection
     {
         $projectDataCollection = new ProjectDataCollection();
-        $projects = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
+        $projects = $this->getAllProjects();
 
         foreach ($projects as $project) {
             $projectData = new ProjectData();
@@ -156,10 +182,15 @@ class LeantimeApiService implements ProjectTrackerInterface
                 $projectData->versions?->add($projectVersion);
             }
 
-            $projectDataCollection->projectData->add($$projectData);
+            $projectDataCollection->projectData->add($projectData);
         }
 
         return $projectDataCollection;
+    }
+
+    public function getClientDataForProject(string $projectId): array
+    {
+        throw new ApiServiceException('Method not implemented', 501);
     }
 
     /**
@@ -210,22 +241,23 @@ class LeantimeApiService implements ProjectTrackerInterface
         return $sprintReportVersions;
     }
 
-    public function getWorklogDataForProjectV2(string $projectId): WorklogDataCollection
+    public function getWorklogDataCollection(string $projectId): WorklogDataCollection
     {
         $worklogDataCollection = new WorklogDataCollection();
-        $worklogs = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'projectId' => $projectId]);
-
+        $worklogs = $this->getProjectWorklogs($projectId);
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
-            $worklogData->projectTrackerId = $worklog->id;
-            $worklogData->comment = $worklog->description;
-            $worklogData->worker = $worklog->userId;
-            $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
-            $worklogData->started = new \DateTime($worklog->workDate);
-            $worklogData->projectTrackerIsBilled = false;
-            $worklogData->projectTrackerIssueId = $worklog->ticketId;
+            if ((bool) $worklog->ticketId) {
+                $worklogData->projectTrackerId = $worklog->id;
+                $worklogData->comment = $worklog->description ?? '';
+                $worklogData->worker = $worklog->userId;
+                $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
+                $worklogData->started = new \DateTime($worklog->workDate);
+                $worklogData->projectTrackerIsBilled = false;
+                $worklogData->projectTrackerIssueId = $worklog->ticketId;
 
-            $worklogDataCollection->worklogData->add($worklogData);
+                $worklogDataCollection->worklogData->add($worklogData);
+            }
 
             // TODO: Is this synchronization relevant?
             // if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
@@ -257,11 +289,7 @@ class LeantimeApiService implements ProjectTrackerInterface
      */
     public function getTicketsInSprint(string $sprintId): array
     {
-        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', [
-            'searchCriteria' => [
-                'sprint' => $sprintId,
-            ],
-        ]);
+        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['sprint' => $sprintId]);
 
         return $result;
     }
@@ -271,7 +299,11 @@ class LeantimeApiService implements ProjectTrackerInterface
      */
     private function getIssueSprint($issueEntry): SprintReportSprint
     {
-        $sprint = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.sprints.getSprint', ['id' => $issueEntry->sprint]);
+        $sprint = false;
+
+        if ((bool) $issueEntry->sprint) {
+            $sprint = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.sprints.getSprint', ['id' => $issueEntry->sprint]);
+        }
 
         if ($sprint) {
             $sprintState = SprintStateEnum::OTHER;
@@ -481,7 +513,7 @@ class LeantimeApiService implements ProjectTrackerInterface
         return $planning;
     }
 
-    public function getTimesheetsForTicket($ticketId): mixed
+    public function getTimesheetsForTicket(string $ticketId): mixed
     {
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'ticketFilter' => $ticketId]);
     }
@@ -491,7 +523,7 @@ class LeantimeApiService implements ProjectTrackerInterface
      */
     private function getIssuesForProjectMilestone($projectId, $milestoneId): array
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'milestone' => $milestoneId]]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['currentProject' => $projectId, 'milestone' => $milestoneId]);
     }
 
     /**
@@ -538,18 +570,20 @@ class LeantimeApiService implements ProjectTrackerInterface
             $issue->epic = $tag;
 
             // Get sprint for issue.
-            try {
-                $issueSprint = $this->getIssueSprint($issueEntry);
+            if ((bool) $issueEntry->sprint) {
+                try {
+                    $issueSprint = $this->getIssueSprint($issueEntry);
 
-                if (!$sprints->containsKey($issueSprint->id)) {
-                    $sprints->set($issueSprint->id, $issueSprint);
+                    if (!$sprints->containsKey($issueSprint->id)) {
+                        $sprints->set($issueSprint->id, $issueSprint);
+                    }
+                    // Set which sprint the issue is assigned to.
+                    if (SprintStateEnum::ACTIVE === $issueSprint->state || SprintStateEnum::FUTURE === $issueSprint->state) {
+                        $issue->assignedToSprint = $issueSprint;
+                    }
+                } catch (ApiServiceException) {
+                    // Ignore if sprint is not found.
                 }
-                // Set which sprint the issue is assigned to.
-                if (SprintStateEnum::ACTIVE === $issueSprint->state || SprintStateEnum::FUTURE === $issueSprint->state) {
-                    $issue->assignedToSprint = $issueSprint;
-                }
-            } catch (ApiServiceException) {
-                // Ignore if sprint is not found.
             }
             $worklogs = $this->getTimesheetsForTicket($issueEntry->id);
 
@@ -559,8 +593,8 @@ class LeantimeApiService implements ProjectTrackerInterface
                 $worklogSprints = array_filter($sprints->toArray(), function ($sprintEntry) use ($workLogStarted) {
                     /* @var SprintReportSprint $sprintEntry */
                     return
-                      $sprintEntry->startDateTimestamp <= $workLogStarted
-                      && ($sprintEntry->completedDateTimstamp ?? $sprintEntry->endDateTimestamp) > $workLogStarted;
+                        $sprintEntry->startDateTimestamp <= $workLogStarted
+                        && ($sprintEntry->completedDateTimstamp ?? $sprintEntry->endDateTimestamp) > $workLogStarted;
                 });
 
                 $worklogSprintId = self::NO_SPRINT;
@@ -647,7 +681,9 @@ class LeantimeApiService implements ProjectTrackerInterface
                     'params' => $params,
                 ]]
             );
+
             $body = $response->getContent(false);
+
             switch ($response->getStatusCode()) {
                 case 200:
                     if ($body) {
