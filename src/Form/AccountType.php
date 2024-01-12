@@ -110,58 +110,6 @@ class AccountType extends AbstractType
                 'help' => 'create_client_form.account_category.help',
                 'required' => true,
                 'row_attr' => ['class' => 'form-element-wrapper'],
-            ])
-            ->add('createdBy', TextType::class, [
-                'label' => 'create_account_form.account_createdBy.label',
-                'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_createdBy.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
-            ])
-            ->add('updatedBy', TextType::class, [
-                'label' => 'create_account_form.account_updatedBy.label',
-                'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_updatedBy.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
-            ])
-            ->add('createdAt', DateTimeType::class, [
-                'required' => false,
-                'label' => 'create_account_form.account_createdAt.label',
-                'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
-                'help' => 'create_client_form.account_createdAt.help',
-                'widget' => 'single_text',
-                'html5' => true,
-                'attr' => ['class' => 'form-element'],
-            ])
-            ->add('updatedAt', DateTimeType::class, [
-                'required' => false,
-                'label' => 'create_account_form.account_updatedAt.label',
-                'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
-                'help' => 'create_client_form.account_updatedAt.help',
-                'widget' => 'single_text',
-                'html5' => true,
-                'attr' => ['class' => 'form-element'],
             ]);
     }
 

@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/price/list')]
+#[Route('/admin/price-list')]
 class PriceListController extends AbstractController
 {
     #[Route('/', name: 'app_price_list_index', methods: ['GET'])]

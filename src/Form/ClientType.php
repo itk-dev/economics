@@ -9,9 +9,14 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ClientType extends AbstractType
 {
+
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+    ) {}
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -159,7 +164,7 @@ class ClientType extends AbstractType
      */
     private function getTypeChoices(): array
     {
-        return ['-- Select --' => null];
+        return [$this->translator->trans('client.client_type_select') => null];
     }
 
     public function configureOptions(OptionsResolver $resolver): void

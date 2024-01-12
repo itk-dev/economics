@@ -128,24 +128,24 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
-    public function getepicKey(): ?string
+    public function getEpicKey(): ?string
     {
         return $this->epicKey;
     }
 
-    public function setepicKey(?string $epicKey): self
+    public function setEpicKey(?string $epicKey): self
     {
         $this->epicKey = $epicKey;
 
         return $this;
     }
 
-    public function getepicName(): ?string
+    public function getEpicName(): ?string
     {
         return $this->epicName;
     }
 
-    public function setepicName(?string $epicName): self
+    public function setEpicName(?string $epicName): self
     {
         $this->epicName = $epicName;
 

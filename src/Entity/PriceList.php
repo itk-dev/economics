@@ -6,23 +6,16 @@ use App\Repository\PriceListRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PriceListRepository::class)]
-class PriceList
+class PriceList extends AbstractBaseEntity
 {
-    #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
     #[ORM\Column(nullable: true)]
     private ?float $price = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getName(): ?string
     {
