@@ -27,11 +27,11 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">no records found</td>
+                <td colspan="4">{{ 'price_list.no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a class="button" href="{{ path('app_price_list_new') }}">Create new</a>
+    <a class="button" href="{{ path('app_price_list_new') }}">{{ 'price_list.create_new'|trans }}</a>
 {% endblock %}

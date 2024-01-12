@@ -15,7 +15,7 @@ class PriceListType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'create_client_form.price_list_name.label',
+                'label' => 'create_pricelist_form.price_list_name.label',
                 'label_attr' => ['class' => 'label'],
                 'constraints' => [
                     new NotNull(['groups' => 'base']),
@@ -26,12 +26,12 @@ class PriceListType extends AbstractType
                 'help_attr' => [
                     'class' => 'form-help',
                 ],
-                'help' => 'create_client_form.price_list_name.help',
+                'help' => 'create_pricelist_form.price_list_name.help',
                 'required' => true,
                 'row_attr' => ['class' => 'form-element-wrapper'],
             ])
             ->add('price', TextType::class, [
-                'label' => 'create_client_form.price_list_price.label',
+                'label' => 'create_pricelist_form.price_list_price.label',
                 'label_attr' => ['class' => 'label'],
                 'constraints' => [
                     new NotNull(['groups' => 'base']),
@@ -42,7 +42,7 @@ class PriceListType extends AbstractType
                 'help_attr' => [
                     'class' => 'form-help',
                 ],
-                'help' => 'create_client_form.price_list_price.help',
+                'help' => 'create_pricelist_form.price_list_price.help',
                 'required' => true,
                 'row_attr' => ['class' => 'form-element-wrapper'],
             ]);
