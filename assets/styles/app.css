@@ -343,4 +343,12 @@
         position: sticky;
         bottom: 0;
     }
+
+    .comma-list span:after {
+        content: ","
+    }
+
+    .comma-list span:last-child:after {
+        content: ""
+    }
 }
