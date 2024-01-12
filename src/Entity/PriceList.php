@@ -8,9 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PriceListRepository::class)]
 class PriceList extends AbstractBaseEntity
 {
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
