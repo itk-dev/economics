@@ -36,17 +36,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class JiraApiService implements DataProviderServiceInterface
 {
-    private const CPB_ACCOUNT_MANAGER = 'anbjv';
     private const NO_SPRINT = 'NoSprint';
     private const API_PATH_SEARCH = '/rest/api/2/search';
     private const API_PATH_VERSION = '/rest/api/2/version/';
     private const API_PATH_ACCOUNT = '/rest/tempo-accounts/1/account/';
-    private const API_PATH_ACCOUNT_BY_KEY = '/rest/tempo-accounts/1/account/key/';
-    private const API_PATH_CUSTOMERS = '/rest/tempo-accounts/1/customer/';
     private const API_PATH_PROJECT = '/rest/api/2/project';
     private const API_PATH_PROJECT_BY_ID = '/rest/api/2/project/';
-    private const API_PATH_LINK_PROJECT_TO_ACCOUNT = '/rest/tempo-accounts/1/link/';
-    private const API_PATH_FILTER = '/rest/api/2/filter';
     private const API_PATH_BOARD = '/rest/agile/1.0/board';
     private const API_PATH_EPIC = '/rest/agile/1.0/epic';
     private const API_PATH_RATE_TABLE = '/rest/tempo-accounts/1/ratetable';
@@ -116,122 +111,6 @@ class JiraApiService implements DataProviderServiceInterface
         }
 
         return $sprintReportVersions;
-    }
-
-    public function createProject(array $data): ?string
-    {
-        $projectKey = strtoupper($data['form']['project_key']);
-        $project = [
-            'key' => $projectKey,
-            'name' => $data['form']['project_name'],
-            'projectTypeKey' => 'software',
-            'projectTemplateKey' => 'com.pyxis.greenhopper.jira:basic-software-development-template',
-            'description' => $data['form']['description'],
-            'lead' => $data['selectedTeamConfig']['team_lead'],
-            'assigneeType' => 'UNASSIGNED',
-            'avatarId' => 10324, // Default avatar image
-            'permissionScheme' => $data['selectedTeamConfig']['permission_scheme'],
-            'notificationScheme' => 10000, // Default Notification Scheme
-            'workflowSchemeId' => $data['selectedTeamConfig']['workflow_scheme'],
-            'categoryId' => $data['selectedTeamConfig']['project_category'],
-        ];
-
-        $response = $this->post(self::API_PATH_PROJECT, $project);
-
-        return $response->key == $projectKey ? $projectKey : null;
-    }
-
-    public function createTimeTrackerCustomer(string $name, string $key): mixed
-    {
-        return $this->post(self::API_PATH_CUSTOMERS,
-            [
-                'isNew' => 1,
-                'name' => $name,
-                'key' => $key,
-            ]
-        );
-    }
-
-    public function createTimeTrackerAccount(string $name, string $key, string $customerKey, string $contactUsername): mixed
-    {
-        return $this->post(self::API_PATH_ACCOUNT,
-            [
-                'name' => $name,
-                'key' => $key,
-                'status' => 'OPEN',
-                'category' => [
-                    'key' => 'DRIFT',
-                ],
-                'customer' => [
-                    'key' => $customerKey,
-                ],
-                'contact' => [
-                    'username' => $contactUsername,
-                ],
-                'lead' => [
-                    'username' => $this::CPB_ACCOUNT_MANAGER,
-                ],
-            ]
-        );
-    }
-
-    public function getTimeTrackerAccount(string $key): mixed
-    {
-        return $this->get(self::API_PATH_ACCOUNT_BY_KEY.$key);
-    }
-
-    public function addProjectToTimeTrackerAccount(mixed $project, mixed $account): void
-    {
-        $this->post(self::API_PATH_LINK_PROJECT_TO_ACCOUNT, [
-            'scopeType' => 'PROJECT',
-            'defaultAccount' => 'true',
-            'linkType' => 'MANUAL',
-            'key' => $project->key,
-            'accountId' => $account->id,
-            'scope' => $project->id,
-        ]);
-    }
-
-    public function getClientData(): ClientData
-    {
-        return new ClientData();
-    }
-
-    /**
-     * Create project board.
-     *
-     * @throws ApiServiceException
-     */
-    public function createProjectBoard(string $type, mixed $project): void
-    {
-        // If no template is configured don't create a board.
-        if (empty($this->formData['selectedTeamConfig']['board_template'])) {
-            return;
-        }
-
-        // Create project filter.
-        $filterResponse = $this->post(self::API_PATH_FILTER, [
-            'name' => 'Filter for Project: '.$project->name,
-            'description' => 'Project filter for '.$project->name,
-            'jql' => 'project = '.$project->key.' ORDER BY Rank ASC',
-            'favourite' => false,
-            'editable' => false,
-        ]);
-
-        // Share project filter with project members.
-        $this->post(self::API_PATH_FILTER.'/'.$filterResponse->id.'/permission', [
-            'type' => 'project',
-            'projectId' => $project->id,
-            'view' => true,
-            'edit' => false,
-        ]);
-
-        // Create board with project filter.
-        $this->post(self::API_PATH_BOARD, [
-            'name' => 'Project: '.$project->name,
-            'type' => $type,
-            'filterId' => $filterResponse->id,
-        ]);
     }
 
     public function getAccount(string $accountId): mixed
@@ -773,8 +652,8 @@ class JiraApiService implements DataProviderServiceInterface
                     'query' => $query,
                 ]
             );
-            $body = $response->getContent(false);
 
+            $body = $response->getContent(false);
             switch ($response->getStatusCode()) {
                 case 200:
                     if ($body) {
@@ -983,57 +862,6 @@ class JiraApiService implements DataProviderServiceInterface
         }
 
         return $accountsResult;
-    }
-
-    /**
-     * @throws ApiServiceException
-     */
-    private function getProjectIssues($projectId): array
-    {
-        $issues = [];
-
-        // Get customFields from Jira.
-        $customFieldEpicLink = $this->getCustomFieldId('Epic Link');
-        $customFieldAccount = $this->getCustomFieldId('Account');
-
-        // Get all issues for version.
-        $fields = implode(
-            ',',
-            [
-                'timetracking',
-                'worklog',
-                'timespent',
-                'timeoriginalestimate',
-                'summary',
-                'assignee',
-                'status',
-                'resolutiondate',
-                'fixVersions',
-                $customFieldEpicLink,
-                $customFieldAccount,
-            ]
-        );
-
-        $startAt = 0;
-
-        // Get issues for the given project and version.
-        do {
-            $results = $this->get(
-                self::API_PATH_SEARCH,
-                [
-                    'jql' => "project = $projectId",
-                    'maxResults' => 50,
-                    //          'fields' => $fields,
-                    'startAt' => $startAt,
-                ]
-            );
-
-            $issues = array_merge($issues, $results->issues);
-
-            $startAt += 50;
-        } while (isset($results->total) && $results->total > $startAt);
-
-        return $issues;
     }
 
     /**
