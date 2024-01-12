@@ -43,6 +43,9 @@ navigation:
   accounts: 'Konto'
   project_billing: 'Projektfakturering'
   projects: 'Projekter'
+  client: 'Kunder'
+  account: 'Kundekonti'
+  pricelist: 'Prisliste'
 
 planning:
   title: 'Planlægning'
@@ -52,6 +55,80 @@ planning:
   data_provider_helptext: ''
   data_provider: 'Vælg datakilde'
   search: 'Vis planlægning'
+
+client:
+  title: 'Kunder'
+  create_new: 'Opret kunde'
+  no_records_found: 'Ingen kunder at vise'
+  new: 'Opret kunde'
+  client_type_select: 'Vælg kundetype'
+  action_create: 'Opret kunde'
+  back_to_list: 'Tilbage til listen'
+
+price_list:
+  title: 'Prisliste'
+  create_new: 'Opret pris'
+  no_records_found: 'Ingen priser at vise'
+  new: 'Opret pris'
+  client_type_select: 'Vælg kundetype'
+  action_create: 'Opret pris'
+  back_to_list: 'Tilbage til listen'
+
+create_pricelist_form:
+  price_list_name:
+    label: 'Navn'
+    help: ''
+  price_list_price:
+    label: 'Pris'
+    help: ''
+
+create_client_form:
+  client_name:
+    label: 'Navn'
+    help: ''
+  client_contact:
+    label: 'Kontakt'
+    help: ''
+  client_standardPrice:
+    label: 'Standardpris'
+    help: ''
+  type:
+    label: 'Kundetype'
+    help: ''
+  client_account:
+    label: 'Kundekonto'
+    help: ''
+  client_psp:
+    label: 'PSP-element'
+    help: ''
+  client_ean:
+    label: 'EAN-nummer'
+    help: ''
+
+    account:
+  title: 'Kundekonti'
+  create_new: 'Opret konto'
+  no_records_found: 'Ingen konti at vise'
+  new: 'Opret konto'
+  action_create: 'Opret konto'
+  back_to_list: 'Tilbage til listen'
+
+create_account_form:
+  account_name:
+    label: 'Navn'
+    help: ''
+  account_value:
+    label: 'Værdi'
+    help: ''
+  account_projectTrackerId:
+    label: 'Projekt'
+    help: ''
+  account_status:
+    label: 'Status'
+    help: ''
+  account_category:
+    label: 'Kategori'
+    help: ''
 
 invoices:
   title: 'Faktura'
