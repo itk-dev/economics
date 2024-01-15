@@ -79,16 +79,16 @@ class View
     }
 
     /**
-     * @return Collection<int, DataProvider>
+     * @return \Doctrine\Common\Collections\Collection|null
      */
-    public function getDataProviders(): Collection
+    public function getDataProviders(): ?Collection
     {
         return $this->dataProviders;
     }
 
-    public function addDataProvider(DataProvider $dataProvider): static
+    public function addDataProvider(?DataProvider $dataProvider): static
     {
-        if (!$this->dataProviders->contains($dataProvider)) {
+        if (!empty($dataProvider) && !$this->dataProviders->contains($dataProvider)) {
             $this->dataProviders->add($dataProvider);
         }
 
