@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'view.title'|trans }}{% endblock %}
+
+{% block content %}
+  <h1 class="page-title">{{ 'view.title'|trans }}</h1>
+
+  {% set data = {
+    'name': view.name,
+    'description': view.description,
+    'dataProviders': view.dataProviders,
+    'projects': view.projects,
+  }
+  %}
+
+  {% include 'view/viewDataTableDisplay.html.twig' with {'data': data} %}
+
+  <div class="bottom-actions">
+    <a class="link" href="{{ path('app_view_list') }}">{{ 'view.back_to_list'|trans }}</a>
+  </div>
+
+{% endblock %}

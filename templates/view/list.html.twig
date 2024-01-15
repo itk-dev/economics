@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'view.title'|trans }}{% endblock %}
+
+{% block content %}
+  <h1 class="page-title">{{ 'view_list.title'|trans }}</h1>
+  <table class="table margin-bottom">
+    <thead class="table-thead">
+    <tr>
+      <th class="table-th">{{ 'views.list_name'|trans }}</th>
+      <th class="table-th">{{ 'views.list_date'|trans }}</th>
+      <th class="table-th">{{ 'views.list_actions'|trans }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for index, view in views %}
+      <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+        <td class="table-td">
+          <a class="link" href="{{ path('app_view_display', {'id': view.id}) }}">
+            {{ view.name }}
+          </a>
+        </td>
+        <td class="table-td">{{ view.created|date('Y-m-d H:i:s') }}</td>
+        <td class="table-td">
+          <a class="link" href="{{ path('app_view_edit', {'id': view.id}) }}">
+            {{ 'views.list_edit'|trans }}
+          </a>
+          <a class="link" href="{{ path('app_view_delete_confirm', {'id': view.id}) }}">
+            {{ 'views.list_delete'|trans }}
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+    {% if views is empty %}
+      <tr class="table-tr">
+        <td class="table-td"
+            colspan="{{ 3 }}">{{ 'views.list_no_records_found'|trans }}</td>
+      </tr>
+    {% endif %}
+    <tr class="table-tr">
+      <td class="table-td" colspan="2">
+        <a class="link" href="{{ path('app_view_add') }}">
+          {{ 'views.action_create_new'|trans }}
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+{% endblock %}
