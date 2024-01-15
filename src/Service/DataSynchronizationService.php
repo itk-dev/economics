@@ -249,7 +249,7 @@ class DataSynchronizationService
             }
 
             $startAt += self::MAX_RESULTS;
-            
+
             $this->entityManager->flush();
             $this->entityManager->clear();
         } while ($startAt < $total);
