@@ -88,16 +88,18 @@ class View
 
     public function addDataProvider(?DataProvider $dataProvider): static
     {
-        if (!empty($dataProvider) && !$this->dataProviders->contains($dataProvider)) {
+        if (!empty($this->dataProviders) && !$this->dataProviders->contains($dataProvider)) {
             $this->dataProviders->add($dataProvider);
         }
 
         return $this;
     }
 
-    public function removeDataProvider(DataProvider $dataProvider): static
+    public function removeDataProvider(?DataProvider $dataProvider): static
     {
-        $this->dataProviders->removeElement($dataProvider);
+        if (!empty($this->dataProviders)) {
+          $this->dataProviders->removeElement($dataProvider);
+        }
 
         return $this;
     }
