@@ -104,6 +104,9 @@ create_client_form:
   client_ean:
     label: 'EAN-nummer'
     help: ''
+  client_projectTrackerId:
+    label: 'ProjectTrackerId'
+    help: ''
 
     account:
   title: 'Kundekonti'
