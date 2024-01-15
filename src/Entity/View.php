@@ -98,7 +98,7 @@ class View
     public function removeDataProvider(?DataProvider $dataProvider): static
     {
         if (!empty($this->dataProviders)) {
-          $this->dataProviders->removeElement($dataProvider);
+            $this->dataProviders->removeElement($dataProvider);
         }
 
         return $this;
