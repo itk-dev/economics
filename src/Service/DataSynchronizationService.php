@@ -202,12 +202,11 @@ class DataSynchronizationService
         }
 
         $issuesProcessed = 0;
-
+        
         $startAt = 0;
         do {
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
             $project = $this->projectRepository->find($projectId);
-
             if (!$project) {
                 throw new EconomicsException($this->translator->trans('exception.project_not_found'));
             }
@@ -215,9 +214,7 @@ class DataSynchronizationService
             $pagedIssueData = $service->getIssuesDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
             $total = $pagedIssueData->total;
 
-            $issueData = $pagedIssueData->items;
-
-            foreach ($issueData as $issueDatum) {
+            foreach ($pagedIssueData->items as $issueDatum) {
                 $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
 
                 if (!$issue) {
@@ -252,13 +249,14 @@ class DataSynchronizationService
             }
 
             $startAt += self::MAX_RESULTS;
-
+            var_dump('<pre>'.print_r($startAt,true).'</pre>');
             $this->entityManager->flush();
             $this->entityManager->clear();
         } while ($startAt < $total);
 
         $this->entityManager->flush();
         $this->entityManager->clear();
+
     }
 
     /**
