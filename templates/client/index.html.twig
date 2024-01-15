@@ -28,18 +28,15 @@
         </thead>
         <tbody>
         {% for index, client in clients %}
-        {{ dump(client.type) }}
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                 <td class="table-td">{{ client.id }}</td>
                 <td class="table-td">{{ client.name }}</td>
                 <td class="table-td">{{ client.contact }}</td>
                 <td class="table-td">{{ client.standardPrice }}</td>
-                {% if client.type == 'internal' %}
-                    <td class="table-td">internal</td>
-                {% elseif client.type == 'external' %}
-                    <td class="table-td">external</td>
+                {% if client.type is not null %}
+                    <td class="table-td">{{ client.type.value }}</td> 
                 {% else %}
-                    <td class="table-td">none</td>
+                    <td class="table-td">unset</td>
                 {% endif %}
                 <td class="table-td">{{ client.account }}</td>
                 <td class="table-td">{{ client.psp }}</td>
