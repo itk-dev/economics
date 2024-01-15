@@ -202,7 +202,7 @@ class DataSynchronizationService
         }
 
         $issuesProcessed = 0;
-        
+
         $startAt = 0;
         do {
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
@@ -249,14 +249,13 @@ class DataSynchronizationService
             }
 
             $startAt += self::MAX_RESULTS;
-            var_dump('<pre>'.print_r($startAt,true).'</pre>');
+            
             $this->entityManager->flush();
             $this->entityManager->clear();
         } while ($startAt < $total);
 
         $this->entityManager->flush();
         $this->entityManager->clear();
-
     }
 
     /**
