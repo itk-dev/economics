@@ -46,6 +46,9 @@ class Project extends AbstractBaseEntity
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Issue::class)]
     private Collection $issues;
 
+    #[ORM\ManyToMany(targetEntity: View::class, mappedBy: 'projects')]
+    private Collection $views;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -54,6 +57,7 @@ class Project extends AbstractBaseEntity
         $this->worklogs = new ArrayCollection();
         $this->projectBillings = new ArrayCollection();
         $this->issues = new ArrayCollection();
+        $this->views = new ArrayCollection();
     }
 
     public function getName(): ?string
@@ -281,6 +285,33 @@ class Project extends AbstractBaseEntity
             if ($issue->getProject() === $this) {
                 $issue->setProject(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, View>
+     */
+    public function getViews(): Collection
+    {
+        return $this->views;
+    }
+
+    public function addView(View $view): static
+    {
+        if (!$this->views->contains($view)) {
+            $this->views->add($view);
+            $view->addProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeView(View $view): static
+    {
+        if ($this->views->removeElement($view)) {
+            $view->removeProject($this);
         }
 
         return $this;

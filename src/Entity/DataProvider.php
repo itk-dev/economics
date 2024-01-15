@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DataProviderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DataProviderRepository::class)]
@@ -25,6 +27,14 @@ class DataProvider extends AbstractBaseEntity
 
     #[ORM\Column(nullable: true)]
     private ?bool $enableAccountSync = null;
+
+    #[ORM\ManyToMany(targetEntity: View::class, mappedBy: 'dataProviders')]
+    private Collection $views;
+
+    public function __construct()
+    {
+        $this->views = new ArrayCollection();
+    }
 
     public function getName(): ?string
     {
@@ -101,5 +111,32 @@ class DataProvider extends AbstractBaseEntity
     public function __toString(): string
     {
         return $this->getName() ?? ''.$this->getId();
+    }
+
+    /**
+     * @return Collection<int, View>
+     */
+    public function getViews(): Collection
+    {
+        return $this->views;
+    }
+
+    public function addView(View $view): static
+    {
+        if (!$this->views->contains($view)) {
+            $this->views->add($view);
+            $view->addDataProvider($this);
+        }
+
+        return $this;
+    }
+
+    public function removeView(View $view): static
+    {
+        if ($this->views->removeElement($view)) {
+            $view->removeDataProvider($this);
+        }
+
+        return $this;
     }
 }
