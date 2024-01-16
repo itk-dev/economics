@@ -258,11 +258,6 @@ class LeantimeApiService implements DataProviderServiceInterface
 
                 $worklogDataCollection->worklogData->add($worklogData);
             }
-
-            // TODO: Is this synchronization relevant?
-            // if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
-            //     $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
-            // }
         }
 
         return $worklogDataCollection;
@@ -724,18 +719,5 @@ class LeantimeApiService implements DataProviderServiceInterface
         } else {
             return self::FUTURE;
         }
-    }
-
-    private function tagToId($tag)
-    {
-        // Use md5 hash function to generate a fixed-length hash
-        $hash = md5($tag);
-
-        // Extract three unique numbers from the hash
-        $num1 = hexdec(substr($hash, 0, 8)) % 1000;
-        $num2 = hexdec(substr($hash, 8, 8)) % 1000;
-        $num3 = hexdec(substr($hash, 16, 8)) % 1000;
-
-        return "$num1$num2$num3";
     }
 }
