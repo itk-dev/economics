@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Exception\ApiServiceException;
+use App\Exception\EconomicsException;
 use App\Interface\DataProviderServiceInterface;
 use App\Model\Invoices\IssueData;
 use App\Model\Invoices\PagedResult;
@@ -664,6 +665,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      * Get from Leantime.
      *
      * @throws ApiServiceException
+     * @throws EconomicsException
      */
     private function request(string $path, string $type, string $method, array $params = []): mixed
     {
@@ -677,31 +679,20 @@ class LeantimeApiService implements DataProviderServiceInterface
                 ]]
             );
 
-            $body = $response->getContent(false);
+            $body = $response->getContent();
 
-            switch ($response->getStatusCode()) {
-                case 200:
-                    if ($body) {
-                        return json_decode($body, null, 512, JSON_THROW_ON_ERROR)->result;
-                    }
-                    break;
-                case 400:
-                case 401:
-                case 403:
-                case 409:
-                    if ($body) {
-                        $error = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
-                        if (!empty($error->errorMessages)) {
-                            $msg = array_pop($error->errorMessages);
-                        } else {
-                            $msg = $error->errors->projectKey;
-                        }
-                        throw new ApiServiceException($msg);
-                    }
-                    break;
+            if ($body) {
+                $data = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
+
+                if (isset($data->error)) {
+                    $message = $data->error->message;
+                    throw new ApiServiceException($message, $data->error->code);
+                }
+
+                return $data->result;
             }
         } catch (\Throwable $e) {
-            throw new ApiServiceException($e->getMessage(), (int) $e->getCode(), $e);
+            throw new ApiServiceException('Error from Leantime API: '.$e->getMessage(), (int) $e->getCode(), $e);
         }
 
         return null;
