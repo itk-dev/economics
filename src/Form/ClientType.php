@@ -138,22 +138,6 @@ class ClientType extends AbstractType
                 'help' => 'create_client_form.client_ean.help',
                 'required' => true,
                 'row_attr' => ['class' => 'form-element-wrapper'],
-            ])
-            ->add('projectTrackerId', TextType::class, [
-                'label' => 'create_client_form.client_projectTrackerId.label',
-                'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.client_projectTrackerId.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
             ]);
     }
 

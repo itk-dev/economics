@@ -46,38 +46,6 @@ class AccountType extends AbstractType
                 'required' => true,
                 'row_attr' => ['class' => 'form-element-wrapper'],
             ])
-            ->add('projectTrackerId', TextType::class, [
-                'label' => 'create_account_form.account_projectTrackerId.label',
-                'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_projectTrackerId.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
-            ])
-            ->add('source', TextType::class, [
-                'label' => 'create_account_form.account_source.label',
-                'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_source.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
-            ])
             ->add('status', TextType::class, [
                 'label' => 'create_account_form.account_status.label',
                 'label_attr' => ['class' => 'label'],

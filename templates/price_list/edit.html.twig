@@ -1,13 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit PriceList{% endblock %}
+{% block title %}{{ 'price_list.edit'|trans}}{% endblock %}
 
 {% block content %}
-    <h1>Edit PriceList</h1>
+    <h1>{{ 'price_list.edit'|trans}}</h1>
 
     {{ include('price_list/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_price_list_index') }}">back to list</a>
-
     {{ include('price_list/_delete_form.html.twig') }}
+    <a href="{{ path('app_price_list_index') }}">{{ 'price_list.back_to_list'|trans}}</a>
+
 {% endblock %}
