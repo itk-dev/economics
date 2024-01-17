@@ -109,7 +109,7 @@ create_client_form:
     help: ""
 
 account:
-  title: "Kundekonti"
+  title: "Konti"
   create_new: "Opret konto"
   no_records_found: "Ingen konti at vise"
   new: "Opret konto"
@@ -282,6 +282,11 @@ accounts:
   created_by: "Oprettet af"
   source: "Kilde"
   manual: "Manuel"
+  action_delete_account: 'Slet konto'
+  list_no_records_found: 'Ingen konti'
+  status: 'Status'
+  category: 'Kategori'
+  action_create_new: 'Opret ny konto'
 
 worklog:
   title: "Tilføj worklogs til fakturalinje"
