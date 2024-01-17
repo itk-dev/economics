@@ -117,21 +117,16 @@ account:
   back_to_list: "Tilbage til listen"
 
 create_account_form:
-  account_name:
-    label: "Navn"
-    help: ""
-  account_value:
-    label: "Værdi"
-    help: ""
-  account_projectTrackerId:
-    label: "Projekt"
-    help: ""
-  account_status:
-    label: "Status"
-    help: ""
-  account_category:
-    label: "Kategori"
-    help: ""
+  account_name_label: "Navn"
+  account_name_help: ""
+  account_value_label: "Værdi"
+  account_value_help: ""
+  account_project_tracker_id_label: "Projekt"
+  account_project_tracker_id_help: ""
+  account_status_label: "Status"
+  account_status_help: ""
+  account_category_label: "Kategori"
+  account_category_help: ""
 
 invoices:
   title: "Faktura"
