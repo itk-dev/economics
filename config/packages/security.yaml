@@ -15,12 +15,12 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        main:
-            custom_authenticators:
-                - App\Security\AzureOIDCAuthenticator
-            entry_point: App\Security\AzureOIDCAuthenticator
-            logout:
-                path: /logout
+#        main:
+#            custom_authenticators:
+#                - App\Security\AzureOIDCAuthenticator
+#            entry_point: App\Security\AzureOIDCAuthenticator
+#            logout:
+#                path: /logout
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
