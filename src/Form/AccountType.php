@@ -20,7 +20,7 @@ class AccountType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_account_form.account_name_help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('value', TextType::class, [
                 'label' => 'create_account_form.account_value_label',
@@ -29,7 +29,7 @@ class AccountType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_account_form.account_value_help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('status', TextType::class, [
                 'label' => 'create_account_form.account_status_label',
@@ -38,7 +38,7 @@ class AccountType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_account_form.account_status_help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('category', TextType::class, [
                 'label' => 'create_account_form.account_category_label',
@@ -47,7 +47,7 @@ class AccountType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_account_form.account_category_help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ]);
     }
 

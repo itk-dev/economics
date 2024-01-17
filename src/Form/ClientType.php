@@ -24,7 +24,7 @@ class ClientType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_client_form.client_name.help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('contact', TextType::class, [
                 'label' => 'create_client_form.client_contact.label',
@@ -33,7 +33,7 @@ class ClientType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_client_form.client_contact.help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('standardPrice', NumberType::class, [
                 'label' => 'create_client_form.client_standardPrice.label',
@@ -42,7 +42,7 @@ class ClientType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_client_form.client_standardPrice.help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
                 'html5' => true,
             ])
             ->add('type', EnumType::class, [
@@ -58,7 +58,7 @@ class ClientType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_client_form.type.help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('account', TextType::class, [
                 'label' => 'create_client_form.client_account.label',
@@ -67,7 +67,7 @@ class ClientType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_client_form.client_account.help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('salesChannel', ChoiceType::class, [
                 'label' => 'create_client_form.sales_channel.label',
@@ -76,7 +76,7 @@ class ClientType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_client_form.sales_channel.help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
                 'choices' => [
                     10 => 10,
                     20 => 20,
@@ -88,7 +88,7 @@ class ClientType extends AbstractType
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_client_form.customer_key.help',
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('psp', TextType::class, [
                 'label' => 'create_client_form.client_psp.label',
@@ -96,7 +96,7 @@ class ClientType extends AbstractType
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_client_form.client_psp.help',
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
                 'required' => false,
             ])
             ->add('ean', TextType::class, [
@@ -105,7 +105,7 @@ class ClientType extends AbstractType
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'create_client_form.client_ean.help',
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
                 'required' => false,
             ]);
     }
