@@ -8,7 +8,6 @@ use App\Form\ViewAddStepThreeType;
 use App\Form\ViewAddStepTwoType;
 use App\Form\ViewSelectType;
 use App\Repository\ViewRepository;
-use App\Service\ViewHelperService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
@@ -56,7 +55,7 @@ class ViewController extends AbstractController
     }
 
     #[Route('/add', name: 'app_view_add')]
-    public function add(Request $request, ViewRepository $viewRepository, ViewHelperService $viewHelperService): Response
+    public function add(Request $request, ViewRepository $viewRepository): Response
     {
         // Create session for multistep form.
         try {
@@ -70,7 +69,10 @@ class ViewController extends AbstractController
 
         // Initialize multistep form.
         if (empty($data)) {
-            $data = $viewHelperService->getCreateFromInitValues();
+            $data = [
+                'view' => new View(),
+                'current_step' => 1,
+            ];
             $session->set(self::VIEW_CREATE_SESSION_KEY, $data);
         }
 
@@ -82,8 +84,6 @@ class ViewController extends AbstractController
             if (self::CREATEFORM_LAST_STEP === $data['current_step']) {
                 if ($form->isValid()) {
                     $session->invalidate();
-
-                    //$data['view']->setCreated(new \DateTimeImmutable());
 
                     $viewRepository->save($data['view'], true);
 

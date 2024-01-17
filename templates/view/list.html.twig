@@ -20,7 +20,7 @@
             {{ view.name }}
           </a>
         </td>
-        <td class="table-td">{{ view.created|date('Y-m-d H:i:s') }}</td>
+        <td class="table-td">{{ view.createdAt|date('Y-m-d H:i:s') }}</td>
         <td class="table-td">
           <a class="link" href="{{ path('app_view_edit', {'id': view.id}) }}">
             {{ 'views.list_edit'|trans }}
