@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* Added view ad related form
+* Added view and related form
 * Modified getSprintReportData to work with Leantime data
 * Added project lead to client when syncing projects.
 * Remove description from create invoice page.

@@ -3,6 +3,9 @@
         <a href="/" class="flex items-center mb-5">
             <img src="{{ asset('img/itk-economics.png') }}" class="h-6 ml-3 sm:h-9" alt="{{ 'navigation.title'|trans }}" />
         </a>
+          {{ render(controller(
+            'App\\Controller\\ViewController::viewSelector'
+          )) }}
         <!-- navigation -->
         <ul class="flex flex-col overflow-hidden">
             <li>
