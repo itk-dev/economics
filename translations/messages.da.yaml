@@ -44,7 +44,7 @@ navigation:
   project_billing: "Projektfakturering"
   projects: "Projekter"
   client: "Kunder"
-  account: "Kundekonti"
+  account: "Konti"
   pricelist: "Prisliste"
 
 planning:
@@ -96,7 +96,7 @@ create_client_form:
     label: "Kundetype"
     help: ""
   client_account:
-    label: "Kundekonto"
+    label: "Konto"
     help: ""
   client_psp:
     label: "PSP-element"
@@ -150,15 +150,15 @@ invoices:
   status_not_posted: "Ikke bogført"
   action_update: "Gem ændringer"
   edit: "Rediger faktura"
-  client_information: "Kundekontoinformationer"
+  client_information: "Kundeinformationer"
   invoice_for: "Faktura for [%project%] (%projectTrackerId%)"
-  no_client: "Ingen kundekonto valgt"
+  no_client: "Ingen kunde valgt"
   client_psp: "PSP"
   client_account: "Konto"
   client_type: "Type"
   client_standard_price: "Standardpris"
   client_contact: "Kontakt"
-  client_name: "Kundekonto"
+  client_name: "Kunde"
   info: "Faktura"
   create_new: "Opret faktura"
   action_edit: "Redigér"
@@ -186,7 +186,7 @@ invoices:
   name: "Navn"
   description: "Beskrivelse"
   project: "Projekt"
-  client: "Kundekonto"
+  client: "Kunde"
   default_material_number: "Materialenummer"
   default_receiver_account: "Til konto"
   paid_by_account: "Betales af konto"
@@ -197,7 +197,7 @@ invoices:
   name_helptext: "Vælg faktuens navn."
   description_helptext: "Indsættes i tekstfeltet i fakturaen. Autoudfyld er tilgængelig, hvis der er valgt en kundekonto med en project lead."
   project_helptext: "Vælg projekt."
-  client_helptext: "Vælg hvilken kundekonto fakturaen skal udstedes til."
+  client_helptext: "Vælg hvilken kunde fakturaen skal udstedes til."
   payer_account_helptext: 'Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: "Betales af [KONTO]".'
   default_material_number_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
   default_receiver_account_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
@@ -230,7 +230,7 @@ invoices:
   already_recorded: "Fakturaen er allerede bogført"
   action_show_export: "Vis eksport"
   action_record: "Bogfør faktura"
-  locked_client_values: "Låste fakturaværdier. Disse værdier bruges i fakturaen og ændres ikke selvom kundekontoen bliver opdateret."
+  locked_client_values: "Låste fakturaværdier. Disse værdier bruges i fakturaen og ændres ikke selvom kunden bliver opdateret."
   locked_type: "Type"
   locked_sales_channel: "Salgskanal"
   locked_account_key: "Konto"
@@ -318,7 +318,7 @@ invoice_entry:
   new_worklog_information: "Bemærk! Der kan først tilkobles worklogs efter linjen er gemt første gang."
 
 invoice_recordable:
-  error_no_client: "Ingen klientkonto tilkoblet"
+  error_no_client: "Ingen kunde tilkoblet"
   error_no_account: "Ingen konto"
   error_no_contact: "Ingen kontakt"
   error_no_type: "Ingen type"
@@ -336,12 +336,15 @@ home:
   sprint_report_description: "Opret sprintrapporter baseret på opgaver og worklogs i Project Tracker."
   create_project: "Projektopretter"
   create_project_description: "Hjælper med at oprette projekter i Project Tracker."
-  accounts: "Konto"
+  accounts: "Konti"
+  accounts_description: "Liste over konti. Bruges i valglister."
   account_details: "Liste over kontoer der bruges i faktura."
   project_billing: "Projektfakturering"
   project_billing_description: "Fakturér alle kunder i et projekt for en given periode."
   projects: "Projekter"
   projects_description: "Liste over projekter. Vælg hvilke skal vises i resten af systemet."
+  clients_description: "Liste over kunder, som kan kobles på projekter."
+  clients: "Kunder"
 
 frontpage:
   title: "Velkommen til Economics"
@@ -457,7 +460,7 @@ exception:
   project_billing_no_project_selected: "Projekt ikke valgt."
   project_billing_period_cannot_be_null: "Perioden skal være valgt."
   billing_cannot_put_invoice_on_record_errors_found: "Kan ikke bogføre fakturaen %invoiceName% (%invoiceId%). Følgende fejl er ikke håndteret: %errors%"
-  invoice_client_must_be_set: "Kundekonto skal være valgt."
+  invoice_client_must_be_set: "Kunde skal være valgt."
   invoice_errors_exit_cannot_put_on_record: "Der er problemer med projektfaktureringen. Kan ikke bogføre den."
 
 error:
