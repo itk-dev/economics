@@ -4,7 +4,6 @@ namespace App\Form;
 
 use App\Entity\Client;
 use App\Enum\ClientTypeEnum;
-use App\Enum\MaterialNumberEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -12,8 +11,6 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\NotNull;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ClientType extends AbstractType
 {
@@ -55,6 +52,7 @@ class ClientType extends AbstractType
                 'choice_label' => fn ($choice) => match ($choice) {
                     ClientTypeEnum::INTERNAL => 'client_type_enum.internal',
                     ClientTypeEnum::EXTERNAL => 'client_type_enum.external',
+                    default => null,
                 },
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
@@ -82,7 +80,7 @@ class ClientType extends AbstractType
                 'choices' => [
                     10 => 10,
                     20 => 20,
-                ]
+                ],
             ])
             ->add('customerKey', TextType::class, [
                 'label' => 'create_client_form.customer_key.label',
