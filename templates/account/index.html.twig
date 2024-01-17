@@ -1,24 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Account index{% endblock %}
+{% block title %}{{ 'account.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_account_new') }}" style="float: right">{{ 'accounts.action_create_new'|trans }}</a>
+    <a class="link" href="{{ path('app_account_new') }}"
+       style="float: right">{{ 'accounts.action_create_new'|trans }}</a>
 
     <h1 class="page-title">{{ 'account.title'|trans }}</h1>
 
     {% set numberOfColumns = 6 %}
 
+    {# TODO: Add pagination, sorting and filters #}
+
     <table class="table margin-bottom">
         <thead class="table-thead">
-            <tr>
-                <th class="table-th">{{ 'accounts.id'|trans }}</th>
-                <th class="table-th">{{ 'accounts.name'|trans }}</th>
-                <th class="table-th">{{ 'accounts.value'|trans }}</th>
-                <th class="table-th">{{ 'accounts.status'|trans }}</th>
-                <th class="table-th">{{ 'accounts.category'|trans }}</th>
-                <th class="table-th">{{ 'accounts.actions'|trans }}</th>
-            </tr>
+        <tr>
+            <th class="table-th">{{ 'accounts.id'|trans }}</th>
+            <th class="table-th">{{ 'accounts.name'|trans }}</th>
+            <th class="table-th">{{ 'accounts.value'|trans }}</th>
+            <th class="table-th">{{ 'accounts.status'|trans }}</th>
+            <th class="table-th">{{ 'accounts.category'|trans }}</th>
+            <th class="table-th">{{ 'accounts.actions'|trans }}</th>
+        </tr>
         </thead>
         <tbody>
         {% for index, account in accounts %}
@@ -29,7 +32,7 @@
                 <td class="table-td">{{ account.status }}</td>
                 <td class="table-td">{{ account.category }}</td>
                 <td class="table-td">
-                    <a href="{{ path('app_account_edit', {'id': account.id}) }}">edit</a>
+                    <a class="link" href="{{ path('app_account_edit', {'id': account.id}) }}">{{ 'accounts.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}

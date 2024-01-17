@@ -1,4 +1,4 @@
-<form method="post" action="{{ path('app_account_delete', {'id': account.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+<form method="post" action="{{ path('app_account_delete', {'id': account.id}) }}" onsubmit="return confirm('{{ 'delete.confirm'|trans }}');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ account.id) }}">
     <button class="button button-danger">{{ 'accounts.action_delete_account'|trans }}</button>
 </form>

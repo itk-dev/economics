@@ -287,6 +287,7 @@ accounts:
   status: 'Status'
   category: 'Kategori'
   action_create_new: 'Opret ny konto'
+  action_edit: 'Redigér'
 
 worklog:
   title: "Tilføj worklogs til fakturalinje"
@@ -472,3 +473,25 @@ error:
   title: "Der opstod en fejl"
   code: "Fejlkode"
   message: "Besked"
+
+clients:
+  action_delete_account: 'Slet kunde'
+  edit: 'Redigér kunde'
+  action_save: 'Redigér'
+  action_create_new: 'Opret ny kunde'
+  id: '#'
+  name: 'Navn'
+  contact: 'Kontakt'
+  standard_price: 'Standardpris'
+  type: 'Type'
+  account: 'Konto'
+  psp: 'PSP'
+  ean: 'EAN'
+  sales_channel: 'Salgskanal'
+  customer_key: 'Kundenøgle'
+  actions: 'Handlinger'
+  action_edit: 'Redigér'
+  list_no_records_found: 'Ingen kunder'
+
+delete:
+  confirm: 'Er du sikker på at du vil slette dette?'
