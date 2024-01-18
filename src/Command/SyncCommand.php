@@ -41,7 +41,7 @@ class SyncCommand extends Command
 
         $io->info('Processing projects');
 
-        $dataProviders = $this->dataProviderRepository->findAll();
+        $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
         foreach ($dataProviders as $dataProvider) {
             $this->dataSynchronizationService->syncProjects(function ($i, $length) use ($io) {

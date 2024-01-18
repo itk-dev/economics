@@ -20,4 +20,23 @@ class DataProviderRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, DataProvider::class);
     }
+
+    public function save(DataProvider $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(DataProvider $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
 }

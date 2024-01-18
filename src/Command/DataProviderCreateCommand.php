@@ -11,8 +11,8 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:project-tracker:create',
-    description: 'Create a new Project Tracker',
+    name: 'app:data-provider:create',
+    description: 'Create a new Data Provider',
 )]
 class DataProviderCreateCommand extends Command
 {
@@ -37,7 +37,7 @@ class DataProviderCreateCommand extends Command
         $question->setAutocompleterValues(DataProviderService::IMPLEMENTATIONS);
         $class = $io->askQuestion($question);
 
-        $dataProvider = $this->dataProviderService->createDataProvider($name, $class, $url, $secret, false, false);
+        $dataProvider = $this->dataProviderService->createDataProvider($name, $class, $url, $secret);
 
         $text = "Created the following data provider\n\n";
         $text .= 'ID: '.$dataProvider->getId()."\n";

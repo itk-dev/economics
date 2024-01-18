@@ -127,7 +127,8 @@ class LeantimeApiService implements DataProviderServiceInterface
     }
 
     /**
-     * @throws ApiServiceException|EconomicsException
+     * @throws ApiServiceException
+     * @throws EconomicsException
      */
     private function getProjectIssuesPaged($projectId, $startAt, $maxResults = 50): array
     {
@@ -135,6 +136,10 @@ class LeantimeApiService implements DataProviderServiceInterface
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['currentProject' => $projectId]);
     }
 
+    /**
+     * @throws ApiServiceException
+     * @throws EconomicsException
+     */
     public function getIssuesDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
     {
         $result = [];
@@ -151,11 +156,12 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->name = $issue->headline;
             $issueData->status = $issue->status;
             $issueData->projectTrackerId = $issue->id;
-            $issueData->projectTrackerKey = '';
+            // Leantime does not have a key for each issue.
+            $issueData->projectTrackerKey = $issue->id;
             $issueData->accountId = '';
             $issueData->accountKey = '';
-            $issueData->epicKey = $issue->tags ? $issue->tags : '';
-            $issueData->epicName = $issue->tags ? $issue->tags : '';
+            $issueData->epicKey = $issue->tags;
+            $issueData->epicName = $issue->tags;
             if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }
@@ -163,7 +169,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             $result[] = $issueData;
         }
 
-        return new PagedResult($result, $startAt, $maxResults, count($issues));
+        return new PagedResult($result, $startAt, count($issues), count($issues));
     }
 
     public function getProjectDataCollection(): ProjectDataCollection
@@ -175,8 +181,9 @@ class LeantimeApiService implements DataProviderServiceInterface
             $projectData = new ProjectData();
             $projectData->name = $project->name;
             $projectData->projectTrackerId = $project->id;
-            $projectData->projectTrackerKey = '';
-            $projectData->projectTrackerProjectUrl = '';
+            // Leantime does not have a key for each project.
+            $projectData->projectTrackerKey = $project->id;
+            $projectData->projectTrackerProjectUrl = $this->leantimeUrl . "#/tickets/showTicket/" . $project->id;
 
             $projectVersions = $this->getSprintReportVersions($project->id);
             foreach ($projectVersions as $projectVersion) {
@@ -256,6 +263,8 @@ class LeantimeApiService implements DataProviderServiceInterface
             if (isset($worklog->ticketId)) {
                 $worklogData->projectTrackerId = $worklog->id;
                 $worklogData->comment = $worklog->description ?? '';
+
+                // TODO: Get work email.
                 $worklogData->worker = $worklog->userId;
                 $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
                 $worklogData->started = new \DateTime($worklog->workDate);
