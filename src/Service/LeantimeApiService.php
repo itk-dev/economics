@@ -34,7 +34,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LeantimeApiService implements DataProviderServiceInterface
 {
-    private const PROJECT_TRACKER_IDENTIFIER = 'LEANTIME';
     private const API_PATH_JSONRPC = '/api/jsonrpc/';
     private const NO_SPRINT = 'NoSprint';
     private const PAST = 'PAST';
@@ -132,6 +131,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      */
     private function getProjectIssuesPaged($projectId, $startAt, $maxResults = 50): array
     {
+        // TODO: Implement pagination.
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['currentProject' => $projectId]);
     }
 
@@ -141,8 +141,9 @@ class LeantimeApiService implements DataProviderServiceInterface
 
         $issues = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
 
-        // TODO: Remove filter when projects are filtered correctly by the API.
-        $issues = array_filter($issues, fn($issue) => $issue->projectId == $projectId);
+        // Filter out all worklogs that do not belong to the project.
+        // TODO: Remove filter when issues are filtered correctly by projectId in the API.
+        $issues = array_filter($issues, fn ($issue) => $issue->projectId == $projectId);
 
         foreach ($issues as $issue) {
             $issueData = new IssueData();
@@ -245,9 +246,14 @@ class LeantimeApiService implements DataProviderServiceInterface
     {
         $worklogDataCollection = new WorklogDataCollection();
         $worklogs = $this->getProjectWorklogs($projectId);
+
+        // Filter out all worklogs that do not belong to the project.
+        // TODO: Remove filter when worklogs are filtered correctly by projectId in the API.
+        $worklogs = array_filter($worklogs, fn ($worklog) => $worklog->projectId == $projectId);
+
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
-            if ((bool) $worklog->ticketId) {
+            if (isset($worklog->ticketId)) {
                 $worklogData->projectTrackerId = $worklog->id;
                 $worklogData->comment = $worklog->description ?? '';
                 $worklogData->worker = $worklog->userId;

@@ -824,7 +824,7 @@ class JiraApiService implements DataProviderServiceInterface
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
             $worklogData->projectTrackerId = $worklog->tempoWorklogId;
-            $worklogData->comment = $worklog->description;
+            $worklogData->comment = $worklog->comment;
             $worklogData->worker = $worklog->worker;
             $worklogData->timeSpentSeconds = (int) $worklog->timeSpentSeconds;
             $worklogData->started = new \DateTime($worklog->started);
