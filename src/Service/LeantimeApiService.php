@@ -29,6 +29,7 @@ use App\Model\SprintReport\SprintReportVersion;
 use App\Model\SprintReport\SprintReportVersions;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Uid\Ulid;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LeantimeApiService implements DataProviderServiceInterface
@@ -56,15 +57,10 @@ class LeantimeApiService implements DataProviderServiceInterface
         ];
     }
 
-    public function getProjectTrackerIdentifier(): string
-    {
-        return self::PROJECT_TRACKER_IDENTIFIER;
-    }
-
     /**
      * Get all projects, including archived.
      *
-     * @throws ApiServiceException
+     * @throws ApiServiceException|EconomicsException
      */
     public function getAllProjects(): mixed
     {
@@ -81,6 +77,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      * @return mixed
      *
      * @throws ApiServiceException
+     * @throws EconomicsException
      */
     public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
     {
@@ -92,7 +89,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      *
      * @return SprintReportProjects array of SprintReportProjects
      *
-     * @throws ApiServiceException
+     * @throws ApiServiceException|EconomicsException
      */
     public function getSprintReportProjects(): SprintReportProjects
     {
@@ -113,12 +110,11 @@ class LeantimeApiService implements DataProviderServiceInterface
     /**
      * Get projectV2.
      *
-     * @param $key
-     *   A project key or id
+     * @param string $projectId A project key or id
      *
      * @return SprintReportProject SprintReportProject
      *
-     * @throws ApiServiceException
+     * @throws ApiServiceException|EconomicsException
      */
     public function getSprintReportProject(string $projectId): SprintReportProject
     {
@@ -132,7 +128,7 @@ class LeantimeApiService implements DataProviderServiceInterface
     }
 
     /**
-     * @throws ApiServiceException
+     * @throws ApiServiceException|EconomicsException
      */
     private function getProjectIssuesPaged($projectId, $startAt, $maxResults = 50): array
     {
@@ -145,6 +141,9 @@ class LeantimeApiService implements DataProviderServiceInterface
 
         $issues = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
 
+        // TODO: Remove filter when projects are filtered correctly by the API.
+        $issues = array_filter($issues, fn($issue) => $issue->projectId == $projectId);
+
         foreach ($issues as $issue) {
             $issueData = new IssueData();
 
@@ -156,7 +155,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->accountKey = '';
             $issueData->epicKey = $issue->tags ? $issue->tags : '';
             $issueData->epicName = $issue->tags ? $issue->tags : '';
-            if ((bool) $issue->milestoneid && (bool) $issue->milestoneHeadline) {
+            if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }
             $issueData->projectId = $issue->projectId;
@@ -674,7 +673,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                 ['json' => [
                     'jsonrpc' => '2.0',
                     'method' => $method,
-                    'id' => '1',
+                    'id' => (new Ulid())->jsonSerialize(),
                     'params' => $params,
                 ]]
             );
