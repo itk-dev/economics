@@ -32,8 +32,8 @@ class DataProviderListCommand extends Command
 
         $dataProviders = $this->dataProviderRepository->findAll();
 
-        /** @var DataProvider $provider */
-        $io->table(['id', 'name', 'enabled', 'class', 'url', 'sync clients', 'sync accounts'], array_map(fn($provider) => [
+        /* @var DataProvider $provider */
+        $io->table(['id', 'name', 'enabled', 'class', 'url', 'sync clients', 'sync accounts'], array_map(fn ($provider) => [
             $provider->getId(),
             $provider->getName(),
             $provider->isEnabled() ? 'true' : 'false',

@@ -183,7 +183,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             $projectData->projectTrackerId = $project->id;
             // Leantime does not have a key for each project.
             $projectData->projectTrackerKey = $project->id;
-            $projectData->projectTrackerProjectUrl = $this->leantimeUrl . "#/tickets/showTicket/" . $project->id;
+            $projectData->projectTrackerProjectUrl = $this->leantimeUrl.'#/tickets/showTicket/'.$project->id;
 
             $projectVersions = $this->getSprintReportVersions($project->id);
             foreach ($projectVersions as $projectVersion) {
@@ -258,6 +258,7 @@ class LeantimeApiService implements DataProviderServiceInterface
 
         $workers = array_reduce($workersData, function ($carry, $item) {
             $carry[$item->id] = $item->username;
+
             return $carry;
         }, []);
 

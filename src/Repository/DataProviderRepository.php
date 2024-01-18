@@ -38,5 +38,4 @@ class DataProviderRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
 }

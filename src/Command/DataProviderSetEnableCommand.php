@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\DataProvider;
 use App\Repository\DataProviderRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -38,14 +37,18 @@ class DataProviderSetEnableCommand extends Command
 
         $dataProvider = $this->dataProviderRepository->find($id);
 
-        if ($dataProvider != null) {
-            $dataProvider->setEnabled($enable == 'true');
+        if (null != $dataProvider) {
+            $dataProvider->setEnabled('true' == $enable);
             $dataProvider->setUpdatedBy('CLI');
             $this->dataProviderRepository->save($dataProvider, true);
+
+            $io->info('Data provider with id: '.$dataProvider->getId().' '.($dataProvider->isEnabled() ? 'enabled' : 'disabled'));
+
+            return Command::SUCCESS;
+        } else {
+            $io->error('Data provider not found');
+
+            return Command::FAILURE;
         }
-
-        $io->info("Data provider with id: " . $dataProvider->getId() . " " . ($dataProvider->isEnabled() ? 'enabled' : 'disabled'));
-
-        return Command::SUCCESS;
     }
 }
