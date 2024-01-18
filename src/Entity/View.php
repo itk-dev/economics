@@ -108,6 +108,11 @@ class View extends AbstractBaseEntity
         return $this;
     }
 
+    /**
+     * Get all reference fields of the entity.
+     *
+     * @return array
+     */
     public function getReferenceFields(): array
     {
         return [
@@ -116,6 +121,13 @@ class View extends AbstractBaseEntity
         ];
     }
 
+    /**
+     * Remove reference regardless of type.
+     *
+     * @param $reference
+     *
+     * @return $this
+     */
     public function removeReference($reference): static
     {
         if ($reference instanceof Project) {
@@ -129,6 +141,13 @@ class View extends AbstractBaseEntity
         return $this;
     }
 
+    /**
+     * Add reference regardless of type.
+     *
+     * @param $entity
+     *
+     * @return $this
+     */
     public function AddReference($entity): static
     {
         if ($entity instanceof Project) {

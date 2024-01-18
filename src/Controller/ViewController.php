@@ -24,7 +24,6 @@ class ViewController extends AbstractController
     private const VIEW_CREATE_SESSION_KEY = self::class;
     private const DEFAULT_VIEW_SESSION_KEY = 'default_view';
     private const CREATEFORM_LAST_STEP = 3;
-
     private const STEPS = [
         1 => [
             'class' => ViewAddStepOneType::class,
@@ -69,11 +68,16 @@ class ViewController extends AbstractController
 
         // Initialize multistep form.
         if (empty($data)) {
-            $data = [
-                'view' => new View(),
-                'current_step' => 1,
-            ];
+            $data = $this->createFormInit();
             $session->set(self::VIEW_CREATE_SESSION_KEY, $data);
+        } else {
+            // Re-initialize form if it's older than 10 seconds.
+            $created = clone $data['created'];
+            $created->modify('+10 minutes');
+            if ($created < new \DateTime()) {
+                $data = $this->createFormInit();
+                $session->set(self::VIEW_CREATE_SESSION_KEY, []);
+            }
         }
 
         $form = $this->createForm(self::STEPS[$data['current_step']]['class'], $data['view']);
@@ -83,7 +87,7 @@ class ViewController extends AbstractController
             // If submitting on last step we save the data.
             if (self::CREATEFORM_LAST_STEP === $data['current_step']) {
                 if ($form->isValid()) {
-                    $session->invalidate();
+                    $session->set(self::VIEW_CREATE_SESSION_KEY, []);
 
                     $viewRepository->save($data['view'], true);
 
@@ -190,5 +194,14 @@ class ViewController extends AbstractController
        $session->set(self::DEFAULT_VIEW_SESSION_KEY, $data['newDefaultView']);
 
         return new JsonResponse($data);
+    }
+
+    private function createFormInit(): array
+    {
+        return [
+            'view' => new View(),
+            'current_step' => 1,
+            'created' => new \DateTime(),
+        ];
     }
 }
