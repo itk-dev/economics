@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -71,7 +72,7 @@ class ViewController extends AbstractController
             $data = $this->createFormInit();
             $session->set(self::VIEW_CREATE_SESSION_KEY, $data);
         } else {
-            // Re-initialize form if it's older than 10 seconds.
+            // Re-initialize form if it's older than 10 minutes.
             $created = clone $data['created'];
             $created->modify('+10 minutes');
             if ($created < new \DateTime()) {
@@ -197,7 +198,7 @@ class ViewController extends AbstractController
     }
 
     #[Route('/abandon-view-add', name: 'app_view_add_abandon')]
-    public function abandonViewAdd(): \Symfony\Component\HttpFoundation\RedirectResponse
+    public function abandonViewAdd(): RedirectResponse
     {
         try {
             $session = $this->requestStack->getSession();
