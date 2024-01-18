@@ -4,13 +4,16 @@
 
 {% block content %}
   <h1 class="page-title">{{ 'view.create_new_step_two'|trans }}</h1>
+  <div>
+    {{ 'view.create_step2_description'|trans }}
+  </div>
 
   {{ form_start(form) }}
   {{ form_row(form.projects) }}
-  <button class="button">{{ 'view.action_create'|trans }}</button>
+  <button class="button">{{ 'view.action_next'|trans }}</button>
   {{ form_end(form) }}
 
   <div class="bottom-actions">
-    <a class="link" href="{{ path('app_view_list') }}">{{ 'view.back_to_list'|trans }}</a>
+    <a class="link" href="{{ path('app_view_add_abandon') }}">{{ 'view.back_to_list'|trans }}</a>
   </div>
 {% endblock %}

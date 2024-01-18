@@ -4,7 +4,6 @@ export default class extends Controller {
     static targets = ['select'];
     connect() {
       this.defaultViewEndpoint = this.element.dataset.defaultViewUpdateEndpoint;
-      console.log('00', this);
     }
     select(event) {
       const newDefaultView = event.target.options[event.target.selectedIndex].value;
@@ -20,11 +19,8 @@ export default class extends Controller {
           newDefaultView
         })
       })
-      .then(() => {
-        console.log('1', this);
-      })
       .catch((err) => {
-        console.log('error', err);
+        console.log('Error', err);
       })
     }
 

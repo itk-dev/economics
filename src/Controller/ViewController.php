@@ -196,6 +196,21 @@ class ViewController extends AbstractController
         return new JsonResponse($data);
     }
 
+    #[Route('/abandon-view-add', name: 'app_view_add_abandon')]
+    public function abandonViewAdd(): \Symfony\Component\HttpFoundation\RedirectResponse
+    {
+        try {
+            $session = $this->requestStack->getSession();
+        } catch (SessionNotFoundException $e) {
+            $session = new Session();
+            $session->start();
+        }
+
+        $session->set(self::VIEW_CREATE_SESSION_KEY, []);
+
+        return $this->redirectToRoute('app_view_list', [], Response::HTTP_SEE_OTHER);
+    }
+
     private function createFormInit(): array
     {
         return [

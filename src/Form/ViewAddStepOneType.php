@@ -17,16 +17,19 @@ class ViewAddStepOneType extends AbstractType
             ->add('name', null, [
                 'required' => true,
                 'attr' => ['class' => 'form-element'],
+                'label' => 'view.name',
             ])
             ->add('description', null, [
                 'required' => true,
                 'attr' => ['class' => 'form-element'],
+                'label' => 'view.description',
             ])
             ->add('dataProviders', EntityType::class, [
                 'class' => DataProvider::class,
                 'choice_label' => 'name',
                 'multiple' => true,
                 'attr' => ['class' => 'form-element'],
+                'label' => 'view.data_providers',
             ]);
     }
 
