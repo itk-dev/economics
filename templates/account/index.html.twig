@@ -1,25 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Account index{% endblock %}
+{% block title %}{{ 'account.title'|trans }}{% endblock %}
 
 {% block content %}
-     <h1 class="page-title">{{ 'account.title'|trans }}</h1>
+    <a class="link" href="{{ path('app_account_new') }}"
+       style="float: right">{{ 'accounts.action_create_new'|trans }}</a>
+
+    <h1 class="page-title">{{ 'account.title'|trans }}</h1>
+
+    {% set numberOfColumns = 6 %}
+
+    {# TODO: Add pagination, sorting and filters #}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
-            <tr>
-                <th class="table-th">Id</th>
-                <th class="table-th">Name</th>
-                <th class="table-th">Value</th>
-                <th class="table-th">ProjectTrackerId</th>
-                <th class="table-th">Status</th>
-                <th class="table-th">Category</th>
-                <th class="table-th">CreatedBy</th>
-                <th class="table-th">UpdatedBy</th>
-                <th class="table-th">CreatedAt</th>
-                <th class="table-th">UpdatedAt</th>
-                <th class="table-th">actions</th>
-            </tr>
+        <tr>
+            <th class="table-th">{{ 'accounts.id'|trans }}</th>
+            <th class="table-th">{{ 'accounts.name'|trans }}</th>
+            <th class="table-th">{{ 'accounts.value'|trans }}</th>
+            <th class="table-th">{{ 'accounts.status'|trans }}</th>
+            <th class="table-th">{{ 'accounts.category'|trans }}</th>
+            <th class="table-th">{{ 'accounts.actions'|trans }}</th>
+        </tr>
         </thead>
         <tbody>
         {% for index, account in accounts %}
@@ -27,25 +29,25 @@
                 <td class="table-td">{{ account.id }}</td>
                 <td class="table-td">{{ account.name }}</td>
                 <td class="table-td">{{ account.value }}</td>
-                <td class="table-td">{{ account.projectTrackerId }}</td>
                 <td class="table-td">{{ account.status }}</td>
                 <td class="table-td">{{ account.category }}</td>
-                <td class="table-td">{{ account.createdBy }}</td>
-                <td class="table-td">{{ account.updatedBy }}</td>
-                <td class="table-td">{{ account.createdAt ? account.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td class="table-td">{{ account.updatedAt ? account.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
                 <td class="table-td">
-                    <a href="{{ path('app_account_show', {'id': account.id}) }}">show</a>
-                    <a href="{{ path('app_account_edit', {'id': account.id}) }}">edit</a>
+                    <a class="link" href="{{ path('app_account_edit', {'id': account.id}) }}">{{ 'accounts.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}
-            <tr>
-                <td colspan="12">no records found</td>
+            <tr class="table-tr">
+                <td class="table-td"
+                    colspan="{{ numberOfColumns }}">{{ 'accounts.list_no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
+        <tr class="table-tr">
+            <td class="table-td" colspan="{{ numberOfColumns }}">
+                <a class="link" href="{{ path('app_account_new') }}">
+                    {{ 'accounts.action_create_new'|trans }}
+                </a>
+            </td>
+        </tr>
         </tbody>
     </table>
-
-    <a class="button" href="{{ path('app_account_new') }}">Create new</a>
 {% endblock %}
