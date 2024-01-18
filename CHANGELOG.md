@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added commands to manage data providers.
 * Changed how errors are handled in Leantime api calls.
 * Modified getSprintReportData to work with Leantime data
 * Added project lead to client when syncing projects.

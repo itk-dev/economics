@@ -254,6 +254,13 @@ class LeantimeApiService implements DataProviderServiceInterface
         $worklogDataCollection = new WorklogDataCollection();
         $worklogs = $this->getProjectWorklogs($projectId);
 
+        $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
+
+        $workers = array_reduce($workersData, function ($carry, $item) {
+            $carry[$item->id] = $item->username;
+            return $carry;
+        }, []);
+
         // Filter out all worklogs that do not belong to the project.
         // TODO: Remove filter when worklogs are filtered correctly by projectId in the API.
         $worklogs = array_filter($worklogs, fn ($worklog) => $worklog->projectId == $projectId);
@@ -263,9 +270,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             if (isset($worklog->ticketId)) {
                 $worklogData->projectTrackerId = $worklog->id;
                 $worklogData->comment = $worklog->description ?? '';
-
-                // TODO: Get work email.
-                $worklogData->worker = $worklog->userId;
+                $worklogData->worker = $workers[$worklog->userId];
                 $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
                 $worklogData->started = new \DateTime($worklog->workDate);
                 $worklogData->projectTrackerIsBilled = false;

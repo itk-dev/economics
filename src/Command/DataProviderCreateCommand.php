@@ -38,6 +38,8 @@ class DataProviderCreateCommand extends Command
         $class = $io->askQuestion($question);
 
         $dataProvider = $this->dataProviderService->createDataProvider($name, $class, $url, $secret);
+        $dataProvider->setCreatedBy('CLI');
+        $dataProvider->setUpdatedBy('CLI');
 
         $text = "Created the following data provider\n\n";
         $text .= 'ID: '.$dataProvider->getId()."\n";

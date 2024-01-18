@@ -40,6 +40,7 @@ class DataProviderSetEnableCommand extends Command
 
         if ($dataProvider != null) {
             $dataProvider->setEnabled($enable == 'true');
+            $dataProvider->setUpdatedBy('CLI');
             $this->dataProviderRepository->save($dataProvider, true);
         }
 
