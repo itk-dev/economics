@@ -19,7 +19,7 @@ class ViewAddStepTwoType extends AbstractType
                 'choice_label' => 'name',
                 'multiple' => true,
                 'attr' => ['class' => 'form-element'],
-                'label' => 'view.projects'
+                'label' => 'view.projects',
             ]);
     }
 
