@@ -29,11 +29,11 @@ use App\Model\SprintReport\SprintReportVersion;
 use App\Model\SprintReport\SprintReportVersions;
 use App\Model\SprintReport\SprintStateEnum;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Uid\Ulid;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LeantimeApiService implements DataProviderServiceInterface
 {
-    private const PROJECT_TRACKER_IDENTIFIER = 'LEANTIME';
     private const API_PATH_JSONRPC = '/api/jsonrpc/';
     private const NO_SPRINT = 'NoSprint';
     private const PAST = 'PAST';
@@ -56,15 +56,10 @@ class LeantimeApiService implements DataProviderServiceInterface
         ];
     }
 
-    public function getProjectTrackerIdentifier(): string
-    {
-        return self::PROJECT_TRACKER_IDENTIFIER;
-    }
-
     /**
      * Get all projects, including archived.
      *
-     * @throws ApiServiceException
+     * @throws ApiServiceException|EconomicsException
      */
     public function getAllProjects(): mixed
     {
@@ -81,6 +76,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      * @return mixed
      *
      * @throws ApiServiceException
+     * @throws EconomicsException
      */
     public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
     {
@@ -92,7 +88,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      *
      * @return SprintReportProjects array of SprintReportProjects
      *
-     * @throws ApiServiceException
+     * @throws ApiServiceException|EconomicsException
      */
     public function getSprintReportProjects(): SprintReportProjects
     {
@@ -113,12 +109,11 @@ class LeantimeApiService implements DataProviderServiceInterface
     /**
      * Get projectV2.
      *
-     * @param $key
-     *   A project key or id
+     * @param string $projectId A project key or id
      *
      * @return SprintReportProject SprintReportProject
      *
-     * @throws ApiServiceException
+     * @throws ApiServiceException|EconomicsException
      */
     public function getSprintReportProject(string $projectId): SprintReportProject
     {
@@ -133,17 +128,27 @@ class LeantimeApiService implements DataProviderServiceInterface
 
     /**
      * @throws ApiServiceException
+     * @throws EconomicsException
      */
     private function getProjectIssuesPaged($projectId, $startAt, $maxResults = 50): array
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['currentProject' => $projectId]);
+        // TODO: Implement pagination.
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId]]);
     }
 
+    /**
+     * @throws ApiServiceException
+     * @throws EconomicsException
+     */
     public function getIssuesDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
     {
         $result = [];
 
         $issues = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
+
+        // Filter out all worklogs that do not belong to the project.
+        // TODO: Remove filter when issues are filtered correctly by projectId in the API.
+        $issues = array_filter($issues, fn ($issue) => $issue->projectId == $projectId);
 
         foreach ($issues as $issue) {
             $issueData = new IssueData();
@@ -151,19 +156,20 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->name = $issue->headline;
             $issueData->status = $issue->status;
             $issueData->projectTrackerId = $issue->id;
-            $issueData->projectTrackerKey = '';
+            // Leantime does not have a key for each issue.
+            $issueData->projectTrackerKey = $issue->id;
             $issueData->accountId = '';
             $issueData->accountKey = '';
-            $issueData->epicKey = $issue->tags ? $issue->tags : '';
-            $issueData->epicName = $issue->tags ? $issue->tags : '';
-            if ((bool) $issue->milestoneid && (bool) $issue->milestoneHeadline) {
+            $issueData->epicKey = $issue->tags;
+            $issueData->epicName = $issue->tags;
+            if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }
             $issueData->projectId = $issue->projectId;
             $result[] = $issueData;
         }
 
-        return new PagedResult($result, $startAt, $maxResults, count($issues));
+        return new PagedResult($result, $startAt, count($issues), count($issues));
     }
 
     public function getProjectDataCollection(): ProjectDataCollection
@@ -175,8 +181,9 @@ class LeantimeApiService implements DataProviderServiceInterface
             $projectData = new ProjectData();
             $projectData->name = $project->name;
             $projectData->projectTrackerId = $project->id;
-            $projectData->projectTrackerKey = '';
-            $projectData->projectTrackerProjectUrl = '';
+            // Leantime does not have a key for each project.
+            $projectData->projectTrackerKey = $project->id;
+            $projectData->projectTrackerProjectUrl = $this->leantimeUrl.'#/tickets/showTicket/'.$project->id;
 
             $projectVersions = $this->getSprintReportVersions($project->id);
             foreach ($projectVersions as $projectVersion) {
@@ -246,12 +253,25 @@ class LeantimeApiService implements DataProviderServiceInterface
     {
         $worklogDataCollection = new WorklogDataCollection();
         $worklogs = $this->getProjectWorklogs($projectId);
+
+        $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
+
+        $workers = array_reduce($workersData, function ($carry, $item) {
+            $carry[$item->id] = $item->username;
+
+            return $carry;
+        }, []);
+
+        // Filter out all worklogs that do not belong to the project.
+        // TODO: Remove filter when worklogs are filtered correctly by projectId in the API.
+        $worklogs = array_filter($worklogs, fn ($worklog) => $worklog->projectId == $projectId);
+
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
-            if ((bool) $worklog->ticketId) {
+            if (isset($worklog->ticketId)) {
                 $worklogData->projectTrackerId = $worklog->id;
                 $worklogData->comment = $worklog->description ?? '';
-                $worklogData->worker = $worklog->userId;
+                $worklogData->worker = $workers[$worklog->userId];
                 $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
                 $worklogData->started = new \DateTime($worklog->workDate);
                 $worklogData->projectTrackerIsBilled = false;
@@ -674,7 +694,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                 ['json' => [
                     'jsonrpc' => '2.0',
                     'method' => $method,
-                    'id' => '1',
+                    'id' => (new Ulid())->jsonSerialize(),
                     'params' => $params,
                 ]]
             );
