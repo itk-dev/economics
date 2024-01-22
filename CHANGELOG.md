@@ -33,7 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed project creator for Jira.
 * Added client view.
 * Added account view.
-* Added pricelist view.
 * Added leantime support for projects and project sync.
 
 
