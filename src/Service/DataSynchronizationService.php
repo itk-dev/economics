@@ -55,9 +55,8 @@ class DataSynchronizationService
         $service = $this->dataProviderService->getService($dataProvider);
 
         // Get all projects from ApiService.
-        $allProjectData = $service->getAllProjectData();
-
-        foreach ($allProjectData as $index => $projectDatum) {
+        $allProjectData = $service->getProjectDataCollection();
+        foreach ($allProjectData->projectData as $index => $projectDatum) {
             $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
 
@@ -71,19 +70,20 @@ class DataSynchronizationService
             $project->setProjectTrackerId($projectDatum->projectTrackerId);
             $project->setProjectTrackerKey($projectDatum->projectTrackerKey);
             $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
-
             foreach ($projectDatum->versions as $versionData) {
-                $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId, 'dataProvider' => $dataProvider]);
+                foreach ($versionData as $versionDatum) {
+                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
 
-                if (!$version) {
-                    $version = new Version();
-                    $version->setDataProvider($dataProvider);
-                    $this->entityManager->persist($version);
+                    if (!$version) {
+                        $version = new Version();
+                        $version->setDataProvider($dataProvider);
+                        $this->entityManager->persist($version);
+                    }
+
+                    $version->setName($versionDatum->name);
+                    $version->setProjectTrackerId($versionDatum->projectTrackerId);
+                    $version->setProject($project);
                 }
-
-                $version->setName($versionData->name);
-                $version->setProjectTrackerId($versionData->projectTrackerId);
-                $version->setProject($project);
             }
 
             // Only synchronize clients if this is enabled.
@@ -124,7 +124,7 @@ class DataSynchronizationService
                 $this->entityManager->clear();
             }
 
-            $progressCallback($index, count($allProjectData));
+            $progressCallback($index, count($allProjectData->projectData));
         }
 
         $this->entityManager->flush();
@@ -204,11 +204,9 @@ class DataSynchronizationService
         $issuesProcessed = 0;
 
         $startAt = 0;
-
         do {
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
             $project = $this->projectRepository->find($projectId);
-
             if (!$project) {
                 throw new EconomicsException($this->translator->trans('exception.project_not_found'));
             }
@@ -216,9 +214,7 @@ class DataSynchronizationService
             $pagedIssueData = $service->getIssuesDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
             $total = $pagedIssueData->total;
 
-            $issueData = $pagedIssueData->items;
-
-            foreach ($issueData as $issueDatum) {
+            foreach ($pagedIssueData->items as $issueDatum) {
                 $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
 
                 if (!$issue) {
@@ -227,7 +223,6 @@ class DataSynchronizationService
 
                     $this->entityManager->persist($issue);
                 }
-
                 $issue->setName($issueDatum->name);
                 $issue->setAccountId($issueDatum->accountId);
                 $issue->setAccountKey($issueDatum->accountKey);
@@ -287,10 +282,9 @@ class DataSynchronizationService
             throw new EconomicsException($this->translator->trans('exception.project_tracker_id_not_set'));
         }
 
-        $worklogData = $service->getWorklogDataForProject($projectTrackerId);
+        $worklogData = $service->getWorklogDataCollection($projectTrackerId);
         $worklogsAdded = 0;
-
-        foreach ($worklogData as $worklogDatum) {
+        foreach ($worklogData->worklogData as $worklogDatum) {
             $project = $this->projectRepository->find($projectId);
 
             if (!$project) {
@@ -298,7 +292,6 @@ class DataSynchronizationService
             }
 
             $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
-
             if (!$worklog) {
                 $worklog = new Worklog();
 
@@ -308,7 +301,6 @@ class DataSynchronizationService
 
                 $this->entityManager->persist($worklog);
             }
-
             $worklog->setWorklogId($worklogDatum->projectTrackerId);
             $worklog->setDescription($worklogDatum->comment);
             $worklog->setWorker($worklogDatum->worker);
@@ -329,7 +321,7 @@ class DataSynchronizationService
             $project->addWorklog($worklog);
 
             if (null !== $progressCallback) {
-                $progressCallback($worklogsAdded, count($worklogData));
+                $progressCallback($worklogsAdded, count($worklogData->worklogData));
 
                 ++$worklogsAdded;
             }

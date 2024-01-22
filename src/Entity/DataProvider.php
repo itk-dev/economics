@@ -26,6 +26,9 @@ class DataProvider extends AbstractBaseEntity
     #[ORM\Column(nullable: true)]
     private ?bool $enableAccountSync = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $enabled = null;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -101,5 +104,17 @@ class DataProvider extends AbstractBaseEntity
     public function __toString(): string
     {
         return $this->getName() ?? ''.$this->getId();
+    }
+
+    public function isEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(?bool $enabled): static
+    {
+        $this->enabled = $enabled;
+
+        return $this;
     }
 }

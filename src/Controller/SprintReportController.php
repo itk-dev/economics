@@ -98,11 +98,11 @@ class SprintReportController extends AbstractController
                 ]);
 
                 if (!empty($requestData['projectId'])) {
-                    $versionCollection = $service->getSprintReportProjectVersions($requestData['projectId']);
+                    $versionCollection = $service->getSprintReportVersions($requestData['projectId']);
 
                     $versionChoices = [];
                     foreach ($versionCollection->versions as $version) {
-                        $versionChoices[$version->headline] = $version->id;
+                        $versionChoices[$version->name] = $version->id;
                     }
 
                     // Override versionId with element with choices.

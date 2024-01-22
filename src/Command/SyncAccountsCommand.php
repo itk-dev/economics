@@ -35,7 +35,7 @@ class SyncAccountsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $dataProviders = $this->dataProviderRepository->findAll();
+        $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
         foreach ($dataProviders as $dataProvider) {
             $io->info('Processing accounts in '.$dataProvider->getName());
