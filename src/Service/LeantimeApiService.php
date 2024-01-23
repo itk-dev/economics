@@ -366,7 +366,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         $sprintIssues = [];
 
         $allSprints = $this->getAllSprints();
-        
+
         foreach ($allSprints as $sprintData) {
             // Expected sprint name examples:
             //   DEV sprint uge 2-3-4.23
@@ -602,7 +602,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                 }
             }
             $worklogs = $this->getTimesheetsForTicket($issueEntry->id);
-            
+
             foreach ($worklogs as $worklog) {
                 $workLogStarted = strtotime($worklog->workDate);
 
