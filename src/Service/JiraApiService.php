@@ -192,6 +192,11 @@ class JiraApiService implements DataProviderServiceInterface
         return $issues;
     }
 
+    public function getPlanningDataWeeks(): PlanningData
+    {
+        return $this->getPlanningData();
+    }
+
     public function getPlanningData(): PlanningData
     {
         $planning = new PlanningData();

@@ -16,6 +16,8 @@ interface DataProviderServiceInterface
 {
     public function getPlanningData(): PlanningData;
 
+    public function getPlanningDataWeeks(): PlanningData;
+
     /**
      * @return array<ClientData>
      */
