@@ -7,7 +7,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\NotNull;
 
 class AccountType extends AbstractType
 {
@@ -15,100 +14,40 @@ class AccountType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'create_account_form.account_name.label',
+                'label' => 'create_account_form.account_name_label',
                 'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_name.help',
+                'attr' => ['class' => 'form-element'],
+                'help_attr' => ['class' => 'form-help'],
+                'help' => 'create_account_form.account_name_help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('value', TextType::class, [
-                'label' => 'create_account_form.account_value.label',
+                'label' => 'create_account_form.account_value_label',
                 'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_value.help',
+                'attr' => ['class' => 'form-element'],
+                'help_attr' => ['class' => 'form-help'],
+                'help' => 'create_account_form.account_value_help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
-            ])
-            ->add('projectTrackerId', TextType::class, [
-                'label' => 'create_account_form.account_projectTrackerId.label',
-                'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_projectTrackerId.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
-            ])
-            ->add('source', TextType::class, [
-                'label' => 'create_account_form.account_source.label',
-                'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_source.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('status', TextType::class, [
-                'label' => 'create_account_form.account_status.label',
+                'label' => 'create_account_form.account_status_label',
                 'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_status.help',
+                'attr' => ['class' => 'form-element'],
+                'help_attr' => ['class' => 'form-help'],
+                'help' => 'create_account_form.account_status_help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('category', TextType::class, [
-                'label' => 'create_account_form.account_category.label',
+                'label' => 'create_account_form.account_category_label',
                 'label_attr' => ['class' => 'label'],
-                'constraints' => [
-                    new NotNull(['groups' => 'base']),
-                ],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help_attr' => [
-                    'class' => 'form-help',
-                ],
-                'help' => 'create_client_form.account_category.help',
+                'attr' => ['class' => 'form-element'],
+                'help_attr' => ['class' => 'form-help'],
+                'help' => 'create_account_form.account_category_help',
                 'required' => true,
-                'row_attr' => ['class' => 'form-element-wrapper'],
+                'row_attr' => ['class' => 'form-row'],
             ]);
     }
 

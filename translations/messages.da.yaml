@@ -1,40 +1,40 @@
 sprint_report:
   data_provider_helptext: ""
   data_provider: "Vælg datakilde"
-  select_project: Vælg projekt
-  select_version: Vælg version
-  select_an_option: Vælg en mulighed
-  save_budget: Gem
-  title: Sprintrapport
-  heading: Sprintrapport
-  heading_overview: Overblik
-  heading_phases: Projektets faser
-  heading_spent_hours: Forbrugt pr. uge
-  heading_planned_hours: Planlagt pr. uge
-  pdf_title: Sprint rapport eksport
-  render_as_pdf: Hent som PDF
+  select_project: "Vælg projekt"
+  select_version: "Vælg version"
+  select_an_option: "Vælg en mulighed"
+  save_budget: "Gem"
+  title: "Sprintrapport"
+  heading: "Sprintrapport"
+  heading_overview: "Overblik"
+  heading_phases: "Projektets faser"
+  heading_spent_hours: "Forbrugt pr. uge"
+  heading_planned_hours: "Planlagt pr. uge"
+  pdf_title: "Sprint rapport eksport"
+  render_as_pdf: "Hent som PDF"
   sub:
-    project: Projekt
-    version: Bestilling
-    budget: Salgsbudget
-    spent_hours: Timer reg. total
-    remaining_hours: Resterende timer planlagt total
-    project_hours: Projektets timer
-    finished_degree: Færdiggørelsesgrad (%)
-    project_forecast: Projekt total forecast
-    over_under_index: Over/underløb - index
+    project: "Projekt"
+    version: "Bestilling"
+    budget: "Salgsbudget"
+    spent_hours: "Timer reg. total"
+    remaining_hours: "Resterende timer planlagt total"
+    project_hours: "Projektets timer"
+    finished_degree: "Færdiggørelsesgrad (%)"
+    project_forecast: "Projekt total forecast"
+    over_under_index: "Over/underløb - index"
   table:
-    epic: Epic
-    estimate: Est.
-    remaining_hours: Resterende arbejde est.
-    remaining_hours_short: Rest. arb.
-    registered_hours: Registreret
-    reg: Reg.
-    no_sprint: Ingen sprint
-    planned_work_sum: Sum af est. planlagt arb.
+    epic: "Epic"
+    estimate: "Est."
+    remaining_hours: "Resterende arbejde est."
+    remaining_hours_short: "Rest. arb."
+    registered_hours: "Registreret"
+    reg: "Reg."
+    no_sprint: "Ingen sprint"
+    planned_work_sum: "Sum af est. planlagt arb."
 
 navigation:
-  home: Forside
+  home: "Forside"
   create_project: "Projektopretter"
   invoices: "Faktura"
   planning: "Planlægning"
@@ -44,7 +44,7 @@ navigation:
   project_billing: "Projektfakturering"
   projects: "Projekter"
   client: "Kunder"
-  account: "Kundekonti"
+  account: "Konti"
   pricelist: "Prisliste"
 
 planning:
@@ -99,7 +99,7 @@ create_client_form:
     label: "Kundetype"
     help: ""
   client_account:
-    label: "Kundekonto"
+    label: "Konto"
     help: ""
   client_psp:
     label: "PSP-element"
@@ -110,9 +110,15 @@ create_client_form:
   client_projectTrackerId:
     label: "ProjectTrackerId"
     help: ""
+  sales_channel:
+    label: "Salgskanal"
+    help: ""
+  customer_key:
+    label: "Ordregiver/Bestiller"
+    help: ""
 
 account:
-  title: "Kundekonti"
+  title: "Konti"
   create_new: "Opret konto"
   no_records_found: "Ingen konti at vise"
   new: "Opret konto"
@@ -120,21 +126,16 @@ account:
   back_to_list: "Tilbage til listen"
 
 create_account_form:
-  account_name:
-    label: "Navn"
-    help: ""
-  account_value:
-    label: "Værdi"
-    help: ""
-  account_projectTrackerId:
-    label: "Projekt"
-    help: ""
-  account_status:
-    label: "Status"
-    help: ""
-  account_category:
-    label: "Kategori"
-    help: ""
+  account_name_label: "Navn"
+  account_name_help: ""
+  account_value_label: "Værdi"
+  account_value_help: ""
+  account_project_tracker_id_label: "Projekt"
+  account_project_tracker_id_help: ""
+  account_status_label: "Status"
+  account_status_help: ""
+  account_category_label: "Kategori"
+  account_category_help: ""
 
 invoices:
   title: "Faktura"
@@ -153,15 +154,15 @@ invoices:
   status_not_posted: "Ikke bogført"
   action_update: "Gem ændringer"
   edit: "Rediger faktura"
-  client_information: "Kundekontoinformationer"
+  client_information: "Kundeinformationer"
   invoice_for: "Faktura for [%project%] (%projectTrackerId%)"
-  no_client: "Ingen kundekonto valgt"
+  no_client: "Ingen kunde valgt"
   client_psp: "PSP"
   client_account: "Konto"
   client_type: "Type"
   client_standard_price: "Standardpris"
   client_contact: "Kontakt"
-  client_name: "Kundekonto"
+  client_name: "Kunde"
   info: "Faktura"
   create_new: "Opret faktura"
   action_edit: "Redigér"
@@ -189,7 +190,7 @@ invoices:
   name: "Navn"
   description: "Beskrivelse"
   project: "Projekt"
-  client: "Kundekonto"
+  client: "Kunde"
   default_material_number: "Materialenummer"
   default_receiver_account: "Til konto"
   paid_by_account: "Betales af konto"
@@ -200,8 +201,8 @@ invoices:
   name_helptext: "Vælg faktuens navn."
   description_helptext: "Indsættes i tekstfeltet i fakturaen. Autoudfyld er tilgængelig, hvis der er valgt en kundekonto med en project lead."
   project_helptext: "Vælg projekt."
-  client_helptext: "Vælg hvilken kundekonto fakturaen skal udstedes til."
-  payer_account_helptext: 'Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: "Betales af [KONTO]".'
+  client_helptext: "Vælg hvilken kunde fakturaen skal udstedes til."
+  payer_account_helptext: "Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: \"Betales af [KONTO]\"."
   default_material_number_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
   default_receiver_account_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
   client_type_internal: "Intern"
@@ -222,7 +223,7 @@ invoices:
   invoice_entry_type_heading: "Type: %type%"
   add_worklogs: "Vælg worklogs"
   confirm_record_title: "Bogfør faktura"
-  confirm_record_are_you_sure: 'Er du sikker på at du vil bogføre fakturaen "%invoiceName%"?'
+  confirm_record_are_you_sure: "Er du sikker på at du vil bogføre fakturaen \"%invoiceName%\"?"
   confirm_record_cannot_be_undone: "Når fakturaen er bogført kan den ikke ændres mere."
   record_save: "Gennemfør valg"
   record_invoice_false: "Nej. Gå tilbage."
@@ -233,7 +234,7 @@ invoices:
   already_recorded: "Fakturaen er allerede bogført"
   action_show_export: "Vis eksport"
   action_record: "Bogfør faktura"
-  locked_client_values: "Låste fakturaværdier. Disse værdier bruges i fakturaen og ændres ikke selvom kundekontoen bliver opdateret."
+  locked_client_values: "Låste fakturaværdier. Disse værdier bruges i fakturaen og ændres ikke selvom kunden bliver opdateret."
   locked_type: "Type"
   locked_sales_channel: "Salgskanal"
   locked_account_key: "Konto"
@@ -260,7 +261,7 @@ invoices:
   client_type_is_null: ""
   generate_description: "Autoudfyld"
   client_project_lead: "Project Lead"
-  required_fields_not_set_for_creating_entries: '"Til konto" og "Materialenummer" skal være valgt før der kan oprettes fakturalinjer.'
+  required_fields_not_set_for_creating_entries: "\"Til konto\" og \"Materialenummer\" skal være valgt før der kan oprettes fakturalinjer."
   type: "Kundekonto type"
 
 material_number_enum:
@@ -285,6 +286,12 @@ accounts:
   created_by: "Oprettet af"
   source: "Kilde"
   manual: "Manuel"
+  action_delete_account: "Slet konto"
+  list_no_records_found: "Ingen konti"
+  status: "Status"
+  category: "Kategori"
+  action_create_new: "Opret ny konto"
+  action_edit: "Redigér"
 
 worklog:
   title: "Tilføj worklogs til fakturalinje"
@@ -311,7 +318,7 @@ worklog:
   error_added_to_other_invoice_entry: "Fejl: Indeholder worklog der er bundet til anden fakturaindgang. Prøv at genindlæse siden..."
   only_available_false: "Nej. Vis alle."
   only_available_true: "Ja"
-  only_available: 'Kun "frie" worklogs'
+  only_available: "Kun \"frie\" worklogs"
   only_available_helptext: "Worklogs der ikke er i en anden fakturalinje."
   title_show: "Worklogs"
 
@@ -321,7 +328,7 @@ invoice_entry:
   new_worklog_information: "Bemærk! Der kan først tilkobles worklogs efter linjen er gemt første gang."
 
 invoice_recordable:
-  error_no_client: "Ingen klientkonto tilkoblet"
+  error_no_client: "Ingen kunde tilkoblet"
   error_no_account: "Ingen konto"
   error_no_contact: "Ingen kontakt"
   error_no_type: "Ingen type"
@@ -339,12 +346,15 @@ home:
   sprint_report_description: "Opret sprintrapporter baseret på opgaver og worklogs i Project Tracker."
   create_project: "Projektopretter"
   create_project_description: "Hjælper med at oprette projekter i Project Tracker."
-  accounts: "Konto"
+  accounts: "Konti"
+  accounts_description: "Liste over konti. Bruges i valglister."
   account_details: "Liste over kontoer der bruges i faktura."
   project_billing: "Projektfakturering"
   project_billing_description: "Fakturér alle kunder i et projekt for en given periode."
   projects: "Projekter"
   projects_description: "Liste over projekter. Vælg hvilke skal vises i resten af systemet."
+  clients_description: "Liste over kunder, som kan kobles på projekter."
+  clients: "Kunder"
 
 frontpage:
   title: "Velkommen til Economics"
@@ -379,12 +389,12 @@ project_billing:
   field_period_end: "Til"
   field_period_end_helptext: "Vælg hvor perioden skal strække sig til"
   field_description: "Beskrivelse"
-  field_description_help: 'Teksten sættes efter "Projektnavn: Accountnavn (faktureringsperiode)." i H på faktura.'
+  field_description_help: "Teksten sættes efter \"Projektnavn: Accountnavn (faktureringsperiode).\" i H på faktura."
   action_export: "Eksportér"
   action_record: "Bogfør projektfakturering"
   action_show_export: "Vis eksport"
   back_to_invoice: "Tilbage til projektfakturering"
-  confirm_record_are_you_sure: 'Er du sikker på at du vil bogføre projektfaktureringen "%projectBillingName%"?'
+  confirm_record_are_you_sure: "Er du sikker på at du vil bogføre projektfaktureringen \"%projectBillingName%\"?"
   all_worklogs_will_be_marked_as_billed: "Alle worklogs og fakturaer i projektfaktureringen vil blive markeret som faktureret."
   confirm_record_cannot_be_undone: "Når fakturaen er bogført kan den ikke ændres mere."
   confirm_record_title: "Bogfør projektfaktureringen"
@@ -399,7 +409,7 @@ project_billing:
   recorded: "Ja"
   list_recorded: "Bogført"
   issues_not_included: "Opgaver der ikke er inkluderet fordi de mangler konto"
-  issues_not_included_helptext: 'Sæt konto på opgaven for få den med i projektfaktureringen. Synkronisér derefter projektet i "Projekter", og tryk derefter "Gem" på denne projektfaktureringen for at få opgaverne med.'
+  issues_not_included_helptext: "Sæt konto på opgaven for få den med i projektfaktureringen. Synkronisér derefter projektet i \"Projekter\", og tryk derefter \"Gem\" på denne projektfaktureringen for at få opgaverne med."
   issue:
     name: "navn"
     status: "status"
@@ -460,10 +470,36 @@ exception:
   project_billing_no_project_selected: "Projekt ikke valgt."
   project_billing_period_cannot_be_null: "Perioden skal være valgt."
   billing_cannot_put_invoice_on_record_errors_found: "Kan ikke bogføre fakturaen %invoiceName% (%invoiceId%). Følgende fejl er ikke håndteret: %errors%"
-  invoice_client_must_be_set: "Kundekonto skal være valgt."
+  invoice_client_must_be_set: "Kunde skal være valgt."
   invoice_errors_exit_cannot_put_on_record: "Der er problemer med projektfaktureringen. Kan ikke bogføre den."
 
 error:
   title: "Der opstod en fejl"
   code: "Fejlkode"
   message: "Besked"
+
+clients:
+  action_delete_account: "Slet kunde"
+  edit: "Redigér kunde"
+  action_save: "Redigér"
+  action_create_new: "Opret ny kunde"
+  id: "#"
+  name: "Navn"
+  contact: "Kontakt"
+  standard_price: "Standardpris"
+  type: "Type"
+  account: "Konto"
+  psp: "PSP"
+  ean: "EAN"
+  sales_channel: "Salgskanal"
+  customer_key: "Ordregiver/Bestiller"
+  actions: "Handlinger"
+  action_edit: "Redigér"
+  list_no_records_found: "Ingen kunder"
+
+delete:
+  confirm: "Er du sikker på at du vil slette dette?"
+
+client_type_enum:
+  internal: "Intern"
+  external: "Ekstern"

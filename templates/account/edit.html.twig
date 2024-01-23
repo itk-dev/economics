@@ -1,13 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Account{% endblock %}
+{% block title %}{{ 'accounts.edit'|trans}}{% endblock %}
 
 {% block content %}
-    <h1>Edit Account</h1>
+    <h1 class="page-title">{{ 'accounts.edit'|trans}}</h1>
 
-    {{ include('account/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="actions-right">
+            <button class="button mt-3">{{ 'accounts.action_save'|trans }}</button>
+        </div>
+    {{ form_end(form) }}
 
-    <a href="{{ path('app_account_index') }}">back to list</a>
-
-    {{ include('account/_delete_form.html.twig') }}
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_account_index') }}">{{ 'accounts.back_to_list'|trans }}</a>
+        {{ include('account/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

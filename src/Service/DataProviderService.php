@@ -89,6 +89,7 @@ class DataProviderService
         $dataProvider->setUrl($url);
         $dataProvider->setSecret($secret);
         $dataProvider->setClass($class);
+        $dataProvider->setEnabled(true);
         $dataProvider->setEnableClientSync($enableClientSync);
         $dataProvider->setEnableAccountSync($enableAccountSync);
 

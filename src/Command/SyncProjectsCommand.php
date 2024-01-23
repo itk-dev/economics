@@ -35,7 +35,7 @@ class SyncProjectsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $dataProviders = $this->dataProviderRepository->findAll();
+        $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
         foreach ($dataProviders as $dataProvider) {
             $this->dataSynchronizationService->syncProjects(function ($i, $length) use ($io) {

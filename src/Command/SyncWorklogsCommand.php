@@ -39,7 +39,7 @@ class SyncWorklogsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $dataProviders = $this->dataProviderRepository->findAll();
+        $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
         foreach ($dataProviders as $dataProvider) {
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);

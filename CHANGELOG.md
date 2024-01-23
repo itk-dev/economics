@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Default to work id worker not longer exists in Leantime worklog sync.
+* Added commands to manage data providers.
+* Changed how errors are handled in Leantime api calls.
 * Modified getSprintReportData to work with Leantime data
 * Added project lead to client when syncing projects.
 * Remove description from create invoice page.
@@ -31,9 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed project creator for Jira.
 * Added client view.
 * Added account view.
-* Added pricelist view.
 * Added leantime support for projects and project sync.
 * Added week-based planning view, based on issue duedates.
+* Fixed minor leantime integration issues.
 
 
 * RELEASE NOTES:
