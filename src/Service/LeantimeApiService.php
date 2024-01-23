@@ -305,7 +305,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      */
     public function getTicketsInSprint(string $sprintId): array
     {
-        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['sprint' => $sprintId]);
+        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['sprint' => $sprintId]]);
 
         return $result;
     }
@@ -366,7 +366,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         $sprintIssues = [];
 
         $allSprints = $this->getAllSprints();
-
+        
         foreach ($allSprints as $sprintData) {
             // Expected sprint name examples:
             //   DEV sprint uge 2-3-4.23
@@ -539,7 +539,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      */
     private function getIssuesForProjectMilestone($projectId, $milestoneId): array
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['currentProject' => $projectId, 'milestone' => $milestoneId]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'milestone' => $milestoneId]]);
     }
 
     /**
@@ -602,7 +602,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                 }
             }
             $worklogs = $this->getTimesheetsForTicket($issueEntry->id);
-
+            
             foreach ($worklogs as $worklog) {
                 $workLogStarted = strtotime($worklog->workDate);
 
