@@ -271,7 +271,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             if (isset($worklog->ticketId)) {
                 $worklogData->projectTrackerId = $worklog->id;
                 $worklogData->comment = $worklog->description ?? '';
-                $worklogData->worker = $workers[$worklog->userId];
+                $worklogData->worker = $workers[$worklog->userId] ?? $worklog->userId;
                 $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
                 $worklogData->started = new \DateTime($worklog->workDate);
                 $worklogData->projectTrackerIsBilled = false;
