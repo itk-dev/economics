@@ -19,6 +19,7 @@ use App\Model\Planning\PlanningData;
 use App\Model\Planning\Project;
 use App\Model\Planning\Sprint;
 use App\Model\Planning\SprintSum;
+use App\Model\Planning\Weeks;
 use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
@@ -305,9 +306,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      */
     public function getTicketsInSprint(string $sprintId): array
     {
-        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['sprint' => $sprintId]]);
-
-        return $result;
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['sprint' => $sprintId]]);
     }
 
     /**
@@ -351,12 +350,225 @@ class LeantimeApiService implements DataProviderServiceInterface
     }
 
     /**
+     * @throws ApiServiceException
+     */
+    private function getAllIssues(): array
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => []]);
+    }
+
+    /**
      * Create data for planning page.
      *
      * @throws ApiServiceException
      * @throws \Exception
      */
-    public function getPlanningData(): PlanningData
+    public function getPlanningDataWeeks(): PlanningData
+    {
+        $planning = new PlanningData();
+        $assignees = $planning->assignees;
+        $projects = $planning->projects;
+        $weeks = $planning->weeks;
+
+        $currentYear = (int) (new \DateTime())->format('Y');
+
+        for ($weekNumber = 1; $weekNumber <= 52; ++$weekNumber) {
+            $date = (new \DateTime())->setISODate($currentYear, $weekNumber);
+            $week = (int) $date->format('W'); // Cast as int to remove leading zero.
+            $weekFirstDay = $date->setISODate($currentYear, $week, 1)->format('j/n');
+            $weekLastDay = $date->setISODate($currentYear, $week, 5)->format('j/n');
+            $weekIsSupport = 1 === $week % 4;
+
+            if ($weekIsSupport) {
+                $supportWeek = new Weeks();
+                $supportWeek->weekCollection->add($week);
+                $supportWeek->weeks = 1;
+                $supportWeek->weekGoalLow = $this->weekGoalLow;
+                $supportWeek->weekGoalHigh = $this->weekGoalHigh;
+                $supportWeek->displayName = (string) $week;
+                $supportWeek->dateSpan = $weekFirstDay.' - '.$weekLastDay;
+                $weeks->add($supportWeek);
+            } else {
+                if (isset($regularWeek)) {
+                    $regularWeek->weekCollection->add($week);
+                    ++$regularWeek->weeks;
+                    $regularWeek->displayName .= '-'.$week;
+                    if (3 === count($regularWeek->weekCollection)) {
+                        $regularWeek->dateSpan .= ' - '.$weekLastDay;
+                        $weeks->add($regularWeek);
+                        unset($regularWeek);
+                    }
+                } else {
+                    $regularWeek = new Weeks();
+                    $regularWeek->weekCollection->add($week);
+                    $regularWeek->weeks = 1;
+                    $regularWeek->weekGoalLow = $this->weekGoalLow * 3;
+                    $regularWeek->weekGoalHigh = $this->weekGoalHigh * 3;
+                    $regularWeek->displayName = (string) $week;
+                    $regularWeek->dateSpan = $weekFirstDay;
+                }
+            }
+        }
+
+        $weekIssues = [];
+        $allIssues = $this->getAllIssues();
+
+        foreach ($allIssues as $issue) {
+            $issueYear = new \DateTime($issue->dateToFinish);
+            $issueYear = $issueYear->format('Y');
+
+            $issueWeek = new \DateTime($issue->dateToFinish);
+            $issueWeek = (int) $issueWeek->format('W');
+
+            if ('-0001' !== $issueYear) {
+                $weekIssues[$issueWeek][] = $issue;
+            } else {
+                $weekIssues['unscheduled'][] = $issue;
+            }
+        }
+        foreach ($weekIssues as $week => $issues) {
+            foreach ($issues as $issueData) {
+                if ('0' !== $issueData->status) { // excludes done issues.
+                    $week = (string) $week;
+                    $projectKey = (string) $issueData->projectId;
+                    $projectDisplayName = $issueData->projectName;
+
+                    $hoursRemaining = ($issueData->planHours - $issueData->bookedHours);
+                    if (empty($issueData->editorId)) {
+                        $assigneeKey = 'unassigned';
+                        $assigneeDisplayName = 'Unassigned';
+                    } else {
+                        $assigneeKey = (string) $issueData->editorId;
+                        if (isset($issueData->editorFirstname) || isset($issueData->editorLastname)) {
+                            $assigneeDisplayName = $issueData->editorFirstname.' '.$issueData->editorLastname;
+                        } else {
+                            $assigneeDisplayName = 'Name missing';
+                        }
+                    }
+                    // Add assignee if not already added.
+                    if (!$assignees->containsKey($assigneeKey)) {
+                        $assignees->set($assigneeKey, new Assignee($assigneeKey, $assigneeDisplayName));
+                    }
+
+                    /** @var Assignee $assignee */
+                    $assignee = $assignees->get($assigneeKey);
+
+                    // Add sprint if not already added.
+                    if (!$assignee->sprintSums->containsKey($week)) {
+                        $assignee->sprintSums->set($week, new SprintSum($week));
+                    }
+
+                    /** @var SprintSum $sprintSum */
+                    $sprintSum = $assignee->sprintSums->get($week);
+                    $sprintSum->sumHours += $hoursRemaining;
+
+                    // Add assignee project if not already added.
+                    if (!$assignee->projects->containsKey($projectKey)) {
+                        $assigneeProject = new AssigneeProject($projectKey, $projectDisplayName);
+                        $assignee->projects->set($projectKey, $assigneeProject);
+                    }
+
+                    /** @var AssigneeProject $assigneeProject */
+                    $assigneeProject = $assignee->projects->get($projectKey);
+
+                    // Add project sprint sum if not already added.
+                    if (!$assigneeProject->sprintSums->containsKey($week)) {
+                        $assigneeProject->sprintSums->set($week, new SprintSum($week));
+                    }
+
+                    /** @var SprintSum $projectSprintSum */
+                    $projectSprintSum = $assigneeProject->sprintSums->get($week);
+                    if (isset($projectSprintSum)) {
+                        $projectSprintSum->sumHours += $hoursRemaining;
+                    }
+
+                    $assigneeProject->issues->add(
+                        new Issue(
+                            $issueData->id,
+                            $issueData->headline,
+                            isset($issueData->hourRemaining) ? $hoursRemaining : null,
+                            $this->leantimeUrl.'/tickets/showKanban?showTicketModal='.$issueData->id.'#/tickets/showTicket/'.$issueData->id,
+                            $week
+                        )
+                    );
+
+                    // Add project if not already added.
+                    if (!$projects->containsKey($projectKey)) {
+                        $projects->set($projectKey, new Project(
+                            $projectKey,
+                            $projectDisplayName,
+                        ));
+                    }
+
+                    /** @var Project $project */
+                    $project = $projects->get($projectKey);
+
+                    // Add sprint sum if not already added.
+
+                    if (!$project->sprintSums->containsKey($week)) {
+                        $project->sprintSums->set($week, new SprintSum($week));
+                    }
+
+                    /** @var SprintSum $projectSprintSum */
+                    $projectSprintSum = $project->sprintSums->get($week);
+                    $projectSprintSum->sumHours += $hoursRemaining;
+
+                    if (!$project->assignees->containsKey($assigneeKey)) {
+                        $project->assignees->set($assigneeKey, new AssigneeProject(
+                            $assigneeKey,
+                            $assigneeDisplayName,
+                        ));
+                    }
+
+                    /** @var AssigneeProject $projectAssignee */
+                    $projectAssignee = $project->assignees->get($assigneeKey);
+
+                    if (!$projectAssignee->sprintSums->containsKey($week)) {
+                        $projectAssignee->sprintSums->set($week, new SprintSum($week));
+                    }
+
+                    /** @var SprintSum $projectAssigneeSprintSum */
+                    $projectAssigneeSprintSum = $projectAssignee->sprintSums->get($week);
+                    $projectAssigneeSprintSum->sumHours += $hoursRemaining;
+
+                    $projectAssignee->issues->add(new Issue(
+                        $issueData->id,
+                        $issueData->headline,
+                        isset($issueData->hourRemaining) ? $hoursRemaining : null,
+                        $this->leantimeUrl.'/tickets/showKanban?showTicketModal='.$issueData->id.'#/tickets/showTicket/'.$issueData->id,
+                        $week
+                    ));
+                }
+            }
+        }
+
+        // Sort assignees by name.
+        /** @var \ArrayIterator $iterator */
+        $iterator = $assignees->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
+        });
+        $planning->assignees = new ArrayCollection(iterator_to_array($iterator));
+
+        // Sort projects by name.
+        /** @var \ArrayIterator $iterator */
+        $iterator = $projects->getIterator();
+        $iterator->uasort(function ($a, $b) {
+            return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
+        });
+
+        $planning->projects = new ArrayCollection(iterator_to_array($iterator));
+
+        return $planning;
+    }
+
+    /**
+     * Create data for planning page.
+     *
+     * @throws ApiServiceException
+     * @throws \Exception
+     */
+    public function getPlanningDataSprints(): PlanningData
     {
         $planning = new PlanningData();
         $assignees = $planning->assignees;

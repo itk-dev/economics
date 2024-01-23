@@ -192,7 +192,12 @@ class JiraApiService implements DataProviderServiceInterface
         return $issues;
     }
 
-    public function getPlanningData(): PlanningData
+    public function getPlanningDataWeeks(): PlanningData
+    {
+        throw new ApiServiceException('Method not implemented', 501);
+    }
+
+    public function getPlanningDataSprints(): PlanningData
     {
         $planning = new PlanningData();
         $assignees = $planning->assignees;

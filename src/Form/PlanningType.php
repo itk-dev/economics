@@ -13,6 +13,7 @@ class PlanningType extends AbstractType
     {
         $builder
             ->add('dataProvider')
+            ->add('viewType')
         ;
     }
 
