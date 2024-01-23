@@ -305,7 +305,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      */
     public function getTicketsInSprint(string $sprintId): array
     {
-        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['sprint' => $sprintId]);
+        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['sprint' => $sprintId]]);
 
         return $result;
     }
@@ -539,7 +539,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      */
     private function getIssuesForProjectMilestone($projectId, $milestoneId): array
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['currentProject' => $projectId, 'milestone' => $milestoneId]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'milestone' => $milestoneId]]);
     }
 
     /**

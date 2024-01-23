@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added client view.
 * Added account view.
 * Added leantime support for projects and project sync.
+* Fixed minor leantime integration issues.
 
 
 * RELEASE NOTES:
