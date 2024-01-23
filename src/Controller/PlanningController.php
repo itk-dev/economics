@@ -32,8 +32,8 @@ class PlanningController extends AbstractController
     public function index(Request $request): Response
     {
         $planningFormData = new PlanningFormData();
-
         $form = $this->createForm(PlanningType::class, $planningFormData);
+        $dataProviderClass = null;
 
         $form->add('dataProvider', EntityType::class, [
             'class' => DataProvider::class,
@@ -52,14 +52,28 @@ class PlanningController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $service = $this->dataProviderService->getService($planningFormData->dataProvider);
-
-            $planningData = $service->getPlanningData();
+            $dataProviderClass = $form->getData()->dataProvider->getClass();
+            $planningData = $service->getPlanningDataWeeks();
         }
-
-        return $this->render('planning/index.html.twig', [
-            'controller_name' => 'PlanningController',
-            'planningData' => $planningData ?? null,
-            'form' => $form,
-        ]);
+        switch ($dataProviderClass) {
+            case "App\Service\LeantimeApiService":
+                return $this->render('planning/planning-weeks.html.twig', [
+                    'controller_name' => 'PlanningController',
+                    'planningData' => $planningData ?? null,
+                    'form' => $form,
+                ]);
+            case "App\Service\JiraApiService":
+                return $this->render('planning/planning-sprints.html.twig', [
+                    'controller_name' => 'PlanningController',
+                    'planningData' => $planningData ?? null,
+                    'form' => $form,
+                ]);
+            default:
+                return $this->render('planning/index.html.twig', [
+                    'controller_name' => 'PlanningController',
+                    'planningData' => $planningData ?? null,
+                    'form' => $form,
+                ]);
+        }
     }
 }
