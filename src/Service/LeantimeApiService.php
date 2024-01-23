@@ -412,7 +412,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         }
         foreach ($weekIssues as $week => $issues) {
             foreach ($issues as $issueData) {
-                if ('0' !== $issueData->status) {
+                if ('0' !== $issueData->status) { // excludes done issues.
                     $week = (string) $week;
                     $projectKey = (string) $issueData->projectId;
                     $projectDisplayName = $issueData->projectName;
@@ -471,7 +471,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                             $issueData->id,
                             $issueData->headline,
                             isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                            $this->leantimeUrl.'/tickets/showTicket/'.$issueData->id,
+                            $this->leantimeUrl.'/tickets/showKanban?showTicketModal='.$issueData->id.'#/tickets/showTicket/'.$issueData->id,
                             $week
                         )
                     );
@@ -519,7 +519,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                         $issueData->id,
                         $issueData->headline,
                         isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                        $this->leantimeUrl.'/tickets/showTicket/'.$issueData->id,
+                        $this->leantimeUrl.'/tickets/showKanban?showTicketModal='.$issueData->id.'#/tickets/showTicket/'.$issueData->id,
                         $week
                     ));
                 }
