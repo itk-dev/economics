@@ -64,7 +64,7 @@ class PlanningController extends AbstractController
 
         $form->handleRequest($request);
 
-        $planningData = null; 
+        $planningData = null;
         $template = 'planning/index.html.twig';
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -75,17 +75,17 @@ class PlanningController extends AbstractController
                 case 'week':
                     $planningData = $service->getPlanningDataWeeks();
                     $template = 'planning/planning-weeks.html.twig';
-                break;
+                    break;
                 case 'sprint':
                     $planningData = $service->getPlanningDataSprints();
                     $template = 'planning/planning-sprints.html.twig';
-                break;
+                    break;
                 default:
                     $planningData = $service->getPlanningDataSprints();
-                break;
+                    break;
             }
         }
-        
+
         return $this->render($template, [
             'controller_name' => 'PlanningController',
             'planningData' => $planningData,
