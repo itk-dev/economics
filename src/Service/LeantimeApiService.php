@@ -290,9 +290,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      */
     public function getTicketsInSprint(string $sprintId): array
     {
-        $result = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['sprint' => $sprintId]);
-
-        return $result;
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['sprint' => $sprintId]]);
     }
 
     /**
@@ -354,40 +352,35 @@ class LeantimeApiService implements DataProviderServiceInterface
         $planning = new PlanningData();
         $assignees = $planning->assignees;
         $projects = $planning->projects;
-        $sprints = $planning->sprints;
+        $weeks = $planning->weeks;
 
-        $allIssues = $this->getAllIssues();
+        $currentYear = (int) (new \DateTime())->format('Y');
 
-        $currentDate = new \DateTime();
-        $currentYear = $currentDate->format('Y');
-        $weekIssues = [];
-
-        for ($week = 1; $week <= 52; ++$week) {
-            $date = new \DateTime();
-            $date->setISODate($currentYear, $week);
+        for ($weekNumber = 1; $weekNumber <= 52; ++$weekNumber) {
+            $date = (new \DateTime())->setISODate($currentYear, $weekNumber);
             $week = (int) $date->format('W');
-            $firstDay = $date->setISODate($currentYear, $week, 1)->format('j/n');
-            $lastDay = $date->setISODate($currentYear, $week, 5)->format('j/n');
-            $isSupportWeek = 1 === $week % 4;
+            $weekFirstDay = $date->setISODate($currentYear, $week, 1)->format('j/n');
+            $weekLastDay = $date->setISODate($currentYear, $week, 5)->format('j/n');
+            $weekIsSupport = 1 === $week % 4;
 
-            if ($isSupportWeek) {
+            if ($weekIsSupport) {
                 $weekObj = new Weeks(
                     new ArrayCollection([$week]),
                     1,
                     $this->weekGoalLow,
                     $this->weekGoalHigh,
                     $week,
-                    $firstDay.' - '.$lastDay,
+                    $weekFirstDay.' - '.$weekLastDay,
                 );
-                $sprints->add($weekObj);
+                $weeks->add($weekObj);
             } else {
                 if (isset($tempWeek)) {
                     $tempWeek->weekCollection->add($week);
                     ++$tempWeek->weeks;
                     $tempWeek->displayName .= '-'.$week;
                     if (3 === count($tempWeek->weekCollection)) {
-                        $tempWeek->dateSpan .= ' - '.$lastDay;
-                        $sprints->add($tempWeek);
+                        $tempWeek->dateSpan .= ' - '.$weekLastDay;
+                        $weeks->add($tempWeek);
                         unset($tempWeek);
                     }
                 } else {
@@ -397,11 +390,15 @@ class LeantimeApiService implements DataProviderServiceInterface
                         $this->weekGoalLow * 3,
                         $this->weekGoalHigh * 3,
                         $week,
-                        $firstDay,
+                        $weekFirstDay,
                     );
                 }
             }
         }
+
+        $weekIssues = [];
+        $allIssues = $this->getAllIssues();
+
         foreach ($allIssues as $issue) {
             $issueYear = new \DateTime($issue->dateToFinish);
             $issueYear = $issueYear->format('Y');
@@ -418,6 +415,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         foreach ($weekIssues as $week => $issues) {
             foreach ($issues as $issueData) {
                 if ('0' !== $issueData->status) {
+                    $week = (string) $week;
                     $projectKey = (string) $issueData->projectId;
                     $projectDisplayName = $issueData->projectName;
 
@@ -556,7 +554,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      * @throws ApiServiceException
      * @throws \Exception
      */
-    public function getPlanningData(): PlanningData
+    public function getPlanningDataSprints(): PlanningData
     {
         $planning = new PlanningData();
         $assignees = $planning->assignees;

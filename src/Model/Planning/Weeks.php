@@ -6,15 +6,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class Weeks
 {
-    /** @var ArrayCollection<string, Assignee> */
+    /** @var ArrayCollection<int, int> */
     public ArrayCollection $weekCollection;
     public int $weeks;
     public readonly float $sprintGoalLow;
     public readonly float $sprintGoalHigh;
-    public string $displayName;
+    public mixed $displayName;
     public string $dateSpan;
 
-    public function __construct(ArrayCollection $weekCollection, int $weeks, float $sprintGoalLow, float $sprintGoalHigh, string $displayName, string $dateSpan)
+    public function __construct(ArrayCollection $weekCollection, int $weeks, float $sprintGoalLow, float $sprintGoalHigh, mixed $displayName, string $dateSpan)
     {
         $this->weekCollection = $weekCollection;
         $this->weeks = $weeks;

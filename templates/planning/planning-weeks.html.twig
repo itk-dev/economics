@@ -71,7 +71,7 @@
                 </svg>
             {% endset %}
 
-            {% set sprints = planningData.sprints %}
+            {% set weeks = planningData.weeks %}
             {% set assignees = planningData.assignees %}
             {% set projects = planningData.projects %}
 
@@ -82,8 +82,8 @@
                     <tr>
                         <th class="table-cell"></th>
                         <th class="table-cell"></th>
-                        {% for sprint in sprints %}
-                            <th class="table-cell-heading" data-span="{{sprint.dateSpan}}" style="white-space: nowrap;">{{ sprint.displayName }}</th>
+                        {% for week in weeks %}
+                            <th class="table-cell-heading" data-span="{{week.dateSpan}}" style="white-space: nowrap;">{{ week.displayName }}</th>
                         {% endfor %}
                     </tr>
                     </thead>
@@ -106,18 +106,18 @@
                             </button>
                             </td>
                             <td></td>
-                            {% for sprint in sprints %}
+                            {% for week in weeks %}
                             {% set res = null %}
 
-                            {% for weeks in sprint.weekCollection %}
-                                {% if assignee.sprintSums.containsKey(weeks) %}
-                                    {% set res = assignee.sprintSums.get(weeks).sumHours %}
+                            {% for weekNumber in week.weekCollection %}
+                                {% if assignee.sprintSums.containsKey(weekNumber) %}
+                                    {% set res = assignee.sprintSums.get(weekNumber).sumHours %}
                                 {% endif %}
                             {% endfor %}
                             <td class="table-cell-heading
-                                {{ res < sprint.sprintGoalLow ? 'low' : '' }}
-                                {{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? 'success' : '' }}
-                                {{ res > sprint.sprintGoalHigh ? 'high' : '' }}">
+                                {{ res < week.sprintGoalLow ? 'low' : '' }}
+                                {{ res >= week.sprintGoalLow and res <= week.sprintGoalHigh ? 'success' : '' }}
+                                {{ res > week.sprintGoalHigh ? 'high' : '' }}">
                                 {{ res }}
                             </td>
                         {% endfor %}
@@ -133,11 +133,11 @@
                                         {{ svgExpand }}
                                     </button>
                                 </td>
-                                {% for sprint in sprints %}
+                                {% for week in weeks %}
                                     <td class="table-cell-heading">
-                                        {% for weeks in sprint.weekCollection %}
-                                            {% if project.sprintSums.containsKey(weeks) %}
-                                                    {{ project.sprintSums.get(weeks).sumHours }}
+                                        {% for weekNumber in week.weekCollection %}
+                                            {% if project.sprintSums.containsKey(weekNumber) %}
+                                                    {{ project.sprintSums.get(weekNumber).sumHours }}
                                             {% endif %}
                                         {% endfor %}
                                     </td>
@@ -150,10 +150,10 @@
                                     <td class="table-cell"><a href="{{ issue.link }}"
                                                               class="link">#{{ issue.key }}</a><br> {{ issue.displayName }}
                                     </td>
-                                    {% for sprint in sprints %}
+                                    {% for week in weeks %}
                                         <td class="table-cell-heading">
-                                            {% for weeks in sprint.weekCollection %}
-                                                {% if issue.sprintId == weeks %}
+                                            {% for weekNumber in week.weekCollection %}
+                                                {% if issue.sprintId == weekNumber %}
                                                     {{ issue.remainingHours ?? 'UE' }}
                                                 {% endif %}
                                             {% endfor %}
@@ -179,8 +179,8 @@
                     <tr>
                         <th class="table-cell"></th>
                         <th class="table-cell"></th>
-                        {% for sprint in sprints %}
-                            <th class="table-cell-heading" data-span="{{sprint.dateSpan}}" style="white-space: nowrap;">{{ sprint.displayName }}</th>
+                        {% for week in weeks %}
+                            <th class="table-cell-heading" data-span="{{week.dateSpan}}" style="white-space: nowrap;">{{ week.displayName }}</th>
                         {% endfor %}
                     </tr>
                     </thead>
@@ -196,12 +196,12 @@
                             </button>
                             </td>
                             <td></td>
-                            {% for sprint in sprints %}
+                            {% for week in weeks %}
                                 <td class="table-cell-heading">
                                     {% set res = null %}
-                                    {% for weeks in sprint.weekCollection %}
-                                        {% if project.sprintSums.containsKey(weeks) %}
-                                             {% set res = (res + project.sprintSums.get(weeks).sumHours) %}
+                                    {% for weekNumber in week.weekCollection %}
+                                        {% if project.sprintSums.containsKey(weekNumber) %}
+                                             {% set res = (res + project.sprintSums.get(weekNumber).sumHours) %}
                                         {% endif %}
                                     {% endfor %}
                                     {{ res }}
@@ -220,11 +220,11 @@
                                         {{ svgExpand }}
                                     </button>
                                 </td>
-                                {% for sprint in sprints %}
+                                {% for week in weeks %}
                                     <td class="table-cell-heading">
-                                        {% for weeks in sprint.weekCollection %}
-                                            {% if assignee.sprintSums.containsKey(weeks) %}
-                                                    {{ assignee.sprintSums.get(weeks).sumHours }}
+                                        {% for weekNumber in week.weekCollection %}
+                                            {% if assignee.sprintSums.containsKey(weekNumber) %}
+                                                    {{ assignee.sprintSums.get(weekNumber).sumHours }}
                                             {% endif %}
                                         {% endfor %}
                                     </td>
@@ -237,10 +237,10 @@
                                     <td class="table-cell"><a href="{{ issue.link }}"
                                                               class="link">#{{ issue.key }}</a> <br> {{ issue.displayName }}
                                     </td>
-                                    {% for sprint in sprints %}
+                                    {% for week in weeks %}
                                         <td class="table-cell-heading">
-                                            {% for weeks in sprint.weekCollection %}
-                                                {% if issue.sprintId == weeks %}
+                                            {% for weekNumber in week.weekCollection %}
+                                                {% if issue.sprintId == weekNumber %}
                                                     {{ issue.remainingHours ?? 'UE' }}
                                                 {% endif %}
                                             {% endfor %}

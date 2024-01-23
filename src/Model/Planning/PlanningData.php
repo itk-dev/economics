@@ -12,11 +12,14 @@ class PlanningData
     public ArrayCollection $projects;
     /** @var ArrayCollection<string, Sprint> */
     public ArrayCollection $sprints;
+    /** @var ArrayCollection<string, Weeks> */
+    public ArrayCollection $weeks;
 
     public function __construct()
     {
         $this->assignees = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->sprints = new ArrayCollection();
+        $this->weeks = new ArrayCollection();
     }
 }
