@@ -55,6 +55,9 @@ planning:
   data_provider_helptext: ""
   data_provider: "Vælg datakilde"
   search: "Vis planlægning"
+  view_type: "Vælg visningstype"
+  week_view: "Ugevisning"
+  sprint_view: "Sprintvisning"
 
 client:
   title: "Kunder"
