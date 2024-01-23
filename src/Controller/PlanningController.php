@@ -51,16 +51,15 @@ class PlanningController extends AbstractController
         ]);
 
         $form->add('viewType', ChoiceType::class, [
+            'required' => true,
             'label' => 'planning.view_type',
             'label_attr' => ['class' => 'label'],
-            'choices' => $this->getTypeChoices(),
-            'choice_translation_domain' => false,
+            'row_attr' => ['class' => 'form-element-wrapper'],
             'attr' => [
                 'class' => 'form-element',
-                'data-create-project-target' => 'choice',
             ],
-            'required' => true,
-            'row_attr' => ['class' => 'form-element-wrapper'],
+            'help' => 'planning.data_provider_helptext',
+            'choices' => $this->getTypeChoices(),
         ]);
 
         $form->handleRequest($request);

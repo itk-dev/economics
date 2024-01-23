@@ -115,9 +115,9 @@
                                 {% endif %}
                             {% endfor %}
                             <td class="table-cell-heading
-                                {{ res < week.sprintGoalLow ? 'low' : '' }}
-                                {{ res >= week.sprintGoalLow and res <= week.sprintGoalHigh ? 'success' : '' }}
-                                {{ res > week.sprintGoalHigh ? 'high' : '' }}">
+                                {{ res < week.weekGoalLow ? 'low' : '' }}
+                                {{ res >= week.weekGoalLow and res <= week.weekGoalHigh ? 'success' : '' }}
+                                {{ res > week.weekGoalHigh ? 'high' : '' }}">
                                 {{ res }}
                             </td>
                         {% endfor %}

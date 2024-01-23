@@ -358,40 +358,38 @@ class LeantimeApiService implements DataProviderServiceInterface
 
         for ($weekNumber = 1; $weekNumber <= 52; ++$weekNumber) {
             $date = (new \DateTime())->setISODate($currentYear, $weekNumber);
-            $week = (int) $date->format('W');
+            $week = (int) $date->format('W'); // Cast as int to remove leading zero.
             $weekFirstDay = $date->setISODate($currentYear, $week, 1)->format('j/n');
             $weekLastDay = $date->setISODate($currentYear, $week, 5)->format('j/n');
             $weekIsSupport = 1 === $week % 4;
 
             if ($weekIsSupport) {
-                $weekObj = new Weeks(
-                    new ArrayCollection([$week]),
-                    1,
-                    $this->weekGoalLow,
-                    $this->weekGoalHigh,
-                    $week,
-                    $weekFirstDay.' - '.$weekLastDay,
-                );
-                $weeks->add($weekObj);
+                $supportWeek = new Weeks();
+                $supportWeek->weekCollection->add($week);
+                $supportWeek->weeks = 1;
+                $supportWeek->weekGoalLow = $this->weekGoalLow;
+                $supportWeek->weekGoalHigh = $this->weekGoalHigh;
+                $supportWeek->displayName = (string) $week;
+                $supportWeek->dateSpan = $weekFirstDay.' - '.$weekLastDay;
+                $weeks->add($supportWeek);
             } else {
-                if (isset($tempWeek)) {
-                    $tempWeek->weekCollection->add($week);
-                    ++$tempWeek->weeks;
-                    $tempWeek->displayName .= '-'.$week;
-                    if (3 === count($tempWeek->weekCollection)) {
-                        $tempWeek->dateSpan .= ' - '.$weekLastDay;
-                        $weeks->add($tempWeek);
-                        unset($tempWeek);
+                if (isset($regularWeek)) {
+                    $regularWeek->weekCollection->add($week);
+                    ++$regularWeek->weeks;
+                    $regularWeek->displayName .= '-'.$week;
+                    if (3 === count($regularWeek->weekCollection)) {
+                        $regularWeek->dateSpan .= ' - '.$weekLastDay;
+                        $weeks->add($regularWeek);
+                        unset($regularWeek);
                     }
                 } else {
-                    $tempWeek = new Weeks(
-                        new ArrayCollection([$week]),
-                        1,
-                        $this->weekGoalLow * 3,
-                        $this->weekGoalHigh * 3,
-                        $week,
-                        $weekFirstDay,
-                    );
+                    $regularWeek = new Weeks();
+                    $regularWeek->weekCollection->add($week);
+                    $regularWeek->weeks = 1;
+                    $regularWeek->weekGoalLow = $this->weekGoalLow * 3;
+                    $regularWeek->weekGoalHigh = $this->weekGoalHigh * 3;
+                    $regularWeek->displayName = (string) $week;
+                    $regularWeek->dateSpan = $weekFirstDay;
                 }
             }
         }
