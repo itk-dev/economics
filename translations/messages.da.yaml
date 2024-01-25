@@ -442,6 +442,7 @@ project:
   form_key: "Nøgle"
   form_include: "Inkluderet"
   information: "Kun inkluderede projekter bliver vist og synkroniseret i resten af system."
+  data_provider_id: "Data Provider"
 
 exception:
   invoices_record_entry_amount_not_set: "Faktura can ikke bogføres, da den indeholder fakturalinjer hvor antal ikke er sat. Se: %invoiceEntryUrl%."
