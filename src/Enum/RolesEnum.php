@@ -6,4 +6,8 @@ enum RolesEnum: string
 {
     case ROLE_USER = 'ROLE_USER';
     case ROLE_ADMIN = 'ROLE_ADMIN';
+    case ROLE_INVOICE = 'ROLE_INVOICE';
+    case ROLE_PROJECT_BILLING = 'ROLE_PROJECT_BILLING';
+    case ROLE_PLANNING = 'ROLE_PLANNING';
+    case ROLE_SPRINT_REPORT = 'ROLE_SPRINT_REPORT';
 }
