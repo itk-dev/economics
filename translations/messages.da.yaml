@@ -356,8 +356,8 @@ home:
   projects_description: "Liste over projekter. Vælg hvilke skal vises i resten af systemet."
   clients_description: "Liste over kunder, som kan kobles på projekter."
   clients: "Kunder"
-  users: 'messages'
-  users_description: 'messages'
+  users: 'Brugere'
+  users_description: 'Administrér brugeres adgang til systemet'
 
 frontpage:
   title: "Velkommen til Economics"
