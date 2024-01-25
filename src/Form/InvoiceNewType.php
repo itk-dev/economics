@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Project;
 use App\Entity\Invoice;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
@@ -25,6 +26,9 @@ class InvoiceNewType extends AbstractType
                         ->orderBy('p.name', 'ASC');
                 },
                 'attr' => ['class' => 'form-element'],
+                'choice_label' => function (Project $pr) {
+                    return $pr->getName() . " (" . $pr->getDataProvider() . ")";
+                }
             ])
         ;
     }
