@@ -42,6 +42,23 @@ class InvoiceRepository extends ServiceEntityRepository
         }
     }
 
+    public function getByRecordedDateBetween(\DateTime $from, \DateTime $to): array
+    {
+        $qb = $this->createQueryBuilder('inv');
+
+        return $qb
+            ->where('inv.recorded = true')
+            ->andWhere($qb->expr()->between('inv.recordedDate', ':date_from', ':date_to'))
+            // ->andWhere($qb->expr()->gte('inv.recordedDate', ))
+            // ->andWhere($qb->expr()->lte('inv.recordedDate', ':date_to'))
+            ->setParameters([
+                'date_from' => $from->format('Y-m-d H:i:s'),
+                'date_to' => $to->format('Y-m-d H:i:s'),
+            ])
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getFilteredPagination(InvoiceFilterData $invoiceFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('invoice');

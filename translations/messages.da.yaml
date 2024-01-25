@@ -38,6 +38,7 @@ navigation:
   create_project: 'Projektopretter'
   invoices: 'Faktura'
   planning: 'Planlægning'
+  reporting: 'Rapportering'
   sprint_report: 'Sprintrapport'
   title: 'Economics'
   accounts: 'Konto'
@@ -351,6 +352,23 @@ project:
   form_key: 'Nøgle'
   form_include: 'Inkluderet'
   information: 'Kun inkluderede projekter bliver vist og synkroniseret i resten af system.'
+
+reports:
+  title: 'Rapporter'
+  description: 'Generer rapporter baseret på data fra eConomics.'
+  create_sprint_report: 'Opret ny Sprintrapport'
+  management-title: 'Ny ledelsesrapport'
+  create_management_report: 'Opret ny Ledelsesrapport'
+  from: 'Fra'
+  to: 'Til'
+  management-title-output: 'Ledelsesrapport %from% - %to%'
+  management-description: 'Rapport med nøgletal til ledelsesrapportering'
+  management-year: 'År'
+  management-total: 'Total'
+  management-1st-quarter: '1. Kvartal'
+  management-2nd-quarter: '2. Kvartal'
+  management-3rd-quarter: '3. Kvartal'
+  management-4th-quarter: '4. Kvartal'
 
 view:
   list_title: 'Views'
