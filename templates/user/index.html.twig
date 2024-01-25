@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'users.title'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'users.title'|trans }}</h1>
+
+    {% set numberOfColumns = 4 %}
+
+    {# TODO: Add pagination, sorting and filters #}
+
+    <table class="table margin-bottom">
+        <thead class="table-thead">
+        <tr>
+            <th class="table-th">{{ 'users.id'|trans }}</th>
+            <th class="table-th">{{ 'users.name'|trans }}</th>
+            <th class="table-th">{{ 'users.email'|trans }}</th>
+            <th class="table-th">{{ 'users.roles'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, user in users %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ user.id }}</td>
+                <td class="table-td">{{ user.name }}</td>
+                <td class="table-td">{{ user.email }}</td>
+                <td class="table-td">{{ user.roles|map(p => p)|join(', ') }}</td>
+            </tr>
+        {% else %}
+            <tr class="table-tr">
+                <td class="table-td"
+                    colspan="{{ numberOfColumns }}">{{ 'users.list_no_records_found'|trans }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

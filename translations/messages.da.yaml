@@ -46,6 +46,7 @@ navigation:
   client: "Kunder"
   account: "Konti"
   pricelist: "Prisliste"
+  user: 'Brugere'
 
 planning:
   title: "Planlægning"
@@ -355,6 +356,8 @@ home:
   projects_description: "Liste over projekter. Vælg hvilke skal vises i resten af systemet."
   clients_description: "Liste over kunder, som kan kobles på projekter."
   clients: "Kunder"
+  users: 'messages'
+  users_description: 'messages'
 
 frontpage:
   title: "Velkommen til Economics"
@@ -503,3 +506,12 @@ delete:
 client_type_enum:
   internal: "Intern"
   external: "Ekstern"
+
+users:
+  title: 'Brugere'
+  id: '#'
+  name: 'Navn'
+  email: 'Email'
+  roles: 'Roller'
+  actions: 'Handlinger'
+  list_no_records_found: 'Ingen brugere fundet.'
