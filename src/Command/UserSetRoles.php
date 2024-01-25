@@ -35,22 +35,22 @@ class UserSetRoles extends Command
 
         $user = $this->userRepository->findOneBy(['email' => $email]);
 
-        if ($user === null) {
-            $io->error("User not found");
+        if (null === $user) {
+            $io->error('User not found');
 
             return Command::FAILURE;
         }
 
-        $roleUser = $io->askQuestion(new ChoiceQuestion("Role user", ['y' => 'yes', 'n' => 'no'], 'n'));
-        $roleAdmin = $io->askQuestion(new ChoiceQuestion("Role admin", ['y' => 'yes', 'n' => 'no'], 'n'));
+        $roleUser = $io->askQuestion(new ChoiceQuestion('Role user', ['y' => 'yes', 'n' => 'no'], 'n'));
+        $roleAdmin = $io->askQuestion(new ChoiceQuestion('Role admin', ['y' => 'yes', 'n' => 'no'], 'n'));
 
         $roles = [];
 
-        if ($roleUser === 'y') {
+        if ('y' === $roleUser) {
             $roles[] = RolesEnum::ROLE_USER->value;
         }
 
-        if ($roleAdmin === 'y') {
+        if ('y' === $roleAdmin) {
             $roles[] = RolesEnum::ROLE_ADMIN->value;
         }
 
