@@ -50,7 +50,7 @@ class UserController extends AbstractController
             $roles = array_unique([...$roles, $key]);
         } else {
             $index = array_search($key, $roles);
-            if ($index !== false) {
+            if (false !== $index) {
                 unset($roles[$index]);
                 $roles = array_values($roles);
             }
