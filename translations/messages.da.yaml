@@ -46,7 +46,8 @@ navigation:
   client: "Kunder"
   account: "Konti"
   pricelist: "Prisliste"
-  user: 'Brugere'
+  user: "Brugere"
+  data: "Data"
 
 planning:
   title: "Planlægning"
@@ -445,6 +446,7 @@ project:
   form_key: "Nøgle"
   form_include: "Inkluderet"
   information: "Kun inkluderede projekter bliver vist og synkroniseret i resten af system."
+  data_provider_id: "Data Provider"
 
 exception:
   invoices_record_entry_amount_not_set: "Faktura can ikke bogføres, da den indeholder fakturalinjer hvor antal ikke er sat. Se: %invoiceEntryUrl%."
@@ -508,10 +510,10 @@ client_type_enum:
   external: "Ekstern"
 
 users:
-  title: 'Brugere'
-  id: '#'
-  name: 'Navn'
-  email: 'Email'
-  roles: 'Roller'
-  actions: 'Handlinger'
-  list_no_records_found: 'Ingen brugere fundet.'
+  title: "Brugere"
+  id: "#"
+  name: "Navn"
+  email: "Email"
+  roles: "Roller"
+  actions: "Handlinger"
+  list_no_records_found: "Ingen brugere fundet."
