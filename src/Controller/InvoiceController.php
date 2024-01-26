@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[Route('/admin/invoices')]
+#[Route('/admin/{viewId}/invoices')]
 class InvoiceController extends AbstractController
 {
     public function __construct(
@@ -47,7 +47,8 @@ class InvoiceController extends AbstractController
             'form' => $form,
             'invoices' => $pagination,
             'invoiceFilterData' => $invoiceFilterData,
-            'submitEndpoint' => $this->generateUrl('app_invoices_export_selection'),
+            'submitEndpoint' => $this->generateUrl('app_invoices_export_selection', ['viewId' => $request->attributes->get('viewId')]),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -69,12 +70,14 @@ class InvoiceController extends AbstractController
 
             return $this->redirectToRoute('app_invoices_edit', [
                 'id' => $invoice->getId(),
+                'viewId' => $request->attributes->get('viewId'),
             ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('invoices/new.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -193,6 +196,7 @@ class InvoiceController extends AbstractController
 
                 return $carry;
             }, 0.0),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -230,7 +234,7 @@ class InvoiceController extends AbstractController
             $invoiceRepository->remove($invoice, true);
         }
 
-        return $this->redirectToRoute('app_invoices_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_invoices_index', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -262,13 +266,14 @@ class InvoiceController extends AbstractController
                 $this->billingService->recordInvoice($invoice);
             }
 
-            return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_invoices_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('invoices/record.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
             'errors' => $errors,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -278,13 +283,14 @@ class InvoiceController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/show-export', name: 'app_invoices_show_export', methods: ['GET'])]
-    public function showExport(Invoice $invoice): Response
+    public function showExport(Request $request, Invoice $invoice): Response
     {
         $html = $this->billingService->generateSpreadsheetHtml([$invoice->getId()]);
 
         return $this->render('invoices/export_show.html.twig', [
             'invoice' => $invoice,
             'html' => $html,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 

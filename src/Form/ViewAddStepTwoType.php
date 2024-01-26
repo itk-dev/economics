@@ -20,6 +20,7 @@ class ViewAddStepTwoType extends AbstractType
                 'multiple' => true,
                 'attr' => ['class' => 'form-element'],
                 'label' => 'view.projects',
+                'required' => false,
             ]);
     }
 

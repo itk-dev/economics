@@ -3,7 +3,7 @@
 {% block title %}{{ 'project_billing.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_project_billing_new') }}" style="float: right">{{ 'project_billing.action_create_new'|trans }}</a>
+    <a class="link" href="{{ path('app_project_billing_new', {viewId: viewId}) }}" style="float: right">{{ 'project_billing.action_create_new'|trans }}</a>
     <h1 class="page-title">{{ 'project_billing.title'|trans }}</h1>
 
     {{ form_start(form) }}
@@ -36,7 +36,7 @@
                 <td class="table-td">{{ projectBilling.createdBy }}</td>
                 <td class="table-td">{{ projectBilling.updatedAt ? projectBilling.updatedAt|date : '' }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}) }}">{{ 'project_billing.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_project_billing_edit', {viewId: viewId, 'id': projectBilling.id}) }}">{{ 'project_billing.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% endfor %}
@@ -46,7 +46,7 @@
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="2"><a class="link" href="{{ path('app_project_billing_new') }}">{{ 'project_billing.action_create_new'|trans }}</a>
+            <td class="table-td" colspan="2"><a class="link" href="{{ path('app_project_billing_new', {viewId: viewId}) }}">{{ 'project_billing.action_create_new'|trans }}</a>
             <td class="table-td" colspan="5" class="text-right">
                 {{ knp_pagination_render(projectBillings) }}
             </td>

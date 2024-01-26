@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/admin/sprint-report')]
+#[Route('/admin/{viewId}/sprint-report')]
 class SprintReportController extends AbstractController
 {
     public function __construct(
@@ -42,7 +42,7 @@ class SprintReportController extends AbstractController
         $sprintReportFormData = new SprintReportFormData();
 
         $form = $this->createForm(SprintReportType::class, $sprintReportFormData, [
-            'action' => $this->generateUrl('app_sprint_report'),
+            'action' => $this->generateUrl('app_sprint_report', ['viewId' => $request->attributes->get('viewId')]),
             'method' => 'GET',
             // Since this is only a filtering form, csrf is not needed.
             'csrf_protection' => false,
@@ -146,7 +146,8 @@ class SprintReportController extends AbstractController
             'data' => $sprintReportFormData,
             'report' => $reportData,
             'budget' => $budget ?? null,
-            'budgetEndpoint' => $this->generateUrl('app_sprint_report_budget'),
+            'budgetEndpoint' => $this->generateUrl('app_sprint_report_budget', ['viewId' => $request->attributes->get('viewId')]),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 

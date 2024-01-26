@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/admin/project')]
+#[Route('/admin/{viewId}/project')]
 class ProjectController extends AbstractController
 {
     #[Route('/', name: 'app_project_index', methods: ['GET'])]
@@ -30,6 +30,7 @@ class ProjectController extends AbstractController
         return $this->render('project/index.html.twig', [
             'projects' => $pagination,
             'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 

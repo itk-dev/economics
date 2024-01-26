@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/admin/planning')]
+#[Route('/admin/{viewId}/planning')]
 class PlanningController extends AbstractController
 {
     public function __construct(

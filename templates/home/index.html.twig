@@ -9,47 +9,47 @@
 
   <div class="grid-split-three">
     <div class="card">
-      <a href="{{ path("app_invoices_index") }}">
+      <a href="{{ path("app_invoices_index", {viewId: viewId}) }}">
         <h5 class="card-header">{{ 'home.invoice'|trans }}</h5>
       </a>
       <p class="card-text">{{ 'home.invoice_desctiption'|trans }}</p>
-      <a href="{{ path("app_invoices_index") }}" class="card-link">
+      <a href="{{ path("app_invoices_index", {viewId: viewId}) }}" class="card-link">
         {{ 'home.invoice'|trans }}
       </a>
     </div>
     <div class="card">
-      <a href="{{ path("app_project_billing_index") }}">
+      <a href="{{ path("app_project_billing_index", {viewId: viewId}) }}">
         <h5 class="card-header">{{ 'home.project_billing'|trans }}</h5>
       </a>
       <p class="card-text">{{ 'home.project_billing_description'|trans }}</p>
-      <a href="{{ path("app_project_billing_index") }}" class="card-link">
+      <a href="{{ path("app_project_billing_index", {viewId: viewId}) }}" class="card-link">
         {{ 'home.project_billing'|trans }}
       </a>
     </div>
     <div class="card">
-      <a href="{{ path("app_planning") }}">
+      <a href="{{ path("app_planning", {viewId: viewId}) }}">
         <h5 class="card-header">{{ 'home.planning'|trans }}</h5>
       </a>
       <p class="card-text">{{ 'home.planning_description'|trans }}</p>
-      <a href="{{ path("app_planning") }}" class="card-link">
+      <a href="{{ path("app_planning", {viewId: viewId}) }}" class="card-link">
         {{ 'home.planning'|trans }}
       </a>
     </div>
     <div class="card">
-      <a href="{{ path("app_sprint_report") }}">
+      <a href="{{ path("app_sprint_report", {viewId: viewId}) }}">
         <h5 class="card-header">{{ 'home.sprint_report'|trans }}</h5>
       </a>
       <p class="card-text">{{ 'home.sprint_report_description'|trans }}</p>
-      <a href="{{ path("app_sprint_report") }}" class="card-link">
+      <a href="{{ path("app_sprint_report", {viewId: viewId}) }}" class="card-link">
         {{ 'home.sprint_report'|trans }}
       </a>
     </div>
     <div class="card">
-      <a href="{{ path("app_project_index") }}">
+      <a href="{{ path("app_project_index", {viewId: viewId}) }}">
         <h5 class="card-header">{{ 'home.projects'|trans }}</h5>
       </a>
       <p class="card-text">{{ 'home.projects_description'|trans }}</p>
-      <a href="{{ path("app_project_index") }}" class="card-link">
+      <a href="{{ path("app_project_index", {viewId: viewId}) }}" class="card-link">
         {{ 'home.projects'|trans }}
       </a>
     </div>

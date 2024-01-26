@@ -19,13 +19,13 @@
     {% for index, view in views %}
       <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
         <td class="table-td">
-          <a class="link" href="{{ path('app_view_display', {'id': view.id}) }}">
+          <a class="link" href="{{ path('app_view_display', {viewId: viewId, 'id': view.id}) }}">
             {{ view.name }}
           </a>
         </td>
         <td class="table-td">{{ view.createdAt|date('Y-m-d H:i:s') }}</td>
         <td class="table-td">
-          <a class="link" href="{{ path('app_view_delete_confirm', {'id': view.id}) }}">
+          <a class="link" href="{{ path('app_view_delete_confirm', {viewId: viewId, 'id': view.id}) }}">
             {{ 'view.list_delete'|trans }}
           </a>
         </td>
@@ -39,7 +39,7 @@
     {% endif %}
     <tr class="table-tr">
       <td class="table-td" colspan="2">
-        <a class="link" href="{{ path('app_view_add') }}">
+        <a class="link" href="{{ path('app_view_add', {viewId: viewId}) }}">
           {{ 'view.action_create_new'|trans }}
         </a>
       </td>
