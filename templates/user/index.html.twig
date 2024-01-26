@@ -16,7 +16,7 @@
             <th class="table-th">{{ 'users.name'|trans }}</th>
             <th class="table-th">{{ 'users.email'|trans }}</th>
             {% for role in roles %}
-                <th class="table-th">{{ role.value }}</th>
+                <th class="table-th">{{ ("roles." ~ role.value)|trans }}</th>
             {% endfor %}
         </tr>
         </thead>

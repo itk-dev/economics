@@ -518,3 +518,11 @@ users:
   roles: "Roller"
   actions: "Handlinger"
   list_no_records_found: "Ingen brugere fundet."
+
+roles:
+  ROLE_ADMIN: Administrator
+  ROLE_USER: Bruger
+  ROLE_INVOICE: Faktura
+  ROLE_PROJECT_BILLING: Projektfakturering
+  ROLE_PLANNING: Planlægning
+  ROLE_SPRINT_REPORT: Sprintrapport
