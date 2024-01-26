@@ -11,7 +11,6 @@ use App\Repository\ViewRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -19,11 +18,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/admin/view')]
+#[Route('/admin/{viewId}/view')]
 class ViewController extends AbstractController
 {
     private const VIEW_CREATE_SESSION_KEY = self::class;
-    private const DEFAULT_VIEW_SESSION_KEY = 'default_view';
     private const CREATEFORM_LAST_STEP = 3;
     private const STEPS = [
         1 => [
@@ -51,6 +49,7 @@ class ViewController extends AbstractController
     {
         return $this->render('view/list.html.twig', [
             'views' => $viewRepository->findAll(),
+            'viewId' => $request->get('viewId'),
         ]);
     }
 
@@ -94,6 +93,7 @@ class ViewController extends AbstractController
 
                     return $this->redirectToRoute('app_view_list', [
                         'id' => $data['view']->getId(),
+                        'viewId' => $request->get('viewId'),
                     ], Response::HTTP_SEE_OTHER);
                 }
             } else {
@@ -101,19 +101,21 @@ class ViewController extends AbstractController
                 $session->set(self::VIEW_CREATE_SESSION_KEY, $data);
 
                 return $this->redirectToRoute('app_view_add', [
+                    'viewId' => $request->get('viewId'),
                 ], Response::HTTP_SEE_OTHER);
             }
         }
 
         return $this->render(self::STEPS[$data['current_step']]['template'], [
             'form' => $form,
+            'viewId' => $request->get('viewId'),
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_view_edit')]
     public function edit(Request $request, View $view, ViewRepository $viewRepository): Response
     {
-        return $this->redirectToRoute('app_view_list', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', ['viewId' => $request->get('viewId')], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_view_delete_confirm')]
@@ -121,6 +123,7 @@ class ViewController extends AbstractController
     {
         return $this->render('view/viewDelete.html.twig', [
             'view' => $view,
+            'viewId' => $request->get('viewId'),
         ]);
     }
 
@@ -133,7 +136,7 @@ class ViewController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_view_list', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', ['viewId' => $request->get('viewId')], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/display', name: 'app_view_display')]
@@ -141,6 +144,7 @@ class ViewController extends AbstractController
     {
         return $this->render('view/display.html.twig', [
             'view' => $view,
+            'viewId' => $request->get('viewId'),
         ]);
     }
 
@@ -151,18 +155,7 @@ class ViewController extends AbstractController
      */
     public function viewSelector(): Response
     {
-        // Get session or create session for default view.
-        try {
-            $session = $this->requestStack->getSession();
-        } catch (SessionNotFoundException $e) {
-            $session = new Session();
-            $session->start();
-        }
-
-        $defaultViewId = $session->get(self::DEFAULT_VIEW_SESSION_KEY);
-        if (empty($defaultViewId)) {
-            $session->set(self::DEFAULT_VIEW_SESSION_KEY, null);
-        }
+        $defaultViewId = $this->requestStack->getMainRequest()->get('viewId');
 
         $defaultView = isset($defaultViewId) ? $this->viewRepository->find($defaultViewId) : null;
 
@@ -173,32 +166,8 @@ class ViewController extends AbstractController
         ]);
     }
 
-    /**
-     * Change the default view. Called from js.
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    #[Route('/set-default', name: 'app_view_set_default', methods: ['POST'])]
-    public function setDefaultView(Request $request): JsonResponse
-    {
-        $data = $request->toArray();
-
-        try {
-            $session = $this->requestStack->getSession();
-        } catch (SessionNotFoundException $e) {
-            $session = new Session();
-            $session->start();
-        }
-
-       $session->set(self::DEFAULT_VIEW_SESSION_KEY, $data['newDefaultView']);
-
-        return new JsonResponse($data);
-    }
-
     #[Route('/abandon-view-add', name: 'app_view_add_abandon')]
-    public function abandonViewAdd(): RedirectResponse
+    public function abandonViewAdd(Request $request): RedirectResponse
     {
         try {
             $session = $this->requestStack->getSession();
@@ -209,7 +178,12 @@ class ViewController extends AbstractController
 
         $session->set(self::VIEW_CREATE_SESSION_KEY, []);
 
-        return $this->redirectToRoute('app_view_list', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', ['viewId' => $request->get('viewId')], Response::HTTP_SEE_OTHER);
+    }
+
+    public function getCurrentView()
+    {
+        return $this->requestStack->getCurrentRequest()->get('viewId');
     }
 
     private function createFormInit(): array
