@@ -9,22 +9,20 @@ export default class extends Controller {
     
   connect() {
     // Find active menupoint
-    var currentPath = window.location.pathname;
-    var regexPattern = /\/admin\/([^\/]+)/;
-    var match = currentPath.match(regexPattern);
-    if (match) {
-      var currentPage = document.querySelector(
-        'a[href*="/admin/' + match[1] + '/"]'
+    const currentPath = window.location.pathname;
+    const pathPattern = /\/admin\/([^\/]+)/;
+    const pathMatch = currentPath.match(pathPattern);
+    let activeNavigationElement;
+    if (pathMatch) {
+      activeNavigationElement = document.querySelector(
+        'a[href*="/admin/' + pathMatch[1] + '/"]'
       );
     } else {
-      var currentPage = document.querySelector('a[href*="/admin/"]');
+      activeNavigationElement = document.querySelector('a[href*="/admin/"]');
     }
-    currentPage.classList.add("current");
+    activeNavigationElement.classList.add("current");
 
-    var activeElementParent = findClosestParentWithClass(
-      currentPage,
-      "submenu-content"
-    );
+    const activeElementParent = activeNavigationElement.closest(".navigation-item-submenu");
 
     // Expand collapsible if active menu point is child
     if (activeElementParent) {
@@ -35,14 +33,4 @@ export default class extends Controller {
   toggle(target) {
     target.currentTarget.nextElementSibling.classList.toggle("shown");
   }
-}
-
-function findClosestParentWithClass(element, className) {
-  while (
-    element &&
-    (element.nodeType !== 1 || !element.classList.contains(className))
-  ) {
-    element = element.parentNode;
-  }
-  return element;
 }
