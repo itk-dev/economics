@@ -36,6 +36,9 @@ class DataProvider extends AbstractBaseEntity
         $this->views = new ArrayCollection();
     }
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $enabled = null;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -113,6 +116,7 @@ class DataProvider extends AbstractBaseEntity
         return $this->getName() ?? ''.$this->getId();
     }
 
+
     /**
      * @return Collection<int, View>
      */
@@ -136,6 +140,18 @@ class DataProvider extends AbstractBaseEntity
         if ($this->views->removeElement($view)) {
             $view->removeDataProvider($this);
         }
+
+        return $this;
+    }
+
+    public function isEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(?bool $enabled): static
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

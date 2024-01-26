@@ -8,10 +8,13 @@ use App\Interface\DataProviderServiceInterface;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\IssueData;
+use App\Model\Invoices\IssueDataCollection;
 use App\Model\Invoices\PagedResult;
 use App\Model\Invoices\ProjectData;
+use App\Model\Invoices\ProjectDataCollection;
 use App\Model\Invoices\VersionData;
 use App\Model\Invoices\WorklogData;
+use App\Model\Invoices\WorklogDataCollection;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
@@ -83,30 +86,28 @@ class JiraApiService implements DataProviderServiceInterface
         $projects = $this->getAllProjects();
 
         foreach ($projects as $project) {
-            $sprintReportProjects->projects->add(
-                new SprintReportProject(
-                    $project->id,
-                    $project->name
-                )
-            );
+            $sprintReportProject = new SprintReportProject();
+            $sprintReportProject->id = $project->id;
+            $sprintReportProject->name = $project->name;
+            $sprintReportProjects->projects->add($sprintReportProject);
         }
 
         return $sprintReportProjects;
     }
 
-    public function getSprintReportProjectVersions(string $projectId): SprintReportVersions
+    public function getSprintReportVersions(string $projectId): SprintReportVersions
     {
         $sprintReportVersions = new SprintReportVersions();
         $project = $this->getProject($projectId);
         $projectVersions = $project->versions ?? [];
 
         foreach ($projectVersions as $projectVersion) {
-            $sprintReportVersions->versions->add(
-                new SprintReportVersion(
-                    $projectVersion->id,
-                    $projectVersion->name,
-                )
-            );
+            $sprintReportVersion = new SprintReportVersion();
+            $sprintReportVersion->id = $projectVersion->id;
+            $sprintReportVersion->name = $projectVersion->name;
+            $sprintReportVersion->projectTrackerId = $projectVersion->projectId;
+
+            $sprintReportVersions->versions->add($sprintReportVersion);
         }
 
         return $sprintReportVersions;
@@ -191,7 +192,12 @@ class JiraApiService implements DataProviderServiceInterface
         return $issues;
     }
 
-    public function getPlanningData(): PlanningData
+    public function getPlanningDataWeeks(): PlanningData
+    {
+        throw new ApiServiceException('Method not implemented', 501);
+    }
+
+    public function getPlanningDataSprints(): PlanningData
     {
         $planning = new PlanningData();
         $assignees = $planning->assignees;
@@ -771,30 +777,27 @@ class JiraApiService implements DataProviderServiceInterface
         return $clients;
     }
 
-    public function getAllProjectData(): array
+    public function getProjectDataCollection(): ProjectDataCollection
     {
-        $projects = [];
+        $projectDataCollection = new ProjectDataCollection();
+        $projects = $this->getAllProjects();
 
-        $trackerProjects = $this->getAllProjects();
-
-        foreach ($trackerProjects as $trackerProject) {
-            $project = $this->getProject($trackerProject->id);
-            $projectVersions = $project->versions ?? [];
-
+        foreach ($projects as $project) {
             $projectData = new ProjectData();
-            $projectData->name = $trackerProject->name;
-            $projectData->projectTrackerId = $trackerProject->id;
-            $projectData->projectTrackerKey = $trackerProject->key;
-            $projectData->projectTrackerProjectUrl = $trackerProject->self;
+            $projectData->name = $project->name;
+            $projectData->projectTrackerId = $project->id;
+            $projectData->projectTrackerKey = $project->key;
+            $projectData->projectTrackerProjectUrl = $project->self;
 
+            $projectVersions = $this->getSprintReportVersions($project->id);
             foreach ($projectVersions as $projectVersion) {
-                $projectData->versions->add(new VersionData($projectVersion->id, $projectVersion->name));
+                $projectData->versions?->add($projectVersion);
             }
 
-            $projects[] = $projectData;
+            $projectDataCollection->projectData->add($projectData);
         }
 
-        return $projects;
+        return $projectDataCollection;
     }
 
     /**
@@ -818,32 +821,35 @@ class JiraApiService implements DataProviderServiceInterface
         ]);
     }
 
-    public function getWorklogDataForProject(string $projectId): array
+    public function getWorklogDataCollection(string $projectId): WorklogDataCollection
     {
-        $worklogsResult = [];
-
+        $worklogDataCollection = new WorklogDataCollection();
         $worklogs = $this->getProjectWorklogs($projectId);
 
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
             $worklogData->projectTrackerId = $worklog->tempoWorklogId;
-            $worklogData->worker = $worklog->worker;
-            $worklogData->timeSpentSeconds = $worklog->timeSpentSeconds;
             $worklogData->comment = $worklog->comment;
+            $worklogData->worker = $worklog->worker;
+            $worklogData->timeSpentSeconds = (int) $worklog->timeSpentSeconds;
             $worklogData->started = new \DateTime($worklog->started);
+            $worklogData->projectTrackerIsBilled = false;
             $worklogData->projectTrackerIssueId = $worklog->issue->id;
+
+            $worklogDataCollection->worklogData->add($worklogData);
 
             // TODO: Is this synchronization relevant?
             if (isset($worklog->attributes->_Billed_) && '_Billed_' == $worklog->attributes->_Billed_->key) {
                 $worklogData->projectTrackerIsBilled = 'true' == $worklog->attributes->_Billed_->value;
             }
-
-            $worklogsResult[] = $worklogData;
         }
 
-        return $worklogsResult;
+        return $worklogDataCollection;
     }
 
+    /**
+     * @throws ApiServiceException
+     */
     public function getAllAccountData(): array
     {
         $accountsResult = [];
@@ -927,13 +933,22 @@ class JiraApiService implements DataProviderServiceInterface
             }
 
             foreach ($fields->fixVersions ?? [] as $fixVersion) {
-                $issueData->versions->add(new VersionData($fixVersion->id, $fixVersion->name));
+                $issueData->versions?->add(new VersionData($fixVersion->id, $fixVersion->name));
             }
 
             $result[] = $issueData;
         }
 
         return new PagedResult($result, $startAt, $maxResults, $pagedResult['total']);
+    }
+
+    /**
+     * @throws ApiServiceException
+     * @throws \Exception
+     */
+    public function getIssueDataCollection(string $projectId): IssueDataCollection
+    {
+        throw new ApiServiceException('Method not implemented', 501);
     }
 
     /**

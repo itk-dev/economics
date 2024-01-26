@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'client.new'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'client.new'|trans }}</h1>
+
+    {{ form_start(form) }}
+    <div>
+        {{ form_rest(form) }}
+        <button class="button">{{ 'client.action_create'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_client_index') }}">{{ 'client.back_to_list'|trans }}</a>
+    </div>
+{% endblock %}

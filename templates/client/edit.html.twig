@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'clients.edit'|trans}}{% endblock %}
+
+{% block content %}
+    <h1>{{ 'clients.edit'|trans}}</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <div class="actions-right">
+        <button class="button mt-3">{{ 'clients.action_save'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
+    {{ include('client/_delete_form.html.twig') }}
+    <a href="{{ path('app_client_index') }}">{{ 'client.back_to_list'|trans}}</a>
+{% endblock %}

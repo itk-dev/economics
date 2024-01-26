@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * Added view and related form
+* Default to work id worker not longer exists in Leantime worklog sync.
+* Added commands to manage data providers.
 * Changed how errors are handled in Leantime api calls.
 * Modified getSprintReportData to work with Leantime data
 * Added project lead to client when syncing projects.
@@ -31,6 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Refactored error handling.
 * Added support for multiple data providers
 * Removed project creator for Jira.
+* Added client view.
+* Added account view.
+* Added leantime support for projects and project sync.
+* Added week-based planning view, based on issue duedates.
+* Fixed minor leantime integration issues.
+* Added dataprovider as column in project list.
+* Added nested menus and current page highlight in menu.
 
 
 * RELEASE NOTES:

@@ -53,5 +53,23 @@
         {{ 'home.projects'|trans }}
       </a>
     </div>
+    <div class="card">
+      <a href="{{ path("app_client_index") }}">
+        <h5 class="card-header">{{ 'home.clients'|trans }}</h5>
+      </a>
+      <p class="card-text">{{ 'home.clients_description'|trans }}</p>
+      <a href="{{ path("app_client_index") }}" class="card-link">
+        {{ 'home.clients'|trans }}
+      </a>
+    </div>
+    <div class="card">
+      <a href="{{ path("app_account_index") }}">
+        <h5 class="card-header">{{ 'home.accounts'|trans }}</h5>
+      </a>
+      <p class="card-text">{{ 'home.accounts_description'|trans }}</p>
+      <a href="{{ path("app_account_index") }}" class="card-link">
+        {{ 'home.accounts'|trans }}
+      </a>
+    </div>
   </div>
 {% endblock %}
