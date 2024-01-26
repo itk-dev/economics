@@ -20,6 +20,8 @@
         </svg> {{ 'project.information'|trans }}
     </div>
 
+    {% set numberOfColumns = 7 %}
+
     <table class="table margin-bottom">
         <thead class="table-thead">
         <tr>
@@ -57,11 +59,11 @@
         {% endfor %}
         {% if projects is empty %}
             <tr class="table-tr">
-                <td class="table-td" colspan="6">{{ 'project.list_no_records_found'|trans }}</td>
+                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'project.list_no_records_found'|trans }}</td>
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="6" class="text-right">
+            <td class="table-td" colspan="{{ numberOfColumns }}" class="text-right">
                 {{ knp_pagination_render(projects) }}
             </td>
         </tr>
