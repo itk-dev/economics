@@ -2,6 +2,8 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     date:
         format: 'd.m.Y'
+    globals:
+        view_controller: '@App\Controller\ViewController'
 
 when@test:
     twig:

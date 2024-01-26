@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[Route('/admin/invoices/{invoice}/entries')]
+#[Route('/admin/{viewId}/invoices/{invoice}/entries')]
 class InvoiceEntryWorklogController extends AbstractController
 {
     public function __construct(
@@ -93,7 +93,8 @@ class InvoiceEntryWorklogController extends AbstractController
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
-            'submitEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', ['invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()]),
+            'submitEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', ['viewId' => $request->attributes->get('viewId'), 'invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()]),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -113,6 +114,7 @@ class InvoiceEntryWorklogController extends AbstractController
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 

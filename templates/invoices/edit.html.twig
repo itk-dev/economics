@@ -9,7 +9,7 @@
     <div class="grid-split selections" {{ stimulus_controller('choices') }}>
         <div>
             {{ form_row(form.name) }}
-            <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {'id': invoice.id}) }}">
+            <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {viewId: viewId, 'id': invoice.id}) }}">
                 {% if invoice.client and invoice.client.projectLeadName and invoice.client.projectLeadMail %}
                     <button type="button" class="link" style="font-size: .8em; float: right" {{ stimulus_action('generate-description', 'generate') }}>{{ 'invoices.generate_description'|trans }}</button>
                 {% endif %}
@@ -77,12 +77,12 @@
             {% endif %}
             <div class="actions-right">
                 {% if invoice.client is not null %}
-                    <a type="button" href="{{ path('app_invoices_show_export', {'id': invoice.id}) }}" class="button button-green">{{ 'invoices.action_show_export'|trans }}</a>
+                    <a type="button" href="{{ path('app_invoices_show_export', {viewId: viewId, 'id': invoice.id}) }}" class="button button-green">{{ 'invoices.action_show_export'|trans }}</a>
                     {% if not invoice.recorded and invoice.projectBilling is null %}
-                        <a type="button" href="{{ path('app_invoices_record', {'id': invoice.id}) }}" class="button button-warning">{{ 'invoices.action_record'|trans }}</a>
+                        <a type="button" href="{{ path('app_invoices_record', {viewId: viewId, 'id': invoice.id}) }}" class="button button-warning">{{ 'invoices.action_record'|trans }}</a>
                     {% endif %}
                     {% if invoice.recorded and invoice.projectBilling is null %}
-                        <a type="button" href="{{ path('app_invoices_export', {'id': invoice.id}) }}" class="button">{{ 'invoices.action_export'|trans }}</a>
+                        <a type="button" href="{{ path('app_invoices_export', {viewId: viewId,'id': invoice.id}) }}" class="button">{{ 'invoices.action_export'|trans }}</a>
                     {% endif %}
                 {% else %}
                     <div class="alert-info" role="alert">
@@ -125,7 +125,7 @@
                         {{ invoiceEntry.entryType.value == 'worklog' ? 'invoices.invoice_entry_type_worklog'|trans : '' }}
                     </td>
                     <td class="table-td">
-                        <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
+                        <a class="link" href="{{ path('app_invoice_entry_edit', {viewId: viewId, 'id': invoiceEntry.id, 'invoice': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -147,8 +147,8 @@
             <tr class="table-tr">
                 <td colspan="8" class="table-td">
                     {% if allowAddingEntries %}
-                        <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
-                        <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
+                        <a class="link mr-5" href="{{ path('app_invoice_entry_new', {viewId: viewId, 'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
+                        <a class="link" href="{{ path('app_invoice_entry_new', {viewId: viewId, 'invoice': invoice.id, 'type': 'worklog'}) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
                     {% else %}
                         <div class="alert-info" role="alert">
                             <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -165,7 +165,7 @@
     {{ form_end(form) }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_invoices_index', {viewId: viewId}) }}">{{ 'invoices.back_to_list'|trans }}</a>
         {% if not invoice.recorded and invoice.projectBilling is null %}
             {{ include('invoices/_delete_form.html.twig') }}
         {% endif %}
