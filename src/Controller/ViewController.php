@@ -166,6 +166,14 @@ class ViewController extends AbstractController
         ]);
     }
 
+    /**
+     * Called from twig: templates/components/navigation.html.twig.
+     */
+    public function getCurrentView()
+    {
+        return $this->requestStack->getMainRequest()?->attributes->get('viewId');
+    }
+
     #[Route('/abandon-view-add', name: 'app_view_add_abandon')]
     public function abandonViewAdd(Request $request): RedirectResponse
     {
