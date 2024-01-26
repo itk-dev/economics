@@ -44,7 +44,7 @@ class ProjectBillingController extends AbstractController
         return $this->render('project_billing/index.html.twig', [
             'projectBillings' => $pagination,
             'form' => $form,
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -69,14 +69,14 @@ class ProjectBillingController extends AbstractController
 
             return $this->redirectToRoute('app_project_billing_edit', [
                 'id' => $id,
-                'viewId' => $request->get('viewId'),
+                'viewId' => $request->attributes->get('viewId'),
             ], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('project_billing/new.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -111,7 +111,7 @@ class ProjectBillingController extends AbstractController
 
             return $this->redirectToRoute('app_project_billing_edit', [
                 'id' => $id,
-                'viewId' => $request->get('viewId'),
+                'viewId' => $request->attributes->get('viewId'),
             ], Response::HTTP_SEE_OTHER);
         }
 
@@ -119,7 +119,7 @@ class ProjectBillingController extends AbstractController
             'projectBilling' => $projectBilling,
             'form' => $form,
             'issuesWithoutAccounts' => $issuesWithoutAccounts,
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -181,14 +181,14 @@ class ProjectBillingController extends AbstractController
                 $projectBillingService->recordProjectBilling($projectBilling);
             }
 
-            return $this->redirectToRoute('app_project_billing_edit', ['viewId' => $request->get('viewId'), 'id' => $projectBilling->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_project_billing_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $projectBilling->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('project_billing/record.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
             'invoiceErrors' => $invoiceErrors,
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -209,7 +209,7 @@ class ProjectBillingController extends AbstractController
         return $this->render('project_billing/export_show.html.twig', [
             'projectBilling' => $projectBilling,
             'html' => $html,
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 

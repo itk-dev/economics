@@ -42,7 +42,7 @@ class SprintReportController extends AbstractController
         $sprintReportFormData = new SprintReportFormData();
 
         $form = $this->createForm(SprintReportType::class, $sprintReportFormData, [
-            'action' => $this->generateUrl('app_sprint_report', ['viewId' => $request->get('viewId')]),
+            'action' => $this->generateUrl('app_sprint_report', ['viewId' => $request->attributes->get('viewId')]),
             'method' => 'GET',
             // Since this is only a filtering form, csrf is not needed.
             'csrf_protection' => false,
@@ -146,8 +146,8 @@ class SprintReportController extends AbstractController
             'data' => $sprintReportFormData,
             'report' => $reportData,
             'budget' => $budget ?? null,
-            'budgetEndpoint' => $this->generateUrl('app_sprint_report_budget', ['viewId' => $request->get('viewId')]),
-            'viewId' => $request->get('viewId'),
+            'budgetEndpoint' => $this->generateUrl('app_sprint_report_budget', ['viewId' => $request->attributes->get('viewId')]),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 

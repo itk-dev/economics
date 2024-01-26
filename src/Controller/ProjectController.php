@@ -30,7 +30,7 @@ class ProjectController extends AbstractController
         return $this->render('project/index.html.twig', [
             'projects' => $pagination,
             'form' => $form,
-            'viewId' => $request->get('viewId')
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 

@@ -21,7 +21,6 @@ class ViewSelectType extends AbstractType
                 'attr' => [
                     'class' => 'form-element',
                     'data-action' => 'view-selector#select',
-                    'data-default-view-update-endpoint' => '/admin/1/view/set-default',
                 ],
                 'data' => $options['data'] ?? null,
             ]);

@@ -7,8 +7,6 @@
 {% block content %}
   <h1 class="page-title">{{ 'home.title'|trans }}</h1>
 
-  {%  set viewId = 1 %}
-
   <div class="grid-split-three">
     <div class="card">
       <a href="{{ path("app_invoices_index", {viewId: viewId}) }}">

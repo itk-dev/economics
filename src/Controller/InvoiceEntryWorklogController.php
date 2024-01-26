@@ -93,8 +93,8 @@ class InvoiceEntryWorklogController extends AbstractController
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
-            'submitEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', ['viewId' => $request->get('viewId'), 'invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()]),
-            'viewId' => $request->get('viewId')
+            'submitEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', ['viewId' => $request->attributes->get('viewId'), 'invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()]),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -114,7 +114,7 @@ class InvoiceEntryWorklogController extends AbstractController
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
-            'viewId' => $request->get('viewId')
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 

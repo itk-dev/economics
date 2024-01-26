@@ -49,7 +49,7 @@ class ViewController extends AbstractController
     {
         return $this->render('view/list.html.twig', [
             'views' => $viewRepository->findAll(),
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -93,7 +93,7 @@ class ViewController extends AbstractController
 
                     return $this->redirectToRoute('app_view_list', [
                         'id' => $data['view']->getId(),
-                        'viewId' => $request->get('viewId'),
+                        'viewId' => $request->attributes->get('viewId'),
                     ], Response::HTTP_SEE_OTHER);
                 }
             } else {
@@ -101,21 +101,21 @@ class ViewController extends AbstractController
                 $session->set(self::VIEW_CREATE_SESSION_KEY, $data);
 
                 return $this->redirectToRoute('app_view_add', [
-                    'viewId' => $request->get('viewId'),
+                    'viewId' => $request->attributes->get('viewId'),
                 ], Response::HTTP_SEE_OTHER);
             }
         }
 
         return $this->render(self::STEPS[$data['current_step']]['template'], [
             'form' => $form,
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_view_edit')]
     public function edit(Request $request, View $view, ViewRepository $viewRepository): Response
     {
-        return $this->redirectToRoute('app_view_list', ['viewId' => $request->get('viewId')], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_view_delete_confirm')]
@@ -123,7 +123,7 @@ class ViewController extends AbstractController
     {
         return $this->render('view/viewDelete.html.twig', [
             'view' => $view,
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -136,7 +136,7 @@ class ViewController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_view_list', ['viewId' => $request->get('viewId')], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/display', name: 'app_view_display')]
@@ -144,7 +144,7 @@ class ViewController extends AbstractController
     {
         return $this->render('view/display.html.twig', [
             'view' => $view,
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -155,7 +155,7 @@ class ViewController extends AbstractController
      */
     public function viewSelector(): Response
     {
-        $defaultViewId = $this->requestStack->getMainRequest()->get('viewId');
+        $defaultViewId = $this->requestStack->getMainRequest()?->attributes->get('viewId');
 
         $defaultView = isset($defaultViewId) ? $this->viewRepository->find($defaultViewId) : null;
 
@@ -178,12 +178,12 @@ class ViewController extends AbstractController
 
         $session->set(self::VIEW_CREATE_SESSION_KEY, []);
 
-        return $this->redirectToRoute('app_view_list', ['viewId' => $request->get('viewId')], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
     }
 
     public function getCurrentView()
     {
-        return $this->requestStack->getCurrentRequest()->get('viewId');
+        return $this->requestStack->getMainRequest()?->attributes->get('viewId');
     }
 
     private function createFormInit(): array

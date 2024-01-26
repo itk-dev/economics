@@ -15,7 +15,7 @@ class ReportsController extends AbstractController
     {
         return $this->render(
             'reports/index.html.twig',
-            ['viewId' => $request->get('viewId')]
+            ['viewId' => $request->attributes->get('viewId')]
         );
     }
 }

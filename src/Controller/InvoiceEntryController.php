@@ -62,17 +62,17 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
             if (InvoiceEntryTypeEnum::MANUAL == $invoiceEntry->getEntryType()) {
-                return $this->redirectToRoute('app_invoices_edit', ['viewId' => $request->get('viewId'), 'id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_invoices_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
             }
 
-            return $this->redirectToRoute('app_invoice_entry_edit', ['viewId' => $request->get('viewId'), 'id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_invoice_entry_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('invoice_entry/new.html.twig', [
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
-            'viewId' => $request->get('viewId')
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -110,7 +110,7 @@ class InvoiceEntryController extends AbstractController
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
-            'viewId' => $request->get('viewId'),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -131,6 +131,6 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceTotalPrice($invoice);
         }
 
-        return $this->redirectToRoute('app_invoices_edit', ['viewId' => $request->get('viewId'), 'id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_invoices_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
     }
 }
