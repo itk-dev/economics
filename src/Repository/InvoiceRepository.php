@@ -49,8 +49,6 @@ class InvoiceRepository extends ServiceEntityRepository
         return $qb
             ->where('inv.recorded = true')
             ->andWhere($qb->expr()->between('inv.recordedDate', ':date_from', ':date_to'))
-            // ->andWhere($qb->expr()->gte('inv.recordedDate', ))
-            // ->andWhere($qb->expr()->lte('inv.recordedDate', ':date_to'))
             ->setParameters([
                 'date_from' => $from->format('Y-m-d H:i:s'),
                 'date_to' => $to->format('Y-m-d H:i:s'),
