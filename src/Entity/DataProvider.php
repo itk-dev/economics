@@ -116,7 +116,6 @@ class DataProvider extends AbstractBaseEntity
         return $this->getName() ?? ''.$this->getId();
     }
 
-
     /**
      * @return Collection<int, View>
      */
