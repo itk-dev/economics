@@ -2,8 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\Project;
 use App\Entity\Invoice;
+use App\Entity\Project;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,8 +27,8 @@ class InvoiceNewType extends AbstractType
                 },
                 'attr' => ['class' => 'form-element'],
                 'choice_label' => function (Project $pr) {
-                    return $pr->getName() . " (" . $pr->getDataProvider() . ")";
-                }
+                    return $pr->getName().' ('.$pr->getDataProvider().')';
+                },
             ])
         ;
     }
