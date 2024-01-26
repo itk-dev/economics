@@ -48,6 +48,7 @@ navigation:
   pricelist: "Prisliste"
   user: "Brugere"
   data: "Data"
+  admin: "Admin"
 
 planning:
   title: "Planlægning"
