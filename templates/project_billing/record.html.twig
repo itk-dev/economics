@@ -27,7 +27,7 @@
                     </thead>
                     <tbody>
                     {% for key, invoiceError in invoiceErrors %}
-                        {% set invoiceUrl = absolute_url(path('app_invoices_edit', {'id': key} )) %}
+                        {% set invoiceUrl = absolute_url(path('app_invoices_edit', {viewId: viewId, 'id': key} )) %}
                         {% for error in invoiceError %}
                             <tr class="table-tr">
                                 <td class="table-td"><strong>{{ key }}</strong></td>
@@ -56,6 +56,6 @@
     {% endif %}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}) }}">{{ 'project_billing.back_to_invoice'|trans }}</a>
+        <a class="link" href="{{ path('app_project_billing_edit', {viewId: viewId, 'id': projectBilling.id}) }}">{{ 'project_billing.back_to_invoice'|trans }}</a>
     </div>
 {% endblock %}

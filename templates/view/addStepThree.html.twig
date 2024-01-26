@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'view.create_new_step_three'|trans }}{% endblock %}
+
+{% block content %}
+  <h1 class="page-title">{{ 'view.create_new_step_three'|trans }}</h1>
+
+  <div>
+    {{ 'view.create_step3_description'|trans }}
+  </div>
+
+  {% set data = {
+    'name': form.vars['value'].name,
+    'description': form.vars['value'].description,
+    'dataProviders': form.vars['value'].dataProviders,
+    'projects': form.vars['value'].projects,
+  }
+  %}
+
+  {% include 'view/viewDataTableDisplay.html.twig' with {'data': data} %}
+
+  {{ form_start(form) }}
+    <button class="button">{{ 'view.action_create'|trans }}</button>
+  {{ form_end(form) }}
+
+  <div class="bottom-actions">
+    <a class="link" href="{{ path('app_view_add_abandon', {viewId: viewId}) }}">{{ 'view.back_to_list'|trans }}</a>
+  </div>
+{% endblock %}

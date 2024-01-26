@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'reports.title'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'reports.title'|trans }}</h1>
+
+    <div class="content">
+      <div>
+        {{ 'reports.description'|trans }}
+      </div>
+
+      <div class="actions">
+        <a class="btn-primary" href="{{ path('app_sprint_report', {viewId: viewId}) }}">{{ 'reports.create_sprint_report'|trans }}</a>
+        <a class="btn-primary" href="{{ path('app_management_reports_create', {viewId: viewId}) }}">{{ 'reports.create_management_report'|trans }}</a>
+      </div>
+    </div>
+{% endblock %}

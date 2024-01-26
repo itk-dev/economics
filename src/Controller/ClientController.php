@@ -11,14 +11,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/client')]
+#[Route('/admin/{viewId}/client')]
 class ClientController extends AbstractController
 {
     #[Route('/', name: 'app_client_index', methods: ['GET'])]
-    public function index(ClientRepository $clientRepository): Response
+    public function index(Request $request, ClientRepository $clientRepository): Response
     {
         return $this->render('client/index.html.twig', [
             'clients' => $clientRepository->findAll(),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -39,14 +40,16 @@ class ClientController extends AbstractController
         return $this->render('client/new.html.twig', [
             'client' => $client,
             'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
     #[Route('/{id}', name: 'app_client_show', methods: ['GET'])]
-    public function show(Client $client): Response
+    public function show(Request $request, Client $client): Response
     {
         return $this->render('client/show.html.twig', [
             'client' => $client,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -65,6 +68,7 @@ class ClientController extends AbstractController
         return $this->render('client/edit.html.twig', [
             'client' => $client,
             'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -77,6 +81,6 @@ class ClientController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_client_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_client_index', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
     }
 }

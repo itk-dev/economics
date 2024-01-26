@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[Route('/admin/invoices/{invoice}/entries')]
+#[Route('/admin/{viewId}/invoices/{invoice}/entries')]
 class InvoiceEntryController extends AbstractController
 {
     public function __construct(
@@ -62,16 +62,17 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
             if (InvoiceEntryTypeEnum::MANUAL == $invoiceEntry->getEntryType()) {
-                return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_invoices_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
             }
 
-            return $this->redirectToRoute('app_invoice_entry_edit', ['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_invoice_entry_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('invoice_entry/new.html.twig', [
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -109,6 +110,7 @@ class InvoiceEntryController extends AbstractController
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -129,6 +131,6 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceTotalPrice($invoice);
         }
 
-        return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_invoices_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
     }
 }

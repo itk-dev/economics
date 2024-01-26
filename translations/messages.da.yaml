@@ -34,6 +34,9 @@ sprint_report:
     planned_work_sum: "Sum af est. planlagt arb."
 
 navigation:
+  reporting: 'Rapportering'
+  setup: 'Opsætning'
+  views: 'Views'
   home: "Forside"
   create_project: "Projektopretter"
   invoices: "Faktura"
@@ -350,7 +353,7 @@ home:
   create_project: "Projektopretter"
   create_project_description: "Hjælper med at oprette projekter i Project Tracker."
   accounts: "Konti"
-  accounts_description: "Liste over konti. Bruges i valglister."
+  accounts_description: "Liste over konti. Bruges i valglister i resten af systemet."
   account_details: "Liste over kontoer der bruges i faktura."
   project_billing: "Projektfakturering"
   project_billing_description: "Fakturér alle kunder i et projekt for en given periode."
@@ -360,6 +363,8 @@ home:
   clients: "Kunder"
   users: 'Brugere'
   users_description: 'Administrér brugeres adgang til systemet'
+  views: "Visning"
+  views_description: "Visninger kan bruges til begrænse, hvilke data en bruger kan se."
 
 frontpage:
   title: "Velkommen til Economics"
@@ -448,6 +453,52 @@ project:
   form_include: "Inkluderet"
   information: "Kun inkluderede projekter bliver vist og synkroniseret i resten af system."
   data_provider_id: "Data Provider"
+
+reports:
+  title: 'Rapporter'
+  description: 'Generer rapporter baseret på data fra eConomics.'
+  create_sprint_report: 'Opret ny Sprintrapport'
+  management-title: 'Ny ledelsesrapport'
+  create_management_report: 'Opret ny Ledelsesrapport'
+  from: 'Fra'
+  to: 'Til'
+  management-title-output: 'Ledelsesrapport %from% - %to%'
+  management-description: 'Rapport med nøgletal til ledelsesrapportering'
+  management-year: 'År'
+  management-total: 'Total'
+  management-1st-quarter: '1. Kvartal'
+  management-2nd-quarter: '2. Kvartal'
+  management-3rd-quarter: '3. Kvartal'
+  management-4th-quarter: '4. Kvartal'
+
+view:
+  list_title: 'Views'
+  list_description: 'Oversigt over de views der er mulige i EConomics'
+  list_name: 'Navn'
+  list_date: 'Dato'
+  list_actions: 'Funktioner'
+  list_edit: 'Redigér'
+  list_delete: 'Slet'
+  list_no_records_found: 'Ingen views'
+  action_create_new: 'Opret View'
+  create_new_step_one: 'Opret nyt view'
+  name: 'Navn'
+  description: 'Beskrivelse'
+  data_providers: 'Installationer'
+  projects: 'Projekter'
+  create_new_step_two: 'Opret nyt view'
+  create_new_step_three: 'Opret nyt view'
+  create_step2_description: 'Brug filtrene herunder til at tilpasse hvilke data der skal være tilgængelige'
+  create_step3_description: 'Dit view'
+  back_to_list: 'Tilbage til listen'
+  action_next: 'Næste'
+  action_create: 'Opret view'
+  action_delete: 'Slet view'
+  delete_page: 'Slet'
+  display_name: 'Navn'
+  display_description: 'Beskrivelse'
+  display_installations: 'Installationer'
+  display_projects: 'Projekter'
 
 exception:
   invoices_record_entry_amount_not_set: "Faktura can ikke bogføres, da den indeholder fakturalinjer hvor antal ikke er sat. Se: %invoiceEntryUrl%."

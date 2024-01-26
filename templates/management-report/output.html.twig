@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% set from = dateInterval['dateFrom']|date('d. F Y') %}
+{% set to = dateInterval['dateTo']|date('d. F Y') %}
+
+{% block title %}{{ 'reports.management-title-output'|trans({'%from%': from, '%to%': to}) }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title text-xl">{{ 'reports.management-title-output'|trans({'%from%': from, '%to%': to}) }}</h1>
+
+    <div class="content">
+      <div>
+        <p>
+          {{ 'reports.management-description'|trans }}
+        </p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left text-sm">
+          <thead>
+          <tr>
+            <th class="px-6 py-4">{{ 'reports.management-year'|trans }}</th>
+            <th class="px-6 py-4">{{ 'reports.management-total'|trans }}</th>
+            <th class="px-6 py-4">{{ 'reports.management-1st-quarter'|trans }}</th>
+            <th class="px-6 py-4">{{ 'reports.management-2nd-quarter'|trans }}</th>
+            <th class="px-6 py-4">{{ 'reports.management-3rd-quarter'|trans }}</th>
+            <th class="px-6 py-4">{{ 'reports.management-4th-quarter'|trans }}</th>
+          </tr>
+          </thead>
+          <tbody>
+            {% for year, yearData in groupedInvoices %}
+              <tr>
+                <td class="px-6 py-4">
+                  {{ year }}
+                </td>
+                {% for data, invoices in yearData %}
+                  {% if data is same as('sum') %}
+                    <td class="px-6 py-4">
+                      {{ yearData['sum'] }}
+                    </td>
+                  {% else %}
+                    {% set quarterTotal = 0 %}
+                    {% for invoice in invoices %}
+                      {% set quarterTotal = quarterTotal + invoice.totalPrice %}
+                    {% endfor %}
+                    <td class="px-6 py-4">
+                      {{ quarterTotal }}
+                    </td>
+                  {% endif %}
+
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+{% endblock %}

@@ -11,14 +11,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/account')]
+#[Route('/admin/{viewId}/account')]
 class AccountController extends AbstractController
 {
     #[Route('/', name: 'app_account_index', methods: ['GET'])]
-    public function index(AccountRepository $accountRepository): Response
+    public function index(Request $request, AccountRepository $accountRepository): Response
     {
         return $this->render('account/index.html.twig', [
             'accounts' => $accountRepository->findAll(),
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -39,14 +40,16 @@ class AccountController extends AbstractController
         return $this->render('account/new.html.twig', [
             'account' => $account,
             'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
     #[Route('/{id}', name: 'app_account_show', methods: ['GET'])]
-    public function show(Account $account): Response
+    public function show(Request $request, Account $account): Response
     {
         return $this->render('account/show.html.twig', [
             'account' => $account,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -65,6 +68,7 @@ class AccountController extends AbstractController
         return $this->render('account/edit.html.twig', [
             'account' => $account,
             'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -77,6 +81,6 @@ class AccountController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_account_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_account_index', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
     }
 }
