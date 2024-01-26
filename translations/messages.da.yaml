@@ -46,6 +46,7 @@ navigation:
   client: "Kunder"
   account: "Konti"
   pricelist: "Prisliste"
+  data: "Data"
 
 planning:
   title: "Planlægning"
