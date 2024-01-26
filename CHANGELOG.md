@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added leantime support for projects and project sync.
 * Added week-based planning view, based on issue duedates.
 * Fixed minor leantime integration issues.
+* Added nested menus and current page highlight in menu.
 
 
 * RELEASE NOTES:

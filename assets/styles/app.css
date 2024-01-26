@@ -343,4 +343,30 @@
         position: sticky;
         bottom: 0;
     }
+
+    .navigation-item + .navigation-item-submenu {
+		padding: 0 18px;
+		display: none;
+		overflow: hidden;
+	}
+
+	.navigation-item-submenu.shown {
+		display: block;
+	}
+
+    .collapsible:has(+ .navigation-item-submenu):after {
+        content: '▲';
+        font-size: 10px;
+		padding-right: 5px;
+    }
+
+    .collapsible:has(+ .navigation-item-submenu.shown):after {
+        content: '▼';
+        font-size: 10px;
+		padding-right: 5px;
+    }
+    
+	.navigation-item.current {
+		background-color: rgb(15, 23, 42);
+	}
 }
