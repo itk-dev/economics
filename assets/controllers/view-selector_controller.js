@@ -7,22 +7,23 @@ export default class extends Controller {
     }
     select(event) {
       const newDefaultView = event.target.options[event.target.selectedIndex].value;
+      const pathArray = window.location.pathname.split('/');
+      const params = window.location.search;
 
-      fetch(this.defaultViewEndpoint, {
-        method: 'POST',
-        mode: 'same-origin',
-        cache: 'no-cache',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          newDefaultView
-        })
-      })
-      .catch((err) => {
-        console.log('Error', err);
-      })
+      let i = 1;
+      if ('admin' === pathArray[1]) {
+        let newPath = "";
+        for (i = 1; i < pathArray.length; i++) {
+          newPath += "/";
+          if (i === 2) {
+            newPath += newDefaultView;
+          }
+          else {
+            newPath += pathArray[i];
+          }
+        }
+
+        window.location.replace(newPath + params);
+      }
     }
-
-
 }

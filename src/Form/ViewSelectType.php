@@ -16,13 +16,12 @@ class ViewSelectType extends AbstractType
                 'class' => View::class,
                 'label' => false,
                 'choice_label' => 'name',
-                'required' => false,
+                'required' => true,
                 'mapped' => false,
-                'placeholder' => 'Select view',
                 'attr' => [
                     'class' => 'form-element',
                     'data-action' => 'view-selector#select',
-                    'data-default-view-update-endpoint' => '/admin/view/set-default',
+                    'data-default-view-update-endpoint' => '/admin/1/view/set-default',
                 ],
                 'data' => $options['data'] ?? null,
             ]);
