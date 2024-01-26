@@ -29,7 +29,7 @@ class ManagementReportController extends AbstractController
         $form = $this->createForm(
             ManagementReportDateIntervalType::class,
             ['firstLog' => $firstRecordedInvoice->getRecordedDate()],
-            ['action' => $this->container->get('router')->getRouteCollection()->get('app_management_reports_output')->getPath(), 'method' => 'GET']
+            ['action' => $this->generateUrl('app_management_reports_output', ['viewId' => $request->get('viewId')]), 'method' => 'GET']
         );
 
         return $this->render('management-report/create.html.twig', [
