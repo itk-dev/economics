@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Interface\ProtectedInterface;
 use App\Repository\ViewRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,7 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ViewRepository::class)]
-class View extends AbstractBaseEntity
+class View extends AbstractBaseEntity implements ProtectedInterface
 {
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -22,6 +23,9 @@ class View extends AbstractBaseEntity
 
     #[ORM\ManyToMany(targetEntity: Project::class, inversedBy: 'views')]
     private Collection $projects;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $protected = null;
 
     public function __construct()
     {
@@ -157,6 +161,18 @@ class View extends AbstractBaseEntity
         if ($entity instanceof DataProvider) {
             $this->AddDataProvider($entity);
         }
+
+        return $this;
+    }
+
+    public function isProtected(): ?bool
+    {
+        return $this->protected;
+    }
+
+    public function setProtected(?bool $protected): static
+    {
+        $this->protected = $protected;
 
         return $this;
     }
