@@ -8,6 +8,7 @@ use App\Form\ViewAddStepThreeType;
 use App\Form\ViewAddStepTwoType;
 use App\Form\ViewSelectType;
 use App\Repository\ViewRepository;
+use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/{viewId}/view')]
+#[Route('/admin/view')]
 class ViewController extends AbstractController
 {
     private const VIEW_CREATE_SESSION_KEY = self::class;
@@ -39,18 +40,18 @@ class ViewController extends AbstractController
     ];
 
     public function __construct(
-        protected RequestStack $requestStack,
-        protected ViewRepository $viewRepository
+        private readonly RequestStack $requestStack,
+        private readonly ViewRepository $viewRepository,
+        private readonly ViewService $viewService,
     ) {
     }
 
     #[Route(['', '/list'], name: 'app_view_list')]
-    public function list(Request $request, ViewRepository $viewRepository): Response
+    public function list(ViewRepository $viewRepository): Response
     {
-        return $this->render('view/list.html.twig', [
+        return $this->render('view/list.html.twig', $this->viewService->addViewIdToRenderArray([
             'views' => $viewRepository->findAll(),
-            'viewId' => $request->attributes->get('viewId'),
-        ]);
+        ]));
     }
 
     #[Route('/add', name: 'app_view_add')]
@@ -91,40 +92,35 @@ class ViewController extends AbstractController
 
                     $viewRepository->save($data['view'], true);
 
-                    return $this->redirectToRoute('app_view_list', [
+                    return $this->redirectToRoute('app_view_list', $this->viewService->addViewIdToRenderArray([
                         'id' => $data['view']->getId(),
-                        'viewId' => $request->attributes->get('viewId'),
-                    ], Response::HTTP_SEE_OTHER);
+                    ]), Response::HTTP_SEE_OTHER);
                 }
             } else {
                 ++$data['current_step'];
                 $session->set(self::VIEW_CREATE_SESSION_KEY, $data);
 
-                return $this->redirectToRoute('app_view_add', [
-                    'viewId' => $request->attributes->get('viewId'),
-                ], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_view_add', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
             }
         }
 
-        return $this->render(self::STEPS[$data['current_step']]['template'], [
+        return $this->render(self::STEPS[$data['current_step']]['template'], $this->viewService->addViewIdToRenderArray([
             'form' => $form,
-            'viewId' => $request->attributes->get('viewId'),
-        ]);
+        ]));
     }
 
     #[Route('/{id}/edit', name: 'app_view_edit')]
     public function edit(Request $request): Response
     {
-        return $this->redirectToRoute('app_view_list', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_view_delete_confirm')]
     public function deleteConfirm(Request $request, View $view): Response
     {
-        return $this->render('view/viewDelete.html.twig', [
+        return $this->render('view/viewDelete.html.twig', $this->viewService->addViewIdToRenderArray([
             'view' => $view,
-            'viewId' => $request->attributes->get('viewId'),
-        ]);
+        ]));
     }
 
     #[Route('/{id}/delete', name: 'app_view_delete')]
@@ -136,16 +132,15 @@ class ViewController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_view_list', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/display', name: 'app_view_display')]
     public function display(Request $request, View $view): Response
     {
-        return $this->render('view/display.html.twig', [
+        return $this->render('view/display.html.twig', $this->viewService->addViewIdToRenderArray([
             'view' => $view,
-            'viewId' => $request->attributes->get('viewId'),
-        ]);
+        ]));
     }
 
     /**
@@ -155,7 +150,7 @@ class ViewController extends AbstractController
      */
     public function viewSelector(): Response
     {
-        $defaultViewId = $this->requestStack->getMainRequest()?->attributes->get('viewId');
+        $defaultViewId = $this->requestStack->getMainRequest()?->query->get('viewId');
 
         $defaultView = isset($defaultViewId) ? $this->viewRepository->find($defaultViewId) : null;
 
@@ -171,7 +166,7 @@ class ViewController extends AbstractController
      */
     public function getCurrentView()
     {
-        return $this->requestStack->getMainRequest()?->attributes->get('viewId');
+        return $this->requestStack->getMainRequest()?->query->get('viewId');
     }
 
     #[Route('/abandon-view-add', name: 'app_view_add_abandon')]
@@ -186,7 +181,7 @@ class ViewController extends AbstractController
 
         $session->set(self::VIEW_CREATE_SESSION_KEY, []);
 
-        return $this->redirectToRoute('app_view_list', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
     }
 
     private function createFormInit(): array

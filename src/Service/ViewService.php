@@ -16,12 +16,32 @@ class ViewService
     public function getCriteria(string $type, QueryBuilder $queryBuilder): Criteria
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
-        $viewId = $currentRequest->attributes->get('viewId');
-        $view = $this->viewRepository->find($viewId);
-        $dataProviders = $view->getDataProviders();
+        $viewId = $currentRequest?->query?->get('viewId');
 
-        return Criteria::create()->andWhere(
-            Criteria::expr()->in('dataProvider', $dataProviders->toArray())
-        );
+        if (null != $viewId) {
+            $view = $this->viewRepository->find($viewId);
+
+            if (null != $view) {
+                $dataProviders = $view->getDataProviders();
+
+                return Criteria::create()->andWhere(
+                    Criteria::expr()->in('dataProvider', $dataProviders->toArray())
+                );
+            }
+        }
+
+        return Criteria::create();
+    }
+
+    public function addViewIdToRenderArray(array $renderArray): array
+    {
+        $currentRequest = $this->requestStack->getCurrentRequest();
+        $viewId = $currentRequest?->query?->get('viewId') ?? null;
+
+        if (null != $viewId) {
+            return [...$renderArray, 'viewId' => $viewId];
+        }
+
+        return $renderArray;
     }
 }
