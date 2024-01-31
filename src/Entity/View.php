@@ -17,10 +17,10 @@ class View extends AbstractBaseEntity
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\ManyToMany(targetEntity: DataProvider::class, inversedBy: 'views')]
-    private ?Collection $dataProviders = null;
+    #[ORM\ManyToMany(targetEntity: DataProvider::class, inversedBy: 'views', fetch: 'EAGER')]
+    private Collection $dataProviders;
 
-    #[ORM\ManyToMany(targetEntity: Project::class, inversedBy: 'views')]
+    #[ORM\ManyToMany(targetEntity: Project::class, inversedBy: 'views', fetch: 'EAGER')]
     private Collection $projects;
 
     public function __construct()
@@ -59,14 +59,14 @@ class View extends AbstractBaseEntity
     }
 
     /**
-     * @return \Doctrine\Common\Collections\Collection|null
+     * @return Collection
      */
-    public function getDataProviders(): ?Collection
+    public function getDataProviders(): Collection
     {
         return $this->dataProviders;
     }
 
-    public function addDataProvider(?DataProvider $dataProvider): static
+    public function addDataProvider(DataProvider $dataProvider): static
     {
         if (!empty($this->dataProviders) && !$this->dataProviders->contains($dataProvider)) {
             $this->dataProviders->add($dataProvider);
@@ -75,7 +75,7 @@ class View extends AbstractBaseEntity
         return $this;
     }
 
-    public function removeDataProvider(?DataProvider $dataProvider): static
+    public function removeDataProvider(DataProvider $dataProvider): static
     {
         if (!empty($this->dataProviders)) {
             $this->dataProviders->removeElement($dataProvider);
