@@ -473,6 +473,7 @@ view:
   list_actions: 'Funktioner'
   list_edit: 'Redigér'
   list_delete: 'Slet'
+  list_required_view: 'Påkrævet'
   list_no_records_found: 'Ingen views'
   action_create_new: 'Opret View'
   create_new_step_one: 'Opret nyt view'

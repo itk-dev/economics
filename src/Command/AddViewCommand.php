@@ -79,9 +79,9 @@ class AddViewCommand extends Command
 
         foreach ($dataProviderStrings as $dataProviderString) {
             preg_match('#\((.*?)\)#', $dataProviderString, $match);
-            if(!empty($match)) {
-              $dataProvider = $this->dataProviderRepository->find($match[1]);
-              $view->addDataProvider($dataProvider);
+            if (!empty($match)) {
+                $dataProvider = $this->dataProviderRepository->find($match[1]);
+                $view->addDataProvider($dataProvider);
             }
         }
     }
@@ -111,9 +111,9 @@ class AddViewCommand extends Command
 
         foreach ($projectStrings as $projectString) {
             preg_match('#\((.*?)\)#', $projectString, $match);
-            if(!empty($match)) {
-              $project = $this->projectRepository->find($match[1]);
-              $view->addProject($project);
+            if (!empty($match)) {
+                $project = $this->projectRepository->find($match[1]);
+                $view->addProject($project);
             }
         }
     }
