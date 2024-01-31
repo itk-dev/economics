@@ -90,12 +90,12 @@ class InvoiceEntryWorklogController extends AbstractController
 
         $worklogs = $worklogRepository->findByFilterData($project, $invoiceEntry, $filterData);
 
-        return $this->render('invoice_entry/worklogs.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('invoice_entry/worklogs.html.twig', $this->viewService->addView([
             'form' => $form->createView(),
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
-            'submitEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', $this->viewService->addViewIdToRenderArray(['invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()])),
+            'submitEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', $this->viewService->addView(['invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()])),
         ]));
     }
 
@@ -111,7 +111,7 @@ class InvoiceEntryWorklogController extends AbstractController
 
         $worklogs = $worklogRepository->findBy(['invoiceEntry' => $invoiceEntry]);
 
-        return $this->render('invoice_entry/worklogs_show.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('invoice_entry/worklogs_show.html.twig', $this->viewService->addView([
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,

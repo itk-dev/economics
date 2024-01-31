@@ -34,6 +34,6 @@
     {% endif %}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_invoices_edit', {viewId: viewId, 'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+        <a class="link" href="{{ path('app_invoices_edit', {view: view, 'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
     </div>
 {% endblock %}

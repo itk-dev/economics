@@ -11,7 +11,7 @@ export default class extends Controller {
         const search = window.location.search;
 
         const params = new URLSearchParams(search);
-        params.set('viewId', newDefaultView);
+        params.set('view', newDefaultView);
 
         window.location.replace( window.location.pathname + "?" +  params);
     }

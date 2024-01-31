@@ -33,7 +33,7 @@ class ProjectController extends AbstractController
 
         $pagination = $projectRepository->getFilteredPagination($projectFilterData, $request->query->getInt('page', 1));
 
-        return $this->render('project/index.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('project/index.html.twig', $this->viewService->addView([
             'projects' => $pagination,
             'form' => $form,
         ]));

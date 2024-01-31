@@ -3,7 +3,7 @@
 {% block title %}{{ 'account.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_account_new', {viewId: viewId}) }}"
+    <a class="link" href="{{ path('app_account_new', {view: view}) }}"
        style="float: right">{{ 'accounts.action_create_new'|trans }}</a>
 
     <h1 class="page-title">{{ 'account.title'|trans }}</h1>
@@ -32,7 +32,7 @@
                 <td class="table-td">{{ account.status }}</td>
                 <td class="table-td">{{ account.category }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_account_edit', {viewId: viewId, 'id': account.id}) }}">{{ 'accounts.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_account_edit', {view: view, 'id': account.id}) }}">{{ 'accounts.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}
@@ -43,7 +43,7 @@
         {% endfor %}
         <tr class="table-tr">
             <td class="table-td" colspan="{{ numberOfColumns }}">
-                <a class="link" href="{{ path('app_account_new', {viewId: viewId}) }}">
+                <a class="link" href="{{ path('app_account_new', {view: view}) }}">
                     {{ 'accounts.action_create_new'|trans }}
                 </a>
             </td>

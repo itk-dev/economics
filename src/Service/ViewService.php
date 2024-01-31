@@ -16,7 +16,7 @@ class ViewService
     public function getCriteria(string $type, QueryBuilder $queryBuilder): Criteria
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
-        $viewId = $currentRequest?->query?->get('viewId');
+        $viewId = $currentRequest?->query?->get('view');
 
         if (null != $viewId) {
             $view = $this->viewRepository->find($viewId);
@@ -33,13 +33,13 @@ class ViewService
         return Criteria::create();
     }
 
-    public function addViewIdToRenderArray(array $renderArray): array
+    public function addView(array $renderArray): array
     {
         $currentRequest = $this->requestStack->getCurrentRequest();
-        $viewId = $currentRequest?->query?->get('viewId') ?? null;
+        $viewId = $currentRequest?->query?->get('view') ?? null;
 
         if (null != $viewId) {
-            return [...$renderArray, 'viewId' => $viewId];
+            return [...$renderArray, 'view' => $viewId];
         }
 
         return $renderArray;

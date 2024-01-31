@@ -31,10 +31,10 @@ class ManagementReportController extends AbstractController
         $form = $this->createForm(
             ManagementReportDateIntervalType::class,
             ['firstLog' => $firstRecordedInvoice->getRecordedDate()],
-            ['action' => $this->generateUrl('app_management_reports_output', $this->viewService->addViewIdToRenderArray([])), 'method' => 'GET']
+            ['action' => $this->generateUrl('app_management_reports_output', $this->viewService->addView([])), 'method' => 'GET']
         );
 
-        return $this->render('management-report/create.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('management-report/create.html.twig', $this->viewService->addView([
             'form' => $form,
         ]));
     }
@@ -49,7 +49,7 @@ class ManagementReportController extends AbstractController
         $dateInterval = $queryElements['management_report_date_interval'] ?? null;
 
         if (empty($dateInterval['dateFrom']) || empty($dateInterval['dateTo'])) {
-            return $this->redirectToRoute('app_management_reports_create', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_management_reports_create', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
         }
         $invoices = $invoiceRepository->getByRecordedDateBetween(
             new \DateTime($dateInterval['dateFrom']),
@@ -87,7 +87,7 @@ class ManagementReportController extends AbstractController
 
         return $this->render(
             'management-report/output.html.twig',
-            $this->viewService->addViewIdToRenderArray([
+            $this->viewService->addView([
                 'groupedInvoices' => $groupedInvoices,
                 'dateInterval' => $dateInterval,
             ])

@@ -27,7 +27,7 @@ class ErrorController extends AbstractController
             $message = $exception->getMessage();
         }
 
-        return $this->render('error/error.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('error/error.html.twig', $this->viewService->addView([
             'code' => $code,
             'message' => $message ?? null,
         ]));

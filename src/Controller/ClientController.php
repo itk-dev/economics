@@ -23,7 +23,7 @@ class ClientController extends AbstractController
     #[Route('/', name: 'app_client_index', methods: ['GET'])]
     public function index(Request $request, ClientRepository $clientRepository): Response
     {
-        return $this->render('client/index.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('client/index.html.twig', $this->viewService->addView([
             'clients' => $clientRepository->findAll(),
         ]));
     }
@@ -39,10 +39,10 @@ class ClientController extends AbstractController
             $entityManager->persist($client);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_client_index', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_client_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('client/new.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('client/new.html.twig', $this->viewService->addView([
             'client' => $client,
             'form' => $form,
         ]));
@@ -51,7 +51,7 @@ class ClientController extends AbstractController
     #[Route('/{id}', name: 'app_client_show', methods: ['GET'])]
     public function show(Request $request, Client $client): Response
     {
-        return $this->render('client/show.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('client/show.html.twig', $this->viewService->addView([
             'client' => $client,
         ]));
     }
@@ -65,10 +65,10 @@ class ClientController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_client_index', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_client_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('client/edit.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('client/edit.html.twig', $this->viewService->addView([
             'client' => $client,
             'form' => $form,
         ]));
@@ -83,6 +83,6 @@ class ClientController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_client_index', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_client_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
     }
 }

@@ -49,7 +49,7 @@ class ViewController extends AbstractController
     #[Route(['', '/list'], name: 'app_view_list')]
     public function list(ViewRepository $viewRepository): Response
     {
-        return $this->render('view/list.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('view/list.html.twig', $this->viewService->addView([
             'views' => $viewRepository->findAll(),
         ]));
     }
@@ -92,7 +92,7 @@ class ViewController extends AbstractController
 
                     $viewRepository->save($data['view'], true);
 
-                    return $this->redirectToRoute('app_view_list', $this->viewService->addViewIdToRenderArray([
+                    return $this->redirectToRoute('app_view_list', $this->viewService->addView([
                         'id' => $data['view']->getId(),
                     ]), Response::HTTP_SEE_OTHER);
                 }
@@ -100,11 +100,11 @@ class ViewController extends AbstractController
                 ++$data['current_step'];
                 $session->set(self::VIEW_CREATE_SESSION_KEY, $data);
 
-                return $this->redirectToRoute('app_view_add', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_view_add', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
             }
         }
 
-        return $this->render(self::STEPS[$data['current_step']]['template'], $this->viewService->addViewIdToRenderArray([
+        return $this->render(self::STEPS[$data['current_step']]['template'], $this->viewService->addView([
             'form' => $form,
         ]));
     }
@@ -112,13 +112,13 @@ class ViewController extends AbstractController
     #[Route('/{id}/edit', name: 'app_view_edit')]
     public function edit(Request $request): Response
     {
-        return $this->redirectToRoute('app_view_list', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_view_delete_confirm')]
     public function deleteConfirm(Request $request, View $view): Response
     {
-        return $this->render('view/viewDelete.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('view/viewDelete.html.twig', $this->viewService->addView([
             'view' => $view,
         ]));
     }
@@ -132,13 +132,13 @@ class ViewController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_view_list', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/display', name: 'app_view_display')]
     public function display(Request $request, View $view): Response
     {
-        return $this->render('view/display.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('view/display.html.twig', $this->viewService->addView([
             'view' => $view,
         ]));
     }
@@ -150,7 +150,7 @@ class ViewController extends AbstractController
      */
     public function viewSelector(): Response
     {
-        $defaultViewId = $this->requestStack->getMainRequest()?->query->get('viewId');
+        $defaultViewId = $this->requestStack->getMainRequest()?->query->get('view');
 
         $defaultView = isset($defaultViewId) ? $this->viewRepository->find($defaultViewId) : null;
 
@@ -166,7 +166,7 @@ class ViewController extends AbstractController
      */
     public function getCurrentView()
     {
-        return $this->requestStack->getMainRequest()?->query->get('viewId');
+        return $this->requestStack->getMainRequest()?->query->get('view');
     }
 
     #[Route('/abandon-view-add', name: 'app_view_add_abandon')]
@@ -181,7 +181,7 @@ class ViewController extends AbstractController
 
         $session->set(self::VIEW_CREATE_SESSION_KEY, []);
 
-        return $this->redirectToRoute('app_view_list', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_view_list', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
     }
 
     private function createFormInit(): array

@@ -23,7 +23,7 @@ class AccountController extends AbstractController
     #[Route('/', name: 'app_account_index', methods: ['GET'])]
     public function index(AccountRepository $accountRepository): Response
     {
-        return $this->render('account/index.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('account/index.html.twig', $this->viewService->addView([
             'accounts' => $accountRepository->findAll(),
         ]));
     }
@@ -39,10 +39,10 @@ class AccountController extends AbstractController
             $entityManager->persist($account);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_account_index', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_account_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('account/new.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('account/new.html.twig', $this->viewService->addView([
             'account' => $account,
             'form' => $form,
         ]));
@@ -57,10 +57,10 @@ class AccountController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_account_index', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_account_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('account/edit.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('account/edit.html.twig', $this->viewService->addView([
             'account' => $account,
             'form' => $form,
         ]));
@@ -75,6 +75,6 @@ class AccountController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_account_index', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_account_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
     }
 }

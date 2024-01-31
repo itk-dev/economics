@@ -20,7 +20,7 @@ class ReportsController extends AbstractController
     {
         return $this->render(
             'reports/index.html.twig',
-            $this->viewService->addViewIdToRenderArray([])
+            $this->viewService->addView([])
         );
     }
 }

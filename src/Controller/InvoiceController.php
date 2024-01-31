@@ -45,11 +45,11 @@ class InvoiceController extends AbstractController
 
         $pagination = $invoiceRepository->getFilteredPagination($invoiceFilterData, $request->query->getInt('page', 1));
 
-        return $this->render('invoices/index.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('invoices/index.html.twig', $this->viewService->addView([
             'form' => $form,
             'invoices' => $pagination,
             'invoiceFilterData' => $invoiceFilterData,
-            'submitEndpoint' => $this->generateUrl('app_invoices_export_selection', $this->viewService->addViewIdToRenderArray([])),
+            'submitEndpoint' => $this->generateUrl('app_invoices_export_selection', $this->viewService->addView([])),
         ]));
     }
 
@@ -69,12 +69,12 @@ class InvoiceController extends AbstractController
             $invoice->setTotalPrice(0);
             $invoiceRepository->save($invoice, true);
 
-            return $this->redirectToRoute('app_invoices_edit', $this->viewService->addViewIdToRenderArray([
+            return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView([
                 'id' => $invoice->getId(),
             ]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('invoices/new.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('invoices/new.html.twig', $this->viewService->addView([
             'invoice' => $invoice,
             'form' => $form,
         ]));
@@ -186,7 +186,7 @@ class InvoiceController extends AbstractController
             && !empty($invoice->getDefaultMaterialNumber())
             && !empty($invoice->getDefaultMaterialNumber()->value);
 
-        return $this->render('invoices/edit.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('invoices/edit.html.twig', $this->viewService->addView([
             'invoice' => $invoice,
             'form' => $form,
             'allowAddingEntries' => $allowAddingEntries,
@@ -232,7 +232,7 @@ class InvoiceController extends AbstractController
             $invoiceRepository->remove($invoice, true);
         }
 
-        return $this->redirectToRoute('app_invoices_index', $this->viewService->addViewIdToRenderArray([]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_invoices_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -264,10 +264,10 @@ class InvoiceController extends AbstractController
                 $this->billingService->recordInvoice($invoice);
             }
 
-            return $this->redirectToRoute('app_invoices_edit', $this->viewService->addViewIdToRenderArray(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('invoices/record.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('invoices/record.html.twig', $this->viewService->addView([
             'invoice' => $invoice,
             'form' => $form,
             'errors' => $errors,
@@ -284,7 +284,7 @@ class InvoiceController extends AbstractController
     {
         $html = $this->billingService->generateSpreadsheetHtml([$invoice->getId()]);
 
-        return $this->render('invoices/export_show.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('invoices/export_show.html.twig', $this->viewService->addView([
             'invoice' => $invoice,
             'html' => $html,
         ]));

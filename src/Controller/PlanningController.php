@@ -88,7 +88,7 @@ class PlanningController extends AbstractController
             }
         }
 
-        return $this->render($template, $this->viewService->addViewIdToRenderArray([
+        return $this->render($template, $this->viewService->addView([
             'controller_name' => 'PlanningController',
             'planningData' => $planningData,
             'form' => $form,

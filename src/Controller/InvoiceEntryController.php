@@ -64,13 +64,13 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
             if (InvoiceEntryTypeEnum::MANUAL == $invoiceEntry->getEntryType()) {
-                return $this->redirectToRoute('app_invoices_edit', $this->viewService->addViewIdToRenderArray(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
             }
 
-            return $this->redirectToRoute('app_invoice_entry_edit', $this->viewService->addViewIdToRenderArray(['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_invoice_entry_edit', $this->viewService->addView(['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('invoice_entry/new.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('invoice_entry/new.html.twig', $this->viewService->addView([
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
@@ -107,7 +107,7 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
         }
 
-        return $this->render('invoice_entry/edit.html.twig', $this->viewService->addViewIdToRenderArray([
+        return $this->render('invoice_entry/edit.html.twig', $this->viewService->addView([
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
@@ -131,6 +131,6 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceTotalPrice($invoice);
         }
 
-        return $this->redirectToRoute('app_invoices_edit', $this->viewService->addViewIdToRenderArray(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
     }
 }
