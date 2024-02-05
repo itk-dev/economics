@@ -7,6 +7,10 @@
         @apply bg-white text-black dark:bg-slate-800 dark:text-white;
     }
 
+    select {
+        @apply cursor-pointer;
+    }
+
     .navigation-item {
         @apply flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 hover:dark:bg-slate-900;
     }
@@ -135,12 +139,10 @@
     .hidden {
         @apply invisible;
     }
-
-    .invoices-filter-form {
+    .form-default, #sprint_report {
         @apply grid gap-3 mb-6 md:grid-cols-4;
     }
-
-    .invoices-filter-form > div {
+    .form-default > div, #sprint_report > div {
         @apply flex flex-col justify-end;
     }
 
@@ -270,7 +272,8 @@
     }
 
     .form-choices .choices__inner {
-        @apply text-white bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-1;
+        @apply  bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-1
+        /* @apply text-white bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-1; */
     }
 
     .form-choices .choices__list--single {
@@ -298,12 +301,13 @@
     }
 
     .selections .choices__list .choices__input {
-        color: black !important;
+        @apply text-black dark:text-white;
+        /* color: black !important; */
     }
 
     .selections .choices__inner,
     .selections .choices__list {
-        @apply dark:bg-gray-900 dark:text-white bg-gray-50 text-black;
+        @apply dark:bg-gray-700 dark:text-white bg-gray-50 text-black;
     }
 
     .selections .choices.is-disabled .choices__inner,
@@ -312,7 +316,7 @@
     }
 
     .selections .choices__item--choice {
-        @apply dark:bg-gray-900 dark:text-white bg-gray-50 text-black;
+        @apply dark:bg-gray-700 dark:text-white bg-gray-50 text-black;
     }
 
     .selections .choices__item.choices__item--choice.choices__item--selectable.is-highlighted {

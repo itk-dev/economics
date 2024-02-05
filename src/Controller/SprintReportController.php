@@ -53,7 +53,6 @@ class SprintReportController extends AbstractController
             'required' => false,
             'label' => 'sprint_report.data_provider',
             'label_attr' => ['class' => 'label'],
-            'row_attr' => ['class' => 'form-row'],
             'attr' => [
                 'data-action' => 'sprint-report#submitFormProjectId',
                 'class' => 'form-element',
@@ -89,7 +88,7 @@ class SprintReportController extends AbstractController
                     'required' => false,
                     'label' => 'sprint_report.select_project',
                     'label_attr' => ['class' => 'label'],
-                    'row_attr' => ['class' => 'form-row form-choices'],
+                    'row_attr' => ['class' => 'form-choices'],
                     'attr' => [
                         'data-sprint-report-target' => 'project',
                         'data-action' => 'sprint-report#submitFormProjectId',
@@ -112,7 +111,7 @@ class SprintReportController extends AbstractController
                         'required' => true,
                         'label' => 'sprint_report.select_version',
                         'label_attr' => ['class' => 'label'],
-                        'row_attr' => ['class' => 'form-row form-choices'],
+                        'row_attr' => ['class' => 'form-choices'],
                         'attr' => [
                             'data-choices-target' => 'choices',
                             'data-sprint-report-target' => 'version',

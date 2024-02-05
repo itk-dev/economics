@@ -58,7 +58,7 @@ planning:
   hidden-entries: "Skjulte brugere"
   data_provider_helptext: ""
   data_provider: "Vælg datakilde"
-  search: "Vis planlægning"
+  search: "Vis"
   view_type: "Vælg visningstype"
   week_view: "Ugevisning"
   sprint_view: "Sprintvisning"
