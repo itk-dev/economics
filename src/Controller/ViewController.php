@@ -166,7 +166,7 @@ class ViewController extends AbstractController
      */
     public function getCurrentView()
     {
-        return $this->requestStack->getMainRequest()?->query->get('view');
+        return $this->requestStack->getMainRequest()?->query->get('view') ?? null;
     }
 
     #[Route('/abandon-view-add', name: 'app_view_add_abandon')]

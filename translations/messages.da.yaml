@@ -499,6 +499,7 @@ view:
   display_description: 'Beskrivelse'
   display_installations: 'Installationer'
   display_projects: 'Projekter'
+  title: 'Views'
 
 exception:
   invoices_record_entry_amount_not_set: "Faktura can ikke bogføres, da den indeholder fakturalinjer hvor antal ikke er sat. Se: %invoiceEntryUrl%."

@@ -13,6 +13,6 @@ export default class extends Controller {
         const params = new URLSearchParams(search);
         params.set('view', newDefaultView);
 
-        window.location.replace( window.location.pathname + "?" +  params);
+        window.location.replace(window.location.pathname + "?" +  params);
     }
 }
