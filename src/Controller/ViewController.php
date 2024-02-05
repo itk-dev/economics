@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/admin/{viewId}/view')]
+#[Route('/admin/{viewId}/view/')]
 class ViewController extends AbstractController
 {
     private const VIEW_CREATE_SESSION_KEY = self::class;
