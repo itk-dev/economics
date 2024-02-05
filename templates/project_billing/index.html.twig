@@ -36,7 +36,7 @@
                 <td class="table-td">{{ projectBilling.createdBy }}</td>
                 <td class="table-td">{{ projectBilling.updatedAt ? projectBilling.updatedAt|date : '' }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}) }}">{{ 'project_billing.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% endfor %}

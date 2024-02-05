@@ -21,13 +21,13 @@
         {% for index, view in views %}
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_view_display', {'id': view.id}) }}">
+                    <a class="link" href="{{ path('app_view_display', {'id': view.id}|merge(view is defined ? {view: view} : {})) }}">
                         {{ view.name }}
                     </a>
                 </td>
                 <td class="table-td">{{ view.createdAt|date('Y-m-d H:i:s') }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_view_delete_confirm', {'id': view.id}) }}">
+                    <a class="link" href="{{ path('app_view_delete_confirm', {'id': view.id}|merge(view is defined ? {view: view} : {})) }}">
                         {{ 'view.list_delete'|trans }}
                     </a>
                 </td>

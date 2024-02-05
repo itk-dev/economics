@@ -46,7 +46,7 @@
                 <td class="table-td">{{ client.salesChannel }}</td>
                 <td class="table-td">{{ client.customerKey }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_client_edit', {'id': client.id}) }}">{{ 'clients.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_client_edit', {'id': client.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'clients.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}

@@ -71,7 +71,7 @@
                             <td class="table-td">{{ invoice.exportedDate ? invoice.exportedDate|date('Y-m-d') : '' }}</td>
                         {% endif %}
                         <td class="table-td">
-                            <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">
+                            <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">
                                 {% if recordedInvoices %}
                                     {{ 'invoices.action_view'|trans }}
                                 {% else %}

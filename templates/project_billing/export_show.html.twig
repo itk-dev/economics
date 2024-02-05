@@ -10,6 +10,6 @@
     </div>
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}) }}">{{ 'project_billing.back_to_invoice'|trans }}</a>
+        <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.back_to_invoice'|trans }}</a>
     </div>
 {% endblock %}
