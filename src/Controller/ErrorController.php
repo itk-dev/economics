@@ -6,6 +6,7 @@ use App\Exception\EconomicsException;
 use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ErrorController extends AbstractController
@@ -21,6 +22,11 @@ class ErrorController extends AbstractController
 
         if ($exception instanceof NotFoundHttpException) {
             $code = 404;
+        }
+
+        if ($exception instanceof AccessDeniedHttpException) {
+            $code = 403;
+            $message = 'Access denied';
         }
 
         if ($exception instanceof EconomicsException) {
