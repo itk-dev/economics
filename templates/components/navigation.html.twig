@@ -13,7 +13,7 @@
             {% include 'components/navigation-item.html.twig' with {icon: 'planning', title: 'navigation.planning'|trans, role: 'ROLE_PLANNING', route: path('app_planning', {}|merge(view is defined ? {view: view} : {}))} %}
             {% include 'components/navigation-item.html.twig' with {icon: 'sprint-report', title: 'navigation.sprint_report'|trans, role: 'ROLE_SPRINT_REPORT', route: path('app_sprint_report', {}|merge(view is defined ? {view: view} : {}))} %}
 			<li>
-				<a href="#" class="navigation-item collapsible"  {{ stimulus_action('navigation', 'toggle') }}>
+				<a class="navigation-item collapsible" {{ stimulus_action('navigation', 'toggle') }}>
 					{% include 'components/icons.html.twig' with {icon: 'collapse', class: "w-6 h-6"} %}
 					<span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.admin'|trans }}</span>
 				</a>
