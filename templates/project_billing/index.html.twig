@@ -10,7 +10,9 @@
     <div class="invoices-filter-form">
         {{ form_row(form.recorded) }}
         {{ form_row(form.createdBy) }}
-        <button class="button m-5">{{ 'project_billing.search'|trans }}</button>
+        <div>
+                <button class="button form-element">{{ 'project_billing.search'|trans }}</button>
+            </div>
     </div>
     {{ form_end(form) }}
 
