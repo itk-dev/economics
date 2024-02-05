@@ -20,7 +20,8 @@ class ViewService
     ) {
     }
 
-    public function getCurrentView(): ?View {
+    public function getCurrentView(): ?View
+    {
         $viewId = $this->getCurrentViewId();
 
         if (null != $viewId) {
@@ -71,9 +72,10 @@ class ViewService
         return $renderArray;
     }
 
-    private function getCurrentViewId(): ?int
+    public function getCurrentViewId(): ?string
     {
-        $currentRequest = $this->requestStack->getCurrentRequest();
-        return $currentRequest?->query?->get('view') ?? null;
+        $request = $this->requestStack->getMainRequest();
+
+        return $request?->query?->get('view') ?? null;
     }
 }

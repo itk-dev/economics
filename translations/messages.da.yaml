@@ -570,6 +570,7 @@ users:
   roles: "Roller"
   actions: "Handlinger"
   list_no_records_found: "Ingen brugere fundet."
+  views: 'Views'
 
 roles:
   ROLE_ADMIN: Administrator

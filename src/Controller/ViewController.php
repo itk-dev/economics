@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\View;
 use App\Form\ViewAddStepOneType;
 use App\Form\ViewAddStepThreeType;
@@ -10,6 +11,7 @@ use App\Form\ViewSelectType;
 use App\Repository\ViewRepository;
 use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -150,11 +152,27 @@ class ViewController extends AbstractController
      */
     public function viewSelector(): Response
     {
-        $defaultViewId = $this->requestStack->getMainRequest()?->query->get('view');
+        $view = $this->viewService->getCurrentView();
 
-        $defaultView = isset($defaultViewId) ? $this->viewRepository->find($defaultViewId) : null;
+        $form = $this->createForm(ViewSelectType::class, $view);
 
-        $form = $this->createForm(ViewSelectType::class, $defaultView ?? null);
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $form
+            ->add('viewSelect', EntityType::class, [
+                'class' => View::class,
+                'label' => false,
+                'choice_label' => 'name',
+                'required' => false,
+                'mapped' => false,
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-action' => 'view-selector#select',
+                ],
+                'choices' => $user->getViews(),
+                'data' => $view,
+            ]);
 
         return $this->render('view/viewSelect.html.twig', [
             'form' => $form,
