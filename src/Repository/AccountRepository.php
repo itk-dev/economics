@@ -57,6 +57,7 @@ class AccountRepository extends ServiceEntityRepository
 
         return $accountChoices;
     }
+
     public function getFilteredPagination(AccountFilterData $accountFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('account');

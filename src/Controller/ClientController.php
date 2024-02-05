@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Client;
-use App\Form\ClientType;
-use App\Repository\ClientRepository;
 use App\Form\ClientFilterType;
+use App\Form\ClientType;
 use App\Model\Invoices\ClientFilterData;
+use App\Repository\ClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
