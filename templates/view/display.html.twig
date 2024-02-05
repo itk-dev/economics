@@ -16,7 +16,7 @@
   {% include 'view/viewDataTableDisplay.html.twig' with {'data': data} %}
 
   <div class="bottom-actions">
-    <a class="link" href="{{ path('app_view_list', {view: view}) }}">{{ 'view.back_to_list'|trans }}</a>
+    <a class="link" href="{{ path('app_view_list', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'view.back_to_list'|trans }}</a>
   </div>
 
 {% endblock %}

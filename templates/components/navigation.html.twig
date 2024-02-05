@@ -1,28 +1,28 @@
 <aside {{ stimulus_controller('navigation') }} class="w-full sm:w-1/3 md:w-1/4 px-2">
     <div class="sticky top-0 p-4 w-full">
-        <a href="{{ path('index', {view: view}) }}" class="flex items-center mb-5">
+        <a href="{{ path('index', {}|merge(view is defined ? {view: view} : {})) }}" class="flex items-center mb-5">
             <img src="{{ asset('img/itk-economics.png') }}" class="h-6 ml-3 sm:h-9" alt="{{ 'navigation.title'|trans }}" />
         </a>
 
         {{ render(controller('App\\Controller\\ViewController::viewSelector')) }}
 
         <ul class="flex flex-col overflow-hidden">
-            {% include 'components/navigation-item.html.twig' with {icon: 'home', title: 'navigation.home'|trans, role: 'ROLE_USER', route: path('index', {view: view})} %}
-            {% include 'components/navigation-item.html.twig' with {icon: 'invoice', title: 'navigation.invoices'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index', {view: view})} %}
-            {% include 'components/navigation-item.html.twig' with {icon: 'project-billing', title: 'navigation.project_billing'|trans, role: 'ROLE_PROJECT_BILLING', route: path('app_project_billing_index', {view: view})} %}
-            {% include 'components/navigation-item.html.twig' with {icon: 'planning', title: 'navigation.planning'|trans, role: 'ROLE_PLANNING', route: path('app_planning', {view: view})} %}
-            {% include 'components/navigation-item.html.twig' with {icon: 'sprint-report', title: 'navigation.sprint_report'|trans, role: 'ROLE_SPRINT_REPORT', route: path('app_sprint_report', {view: view})} %}
+            {% include 'components/navigation-item.html.twig' with {icon: 'home', title: 'navigation.home'|trans, role: 'ROLE_USER', route: path('index', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% include 'components/navigation-item.html.twig' with {icon: 'invoice', title: 'navigation.invoices'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% include 'components/navigation-item.html.twig' with {icon: 'project-billing', title: 'navigation.project_billing'|trans, role: 'ROLE_PROJECT_BILLING', route: path('app_project_billing_index', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% include 'components/navigation-item.html.twig' with {icon: 'planning', title: 'navigation.planning'|trans, role: 'ROLE_PLANNING', route: path('app_planning', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% include 'components/navigation-item.html.twig' with {icon: 'sprint-report', title: 'navigation.sprint_report'|trans, role: 'ROLE_SPRINT_REPORT', route: path('app_sprint_report', {}|merge(view is defined ? {view: view} : {}))} %}
 			<li>
 				<a href="#" class="navigation-item collapsible"  {{ stimulus_action('navigation', 'toggle') }}>
 					{% include 'components/icons.html.twig' with {icon: 'collapse', class: "w-6 h-6"} %}
 					<span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.admin'|trans }}</span>
 				</a>
 				<ul class="navigation-item-submenu">
-					{% include 'components/navigation-item.html.twig' with {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_ADMIN', route: path('app_project_index', {view: view})} %}
-					{% include 'components/navigation-item.html.twig' with {icon: 'client', title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index', {view: view})} %}
-					{% include 'components/navigation-item.html.twig' with {icon: 'account', title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index', {view: view})} %}
-					{% include 'components/navigation-item.html.twig' with {icon: 'user', title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index', {view: view})} %}
-					{% include 'components/navigation-item.html.twig' with {icon: 'view', title: 'navigation.views'|trans, role: 'ROLE_ADMIN', route: path('app_view_list', {view: view})} %}
+					{% include 'components/navigation-item.html.twig' with {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_ADMIN', route: path('app_project_index', {}|merge(view is defined ? {view: view} : {}))} %}
+					{% include 'components/navigation-item.html.twig' with {icon: 'client', title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index', {}|merge(view is defined ? {view: view} : {}))} %}
+					{% include 'components/navigation-item.html.twig' with {icon: 'account', title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index', {}|merge(view is defined ? {view: view} : {}))} %}
+					{% include 'components/navigation-item.html.twig' with {icon: 'user', title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index', {}|merge(view is defined ? {view: view} : {}))} %}
+					{% include 'components/navigation-item.html.twig' with {icon: 'view', title: 'navigation.views'|trans, role: 'ROLE_ADMIN', route: path('app_view_list', {}|merge(view is defined ? {view: view} : {}))} %}
 				</ul>
 			</li>
         </ul>

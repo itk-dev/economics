@@ -15,6 +15,6 @@
     {{ form_end(form) }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_invoices_index', {view: view}) }}">{{ 'invoices.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_invoices_index', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.back_to_list'|trans }}</a>
     </div>
 {% endblock %}

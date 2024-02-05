@@ -13,6 +13,6 @@
     {{ form_end(form) }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_account_index', {view: view}) }}">{{ 'account.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_account_index', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'account.back_to_list'|trans }}</a>
     </div>
 {% endblock %}

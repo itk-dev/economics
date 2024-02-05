@@ -1,4 +1,4 @@
-<form method="post" action="{{ path('app_client_delete', {view: view, 'id': client.id}) }}" onsubmit="return confirm('{{ 'delete.confirm'|trans }}');">
+<form method="post" action="{{ path('app_client_delete', {'id': client.id}) }}" onsubmit="return confirm('{{ 'delete.confirm'|trans }}');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ client.id) }}">
     <button class="button button-danger">{{ 'clients.action_delete_account'|trans }}</button>
 </form>
