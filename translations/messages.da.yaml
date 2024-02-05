@@ -131,6 +131,7 @@ account:
   new: "Opret konto"
   action_create: "Opret konto"
   back_to_list: "Tilbage til listen"
+  name: "Navn"
 
 create_account_form:
   account_name_label: "Navn"
