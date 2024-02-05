@@ -71,6 +71,9 @@ client:
   client_type_select: "Vælg kundetype"
   action_create: "Opret kunde"
   back_to_list: "Tilbage til listen"
+  name: "Navn"
+  contact: "Kontakt"
+  search: "Søg"
 
 price_list:
   title: "Prisliste"
@@ -174,7 +177,7 @@ invoices:
   action_delete: "Slet faktura"
   action_create: "Opret faktura"
   back_to_list: "Tilbage til listen"
-  search: "Filtrér"
+  search: "Søg"
   recorded_true: "Bogført"
   recorded_false: "Ikke bogført"
   recorded: "Bogført"
@@ -418,7 +421,7 @@ project_billing:
     name: "navn"
     status: "status"
     key: "nøgle"
-  search: "Filtrér"
+  search: "Søg"
   form_recorded: "Bogført"
   form_created_by: "Opretter"
   existing_errors_before_on_record: "Følgende fejl skal rettes før projektfakturering kan bogføres."

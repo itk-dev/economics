@@ -10,21 +10,31 @@
 
     {% set numberOfColumns = 11 %}
 
+    {{ form_start(form) }}
+        <div class="invoices-filter-form">
+            {{ form_row(form.name) }}
+            {{ form_row(form.contact) }}
+            <div>
+                <button class="button form-element">{{ 'client.search'|trans }}</button>
+            </div>
+        </div>
+    {{ form_end(form) }}
+
     {# TODO: Add pagination, sorting and filters #}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
         <tr>
-            <th class="table-th">{{ 'clients.id'|trans }}</th>
-            <th class="table-th">{{ 'clients.name'|trans }}</th>
-            <th class="table-th">{{ 'clients.contact'|trans }}</th>
-            <th class="table-th">{{ 'clients.standard_price'|trans }}</th>
-            <th class="table-th">{{ 'clients.type'|trans }}</th>
-            <th class="table-th">{{ 'clients.account'|trans }}</th>
-            <th class="table-th">{{ 'clients.psp'|trans }}</th>
-            <th class="table-th">{{ 'clients.ean'|trans }}</th>
-            <th class="table-th">{{ 'clients.sales_channel'|trans }}</th>
-            <th class="table-th">{{ 'clients.customer_key'|trans }}</th>
+            <th class="table-th {% if clients.isSorted('clients.id') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.id'|trans, 'client.id') }}</th>
+            <th class="table-th {% if clients.isSorted('client.name') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.name'|trans, 'client.name') }}</th>
+            <th class="table-th {% if clients.isSorted('client.contact') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.contact'|trans, 'client.contact') }}</th>
+            <th class="table-th {% if clients.isSorted('client.standardPrice') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.standard_price'|trans, 'client.standardPrice') }}</th>
+            <th class="table-th {% if clients.isSorted('client.type') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.type'|trans, 'client.type') }}</th>
+            <th class="table-th {% if clients.isSorted('client.account') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.account'|trans, 'client.account') }}</th>
+            <th class="table-th {% if clients.isSorted('client.psp') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.psp'|trans, 'client.psp') }}</th>
+            <th class="table-th {% if clients.isSorted('client.ean') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.ean'|trans, 'client.ean') }}</th>
+            <th class="table-th {% if clients.isSorted('client.customerKey') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.sales_channel'|trans, 'client.salesChannel') }}</th>
+            <th class="table-th {% if clients.isSorted('client.customerKey') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.customer_key'|trans, 'client.customerKey') }}</th>
             <th class="table-th">{{ 'clients.actions'|trans }}</th>
         </tr>
         </thead>
@@ -60,6 +70,11 @@
                 <a class="link" href="{{ path('app_client_new', {viewId: viewId}) }}">
                     {{ 'clients.action_create_new'|trans }}
                 </a>
+            </td>
+        </tr>
+        <tr class="table-tr">
+            <td class="table-td" colspan="6" class="text-right">
+                {{ knp_pagination_render(clients) }}
             </td>
         </tr>
         </tbody>

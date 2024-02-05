@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Client;
 use App\Form\ClientType;
 use App\Repository\ClientRepository;
+use App\Form\ClientFilterType;
+use App\Model\Invoices\ClientFilterData;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,8 +19,15 @@ class ClientController extends AbstractController
     #[Route('/', name: 'app_client_index', methods: ['GET'])]
     public function index(Request $request, ClientRepository $clientRepository): Response
     {
+        $clientFilterData = new ClientFilterData();
+        $form = $this->createForm(ClientFilterType::class, $clientFilterData);
+        $form->handleRequest($request);
+
+        $pagination = $clientRepository->getFilteredPagination($clientFilterData, $request->query->getInt('page', 1));
+
         return $this->render('client/index.html.twig', [
-            'clients' => $clientRepository->findAll(),
+            'clients' => $pagination,
+            'form' => $form,
             'viewId' => $request->attributes->get('viewId'),
         ]);
     }

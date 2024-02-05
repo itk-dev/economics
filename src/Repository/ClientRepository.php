@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Client;
+use App\Model\Invoices\ClientFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Client>
@@ -16,7 +19,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ClientRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {
         parent::__construct($registry, Client::class);
     }
@@ -43,5 +46,26 @@ class ClientRepository extends ServiceEntityRepository
         $clients = $this->findAll();
 
         return $clients;
+    }
+    public function getFilteredPagination(ClientFilterData $clientFilterData, int $page = 1): PaginationInterface
+    {
+        $qb = $this->createQueryBuilder('client');
+
+        if (!is_null($clientFilterData->name)) {
+            $name = $clientFilterData->name;
+            $qb->andWhere('client.name LIKE :name')->setParameter('name', "%$name%");
+        }
+
+        if (!is_null($clientFilterData->contact)) {
+            $contact = $clientFilterData->contact;
+            $qb->andWhere('client.contact LIKE :contact')->setParameter('contact', "%$contact%");
+        }
+
+        return $this->paginator->paginate(
+            $qb,
+            $page,
+            10,
+            ['defaultSortFieldName' => 'client.id', 'defaultSortDirection' => 'asc']
+        );
     }
 }
