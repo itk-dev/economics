@@ -53,7 +53,7 @@ class UserController extends AbstractController
         foreach ($selected as $sel) {
             $view = $viewRepository->find($sel);
 
-            if ($view !== null) {
+            if (null !== $view) {
                 $user->addView($view);
                 $viewsAdded[] = $view;
             }

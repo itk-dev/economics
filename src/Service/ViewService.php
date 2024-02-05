@@ -72,7 +72,7 @@ class ViewService
         return $renderArray;
     }
 
-    public function getCurrentViewId(): ?string
+    public function getCurrentViewId(): mixed
     {
         $request = $this->requestStack->getMainRequest();
 

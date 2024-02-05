@@ -2,11 +2,8 @@
 
 namespace App\Repository;
 
-use App\Entity\Invoice;
 use App\Entity\Project;
-use App\Exception\EconomicsException;
 use App\Model\Invoices\ProjectFilterData;
-use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
