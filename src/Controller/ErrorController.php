@@ -26,7 +26,7 @@ class ErrorController extends AbstractController
 
         if ($exception instanceof AccessDeniedHttpException) {
             $code = 403;
-            $message = 'Access denied';
+            $message = 'Access denied.';
         }
 
         if ($exception instanceof EconomicsException) {

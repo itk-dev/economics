@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Invoice;
+use App\Entity\View;
 use App\Enum\RolesEnum;
 use App\Exception\EconomicsException;
 use App\Repository\ViewRepository;
@@ -19,35 +20,40 @@ class ViewService
     ) {
     }
 
-    public function addWhere(QueryBuilder $queryBuilder, $entityClass = null, string $alias = null): QueryBuilder
-    {
-        $currentRequest = $this->requestStack->getCurrentRequest();
-        $viewId = $currentRequest?->query?->get('view');
-
-        $whereSet = false;
+    public function getCurrentView(): ?View {
+        $viewId = $this->getCurrentViewId();
 
         if (null != $viewId) {
-            $view = $this->viewRepository->find($viewId);
+            return $this->viewRepository->find($viewId);
+        }
 
-            if (null != $view) {
-                $dataProviders = $view->getDataProviders();
+        return null;
+    }
 
-                if (Invoice::class == $entityClass) {
-                    $queryBuilder->leftJoin((null !== $alias ? $alias.'.' : '').'project', 'project');
-                    $queryBuilder->andWhere($queryBuilder->expr()->in('project.dataProvider', ':dataProviders'));
-                } else {
-                    $queryBuilder->andWhere($queryBuilder->expr()->in((null !== $alias ? $alias.'.' : '').'dataProvider', ':dataProviders'));
-                }
+    public function addWhere(QueryBuilder $queryBuilder, $entityClass = null, string $alias = null): QueryBuilder
+    {
+        $whereSet = false;
 
-                $queryBuilder->setParameter('dataProviders', $dataProviders);
-                $whereSet = true;
+        $view = $this->getCurrentView();
+
+        if (null != $view) {
+            $dataProviders = $view->getDataProviders();
+
+            if (Invoice::class == $entityClass) {
+                $queryBuilder->leftJoin((null !== $alias ? $alias.'.' : '').'project', 'project');
+                $queryBuilder->andWhere($queryBuilder->expr()->in('project.dataProvider', ':dataProviders'));
+            } else {
+                $queryBuilder->andWhere($queryBuilder->expr()->in((null !== $alias ? $alias.'.' : '').'dataProvider', ':dataProviders'));
             }
+
+            $queryBuilder->setParameter('dataProviders', $dataProviders);
+            $whereSet = true;
         }
 
         // Required that user has role admin.
         if (!$whereSet) {
             if (!$this->security->isGranted(RolesEnum::ROLE_ADMIN->value)) {
-                throw new EconomicsException('Permission denied', 403);
+                throw new EconomicsException('Permission denied. No view selected and user is not admin.', 403);
             }
         }
 
@@ -56,13 +62,18 @@ class ViewService
 
     public function addView(array $renderArray): array
     {
-        $currentRequest = $this->requestStack->getCurrentRequest();
-        $viewId = $currentRequest?->query?->get('view') ?? null;
+        $viewId = $this->getCurrentViewId();
 
         if (null != $viewId) {
             return [...$renderArray, 'view' => $viewId];
         }
 
         return $renderArray;
+    }
+
+    private function getCurrentViewId(): ?int
+    {
+        $currentRequest = $this->requestStack->getCurrentRequest();
+        return $currentRequest?->query?->get('view') ?? null;
     }
 }
