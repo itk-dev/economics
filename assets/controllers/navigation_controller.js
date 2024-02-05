@@ -10,13 +10,15 @@ export default class extends Controller {
   connect() {
     // Find active menupoint
     const currentPath = window.location.pathname;
-    const pathPattern = /\/admin\/([^\/]+)/;
+    // const pathPattern =  /\/admin\/[^/]+\/([^/]+)/;
+    const pathPattern = /\/admin\/(?:[^/]+\/)?([^/]+)/;
+
     const pathMatch = currentPath.match(pathPattern);
     let activeNavigationElement;
+    console.log(pathMatch);
     if (pathMatch) {
-      activeNavigationElement = document.querySelector(
-        'a[href*="/admin/' + pathMatch[1] + '/"]'
-      );
+      activeNavigationElement = document.querySelector('a.navigation-item[href="' + pathMatch[0] + '/"]');
+      console.log(activeNavigationElement);
     } else {
       activeNavigationElement = document.querySelector('a[href*="/admin/"]');
     }
