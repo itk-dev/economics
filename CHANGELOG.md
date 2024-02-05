@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * Added view delete protection
+* Adds user administration.
 * Added view and related form
 * Default to work id worker not longer exists in Leantime worklog sync.
 * Added commands to manage data providers.

@@ -16,13 +16,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/{viewId}/view')]
 class ViewController extends AbstractController
 {
     private const VIEW_CREATE_SESSION_KEY = self::class;
-    private const CREATEFORM_LAST_STEP = 3;
+    private const CREATE_FORM_LAST_STEP = 3;
     private const STEPS = [
         1 => [
             'class' => ViewAddStepOneType::class,
@@ -85,7 +85,7 @@ class ViewController extends AbstractController
 
         if ($form->isSubmitted()) {
             // If submitting on last step we save the data.
-            if (self::CREATEFORM_LAST_STEP === $data['current_step']) {
+            if (self::CREATE_FORM_LAST_STEP === $data['current_step']) {
                 if ($form->isValid()) {
                     $session->set(self::VIEW_CREATE_SESSION_KEY, []);
 
@@ -113,13 +113,13 @@ class ViewController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_view_edit')]
-    public function edit(Request $request, View $view, ViewRepository $viewRepository): Response
+    public function edit(Request $request): Response
     {
         return $this->redirectToRoute('app_view_list', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_view_delete_confirm')]
-    public function deleteConfirm(Request $request, View $view, ViewRepository $viewRepository): Response
+    public function deleteConfirm(Request $request, View $view): Response
     {
         return $this->render('view/viewDelete.html.twig', [
             'view' => $view,
@@ -128,7 +128,7 @@ class ViewController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_view_delete')]
-    public function delete(Request $request, View $view, ViewRepository $viewRepository, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, View $view, EntityManagerInterface $entityManager): Response
     {
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$view->getId(), $token)) {
@@ -140,7 +140,7 @@ class ViewController extends AbstractController
     }
 
     #[Route('/{id}/display', name: 'app_view_display')]
-    public function display(Request $request, View $view, ViewRepository $viewRepository): Response
+    public function display(Request $request, View $view): Response
     {
         return $this->render('view/display.html.twig', [
             'view' => $view,
@@ -149,9 +149,9 @@ class ViewController extends AbstractController
     }
 
     /**
-     * Provide select view form.
+     * Provide select view form. Called from twig: templates/components/navigation.html.twig.
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function viewSelector(): Response
     {
@@ -164,6 +164,14 @@ class ViewController extends AbstractController
         return $this->render('view/viewSelect.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    /**
+     * Called from twig: templates/components/navigation.html.twig.
+     */
+    public function getCurrentView()
+    {
+        return $this->requestStack->getMainRequest()?->attributes->get('viewId');
     }
 
     #[Route('/abandon-view-add', name: 'app_view_add_abandon')]
@@ -179,11 +187,6 @@ class ViewController extends AbstractController
         $session->set(self::VIEW_CREATE_SESSION_KEY, []);
 
         return $this->redirectToRoute('app_view_list', ['viewId' => $request->attributes->get('viewId')], Response::HTTP_SEE_OTHER);
-    }
-
-    public function getCurrentView()
-    {
-        return $this->requestStack->getMainRequest()?->attributes->get('viewId');
     }
 
     private function createFormInit(): array
