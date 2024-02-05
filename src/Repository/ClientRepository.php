@@ -38,4 +38,10 @@ class ClientRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    public function getAllChoices(): array
+    {
+        $clients = $this->findAll();
+
+        return $clients;
+    }
 }
