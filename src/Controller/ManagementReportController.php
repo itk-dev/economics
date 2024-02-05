@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Form\ManagementReportDateIntervalType;
 use App\Repository\InvoiceRepository;
+use App\Service\ManagementReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,11 +50,42 @@ class ManagementReportController extends AbstractController
         if (empty($dateInterval['dateFrom']) || empty($dateInterval['dateTo'])) {
             return $this->redirectToRoute('app_management_reports_create', [], Response::HTTP_SEE_OTHER);
         }
-        $invoices = $invoiceRepository->getByRecordedDateBetween(
-            new \DateTime($dateInterval['dateFrom']),
-            new \DateTime($dateInterval['dateTo'].' 23:59:59')
-        );
 
+        $invoices = $this->getInvoicesDataFromQuery($dateInterval, $invoiceRepository);
+
+        return $this->render(
+            'management-report/output.html.twig',
+            [
+                'groupedInvoices' => $this->createGroupedInvoices($invoices),
+                'dateInterval' => $dateInterval,
+                'viewId' => $request->attributes->get('viewId'),
+                'currentQueryString' => '?'.$request->getQueryString(),
+            ]
+        );
+    }
+
+    /**
+     * @throws \Doctrine\ORM\Exception\NotSupported
+     * @throws \Exception
+     */
+    #[Route('/output/export', name: 'app_management_reports_output_export', methods: ['GET'])]
+    public function export(Request $request, ManagementReportService $managementReportService, InvoiceRepository $invoiceRepository): Response
+    {
+        $queryElements = $request->query->all();
+
+        $dateInterval = $queryElements['management_report_date_interval'] ?? null;
+
+        if (empty($dateInterval['dateFrom']) || empty($dateInterval['dateTo'])) {
+            return $this->redirectToRoute('app_management_reports_create', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $invoices = $this->getInvoicesDataFromQuery($dateInterval, $invoiceRepository);
+
+        return $managementReportService->generateSpreadsheetCsvResponse($this->createGroupedInvoices($invoices), $dateInterval);
+    }
+
+    private function createGroupedInvoices(array $invoices): array
+    {
         $groupedInvoices = [];
         foreach ($invoices as $invoice) {
             $recordedDate = $invoice->getRecordedDate();
@@ -83,12 +115,18 @@ class ManagementReportController extends AbstractController
             $groupedInvoices[$year] = array_merge(['sum' => $sum], $groupedInvoices[$year]);
         }
 
-        return $this->render(
-            'management-report/output.html.twig',
-            [
-                'groupedInvoices' => $groupedInvoices,
-                'dateInterval' => $dateInterval,
-            ]
+        return $groupedInvoices;
+    }
+
+    /**
+     * @throws \Doctrine\ORM\Exception\NotSupported
+     * @throws \Exception
+     */
+    private function getInvoicesDataFromQuery($dateInterval, InvoiceRepository $invoiceRepository): array
+    {
+        return $invoiceRepository->getByRecordedDateBetween(
+            new \DateTime($dateInterval['dateFrom']),
+            new \DateTime($dateInterval['dateTo'].' 23:59:59')
         );
     }
 }

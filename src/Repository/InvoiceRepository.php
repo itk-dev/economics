@@ -3,11 +3,15 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
+use App\Entity\Project;
+use App\Entity\View;
 use App\Model\Invoices\InvoiceFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @extends ServiceEntityRepository<Invoice>
@@ -19,8 +23,12 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class InvoiceRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PaginatorInterface $paginator,
+        private readonly RequestStack $request,
+        private readonly EntityManagerInterface $entityManager
+    ) {
         parent::__construct($registry, Invoice::class);
     }
 
@@ -42,16 +50,22 @@ class InvoiceRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @throws \Doctrine\ORM\Exception\NotSupported
+     */
     public function getByRecordedDateBetween(\DateTime $from, \DateTime $to): array
     {
+        $viewId = (int) $this->request->getMainRequest()->attributes->get('viewId');
         $qb = $this->createQueryBuilder('inv');
 
         return $qb
             ->where('inv.recorded = true')
+            ->andWhere('inv.project IN (:projectIds)')
             ->andWhere($qb->expr()->between('inv.recordedDate', ':date_from', ':date_to'))
             ->setParameters([
                 'date_from' => $from->format('Y-m-d H:i:s'),
                 'date_to' => $to->format('Y-m-d H:i:s'),
+                'projectIds' => $this->getProjectIdsFromViewId($viewId),
             ])
             ->getQuery()
             ->getResult();
@@ -81,5 +95,24 @@ class InvoiceRepository extends ServiceEntityRepository
             10,
             ['defaultSortFieldName' => $defaultSortField, 'defaultSortDirection' => 'desc']
         );
+    }
+
+    private function getProjectIdsFromViewId(int $viewId): array
+    {
+        $view = $this->entityManager->getRepository(View::class)->find($viewId);
+        $dataProviders = $view->getDataProviders();
+
+        $dataProviderIds = [];
+        foreach ($dataProviders as $dataProvider) {
+            $dataProviderIds[] = $dataProvider->getId();
+        }
+
+        $projects = $this->entityManager->getRepository(Project::class)->findBy(['dataProvider' => $dataProviderIds]);
+        $projectIds = [];
+        foreach ($projects as $project) {
+            $projectIds[] = $project->getId();
+        }
+
+        return $projectIds;
     }
 }

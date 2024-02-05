@@ -464,6 +464,7 @@ reports:
   management-2nd-quarter: '2. Kvartal'
   management-3rd-quarter: '3. Kvartal'
   management-4th-quarter: '4. Kvartal'
+  management-export-xls: 'Eksportér til excel'
 
 view:
   list_title: 'Views'
