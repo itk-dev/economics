@@ -10,7 +10,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
@@ -43,39 +43,29 @@ class AddViewCommand extends Command
         $this->addDataProvider($io, $view);
         $this->addProjects($io, $view);
 
-        // tell Doctrine you want to (eventually) save the Product (no queries yet)
         $this->entityManager->persist($view);
-
-        // actually executes the queries (i.e. the INSERT query)
         $this->entityManager->flush();
 
-        $io->info('Added new protected view');
+        $io->info('Added new view');
 
         return Command::SUCCESS;
     }
 
     protected function addDataProvider($io, $view): void
     {
-        // Whether to change another field after this one.
-        $another = true;
-        $dataProviderStrings = [];
         $allDataProviders = $this->dataProviderRepository->findAll();
 
-        while ($another) {
-            $idAndTitle = [];
-            foreach ($allDataProviders as $dataProvider) {
-                $idAndTitle[] = $dataProvider->getName().' ('.$dataProvider->getId().')';
-            }
-
-            $question = new Question('Select data providers');
-            $question->setAutocompleterValues($idAndTitle);
-            $dataProviderStrings[] = $io->askQuestion($question);
-
-            $another = $io->confirm(
-                'Add more data providers?',
-                false
-            );
+        $idAndTitle = [];
+        foreach ($allDataProviders as $dataProvider) {
+            $idAndTitle[] = $dataProvider->getName().' ('.$dataProvider->getId().')';
         }
+
+        $question = new ChoiceQuestion(
+            'Select dataProviders',
+            $idAndTitle
+        );
+        $question->setMultiselect(true);
+        $dataProviderStrings = $io->askQuestion($question);
 
         foreach ($dataProviderStrings as $dataProviderString) {
             preg_match('#\((.*?)\)#', $dataProviderString, $match);
@@ -88,26 +78,19 @@ class AddViewCommand extends Command
 
     protected function addProjects($io, $view): void
     {
-        // Whether to change another field after this one.
-        $another = true;
-        $projectStrings = [];
         $allProjects = $this->projectRepository->findAll();
 
-        while ($another) {
-            $idAndTitle = [];
-            foreach ($allProjects as $project) {
-                $idAndTitle[] = $project->getName().' ('.$project->getId().')';
-            }
-
-            $question = new Question('Select project');
-            $question->setAutocompleterValues($idAndTitle);
-            $projectStrings[] = $io->askQuestion($question);
-
-            $another = $io->confirm(
-                'Add more projects?',
-                false
-            );
+        $idAndTitle = [];
+        foreach ($allProjects as $project) {
+            $idAndTitle[] = $project->getName().' ('.$project->getId().')';
         }
+
+        $question = new ChoiceQuestion(
+            'Select project',
+            $idAndTitle
+        );
+        $question->setMultiselect(true);
+        $projectStrings = $io->askQuestion($question);
 
         foreach ($projectStrings as $projectString) {
             preg_match('#\((.*?)\)#', $projectString, $match);
