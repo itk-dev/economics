@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/admin/{viewId}/view/')]
+#[Route('/admin/{viewId}/view')]
 class ViewController extends AbstractController
 {
     private const VIEW_CREATE_SESSION_KEY = self::class;
@@ -44,7 +44,7 @@ class ViewController extends AbstractController
     ) {
     }
 
-    #[Route(['', '/list'], name: 'app_view_list')]
+    #[Route(['/', '/list'], name: 'app_view_list')]
     public function list(Request $request, ViewRepository $viewRepository): Response
     {
         return $this->render('view/list.html.twig', [
