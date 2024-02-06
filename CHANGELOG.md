@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed minor leantime integration issues.
 * Added dataprovider as column in project list.
 * Added nested menus and current page highlight in menu.
+* Added filters and sorting to client and account viewws.
+* Added display names when hiding rows in Planning overview.
 
 
 * RELEASE NOTES:

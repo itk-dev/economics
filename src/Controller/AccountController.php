@@ -23,7 +23,7 @@ class AccountController extends AbstractController
     }
 
     #[Route('/', name: 'app_account_index', methods: ['GET'])]
-    public function index(AccountRepository $accountRepository): Response
+    public function index(Request $request, AccountRepository $accountRepository): Response
     {
         $accountFilterData = new AccountFilterData();
         $form = $this->createForm(AccountFilterType::class, $accountFilterData);
