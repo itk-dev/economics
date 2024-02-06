@@ -142,8 +142,12 @@
     .form-default, #sprint_report {
         @apply grid gap-3 mb-6 md:grid-cols-4;
     }
-    .form-default > div, #sprint_report > div {
+    .form-default > div {
         @apply flex flex-col justify-end;
+    }
+
+    #sprint_report > div {
+        @apply flex flex-col;
     }
 
     .worklogs-filter-form {
