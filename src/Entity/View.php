@@ -18,19 +18,23 @@ class View extends AbstractBaseEntity implements ProtectedInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\ManyToMany(targetEntity: DataProvider::class, inversedBy: 'views')]
-    private ?Collection $dataProviders = null;
+    #[ORM\ManyToMany(targetEntity: DataProvider::class, inversedBy: 'views', fetch: 'EAGER')]
+    private Collection $dataProviders;
 
-    #[ORM\ManyToMany(targetEntity: Project::class, inversedBy: 'views')]
+    #[ORM\ManyToMany(targetEntity: Project::class, inversedBy: 'views', fetch: 'EAGER')]
     private Collection $projects;
 
     #[ORM\Column(nullable: true)]
     private ?bool $protected = null;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'views')]
+    private Collection $users;
+
     public function __construct()
     {
         $this->dataProviders = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -63,14 +67,14 @@ class View extends AbstractBaseEntity implements ProtectedInterface
     }
 
     /**
-     * @return \Doctrine\Common\Collections\Collection|null
+     * @return Collection
      */
-    public function getDataProviders(): ?Collection
+    public function getDataProviders(): Collection
     {
         return $this->dataProviders;
     }
 
-    public function addDataProvider(?DataProvider $dataProvider): static
+    public function addDataProvider(DataProvider $dataProvider): static
     {
         if (!empty($this->dataProviders) && !$this->dataProviders->contains($dataProvider)) {
             $this->dataProviders->add($dataProvider);
@@ -79,7 +83,7 @@ class View extends AbstractBaseEntity implements ProtectedInterface
         return $this;
     }
 
-    public function removeDataProvider(?DataProvider $dataProvider): static
+    public function removeDataProvider(DataProvider $dataProvider): static
     {
         if (!empty($this->dataProviders)) {
             $this->dataProviders->removeElement($dataProvider);
@@ -170,9 +174,34 @@ class View extends AbstractBaseEntity implements ProtectedInterface
         return $this->protected;
     }
 
-    public function setProtected(?bool $protected): static
+    public function setProtected(?bool $protected): void
     {
         $this->protected = $protected;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addView($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeView($this);
+        }
 
         return $this;
     }

@@ -10,6 +10,7 @@ use App\Model\SprintReport\SprintReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
 use App\Service\SprintReportService;
+use App\Service\ViewService;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -19,15 +20,16 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/{viewId}/sprint-report')]
+#[Route('/admin/sprint-report')]
 class SprintReportController extends AbstractController
 {
     public function __construct(
         private readonly SprintReportService $sprintReportService,
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
+        private readonly ViewService $viewService,
     ) {
     }
 
@@ -42,7 +44,7 @@ class SprintReportController extends AbstractController
         $sprintReportFormData = new SprintReportFormData();
 
         $form = $this->createForm(SprintReportType::class, $sprintReportFormData, [
-            'action' => $this->generateUrl('app_sprint_report', ['viewId' => $request->attributes->get('viewId')]),
+            'action' => $this->generateUrl('app_sprint_report', $this->viewService->addView([])),
             'method' => 'GET',
             // Since this is only a filtering form, csrf is not needed.
             'csrf_protection' => false,
@@ -140,14 +142,13 @@ class SprintReportController extends AbstractController
             }
         }
 
-        return $this->render('sprint_report/index.html.twig', [
+        return $this->render('sprint_report/index.html.twig', $this->viewService->addView([
             'form' => $form->createView(),
             'data' => $sprintReportFormData,
             'report' => $reportData,
             'budget' => $budget ?? null,
-            'budgetEndpoint' => $this->generateUrl('app_sprint_report_budget', ['viewId' => $request->attributes->get('viewId')]),
-            'viewId' => $request->attributes->get('viewId'),
-        ]);
+            'budgetEndpoint' => $this->generateUrl('app_sprint_report_budget', $this->viewService->addView([])),
+        ]));
     }
 
     #[Route('/budget', name: 'app_sprint_report_budget', methods: ['POST'])]
