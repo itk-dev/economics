@@ -9,11 +9,9 @@ use App\Exception\EconomicsException;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @extends ServiceEntityRepository<Invoice>
@@ -25,7 +23,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class InvoiceRepository extends ServiceEntityRepository
 {
-
     public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator, private readonly ViewService $viewService)
     {
         parent::__construct($registry, Invoice::class);

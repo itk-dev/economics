@@ -17,6 +17,7 @@ class ManagementReportService
 
     public function generateSpreadsheetCsvResponse(array $groupedInvoices, $dateInterval): Response
     {
+        $values = [];
         // Add header.
         $values[] = [
             $this->translator->trans('reports.management-year'),
