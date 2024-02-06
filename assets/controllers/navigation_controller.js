@@ -17,7 +17,6 @@ export default class extends Controller {
 
     if (pathMatch) {
       activeNavigationElement = document.querySelector('a.navigation-item[href="' + pathMatch[0] + '/"]');
-      console.log(activeNavigationElement);
     } else {
       activeNavigationElement = document.querySelector('a[href*="/admin/"]');
     }
