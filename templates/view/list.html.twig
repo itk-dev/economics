@@ -27,9 +27,13 @@
                 </td>
                 <td class="table-td">{{ view.createdAt|date('Y-m-d H:i:s') }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_view_delete_confirm', {'id': view.id}|merge(view is defined ? {view: view} : {})) }}">
-                        {{ 'view.list_delete'|trans }}
+                  {% if view.isProtected is empty or view.isProtected is same as false %}
+                    <a class="link" href="{{ path('app_view_delete_confirm', {viewId: viewId, 'id': view.id}) }}">
+                      {{ 'view.list_delete'|trans }}
                     </a>
+                  {% else %}
+                    {{ 'view.list_required_view'|trans }}
+                  {% endif %}
                 </td>
             </tr>
         {% endfor %}
