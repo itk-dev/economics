@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/project-billing')]
@@ -35,6 +36,7 @@ class ProjectBillingController extends AbstractController
     }
 
     #[Route('/', name: 'app_project_billing_index', methods: ['GET'])]
+    #[IsGranted('EDIT')]
     public function index(Request $request, ProjectBillingRepository $projectBillingRepository): Response
     {
         $projectBillingFilterData = new ProjectBillingFilterData();
@@ -50,6 +52,7 @@ class ProjectBillingController extends AbstractController
     }
 
     #[Route('/new', name: 'app_project_billing_new', methods: ['GET', 'POST'])]
+    #[IsGranted('EDIT')]
     public function new(Request $request, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, string $projectBillingDefaultDescription): Response
     {
         $projectBilling = new ProjectBilling();
@@ -83,6 +86,7 @@ class ProjectBillingController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('EDIT', 'projectBilling')]
     public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, IssueRepository $issueRepository): Response
     {
         $options = [];
@@ -124,6 +128,7 @@ class ProjectBillingController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}', name: 'app_project_billing_delete', methods: ['POST'])]
+    #[IsGranted('EDIT', 'projectBilling')]
     public function delete(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, InvoiceRepository $invoiceRepository): Response
     {
         $token = $request->request->get('_token');
@@ -152,6 +157,7 @@ class ProjectBillingController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_project_billing_record', methods: ['GET', 'POST'])]
+    #[IsGranted('EDIT', 'projectBilling')]
     public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService, BillingService $billingService): Response
     {
         $recordData = new ConfirmData();
@@ -194,6 +200,7 @@ class ProjectBillingController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/show-export', name: 'app_project_billing_show_export', methods: ['GET'])]
+    #[IsGranted('VIEW', 'projectBilling')]
     public function showExport(Request $request, ProjectBilling $projectBilling, BillingService $billingService): Response
     {
         $ids = array_map(function ($invoice) {
@@ -214,6 +221,7 @@ class ProjectBillingController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
+    #[IsGranted('VIEW', 'projectBilling')]
     public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
     {
         $invoices = $projectBilling->getInvoices();
