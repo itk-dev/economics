@@ -56,8 +56,8 @@
 
     <div class="bottom-actions">
         <a class="link"
-           href="{{ path('app_invoice_entry_edit', {viewId: viewId, 'id': invoiceEntry.id, 'invoice': invoice.id}) }}">{{ 'invoices.back_to_invoice_entry'|trans }}</a>
+           href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.back_to_invoice_entry'|trans }}</a>
         <a class="link"
-           href="{{ path('app_invoices_edit', {viewId: viewId, 'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+           href="{{ path('app_invoices_edit', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
     </div>
 {% endblock %}

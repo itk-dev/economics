@@ -63,7 +63,7 @@ class Invoice extends AbstractBaseEntity
     #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceEntry::class, cascade: ['remove'])]
     private Collection $invoiceEntries;
 
-    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'invoices')]
     private ?Project $project = null;
 
     #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'invoices')]

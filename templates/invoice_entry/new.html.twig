@@ -20,6 +20,6 @@
     {{ form_end(form) }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_invoices_edit', {viewId: viewId, 'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+        <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
     </div>
 {% endblock %}

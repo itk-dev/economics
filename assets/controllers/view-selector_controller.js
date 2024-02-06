@@ -1,29 +1,18 @@
-import { Controller } from '@hotwired/stimulus';
+import {Controller} from '@hotwired/stimulus';
+
 export default class extends Controller {
-
     static targets = ['select'];
-    connect() {
-      this.defaultViewEndpoint = this.element.dataset.defaultViewUpdateEndpoint;
-    }
+
     select(event) {
-      const newDefaultView = event.target.options[event.target.selectedIndex].value;
-      const pathArray = window.location.pathname.split('/');
-      const params = window.location.search;
+        event.preventDefault();
+        event.stopPropagation();
 
-      let i = 1;
-      if ('admin' === pathArray[1]) {
-        let newPath = "";
-        for (i = 1; i < pathArray.length; i++) {
-          newPath += "/";
-          if (i === 2) {
-            newPath += newDefaultView;
-          }
-          else {
-            newPath += pathArray[i];
-          }
-        }
+        const newDefaultView = event.target.options[event.target.selectedIndex].value;
+        const search = window.location.search;
 
-        window.location.replace(newPath + params);
-      }
+        const params = new URLSearchParams(search);
+        params.set('view', newDefaultView);
+
+        window.location.replace(window.location.pathname + "?" +  params);
     }
 }

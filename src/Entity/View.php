@@ -23,10 +23,14 @@ class View extends AbstractBaseEntity
     #[ORM\ManyToMany(targetEntity: Project::class, inversedBy: 'views', fetch: 'EAGER')]
     private Collection $projects;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'views')]
+    private Collection $users;
+
     public function __construct()
     {
         $this->dataProviders = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -156,6 +160,33 @@ class View extends AbstractBaseEntity
 
         if ($entity instanceof DataProvider) {
             $this->AddDataProvider($entity);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addView($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeView($this);
         }
 
         return $this;

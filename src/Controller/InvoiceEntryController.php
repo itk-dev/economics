@@ -10,18 +10,20 @@ use App\Form\InvoiceEntryType;
 use App\Form\InvoiceEntryWorklogType;
 use App\Repository\InvoiceEntryRepository;
 use App\Service\BillingService;
+use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[Route('/admin/{viewId}/invoices/{invoice}/entries')]
+#[Route('/admin/invoices/{invoice}/entries')]
 class InvoiceEntryController extends AbstractController
 {
     public function __construct(
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
+        private readonly ViewService $viewService,
     ) {
     }
 
@@ -62,18 +64,17 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
             if (InvoiceEntryTypeEnum::MANUAL == $invoiceEntry->getEntryType()) {
-                return $this->redirectToRoute('app_invoices_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
             }
 
-            return $this->redirectToRoute('app_invoice_entry_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_invoice_entry_edit', $this->viewService->addView(['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('invoice_entry/new.html.twig', [
+        return $this->render('invoice_entry/new.html.twig', $this->viewService->addView([
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
-            'viewId' => $request->attributes->get('viewId'),
-        ]);
+        ]));
     }
 
     /**
@@ -106,12 +107,11 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
         }
 
-        return $this->render('invoice_entry/edit.html.twig', [
+        return $this->render('invoice_entry/edit.html.twig', $this->viewService->addView([
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
-            'viewId' => $request->attributes->get('viewId'),
-        ]);
+        ]));
     }
 
     /**
@@ -131,6 +131,6 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceTotalPrice($invoice);
         }
 
-        return $this->redirectToRoute('app_invoices_edit', ['viewId' => $request->attributes->get('viewId'), 'id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
     }
 }
