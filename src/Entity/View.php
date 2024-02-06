@@ -174,8 +174,7 @@ class View extends AbstractBaseEntity implements ProtectedInterface
         return $this->protected;
     }
 
-    public function setProtected(?bool $protected): static
-    {
+    public function setProtected(?bool $protected): void {
         $this->protected = $protected;
     }
 
