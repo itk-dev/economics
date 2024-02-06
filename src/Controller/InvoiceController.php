@@ -141,7 +141,7 @@ class InvoiceController extends AbstractController
             'help' => 'invoices.default_receiver_account_helptext',
         ]);
 
-        $clientChoices = $clientRepository->getAllChoices();
+        $clientChoices = $clientRepository->findAll();
         $form->add('client', null, [
             'label' => 'invoices.client',
             'label_attr' => ['class' => 'label'],

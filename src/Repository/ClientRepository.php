@@ -42,13 +42,6 @@ class ClientRepository extends ServiceEntityRepository
         }
     }
 
-    public function getAllChoices(): array
-    {
-        $clients = $this->findAll();
-
-        return $clients;
-    }
-
     public function getFilteredPagination(ClientFilterData $clientFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('client');
