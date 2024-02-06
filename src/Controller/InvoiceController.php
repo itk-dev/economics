@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Exception\EconomicsException;
+use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Form\InvoiceFilterType;
 use App\Form\InvoiceNewType;
 use App\Form\InvoiceRecordType;
@@ -24,6 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/invoices')]
@@ -37,6 +39,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/', name: 'app_invoices_index', methods: ['GET'])]
+    #[IsGranted('VIEW')]
     public function index(Request $request, InvoiceRepository $invoiceRepository): Response
     {
         $invoiceFilterData = new InvoiceFilterData();
@@ -54,6 +57,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/new', name: 'app_invoices_new', methods: ['GET', 'POST'])]
+    #[IsGranted('EDIT')]
     public function new(Request $request, InvoiceRepository $invoiceRepository, string $invoiceDefaultReceiverAccount): Response
     {
         $invoice = new Invoice();
@@ -84,6 +88,7 @@ class InvoiceController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('EDIT', 'invoice')]
     public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
@@ -199,6 +204,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}/generate-description', name: 'app_invoices_generate_description', methods: ['GET'])]
+    #[IsGranted('VIEW', 'invoice')]
     public function generateDescription(Invoice $invoice, $defaultInvoiceDescriptionTemplate): JsonResponse
     {
         $client = $invoice->getClient();
@@ -217,6 +223,7 @@ class InvoiceController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}', name: 'app_invoices_delete', methods: ['POST'])]
+    #[IsGranted('EDIT', 'invoice')]
     public function delete(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         $token = $request->request->get('_token');
@@ -239,8 +246,10 @@ class InvoiceController extends AbstractController
      * Put an invoice on record. After this invoice cannot be deleted.
      *
      * @throws EconomicsException
+     * @throws InvoiceAlreadyOnRecordException
      */
     #[Route('/{id}/record', name: 'app_invoices_record', methods: ['GET', 'POST'])]
+    #[IsGranted('EDIT', 'invoice')]
     public function record(Request $request, Invoice $invoice): Response
     {
         $recordData = new ConfirmData();
@@ -280,6 +289,7 @@ class InvoiceController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/show-export', name: 'app_invoices_show_export', methods: ['GET'])]
+    #[IsGranted('VIEW', 'invoice')]
     public function showExport(Request $request, Invoice $invoice): Response
     {
         $html = $this->billingService->generateSpreadsheetHtml([$invoice->getId()]);
@@ -296,6 +306,7 @@ class InvoiceController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/export', name: 'app_invoices_export', methods: ['GET'])]
+    #[IsGranted('VIEW', 'invoice')]
     public function export(Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         if (!$invoice->isRecorded()) {
@@ -321,6 +332,7 @@ class InvoiceController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/export-selection', name: 'app_invoices_export_selection', methods: ['GET'])]
+    #[IsGranted('VIEW')]
     public function exportSelection(Request $request, InvoiceRepository $invoiceRepository, EntityManagerInterface $entityManager): Response
     {
         $queryIds = $request->query->get('ids');

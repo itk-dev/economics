@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed minor leantime integration issues.
 * Added dataprovider as column in project list.
 * Added nested menus and current page highlight in menu.
+* Added a security voter for handling access to Invoice, InvoiceEntry and ProjectBilling.
 
 
 * RELEASE NOTES:
