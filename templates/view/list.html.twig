@@ -3,51 +3,53 @@
 {% block title %}{{ 'view.list_title'|trans }}{% endblock %}
 
 {% block content %}
-  <h1 class="page-title">{{ 'view.list_title'|trans }}</h1>
-  <div>
-    {{ 'view.list_description'|trans }}
-  </div>
-  <table class="table margin-bottom">
-    <thead class="table-thead">
-    <tr>
-      <th class="table-th">{{ 'view.list_name'|trans }}</th>
-      <th class="table-th">{{ 'view.list_date'|trans }}</th>
-      <th class="table-th">{{ 'view.list_actions'|trans }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for index, view in views %}
-      <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-        <td class="table-td">
-          <a class="link" href="{{ path('app_view_display', {viewId: viewId, 'id': view.id}) }}">
-            {{ view.name }}
-          </a>
-        </td>
-        <td class="table-td">{{ view.createdAt|date('Y-m-d H:i:s') }}</td>
-        <td class="table-td">
-          {% if view.isProtected is empty or view.isProtected is same as false %}
-            <a class="link" href="{{ path('app_view_delete_confirm', {viewId: viewId, 'id': view.id}) }}">
-              {{ 'view.list_delete'|trans }}
-            </a>
-          {% else %}
-            {{ 'view.list_required_view'|trans }}
-          {% endif %}
-        </td>
-      </tr>
-    {% endfor %}
-    {% if views is empty %}
-      <tr class="table-tr">
-        <td class="table-td"
-            colspan="{{ 3 }}">{{ 'view.list_no_records_found'|trans }}</td>
-      </tr>
-    {% endif %}
-    <tr class="table-tr">
-      <td class="table-td" colspan="2">
-        <a class="link" href="{{ path('app_view_add', {viewId: viewId}) }}">
-          {{ 'view.action_create_new'|trans }}
-        </a>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+    <h1 class="page-title">{{ 'view.list_title'|trans }}</h1>
+
+    <div>{{ 'view.list_description'|trans }}</div>
+
+    {% set numberOfColumns = 3 %}
+
+    <table class="table margin-bottom">
+        <thead class="table-thead">
+        <tr>
+            <th class="table-th">{{ 'view.list_name'|trans }}</th>
+            <th class="table-th">{{ 'view.list_date'|trans }}</th>
+            <th class="table-th">{{ 'view.list_actions'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, view in views %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">
+                    <a class="link" href="{{ path('app_view_display', {'id': view.id}|merge(view is defined ? {view: view} : {})) }}">
+                        {{ view.name }}
+                    </a>
+                </td>
+                <td class="table-td">{{ view.createdAt|date('Y-m-d H:i:s') }}</td>
+                <td class="table-td">
+                  {% if view.isProtected is empty or view.isProtected is same as false %}
+                    <a class="link" href="{{ path('app_view_delete_confirm', {viewId: viewId, 'id': view.id}) }}">
+                      {{ 'view.list_delete'|trans }}
+                    </a>
+                  {% else %}
+                    {{ 'view.list_required_view'|trans }}
+                  {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        {% if views is empty %}
+            <tr class="table-tr">
+                <td class="table-td"
+                    colspan="{{ numberOfColumns }}">{{ 'view.list_no_records_found'|trans }}</td>
+            </tr>
+        {% endif %}
+        <tr class="table-tr">
+            <td class="table-td" colspan="{{ numberOfColumns }}">
+                <a class="link" href="{{ path('app_view_add', {}|merge(view is defined ? {view: view} : {})) }}">
+                    {{ 'view.action_create_new'|trans }}
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 {% endblock %}

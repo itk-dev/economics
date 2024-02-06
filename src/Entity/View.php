@@ -27,10 +27,14 @@ class View extends AbstractBaseEntity implements ProtectedInterface
     #[ORM\Column(nullable: true)]
     private ?bool $protected = null;
 
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'views')]
+    private Collection $users;
+
     public function __construct()
     {
         $this->dataProviders = new ArrayCollection();
         $this->projects = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -173,6 +177,31 @@ class View extends AbstractBaseEntity implements ProtectedInterface
     public function setProtected(?bool $protected): static
     {
         $this->protected = $protected;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addView($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            $user->removeView($this);
+        }
 
         return $this;
     }

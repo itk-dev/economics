@@ -3,7 +3,7 @@
 {% block title %}{{ 'invoices.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_invoices_new', {viewId: viewId}) }}"
+    <a class="link" href="{{ path('app_invoices_new', {}|merge(view is defined ? {view: view} : {})) }}"
        style="float: right">{{ 'invoices.action_create_new'|trans }}</a>
     <h1 class="page-title">{{ 'invoices.title'|trans }}</h1>
 
@@ -71,7 +71,7 @@
                             <td class="table-td">{{ invoice.exportedDate ? invoice.exportedDate|date('Y-m-d') : '' }}</td>
                         {% endif %}
                         <td class="table-td">
-                            <a class="link" href="{{ path('app_invoices_edit', {viewId: viewId, 'id': invoice.id}) }}">
+                            <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">
                                 {% if recordedInvoices %}
                                     {{ 'invoices.action_view'|trans }}
                                 {% else %}
@@ -89,7 +89,7 @@
                 {% endif %}
                 <tr class="table-tr">
                     <td class="table-td" colspan="2">
-                        <a class="link" href="{{ path('app_invoices_new', {viewId: viewId}) }}">
+                        <a class="link" href="{{ path('app_invoices_new', {}|merge(view is defined ? {view: view} : {})) }}">
                             {{ 'invoices.action_create_new'|trans }}
                         </a>
                     </td>

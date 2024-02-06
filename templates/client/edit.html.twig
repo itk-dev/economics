@@ -13,5 +13,5 @@
     {{ form_end(form) }}
 
     {{ include('client/_delete_form.html.twig') }}
-    <a href="{{ path('app_client_index', {viewId: viewId}) }}">{{ 'client.back_to_list'|trans}}</a>
+    <a href="{{ path('app_client_index', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'client.back_to_list'|trans}}</a>
 {% endblock %}
