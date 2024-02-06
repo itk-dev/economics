@@ -3,6 +3,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Enum\RolesEnum;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use ItkDev\OpenIdConnect\Exception\ItkOpenIdConnectException;
@@ -56,6 +57,9 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
                 // Create the new user and persist it
                 $user = new User();
                 $this->entityManager->persist($user);
+
+                // If allowed by OIDC give role user.
+                $user->setRoles([RolesEnum::ROLE_USER->value]);
             }
 
             // Update/set user properties

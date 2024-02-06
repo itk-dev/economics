@@ -20,6 +20,7 @@ export default class extends Controller {
     } else {
       activeNavigationElement = document.querySelector('a[href*="/admin/"]');
     }
+
     activeNavigationElement.classList.add("current");
 
     const activeElementParent = activeNavigationElement.closest(".navigation-item-submenu");

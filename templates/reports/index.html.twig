@@ -11,8 +11,8 @@
       </div>
 
       <div class="actions">
-        <a class="btn-primary" href="{{ path('app_sprint_report', {viewId: viewId}) }}">{{ 'reports.create_sprint_report'|trans }}</a>
-        <a class="btn-primary" href="{{ path('app_management_reports_create', {viewId: viewId}) }}">{{ 'reports.create_management_report'|trans }}</a>
+        <a class="btn-primary" href="{{ path('app_sprint_report', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'reports.create_sprint_report'|trans }}</a>
+        <a class="btn-primary" href="{{ path('app_management_reports_create', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'reports.create_management_report'|trans }}</a>
       </div>
     </div>
 {% endblock %}

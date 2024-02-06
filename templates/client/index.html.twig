@@ -3,7 +3,7 @@
 {% block title %}{{ 'client.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_client_new', {viewId: viewId}) }}"
+    <a class="link" href="{{ path('app_client_new', {}|merge(view is defined ? {view: view} : {})) }}"
        style="float: right">{{ 'clients.action_create_new'|trans }}</a>
 
     <h1 class="page-title">{{ 'client.title'|trans }}</h1>
@@ -46,7 +46,7 @@
                 <td class="table-td">{{ client.salesChannel }}</td>
                 <td class="table-td">{{ client.customerKey }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_client_edit', {viewId: viewId, 'id': client.id}) }}">{{ 'clients.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_client_edit', {'id': client.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'clients.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}
@@ -57,7 +57,7 @@
         {% endfor %}
         <tr class="table-tr">
             <td class="table-td" colspan="{{ numberOfColumns }}">
-                <a class="link" href="{{ path('app_client_new', {viewId: viewId}) }}">
+                <a class="link" href="{{ path('app_client_new', {}|merge(view is defined ? {view: view} : {})) }}">
                     {{ 'clients.action_create_new'|trans }}
                 </a>
             </td>

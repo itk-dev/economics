@@ -16,7 +16,7 @@ class ViewSelectType extends AbstractType
                 'class' => View::class,
                 'label' => false,
                 'choice_label' => 'name',
-                'required' => true,
+                'required' => false,
                 'mapped' => false,
                 'attr' => [
                     'class' => 'form-element',

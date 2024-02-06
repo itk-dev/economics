@@ -5,7 +5,9 @@ namespace App\Repository;
 use App\Entity\Invoice;
 use App\Entity\Project;
 use App\Entity\View;
+use App\Exception\EconomicsException;
 use App\Model\Invoices\InvoiceFilterData;
+use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -23,12 +25,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class InvoiceRepository extends ServiceEntityRepository
 {
-    public function __construct(
-        ManagerRegistry $registry,
-        private readonly PaginatorInterface $paginator,
-        private readonly RequestStack $request,
-        private readonly EntityManagerInterface $entityManager
-    ) {
+
+    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator, private readonly ViewService $viewService)
+    {
         parent::__construct($registry, Invoice::class);
     }
 
@@ -71,9 +70,14 @@ class InvoiceRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @throws EconomicsException
+     */
     public function getFilteredPagination(InvoiceFilterData $invoiceFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('invoice');
+
+        $qb = $this->viewService->addWhere($qb, Invoice::class, 'invoice');
 
         $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $invoiceFilterData->recorded);
 

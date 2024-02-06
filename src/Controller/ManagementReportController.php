@@ -5,18 +5,20 @@ namespace App\Controller;
 use App\Form\ManagementReportDateIntervalType;
 use App\Repository\InvoiceRepository;
 use App\Service\ManagementReportService;
+use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/admin/{viewId}/management-report')]
+#[Route('/admin/management-report')]
 class ManagementReportController extends AbstractController
 {
-    /**
-     * @throws \Psr\Container\ContainerExceptionInterface
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
+    public function __construct(
+        private readonly ViewService $viewService,
+    ) {
+    }
+
     #[Route('', name: 'app_management_reports_create')]
     public function create(Request $request, InvoiceRepository $invoiceRepository): Response
     {
@@ -30,12 +32,12 @@ class ManagementReportController extends AbstractController
         $form = $this->createForm(
             ManagementReportDateIntervalType::class,
             ['firstLog' => $firstRecordedInvoice->getRecordedDate()],
-            ['action' => $this->generateUrl('app_management_reports_output', ['viewId' => $request->attributes->get('viewId')]), 'method' => 'GET']
+            ['action' => $this->generateUrl('app_management_reports_output', $this->viewService->addView([])), 'method' => 'GET']
         );
 
-        return $this->render('management-report/create.html.twig', [
+        return $this->render('management-report/create.html.twig', $this->viewService->addView([
             'form' => $form,
-        ]);
+        ]));
     }
 
     /**
@@ -48,10 +50,10 @@ class ManagementReportController extends AbstractController
         $dateInterval = $queryElements['management_report_date_interval'] ?? null;
 
         if (empty($dateInterval['dateFrom']) || empty($dateInterval['dateTo'])) {
-            return $this->redirectToRoute('app_management_reports_create', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_management_reports_create', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
         }
 
-        $invoices = $this->getInvoicesDataFromQuery($dateInterval, $invoiceRepository);
+        $invoices = $this->getInvoicesDataFromDates($dateInterval, $invoiceRepository);
 
         return $this->render(
             'management-report/output.html.twig',
@@ -79,7 +81,7 @@ class ManagementReportController extends AbstractController
             return $this->redirectToRoute('app_management_reports_create', [], Response::HTTP_SEE_OTHER);
         }
 
-        $invoices = $this->getInvoicesDataFromQuery($dateInterval, $invoiceRepository);
+        $invoices = $this->getInvoicesDataFromDates($dateInterval, $invoiceRepository);
 
         return $managementReportService->generateSpreadsheetCsvResponse($this->createGroupedInvoices($invoices), $dateInterval);
     }
@@ -122,7 +124,7 @@ class ManagementReportController extends AbstractController
      * @throws \Doctrine\ORM\Exception\NotSupported
      * @throws \Exception
      */
-    private function getInvoicesDataFromQuery($dateInterval, InvoiceRepository $invoiceRepository): array
+    private function getInvoicesDataFromDates($dateInterval, InvoiceRepository $invoiceRepository): array
     {
         return $invoiceRepository->getByRecordedDateBetween(
             new \DateTime($dateInterval['dateFrom']),

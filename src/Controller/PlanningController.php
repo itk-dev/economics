@@ -9,21 +9,23 @@ use App\Form\PlanningType;
 use App\Model\Planning\PlanningFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
+use App\Service\ViewService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[Route('/admin/{viewId}/planning')]
+#[Route('/admin/planning')]
 class PlanningController extends AbstractController
 {
     public function __construct(
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly TranslatorInterface $translator,
+        private readonly ViewService $viewService,
     ) {
     }
 
@@ -86,11 +88,11 @@ class PlanningController extends AbstractController
             }
         }
 
-        return $this->render($template, [
+        return $this->render($template, $this->viewService->addView([
             'controller_name' => 'PlanningController',
             'planningData' => $planningData,
             'form' => $form,
-        ]);
+        ]));
     }
 
     private function getTypeChoices()

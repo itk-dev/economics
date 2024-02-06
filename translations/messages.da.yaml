@@ -49,7 +49,9 @@ navigation:
   client: "Kunder"
   account: "Konti"
   pricelist: "Prisliste"
+  user: "Brugere"
   data: "Data"
+  admin: "Admin"
 
 planning:
   title: "Planlægning"
@@ -351,7 +353,7 @@ home:
   create_project: "Projektopretter"
   create_project_description: "Hjælper med at oprette projekter i Project Tracker."
   accounts: "Konti"
-  accounts_description: "Liste over konti. Bruges i valglister."
+  accounts_description: "Liste over konti. Bruges i valglister i resten af systemet."
   account_details: "Liste over kontoer der bruges i faktura."
   project_billing: "Projektfakturering"
   project_billing_description: "Fakturér alle kunder i et projekt for en given periode."
@@ -359,6 +361,10 @@ home:
   projects_description: "Liste over projekter. Vælg hvilke skal vises i resten af systemet."
   clients_description: "Liste over kunder, som kan kobles på projekter."
   clients: "Kunder"
+  users: 'Brugere'
+  users_description: 'Administrér brugeres adgang til systemet'
+  views: "Visning"
+  views_description: "Visninger kan bruges til begrænse, hvilke data en bruger kan se."
 
 frontpage:
   title: "Velkommen til Economics"
@@ -495,6 +501,7 @@ view:
   display_description: 'Beskrivelse'
   display_installations: 'Installationer'
   display_projects: 'Projekter'
+  title: 'Views'
 
 exception:
   invoices_record_entry_amount_not_set: "Faktura can ikke bogføres, da den indeholder fakturalinjer hvor antal ikke er sat. Se: %invoiceEntryUrl%."
@@ -556,3 +563,21 @@ delete:
 client_type_enum:
   internal: "Intern"
   external: "Ekstern"
+
+users:
+  title: "Brugere"
+  id: "#"
+  name: "Navn"
+  email: "Email"
+  roles: "Roller"
+  actions: "Handlinger"
+  list_no_records_found: "Ingen brugere fundet."
+  views: 'Views'
+
+roles:
+  ROLE_ADMIN: Administrator
+  ROLE_USER: Bruger
+  ROLE_INVOICE: Faktura
+  ROLE_PROJECT_BILLING: Projektfakturering
+  ROLE_PLANNING: Planlægning
+  ROLE_SPRINT_REPORT: Sprintrapport
