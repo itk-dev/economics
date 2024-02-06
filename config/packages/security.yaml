@@ -18,6 +18,7 @@ security:
         main:
             custom_authenticators:
                 - App\Security\AzureOIDCAuthenticator
+                - ItkDev\OpenIdConnectBundle\Security\CliLoginTokenAuthenticator
             entry_point: App\Security\AzureOIDCAuthenticator
             logout:
                 path: /logout
