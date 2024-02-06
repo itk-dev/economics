@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added nested menus and current page highlight in menu.
 * Added filters and sorting to client and account viewws.
 * Added display names when hiding rows in Planning overview.
+* Added a security voter for handling access to Invoice, InvoiceEntry and ProjectBilling.
 
 
 * RELEASE NOTES:
