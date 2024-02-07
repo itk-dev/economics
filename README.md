@@ -35,7 +35,7 @@ The output is a .csv file.
 
 Projects, clients, accounts, issues and worklogs are synchronized from a project tracker.
 
-Invoice entries can be manual entries or connected to a number of worklogs from 
+Invoice entries can be manual entries or connected to a number of worklogs from
 a project tracker.
 
 Project billing can create a number of invoices for a given project for a given project.
@@ -128,6 +128,19 @@ The node container will watch for code changes in assets folder and recompile.
    bin/console app:sync-issues
    bin/console app:sync-worklogs
    ```
+
+### Coding standards
+
+Each PR is reviewed with Github Actions.
+
+Apply coding standards with:
+
+```shell
+# Apply coding standards and run static analysis for php and twig
+docker compose exec phpfpm composer prepare-code
+# Apply coding standards for javascript assets
+docker compose exec node npm run check-coding-standards
+```
 
 ## Production
 
