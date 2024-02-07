@@ -22,7 +22,7 @@ class PlanningType extends AbstractType
         $resolver->setDefaults([
             'data_class' => PlanningFormData::class,
             'attr' => [
-                'class' => 'planning-form',
+                'class' => 'form-default',
             ],
         ]);
     }

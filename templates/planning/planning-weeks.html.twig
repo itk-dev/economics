@@ -91,7 +91,7 @@
 							<tr class="table-row">
 								<td class="table-cell-heading nowrap">
 									<span>{{ assignee.displayName }}</span>
-									<button class="mr-2 hide-btn" type="button" {{ stimulus_action('show-hide', 'toggleEntry') }} data-toggle-id="{{ assignee.key }}" data-toggle-target="button" style="width: 16px;">
+									<button class="mr-2 hide-btn" type="button" {{ stimulus_action('show-hide', 'toggleEntry') }} data-toggle-id="{{ assignee.key }}" data-toggle-name="{{ assignee.displayName }}" data-toggle-target="button" style="width: 16px;">
 										{{ svgHide }}
 									</button>
 									<button class="expand-btn" type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }} data-toggle-target="button" style="width: 16px;">

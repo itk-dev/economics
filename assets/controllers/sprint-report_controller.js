@@ -25,6 +25,9 @@ export default class extends Controller {
         this.contentTarget.classList.remove('hidden');
         this.selectTarget.classList.remove('hidden');
 
+        this.projectTarget.closest('div.choices').parentElement.classList.add('form-choices');
+        this.versionTarget.closest('div.choices').parentElement.classList.add('form-choices');
+        
         if (this.projectTarget.value && this.versionTarget.value) {
             this.budgetTarget.addEventListener('change', this.calculateForecasts);
             this.finishedPercentageTarget.addEventListener('change', this.calculateForecasts);

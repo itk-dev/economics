@@ -1,61 +1,83 @@
-import {Controller} from '@hotwired/stimulus';
+import { Controller } from "@hotwired/stimulus";
 
 /**
  * Toggles a display of an entry.
  */
 export default class extends Controller {
-    static targets = ['entry', 'hiddenEntries'];
-    storageKey = 'hiddenEntries';
+  static targets = ["entry", "hiddenEntries"];
+  storageKey = "hiddenEntries";
 
-    connect() {
-        if (this.element.dataset.storageKey) {
-            this.storageKey = this.element.dataset.storageKey;
-        }
-
-        this.hideEntries();
+  connect() {
+    if (this.element.dataset.storageKey) {
+      this.storageKey = this.element.dataset.storageKey;
     }
 
-    hideEntries() {
-        const localStorageItem = localStorage.getItem(this.storageKey);
-        const hiddenAssignees = JSON.parse(localStorageItem) ?? [];
+    this.hideEntries();
+  }
 
-        this.entryTargets.forEach((target) => {
-            if (hiddenAssignees.includes(target.dataset.toggleId)) {
-                target.classList.add('hidden');
-            } else {
-                target.classList.remove('hidden');
-            }
-        })
+  hideEntries() {
+    const localStorageItem = localStorage.getItem(this.storageKey);
+    const hiddenAssignees = JSON.parse(localStorageItem) ?? [];
 
-        this.hiddenEntriesTarget.innerHTML = hiddenAssignees.map(
-            (value) => `<button data-action="click->show-hide#toggleEntry" data-toggle-id="${value}">
+    this.entryTargets.forEach((target) => {
+    const key = target.dataset.toggleId;
+    const shouldHide = hiddenAssignees.some(assignee => assignee.key === key);
+
+    if (shouldHide) {
+        target.classList.add("hidden");
+    } else {
+        target.classList.remove("hidden");
+    }
+    });
+
+    this.hiddenEntriesTarget.innerHTML = hiddenAssignees
+      .map(
+        (
+          value
+        ) => `<button data-action="click->show-hide#toggleEntry" data-toggle-id="${value.key}">
                     <svg class="planning-hidden-svg" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"></path>
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg> ${value}
+                    </svg> ${value.displayName}
                 </button>`
-        ).join();
+      )
+      .join();
+  }
+
+  toggleEntry(event) {
+    const localStorageItem = localStorage.getItem(this.storageKey);
+    const hiddenEntries = JSON.parse(localStorageItem) ?? [];
+
+    const key = event.currentTarget.dataset.toggleId;
+    const displayName = event.currentTarget.dataset.toggleName ?? key;
+    
+    if (key === null) {
+      return;
     }
-
-    toggleEntry(event) {
-        const localStorageItem = localStorage.getItem(this.storageKey);
-        const hiddenEntries = JSON.parse(localStorageItem) ?? [];
-
-        const key = event.currentTarget.dataset.toggleId;
-
-        if (key === null) {
-            return;
+    
+    const newHiddenEntries = new Set(hiddenEntries);
+    
+    if (newHiddenEntries.size === 0) {
+      newHiddenEntries.add({ key: key, displayName: displayName });
+    } else {
+      let found = false;
+      newHiddenEntries.forEach((newHiddenEntry) => {
+        if (newHiddenEntry.key === key) {
+          newHiddenEntries.delete(newHiddenEntry);
+          found = true;
         }
-
-        const newHiddenEntries = new Set(hiddenEntries);
-        if (newHiddenEntries.has(key)) {
-            newHiddenEntries.delete(key);
-        } else {
-            newHiddenEntries.add(key)
-        }
-
-        localStorage.setItem(this.storageKey, JSON.stringify([...newHiddenEntries]));
-
-        this.hideEntries();
+      });
+    
+      if (!found) {
+        newHiddenEntries.add({ key: key, displayName: displayName });
+      }
     }
+    
+    localStorage.setItem(
+      this.storageKey,
+      JSON.stringify(Array.from(newHiddenEntries))
+    );
+
+    this.hideEntries();
+  }
 }

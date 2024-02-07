@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Client;
+use App\Form\ClientFilterType;
 use App\Form\ClientType;
+use App\Model\Invoices\ClientFilterData;
 use App\Repository\ClientRepository;
 use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,9 +25,17 @@ class ClientController extends AbstractController
     #[Route('/', name: 'app_client_index', methods: ['GET'])]
     public function index(Request $request, ClientRepository $clientRepository): Response
     {
-        return $this->render('client/index.html.twig', $this->viewService->addView([
-            'clients' => $clientRepository->findAll(),
-        ]));
+        $clientFilterData = new ClientFilterData();
+        $form = $this->createForm(ClientFilterType::class, $clientFilterData);
+        $form->handleRequest($request);
+
+        $pagination = $clientRepository->getFilteredPagination($clientFilterData, $request->query->getInt('page', 1));
+
+        return $this->render('client/index.html.twig', [
+            'clients' => $pagination,
+            'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
+        ]);
     }
 
     #[Route('/new', name: 'app_client_new', methods: ['GET', 'POST'])]

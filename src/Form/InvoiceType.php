@@ -33,7 +33,8 @@ class InvoiceType extends AbstractType
                 'attr' => ['class' => 'form-element', 'data-generate-description-target' => 'description', 'rows' => 4],
                 'help' => 'invoices.description_helptext',
             ])
-            ->add('client', null, [
+            ->add('client', ChoiceType::class, [
+                'required' => true,
                 'label' => 'invoices.client',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row form-choices'],

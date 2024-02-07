@@ -7,10 +7,12 @@
     <h1 class="page-title">{{ 'project_billing.title'|trans }}</h1>
 
     {{ form_start(form) }}
-    <div class="invoices-filter-form">
+    <div class="form-default">
         {{ form_row(form.recorded) }}
         {{ form_row(form.createdBy) }}
-        <button class="button m-5">{{ 'project_billing.search'|trans }}</button>
+        <div>
+                <button class="button form-element">{{ 'project_billing.search'|trans }}</button>
+            </div>
     </div>
     {{ form_end(form) }}
 

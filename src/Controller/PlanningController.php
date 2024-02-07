@@ -44,7 +44,6 @@ class PlanningController extends AbstractController
             'required' => true,
             'label' => 'planning.data_provider',
             'label_attr' => ['class' => 'label'],
-            'row_attr' => ['class' => 'form-row'],
             'attr' => [
                 'class' => 'form-element',
             ],
@@ -56,7 +55,6 @@ class PlanningController extends AbstractController
             'required' => true,
             'label' => 'planning.view_type',
             'label_attr' => ['class' => 'label'],
-            'row_attr' => ['class' => 'form-element-wrapper'],
             'attr' => [
                 'class' => 'form-element',
             ],

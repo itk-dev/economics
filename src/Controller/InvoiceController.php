@@ -13,6 +13,7 @@ use App\Form\InvoiceType;
 use App\Model\Invoices\ConfirmData;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\AccountRepository;
+use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
@@ -89,7 +90,7 @@ class InvoiceController extends AbstractController
      */
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
     #[IsGranted('EDIT', 'invoice')]
-    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
+    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, ClientRepository $clientRepository, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
         if ($invoice->isRecorded()) {
@@ -144,23 +145,18 @@ class InvoiceController extends AbstractController
             'help' => 'invoices.default_receiver_account_helptext',
         ]);
 
-        $project = $invoice->getProject();
-
-        if (!is_null($project)) {
-            $clients = $project->getClients();
-
-            $form->add('client', null, [
-                'label' => 'invoices.client',
-                'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row form-choices'],
-                'attr' => [
-                    'class' => 'form-element',
-                    'data-choices-target' => 'choices',
-                ],
-                'help' => 'invoices.client_helptext',
-                'choices' => $clients,
-            ]);
-        }
+        $clientChoices = $clientRepository->findAll();
+        $form->add('client', null, [
+            'label' => 'invoices.client',
+            'label_attr' => ['class' => 'label'],
+            'row_attr' => ['class' => 'form-row form-choices'],
+            'attr' => [
+                'class' => 'form-element',
+                'data-choices-target' => 'choices',
+            ],
+            'help' => 'invoices.client_helptext',
+            'choices' => $clientChoices,
+        ]);
 
         $form->handleRequest($request);
 
@@ -188,8 +184,8 @@ class InvoiceController extends AbstractController
 
         // Only allow adding entries when material number and receiver account have been set.
         $allowAddingEntries = !empty($invoice->getDefaultReceiverAccount())
-            && !empty($invoice->getDefaultMaterialNumber())
-            && !empty($invoice->getDefaultMaterialNumber()->value);
+          && !empty($invoice->getDefaultMaterialNumber())
+          && !empty($invoice->getDefaultMaterialNumber()->value);
 
         return $this->render('invoices/edit.html.twig', $this->viewService->addView([
             'invoice' => $invoice,

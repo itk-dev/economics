@@ -5,12 +5,12 @@
 {% block content %}
     <h1 class="page-title">{{ 'planning.title'|trans }}</h1>
 
-    <div class="selections">
         {{ form_start(form) }}
         {{ form_row(form.dataProvider) }}
         {{ form_row(form.viewType) }}
-        <button class="button m-5">{{ 'planning.search'|trans }}</button>
+        <div>
+            <button class="button form-element">{{ 'planning.search'|trans }}</button>
+        </div>
         {{ form_end(form) }}
-    </div>
 
 {% endblock %}
