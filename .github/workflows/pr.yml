@@ -208,7 +208,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: React coding standards
+      - name: Coding standards
         run: |
           docker network create frontend
           docker compose run --rm node npm install
