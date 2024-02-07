@@ -139,9 +139,11 @@
     .hidden {
         @apply invisible;
     }
+
     .form-default, #sprint_report {
         @apply grid gap-3 mb-6 md:grid-cols-4;
     }
+
     .form-default > div {
         @apply flex flex-col justify-end;
     }
@@ -276,7 +278,7 @@
     }
 
     .form-choices .choices__inner {
-        @apply  bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-1
+        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-1
     }
 
     .form-choices .choices__list--single {
@@ -391,7 +393,8 @@
     .navigation-item.current {
         background-color: rgb(15, 23, 42);
     }
+
     .navigation-item.current {
-		background-color: rgb(15, 23, 42);
-	}
+        background-color: rgb(15, 23, 42);
+    }
 }
