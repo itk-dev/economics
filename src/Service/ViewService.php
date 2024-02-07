@@ -81,11 +81,10 @@ class ViewService
 
     public function getViewFromId(string $viewId): mixed
     {
+        if (null != $viewId) {
+            return $this->viewRepository->find($viewId);
+        }
 
-      if (null != $viewId) {
-        return $this->viewRepository->find($viewId);
-      }
-
-      return null;
+        return null;
     }
 }
