@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Account;
+use App\Form\AccountFilterType;
 use App\Form\AccountType;
+use App\Model\Invoices\AccountFilterData;
 use App\Repository\AccountRepository;
 use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,11 +23,19 @@ class AccountController extends AbstractController
     }
 
     #[Route('/', name: 'app_account_index', methods: ['GET'])]
-    public function index(AccountRepository $accountRepository): Response
+    public function index(Request $request, AccountRepository $accountRepository): Response
     {
-        return $this->render('account/index.html.twig', $this->viewService->addView([
-            'accounts' => $accountRepository->findAll(),
-        ]));
+        $accountFilterData = new AccountFilterData();
+        $form = $this->createForm(AccountFilterType::class, $accountFilterData);
+        $form->handleRequest($request);
+
+        $pagination = $accountRepository->getFilteredPagination($accountFilterData, $request->query->getInt('page', 1));
+
+        return $this->render('account/index.html.twig', [
+            'accounts' => $pagination,
+            'form' => $form,
+            'viewId' => $request->attributes->get('viewId'),
+        ]);
     }
 
     #[Route('/new', name: 'app_account_new', methods: ['GET', 'POST'])]

@@ -200,3 +200,16 @@ jobs:
       - name: Validate publiccode.yml
         # https://github.com/italia/publiccode-parser-go#easy-validation-with-docker
         run: docker run --interactive italia/publiccode-parser-go /dev/stdin < publiccode.yml
+
+  assets-coding-standards:
+    name: Assets coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Coding standards
+        run: |
+          docker network create frontend
+          docker compose run --rm node npm install
+          docker compose run --rm node npm run check-coding-standards

@@ -1,4 +1,4 @@
-import {Controller} from '@hotwired/stimulus';
+import { Controller } from "@hotwired/stimulus";
 
 /**
  * Project sync controller.
@@ -6,7 +6,7 @@ import {Controller} from '@hotwired/stimulus';
  * Sync a project
  */
 export default class extends Controller {
-    static targets = ['text', 'button'];
+    static targets = ["text", "button"];
 
     updateUrl;
 
@@ -15,31 +15,34 @@ export default class extends Controller {
     }
 
     sync() {
-        this.textTarget.innerText = 'Syncing...';
-        this.buttonTarget.style.display = 'none';
+        this.textTarget.innerText = "Syncing...";
+        this.buttonTarget.style.display = "none";
 
         fetch(this.updateUrl, {
-            method: 'POST',
-            mode: 'same-origin',
-            cache: 'no-cache',
-            credentials: 'same-origin',
+            method: "POST",
+            mode: "same-origin",
+            cache: "no-cache",
+            credentials: "same-origin",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json",
             },
-            redirect: 'follow',
-            referrerPolicy: 'no-referrer',
-        }).then(async (resp) => {
-            if (!resp.ok) {
-                resp.json().then((err) => {
-                    this.textTarget.innerText = 'failed: ' + err.message;
-                });
-            } else {
-                this.textTarget.innerText = 'ok';
-            }
-        }).catch((err) => {
-            this.textTarget.innerText = 'failed' + err.message;
-        }).finally(() => {
-            this.buttonTarget.style.display = 'block';
-        });
+            redirect: "follow",
+            referrerPolicy: "no-referrer",
+        })
+            .then(async (resp) => {
+                if (!resp.ok) {
+                    resp.json().then((err) => {
+                        this.textTarget.innerText = `failed: ${err.message}`;
+                    });
+                } else {
+                    this.textTarget.innerText = "ok";
+                }
+            })
+            .catch((err) => {
+                this.textTarget.innerText = `failed${err.message}`;
+            })
+            .finally(() => {
+                this.buttonTarget.style.display = "block";
+            });
     }
 }

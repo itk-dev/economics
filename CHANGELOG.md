@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed invoices overview sorting. Changed default sorting for invoices on record as by exportedDate.
 * Changed monolog config to ignore deprecations.
 * Added Leantime specific header to api service.
-* Added option to only export internal or external invoices from project billing. 
+* Added option to only export internal or external invoices from project billing.
 * Added checks for errors before allowing putting project billing on record
 * Added error check for invoice entries with 0 amounts
 * Make sure all issues are selected in project billing period.
@@ -45,7 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed minor leantime integration issues.
 * Added dataprovider as column in project list.
 * Added nested menus and current page highlight in menu.
+* Added filters and sorting to client and account viewws.
+* Added display names when hiding rows in Planning overview.
 * Added a security voter for handling access to Invoice, InvoiceEntry and ProjectBilling.
+* Added javascript style linting.
 
 
 * RELEASE NOTES:

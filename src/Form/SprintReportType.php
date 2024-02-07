@@ -49,7 +49,6 @@ class SprintReportType extends AbstractType
             'data_class' => SprintReportFormData::class,
             'attr' => [
                 'data-sprint-report-target' => 'form',
-                'class' => 'sprint-report-form',
             ],
         ]);
     }

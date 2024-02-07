@@ -49,7 +49,7 @@ class ViewController extends AbstractController
     }
 
     #[Route(['/', '/list'], name: 'app_view_list')]
-    public function list(ViewRepository $viewRepository): Response
+    public function list(Request $request, ViewRepository $viewRepository): Response
     {
         return $this->render('view/list.html.twig', $this->viewService->addView([
             'views' => $viewRepository->findAll(),
