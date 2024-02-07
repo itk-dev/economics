@@ -41,7 +41,7 @@ navigation:
   create_project: "Projektopretter"
   invoices: "Faktura"
   planning: "Planlægning"
-  sprint_report: "Sprintrapport"
+  sprint_report: "Hent sprintrapport"
   title: "Economics"
   accounts: "Konto"
   project_billing: "Projektfakturering"
@@ -52,6 +52,7 @@ navigation:
   user: "Brugere"
   data: "Data"
   admin: "Admin"
+  management_report: "Hent ledelsesrapport"
 
 planning:
   title: "Planlægning"
@@ -457,9 +458,9 @@ project:
 reports:
   title: 'Rapporter'
   description: 'Generer rapporter baseret på data fra eConomics.'
-  create_sprint_report: 'Opret ny Sprintrapport'
+  fetch_sprint_report: 'Hent Sprintrapport'
   management-title: 'Ny ledelsesrapport'
-  create_management_report: 'Opret ny Ledelsesrapport'
+  fetch_management_report: 'Hent Ledelsesrapport'
   from: 'Fra'
   to: 'Til'
   management-title-output: 'Ledelsesrapport %from% - %to%'

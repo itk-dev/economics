@@ -4,6 +4,7 @@ namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class ManagementReportDateIntervalType extends AbstractType
@@ -30,6 +31,9 @@ class ManagementReportDateIntervalType extends AbstractType
                     'max' => (new \DateTime())->format('Y-m-d'),
                 ],
                 'label' => 'reports.to',
+            ])
+            ->add('view', HiddenType::class, [
+                'data' => $options['data']['view'],
             ]);
     }
 }

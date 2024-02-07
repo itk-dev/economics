@@ -78,4 +78,14 @@ class ViewService
 
         return $request?->query?->get('view') ?? null;
     }
+
+    public function getViewFromId(string $viewId): mixed
+    {
+
+      if (null != $viewId) {
+        return $this->viewRepository->find($viewId);
+      }
+
+      return null;
+    }
 }

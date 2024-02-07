@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Invoice;
 use App\Entity\Project;
-use App\Entity\View;
 use App\Exception\EconomicsException;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Service\ViewService;
@@ -49,22 +48,27 @@ class InvoiceRepository extends ServiceEntityRepository
     /**
      * @throws \Doctrine\ORM\Exception\NotSupported
      */
-    public function getByRecordedDateBetween(\DateTime $from, \DateTime $to): array
+    public function getByRecordedDateBetween(\DateTime $from, \DateTime $to, $view): array
     {
-        $viewId = (int) $this->request->getMainRequest()->attributes->get('viewId');
-        $qb = $this->createQueryBuilder('inv');
+        $parameters = [
+            'date_from' => $from->format('Y-m-d H:i:s'),
+            'date_to' => $to->format('Y-m-d H:i:s'),
+        ];
 
-        return $qb
+        $qb = $this->createQueryBuilder('inv');
+        $qb
             ->where('inv.recorded = true')
-            ->andWhere('inv.project IN (:projectIds)')
-            ->andWhere($qb->expr()->between('inv.recordedDate', ':date_from', ':date_to'))
-            ->setParameters([
-                'date_from' => $from->format('Y-m-d H:i:s'),
-                'date_to' => $to->format('Y-m-d H:i:s'),
-                'projectIds' => $this->getProjectIdsFromViewId($viewId),
-            ])
-            ->getQuery()
-            ->getResult();
+            ->andWhere($qb->expr()->between('inv.recordedDate', ':date_from', ':date_to'));
+
+        $projectIds = $this->getProjectIdsFromViewId($view);
+        if (!empty($projectIds)) {
+            $qb->andWhere('inv.project IN (:projectIds)');
+            $parameters['projectIds'] = $projectIds;
+        }
+
+        $qb->setParameters($parameters);
+
+        return $qb->getQuery()->getResult();
     }
 
     /**
@@ -98,9 +102,14 @@ class InvoiceRepository extends ServiceEntityRepository
         );
     }
 
-    private function getProjectIdsFromViewId(int $viewId): array
+    private function getProjectIdsFromViewId(string $viewId): array
     {
-        $view = $this->entityManager->getRepository(View::class)->find($viewId);
+        $view = $this->viewService->getViewFromId($viewId);
+
+        if (empty($view)) {
+            return [];
+        }
+
         $dataProviders = $view->getDataProviders();
 
         $dataProviderIds = [];
@@ -108,7 +117,7 @@ class InvoiceRepository extends ServiceEntityRepository
             $dataProviderIds[] = $dataProvider->getId();
         }
 
-        $projects = $this->entityManager->getRepository(Project::class)->findBy(['dataProvider' => $dataProviderIds]);
+        $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['dataProvider' => $dataProviderIds]);
         $projectIds = [];
         foreach ($projects as $project) {
             $projectIds[] = $project->getId();

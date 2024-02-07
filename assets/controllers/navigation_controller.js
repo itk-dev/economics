@@ -6,31 +6,31 @@ import { Controller } from "@hotwired/stimulus";
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    
+  // Set active class in main menu on load.
   connect() {
-    // Find active menupoint
+
+    // Find active menu item.
     const currentPath = window.location.pathname;
-    const pathPattern = /\/admin\/([^\/]+)/;
-    const pathMatch = currentPath.match(pathPattern);
-    let activeNavigationElement;
-    if (pathMatch) {
-      activeNavigationElement = document.querySelector(
-        'a[href*="/admin/' + pathMatch[1] + '/"]'
-      );
-    } else {
-      activeNavigationElement = document.querySelector('a[href*="/admin/"]');
-    }
+    let menuItems = document.querySelectorAll('#main-menu .navigation-item');
 
-    activeNavigationElement.classList.add("current");
+    menuItems.forEach(function (menuItem) {
+      if (menuItem.pathname === currentPath) {
+        menuItem.classList.add("current");
 
-    const activeElementParent = activeNavigationElement.closest(".navigation-item-submenu");
+        const activeElementParent = menuItem.closest(".navigation-item-submenu");
+        const nextElement = menuItem.nextElementSibling;
 
-    // Expand collapsible if active menu point is child
-    if (activeElementParent) {
-      activeElementParent.classList.add("shown");
-    }
+        if (activeElementParent) {
+          activeElementParent.classList.add("shown");
+        }
+        if (nextElement && nextElement.classList.contains("navigation-item-submenu")) {
+          nextElement.classList.add("shown");
+        }
+      }
+    });
   }
 
+  // Set active menu item if menu item has no pathname.
   toggle(target) {
     target.currentTarget.nextElementSibling.classList.toggle("shown");
   }
