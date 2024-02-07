@@ -1,0 +1,27 @@
+{
+  "plugins": ["prettier", "only-warn"],
+  "globals": {
+    "document": true,
+    "localStorage": true,
+    "window": true
+  },
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:jsdoc/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "ignorePatterns": ["*.yml"],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "sourceType": "module",
+    "allowImportExportEverywhere": true,
+    "requireConfigFile": false,
+    "babelOptions": {
+      "babelrc": false,
+      "configFile": false,
+      "presets": ["@babel/preset-env"]
+    }
+  },
+  "rules": {}
+}

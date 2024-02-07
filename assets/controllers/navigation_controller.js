@@ -1,4 +1,4 @@
-import {Controller} from "@hotwired/stimulus";
+import { Controller } from "@hotwired/stimulus";
 
 /*
  * The following line makes this controller "lazy": it won't be downloaded until needed
@@ -6,7 +6,7 @@ import {Controller} from "@hotwired/stimulus";
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    connect() {
+    static connect() {
         // Find active menupoint
         const currentPath = window.location.pathname;
         const pathPattern = /\/admin\/(?:[^/]+\/)?([^/]+)/;
@@ -15,14 +15,19 @@ export default class extends Controller {
         let activeNavigationElement;
 
         if (pathMatch) {
-            activeNavigationElement = document.querySelector('a.navigation-item[href="' + pathMatch[0] + '/"]');
+            activeNavigationElement = document.querySelector(
+                `a.navigation-item[href="${pathMatch[0]}/"]`,
+            );
         } else {
-            activeNavigationElement = document.querySelector('a[href*="/admin/"]');
+            activeNavigationElement =
+                document.querySelector('a[href*="/admin/"]');
         }
 
         activeNavigationElement.classList.add("current");
 
-        const activeElementParent = activeNavigationElement.closest(".navigation-item-submenu");
+        const activeElementParent = activeNavigationElement.closest(
+            ".navigation-item-submenu",
+        );
 
         // Expand collapsible if active menu point is child
         if (activeElementParent) {
@@ -30,7 +35,7 @@ export default class extends Controller {
         }
     }
 
-    toggle(target) {
+    static toggle(target) {
         target.currentTarget.nextElementSibling.classList.toggle("shown");
     }
 }

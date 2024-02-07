@@ -1,13 +1,21 @@
-import {Controller} from '@hotwired/stimulus';
+import { Controller } from "@hotwired/stimulus";
 
-/**
- * Entry select controller.
- */
+/** Entry select controller. */
 export default class extends Controller {
-    static targets = ['checkbox', 'toggleAll', 'spinner', 'result', 'submitButton'];
+    static targets = [
+        "checkbox",
+        "toggleAll",
+        "spinner",
+        "result",
+        "submitButton",
+    ];
+
     submitEndpoint = null;
+
     selectAll = true;
+
     submitting = false;
+
     dirtyEntrys = new Set();
 
     connect() {
@@ -16,8 +24,9 @@ export default class extends Controller {
 
     toggleAll() {
         this.checkboxTargets.forEach((target) => {
-            target.checked = this.selectAll;
-            this.dirtyEntrys.add(target.dataset.id);
+            const theTarget = target;
+            theTarget.checked = this.selectAll;
+            this.dirtyEntrys.add(theTarget.dataset.id);
         });
 
         this.selectAll = !this.selectAll;
@@ -33,8 +42,8 @@ export default class extends Controller {
         event.stopPropagation();
 
         const values = this.checkboxTargets.reduce((accumulator, target) => {
-            const id = target.dataset.id;
-            const checked = target.checked;
+            const { id } = target.dataset;
+            const { checked } = target;
 
             if (this.dirtyEntrys.has(id) && checked) {
                 accumulator.push(id);
@@ -43,11 +52,11 @@ export default class extends Controller {
             return accumulator;
         }, []);
 
-        let params = new URLSearchParams({
-            ids: values
-        })
+        const params = new URLSearchParams({
+            ids: values,
+        });
 
-        window.location.href = (this.submitEndpoint + "?" + params);
+        window.location.href = `${this.submitEndpoint}?${params}`;
     }
 
     async submitForm(event) {
@@ -58,54 +67,57 @@ export default class extends Controller {
             return;
         }
 
-        this.submitButtonTarget.classList.add('hidden');
+        this.submitButtonTarget.classList.add("hidden");
         this.submitting = true;
 
         const values = this.checkboxTargets.reduce((accumulator, target) => {
-            const id = target.dataset.id;
-            const checked = target.checked;
+            const { id } = target.dataset;
+            const { checked } = target;
 
             if (this.dirtyEntrys.has(id)) {
-                accumulator.push({id, checked});
+                accumulator.push({ id, checked });
             }
 
             return accumulator;
         }, []);
 
-        this.spinnerTarget.classList.remove('hidden');
-        this.resultTarget.classList = ['hidden'];
+        this.spinnerTarget.classList.remove("hidden");
+        this.resultTarget.classList = ["hidden"];
 
         fetch(this.submitEndpoint, {
-            method: 'POST',
-            mode: 'same-origin',
-            cache: 'no-cache',
-            credentials: 'same-origin',
+            method: "POST",
+            mode: "same-origin",
+            cache: "no-cache",
+            credentials: "same-origin",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json",
             },
-            redirect: 'follow',
-            referrerPolicy: 'no-referrer',
-            body: JSON.stringify(values)
-        }).then(async (resp) => {
-            if (!resp.ok) {
-                resp.json().then((err) => {
-                    this.resultTarget.innerHTML = err.message;
-                    this.resultTarget.classList.remove('hidden');
-                    this.resultTarget.classList.add('text-red-500');
-                });
-            } else {
-                this.resultTarget.innerHTML = 'Ok.';
-                this.resultTarget.classList.remove('hidden');
-                this.resultTarget.classList.add('text-green-500');
-            }
-        }).catch((err) => {
-            this.resultTarget.innerHTML = err.message;
-            this.resultTarget.classList.remove('hidden');
-            this.resultTarget.classList.add('text-red-500');
-        }).finally(() => {
-            this.spinnerTarget.classList.add('hidden');
-            this.submitting = false;
-            this.submitButtonTarget.classList.remove('hidden');
-        });
+            redirect: "follow",
+            referrerPolicy: "no-referrer",
+            body: JSON.stringify(values),
+        })
+            .then(async (resp) => {
+                if (!resp.ok) {
+                    resp.json().then((err) => {
+                        this.resultTarget.innerHTML = err.message;
+                        this.resultTarget.classList.remove("hidden");
+                        this.resultTarget.classList.add("text-red-500");
+                    });
+                } else {
+                    this.resultTarget.innerHTML = "Ok.";
+                    this.resultTarget.classList.remove("hidden");
+                    this.resultTarget.classList.add("text-green-500");
+                }
+            })
+            .catch((err) => {
+                this.resultTarget.innerHTML = err.message;
+                this.resultTarget.classList.remove("hidden");
+                this.resultTarget.classList.add("text-red-500");
+            })
+            .finally(() => {
+                this.spinnerTarget.classList.add("hidden");
+                this.submitting = false;
+                this.submitButtonTarget.classList.remove("hidden");
+            });
     }
 }
