@@ -6,7 +6,8 @@ import { Controller } from "@hotwired/stimulus";
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    static connect() {
+    /* eslint-disable-next-line class-methods-use-this */
+    connect() {
         // Find active menupoint
         const currentPath = window.location.pathname;
         const pathPattern = /\/admin\/(?:[^/]+\/)?([^/]+)/;
@@ -35,7 +36,8 @@ export default class extends Controller {
         }
     }
 
-    static toggle(target) {
+    /* eslint-disable-next-line class-methods-use-this */
+    toggle(target) {
         target.currentTarget.nextElementSibling.classList.toggle("shown");
     }
 }

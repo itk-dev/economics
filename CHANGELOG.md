@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added display names when hiding rows in Planning overview.
 * Added a security voter for handling access to Invoice, InvoiceEntry and ProjectBilling.
 * Added javascript style linting.
+* Removed static from stimulus controller.
 
 
 * RELEASE NOTES:

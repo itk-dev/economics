@@ -3,7 +3,8 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
     static targets = ["select"];
 
-    static select(event) {
+    /* eslint-disable-next-line class-methods-use-this */
+    select(event) {
         event.preventDefault();
         event.stopPropagation();
 
