@@ -27,9 +27,6 @@ class Client extends AbstractBaseEntity
     private ?ClientTypeEnum $type = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $account = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $psp = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -43,9 +40,6 @@ class Client extends AbstractBaseEntity
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $salesChannel = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerKey = null;
@@ -94,18 +88,6 @@ class Client extends AbstractBaseEntity
     public function setStandardPrice(?float $standardPrice): self
     {
         $this->standardPrice = $standardPrice;
-
-        return $this;
-    }
-
-    public function getAccount(): ?string
-    {
-        return $this->account;
-    }
-
-    public function setAccount(?string $account): self
-    {
-        $this->account = $account;
 
         return $this;
     }
@@ -212,18 +194,6 @@ class Client extends AbstractBaseEntity
     public function __toString(): string
     {
         return $this->getName() ?? (string) $this->getId();
-    }
-
-    public function getSalesChannel(): ?string
-    {
-        return $this->salesChannel;
-    }
-
-    public function setSalesChannel(?string $salesChannel): self
-    {
-        $this->salesChannel = $salesChannel;
-
-        return $this;
     }
 
     public function getCustomerKey(): ?string

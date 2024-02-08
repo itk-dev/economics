@@ -29,10 +29,8 @@
             <th class="table-th {% if clients.isSorted('client.standardPrice') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.standard_price'|trans, 'client.standardPrice') }}</th>
             <th class="table-th">{{ 'clients.data_provider'|trans }}</th>
             <th class="table-th {% if clients.isSorted('client.type') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.type'|trans, 'client.type') }}</th>
-            <th class="table-th {% if clients.isSorted('client.account') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.account'|trans, 'client.account') }}</th>
             <th class="table-th {% if clients.isSorted('client.psp') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.psp'|trans, 'client.psp') }}</th>
             <th class="table-th {% if clients.isSorted('client.ean') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.ean'|trans, 'client.ean') }}</th>
-            <th class="table-th {% if clients.isSorted('client.customerKey') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.sales_channel'|trans, 'client.salesChannel') }}</th>
             <th class="table-th {% if clients.isSorted('client.customerKey') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.customer_key'|trans, 'client.customerKey') }}</th>
             <th class="table-th">{{ 'clients.actions'|trans }}</th>
         </tr>
@@ -50,10 +48,8 @@
                 {% else %}
                     <td class="table-td"></td>
                 {% endif %}
-                <td class="table-td">{{ client.account }}</td>
                 <td class="table-td">{{ client.psp }}</td>
                 <td class="table-td">{{ client.ean }}</td>
-                <td class="table-td">{{ client.salesChannel }}</td>
                 <td class="table-td">{{ client.customerKey }}</td>
                 <td class="table-td">
                     <a class="link" href="{{ path('app_client_edit', {'id': client.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'clients.action_edit'|trans }}</a>

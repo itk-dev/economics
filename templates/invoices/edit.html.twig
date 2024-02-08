@@ -43,7 +43,6 @@
                     <li class="list-group-item border-bottom">{{ 'invoices.client_project_lead'|trans }}: {{ invoice.client.projectLeadName }} ({{ invoice.client.projectLeadMail }})</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
-                    <li class="list-group-item border-bottom">{{ 'invoices.client_sales_channel'|trans }}: {{ invoice.client.salesChannel }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_customer_key'|trans }}: {{ invoice.client.customerKey }}</li>
                     <li class="list-group-item border-bottom">
                         {{ 'invoices.client_type'|trans }}:
@@ -54,7 +53,6 @@
                             {{ 'invoices.client_type_is_null'|trans }}
                         {% endif %}
                     </li>
-                    <li class="list-group-item border-bottom">{{ 'invoices.client_account'|trans }}: {{ invoice.client.account }}</li>
                     {% if invoice.client.psp is defined and invoice.client.psp is not null %}
                         <li class="list-group-item">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
                     {% endif %}
@@ -69,7 +67,6 @@
             <ul class="list-group margin-bottom">
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.locked_client_values'|trans }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_type'|trans }}: {{ invoice.lockedType }}</li>
-                <li class="list-group-item border-bottom">{{ 'invoices.locked_sales_channel'|trans }}: {{ invoice.lockedSalesChannel }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_account_key'|trans }}: {{ invoice.lockedAccountKey }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_contact_name'|trans }}: {{ invoice.lockedContactName }}</li>
                 <li class="list-group-item">{{ 'invoices.locked_customer_key'|trans }}: {{ invoice.lockedCustomerKey }}</li>

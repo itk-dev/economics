@@ -40,7 +40,7 @@ class Invoice extends AbstractBaseEntity
     private ?string $lockedType = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $lockedAccountKey = null;
+    private ?string $lockedEan = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lockedSalesChannel = null;
@@ -176,14 +176,14 @@ class Invoice extends AbstractBaseEntity
         return $this;
     }
 
-    public function getLockedAccountKey(): ?string
+    public function getLockedEan(): ?string
     {
-        return $this->lockedAccountKey;
+        return $this->lockedEan;
     }
 
-    public function setLockedAccountKey(?string $lockedAccountKey): self
+    public function setLockedEan(?string $lockedEan): self
     {
-        $this->lockedAccountKey = $lockedAccountKey;
+        $this->lockedEan = $lockedEan;
 
         return $this;
     }

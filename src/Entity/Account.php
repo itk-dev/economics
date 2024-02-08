@@ -20,12 +20,6 @@ class Account extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $status = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $category = null;
-
     public function getName(): ?string
     {
         return $this->name;
@@ -66,30 +60,6 @@ class Account extends AbstractBaseEntity
     public function setProjectTrackerId(?string $projectTrackerId): self
     {
         $this->projectTrackerId = $projectTrackerId;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(?string $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?string $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }

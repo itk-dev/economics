@@ -95,10 +95,9 @@ class BillingService
         // Lock client values.
         // The locked type is handled this way to be backwards compatible with Jira Economics.
         $invoice->setLockedType(ClientTypeEnum::INTERNAL == $client->getType() ? 'INTERN' : 'EKSTERN');
-        $invoice->setLockedSalesChannel($client->getSalesChannel());
         $invoice->setLockedCustomerKey($client->getCustomerKey());
         $invoice->setLockedContactName($client->getContact());
-        $invoice->setLockedAccountKey($client->getAccount());
+        $invoice->setLockedEan($client->getEan() ?? '');
 
         $invoice->setRecorded(true);
         $invoice->setRecordedDate(new \DateTime());
@@ -256,8 +255,7 @@ class BillingService
             if ($invoice->isRecorded()) {
                 $internal = 'INTERN' === $invoice->getLockedType();
                 $customerKey = $invoice->getLockedCustomerKey();
-                $accountKey = $invoice->getLockedAccountKey();
-                $salesChannel = $invoice->getLockedSalesChannel();
+                $accountKey = $invoice->getLockedEan();
                 $contactName = $invoice->getLockedContactName();
             } else {
                 // If the invoice has not been recorded yet.
@@ -269,8 +267,7 @@ class BillingService
 
                 $internal = ClientTypeEnum::INTERNAL === $client->getType();
                 $customerKey = $client->getCustomerKey();
-                $accountKey = $client->getAccount();
-                $salesChannel = $client->getSalesChannel();
+                $accountKey = $client->getEan() ?? '';
                 $contactName = $client->getContact();
             }
 
@@ -302,7 +299,7 @@ class BillingService
             // 6. "Salgsorganisation"
             $sheet->setCellValue([6, $row], '0020');
             // 7. "Salgskanal"
-            $sheet->setCellValue([7, $row], $salesChannel);
+            $sheet->setCellValue([7, $row], $internal ? 10 : 20);
             // 8. "Division"
             $sheet->setCellValue([8, $row], '20');
             // 9. "Ordreart"

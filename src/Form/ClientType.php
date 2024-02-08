@@ -60,28 +60,6 @@ class ClientType extends AbstractType
                 'required' => true,
                 'row_attr' => ['class' => 'form-row'],
             ])
-            ->add('account', TextType::class, [
-                'label' => 'create_client_form.client_account.label',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
-                'help_attr' => ['class' => 'form-help'],
-                'help' => 'create_client_form.client_account.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-row'],
-            ])
-            ->add('salesChannel', ChoiceType::class, [
-                'label' => 'create_client_form.sales_channel.label',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
-                'help_attr' => ['class' => 'form-help'],
-                'help' => 'create_client_form.sales_channel.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-row'],
-                'choices' => [
-                    10 => 10,
-                    20 => 20,
-                ],
-            ])
             ->add('customerKey', TextType::class, [
                 'label' => 'create_client_form.customer_key.label',
                 'label_attr' => ['class' => 'label'],
