@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added a security voter for handling access to Invoice, InvoiceEntry and ProjectBilling.
 * Added javascript style linting.
 * Removed static from stimulus controller.
+* Added data provider to account, client, project_billing and invoice index views.
 
 
 * RELEASE NOTES:
