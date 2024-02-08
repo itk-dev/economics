@@ -155,6 +155,7 @@ invoices:
   list_created_by: "Opretter"
   list_updated_at: "Dato"
   list_total_price: "Beløb"
+  list_project_data_provider: "Data provider"
   list_actions: "Handlinger"
   list_no_records_found: "Ingen fundet"
   action_create_new: "Opret ny faktura"
@@ -302,6 +303,7 @@ accounts:
   category: "Kategori"
   action_create_new: "Opret ny konto"
   action_edit: "Redigér"
+  data_provider: "Data provider"
 
 worklog:
   title: "Tilføj worklogs til fakturalinje"
@@ -381,6 +383,7 @@ project_billing:
   list_project: "Projekt"
   list_created_by: "Opretter"
   list_updated_at: "Dato"
+  list_project_data_provider: "Data provider"
   list_actions: "Handlinger"
   action_edit: "Redigér"
   list_no_records_found: "Ingen fundet"
@@ -559,6 +562,7 @@ clients:
   actions: "Handlinger"
   action_edit: "Redigér"
   list_no_records_found: "Ingen kunder"
+  data_provider: "Data provider"
 
 delete:
   confirm: "Er du sikker på at du vil slette dette?"

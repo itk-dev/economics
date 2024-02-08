@@ -10,20 +10,20 @@ export default class extends Controller {
     connect() {
         // Find active menupoint
         const currentPath = window.location.pathname;
-        const pathPattern = /\/admin\/(?:[^/]+\/)?([^/]+)/;
+        const pathPattern = /\/admin\/([^\/]+)\//;
 
         const pathMatch = currentPath.match(pathPattern);
         let activeNavigationElement;
 
+
         if (pathMatch) {
             activeNavigationElement = document.querySelector(
-                `a.navigation-item[href="${pathMatch[0]}/"]`,
+                `a.navigation-item[href="${pathMatch[0]}"]`,
             );
         } else {
             activeNavigationElement =
-                document.querySelector('a[href*="/admin/"]');
+                document.querySelector('a.navigation-item[href*="/admin/"]');
         }
-
         activeNavigationElement.classList.add("current");
 
         const activeElementParent = activeNavigationElement.closest(

@@ -22,6 +22,7 @@
             <th class="table-th{% if projectBillings.isSorted('projectBilling.id') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_id'|trans, 'projectBilling.id') }}</th>
             <th class="table-th{% if projectBillings.isSorted('projectBilling.name') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_name'|trans, 'projectBilling.name') }}</th>
             <th class="table-th">{{ 'project_billing.list_project'|trans }}</th>
+            <th class="table-th">{{ 'project_billing.list_project_data_provider'|trans }}</th>
             <th class="table-th">{{ 'project_billing.list_recorded'|trans }}</th>
             <th class="table-th{% if projectBillings.isSorted('projectBilling.createdBy') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_created_by'|trans, 'projectBilling.createdBy') }}</th>
             <th class="table-th{% if projectBillings.isSorted('projectBilling.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_updated_at'|trans, 'projectBilling.updatedAt') }}</th>
@@ -34,6 +35,7 @@
                 <td class="table-td">{{ projectBilling.id }}</td>
                 <td class="table-td">{{ projectBilling.name }}</td>
                 <td class="table-td">{{ projectBilling.project }}</td>
+                <td class="table-td">{{ projectBilling.project.dataProvider }}</td>
                 <td class="table-td">{{ projectBilling.isRecorded ? 'project_billing.recorded'|trans : '' }}</td>
                 <td class="table-td">{{ projectBilling.createdBy }}</td>
                 <td class="table-td">{{ projectBilling.updatedAt ? projectBilling.updatedAt|date : '' }}</td>
@@ -49,7 +51,7 @@
         {% endif %}
         <tr class="table-tr">
             <td class="table-td" colspan="2"><a class="link" href="{{ path('app_project_billing_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_create_new'|trans }}</a>
-            <td class="table-td" colspan="5" class="text-right">
+            <td class="table-td" colspan="6" class="text-right">
                 {{ knp_pagination_render(projectBillings) }}
             </td>
         </tr>
