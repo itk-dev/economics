@@ -589,4 +589,4 @@ roles:
   ROLE_INVOICE: Faktura
   ROLE_PROJECT_BILLING: Projektfakturering
   ROLE_PLANNING: Planlægning
-  ROLE_SPRINT_REPORT: Sprintrapport
+  ROLE_REPORT: Report
