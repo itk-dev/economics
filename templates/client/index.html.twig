@@ -27,6 +27,7 @@
             <th class="table-th {% if clients.isSorted('client.name') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.name'|trans, 'client.name') }}</th>
             <th class="table-th {% if clients.isSorted('client.contact') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.contact'|trans, 'client.contact') }}</th>
             <th class="table-th {% if clients.isSorted('client.standardPrice') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.standard_price'|trans, 'client.standardPrice') }}</th>
+            <th class="table-th">{{ 'clients.data_provider'|trans }}</th>
             <th class="table-th {% if clients.isSorted('client.type') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.type'|trans, 'client.type') }}</th>
             <th class="table-th {% if clients.isSorted('client.account') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.account'|trans, 'client.account') }}</th>
             <th class="table-th {% if clients.isSorted('client.psp') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.psp'|trans, 'client.psp') }}</th>
@@ -43,6 +44,7 @@
                 <td class="table-td">{{ client.name }}</td>
                 <td class="table-td">{{ client.contact }}</td>
                 <td class="table-td">{{ client.standardPrice }}</td>
+                <td class="table-td">{{ client.dataProvider }}</td>
                 {% if client.type is not null %}
                     <td class="table-td">{{ client.type.value }}</td>
                 {% else %}
