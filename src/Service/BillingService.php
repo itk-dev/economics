@@ -130,10 +130,6 @@ class BillingService
         if (is_null($client)) {
             $errors[] = $this->translator->trans('invoice_recordable.error_no_client');
         } else {
-            if (!$client->getAccount()) {
-                $errors[] = $this->translator->trans('invoice_recordable.error_no_account');
-            }
-
             if (!$client->getContact()) {
                 $errors[] = $this->translator->trans('invoice_recordable.error_no_contact');
             }

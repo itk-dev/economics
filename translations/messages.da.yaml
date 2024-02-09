@@ -342,7 +342,6 @@ invoice_entry:
 
 invoice_recordable:
   error_no_client: "Ingen kunde tilkoblet"
-  error_no_account: "Ingen konto"
   error_no_contact: "Ingen kontakt"
   error_no_type: "Ingen type"
   error_empty_invoice_entry: "Fakturaindgangen med id: %invoiceEntryId% har et tomt antal"

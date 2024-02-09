@@ -203,13 +203,14 @@ class InvoiceController extends AbstractController
     #[IsGranted('VIEW', 'invoice')]
     public function generateDescription(Invoice $invoice, $defaultInvoiceDescriptionTemplate): JsonResponse
     {
-        $client = $invoice->getClient();
+        $projectLeadName = $invoice->getProject()?->getProjectLeadName() ?? null;
+        $projectLeadMail = $invoice->getProject()?->getProjectLeadMail() ?? null;
 
-        if (!empty($client) && !(empty($client->getProjectLeadName())) && !empty($client->getProjectLeadMail())) {
+        if (!(empty($projectLeadName)) && !empty($projectLeadMail)) {
             $description = $defaultInvoiceDescriptionTemplate;
 
-            $description = str_replace('%name%', $client->getProjectLeadName() ?? '', $description);
-            $description = str_replace('%email%', $client->getProjectLeadMail() ?? '', $description);
+            $description = str_replace('%name%', $projectLeadName, $description);
+            $description = str_replace('%email%', $projectLeadMail, $description);
         }
 
         return new JsonResponse(['description' => $description ?? null]);
