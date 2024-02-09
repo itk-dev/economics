@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'view.title'|trans }}{% endblock %}
+{% block title %}{{ view.name }}{% endblock %}
 
 {% block content %}
-  <h1 class="page-title">{{ 'view.title'|trans }}</h1>
+  <h1 class="page-title">{{ view.name }}</h1>
 
   {% set data = {
     'name': view.name,

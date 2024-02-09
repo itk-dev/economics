@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Add team report
+* Add workers to views
 * Add view filtering to management reports
 * Add csv export to management reports
 * Added view delete protection

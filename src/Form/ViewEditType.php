@@ -33,7 +33,7 @@ class ViewEditType extends AbstractType
                 'mapped' => false,
                 'multiple' => true,
                 'attr' => ['class' => 'form-element'],
-                'label' => 'view.users',
+                'label' => 'view.workers',
                 'required' => false,
             ]);
     }
