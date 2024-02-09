@@ -7,6 +7,7 @@ use App\Entity\View;
 use App\Enum\RolesEnum;
 use App\Exception\EconomicsException;
 use App\Repository\ViewRepository;
+use App\Repository\WorklogRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -17,6 +18,7 @@ class ViewService
         private readonly RequestStack $requestStack,
         private readonly ViewRepository $viewRepository,
         private readonly Security $security,
+        private readonly WorklogRepository $worklogRepository
     ) {
     }
 
@@ -86,5 +88,16 @@ class ViewService
         }
 
         return null;
+    }
+
+    public function getWorklogUsers(): array
+    {
+        $workers = [];
+        $worklogs = $this->worklogRepository->findAll();
+        foreach ($worklogs as $worklog) {
+            $workers[$worklog->getWorker()] = $worklog->getWorker();
+        }
+
+        return $workers;
     }
 }
