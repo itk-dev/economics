@@ -7,6 +7,7 @@ use App\Entity\Project;
 use App\Entity\Worklog;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -90,5 +91,28 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->execute();
+    }
+
+    public function getTeamReportData(\DateTime $from, \DateTime $to, $view): Query
+    {
+        $parameters = [
+            'date_from' => $from->format('Y-m-d H:i:s'),
+            'date_to' => $to->format('Y-m-d H:i:s'),
+        ];
+
+        $qb = $this->createQueryBuilder('wor');
+        $qb
+            ->where($qb->expr()->between('wor.started', ':date_from', ':date_to'));
+
+        /*
+        $projectIds = $this->getProjectIdsFromViewId($view);
+        if (!empty($projectIds)) {
+            $qb->andWhere('inv.project IN (:projectIds)');
+            $parameters['projectIds'] = $projectIds;
+        }
+        */
+        $qb->setParameters($parameters);
+
+        return $qb->getQuery();
     }
 }
