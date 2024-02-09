@@ -40,6 +40,7 @@ security:
         - { path: ^/admin/client/, roles: ROLE_ADMIN }
         - { path: ^/admin/account/, roles: ROLE_ADMIN }
         - { path: ^/admin/users/, roles: ROLE_ADMIN }
+        - { path: ^/admin/view/, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_USER }
 
     role_hierarchy:
