@@ -7,6 +7,7 @@ import { Controller } from "@hotwired/stimulus";
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
     // Set active class in main menu on load.
+
     /* eslint-disable-next-line class-methods-use-this */
     connect() {
         // Find active menu item.
