@@ -10,7 +10,7 @@
         <div>
             {{ form_row(form.name) }}
             <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">
-                {% if invoice.client and invoice.client.projectLeadName and invoice.client.projectLeadMail %}
+                {% if invoice.client and invoice.project.projectLeadName and invoice.project.projectLeadMail %}
                     <button type="button" class="link" style="font-size: .8em; float: right" {{ stimulus_action('generate-description', 'generate') }}>{{ 'invoices.generate_description'|trans }}</button>
                 {% endif %}
                 {{ form_row(form.description) }}
@@ -40,7 +40,7 @@
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.client_information'|trans }}</li>
                 {% if invoice.client != null %}
                     <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
-                    <li class="list-group-item border-bottom">{{ 'invoices.client_project_lead'|trans }}: {{ invoice.client.projectLeadName }} ({{ invoice.client.projectLeadMail }})</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_project_lead'|trans }}: {{ invoice.project.projectLeadName }} ({{ invoice.project.projectLeadMail }})</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_customer_key'|trans }}: {{ invoice.client.customerKey }}</li>
