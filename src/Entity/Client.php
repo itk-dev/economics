@@ -8,11 +8,15 @@ use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
+#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
 class Client extends AbstractBaseEntity
 {
     use DataProviderTrait;
+    use SoftDeleteableEntity;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -43,12 +47,6 @@ class Client extends AbstractBaseEntity
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerKey = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $projectLeadName = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $projectLeadMail = null;
 
     public function __construct()
     {
@@ -204,30 +202,6 @@ class Client extends AbstractBaseEntity
     public function setCustomerKey(?string $customerKey): self
     {
         $this->customerKey = $customerKey;
-
-        return $this;
-    }
-
-    public function getProjectLeadName(): ?string
-    {
-        return $this->projectLeadName;
-    }
-
-    public function setProjectLeadName(?string $projectLeadName): static
-    {
-        $this->projectLeadName = $projectLeadName;
-
-        return $this;
-    }
-
-    public function getProjectLeadMail(): ?string
-    {
-        return $this->projectLeadMail;
-    }
-
-    public function setProjectLeadMail(?string $projectLeadMail): static
-    {
-        $this->projectLeadMail = $projectLeadMail;
 
         return $this;
     }

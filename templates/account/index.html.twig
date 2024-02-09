@@ -8,8 +8,6 @@
 
     <h1 class="page-title">{{ 'account.title'|trans }}</h1>
 
-    {% set numberOfColumns = 6 %}
-
     {{ form_start(form) }}
         <div class="form-default">
             {{ form_row(form.name) }}
@@ -19,7 +17,7 @@
         </div>
     {{ form_end(form) }}
 
-    {# TODO: Add pagination, sorting and filters #}
+    {% set numberOfColumns = 6 %}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
@@ -27,9 +25,7 @@
             <th class="table-th {% if accounts.isSorted('accounts.id') %} sorted{% endif %}">{{ knp_pagination_sortable(accounts, 'accounts.id'|trans, 'account.id') }}</th>
             <th class="table-th {% if accounts.isSorted('accounts.name') %} sorted{% endif %}">{{ knp_pagination_sortable(accounts, 'accounts.name'|trans, 'account.name') }}</th>
             <th class="table-th {% if accounts.isSorted('accounts.value') %} sorted{% endif %}">{{ knp_pagination_sortable(accounts, 'accounts.value'|trans, 'account.value') }}</th>
-            <th class="table-th {% if accounts.isSorted('accounts.status') %} sorted{% endif %}">{{ knp_pagination_sortable(accounts, 'accounts.status'|trans, 'account.status') }}</th>
             <th class="table-th">{{ 'accounts.data_provider'|trans }}</th>
-            <th class="table-th {% if accounts.isSorted('accounts.category') %} sorted{% endif %}">{{ knp_pagination_sortable(accounts, 'accounts.category'|trans, 'account.category') }}</th>
             <th class="table-th">{{ 'accounts.actions'|trans }}</th>
         </tr>
         </thead>
@@ -39,9 +35,7 @@
                 <td class="table-td">{{ account.id }}</td>
                 <td class="table-td">{{ account.name }}</td>
                 <td class="table-td">{{ account.value }}</td>
-                <td class="table-td">{{ account.status }}</td>
                 <td class="table-td">{{ account.dataProvider }}</td>
-                <td class="table-td">{{ account.category }}</td>
                 <td class="table-td">
                     <a class="link" href="{{ path('app_account_edit', {'id': account.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'accounts.action_edit'|trans }}</a>
                 </td>

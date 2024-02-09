@@ -19,7 +19,7 @@
     {{ form_end(form) }}
 
     {% set recordedInvoices = invoiceFilterData.recorded %}
-    {% set numberOfColumns = recordedInvoices ? 9 : 7 %}
+    {% set numberOfColumns = recordedInvoices ? 10 : 8 %}
 
     <div {{ stimulus_controller('entry-select') }} data-submit-endpoint="{{ submitEndpoint }}">
         <form id="entry-form">
