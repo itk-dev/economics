@@ -327,6 +327,10 @@
         @apply dark:bg-gray-800 dark:text-white bg-gray-200 text-black;
     }
 
+    .navigation-item.current {
+        @apply  bg-black/[.20] dark:bg-gray-900;
+    }
+
     .planning-svg {
         width: 16px;
     }
@@ -389,12 +393,9 @@
         font-size: 10px;
         padding-right: 5px;
     }
-
+    
     .navigation-item.current {
         text-decoration: underline;
     }
 
-    .navigation-item.current {
-        background-color: rgb(15, 23, 42);
-    }
 }

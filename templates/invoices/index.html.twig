@@ -36,6 +36,7 @@
                     <th class="table-th{% if invoices.isSorted('invoice.id') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_id'|trans, 'invoice.id') }}</th>
                     <th class="table-th{% if invoices.isSorted('invoice.name') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_name'|trans, 'invoice.name') }}</th>
                     <th class="table-th">{{ 'invoices.list_project'|trans }}</th>
+                    <th class="table-th">{{ 'invoices.list_project_data_provider'|trans }}</th>
                     <th class="table-th{% if invoices.isSorted('invoice.createdBy') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_created_by'|trans, 'invoice.createdBy') }}</th>
                     <th class="table-th{% if invoices.isSorted('invoice.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_updated_at'|trans, 'invoice.updatedAt') }}</th>
                     <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
@@ -66,6 +67,7 @@
                         <td class="table-td">{{ invoice.id }}</td>
                         <td class="table-td">{{ invoice.name }}</td>
                         <td class="table-td">{{ invoice.project }}</td>
+                        <td class="table-td">{{ invoice.project.dataProvider }}</td>
                         <td class="table-td">{{ invoice.createdBy }}</td>
                         <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date : '' }}</td>
                         <td class="table-td">{{ invoice.totalPrice }}</td>
@@ -100,7 +102,7 @@
                             <button type="submit" class="button" data-action="entry-select#submitFormRedirectWithIds" data-entry-select-target="submitButton">{{ 'invoices.action_export_selected'|trans }}</button>
                         {% endif %}
                     </td>
-                    <td class="table-td" colspan="{{ numberOfColumns - 4 }}" class="text-right">
+                    <td class="table-td" colspan="{{ numberOfColumns - 3 }}" class="text-right">
                         {{ knp_pagination_render(invoices) }}
                     </td>
                 </tr>

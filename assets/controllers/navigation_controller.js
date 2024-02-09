@@ -8,7 +8,6 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   // Set active class in main menu on load.
   connect() {
-
     // Find active menu item.
     const currentPath = window.location.pathname;
     let menuItems = document.querySelectorAll('#main-menu .navigation-item');
