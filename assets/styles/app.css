@@ -393,7 +393,7 @@
         font-size: 10px;
         padding-right: 5px;
     }
-    
+
     .navigation-item.current {
         text-decoration: underline;
     }

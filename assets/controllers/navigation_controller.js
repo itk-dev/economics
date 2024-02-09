@@ -6,31 +6,33 @@ import { Controller } from "@hotwired/stimulus";
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-  // Set active class in main menu on load.
-  connect() {
-    // Find active menu item.
-    const currentPath = window.location.pathname;
-    let menuItems = document.querySelectorAll('#main-menu .navigation-item');
+    // Set active class in main menu on load.
+    /* eslint-disable-next-line class-methods-use-this */
+    connect() {
+        // Find active menu item.
+        const currentPath = window.location.pathname;
+        let menuItems = document.querySelectorAll('#main-menu .navigation-item');
 
-    menuItems.forEach(function (menuItem) {
-      if (menuItem.pathname === currentPath) {
-        menuItem.classList.add("current");
+        menuItems.forEach(function (menuItem) {
+            if (menuItem.pathname === currentPath) {
+                menuItem.classList.add("current");
 
-        const activeElementParent = menuItem.closest(".navigation-item-submenu");
-        const nextElement = menuItem.nextElementSibling;
+                const activeElementParent = menuItem.closest(".navigation-item-submenu");
+                const nextElement = menuItem.nextElementSibling;
 
-        if (activeElementParent) {
-          activeElementParent.classList.add("shown");
-        }
-        if (nextElement && nextElement.classList.contains("navigation-item-submenu")) {
-          nextElement.classList.add("shown");
-        }
-      }
-    });
+                if (activeElementParent) {
+                    activeElementParent.classList.add("shown");
+                }
+                if (nextElement && nextElement.classList.contains("navigation-item-submenu")) {
+                    nextElement.classList.add("shown");
+                }
+            }
+        });
   }
 
-  // Set active menu item if menu item has no pathname.
-  toggle(target) {
-    target.currentTarget.nextElementSibling.classList.toggle("shown");
-  }
+    // Set active menu item if menu item has no pathname.
+    /* eslint-disable-next-line class-methods-use-this */
+    toggle(target) {
+        target.currentTarget.nextElementSibling.classList.toggle("shown");
+    }
 }
