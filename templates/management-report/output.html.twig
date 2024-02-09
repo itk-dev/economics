@@ -46,12 +46,14 @@
                       {{ quarterTotal }}
                     </td>
                   {% endif %}
-
                 {% endfor %}
               </tr>
             {% endfor %}
           </tbody>
         </table>
+      </div>
+      <div>
+        <a class="btn-primary" href="{{ path('app_management_reports_output_export', currentQuery.management_report_date_interval) }}">{{ 'reports.management-export-xls'|trans }}</a>
       </div>
     </div>
 {% endblock %}

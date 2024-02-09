@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
+use App\Entity\Project;
 use App\Exception\EconomicsException;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Service\ViewService;
@@ -44,19 +45,30 @@ class InvoiceRepository extends ServiceEntityRepository
         }
     }
 
-    public function getByRecordedDateBetween(\DateTime $from, \DateTime $to): array
+    /**
+     * @throws \Doctrine\ORM\Exception\NotSupported
+     */
+    public function getByRecordedDateBetween(\DateTime $from, \DateTime $to, $view): array
     {
-        $qb = $this->createQueryBuilder('inv');
+        $parameters = [
+            'date_from' => $from->format('Y-m-d H:i:s'),
+            'date_to' => $to->format('Y-m-d H:i:s'),
+        ];
 
-        return $qb
+        $qb = $this->createQueryBuilder('inv');
+        $qb
             ->where('inv.recorded = true')
-            ->andWhere($qb->expr()->between('inv.recordedDate', ':date_from', ':date_to'))
-            ->setParameters([
-                'date_from' => $from->format('Y-m-d H:i:s'),
-                'date_to' => $to->format('Y-m-d H:i:s'),
-            ])
-            ->getQuery()
-            ->getResult();
+            ->andWhere($qb->expr()->between('inv.recordedDate', ':date_from', ':date_to'));
+
+        $projectIds = $this->getProjectIdsFromViewId($view);
+        if (!empty($projectIds)) {
+            $qb->andWhere('inv.project IN (:projectIds)');
+            $parameters['projectIds'] = $projectIds;
+        }
+
+        $qb->setParameters($parameters);
+
+        return $qb->getQuery()->getResult();
     }
 
     /**
@@ -88,5 +100,29 @@ class InvoiceRepository extends ServiceEntityRepository
             10,
             ['defaultSortFieldName' => $defaultSortField, 'defaultSortDirection' => 'desc']
         );
+    }
+
+    private function getProjectIdsFromViewId(string $viewId): array
+    {
+        $view = $this->viewService->getViewFromId($viewId);
+
+        if (empty($view)) {
+            return [];
+        }
+
+        $dataProviders = $view->getDataProviders();
+
+        $dataProviderIds = [];
+        foreach ($dataProviders as $dataProvider) {
+            $dataProviderIds[] = $dataProvider->getId();
+        }
+
+        $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['dataProvider' => $dataProviderIds]);
+        $projectIds = [];
+        foreach ($projects as $project) {
+            $projectIds[] = $project->getId();
+        }
+
+        return $projectIds;
     }
 }
