@@ -28,6 +28,9 @@
                 <td class="table-td">{{ view.createdAt|date('Y-m-d H:i:s') }}</td>
                 <td class="table-td">
                   {% if view.isProtected is empty or view.isProtected is same as false %}
+                    <a class="link" href="{{ path('app_view_edit', {'id': view.id}|merge(view is defined ? {view: view} : {})) }}">
+                      {{ 'view.list_edit'|trans }}
+                    </a>
                     <a class="link" href="{{ path('app_view_delete_confirm', {'id': view.id}|merge(view is defined ? {view: view} : {})) }}">
                       {{ 'view.list_delete'|trans }}
                     </a>

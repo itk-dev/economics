@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Added project lead/mail to project.
 * Removed usused fields from account and client.
+* Add team report
+* Add workers to views
 * Add view filtering to management reports
 * Add csv export to management reports
 * Added view delete protection

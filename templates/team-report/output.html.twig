@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% set from = dateInterval['dateFrom']|date('d. F Y') %}
+{% set to = dateInterval['dateTo']|date('d. F Y') %}
+
+{% block title %}{{ 'reports.team-title-output'|trans({'%from%': from, '%to%': to}) }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title text-xl">{{ 'reports.team-title-output'|trans({'%from%': from, '%to%': to}) }}</h1>
+  {{ dump() }}
+{% endblock %}

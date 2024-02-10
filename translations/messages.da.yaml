@@ -53,6 +53,7 @@ navigation:
     data: "Data"
     admin: "Admin"
     management_report: "Hent ledelsesrapport"
+    team_report: "Hent teamrapport"
 
 planning:
     title: "Planlægning"
@@ -474,9 +475,10 @@ project:
 reports:
     title: 'Rapporter'
     description: 'Generer rapporter baseret på data fra eConomics.'
-    fetch_sprint_report: 'Hent Sprintrapport'
+    fetch_sprint_report: 'Hent sprintrapport'
     management-title: 'Ny ledelsesrapport'
-    fetch_management_report: 'Hent Ledelsesrapport'
+    fetch_management_report: 'Hent ledelsesrapport'
+    fetch_team_report: 'Hent teamrapport'
     from: 'Fra'
     to: 'Til'
     management-title-output: 'Ledelsesrapport %from% - %to%'
@@ -488,6 +490,8 @@ reports:
     management-3rd-quarter: '3. Kvartal'
     management-4th-quarter: '4. Kvartal'
     management-export-xls: 'Eksportér til excel'
+    team-title: 'Ny teamrapport'
+    team-title-output: 'Ledelsesrapport %from% - %to%'
 
 view:
     list_title: 'Views'
@@ -505,11 +509,12 @@ view:
     description: 'Beskrivelse'
     data_providers: 'Installationer'
     projects: 'Projekter'
-    create_new_step_two: 'Opret nyt view'
-    create_new_step_three: 'Opret nyt view'
-    create_step2_description: 'Brug filtrene herunder til at tilpasse hvilke data der skal være tilgængelige'
+    workers: 'Brugere'
+    edit: 'Angiv filtre'
+    edit_description: 'Brug filtrene herunder til at tilpasse hvilke data der skal være tilgængelige'
     create_step3_description: 'Dit view'
     back_to_list: 'Tilbage til listen'
+    save: 'Gem view'
     action_next: 'Næste'
     action_create: 'Opret view'
     action_delete: 'Slet view'
@@ -518,6 +523,7 @@ view:
     display_description: 'Beskrivelse'
     display_installations: 'Installationer'
     display_projects: 'Projekter'
+    display_workers: 'Brugere'
     title: 'Views'
 
 exception:
@@ -598,4 +604,4 @@ roles:
     ROLE_INVOICE: 'Faktura'
     ROLE_PROJECT_BILLING: 'Projektfakturering'
     ROLE_PLANNING: 'Planlægning'
-    ROLE_SPRINT_REPORT: 'Sprintrapport'
+    ROLE_REPORT: 'Rapporter'
