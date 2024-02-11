@@ -251,7 +251,7 @@ class BillingService
             if ($invoice->isRecorded()) {
                 $internal = 'INTERN' === $invoice->getLockedType();
                 $customerKey = $invoice->getLockedCustomerKey();
-                $accountKey = $invoice->getLockedEan();
+                $ean = $invoice->getLockedEan();
                 $contactName = $invoice->getLockedContactName();
             } else {
                 // If the invoice has not been recorded yet.
@@ -263,7 +263,7 @@ class BillingService
 
                 $internal = ClientTypeEnum::INTERNAL === $client->getType();
                 $customerKey = $client->getCustomerKey();
-                $accountKey = $client->getEan() ?? '';
+                $ean = $client->getEan() ?? '';
                 $contactName = $client->getContact();
             }
 
@@ -310,8 +310,8 @@ class BillingService
                 $sheet->setCellValue([17, $row], str_pad($this->invoiceSupplierAccount, 10, '0', \STR_PAD_LEFT));
             }
             // 18. "EAN nr."
-            if (!$internal && 13 === \strlen($accountKey ?? '')) {
-                $sheet->setCellValue([18, $row], $accountKey);
+            if (!$internal && 13 === \strlen($ean ?? '')) {
+                $sheet->setCellValue([18, $row], $ean);
             }
 
             // External invoices.
