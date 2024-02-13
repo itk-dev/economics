@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Add team report export
+* Add open spout extension
+* Add choices to views
 * Add team report
 * Add workers to views
 * Add view filtering to management reports
