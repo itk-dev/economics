@@ -58,15 +58,8 @@ class ViewController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_view_edit')]
-    public function edit(Request $request, ViewRepository $viewRepository, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, View $view, EntityManagerInterface $entityManager): Response
     {
-        $viewId = $request->attributes->get('id');
-        $view = $viewRepository->find($viewId);
-
-        if (empty($view)) {
-            return $this->redirectToRoute('app_view_list', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
-        }
-
         $workersOutput = [];
         $workers = $view->getWorkers() ?? [];
 
@@ -96,7 +89,7 @@ class ViewController extends AbstractController
         }
 
         return $this->render('view/edit.html.twig', $this->viewService->addView([
-            'id' => $viewId,
+            'id' => $view->getId(),
             'form' => $form,
         ]));
     }
