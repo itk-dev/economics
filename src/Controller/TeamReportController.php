@@ -95,6 +95,7 @@ class TeamReportController extends AbstractController
         $response = new StreamedResponse(function () use ($teamReportService, $queryElements, $worklogRepository, $entityManager, $dateInterval) {
             $page = 1;
             $writer = $teamReportService->initWriter($queryElements['team_report_date_interval']);
+            // Handle file building in batches due to possible large datasets in worklog table.
             do {
                 $data = $worklogRepository->getTeamReportData(
                     new \DateTime($dateInterval['dateFrom']),
