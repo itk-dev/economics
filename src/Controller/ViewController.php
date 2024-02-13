@@ -36,7 +36,7 @@ class ViewController extends AbstractController
     }
 
     #[Route('/add', name: 'app_view_add')]
-    public function add(Request $request, ViewRepository $viewRepository): Response
+    public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $view = new View();
         $view->setProtected(false);
@@ -44,7 +44,8 @@ class ViewController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $viewRepository->save($view, true);
+            $entityManager->persist($view);
+            $entityManager->flush();
 
             return $this->redirectToRoute('app_view_edit', $this->viewService->addView([
                 'id' => $view->getId(),
@@ -57,7 +58,7 @@ class ViewController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_view_edit')]
-    public function edit(Request $request, ViewRepository $viewRepository): Response
+    public function edit(Request $request, ViewRepository $viewRepository, EntityManagerInterface $entityManager): Response
     {
         $viewId = $request->attributes->get('id');
         $view = $viewRepository->find($viewId);
@@ -79,10 +80,15 @@ class ViewController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $workersSelected = $form->get('workers')->getData();
-
             $view->setWorkers($workersSelected ?? []);
 
-            $viewRepository->save($view, true);
+            $dataProviders = $view->getDataProviders();
+            foreach ($dataProviders as $dataProvider) {
+                $view->addDataProvider($dataProvider);
+            }
+
+            $entityManager->persist($view);
+            $entityManager->flush();
 
             return $this->redirectToRoute('app_view_display', $this->viewService->addView([
                 'id' => $view->getId(),
@@ -119,7 +125,7 @@ class ViewController extends AbstractController
     public function display(Request $request, View $view): Response
     {
         return $this->render('view/display.html.twig', $this->viewService->addView([
-            'view' => $view,
+            'viewEntity' => $view,
         ]));
     }
 
