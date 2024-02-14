@@ -4,9 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Issue;
 use App\Entity\Project;
-use App\Entity\ProjectBilling;
-use App\Entity\Version;
-use App\Service\ProjectBillingService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

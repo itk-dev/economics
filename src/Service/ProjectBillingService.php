@@ -34,13 +34,28 @@ class ProjectBillingService
     ) {
     }
 
+    /**
+     * @throws EconomicsException
+     * @throws \Exception
+     */
     public function getIssuesNotIncludedInProjectBilling(ProjectBilling $projectBilling): array
     {
-        $from = new \DateTime($projectBilling->getPeriodStart()->format('Y-m-d').' 00:00:00');
-        $to = new \DateTime($projectBilling->getPeriodEnd()->format('Y-m-d').' 23:59:59');
+        $project = $projectBilling->getProject();
+        $periodStart = $projectBilling->getPeriodStart();
+        $periodEnd = $projectBilling->getPeriodEnd();
 
-        $issues = $this->issueRepository->getClosedIssuesFromInterval($projectBilling->getProject(), $from, $to);
+        if (null == $project) {
+            throw new EconomicsException($this->translator->trans('exception.project_billing_no_project_selected'));
+        }
 
+        if (null == $periodStart || null == $periodEnd) {
+            throw new EconomicsException($this->translator->trans('exception.project_billing_period_cannot_be_null'));
+        }
+
+        $from = new \DateTime($periodStart->format('Y-m-d').' 00:00:00');
+        $to = new \DateTime($periodEnd->format('Y-m-d').' 23:59:59');
+
+        $issues = $this->issueRepository->getClosedIssuesFromInterval($project, $from, $to);
 
         $includedProducts = [];
 
@@ -129,12 +144,13 @@ class ProjectBillingService
             $foundProjectBillingVersions = [];
 
             foreach ($issue->getVersions() as $version) {
-                if (str_starts_with($version->getName(), self::PROJECT_BILLING_VERSION_PREFIX)) {
+                $name = $issue->getName();
+                if (null !== $name && str_starts_with($name, self::PROJECT_BILLING_VERSION_PREFIX)) {
                     $foundProjectBillingVersions[] = $version;
                 }
             }
 
-            if (count($foundProjectBillingVersions) !== 1) {
+            if (1 !== count($foundProjectBillingVersions)) {
                 continue;
             }
 
@@ -143,23 +159,23 @@ class ProjectBillingService
             // Find the client.
             $client = $this->clientRepository->findOneBy(['versionName' => $foundVersion->getName()]);
 
-            if ($client === null) {
+            if (null === $client) {
                 continue;
             }
 
             $clientId = $client->getId();
 
-            if (!isset($invoices[$clientId])) {
-                $invoices[$clientId] = [
-                    'client' => $client,
-                    'issues' => [],
-                ];
+            if (null !== $clientId) {
+                if (!isset($invoices[$clientId])) {
+                    $invoices[$clientId] = [
+                        'client' => $client,
+                        'issues' => [],
+                    ];
+                }
+
+                $invoices[$clientId]['issues'][] = $issue;
             }
-
-            $invoices[$clientId]['issues'][] = $issue;
         }
-
-        $p = 1;
 
         foreach ($invoices as $invoiceArray) {
             /** @var Client $client */

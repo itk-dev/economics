@@ -112,15 +112,17 @@ class ClientType extends AbstractType
         $result = [];
 
         foreach ($versions as $version) {
+            $name = $version->getName();
+
             // Only include versions that start with project billing prefix.
-            if (str_starts_with($version->getName(), ProjectBillingService::PROJECT_BILLING_VERSION_PREFIX)) {
+            if (null !== $name && str_starts_with($name, ProjectBillingService::PROJECT_BILLING_VERSION_PREFIX)) {
                 // A version name should only be assigned to one client to ensure a unique project billing mapping.
                 $alreadyAssigned = $this->clientRepository->findBy(['versionName' => $version->getName()]);
                 if (count($alreadyAssigned) > 0) {
                     continue;
                 }
 
-                $result[$version->getName()] = $version->getName();
+                $result[$name] = $name;
             }
         }
 
