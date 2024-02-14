@@ -498,7 +498,17 @@ reports:
     management-4th-quarter: '4. Kvartal'
     management-export-xls: 'Eksportér til excel'
     team-title: 'Ny teamrapport'
-    team-title-output: 'Ledelsesrapport %from% - %to%'
+    team-title-output: 'Teamrapport %from% - %to%'
+    team-description: 'Hent worklogs på tværs af projekter og teams'
+    team-export-xls: 'Eksportér til excel'
+    team-result: 'Viser: %items_per_page% af %items_total% elementer'
+    team_project_name: 'Projektnavn'
+    team_user: 'Bruger / medarbejder'
+    team_issue_id: 'Issue id'
+    team_date: 'Registreringsdato'
+    team_time_spent: 'Timeforbrug'
+    team_description: 'Beskrivelse'
+    team_no_records_found: 'Ingen resultater'
 
 view:
     list_title: 'Views'

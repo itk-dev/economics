@@ -28,7 +28,11 @@ class ViewAddType extends AbstractType
                 'class' => DataProvider::class,
                 'choice_label' => 'name',
                 'multiple' => true,
-                'attr' => ['class' => 'form-element'],
+                'row_attr' => ['class' => 'form-row form-choices'],
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-choices-target' => 'choices',
+                ],
                 'label' => 'view.data_providers',
             ]);
     }
