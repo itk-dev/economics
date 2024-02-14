@@ -4,7 +4,11 @@ namespace App\Form;
 
 use App\Entity\Client;
 use App\Enum\ClientTypeEnum;
+use App\Repository\ClientRepository;
+use App\Repository\VersionRepository;
+use App\Service\ProjectBillingService;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -13,6 +17,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ClientType extends AbstractType
 {
+    public function __construct(private readonly VersionRepository $versionRepository, private readonly ClientRepository $clientRepository)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -84,7 +92,39 @@ class ClientType extends AbstractType
                 'help' => 'create_client_form.client_ean.help',
                 'row_attr' => ['class' => 'form-row'],
                 'required' => false,
+            ])
+            ->add('versionName', ChoiceType::class, [
+                'label' => 'create_client_form.version_id.label',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element ', 'data-choices-target' => 'choices'],
+                'help_attr' => ['class' => 'form-help'],
+                'help' => 'create_client_form.version_id.help',
+                'row_attr' => ['class' => 'form-row form-choices'],
+                'required' => false,
+                'choices' => $this->getVersionOptions(),
             ]);
+    }
+
+    private function getVersionOptions(): array
+    {
+        $versions = $this->versionRepository->findAll();
+
+        $result = [];
+
+        foreach ($versions as $version) {
+            // Only include versions that start with project billing prefix.
+            if (str_starts_with($version->getName(), ProjectBillingService::PROJECT_BILLING_VERSION_PREFIX)) {
+                // A version name should only be assigned to one client to ensure a unique project billing mapping.
+                $alreadyAssigned = $this->clientRepository->findBy(['versionName' => $version->getName()]);
+                if (count($alreadyAssigned) > 0) {
+                    continue;
+                }
+
+                $result[$version->getName()] = $version->getName();
+            }
+        }
+
+        return $result;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

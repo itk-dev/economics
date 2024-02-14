@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Changed to using client->versionName to issue->version mapping for project billing.
 * Added project lead/mail to project.
 * Removed usused fields from account and client.
 * Add team report

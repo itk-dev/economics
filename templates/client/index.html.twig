@@ -32,6 +32,7 @@
             <th class="table-th {% if clients.isSorted('client.psp') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.psp'|trans, 'client.psp') }}</th>
             <th class="table-th {% if clients.isSorted('client.ean') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.ean'|trans, 'client.ean') }}</th>
             <th class="table-th {% if clients.isSorted('client.customerKey') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.customer_key'|trans, 'client.customerKey') }}</th>
+            <th class="table-th {% if clients.isSorted('client.versionName') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.version_name'|trans, 'client.versionName') }}</th>
             <th class="table-th">{{ 'clients.actions'|trans }}</th>
         </tr>
         </thead>
@@ -51,6 +52,7 @@
                 <td class="table-td">{{ client.psp }}</td>
                 <td class="table-td">{{ client.ean }}</td>
                 <td class="table-td">{{ client.customerKey }}</td>
+                <td class="table-td">{{ client.versionName }}</td>
                 <td class="table-td">
                     <a class="link" href="{{ path('app_client_edit', {'id': client.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'clients.action_edit'|trans }}</a>
                 </td>

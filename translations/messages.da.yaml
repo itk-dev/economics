@@ -127,6 +127,9 @@ create_client_form:
     customer_key:
         label: "Ordregiver/Bestiller"
         help: ""
+    version_id:
+        label: "VersionID"
+        help: "Hvis dette passer med en version på en opgave i projektfakturering, vil kunden automatisk blive udfyldt."
 
 account:
     title: "Konti"
@@ -157,7 +160,7 @@ invoices:
     list_created_by: "Opretter"
     list_updated_at: "Dato"
     list_total_price: "Beløb"
-    list_project_data_provider: "Data provider"
+    list_project_data_provider: "Datakilde"
     list_actions: "Handlinger"
     list_no_records_found: "Ingen fundet"
     action_create_new: "Opret ny faktura"
@@ -305,7 +308,7 @@ accounts:
     category: "Kategori"
     action_create_new: "Opret ny konto"
     action_edit: "Redigér"
-    data_provider: "Data provider"
+    data_provider: "Datakilde"
 
 worklog:
     title: "Tilføj worklogs til fakturalinje"
@@ -384,7 +387,7 @@ project_billing:
     list_project: "Projekt"
     list_created_by: "Opretter"
     list_updated_at: "Dato"
-    list_project_data_provider: "Data provider"
+    list_project_data_provider: "Datakilde"
     list_actions: "Handlinger"
     action_edit: "Redigér"
     list_no_records_found: "Ingen fundet"
@@ -426,12 +429,16 @@ project_billing:
     export_title: "Eksport"
     recorded: "Ja"
     list_recorded: "Bogført"
-    issues_not_included: "Opgaver der ikke er inkluderet fordi de mangler konto"
-    issues_not_included_helptext: "Sæt konto på opgaven for få den med i projektfaktureringen. Synkronisér derefter projektet i \"Projekter\", og tryk derefter \"Gem\" på denne projektfaktureringen for at få opgaverne med."
+    issues_not_included: "Opgaver der ikke er inkluderet"
+    issues_not_included_helptext: "En opgave er ikke inkluderet, hvis der ikke er timer registreret på den, eller hvis den ikke har en version sat, som er koblet på en kunde.
+        Sæt version/milestone (skal starte med PB-) på opgaven for få den med i projektfaktureringen.
+        Synkronisér derefter projektet i \"Projekter\", og tryk derefter \"Gem\" på denne projektfaktureringen for at få opgaverne med."
     issue:
         name: "navn"
         status: "status"
         key: "nøgle"
+        versions: 'Version'
+        worklog_time_spent: 'Timer'
     search: "Søg"
     form_recorded: "Bogført"
     form_created_by: "Opretter"
@@ -460,7 +467,7 @@ project:
     form_key: "Nøgle"
     form_include: "Inkluderet"
     information: "Kun inkluderede projekter bliver vist og synkroniseret i resten af system."
-    data_provider_id: "Data Provider"
+    data_provider_id: "Datakilde"
     edit: 'Redigér projekt'
     back_to_list: 'Tilbage til listen'
     action_save: 'Gem projekt'
@@ -579,7 +586,8 @@ clients:
     actions: "Handlinger"
     action_edit: "Redigér"
     list_no_records_found: "Ingen kunder"
-    data_provider: "Data provider"
+    data_provider: "Datakilde"
+    version_name: 'Version'
 
 delete:
     confirm: "Er du sikker på at du vil slette dette?"

@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Entity\Account;
+use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
@@ -13,7 +13,6 @@ use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\MaterialNumberEnum;
 use App\Exception\EconomicsException;
 use App\Exception\InvoiceAlreadyOnRecordException;
-use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
@@ -22,8 +21,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProjectBillingService
 {
+    public const PROJECT_BILLING_VERSION_PREFIX = 'PB-';
+
     public function __construct(
-        private readonly AccountRepository $accountRepository,
         private readonly ProjectBillingRepository $projectBillingRepository,
         private readonly BillingService $billingService,
         private readonly IssueRepository $issueRepository,
@@ -32,6 +32,35 @@ class ProjectBillingService
         private readonly TranslatorInterface $translator,
         private readonly string $invoiceDefaultReceiverAccount,
     ) {
+    }
+
+    public function getIssuesNotIncludedInProjectBilling(ProjectBilling $projectBilling): array
+    {
+        $from = new \DateTime($projectBilling->getPeriodStart()->format('Y-m-d').' 00:00:00');
+        $to = new \DateTime($projectBilling->getPeriodEnd()->format('Y-m-d').' 23:59:59');
+
+        $issues = $this->issueRepository->getClosedIssuesFromInterval($projectBilling->getProject(), $from, $to);
+
+
+        $includedProducts = [];
+
+        foreach ($projectBilling->getInvoices() as $invoice) {
+            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+                $includedProducts[] = $invoiceEntry->getProduct();
+            }
+        }
+
+        $filteredIssues = [];
+
+        foreach ($issues as $issue) {
+            $product = $this->getInvoiceEntryProduct($issue);
+
+            if (!in_array($product, $includedProducts)) {
+                $filteredIssues[] = $issue;
+            }
+        }
+
+        return $filteredIssues;
     }
 
     /**
@@ -85,11 +114,11 @@ class ProjectBillingService
         }
 
         // Find issues in interval
-        // Group by account
-        // Foreach Account
-        // Create invoice
-        //   Create an InvoiceEntry in the invoice
-        //   Connect worklogs from the database to the invoice entry.
+        // Group by client
+        // Foreach client
+        //   Create invoice
+        //     Create an InvoiceEntry in the invoice
+        //     Connect worklogs from the database to the invoice entry.
         $issues = $this->issueRepository->getClosedIssuesFromInterval($project, $periodStart, $periodEnd);
 
         // TODO: Replace with Model.
@@ -97,49 +126,53 @@ class ProjectBillingService
 
         /** @var Issue $issue */
         foreach ($issues as $issue) {
-            if (null !== $issue->getAccountId()) {
-                $accountId = $issue->getAccountId();
+            $foundProjectBillingVersions = [];
 
-                if (!is_null($accountId)) {
-                    if (!isset($invoices[$accountId])) {
-                        $account = $this->accountRepository->findOneBy(['projectTrackerId' => $issue->getAccountId()]);
-
-                        if (null == $account) {
-                            continue;
-                        }
-
-                        $invoices[$accountId] = [
-                            'account' => $account,
-                            'issues' => [],
-                        ];
-                    }
-
-                    $invoices[$accountId]['issues'][] = $issue;
+            foreach ($issue->getVersions() as $version) {
+                if (str_starts_with($version->getName(), self::PROJECT_BILLING_VERSION_PREFIX)) {
+                    $foundProjectBillingVersions[] = $version;
                 }
             }
+
+            if (count($foundProjectBillingVersions) !== 1) {
+                continue;
+            }
+
+            $foundVersion = $foundProjectBillingVersions[0];
+
+            // Find the client.
+            $client = $this->clientRepository->findOneBy(['versionName' => $foundVersion->getName()]);
+
+            if ($client === null) {
+                continue;
+            }
+
+            $clientId = $client->getId();
+
+            if (!isset($invoices[$clientId])) {
+                $invoices[$clientId] = [
+                    'client' => $client,
+                    'issues' => [],
+                ];
+            }
+
+            $invoices[$clientId]['issues'][] = $issue;
         }
 
+        $p = 1;
+
         foreach ($invoices as $invoiceArray) {
-            /** @var Account $account */
-            $account = $invoiceArray['account'];
+            /** @var Client $client */
+            $client = $invoiceArray['client'];
 
             $invoice = new Invoice();
             $invoice->setRecorded(false);
             $invoice->setProject($projectBilling->getProject());
             $invoice->setProjectBilling($projectBilling);
             $invoice->setDescription($projectBilling->getDescription());
-            $invoice->setName($project->getName().': '.$account->getName().' ('.$periodStart->format('d/m/Y').' - '.$periodEnd->format('d/m/Y').')');
+            $invoice->setName($project->getName().': '.$client->getName().' ('.$periodStart->format('d/m/Y').' - '.$periodEnd->format('d/m/Y').')');
             $invoice->setPeriodFrom($periodStart);
             $invoice->setPeriodTo($periodEnd);
-
-            // Find client.
-            $client = $this->clientRepository->findOneBy(['name' => $account->getName(), 'account' => $account->getValue()]);
-
-            // Ignore invoices where there is not client.
-            if (null == $client) {
-                continue;
-            }
-
             $invoice->setClient($client);
 
             $internal = ClientTypeEnum::INTERNAL == $client->getType();
@@ -154,7 +187,7 @@ class ProjectBillingService
                 $invoiceEntry->setEntryType(InvoiceEntryTypeEnum::WORKLOG);
                 $invoiceEntry->setDescription('');
 
-                $product = $issue->getProjectTrackerKey().':'.preg_replace('/\(DEVSUPP-\d+\)/i', '', $issue->getName() ?? '');
+                $product = $this->getInvoiceEntryProduct($issue);
                 $price = $client->getStandardPrice();
 
                 $invoiceEntry->setProduct($product);
@@ -219,5 +252,10 @@ class ProjectBillingService
 
         $projectBilling->setRecorded(true);
         $this->projectBillingRepository->save($projectBilling, true);
+    }
+
+    public function getInvoiceEntryProduct(Issue $issue): string
+    {
+        return $issue->getProjectTrackerKey().':'.preg_replace('/\(DEVSUPP-\d+\)/i', '', $issue->getName() ?? '');
     }
 }

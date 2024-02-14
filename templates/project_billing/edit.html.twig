@@ -69,13 +69,19 @@
     {% if issuesWithoutAccounts is not empty %}
         <h2 class="subheading">{{ 'project_billing.issues_not_included'|trans }}</h2>
 
-        <div class="help-text mt-2 mb-5">{{ 'project_billing.issues_not_included_helptext'|trans }}</div>
+        <div class="alert-info" role="alert">
+            <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"></path>
+            </svg> {{ 'project_billing.issues_not_included_helptext'|trans }}
+        </div>
 
         <table class="table margin-bottom">
             <thead class="table-thead">
             <tr>
                 <th class="table-th">{{ 'project_billing.issue.key'|trans }}</th>
                 <th class="table-th">{{ 'project_billing.issue.name'|trans }}</th>
+                <th class="table-th">{{ 'project_billing.issue.versions'|trans }}</th>
+                <th class="table-th">{{ 'project_billing.issue.worklog_time_spent'|trans }}</th>
                 <th class="table-th">{{ 'project_billing.issue.status'|trans }}</th>
             </tr>
             </thead>
@@ -84,6 +90,8 @@
                 <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                     <td class="table-td">{{ issue.projectTrackerKey }}</td>
                     <td class="table-td">{{ issue.name }}</td>
+                    <td class="table-td">{{ issue.versions|map(p => p.name)|join(', ') }}</td>
+                    <td class="table-td">{{ issue.worklogs|reduce((carry, v, k) => carry + v.timeSpentSeconds / 3600) }}</td>
                     <td class="table-td">{{ issue.status }}</td>
                 </tr>
             {% endfor %}

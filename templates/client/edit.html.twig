@@ -3,12 +3,14 @@
 {% block title %}{{ 'clients.edit'|trans}}{% endblock %}
 
 {% block content %}
-    <h1>{{ 'clients.edit'|trans}}</h1>
+    <h1 class="page-title">{{ 'clients.edit'|trans}}</h1>
 
     {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <div class="actions-right">
-        <button class="button mt-3">{{ 'clients.action_save'|trans }}</button>
+    <div {{ stimulus_controller('choices') }}>
+        {{ form_rest(form) }}
+        <div class="actions-right">
+            <button class="button mt-3">{{ 'clients.action_save'|trans }}</button>
+        </div>
     </div>
     {{ form_end(form) }}
 

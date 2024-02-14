@@ -48,6 +48,9 @@ class Client extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerKey = null;
 
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    private ?string $versionName = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -202,6 +205,18 @@ class Client extends AbstractBaseEntity
     public function setCustomerKey(?string $customerKey): self
     {
         $this->customerKey = $customerKey;
+
+        return $this;
+    }
+
+    public function getVersionName(): ?string
+    {
+        return $this->versionName;
+    }
+
+    public function setVersionName(?string $versionName): static
+    {
+        $this->versionName = $versionName;
 
         return $this;
     }
