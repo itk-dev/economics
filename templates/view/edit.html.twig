@@ -3,20 +3,24 @@
 {% block title %}{{ 'view.edit'|trans }}{% endblock %}
 
 {% block content %}
-  <h1 class="page-title">{{ 'view.edit'|trans }}</h1>
-  <div>
-    {{ 'view.edit_description'|trans }}
-  </div>
+    <h1 class="page-title">{{ 'view.edit'|trans }}</h1>
+    <div>
+        {{ 'view.edit_description'|trans }}
+    </div>
 
-  {{ form_start(form) }}
+    {{ form_start(form) }}
 
-  {{ form_row(form.projects) }}
-  {{ form_row(form.workers) }}
+    <div {{ stimulus_controller('choices') }}>
 
-  <button class="button">{{ 'view.save'|trans }}</button>
-  {{ form_end(form) }}
+        {{ form_row(form.projects) }}
+        {{ form_row(form.workers) }}
 
-  <div class="bottom-actions">
-    <a class="link" href="{{ path('app_view_add_abandon', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'view.back_to_list'|trans }}</a>
-  </div>
+        <button class="button">{{ 'view.save'|trans }}</button>
+    </div>
+
+    {{ form_end(form) }}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_view_add_abandon', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'view.back_to_list'|trans }}</a>
+    </div>
 {% endblock %}

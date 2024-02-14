@@ -50,21 +50,22 @@ class ManagementReportController extends AbstractController
     public function output(Request $request, InvoiceRepository $invoiceRepository): Response
     {
         $queryElements = $request->query->all();
+        $view = $queryElements['view'];
         $dateInterval = $queryElements['management_report_date_interval'] ?? null;
 
         if (empty($dateInterval['dateFrom']) || empty($dateInterval['dateTo'])) {
             return $this->redirectToRoute('app_management_reports_create', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
         }
 
-        $invoices = $this->getInvoicesDataFromDates($dateInterval, $invoiceRepository);
+        $invoices = $this->getInvoicesDataFromDates($dateInterval, $invoiceRepository, $view);
 
         return $this->render(
             'management-report/output.html.twig',
             [
                 'groupedInvoices' => $this->createGroupedInvoices($invoices),
                 'dateInterval' => $dateInterval,
-                'view' => $dateInterval['view'],
-                'currentQuery' => $request->query->all(),
+                'view' => $queryElements['view'],
+                'currentQuery' => $queryElements,
             ]
         );
     }
@@ -77,14 +78,16 @@ class ManagementReportController extends AbstractController
     public function export(Request $request, ManagementReportService $managementReportService, InvoiceRepository $invoiceRepository): Response
     {
         $queryElements = $request->query->all();
+        $view = $queryElements['view'];
+        $dateInterval = $queryElements['management_report_date_interval'] ?? null;
 
-        if (empty($queryElements['dateFrom']) || empty($queryElements['dateTo'])) {
+        if (empty($dateInterval['dateFrom']) || empty($dateInterval['dateTo'])) {
             return $this->redirectToRoute('app_management_reports_create', [], Response::HTTP_SEE_OTHER);
         }
 
-        $invoices = $this->getInvoicesDataFromDates($queryElements, $invoiceRepository);
+        $invoices = $this->getInvoicesDataFromDates($dateInterval, $invoiceRepository, $view);
 
-        return $managementReportService->generateSpreadsheetCsvResponse($this->createGroupedInvoices($invoices), $queryElements);
+        return $managementReportService->generateSpreadsheetCsvResponse($this->createGroupedInvoices($invoices), $dateInterval);
     }
 
     private function createGroupedInvoices(array $invoices): array
@@ -125,12 +128,12 @@ class ManagementReportController extends AbstractController
      * @throws \Doctrine\ORM\Exception\NotSupported
      * @throws \Exception
      */
-    private function getInvoicesDataFromDates($dateInterval, InvoiceRepository $invoiceRepository): array
+    private function getInvoicesDataFromDates($dateInterval, InvoiceRepository $invoiceRepository, ?string $viewId): array
     {
         return $invoiceRepository->getByRecordedDateBetween(
             new \DateTime($dateInterval['dateFrom']),
             new \DateTime($dateInterval['dateTo'].' 23:59:59'),
-            $dateInterval['view']
+            $viewId
         );
     }
 }

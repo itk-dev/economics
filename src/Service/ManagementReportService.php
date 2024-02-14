@@ -46,9 +46,9 @@ class ManagementReportService
         $writer = new Xlsx($spreadsheet);
 
         $response = new StreamedResponse();
-        $filename = 'management-report--'.$dateInterval['dateFrom'].'-'.$dateInterval['dateTo'].'.csv';
+        $filename = 'management-report--'.$dateInterval['dateFrom'].'-'.$dateInterval['dateTo'].'.xlsx  ';
 
-        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Type', 'application/vnd.ms-excel');
         $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
         $response->headers->set('Cache-Control', 'max-age=0');
         $response->headers->addCacheControlDirective('no-cache', true);
