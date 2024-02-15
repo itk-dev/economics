@@ -57,21 +57,15 @@ class ProjectBillingService
 
         $issues = $this->issueRepository->getClosedIssuesFromInterval($project, $from, $to);
 
-        $includedProducts = [];
-
-        foreach ($projectBilling->getInvoices() as $invoice) {
-            foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
-                $includedProducts[] = $invoiceEntry->getProduct();
-            }
-        }
-
         $filteredIssues = [];
 
+        /** @var Issue $issue */
         foreach ($issues as $issue) {
-            $product = $this->getInvoiceEntryProduct($issue);
-
-            if (!in_array($product, $includedProducts)) {
-                $filteredIssues[] = $issue;
+            foreach ($issue->getWorklogs() as $worklog) {
+                if (!$worklog->isBilled() && $worklog->getTimeSpentSeconds() > 0 && $worklog->getInvoiceEntry() === null) {
+                    $filteredIssues[] = $issue;
+                    break;
+                }
             }
         }
 
@@ -215,7 +209,7 @@ class ProjectBillingService
 
                 /** @var Worklog $worklog */
                 foreach ($worklogs as $worklog) {
-                    if (!$worklog->isBilled()) {
+                    if (!$worklog->isBilled() && $worklog->getInvoiceEntry() === null) {
                         $invoiceEntry->addWorklog($worklog);
                     }
                 }
