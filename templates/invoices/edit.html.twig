@@ -82,11 +82,7 @@
                         <a type="button" href="{{ path('app_invoices_export', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}" class="button">{{ 'invoices.action_export'|trans }}</a>
                     {% endif %}
                 {% else %}
-                    <div class="alert-info" role="alert">
-                        <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"></path>
-                        </svg> {{ 'invoices.export_only_available_when_mandatory_fields_are_set'|trans }}
-                    </div>
+                    {% include 'components/alert.html.twig' with {level: 'info', text: 'invoices.export_only_available_when_mandatory_fields_are_set'|trans} %}
                 {% endif %}
             </div>
         </div>
@@ -147,11 +143,7 @@
                         <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
                         <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
                     {% else %}
-                        <div class="alert-info" role="alert">
-                            <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"></path>
-                            </svg> {{ 'invoices.required_fields_not_set_for_creating_entries'|trans }}
-                        </div>
+                        {% include 'components/alert.html.twig' with {level: 'info', text: 'invoices.required_fields_not_set_for_creating_entries'|trans} %}
                     {% endif %}
                 </td>
             </tr>

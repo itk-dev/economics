@@ -430,9 +430,7 @@ project_billing:
     recorded: "Ja"
     list_recorded: "Bogført"
     issues_not_included: "Opgaver der ikke er inkluderet"
-    issues_not_included_helptext: "En opgave er ikke inkluderet, hvis der ikke er timer registreret på den, eller hvis den ikke har en version sat, som er koblet på en kunde."
-    issues_not_included_helptext2: "Sæt version/milestone (skal starte med PB-) på opgaven for at få den med i projektfaktureringen."
-    issues_not_included_helptext3: "Synkronisér derefter projektet i \"Projekter\", og tryk derefter \"Gem\" på denne projektfaktureringen for at få opgaverne med."
+    issues_not_included_helptext: "En opgave er ikke inkluderet, hvis der ikke er timer registreret på den, eller hvis den ikke har en version sat, som er koblet på en kunde. Sæt version/milestone (skal starte med PB-) på opgaven for at få den med i projektfaktureringen. Synkronisér derefter projektet i \"Projekter\", og tryk derefter \"Gem\" på denne projektfaktureringen for at få opgaverne med."
     issue:
         name: "navn"
         status: "status"

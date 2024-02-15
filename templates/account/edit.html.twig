@@ -6,10 +6,10 @@
     <h1 class="page-title">{{ 'accounts.edit'|trans}}</h1>
 
     {{ form_start(form) }}
-        <div class="grid-split-2 selections" {{ stimulus_controller('choices') }}>
-            {{ form_widget(form) }}
-        </div>
+    <div>
+        {{ form_rest(form) }}
         <button class="button mt-3">{{ 'accounts.action_save'|trans }}</button>
+    </div>
     {{ form_end(form) }}
 
     <div class="bottom-actions">
