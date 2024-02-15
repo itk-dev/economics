@@ -64,14 +64,12 @@
             </tr>
         {% endfor %}
         <tr class="table-tr">
-            <td class="table-td" colspan="{{ numberOfColumns }}">
+            <td class="table-td" colspan="2">
                 <a class="link" href="{{ path('app_client_new', {}|merge(view is defined ? {view: view} : {})) }}">
                     {{ 'clients.action_create_new'|trans }}
                 </a>
             </td>
-        </tr>
-        <tr class="table-tr">
-            <td class="table-td" colspan="{{ numberOfColumns }}" class="text-right">
+            <td class="table-td" colspan="{{ numberOfColumns - 2 }}">
                 {{ knp_pagination_render(clients) }}
             </td>
         </tr>

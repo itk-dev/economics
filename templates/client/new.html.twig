@@ -6,10 +6,10 @@
     <h1 class="page-title">{{ 'client.new'|trans }}</h1>
 
     {{ form_start(form) }}
-    <div {{ stimulus_controller('choices') }}>
-        {{ form_rest(form) }}
+        <div class="grid-split-2 selections" {{ stimulus_controller('choices') }}>
+            {{ form_rest(form) }}
+        </div>
         <button class="button">{{ 'client.action_create'|trans }}</button>
-    </div>
     {{ form_end(form) }}
 
     <div class="bottom-actions">

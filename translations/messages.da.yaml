@@ -581,7 +581,7 @@ error:
 clients:
     action_delete_account: "Slet kunde"
     edit: "Redigér kunde"
-    action_save: "Redigér"
+    action_save: "Gem"
     action_create_new: "Opret ny kunde"
     id: "#"
     name: "Navn"

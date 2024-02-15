@@ -62,7 +62,7 @@ class ProjectBillingService
         /** @var Issue $issue */
         foreach ($issues as $issue) {
             foreach ($issue->getWorklogs() as $worklog) {
-                if (!$worklog->isBilled() && $worklog->getTimeSpentSeconds() > 0 && $worklog->getInvoiceEntry() === null) {
+                if (!$worklog->isBilled() && $worklog->getTimeSpentSeconds() > 0 && null === $worklog->getInvoiceEntry()) {
                     $filteredIssues[] = $issue;
                     break;
                 }
@@ -209,7 +209,7 @@ class ProjectBillingService
 
                 /** @var Worklog $worklog */
                 foreach ($worklogs as $worklog) {
-                    if (!$worklog->isBilled() && $worklog->getInvoiceEntry() === null) {
+                    if (!$worklog->isBilled() && null === $worklog->getInvoiceEntry()) {
                         $invoiceEntry->addWorklog($worklog);
                     }
                 }
