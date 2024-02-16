@@ -109,12 +109,6 @@ class ProjectBillingService
             throw new EconomicsException($this->translator->trans('exception.project_billing_no_project_selected'));
         }
 
-        $projectTrackerId = $project->getProjectTrackerId();
-
-        if (null == $projectTrackerId) {
-            throw new EconomicsException($this->translator->trans('exception.project_billing_no_project_project_tracker_id'));
-        }
-
         $periodStart = $projectBilling->getPeriodStart();
         $periodEnd = $projectBilling->getPeriodEnd();
 
@@ -138,7 +132,7 @@ class ProjectBillingService
             $foundProjectBillingVersions = [];
 
             foreach ($issue->getVersions() as $version) {
-                $name = $issue->getName();
+                $name = $version->getName();
                 if (null !== $name && str_starts_with($name, self::PROJECT_BILLING_VERSION_PREFIX)) {
                     $foundProjectBillingVersions[] = $version;
                 }
