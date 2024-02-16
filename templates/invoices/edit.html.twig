@@ -10,7 +10,7 @@
         <div>
             {{ form_row(form.name) }}
             <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">
-                {% if invoice.client and invoice.project.projectLeadName and invoice.project.projectLeadMail %}
+                {% if invoice.project.projectLeadName and invoice.project.projectLeadMail %}
                     <button type="button" class="link" style="font-size: .8em; float: right" {{ stimulus_action('generate-description', 'generate') }}>{{ 'invoices.generate_description'|trans }}</button>
                 {% endif %}
                 {{ form_row(form.description) }}
@@ -34,7 +34,7 @@
                 <li class="list-group-item border-bottom">{{ 'invoices.id'|trans }}: {{ invoice.id }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.created_by'|trans }}: {{ invoice.createdBy }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.project'|trans }}: {{ invoice.project }} ({{ invoice.project.projectTrackerId }})</li>
-                <li class="list-group-item">{{ 'invoices.status'|trans }}: {{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.status'|trans }}: {{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</li>
             </ul>
             <ul class="list-group margin-bottom">
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.client_information'|trans }}</li>
@@ -54,13 +54,13 @@
                         {% endif %}
                     </li>
                     {% if invoice.client.psp is defined and invoice.client.psp is not null %}
-                        <li class="list-group-item">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
+                        <li class="list-group-item border-bottom">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
                     {% endif %}
                     {% if invoice.client.ean is defined and invoice.client.ean is not null %}
-                        <li class="list-group-item">{{ 'invoices.client_ean'|trans }}: {{ invoice.client.ean }}</li>
+                        <li class="list-group-item border-bottom">{{ 'invoices.client_ean'|trans }}: {{ invoice.client.ean }}</li>
                     {% endif %}
                 {% else %}
-                    <li class="list-group-item">{{ 'invoices.no_client'|trans }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.no_client'|trans }}</li>
                 {% endif %}
             </ul>
             {% if invoice.recorded %}
@@ -69,7 +69,7 @@
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_type'|trans }}: {{ invoice.lockedType }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_account_key'|trans }}: {{ invoice.lockedAccountKey }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_contact_name'|trans }}: {{ invoice.lockedContactName }}</li>
-                <li class="list-group-item">{{ 'invoices.locked_customer_key'|trans }}: {{ invoice.lockedCustomerKey }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.locked_customer_key'|trans }}: {{ invoice.lockedCustomerKey }}</li>
             </ul>
             {% endif %}
             <div class="actions-right">

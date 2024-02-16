@@ -215,7 +215,7 @@ invoices:
     period_from_helptext: "Dette felt skal udfyldes på eksterne fakturaer."
     period_to_helptext: "Dette felt skal udfyldes på eksterne fakturaer."
     name_helptext: "Vælg faktuens navn."
-    description_helptext: "Indsættes i tekstfeltet i fakturaen. Autoudfyld er tilgængelig, hvis der er valgt en kundekonto med en project lead."
+    description_helptext: "Indsættes i tekstfeltet i fakturaen. Autoudfyld er tilgængelig, hvis der er valgt et projekt med en project lead."
     project_helptext: "Vælg projekt."
     client_helptext: "Vælg hvilken kunde fakturaen skal udstedes til."
     payer_account_helptext: "Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: \"Betales af [KONTO]\"."
