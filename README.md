@@ -142,6 +142,19 @@ docker compose exec phpfpm composer prepare-code
 docker compose exec node npm run check-coding-standards
 ```
 
+### Testing
+
+The test setup follows the guidelines from: https://symfony.com/doc/current/testing.html.
+
+To run tests:
+
+```shell
+docker compose exec phpfpm composer tests
+```
+
+DoctrineFixtures are load each time phpunit is run.
+Between each test the initial state of the database is restored using DAMADoctrineTestBundle.
+
 ## Production
 
 ### Deploy
