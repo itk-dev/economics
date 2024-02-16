@@ -260,4 +260,4 @@ jobs:
             -   name: PHP Unit
                 env:
                     PORT: ${{ job.services.mariadb.ports[3306] }}
-                run: DATABASE_URL="mysql://db:db@127.0.0.1:$PORT/db_test" composer tests
+                run: DATABASE_URL="mysql://db:db@127.0.0.1:$PORT/db_test" composer run tests
