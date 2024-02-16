@@ -234,7 +234,7 @@ class BillingService
      *
      * @throws EconomicsException
      */
-    private function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet
+    public function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();

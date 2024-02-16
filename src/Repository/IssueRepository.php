@@ -58,7 +58,8 @@ class IssueRepository extends ServiceEntityRepository
         $to = new \DateTime($periodEnd->format('Y-m-d').' 23:59:59');
 
         $qb = $this->createQueryBuilder('issue');
-        $qb->andWhere($qb->expr()->eq('issue.project', $project->getId()));
+        $qb->andWhere($qb->expr()->eq('issue.project', ':project'));
+        $qb->setParameter('project', $project);
         $qb->andWhere('issue.resolutionDate >= :periodStart');
         $qb->andWhere('issue.resolutionDate <= :periodEnd');
         $qb->setParameter('periodStart', $from);
