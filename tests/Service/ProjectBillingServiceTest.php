@@ -33,12 +33,12 @@ class ProjectBillingServiceTest extends KernelTestCase
         $project = $projectRepository->findOneBy([], ['id' => 'asc']);
 
         $projectBilling = new ProjectBilling();
-        $projectBilling->setPeriodStart((new \DateTime())->sub(new \DateInterval("P1D")));
-        $projectBilling->setPeriodEnd((new \DateTime())->add(new \DateInterval("P1D")));
-        $projectBilling->setName("Project Billing 1");
+        $projectBilling->setPeriodStart((new \DateTime())->sub(new \DateInterval('P1D')));
+        $projectBilling->setPeriodEnd((new \DateTime())->add(new \DateInterval('P1D')));
+        $projectBilling->setName('Project Billing 1');
         $projectBilling->setProject($project);
         $projectBilling->setRecorded(false);
-        $projectBilling->setDescription("Project billing");
+        $projectBilling->setDescription('Project billing');
 
         $issues = $container->get(IssueRepository::class)->getClosedIssuesFromInterval($projectBilling->getProject(), $projectBilling->getPeriodStart(), $projectBilling->getPeriodEnd());
         $this->assertCount(10, $issues);
@@ -54,7 +54,7 @@ class ProjectBillingServiceTest extends KernelTestCase
 
         $this->assertCount(4, $issues);
 
-        $ids = $projectBilling->getInvoices()->map(fn($invoice) => $invoice->getId())->toArray();
+        $ids = $projectBilling->getInvoices()->map(fn ($invoice) => $invoice->getId())->toArray();
 
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
 
