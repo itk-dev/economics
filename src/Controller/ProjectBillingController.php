@@ -13,7 +13,6 @@ use App\Message\UpdateProjectBillingMessage;
 use App\Model\Invoices\ConfirmData;
 use App\Model\Invoices\ProjectBillingFilterData;
 use App\Repository\InvoiceRepository;
-use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\BillingService;
 use App\Service\ProjectBillingService;
@@ -87,7 +86,7 @@ class ProjectBillingController extends AbstractController
      */
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
     #[IsGranted('EDIT', 'projectBilling')]
-    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, IssueRepository $issueRepository): Response
+    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
     {
         $options = [];
         if ($projectBilling->isRecorded()) {
@@ -97,7 +96,7 @@ class ProjectBillingController extends AbstractController
         $form = $this->createForm(ProjectBillingType::class, $projectBilling, $options);
         $form->handleRequest($request);
 
-        $issuesWithoutAccounts = $issueRepository->getIssuesNotIncludedInProjectBilling($projectBilling);
+        $issuesWithoutAccounts = $projectBillingService->getIssuesNotIncludedInProjectBilling($projectBilling);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($projectBilling->isRecorded()) {

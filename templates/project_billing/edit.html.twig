@@ -69,13 +69,15 @@
     {% if issuesWithoutAccounts is not empty %}
         <h2 class="subheading">{{ 'project_billing.issues_not_included'|trans }}</h2>
 
-        <div class="help-text mt-2 mb-5">{{ 'project_billing.issues_not_included_helptext'|trans }}</div>
+        {% include 'components/alert.html.twig' with {level: 'info', text: 'project_billing.issues_not_included_helptext'|trans} %}
 
         <table class="table margin-bottom">
             <thead class="table-thead">
             <tr>
                 <th class="table-th">{{ 'project_billing.issue.key'|trans }}</th>
                 <th class="table-th">{{ 'project_billing.issue.name'|trans }}</th>
+                <th class="table-th">{{ 'project_billing.issue.versions'|trans }}</th>
+                <th class="table-th">{{ 'project_billing.issue.worklog_time_spent'|trans }}</th>
                 <th class="table-th">{{ 'project_billing.issue.status'|trans }}</th>
             </tr>
             </thead>
@@ -84,6 +86,8 @@
                 <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                     <td class="table-td">{{ issue.projectTrackerKey }}</td>
                     <td class="table-td">{{ issue.name }}</td>
+                    <td class="table-td">{{ issue.versions|map(p => p.name)|join(', ') }}</td>
+                    <td class="table-td">{{ issue.worklogs|reduce((carry, v, k) => carry + v.timeSpentSeconds / 3600) }}</td>
                     <td class="table-td">{{ issue.status }}</td>
                 </tr>
             {% endfor %}

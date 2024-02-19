@@ -95,10 +95,9 @@ class BillingService
         // Lock client values.
         // The locked type is handled this way to be backwards compatible with Jira Economics.
         $invoice->setLockedType(ClientTypeEnum::INTERNAL == $client->getType() ? 'INTERN' : 'EKSTERN');
-        $invoice->setLockedSalesChannel($client->getSalesChannel());
         $invoice->setLockedCustomerKey($client->getCustomerKey());
         $invoice->setLockedContactName($client->getContact());
-        $invoice->setLockedAccountKey($client->getAccount());
+        $invoice->setLockedEan($client->getEan() ?? '');
 
         $invoice->setRecorded(true);
         $invoice->setRecordedDate(new \DateTime());
@@ -131,10 +130,6 @@ class BillingService
         if (is_null($client)) {
             $errors[] = $this->translator->trans('invoice_recordable.error_no_client');
         } else {
-            if (!$client->getAccount()) {
-                $errors[] = $this->translator->trans('invoice_recordable.error_no_account');
-            }
-
             if (!$client->getContact()) {
                 $errors[] = $this->translator->trans('invoice_recordable.error_no_contact');
             }
@@ -239,7 +234,7 @@ class BillingService
      *
      * @throws EconomicsException
      */
-    private function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet
+    public function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -256,8 +251,7 @@ class BillingService
             if ($invoice->isRecorded()) {
                 $internal = 'INTERN' === $invoice->getLockedType();
                 $customerKey = $invoice->getLockedCustomerKey();
-                $accountKey = $invoice->getLockedAccountKey();
-                $salesChannel = $invoice->getLockedSalesChannel();
+                $ean = $invoice->getLockedEan();
                 $contactName = $invoice->getLockedContactName();
             } else {
                 // If the invoice has not been recorded yet.
@@ -269,8 +263,7 @@ class BillingService
 
                 $internal = ClientTypeEnum::INTERNAL === $client->getType();
                 $customerKey = $client->getCustomerKey();
-                $accountKey = $client->getAccount();
-                $salesChannel = $client->getSalesChannel();
+                $ean = $client->getEan() ?? '';
                 $contactName = $client->getContact();
             }
 
@@ -302,7 +295,7 @@ class BillingService
             // 6. "Salgsorganisation"
             $sheet->setCellValue([6, $row], '0020');
             // 7. "Salgskanal"
-            $sheet->setCellValue([7, $row], $salesChannel);
+            $sheet->setCellValue([7, $row], $internal ? 10 : 20);
             // 8. "Division"
             $sheet->setCellValue([8, $row], '20');
             // 9. "Ordreart"
@@ -317,8 +310,8 @@ class BillingService
                 $sheet->setCellValue([17, $row], str_pad($this->invoiceSupplierAccount, 10, '0', \STR_PAD_LEFT));
             }
             // 18. "EAN nr."
-            if (!$internal && 13 === \strlen($accountKey ?? '')) {
-                $sheet->setCellValue([18, $row], $accountKey);
+            if (!$internal && 13 === \strlen($ean ?? '')) {
+                $sheet->setCellValue([18, $row], $ean);
             }
 
             // External invoices.

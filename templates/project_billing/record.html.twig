@@ -6,45 +6,47 @@
     <h1 class="page-title">{{ 'project_billing.confirm_record_title'|trans }}</h1>
 
     {% if projectBilling.recorded %}
-        <div class="alert-danger" role="alert">
-            <div>{{ 'project_billing.already_recorded'|trans }}</div>
-        </div>
+        {% include 'components/alert.html.twig' with {level: 'danger', text: 'project_billing.already_recorded'|trans} %}
     {% else %}
         {% if invoiceErrors|length > 0 %}
-            <div class="alert-danger" role="alert">
-                <h3 class="subheading">{{ 'project_billing.existing_errors_before_on_record'|trans }}</h3>
-                <table class="table">
-                    <thead class="table-thead">
-                    <th class="table-th">
-                        {{ 'project_billing.on_record_errors_invoice_id'|trans }}
-                    </th>
-                    <th class="table-th">
-                        {{ 'project_billing.on_record_errors_invoice_link'|trans }}
-                    </th>
-                    <th class="table-th">
-                        {{ 'project_billing.on_record_errors_error'|trans }}
-                    </th>
-                    </thead>
-                    <tbody>
-                    {% for key, invoiceError in invoiceErrors %}
-                        {% set invoiceUrl = absolute_url(path('app_invoices_edit', {'id': key}|merge(view is defined ? {view: view} : {}) )) %}
-                        {% for error in invoiceError %}
-                            <tr class="table-tr">
-                                <td class="table-td"><strong>{{ key }}</strong></td>
-                                <td class="table-td"><a href="{{ invoiceUrl }}">{{ invoiceUrl }}</a></td>
-                                <td class="table-td">{{ error }}</td>
-                            </tr>
+            {% embed 'components/alert.html.twig' with {level: 'danger'} %}
+                {% block alert %}
+                    <h3 class="subheading">{{ 'project_billing.existing_errors_before_on_record'|trans }}</h3>
+                    <table class="table">
+                        <thead class="table-thead">
+                        <th class="table-th">
+                            {{ 'project_billing.on_record_errors_invoice_id'|trans }}
+                        </th>
+                        <th class="table-th">
+                            {{ 'project_billing.on_record_errors_invoice_link'|trans }}
+                        </th>
+                        <th class="table-th">
+                            {{ 'project_billing.on_record_errors_error'|trans }}
+                        </th>
+                        </thead>
+                        <tbody>
+                        {% for key, invoiceError in invoiceErrors %}
+                            {% set invoiceUrl = absolute_url(path('app_invoices_edit', {'id': key}|merge(view is defined ? {view: view} : {}) )) %}
+                            {% for error in invoiceError %}
+                                <tr class="table-tr">
+                                    <td class="table-td"><strong>{{ key }}</strong></td>
+                                    <td class="table-td"><a href="{{ invoiceUrl }}">{{ invoiceUrl }}</a></td>
+                                    <td class="table-td">{{ error }}</td>
+                                </tr>
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                        </tbody>
+                    </table>
+                {% endblock %}
+            {% endembed %}
         {% else %}
-            <div class="alert-warning" role="alert">
-                <div class="mb-5">{{ 'project_billing.confirm_record_are_you_sure'|trans({ '%projectBillingName%': projectBilling.name }) }}</div>
-                <div class="mb-5">{{ 'project_billing.all_worklogs_will_be_marked_as_billed'|trans }}</div>
-                <div>{{ 'project_billing.confirm_record_cannot_be_undone'|trans }}</div>
-            </div>
+            {% embed 'components/alert.html.twig' with {level: 'warning'} %}
+                {% block alert %}
+                    <div class="mb-5">{{ 'project_billing.confirm_record_are_you_sure'|trans({ '%projectBillingName%': projectBilling.name }) }}</div>
+                    <div class="mb-5">{{ 'project_billing.all_worklogs_will_be_marked_as_billed'|trans }}</div>
+                    <div>{{ 'project_billing.confirm_record_cannot_be_undone'|trans }}</div>
+                {% endblock %}
+            {% endembed %}
 
             {{ form_start(form) }}
             {{ form_rest(form) }}

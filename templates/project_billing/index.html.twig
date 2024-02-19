@@ -16,6 +16,8 @@
     </div>
     {{ form_end(form) }}
 
+    {% set numberOfColumns = 8 %}
+
     <table class="table margin-bottom">
         <thead class="table-thead">
         <tr>
@@ -46,12 +48,12 @@
         {% endfor %}
         {% if projectBillings is empty %}
             <tr class="table-tr">
-                <td class="table-td" colspan="7">{{ 'project_billing.list_no_records_found'|trans }}</td>
+                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'project_billing.list_no_records_found'|trans }}</td>
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="2"><a class="link" href="{{ path('app_project_billing_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_create_new'|trans }}</a>
-            <td class="table-td" colspan="6" class="text-right">
+            <td class="table-td" colspan="{{ numberOfColumns - 6 }}"><a class="link" href="{{ path('app_project_billing_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_create_new'|trans }}</a>
+            <td class="table-td" colspan="{{ numberOfColumns - 2 }}" class="text-right">
                 {{ knp_pagination_render(projectBillings) }}
             </td>
         </tr>

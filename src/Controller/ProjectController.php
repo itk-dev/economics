@@ -6,6 +6,7 @@ use App\Entity\Project;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Form\ProjectFilterType;
+use App\Form\ProjectType;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\ProjectRepository;
 use App\Service\DataSynchronizationService;
@@ -35,6 +36,23 @@ class ProjectController extends AbstractController
 
         return $this->render('project/index.html.twig', $this->viewService->addView([
             'projects' => $pagination,
+            'form' => $form,
+        ]));
+    }
+
+    #[Route('/{id}/edit', name: 'app_project_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    {
+        $form = $this->createForm(ProjectType::class, $project);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $projectRepository->save($project, true);
+        }
+
+        return $this->render('project/edit.html.twig', $this->viewService->addView([
+            'project' => $project,
             'form' => $form,
         ]));
     }

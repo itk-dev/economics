@@ -19,7 +19,7 @@
     {{ form_end(form) }}
 
     {% set recordedInvoices = invoiceFilterData.recorded %}
-    {% set numberOfColumns = recordedInvoices ? 9 : 7 %}
+    {% set numberOfColumns = recordedInvoices ? 10 : 8 %}
 
     <div {{ stimulus_controller('entry-select') }} data-submit-endpoint="{{ submitEndpoint }}">
         <form id="entry-form">
@@ -102,7 +102,7 @@
                             <button type="submit" class="button" data-action="entry-select#submitFormRedirectWithIds" data-entry-select-target="submitButton">{{ 'invoices.action_export_selected'|trans }}</button>
                         {% endif %}
                     </td>
-                    <td class="table-td" colspan="{{ numberOfColumns - 3 }}" class="text-right">
+                    <td class="table-td" colspan="{{ numberOfColumns - 3 }}">
                         {{ knp_pagination_render(invoices) }}
                     </td>
                 </tr>

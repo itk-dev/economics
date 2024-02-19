@@ -9,9 +9,7 @@
     <h3 class="subheading">{{ 'invoices.invoice_entry_type_heading'|trans({'%type%': invoice_entry.entryType.value}) }}</h3>
 
     {% if invoice_entry.entryType.value == 'worklog' %}
-        <div class="alert-warning" role="alert">
-            <div>{{ 'invoice_entry.new_worklog_information'|trans }}</div>
-        </div>
+        {% include 'components/alert.html.twig' with {level: 'warning', text: 'invoice_entry.new_worklog_information'|trans} %}
     {% endif %}
 
     {{ form_start(form) }}
