@@ -1,5 +1,5 @@
 <aside {{ stimulus_controller('navigation') }} class="w-full sm:w-1/3 md:w-1/4 px-2">
-    <div class="sticky top-0 p-4 w-full">
+    <div id="main-menu" class="sticky top-0 p-4 w-full">
         <a href="{{ path('index', {}|merge(view is defined ? {view: view} : {})) }}" class="flex items-center mb-5">
             <img src="{{ asset('img/itk-economics.png') }}" class="h-6 ml-3 sm:h-9" alt="{{ 'navigation.title'|trans }}" />
         </a>
@@ -11,14 +11,26 @@
             {% include 'components/navigation-item.html.twig' with {icon: 'invoice', title: 'navigation.invoices'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% include 'components/navigation-item.html.twig' with {icon: 'project-billing', title: 'navigation.project_billing'|trans, role: 'ROLE_PROJECT_BILLING', route: path('app_project_billing_index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% include 'components/navigation-item.html.twig' with {icon: 'planning', title: 'navigation.planning'|trans, role: 'ROLE_PLANNING', route: path('app_planning', {}|merge(view is defined ? {view: view} : {}))} %}
-            {% include 'components/navigation-item.html.twig' with {icon: 'sprint-report', title: 'navigation.sprint_report'|trans, role: 'ROLE_SPRINT_REPORT', route: path('app_sprint_report', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% if is_granted('ROLE_REPORT') %}
+            <li>
+                <a class="navigation-item collapsible" href="{{ path('app_reports_index', {}|merge(view is defined ? {view: view} : {})) }}">
+                  {% include 'components/icons.html.twig' with {icon: 'report', class: "w-6 h-6"} %}
+                  <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.reporting'|trans }}</span>
+                </a>
+                <ul class="navigation-item-submenu">
+                  {% include 'components/navigation-item.html.twig' with {title: 'navigation.sprint_report'|trans, role: 'ROLE_REPORT', route: path('app_sprint_report', {}|merge(view is defined ? {view: view} : {}))} %}
+                  {% include 'components/navigation-item.html.twig' with {title: 'navigation.management_report'|trans, role: 'ROLE_REPORT', route: path('app_management_reports_create', {}|merge(view is defined ? {view: view} : {}))} %}
+                  {% include 'components/navigation-item.html.twig' with {title: 'navigation.team_report'|trans, role: 'ROLE_REPORT', route: path('app_team_reports_create', {}|merge(view is defined ? {view: view} : {}))} %}
+                </ul>
+            </li>
+            {% endif %}
             {% if is_granted('ROLE_ADMIN') %}
                 <li>
                     <a class="navigation-item collapsible" {{ stimulus_action('navigation', 'toggle') }}>
                         {% include 'components/icons.html.twig' with {icon: 'collapse', class: "w-6 h-6"} %}
                         <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.admin'|trans }}</span>
                     </a>
-                    <ul class="navigation-item-submenu">
+                      <ul class="navigation-item-submenu">
                         {% include 'components/navigation-item.html.twig' with {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_ADMIN', route: path('app_project_index', {}|merge(view is defined ? {view: view} : {}))} %}
                         {% include 'components/navigation-item.html.twig' with {icon: 'client', title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index', {}|merge(view is defined ? {view: view} : {}))} %}
                         {% include 'components/navigation-item.html.twig' with {icon: 'account', title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index', {}|merge(view is defined ? {view: view} : {}))} %}

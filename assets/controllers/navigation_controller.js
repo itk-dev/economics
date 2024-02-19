@@ -6,36 +6,32 @@ import { Controller } from "@hotwired/stimulus";
  */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
+    // Set active class in main menu on load.
+
     /* eslint-disable-next-line class-methods-use-this */
     connect() {
-        // Find active menupoint
+        // Find active menu item.
         const currentPath = window.location.pathname;
-        const pathPattern = /\/admin\/([^\/]+)\//;
+        let menuItems = document.querySelectorAll('#main-menu .navigation-item');
 
-        const pathMatch = currentPath.match(pathPattern);
-        let activeNavigationElement;
+        menuItems.forEach(function (menuItem) {
+            if (menuItem.pathname === currentPath) {
+                menuItem.classList.add("current");
 
+                const activeElementParent = menuItem.closest(".navigation-item-submenu");
+                const nextElement = menuItem.nextElementSibling;
 
-        if (pathMatch) {
-            activeNavigationElement = document.querySelector(
-                `a.navigation-item[href="${pathMatch[0]}"]`,
-            );
-        } else {
-            activeNavigationElement =
-                document.querySelector('a.navigation-item[href*="/admin/"]');
-        }
-        activeNavigationElement.classList.add("current");
+                if (activeElementParent) {
+                    activeElementParent.classList.add("shown");
+                }
+                if (nextElement && nextElement.classList.contains("navigation-item-submenu")) {
+                    nextElement.classList.add("shown");
+                }
+            }
+        });
+  }
 
-        const activeElementParent = activeNavigationElement.closest(
-            ".navigation-item-submenu",
-        );
-
-        // Expand collapsible if active menu point is child
-        if (activeElementParent) {
-            activeElementParent.classList.add("shown");
-        }
-    }
-
+    // Set active menu item if menu item has no pathname.
     /* eslint-disable-next-line class-methods-use-this */
     toggle(target) {
         target.currentTarget.nextElementSibling.classList.toggle("shown");

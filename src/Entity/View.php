@@ -30,6 +30,9 @@ class View extends AbstractBaseEntity implements ProtectedInterface
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'views')]
     private Collection $users;
 
+    #[ORM\Column(type: Types::SIMPLE_ARRAY, nullable: true)]
+    private ?array $workers = null;
+
     public function __construct()
     {
         $this->dataProviders = new ArrayCollection();
@@ -202,6 +205,18 @@ class View extends AbstractBaseEntity implements ProtectedInterface
         if ($this->users->removeElement($user)) {
             $user->removeView($this);
         }
+
+        return $this;
+    }
+
+    public function getWorkers(): ?array
+    {
+        return $this->workers;
+    }
+
+    public function setWorkers(array $workers): static
+    {
+        $this->workers = $workers;
 
         return $this;
     }

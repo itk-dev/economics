@@ -4,46 +4,25 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\View;
-use App\Form\ViewAddStepOneType;
-use App\Form\ViewAddStepThreeType;
-use App\Form\ViewAddStepTwoType;
+use App\Form\ViewAddType;
+use App\Form\ViewEditType;
 use App\Form\ViewSelectType;
 use App\Repository\ViewRepository;
 use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/view')]
 class ViewController extends AbstractController
 {
-    private const VIEW_CREATE_SESSION_KEY = self::class;
-    private const CREATE_FORM_LAST_STEP = 3;
-    private const STEPS = [
-        1 => [
-            'class' => ViewAddStepOneType::class,
-            'template' => 'view/addStepOne.html.twig',
-        ],
-        2 => [
-            'class' => ViewAddStepTwoType::class,
-            'template' => 'view/addStepTwo.html.twig',
-        ],
-        3 => [
-            'class' => ViewAddStepThreeType::class,
-            'template' => 'view/addStepThree.html.twig',
-        ],
-    ];
-
     public function __construct(
         private readonly RequestStack $requestStack,
-        private readonly ViewRepository $viewRepository,
         private readonly ViewService $viewService,
     ) {
     }
@@ -57,71 +36,61 @@ class ViewController extends AbstractController
     }
 
     #[Route('/add', name: 'app_view_add')]
-    public function add(Request $request, ViewRepository $viewRepository): Response
+    public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Create session for multistep form.
-        try {
-            $session = $request->getSession();
-        } catch (SessionNotFoundException $e) {
-            $session = new Session();
-            $session->start();
-        }
-
-        $data = $session->get(self::VIEW_CREATE_SESSION_KEY);
-
-        // Initialize multistep form.
-        if (empty($data)) {
-            $data = $this->createFormInit();
-            $session->set(self::VIEW_CREATE_SESSION_KEY, $data);
-        } else {
-            // Re-initialize form if it's older than 10 minutes.
-            $created = clone $data['created'];
-            $created->modify('+10 minutes');
-            if ($created < new \DateTime()) {
-                $data = $this->createFormInit();
-                $session->set(self::VIEW_CREATE_SESSION_KEY, []);
-            }
-        }
-
-        $form = $this->createForm(self::STEPS[$data['current_step']]['class'], $data['view']);
+        $view = new View();
+        $view->setProtected(false);
+        $form = $this->createForm(ViewAddType::class, $view);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            // If submitting on last step we save the data.
-            if (self::CREATE_FORM_LAST_STEP === $data['current_step']) {
-                if ($form->isValid()) {
-                    $session->set(self::VIEW_CREATE_SESSION_KEY, []);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($view);
+            $entityManager->flush();
 
-                    $viewRepository->save($data['view'], true);
-
-                    return $this->redirectToRoute('app_view_list', $this->viewService->addView([
-                        'id' => $data['view']->getId(),
-                    ]), Response::HTTP_SEE_OTHER);
-                }
-            } else {
-                ++$data['current_step'];
-                $session->set(self::VIEW_CREATE_SESSION_KEY, $data);
-
-                return $this->redirectToRoute('app_view_add', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
-            }
+            return $this->redirectToRoute('app_view_edit', $this->viewService->addView([
+                'id' => $view->getId(),
+            ]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render(self::STEPS[$data['current_step']]['template'], $this->viewService->addView([
+        return $this->render('view/add.html.twig', $this->viewService->addView([
             'form' => $form,
         ]));
     }
 
     #[Route('/{id}/edit', name: 'app_view_edit')]
-    public function edit(Request $request): Response
+    public function edit(Request $request, View $view, EntityManagerInterface $entityManager): Response
     {
-        return $this->redirectToRoute('app_view_list', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
-    }
+        $workersOutput = [];
+        $workers = $view->getWorkers() ?? [];
 
-    #[Route('/{id}/delete/confirm', name: 'app_view_delete_confirm')]
-    public function deleteConfirm(Request $request, View $view): Response
-    {
-        return $this->render('view/viewDelete.html.twig', $this->viewService->addView([
-            'view' => $view,
+        foreach ($workers as $worker) {
+            $workersOutput[$worker] = $worker;
+        }
+
+        $form = $this->createForm(ViewEditType::class, $view);
+        $form->get('workers')->setData($workersOutput);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $workersSelected = $form->get('workers')->getData();
+            $view->setWorkers($workersSelected ?? []);
+
+            $dataProviders = $view->getDataProviders();
+            foreach ($dataProviders as $dataProvider) {
+                $view->addDataProvider($dataProvider);
+            }
+
+            $entityManager->persist($view);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_view_display', $this->viewService->addView([
+                'id' => $view->getId(),
+            ]), Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('view/edit.html.twig', $this->viewService->addView([
+            'id' => $view->getId(),
+            'form' => $form,
         ]));
     }
 
@@ -137,11 +106,19 @@ class ViewController extends AbstractController
         return $this->redirectToRoute('app_view_list', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
     }
 
+    #[Route('/{id}/delete/confirm', name: 'app_view_delete_confirm')]
+    public function deleteConfirm(Request $request, View $view): Response
+    {
+        return $this->render('view/viewDelete.html.twig', $this->viewService->addView([
+            'view' => $view,
+        ]));
+    }
+
     #[Route('/{id}/display', name: 'app_view_display')]
     public function display(Request $request, View $view): Response
     {
         return $this->render('view/display.html.twig', $this->viewService->addView([
-            'view' => $view,
+            'viewEntity' => $view,
         ]));
     }
 
@@ -182,7 +159,7 @@ class ViewController extends AbstractController
     /**
      * Called from twig: templates/components/navigation.html.twig.
      */
-    public function getCurrentView()
+    public function getCurrentView(): mixed
     {
         return $this->requestStack->getMainRequest()?->query->get('view') ?? null;
     }
@@ -190,24 +167,6 @@ class ViewController extends AbstractController
     #[Route('/abandon-view-add', name: 'app_view_add_abandon')]
     public function abandonViewAdd(Request $request): RedirectResponse
     {
-        try {
-            $session = $this->requestStack->getSession();
-        } catch (SessionNotFoundException $e) {
-            $session = new Session();
-            $session->start();
-        }
-
-        $session->set(self::VIEW_CREATE_SESSION_KEY, []);
-
         return $this->redirectToRoute('app_view_list', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
-    }
-
-    private function createFormInit(): array
-    {
-        return [
-            'view' => new View(),
-            'current_step' => 1,
-            'created' => new \DateTime(),
-        ];
     }
 }

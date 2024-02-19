@@ -8,11 +8,15 @@ use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
+#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
 class Client extends AbstractBaseEntity
 {
     use DataProviderTrait;
+    use SoftDeleteableEntity;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -25,9 +29,6 @@ class Client extends AbstractBaseEntity
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?ClientTypeEnum $type = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $account = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $psp = null;
@@ -45,16 +46,10 @@ class Client extends AbstractBaseEntity
     private ?string $projectTrackerId = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $salesChannel = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerKey = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $projectLeadName = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $projectLeadMail = null;
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    private ?string $versionName = null;
 
     public function __construct()
     {
@@ -94,18 +89,6 @@ class Client extends AbstractBaseEntity
     public function setStandardPrice(?float $standardPrice): self
     {
         $this->standardPrice = $standardPrice;
-
-        return $this;
-    }
-
-    public function getAccount(): ?string
-    {
-        return $this->account;
-    }
-
-    public function setAccount(?string $account): self
-    {
-        $this->account = $account;
 
         return $this;
     }
@@ -214,18 +197,6 @@ class Client extends AbstractBaseEntity
         return $this->getName() ?? (string) $this->getId();
     }
 
-    public function getSalesChannel(): ?string
-    {
-        return $this->salesChannel;
-    }
-
-    public function setSalesChannel(?string $salesChannel): self
-    {
-        $this->salesChannel = $salesChannel;
-
-        return $this;
-    }
-
     public function getCustomerKey(): ?string
     {
         return $this->customerKey;
@@ -238,26 +209,14 @@ class Client extends AbstractBaseEntity
         return $this;
     }
 
-    public function getProjectLeadName(): ?string
+    public function getVersionName(): ?string
     {
-        return $this->projectLeadName;
+        return $this->versionName;
     }
 
-    public function setProjectLeadName(?string $projectLeadName): static
+    public function setVersionName(?string $versionName): static
     {
-        $this->projectLeadName = $projectLeadName;
-
-        return $this;
-    }
-
-    public function getProjectLeadMail(): ?string
-    {
-        return $this->projectLeadMail;
-    }
-
-    public function setProjectLeadMail(?string $projectLeadMail): static
-    {
-        $this->projectLeadMail = $projectLeadMail;
+        $this->versionName = $versionName;
 
         return $this;
     }

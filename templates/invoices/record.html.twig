@@ -6,16 +6,16 @@
     <h1 class="page-title">{{ 'invoices.confirm_record_title'|trans }}</h1>
 
     {% if invoice.recorded %}
-        <div class="alert-danger" role="alert">
-            <div>{{ 'invoices.already_recorded'|trans }}</div>
-        </div>
+        {% include 'components/alert.html.twig' with {level: 'danger', text: 'invoices.already_recorded'|trans} %}
     {% else %}
         {% if errors is empty %}
-            <div class="alert-warning" role="alert">
-                <div class="mb-5">{{ 'invoices.confirm_record_are_you_sure'|trans({ '%invoiceName%': invoice.name }) }}</div>
-                <div class="mb-5">{{ 'invoices.all_worklogs_will_be_marked_as_billed'|trans }}</div>
-                <div>{{ 'invoices.confirm_record_cannot_be_undone'|trans }}</div>
-            </div>
+            {% embed 'components/alert.html.twig' with {level: 'warning'} %}
+                {% block alert %}
+                    <div class="mb-5">{{ 'invoices.confirm_record_are_you_sure'|trans({ '%invoiceName%': invoice.name }) }}</div>
+                    <div class="mb-5">{{ 'invoices.all_worklogs_will_be_marked_as_billed'|trans }}</div>
+                    <div>{{ 'invoices.confirm_record_cannot_be_undone'|trans }}</div>
+                {% endblock %}
+            {% endembed %}
 
             {{ form_start(form) }}
             {{ form_rest(form) }}
@@ -26,9 +26,7 @@
         {% else %}
             <h3 class="subheading">{{ 'invoices.cannot_record_errors_exist'|trans }}</h3>
             {% for error in errors %}
-                <div class="alert-danger" role="alert">
-                    <div>{{ error }}</div>
-                </div>
+                {% include 'components/alert.html.twig' with {level: 'danger', text: error} %}
             {% endfor %}
         {% endif %}
     {% endif %}

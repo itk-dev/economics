@@ -9,6 +9,10 @@ doctrine:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
+        filters:
+            softdeleteable:
+                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                enabled: true
         mappings:
             App:
                 is_bundle: false
@@ -20,7 +24,10 @@ when@test:
     doctrine:
         dbal:
             # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+#            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+
+            # Enable savepoints for nested transactions
+            use_savepoints: true
 
 when@prod:
     doctrine:

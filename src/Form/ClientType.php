@@ -4,6 +4,9 @@ namespace App\Form;
 
 use App\Entity\Client;
 use App\Enum\ClientTypeEnum;
+use App\Repository\ClientRepository;
+use App\Repository\VersionRepository;
+use App\Service\ProjectBillingService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -14,6 +17,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ClientType extends AbstractType
 {
+    public function __construct(private readonly VersionRepository $versionRepository, private readonly ClientRepository $clientRepository)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -60,28 +67,6 @@ class ClientType extends AbstractType
                 'required' => true,
                 'row_attr' => ['class' => 'form-row'],
             ])
-            ->add('account', TextType::class, [
-                'label' => 'create_client_form.client_account.label',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
-                'help_attr' => ['class' => 'form-help'],
-                'help' => 'create_client_form.client_account.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-row'],
-            ])
-            ->add('salesChannel', ChoiceType::class, [
-                'label' => 'create_client_form.sales_channel.label',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
-                'help_attr' => ['class' => 'form-help'],
-                'help' => 'create_client_form.sales_channel.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-row'],
-                'choices' => [
-                    10 => 10,
-                    20 => 20,
-                ],
-            ])
             ->add('customerKey', TextType::class, [
                 'label' => 'create_client_form.customer_key.label',
                 'label_attr' => ['class' => 'label'],
@@ -107,7 +92,41 @@ class ClientType extends AbstractType
                 'help' => 'create_client_form.client_ean.help',
                 'row_attr' => ['class' => 'form-row'],
                 'required' => false,
+            ])
+            ->add('versionName', ChoiceType::class, [
+                'label' => 'create_client_form.version_id.label',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element ', 'data-choices-target' => 'choices'],
+                'help_attr' => ['class' => 'form-help'],
+                'help' => 'create_client_form.version_id.help',
+                'row_attr' => ['class' => 'form-row form-choices'],
+                'required' => false,
+                'choices' => $this->getVersionOptions(),
             ]);
+    }
+
+    private function getVersionOptions(): array
+    {
+        $versions = $this->versionRepository->findAll();
+
+        $result = [];
+
+        foreach ($versions as $version) {
+            $name = $version->getName();
+
+            // Only include versions that start with project billing prefix.
+            if (null !== $name && str_starts_with($name, ProjectBillingService::PROJECT_BILLING_VERSION_PREFIX)) {
+                // A version name should only be assigned to one client to ensure a unique project billing mapping.
+                $alreadyAssigned = $this->clientRepository->findBy(['versionName' => $version->getName()]);
+                if (count($alreadyAssigned) > 0) {
+                    continue;
+                }
+
+                $result[$name] = $name;
+            }
+        }
+
+        return $result;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -16,7 +16,7 @@ class ViewService
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly ViewRepository $viewRepository,
-        private readonly Security $security,
+        private readonly Security $security
     ) {
     }
 
@@ -77,5 +77,14 @@ class ViewService
         $request = $this->requestStack->getMainRequest();
 
         return $request?->query?->get('view') ?? null;
+    }
+
+    public function getViewFromId(string $viewId): mixed
+    {
+        if (null != $viewId) {
+            return $this->viewRepository->find($viewId);
+        }
+
+        return null;
     }
 }

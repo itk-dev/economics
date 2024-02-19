@@ -35,11 +35,15 @@ security:
         - { path: ^/admin/invoices/, roles: ROLE_INVOICE }
         - { path: ^/admin/project-billing/, roles: ROLE_PROJECT_BILLING }
         - { path: ^/admin/planning/, roles: ROLE_PLANNING }
-        - { path: ^/admin/sprint-report/, roles: ROLE_SPRINT_REPORT }
+        - { path: ^/admin/reports/, roles: ROLE_ADMIN }
+        - { path: ^/admin/management-report/, roles: ROLE_REPORT }
+        - { path: ^/admin/team-report/, roles: ROLE_REPORT }
+        - { path: ^/admin/sprint-report/, roles: ROLE_REPORT }
         - { path: ^/admin/project/, roles: ROLE_ADMIN }
         - { path: ^/admin/client/, roles: ROLE_ADMIN }
         - { path: ^/admin/account/, roles: ROLE_ADMIN }
         - { path: ^/admin/users/, roles: ROLE_ADMIN }
+        - { path: ^/admin/view/, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_USER }
 
     role_hierarchy:
@@ -48,11 +52,11 @@ security:
             - ROLE_INVOICE
             - ROLE_PROJECT_BILLING
             - ROLE_PLANNING
-            - ROLE_SPRINT_REPORT
+            - ROLE_REPORT
         ROLE_INVOICE: ROLE_USER
         ROLE_PROJECT_BILLING: ROLE_INVOICE
         ROLE_PLANNING: ROLE_USER
-        ROLE_SPRINT_REPORT: ROLE_USER
+        ROLE_REPORT: ROLE_USER
 
 when@test:
     security:

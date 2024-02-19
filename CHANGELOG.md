@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0]
 
+* Adds phpunit.
+* Adds fixtures.
+* Adds project billing tests.
+* Changed to using client->versionName to issue->version mapping for project billing.
+* Added project lead/mail to project.
+* Removed usused fields from account and client.
+* Add team report export
+* Add open spout extension
+* Add choices to views
+* Add team report
+* Add workers to views
+* Add view filtering to management reports
+* Add csv export to management reports
 * Added view delete protection
 * Adds views filtering.
 * Adds user administration.

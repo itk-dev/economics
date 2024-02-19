@@ -70,6 +70,7 @@ class DataSynchronizationService
             $project->setProjectTrackerId($projectDatum->projectTrackerId);
             $project->setProjectTrackerKey($projectDatum->projectTrackerKey);
             $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
+
             foreach ($projectDatum->versions as $versionData) {
                 foreach ($versionData as $versionDatum) {
                     $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
@@ -102,15 +103,11 @@ class DataSynchronizationService
 
                     $client->setName($clientData->name);
                     $client->setContact($clientData->contact);
-                    $client->setAccount($clientData->account);
                     $client->setType($clientData->type);
                     $client->setPsp($clientData->psp);
                     $client->setEan($clientData->ean);
                     $client->setStandardPrice($clientData->standardPrice);
                     $client->setCustomerKey($clientData->customerKey);
-                    $client->setSalesChannel($clientData->salesChannel);
-                    $client->setProjectLeadName($clientData->projectLeadName);
-                    $client->setProjectLeadMail($clientData->projectLeadMail);
 
                     if (!$client->getProjects()->contains($client)) {
                         $client->addProject($project);
@@ -160,8 +157,6 @@ class DataSynchronizationService
 
                 $account->setName($accountDatum->name);
                 $account->setValue($accountDatum->value);
-                $account->setStatus($accountDatum->status);
-                $account->setCategory($accountDatum->category);
 
                 // Flush and clear for each batch.
                 if (0 === intval($index) % self::BATCH_SIZE) {

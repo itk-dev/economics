@@ -1,21 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'view.title'|trans }}{% endblock %}
+{% block title %}{{ viewEntity.name }}{% endblock %}
 
 {% block content %}
-  <h1 class="page-title">{{ 'view.title'|trans }}</h1>
+  <h1 class="page-title">{{ viewEntity.name }}</h1>
 
   {% set data = {
-    'name': view.name,
-    'description': view.description,
-    'dataProviders': view.dataProviders,
-    'projects': view.projects,
+    'name': viewEntity.name,
+    'description': viewEntity.description,
+    'dataProviders': viewEntity.dataProviders,
+    'workers': viewEntity.workers,
+    'projects': viewEntity.projects,
   }
   %}
 
   {% include 'view/viewDataTableDisplay.html.twig' with {'data': data} %}
 
   <div class="bottom-actions">
+    <a class="link" href="{{ path('app_view_edit', {'id': viewEntity.id}|merge(view is defined ? {view: view} : {})) }}">
+      {{ 'view.list_edit'|trans }}
+    </a>
     <a class="link" href="{{ path('app_view_list', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'view.back_to_list'|trans }}</a>
   </div>
 

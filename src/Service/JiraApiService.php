@@ -745,11 +745,7 @@ class JiraApiService implements DataProviderServiceInterface
             $client->projectTrackerId = $accountId;
             $client->name = $account->name;
             $client->contact = $account->contact->name ?? null;
-            $client->account = $account->key ?? null;
             $client->customerKey = $account->customer->key ?? null;
-            $client->salesChannel = $account->category->key ?? null;
-            $client->projectLeadName = $account->lead->displayName ?? null;
-            $client->projectLeadMail = $account->lead->emailAddress ?? null;
 
             switch ($account->category->name ?? null) {
                 case 'INTERN':
@@ -847,9 +843,6 @@ class JiraApiService implements DataProviderServiceInterface
         return $worklogDataCollection;
     }
 
-    /**
-     * @throws ApiServiceException
-     */
     public function getAllAccountData(): array
     {
         $accountsResult = [];
@@ -857,13 +850,11 @@ class JiraApiService implements DataProviderServiceInterface
         $accounts = $this->getAllAccounts();
 
         foreach ($accounts as $account) {
-            $status = $account->status;
             $id = $account->id;
             $key = $account->key;
-            $category = $account->category->name ?? null;
             $name = $account->name;
 
-            $accountsResult[] = new AccountData($id, $name, $key, $category, $status);
+            $accountsResult[] = new AccountData($id, $name, $key);
         }
 
         return $accountsResult;

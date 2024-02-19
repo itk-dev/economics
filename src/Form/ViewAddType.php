@@ -9,7 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ViewAddStepOneType extends AbstractType
+class ViewAddType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -28,7 +28,11 @@ class ViewAddStepOneType extends AbstractType
                 'class' => DataProvider::class,
                 'choice_label' => 'name',
                 'multiple' => true,
-                'attr' => ['class' => 'form-element'],
+                'row_attr' => ['class' => 'form-row form-choices'],
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-choices-target' => 'choices',
+                ],
                 'label' => 'view.data_providers',
             ]);
     }
