@@ -81,7 +81,14 @@ class LeantimeApiService implements DataProviderServiceInterface
      */
     public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'id' => $projectId]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', [
+            'dateFrom' => $from,
+            'dateTo' => $to,
+            'invEmpl' => '-1',
+            'invComp' => '-1',
+            'paid' => '-1',
+            'id' => $projectId,
+        ]);
     }
 
     /**
