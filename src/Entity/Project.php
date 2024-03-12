@@ -55,6 +55,9 @@ class Project extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectLeadMail = null;
 
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Product::class, orphanRemoval: true)]
+    private Collection $products;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -64,6 +67,7 @@ class Project extends AbstractBaseEntity
         $this->projectBillings = new ArrayCollection();
         $this->issues = new ArrayCollection();
         $this->views = new ArrayCollection();
+        $this->products = new ArrayCollection();
     }
 
     public function getName(): ?string
@@ -343,6 +347,36 @@ class Project extends AbstractBaseEntity
     public function setProjectLeadMail(?string $projectLeadMail): static
     {
         $this->projectLeadMail = $projectLeadMail;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        if ($this->products->removeElement($product)) {
+            // set the owning side to null (unless already changed)
+            if ($product->getProject() === $this) {
+                $product->setProject(null);
+            }
+        }
 
         return $this;
     }
