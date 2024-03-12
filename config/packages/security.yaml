@@ -53,10 +53,12 @@ security:
             - ROLE_PROJECT_BILLING
             - ROLE_PLANNING
             - ROLE_REPORT
+            - ROLE_PRODUCT_MANAGER
         ROLE_INVOICE: ROLE_USER
         ROLE_PROJECT_BILLING: ROLE_INVOICE
         ROLE_PLANNING: ROLE_USER
         ROLE_REPORT: ROLE_USER
+        ROLE_PRODUCT_MANAGER: ROLE_USER
 
 when@test:
     security:

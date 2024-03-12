@@ -45,6 +45,7 @@ navigation:
     title: "Economics"
     accounts: "Konto"
     project_billing: "Projektfakturering"
+    products: "Produkter"
     projects: "Projekter"
     client: "Kunder"
     account: "Konti"
@@ -445,6 +446,29 @@ project_billing:
     on_record_errors_invoice_link: "Link til faktura"
     action_record_internal: "Eksportér interne"
     action_record_external: "Eksportér eksterne"
+
+product:
+    title: "Produkter"
+    id: "#"
+    name: "Navn"
+    price: "Pris"
+    project: "Projekt"
+    created_at: "Oprettet"
+    updated_at: "Opdateret"
+    list_no_records_found: "Ingen produkter fundet"
+    create: "Opret produkt"
+    update: "Gem"
+    search: "Søg"
+    new: "Opret nyt produkt"
+    form_name: "Navn"
+    form_project: "Projekt"
+    edit: 'Redigér produkt'
+    back_to_list: 'Tilbage til listen'
+    action_save: 'Gem produkt'
+    action_delete: 'Slet produkt'
+    actions: 'Handlinger'
+    action_create_new: 'Opret nyt produkt'
+    action_edit: 'Redigér'
 
 project:
     title: "Projekter"

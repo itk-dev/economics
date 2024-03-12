@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'product.title'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'product.title'|trans }}</h1>
+
+    {{ form_start(form) }}
+    <div class="form-default">
+        {{ form_row(form.name) }}
+        {{ form_row(form.project) }}
+        <div>
+            <button class="button form-element">{{ 'client.search'|trans }}</button>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    {% set numberOfColumns = 7 %}
+
+    <table class="table margin-bottom">
+        <thead class="table-thead">
+        <tr>
+            <th class="table-th{% if products.isSorted('product.id') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.id'|trans, 'product.id') }}</th>
+            <th class="table-th{% if products.isSorted('product.name') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.name'|trans, 'product.name') }}</th>
+            <th class="table-th price{% if products.isSorted('product.price') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.price'|trans, 'product.price') }}</th>
+            <th class="table-th{% if products.isSorted('product.project') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.project'|trans, 'product.project') }}</th>
+            <th class="table-th{% if products.isSorted('product.createdAt') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.created_at'|trans, 'product.createdAt') }}</th>
+            <th class="table-th{% if products.isSorted('product.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.updated_at'|trans, 'product.updatedAt') }}</th>
+
+            <th class="table-th">{{ 'product.actions'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, product in products %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ product.id }}</td>
+                <td class="table-td">{{ product.name }}</td>
+                <td class="table-td price">{{ product.price|number_format(2, ',', '') }}</td>
+                <td class="table-td">{{ product.project }}</td>
+                <td class="table-td">{{ product.createdAt ? product.createdAt|date : '' }}</td>
+                <td class="table-td">{{ product.updatedAt ? product.updatedAt|date : '' }}</td>
+
+                <td class="table-td">
+                    <a class="link" href="{{ path('app_product_edit', {'id': product.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'product.action_edit'|trans }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% if products is empty %}
+            <tr class="table-tr">
+                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'product.list_no_records_found'|trans }}</td>
+            </tr>
+        {% endif %}
+        <tr class="table-tr">
+            <td class="table-td" colspan="{{ numberOfColumns - 3 }}">
+                <a class="link" href="{{ path('app_product_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'product.action_create_new'|trans }}</a>
+            </td>
+            <td class="table-td text-right" colspan="{{ numberOfColumns - 4 }}">
+                {{ knp_pagination_render(products) }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}
