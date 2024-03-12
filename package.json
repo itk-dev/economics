@@ -6,10 +6,12 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress",
-        "lint:js": "eslint --ext .js ./assets",
-        "lint:js:fix": "eslint --ext .js --fix ./assets",
-        "check-coding-standards": "npm run lint:js",
-        "apply-coding-standards": "npm run lint:js:fix"
+        "coding-standards-check/eslint": "eslint --ext .js ./assets",
+        "coding-standards-check/markdownlint": "markdownlint --ignore LICENSE.md '*.md' docs/",
+        "coding-standards-check": "npm run coding-standards-check/eslint && npm run coding-standards-check/markdownlint",
+        "coding-standards-apply/eslint": "eslint --ext .js --fix ./assets",
+        "coding-standards-apply/markdownlint": "markdownlint --ignore LICENSE.md '*.md' docs/ --fix",
+        "coding-standards-apply": "npm run coding-standards-apply/eslint && npm run coding-standards-apply/markdownlint"
     },
     "dependencies": {
         "@babel/core": "^7.23.9",
@@ -43,6 +45,7 @@
         "eslint-plugin-import": "^2.29.1",
         "eslint-plugin-jsdoc": "^48.0.6",
         "eslint-plugin-only-warn": "^1.1.0",
-        "eslint-plugin-prettier": "^5.1.3"
+        "eslint-plugin-prettier": "^5.1.3",
+        "markdownlint-cli": "^0.39.0"
     }
 }

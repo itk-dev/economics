@@ -46,13 +46,16 @@ accounts.
 ## Development
 
 Getting started:
+
 ```shell
-docker compose run node npm install
-docker compose up -d
-docker compose bin/console doctrine:migrations:migrate
+docker compose run --rm node npm install
+docker compose up --detach
+docker compose exec phpfpm composer install
+docker compose exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
 ```
 
-Set create .env.local with the following values set
+Set create `.env.local` with the following values set
+
 ```shell
 ###> Project tracker connection ###
 JIRA_PROJECT_TRACKER_URL=<VALUE>
@@ -83,8 +86,8 @@ JIRA_API_SERVICE_DEFAULT_BOARD=<VALUE>
 Sync projects and accounts.
 
 ```shell
-docker compose bin/console app:sync-projects
-docker compose bin/console app:sync-accounts
+docker compose exec phpfpm bin/console app:sync-projects
+docker compose exec phpfpm bin/console app:sync-accounts
 ```
 
 Visit /admin/project and "include" the projects that should be synchronized in the installation.
@@ -92,8 +95,8 @@ Visit /admin/project and "include" the projects that should be synchronized in t
 Then sync issues and worklogs
 
 ```shell
-docker compose bin/console app:sync-issues
-docker compose bin/console app:sync-worklogs
+docker compose exec phpfpm bin/console app:sync-issues
+docker compose exec phpfpm bin/console app:sync-worklogs
 ```
 
 ### Assets
@@ -104,26 +107,35 @@ The node container will watch for code changes in assets folder and recompile.
 
 1. Copy database from JiraEconomics.
 2. Run migrate-from-jira-economics:
+
    ```shell
    bin/console app:migrate-from-jira-economics
    ```
+
    to prepare the database. This will remove a couple of tables and add the doctrine_migration_versions table
    with the Version20230101000000 migration marked as already run.
 3. Execute the remaining migrations:
+
    ```shell
    bin/console doctrine:migrations:migrate
    ```
+
 4. Run synchronizations:
+
    ```shell
    bin/console app:sync-projects
    bin/console app:sync-accounts
    ```
+
 5. Run migrate-customer to migrate from invoice.customerAccountId to invoice.client
+
    ```shell
    bin/console app:migrate-customers
    ```
+
 6. Visit /admin/project and "include" the projects that should be synchronized in the installation.
 7. Synchronize issues and worklogs
+
    ```shell
    bin/console app:sync-issues
    bin/console app:sync-worklogs
@@ -133,18 +145,29 @@ The node container will watch for code changes in assets folder and recompile.
 
 Each PR is reviewed with Github Actions.
 
-Apply coding standards with:
+Check coding standards with:
+
+```shell
+# Apply coding standards and run static analysis for php and twig
+docker compose exec phpfpm composer coding-standards-check
+
+# Check coding standards for assets and markdown
+docker compose run --rm node npm run coding-standards-check
+```
+
+Apply some coding standards with:
 
 ```shell
 # Apply coding standards and run static analysis for php and twig
 docker compose exec phpfpm composer prepare-code
-# Apply coding standards for javascript assets
-docker compose exec node npm run check-coding-standards
+
+# Apply coding standards for assets and markdown
+docker compose run --rm node npm run coding-standards-apply
 ```
 
 ### Testing
 
-The test setup follows the guidelines from: https://symfony.com/doc/current/testing.html.
+The test setup follows the guidelines from: <https://symfony.com/doc/current/testing.html>.
 
 To run tests:
 
@@ -160,6 +183,7 @@ Between each test the initial state of the database is restored using DAMADoctri
 ### Deploy
 
 Build the assets locally
+
 ```shell
 docker compose run --rm node npm run build
 ```
@@ -175,6 +199,7 @@ docker compose exec phpfpm bin/console doctrine:migrations:migrate
 ### Sync
 
 Run synchronization with a cron process with a given interval to synchronize with the project tracker:
+
  ```shell
    bin/console app:sync
 ```

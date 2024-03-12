@@ -12,24 +12,31 @@ export default class extends Controller {
     connect() {
         // Find active menu item.
         const currentPath = window.location.pathname;
-        let menuItems = document.querySelectorAll('#main-menu .navigation-item');
+        const menuItems = document.querySelectorAll(
+            "#main-menu .navigation-item",
+        );
 
         menuItems.forEach(function (menuItem) {
             if (menuItem.pathname === currentPath) {
                 menuItem.classList.add("current");
 
-                const activeElementParent = menuItem.closest(".navigation-item-submenu");
+                const activeElementParent = menuItem.closest(
+                    ".navigation-item-submenu",
+                );
                 const nextElement = menuItem.nextElementSibling;
 
                 if (activeElementParent) {
                     activeElementParent.classList.add("shown");
                 }
-                if (nextElement && nextElement.classList.contains("navigation-item-submenu")) {
+                if (
+                    nextElement &&
+                    nextElement.classList.contains("navigation-item-submenu")
+                ) {
                     nextElement.classList.add("shown");
                 }
             }
         });
-  }
+    }
 
     // Set active menu item if menu item has no pathname.
     /* eslint-disable-next-line class-methods-use-this */
