@@ -154,10 +154,6 @@ class LeantimeApiService implements DataProviderServiceInterface
 
         $issues = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
 
-        // Filter out all worklogs that do not belong to the project.
-        // TODO: Remove filter when issues are filtered correctly by projectId in the API.
-        $issues = array_filter($issues, fn ($issue) => $issue->projectId == $projectId);
-
         foreach ($issues as $issue) {
             $issueData = new IssueData();
 
