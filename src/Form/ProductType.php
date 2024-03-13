@@ -9,12 +9,24 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatableMessage;
 
 class ProductType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('project', EntityType::class, [
+                'placeholder' => new TranslatableMessage('product.select_project'),
+                'class' => Project::class,
+                'choice_label' => 'name',
+                'required' => true,
+                'attr' => ['class' => 'form-element'],
+                'label' => 'product.project',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'help' => 'product.project_helptext',
+            ])
             ->add('name', null, [
                 'required' => true,
                 'attr' => ['class' => 'form-element'],
@@ -35,16 +47,6 @@ class ProductType extends AbstractType
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'product.price_helptext',
-            ])
-            ->add('project', EntityType::class, [
-                'class' => Project::class,
-                'choice_label' => 'name',
-                'required' => true,
-                'attr' => ['class' => 'form-element'],
-                'label' => 'product.project',
-                'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
-                'help' => 'product.project_helptext',
             ])
         ;
     }

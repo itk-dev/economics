@@ -499,6 +499,7 @@ project:
     project_lead: 'Project Lead'
     actions: 'Handlinger'
     action_edit: 'Redigér'
+    action_view_issues: "Vis opgaver"
 
 reports:
     title: 'Rapporter'
@@ -644,3 +645,29 @@ roles:
     ROLE_PROJECT_BILLING: 'Projektfakturering'
     ROLE_PLANNING: 'Planlægning'
     ROLE_REPORT: 'Rapporter'
+
+issue:
+    title: "Opgaver (%project%)"
+    id: "#"
+    project: "Projekt"
+    name: "Navn"
+    status: "Status"
+    actions: "Handlinger"
+    title_show: "Opgave"
+    placeholder_select_product: "Vælg produkt"
+    products: "Produkter"
+    products_total: "I alt"
+    back_to_list: "Tilbage til listen"
+    form_name: "Navn"
+    action_show: "Vis"
+    no_products_defined_in_project: "Projektet har ingen produkter."
+    create_product_in_project: "Opret et produkt"
+    product:
+        action_delete: "Fjern"
+        action_add: "Tilføj produkt"
+        action_update: "Opdatér"
+        name: "Produkt"
+        price: "Pris"
+        quantity: "Antal"
+        total: "I alt"
+        list_no_records_found: "Ingen produkter"

@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'issue.title'|trans }}{% endblock %}
+
+{% import "_partials.html.twig" as macros %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'issue.title'|trans({'%project%': project.name}) }}</h1>
+
+    {{ form_start(form) }}
+    <div class="form-default">
+        {{ form_row(form.name) }}
+        <div>
+            <button class="button form-element">{{ 'client.search'|trans }}</button>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    {% set numberOfColumns = 5 %}
+
+    <table class="table margin-bottom">
+        <thead class="table-thead">
+        <tr>
+            {{ macros.knp_pagination_sortable_header(issues, 'issue.id'|trans, 'issue.id') }}
+            {{ macros.knp_pagination_sortable_header(issues, 'issue.name'|trans, 'issue.name') }}
+            {{ macros.knp_pagination_sortable_header(issues, 'issue.status'|trans, 'issue.status') }}
+
+            {#
+            issue.accountKey
+            issue.accountId
+            issue.projectTrackerId
+            issue.projectTrackerKey
+            issue.epicKey
+            issue.epicName
+            issue.resolutionDate
+            issue.createdBy
+            issue.updatedBy
+            issue.createdAt
+            issue.updatedAt
+            #}
+            <th class="table-th">{{ 'issue.products'|trans }}</th>
+            <th class="table-th">{{ 'issue.actions'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, issue in issues %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ issue.id }}</td>
+                <td class="table-td">{{ issue.name }}</td>
+                <td class="table-td">{{ issue.status }}</td>
+                <td class="table-td">
+                    <a class="link" href="{{ path('app_issue_show', {project: issue.project.id, id: issue.id, _fragment: 'products'}|merge(view is defined ? {view: view} : {})) }}">
+                        {{ issue.products|length }}
+                    </a>
+                </td>
+
+                <td class="table-td">
+                    <a class="link" href="{{ path('app_issue_show', {project: issue.project.id, id: issue.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'issue.action_show'|trans }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        {% if issues is empty %}
+            <tr class="table-tr">
+                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'issue.list_no_records_found'|trans }}</td>
+            </tr>
+        {% endif %}
+        <tr class="table-tr">
+            <td class="table-td text-right" colspan="{{ numberOfColumns }}">
+                {{ knp_pagination_render(issues) }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}

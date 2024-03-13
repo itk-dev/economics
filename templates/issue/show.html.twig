@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'issue.title_show'|trans }}{% endblock %}
+
+{% import "_partials.html.twig" as macros %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'issue.title_show'|trans }}</h1>
+
+    <table class="table">
+        <tbody>
+            {% for label, item in {
+            ('issue.project'|trans): {value: issue.project.name},
+            ('issue.name'|trans): {value: issue.name},
+            ('issue.status'|trans): {value: issue.status},
+            } %}
+            <tr>
+                <th class="table-th">{{ label }}</th>
+                <td class="table-td">{{ item.value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2 id="products">{{ 'issue.products'|trans }}</h2>
+
+    {% if project.products is empty %}
+        <div class="alert-warning">
+            {{ 'issue.no_products_defined_in_project'|trans({'%project%': project.name}) }}
+            <a class="link"
+               href="{{ path('app_product_new', {project: project.id}) }}">{{ 'issue.create_product_in_project'|trans({'%project%': project.name}) }}</a>
+        </div>
+    {% endif %}
+
+    {% set numberOfColumns = 5 %}
+
+    {# The form theme adds a div element with the (default?) form id inside a form  #}
+    {% set add_product_form_id = 'add_product_form_id' %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="table-th">{{ 'issue.product.name'|trans }}</th>
+                <th class="table-th amount text-right">{{ 'issue.product.price'|trans }}</th>
+                <th class="table-th number text-right">{{ 'issue.product.quantity'|trans }}</th>
+                <th class="table-th amount text-right">{{ 'issue.product.total'|trans }}</th>
+                <th class="table-th"></th>
+            </tr>
+        </thead>
+        <tfoot>
+        {% if project.products is not empty %}
+            <tr>
+                <td class="table-td" colspan="2">{{ form_widget(add_product_form.product, {attr: {form: add_product_form_id}}) }}</td>
+                <td class="table-td number text-right">{{ form_widget(add_product_form.quantity, {attr: {form: add_product_form_id}}) }}</td>
+                <td></td>
+                <td class="table-td">{{ form_widget(add_product_form.submit, {attr: {form: add_product_form_id}}) }}</td>
+            </tr>
+        {% endif %}
+            <tr>
+                <th class="table-th">{{ 'issue.products_total'|trans }}</th>
+                <th colspan="2"></th>
+                <th class="table-th amount text-right">{{ macros.format_amount(products_total) }}</th>
+                <th></th>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for issue_product in issue.products %}
+            {% set product = issue_product.product %}
+            {% set edit_product_form = edit_product_forms[issue_product.id]|default(null) %}
+            {% set edit_product_form_id = 'edit_product_form_'~issue_product.id %}
+            <tr>
+                <td class="table-td">{{ product.name }}</td>
+                <td class="table-td amount text-right">{{ macros.format_amount(product.price) }}</td>
+                <td class="table-td number text-right">{{ edit_product_form ? form_widget(edit_product_form.quantity, {attr: {form: edit_product_form_id}}) : issue_product.quantity }}</td>
+                <td class="table-td amount text-right">{{ macros.format_amount(issue_product.total) }}</td>
+                <td class="table-td">
+                    <div class="flex flex-row">
+                        {% if edit_product_form %}
+                        {{ form_start(edit_product_form, {attr: {id: edit_product_form_id}}) }}
+                        {{ form_widget(edit_product_form.submit) }}
+                        <div style="display: none">
+                            {{ form_rest(edit_product_form) }}
+                        </div>
+                        {{ form_end(edit_product_form) }}
+                        {% endif %}
+
+                        <form method="post" action="{{ path('app_issue_delete_product', {project: issue.project.id, id: issue.id, product: issue_product.id}) }}" onsubmit="return confirm('{{ 'delete.confirm'|trans }}');">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ issue_product.id) }}">
+                            <button class="button button-danger">{{ 'issue.product.action_delete'|trans }}</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            {% if issue.products is empty %}
+                <tr class="table-tr">
+                    <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'issue.product.list_no_records_found'|trans }}</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    {% if project.products is not empty %}
+        {# Important: The actual add_product_form *must* come after the individual form fields in the table #}
+        {# Furthermore, we must add rou custom id since the form contains a div element with the (default) form id #}
+        {{ form(add_product_form, {attr: {id: add_product_form_id}}) }}</td>
+    {% endif %}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_issue_index', {project: issue.project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'issue.back_to_list'|trans }}</a>
+    </div>
+{% endblock %}

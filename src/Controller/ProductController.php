@@ -7,6 +7,7 @@ use App\Form\ProductFilterType;
 use App\Form\ProductType;
 use App\Model\Invoices\ProductFilterData;
 use App\Repository\ProductRepository;
+use App\Repository\ProjectRepository;
 use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,9 +41,14 @@ class ProductController extends AbstractController
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, ProjectRepository $projectRepository, EntityManagerInterface $entityManager): Response
     {
         $product = new Product();
+        if ($projectId = $request->query->get('project')) {
+            if ($project = $projectRepository->find($projectId)) {
+                $product->setProject($project);
+            }
+        }
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 

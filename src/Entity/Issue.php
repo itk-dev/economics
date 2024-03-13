@@ -6,6 +6,7 @@ use App\Entity\Trait\DataProviderTrait;
 use App\Repository\IssueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -50,10 +51,15 @@ class Issue extends AbstractBaseEntity
     #[ORM\ManyToOne(inversedBy: 'issues')]
     private ?Project $project = null;
 
+    #[ORM\OneToMany(mappedBy: 'issue', targetEntity: IssueProduct::class, orphanRemoval: true)]
+    #[ORM\OrderBy(['createdAt' => Criteria::DESC])]
+    private Collection $products;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
         $this->worklogs = new ArrayCollection();
+        $this->products = new ArrayCollection();
     }
 
     public function getName(): ?string
@@ -226,6 +232,36 @@ class Issue extends AbstractBaseEntity
     public function setProject(?Project $project): self
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, IssueProduct>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(IssueProduct $issueProduct): static
+    {
+        if (!$this->products->contains($issueProduct)) {
+            $this->products->add($issueProduct);
+            $issueProduct->setIssue($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(IssueProduct $issueProduct): static
+    {
+        if ($this->products->removeElement($issueProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($issueProduct->getIssue() === $this) {
+                $issueProduct->setIssue(null);
+            }
+        }
 
         return $this;
     }

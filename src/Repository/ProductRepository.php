@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Product;
 use App\Model\Invoices\ProductFilterData;
-use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -22,8 +21,7 @@ class ProductRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
-        private readonly PaginatorInterface $paginator,
-        private readonly ViewService $viewService
+        private readonly PaginatorInterface $paginator
     ) {
         parent::__construct($registry, Product::class);
     }

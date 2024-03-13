@@ -57,7 +57,8 @@
                     <span class="sync-text" {{ stimulus_target('sync', 'text') }}></span>
                 </td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_project_edit', {'id': project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.action_edit'|trans }}</a>
+                    <a class="link whitespace-nowrap" href="{{ path('app_project_edit', {'id': project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.action_edit'|trans }}</a>
+                    <a class="link whitespace-nowrap" href="{{ path('app_issue_index', {'project': project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.action_view_issues'|trans }}</a>
                 </td>
             </tr>
         {% endfor %}

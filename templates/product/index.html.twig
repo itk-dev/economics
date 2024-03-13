@@ -2,6 +2,8 @@
 
 {% block title %}{{ 'product.title'|trans }}{% endblock %}
 
+{% import "_partials.html.twig" as macros %}
+
 {% block content %}
     <h1 class="page-title">{{ 'product.title'|trans }}</h1>
 
@@ -35,7 +37,7 @@
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                 <td class="table-td">{{ product.id }}</td>
                 <td class="table-td">{{ product.name }}</td>
-                <td class="table-td price">{{ product.price|number_format(2, ',', '') }}</td>
+                <td class="table-td price">{{ macros.format_amount(product.price) }}</td>
                 <td class="table-td">{{ product.project }}</td>
                 <td class="table-td">{{ product.createdAt ? product.createdAt|date : '' }}</td>
                 <td class="table-td">{{ product.updatedAt ? product.updatedAt|date : '' }}</td>

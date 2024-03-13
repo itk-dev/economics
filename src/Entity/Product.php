@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -18,6 +20,14 @@ class Product extends AbstractBaseEntity
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $price = null;
+
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: IssueProduct::class, orphanRemoval: true)]
+    private Collection $issues;
+
+    public function __construct()
+    {
+        $this->issues = new ArrayCollection();
+    }
 
     public function getName(): ?string
     {
@@ -56,6 +66,36 @@ class Product extends AbstractBaseEntity
     public function setPrice(string $price): static
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, IssueProduct>
+     */
+    public function getIssues(): Collection
+    {
+        return $this->issues;
+    }
+
+    public function addIssue(IssueProduct $issue): static
+    {
+        if (!$this->issues->contains($issue)) {
+            $this->issues->add($issue);
+            $issue->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIssue(IssueProduct $issue): static
+    {
+        if ($this->issues->removeElement($issue)) {
+            // set the owning side to null (unless already changed)
+            if ($issue->getProduct() === $this) {
+                $issue->setProduct(null);
+            }
+        }
 
         return $this;
     }
