@@ -5,6 +5,7 @@ App\Entity\Project:
 
   project-001 (extends project):
     name: The first project
+    include: true
 
   project-002 (extends project):
     name: Another project
