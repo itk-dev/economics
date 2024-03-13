@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-88](https://github.com/itk-dev/economics/pull/88)
+  Miscellaneous clean-ups.
 * Adds phpunit.
 * Adds fixtures.
 * Adds project billing tests.
