@@ -1,0 +1,13 @@
+App\Entity\Project:
+  project (template):
+    projectTrackerProjectUrl: projectTrackerProjectUrl
+    projectTrackerKey: projectTrackerKey
+
+  project-001 (extends project):
+    name: The first project
+
+  project-002 (extends project):
+    name: Another project
+
+  project-003 (extends project):
+    name: The third project

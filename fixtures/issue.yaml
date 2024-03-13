@@ -1,0 +1,20 @@
+App\Entity\Issue:
+  issue (template):
+    projectTrackerId: projectTrackerId
+    projectTrackerKey: projectTrackerKey
+
+  issue-001 (extends issue):
+    project: '@project-001'
+    name: The first issue
+    status: Done
+
+  issue-002 (extends issue):
+    project: '@project-002'
+    name: Another issue
+    status: Done
+
+App\Entity\IssueProduct:
+  issue-product-001:
+    issue: '@issue-001'
+    product: '@product-001'
+    quantity: 3

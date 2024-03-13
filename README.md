@@ -103,6 +103,25 @@ docker compose exec phpfpm bin/console app:sync-worklogs
 
 The node container will watch for code changes in assets folder and recompile.
 
+### Fixtures
+
+We use [AliceBundle](https://github.com/theofidry/AliceBundle) for fixtures.
+
+Load fixtures by running (**warning****: will empty your database!)
+
+``` shell
+docker compose exec phpfpm composer fixtures:load
+```
+
+After loading fixtures you can sign in as `admin@example.com`:
+
+``` shell
+open $(docker compose exec phpfpm bin/console itk-dev:openid-connect:login admin@example.com)
+```
+
+See [fixtures/user.yaml](fixtures/user.yaml) for additional info on users created when loading
+fixtures.
+
 ## Migration path from JiraEconomics
 
 1. Copy database from JiraEconomics.
