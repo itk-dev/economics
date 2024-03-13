@@ -27,23 +27,23 @@
           </tr>
           </thead>
           <tbody>
-            {% for year, yearData in groupedInvoices %}
+            {% for year, year_data in groupedInvoices %}
               <tr>
                 <td class="px-6 py-4">
                   {{ year }}
                 </td>
-                {% for data, invoices in yearData %}
+                {% for data, invoices in year_data %}
                   {% if data is same as('sum') %}
                     <td class="px-6 py-4">
-                      {{ yearData['sum'] }}
+                      {{ year_data['sum'] }}
                     </td>
                   {% else %}
-                    {% set quarterTotal = 0 %}
+                    {% set quarter_total = 0 %}
                     {% for invoice in invoices %}
-                      {% set quarterTotal = quarterTotal + invoice.totalPrice %}
+                      {% set quarter_total = quarter_total + invoice.totalPrice %}
                     {% endfor %}
                     <td class="px-6 py-4">
-                      {{ quarterTotal }}
+                      {{ quarter_total }}
                     </td>
                   {% endif %}
                 {% endfor %}

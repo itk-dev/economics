@@ -16,7 +16,7 @@
     </div>
     {{ form_end(form) }}
 
-    {% set numberOfColumns = 8 %}
+    {% set number_of_columns = 8 %}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
@@ -32,28 +32,28 @@
         </tr>
         </thead>
         <tbody>
-        {% for index, projectBilling in projectBillings %}
+        {% for index, project_billing in projectBillings %}
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-                <td class="table-td">{{ projectBilling.id }}</td>
-                <td class="table-td">{{ projectBilling.name }}</td>
-                <td class="table-td">{{ projectBilling.project }}</td>
-                <td class="table-td">{{ projectBilling.project.dataProvider }}</td>
-                <td class="table-td">{{ projectBilling.isRecorded ? 'project_billing.recorded'|trans : '' }}</td>
-                <td class="table-td">{{ projectBilling.createdBy }}</td>
-                <td class="table-td">{{ projectBilling.updatedAt ? projectBilling.updatedAt|date : '' }}</td>
+                <td class="table-td">{{ project_billing.id }}</td>
+                <td class="table-td">{{ project_billing.name }}</td>
+                <td class="table-td">{{ project_billing.project }}</td>
+                <td class="table-td">{{ project_billing.project.dataProvider }}</td>
+                <td class="table-td">{{ project_billing.isRecorded ? 'project_billing.recorded'|trans : '' }}</td>
+                <td class="table-td">{{ project_billing.createdBy }}</td>
+                <td class="table-td">{{ project_billing.updatedAt ? project_billing.updatedAt|date : '' }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_project_billing_edit', {'id': project_billing.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% endfor %}
         {% if projectBillings is empty %}
             <tr class="table-tr">
-                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'project_billing.list_no_records_found'|trans }}</td>
+                <td class="table-td" colspan="{{ number_of_columns }}">{{ 'project_billing.list_no_records_found'|trans }}</td>
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="{{ numberOfColumns - 6 }}"><a class="link" href="{{ path('app_project_billing_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_create_new'|trans }}</a>
-            <td class="table-td" colspan="{{ numberOfColumns - 2 }}" class="text-right">
+            <td class="table-td" colspan="{{ number_of_columns - 6 }}"><a class="link" href="{{ path('app_project_billing_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_create_new'|trans }}</a>
+            <td class="table-td" colspan="{{ number_of_columnsemacs - 2 }}" class="text-right">
                 {{ knp_pagination_render(projectBillings) }}
             </td>
         </tr>

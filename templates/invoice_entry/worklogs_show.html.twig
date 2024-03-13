@@ -20,11 +20,11 @@
             </thead>
             <tbody>
             {% for index, worklog in worklogs %}
-                {% set ownedByInvoiceEntry = worklog.invoiceEntry == invoiceEntry %}
-                {% set ownedByOtherInvoiceEntry = (not ownedByInvoiceEntry and worklog.invoiceEntry is not null) %}
-                {% set disabled = worklog.isBilled or ownedByOtherInvoiceEntry %}
+                {% set owned_by_invoice_entry = worklog.invoiceEntry == invoiceEntry %}
+                {% set owned_by_other_invoice_entry = (not owned_by_invoice_entry and worklog.invoiceEntry is not null) %}
+                {% set disabled = worklog.isBilled or owned_by_other_invoice_entry %}
 
-                <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}{{ disabled ? ' table-tr-disabled' : '' }}{{ ownedByOtherInvoiceEntry ? ' table-tr-disabled-alt' : '' }}">
+                <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}{{ disabled ? ' table-tr-disabled' : '' }}{{ owned_by_other_invoice_entry ? ' table-tr-disabled-alt' : '' }}">
                     <td class="table-td">
                         <div>
                             <span>{{ worklog.description }}</span>
