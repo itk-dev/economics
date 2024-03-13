@@ -105,20 +105,20 @@
             </tr>
             </thead>
             <tbody>
-            {% for index, invoiceEntry in invoice.invoiceEntries %}
+            {% for index, invoice_entry in invoice.invoiceEntries %}
                 <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-                    <td class="table-td">{{ invoiceEntry.account }}</td>
-                    <td class="table-td">{{ invoiceEntry.materialNumber.value ?? '' }}</td>
-                    <td class="table-td">{{ invoiceEntry.product }}</td>
-                    <td class="table-td">{{ invoiceEntry.amount }}</td>
-                    <td class="table-td">{{ invoiceEntry.price }}</td>
-                    <td class="table-td">{{ invoiceEntry.totalPrice }}</td>
+                    <td class="table-td">{{ invoice_entry.account }}</td>
+                    <td class="table-td">{{ invoice_entry.materialNumber.value ?? '' }}</td>
+                    <td class="table-td">{{ invoice_entry.product }}</td>
+                    <td class="table-td">{{ invoice_entry.amount }}</td>
+                    <td class="table-td">{{ invoice_entry.price }}</td>
+                    <td class="table-td">{{ invoice_entry.totalPrice }}</td>
                     <td class="table-td">
-                        {{ invoiceEntry.entryType.value == 'manual' ? 'invoices.invoice_entry_type_manual'|trans : '' }}
-                        {{ invoiceEntry.entryType.value == 'worklog' ? 'invoices.invoice_entry_type_worklog'|trans : '' }}
+                        {{ invoice_entry.entryType.value == 'manual' ? 'invoices.invoice_entry_type_manual'|trans : '' }}
+                        {{ invoice_entry.entryType.value == 'worklog' ? 'invoices.invoice_entry_type_worklog'|trans : '' }}
                     </td>
                     <td class="table-td">
-                        <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_edit'|trans }}</a>
+                        <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoice_entry.id, 'invoice': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_edit'|trans }}</a>
                     </td>
                 </tr>
             {% endfor %}

@@ -16,9 +16,9 @@
     </div>
     {{ form_end(form) }}
 
-    {% include 'components/alert.html.twig' with { text: 'project.information'|trans, level: 'info' } %}
+    {% include 'components/alert.html.twig' with {text: 'project.information'|trans, level: 'info'} %}
 
-    {% set numberOfColumns = 9 %}
+    {% set number_of_columns = 9 %}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
@@ -44,13 +44,13 @@
                 <td class="table-td">{{ project.projectTrackerKey }}</td>
                 <td class="table-td">{{ project.updatedAt ? project.updatedAt|date : '' }}</td>
                 <td class="table-td">
-                    <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_include', {id: project.id }) }}">
+                    <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_include', {id: project.id}) }}">
                         <input type="checkbox" value="" class="sr-only peer" {{ stimulus_action('toggle', 'toggle') }} {{ stimulus_target('toggle', 'checkbox') }} {{ project.include ? 'checked' : '' }}>
                         {% include "components/checkbox.html.twig" %}
                         <span class="toggle-text" {{ stimulus_target('toggle', 'text') }}></span>
                     </label>
                 </td>
-                <td class="table-td" {{ stimulus_controller('sync') }} data-update-url="{{ path('app_project_sync', {id: project.id }) }}">
+                <td class="table-td" {{ stimulus_controller('sync') }} data-update-url="{{ path('app_project_sync', {id: project.id}) }}">
                     <button class="button" {{ stimulus_action('sync', 'sync') }} {{ stimulus_target('sync', 'button') }}>
                         {{ 'project.sync_action'|trans }}
                     </button>
@@ -63,11 +63,11 @@
         {% endfor %}
         {% if projects is empty %}
             <tr class="table-tr">
-                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'project.list_no_records_found'|trans }}</td>
+                <td class="table-td" colspan="{{ number_of_columns }}">{{ 'project.list_no_records_found'|trans }}</td>
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="{{ numberOfColumns }}" class="text-right">
+            <td class="table-td" colspan="{{ number_of_columns }}" class="text-right">
                 {{ knp_pagination_render(projects) }}
             </td>
         </tr>

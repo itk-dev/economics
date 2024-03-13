@@ -11,7 +11,7 @@
         {% if errors is empty %}
             {% embed 'components/alert.html.twig' with {level: 'warning'} %}
                 {% block alert %}
-                    <div class="mb-5">{{ 'invoices.confirm_record_are_you_sure'|trans({ '%invoiceName%': invoice.name }) }}</div>
+                    <div class="mb-5">{{ 'invoices.confirm_record_are_you_sure'|trans({'%invoiceName%': invoice.name}) }}</div>
                     <div class="mb-5">{{ 'invoices.all_worklogs_will_be_marked_as_billed'|trans }}</div>
                     <div>{{ 'invoices.confirm_record_cannot_be_undone'|trans }}</div>
                 {% endblock %}

@@ -8,7 +8,7 @@
 
     <h1 class="page-title">{{ 'client.title'|trans }}</h1>
 
-    {% set numberOfColumns = 11 %}
+    {% set number_of_columns = 11 %}
 
     {{ form_start(form) }}
         <div class="form-default">
@@ -60,7 +60,7 @@
         {% else %}
             <tr class="table-tr">
                 <td class="table-td"
-                    colspan="{{ numberOfColumns }}">{{ 'clients.list_no_records_found'|trans }}</td>
+                    colspan="{{ number_of_columns }}">{{ 'clients.list_no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
         <tr class="table-tr">
@@ -69,7 +69,7 @@
                     {{ 'clients.action_create_new'|trans }}
                 </a>
             </td>
-            <td class="table-td" colspan="{{ numberOfColumns - 2 }}">
+            <td class="table-td" colspan="{{ number_of_columns - 2 }}">
                 {{ knp_pagination_render(clients) }}
             </td>
         </tr>

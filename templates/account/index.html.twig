@@ -17,7 +17,7 @@
         </div>
     {{ form_end(form) }}
 
-    {% set numberOfColumns = 6 %}
+    {% set number_of_columns = 6 %}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
@@ -43,7 +43,7 @@
         {% else %}
             <tr class="table-tr">
                 <td class="table-td"
-                    colspan="{{ numberOfColumns }}">{{ 'accounts.list_no_records_found'|trans }}</td>
+                    colspan="{{ number_of_columns }}">{{ 'accounts.list_no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
         <tr class="table-tr">
@@ -52,7 +52,7 @@
                     {{ 'accounts.action_create_new'|trans }}
                 </a>
             </td>
-            <td class="table-td" colspan="{{ numberOfColumns - 2 }}" class="text-right">
+            <td class="table-td" colspan="{{ number_of_columns - 2 }}" class="text-right">
                 {{ knp_pagination_render(accounts) }}
             </td>
         </tr>

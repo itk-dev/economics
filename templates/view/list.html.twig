@@ -7,7 +7,7 @@
 
     <div>{{ 'view.list_description'|trans }}</div>
 
-    {% set numberOfColumns = 3 %}
+    {% set number_of_columns = 3 %}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
@@ -43,11 +43,11 @@
         {% if views is empty %}
             <tr class="table-tr">
                 <td class="table-td"
-                    colspan="{{ numberOfColumns }}">{{ 'view.list_no_records_found'|trans }}</td>
+                    colspan="{{ number_of_columns }}">{{ 'view.list_no_records_found'|trans }}</td>
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="{{ numberOfColumns }}">
+            <td class="table-td" colspan="{{ number_of_columns }}">
                 <a class="link" href="{{ path('app_view_add', {}|merge(view is defined ? {view: view} : {})) }}">
                     {{ 'view.action_create_new'|trans }}
                 </a>
