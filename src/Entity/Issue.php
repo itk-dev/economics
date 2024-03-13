@@ -52,7 +52,7 @@ class Issue extends AbstractBaseEntity
     private ?Project $project = null;
 
     #[ORM\OneToMany(mappedBy: 'issue', targetEntity: IssueProduct::class, orphanRemoval: true)]
-    #[ORM\OrderBy(['createdAt' => Criteria::DESC])]
+    #[ORM\OrderBy(['createdAt' => Criteria::ASC])]
     private Collection $products;
 
     public function __construct()

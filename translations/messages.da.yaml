@@ -672,5 +672,6 @@ issue:
         name: "Produkt"
         price: "Pris"
         quantity: "Antal"
+        description: "Beskrivelse"
         total: "I alt"
         list_no_records_found: "Ingen produkter"

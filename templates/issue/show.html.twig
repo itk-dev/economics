@@ -37,7 +37,7 @@
         </div>
     {% endif %}
 
-    {% set number_of_columns = 5 %}
+    {% set number_of_columns = 6 %}
 
     {# The form theme adds a div element with the (default?) form id inside a form  #}
     {% set add_product_form_id = 'add_product_form_id' %}
@@ -48,17 +48,19 @@
                 <th class="table-th amount text-right">{{ 'issue.product.price'|trans }}</th>
                 <th class="table-th number text-right">{{ 'issue.product.quantity'|trans }}</th>
                 <th class="table-th amount text-right">{{ 'issue.product.total'|trans }}</th>
+                <th class="table-th">{{ 'issue.product.description'|trans }}</th>
                 <th class="table-th"></th>
             </tr>
         </thead>
         <tfoot>
-        {% if project.products is not empty %}
+        {% if add_product_form %}
             <tr>
                 <td class="table-td" colspan="2">
                     {{ form_widget(add_product_form.product, {attr: {form: add_product_form_id}}) }}
                 </td>
                 <td class="table-td number text-right">{{ form_widget(add_product_form.quantity, {attr: {form: add_product_form_id}}) }}</td>
                 <td></td>
+                <td class="table-td">{{ form_widget(add_product_form.description, {attr: {form: add_product_form_id}}) }}</td>
                 <td class="table-td">{{ form_widget(add_product_form.submit, {attr: {form: add_product_form_id}}) }}</td>
             </tr>
         {% endif %}
@@ -79,6 +81,7 @@
                 <td class="table-td amount text-right">{{ macros.format_amount(product.price) }}</td>
                 <td class="table-td number text-right">{{ edit_product_form ? form_widget(edit_product_form.quantity, {attr: {form: edit_product_form_id}}) : issue_product.quantity }}</td>
                 <td class="table-td amount text-right">{{ macros.format_amount(issue_product.total) }}</td>
+                <td class="table-td">{{ edit_product_form ? form_widget(edit_product_form.description, {attr: {form: edit_product_form_id}}) : issue_product.description }}</td>
                 <td class="table-td">
                     <div class="flex flex-row">
                         {% if edit_product_form %}
@@ -107,10 +110,14 @@
         </tbody>
     </table>
 
-    {% if project.products is not empty %}
+    {% if add_product_form %}
         {# Important: The actual add_product_form *must* come after the individual form fields in the table #}
         {# Furthermore, we must add rou custom id since the form contains a div element with the (default) form id #}
-        {{ form(add_product_form, {attr: {id: add_product_form_id}}) }}</td>
+        {{ form_start(add_product_form, {attr: {id: add_product_form_id}}) }}
+        <div style="display: none">
+            {{ form_rest(add_product_form) }}
+        </div>
+        {{ form_end(add_product_form) }}
     {% endif %}
 
     <div class="bottom-actions">

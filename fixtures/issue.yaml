@@ -18,3 +18,9 @@ App\Entity\IssueProduct:
     issue: '@issue-001'
     product: '@product-001'
     quantity: 3
+
+  issue-product-002:
+    issue: '@issue-001'
+    product: '@product-002'
+    quantity: 123
+    description: 'This was tricky'

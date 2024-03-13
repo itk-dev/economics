@@ -49,14 +49,16 @@ class IssueController extends AbstractController
     {
         $product = (new IssueProduct())
             ->setIssue($issue);
-        $addProductForm = $this->createForm(IssueProductType::class, $product, [
-            'project' => $project,
-            'action' => $this->generateUrl('app_issue_add_product', [
-                'project' => $project->getId(),
-                'id' => $issue->getId(),
-            ]),
-            'method' => Request::METHOD_POST,
-        ]);
+        $addProductForm = $project->getProducts()->isEmpty()
+            ? null
+            : $this->createForm(IssueProductType::class, $product, [
+                'project' => $project,
+                'action' => $this->generateUrl('app_issue_add_product', [
+                    'project' => $project->getId(),
+                    'id' => $issue->getId(),
+                ]),
+                'method' => Request::METHOD_POST,
+            ]);
 
         // Index issue products by id.
         $products = [];
