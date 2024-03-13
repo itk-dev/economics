@@ -31,13 +31,14 @@ class IssueController extends AbstractController
     public function index(Request $request, Project $project, IssueRepository $issueRepository): Response
     {
         $issueFilterData = new IssueFilterData();
+        $issueFilterData->project ??= $project;
         $form = $this->createForm(IssueFilterType::class, $issueFilterData);
         $form->handleRequest($request);
 
         $pagination = $issueRepository->getFilteredPagination($issueFilterData, $request->query->getInt('page', 1));
 
         return $this->render('issue/index.html.twig', $this->viewService->addView([
-            'project' => $project,
+            'project' => $issueFilterData->project,
             'issues' => $pagination,
             'form' => $form,
         ]));

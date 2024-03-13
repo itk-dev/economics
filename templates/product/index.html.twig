@@ -17,7 +17,7 @@
     </div>
     {{ form_end(form) }}
 
-    {% set numberOfColumns = 7 %}
+    {% set number_of_columns = 7 %}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
@@ -49,14 +49,14 @@
         {% endfor %}
         {% if products is empty %}
             <tr class="table-tr">
-                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'product.list_no_records_found'|trans }}</td>
+                <td class="table-td" colspan="{{ number_of_columns }}">{{ 'product.list_no_records_found'|trans }}</td>
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="{{ numberOfColumns - 3 }}">
-                <a class="link" href="{{ path('app_product_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'product.action_create_new'|trans }}</a>
+            <td class="table-td" colspan="{{ number_of_columns - 3 }}">
+                <a class="link" href="{{ path('app_product_new', {project: project.id|default(null)}|merge(view is defined ? {view: view} : {})) }}">{{ 'product.action_create_new'|trans }}</a>
             </td>
-            <td class="table-td text-right" colspan="{{ numberOfColumns - 4 }}">
+            <td class="table-td text-right" colspan="{{ number_of_columns - 4 }}">
                 {{ knp_pagination_render(products) }}
             </td>
         </tr>

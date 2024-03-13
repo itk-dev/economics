@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\Project;
 use App\Form\ProductFilterType;
 use App\Form\ProductType;
 use App\Model\Invoices\ProductFilterData;
@@ -22,6 +23,7 @@ class ProductController extends AbstractController
 {
     public function __construct(
         private readonly ViewService $viewService,
+        private readonly ProjectRepository $projectRepository
     ) {
     }
 
@@ -29,25 +31,25 @@ class ProductController extends AbstractController
     public function index(Request $request, ProductRepository $productRepository): Response
     {
         $productFilterData = new ProductFilterData();
+        $productFilterData->project ??= $this->getProject($request);
         $form = $this->createForm(ProductFilterType::class, $productFilterData);
         $form->handleRequest($request);
 
         $pagination = $productRepository->getFilteredPagination($productFilterData, $request->query->getInt('page', 1));
 
         return $this->render('product/index.html.twig', $this->viewService->addView([
+            'project' => $productFilterData->project,
             'products' => $pagination,
             'form' => $form,
         ]));
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ProjectRepository $projectRepository, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $product = new Product();
-        if ($projectId = $request->query->get('project')) {
-            if ($project = $projectRepository->find($projectId)) {
-                $product->setProject($project);
-            }
+        if ($project = $this->getProject($request)) {
+            $product->setProject($project);
         }
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
@@ -100,5 +102,14 @@ class ProductController extends AbstractController
         }
 
         return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function getProject(Request $request): ?Project
+    {
+        if ($projectId = $request->query->get('project')) {
+            return $this->projectRepository->find($projectId);
+        }
+
+        return null;
     }
 }

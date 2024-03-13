@@ -58,7 +58,9 @@
                 </td>
                 <td class="table-td">
                     <a class="link whitespace-nowrap" href="{{ path('app_project_edit', {'id': project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.action_edit'|trans }}</a>
-                    <a class="link whitespace-nowrap" href="{{ path('app_issue_index', {'project': project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.action_view_issues'|trans }}</a>
+                    {% if project.issues is not empty %}
+                        <a class="link whitespace-nowrap" href="{{ path('app_issue_index', {'project': project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.action_view_issues'|trans }}</a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

@@ -16,7 +16,7 @@
     </div>
     {{ form_end(form) }}
 
-    {% set numberOfColumns = 5 %}
+    {% set number_of_columns = 5 %}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
@@ -61,11 +61,11 @@
         {% endfor %}
         {% if issues is empty %}
             <tr class="table-tr">
-                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'issue.list_no_records_found'|trans }}</td>
+                <td class="table-td" colspan="{{ number_of_columns }}">{{ 'issue.list_no_records_found'|trans }}</td>
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td text-right" colspan="{{ numberOfColumns }}">
+            <td class="table-td text-right" colspan="{{ number_of_columns }}">
                 {{ knp_pagination_render(issues) }}
             </td>
         </tr>

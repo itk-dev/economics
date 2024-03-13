@@ -22,17 +22,22 @@
         </tbody>
     </table>
 
-    <h2 id="products">{{ 'issue.products'|trans }}</h2>
+    <div class="flex flex-row">
+        <div class="flex-grow">
+            <h2 id="products">{{ 'issue.products'|trans }}</h2>
+        </div>
+        <div>
+            <a class="link" href="{{ path('app_product_index', {project: project.id}) }}">{{ 'issue.manage_products_in_project'|trans({'%project%': project.name}) }}</a>
+        </div>
+    </div>
 
     {% if project.products is empty %}
         <div class="alert-warning">
             {{ 'issue.no_products_defined_in_project'|trans({'%project%': project.name}) }}
-            <a class="link"
-               href="{{ path('app_product_new', {project: project.id}) }}">{{ 'issue.create_product_in_project'|trans({'%project%': project.name}) }}</a>
         </div>
     {% endif %}
 
-    {% set numberOfColumns = 5 %}
+    {% set number_of_columns = 5 %}
 
     {# The form theme adds a div element with the (default?) form id inside a form  #}
     {% set add_product_form_id = 'add_product_form_id' %}
@@ -49,7 +54,9 @@
         <tfoot>
         {% if project.products is not empty %}
             <tr>
-                <td class="table-td" colspan="2">{{ form_widget(add_product_form.product, {attr: {form: add_product_form_id}}) }}</td>
+                <td class="table-td" colspan="2">
+                    {{ form_widget(add_product_form.product, {attr: {form: add_product_form_id}}) }}
+                </td>
                 <td class="table-td number text-right">{{ form_widget(add_product_form.quantity, {attr: {form: add_product_form_id}}) }}</td>
                 <td></td>
                 <td class="table-td">{{ form_widget(add_product_form.submit, {attr: {form: add_product_form_id}}) }}</td>
@@ -66,7 +73,7 @@
             {% for issue_product in issue.products %}
             {% set product = issue_product.product %}
             {% set edit_product_form = edit_product_forms[issue_product.id]|default(null) %}
-            {% set edit_product_form_id = 'edit_product_form_'~issue_product.id %}
+            {% set edit_product_form_id = 'edit_product_form_' ~ issue_product.id %}
             <tr>
                 <td class="table-td">{{ product.name }}</td>
                 <td class="table-td amount text-right">{{ macros.format_amount(product.price) }}</td>
@@ -94,7 +101,7 @@
             {% endfor %}
             {% if issue.products is empty %}
                 <tr class="table-tr">
-                    <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'issue.product.list_no_records_found'|trans }}</td>
+                    <td class="table-td" colspan="{{ number_of_columns }}">{{ 'issue.product.list_no_records_found'|trans }}</td>
                 </tr>
             {% endif %}
         </tbody>

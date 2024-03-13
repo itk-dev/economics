@@ -227,6 +227,22 @@ jobs:
                     docker compose run --rm node npm install
                     docker compose run --rm node npm run coding-standards-check/markdownlint
 
+    twig-coding-standards:
+        name: Twig coding standards
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Install
+                run: |
+                    docker network create frontend
+                    docker compose up --detach
+                    docker compose exec --user root phpfpm composer install
+            -   name: Coding standards
+                run: |
+                    docker compose exec phpfpm composer coding-standards-check/twigcs
+
     phpunit:
         runs-on: ubuntu-latest
         services:

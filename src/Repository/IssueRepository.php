@@ -45,6 +45,11 @@ class IssueRepository extends ServiceEntityRepository
             $qb->andWhere('issue.name LIKE :name')->setParameter('name', "%$name%");
         }
 
+        if (!is_null($issueFilterData->project)) {
+            $project = $issueFilterData->project;
+            $qb->andWhere('issue.project = :project')->setParameter('project', $project);
+        }
+
         return $this->paginator->paginate(
             $qb,
             $page,

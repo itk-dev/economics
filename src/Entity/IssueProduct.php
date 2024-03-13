@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: IssueProductRepository::class)]
 class IssueProduct extends AbstractBaseEntity
 {
-    #[ORM\ManyToOne(inversedBy: 'issueProducts')]
+    #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Issue $issue = null;
 

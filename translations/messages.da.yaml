@@ -469,6 +469,7 @@ product:
     actions: 'Handlinger'
     action_create_new: 'Opret nyt produkt'
     action_edit: 'Redigér'
+    select_project: "Vælg projekt"
 
 project:
     title: "Projekter"
@@ -645,6 +646,7 @@ roles:
     ROLE_PROJECT_BILLING: 'Projektfakturering'
     ROLE_PLANNING: 'Planlægning'
     ROLE_REPORT: 'Rapporter'
+    ROLE_PRODUCT_MANAGER: 'Produktadministrator'
 
 issue:
     title: "Opgaver (%project%)"
@@ -661,7 +663,8 @@ issue:
     form_name: "Navn"
     action_show: "Vis"
     no_products_defined_in_project: "Projektet har ingen produkter."
-    create_product_in_project: "Opret et produkt"
+    manage_products_in_project: "Rediger produkter"
+    list_no_records_found: "Ingen opgaver fundet."
     product:
         action_delete: "Fjern"
         action_add: "Tilføj produkt"
