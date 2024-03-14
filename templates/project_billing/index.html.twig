@@ -53,7 +53,7 @@
         {% endif %}
         <tr class="table-tr">
             <td class="table-td" colspan="{{ number_of_columns - 6 }}"><a class="link" href="{{ path('app_project_billing_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_create_new'|trans }}</a>
-            <td class="table-td" colspan="{{ number_of_columnsemacs - 2 }}" class="text-right">
+            <td class="table-td" colspan="{{ number_of_columns - 2 }}" class="text-right">
                 {{ knp_pagination_render(projectBillings) }}
             </td>
         </tr>
