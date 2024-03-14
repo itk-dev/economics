@@ -119,6 +119,24 @@ After loading fixtures you can sign in as `admin@example.com`:
 open $(docker compose exec phpfpm bin/console itk-dev:openid-connect:login admin@example.com)
 ```
 
+Use
+
+``` shell
+docker run --rm --interactive mikefarah/yq '.["App\Entity\User"].[].email' - < fixtures/user.yaml
+```
+
+to list email of all fixture users.
+
+Generate login URLs for alle users with
+
+``` shell
+for email in $(docker run --rm --interactive mikefarah/yq '.["App\Entity\User"].[].email' - < fixtures/user.yaml); do
+   echo "$email"
+   echo $(docker compose exec phpfpm bin/console itk-dev:openid-connect:login "$email")
+   echo
+done
+```
+
 See [fixtures/user.yaml](fixtures/user.yaml) for additional info on users created when loading
 fixtures.
 
