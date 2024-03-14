@@ -16,7 +16,7 @@ export default class extends Controller {
             "#main-menu .navigation-item",
         );
 
-        menuItems.forEach(function (menuItem) {
+        menuItems.forEach((menuItem) => {
             if (menuItem.pathname === currentPath) {
                 menuItem.classList.add("current");
 
