@@ -4,12 +4,11 @@
 
 {% block content %}
 
-    {% include '/components/page-header.html.twig' with {
-            'title': 'client.title'|trans,
-            'link_text': 'clients.action_create_new'|trans,
-            'link_url': 'app_client_new'
-        }
-    %}
+    {% include 'components/page-header.html.twig' with {
+        'title': 'client.title'|trans,
+        'link_text': 'clients.action_create_new'|trans,
+        'link_url': 'app_client_new'
+    } %}
 
     {% set number_of_columns = 11 %}
 

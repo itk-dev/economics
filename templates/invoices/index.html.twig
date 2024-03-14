@@ -4,12 +4,11 @@
 
 {% block content %}
 
-    {% include '/components/page-header.html.twig' with {
-            'title': 'invoices.title'|trans,
-            'link_text': 'invoices.action_create_new'|trans,
-            'link_url': 'app_invoices_new'
-        }
-    %}
+    {% include 'components/page-header.html.twig' with {
+        'title': 'invoices.title'|trans,
+        'link_text': 'invoices.action_create_new'|trans,
+        'link_url': 'app_invoices_new'
+    } %}
 
     {{ form_start(form) }}
     <div class="form-default">

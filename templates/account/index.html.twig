@@ -4,12 +4,11 @@
 
 {% block content %}
 
-    {% include '/components/page-header.html.twig' with {
-            'title': 'account.title'|trans,
-            'link_text': 'accounts.action_create_new'|trans,
-            'link_url': 'app_account_new'
-        }
-    %}
+    {% include 'components/page-header.html.twig' with {
+        'title': 'account.title'|trans,
+        'link_text': 'accounts.action_create_new'|trans,
+        'link_url': 'app_account_new'
+    } %}
 
     {{ form_start(form) }}
         <div class="form-default">

@@ -5,10 +5,9 @@
 {% block content %}
 
 
-    {% include '/components/page-header.html.twig' with {
-            'title': invoice.name,
-        }
-    %}
+    {% include 'components/page-header.html.twig' with {
+        'title': invoice.name,
+    } %}
 
     {{ form_start(form) }}
     <div class="grid-split selections" {{ stimulus_controller('choices') }}>

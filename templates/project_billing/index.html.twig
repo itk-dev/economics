@@ -4,12 +4,11 @@
 
 {% block content %}
 
-    {% include '/components/page-header.html.twig' with {
-            'title': 'project_billing.title'|trans,
-            'link_text': 'project_billing.action_create_new'|trans,
-            'link_url': 'app_project_billing_new'
-        }
-    %}
+    {% include 'components/page-header.html.twig' with {
+        'title': 'project_billing.title'|trans,
+        'link_text': 'project_billing.action_create_new'|trans,
+        'link_url': 'app_project_billing_new'
+    } %}
 
     {{ form_start(form) }}
     <div class="form-default">
