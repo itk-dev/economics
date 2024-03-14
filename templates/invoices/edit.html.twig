@@ -3,7 +3,12 @@
 {% block title %}{{ 'invoices.edit'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ invoice.name }}</h1>
+
+
+    {% include '/components/page-header.html.twig' with {
+            'title': invoice.name,
+        }
+    %}
 
     {{ form_start(form) }}
     <div class="grid-split selections" {{ stimulus_controller('choices') }}>

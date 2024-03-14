@@ -3,9 +3,13 @@
 {% block title %}{{ 'invoices.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_invoices_new', {}|merge(view is defined ? {view: view} : {})) }}"
-       style="float: right">{{ 'invoices.action_create_new'|trans }}</a>
-    <h1 class="page-title">{{ 'invoices.title'|trans }}</h1>
+
+    {% include '/components/page-header.html.twig' with {
+            'title': 'invoices.title'|trans,
+            'link_text': 'invoices.action_create_new'|trans,
+            'link_url': 'app_invoices_new'
+        }
+    %}
 
     {{ form_start(form) }}
     <div class="form-default">

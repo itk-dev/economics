@@ -1,0 +1,6 @@
+<header class="w-full flex justify-between items-center">
+    <h1 class="page-title">{{ title }}</h1>
+    {% if link_url %}
+        <a class="link border border-blue-600 rounded px-3 py-2 no-underline hover:bg-blue-50" href="{{ path(link_url, {}|merge(view is defined ? {view: view} : {})) }}">{{ link_text }}</a>
+    {% endif %}
+</header>

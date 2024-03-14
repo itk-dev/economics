@@ -3,10 +3,13 @@
 {% block title %}{{ 'account.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_account_new', {}|merge(view is defined ? {view: view} : {})) }}"
-       style="float: right">{{ 'accounts.action_create_new'|trans }}</a>
 
-    <h1 class="page-title">{{ 'account.title'|trans }}</h1>
+    {% include '/components/page-header.html.twig' with {
+            'title': 'account.title'|trans,
+            'link_text': 'accounts.action_create_new'|trans,
+            'link_url': 'app_account_new'
+        }
+    %}
 
     {{ form_start(form) }}
         <div class="form-default">
