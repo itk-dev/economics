@@ -21,7 +21,7 @@
     {% set number_of_columns = 9 %}
 
     <table class="table margin-bottom">
-        <thead class="table-thead">
+        <thead class="table-th">
         <tr>
             <th class="table-th{% if projects.isSorted('project.id') %} sorted{% endif %}">{{ knp_pagination_sortable(projects, 'project.id'|trans, 'project.id') }}</th>
             <th class="table-th{% if projects.isSorted('project.name') %} sorted{% endif %}">{{ knp_pagination_sortable(projects, 'project.name'|trans, 'project.name') }}</th>

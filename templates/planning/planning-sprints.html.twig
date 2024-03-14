@@ -39,17 +39,17 @@
 				<table class="table-auto">
 					<thead>
 						<tr>
-							<th class="table-cell"></th>
-							<th class="table-cell"></th>
+							<th class="table-td"></th>
+							<th class="table-td"></th>
 							{% for sprint in sprints %}
-								<th class="table-cell-heading" style="white-space: nowrap;">{{ sprint.displayName }}</th>
+								<th class="table-td-heading" style="white-space: nowrap;">{{ sprint.displayName }}</th>
 							{% endfor %}
 						</tr>
 					</thead>
 					{% for assignee in assignees %}
 						<tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ assignee.key }}" {{ stimulus_target('show-hide', 'entry') }}>
-							<tr class="table-row">
-								<td class="table-cell-heading">
+							<tr class="table-tr">
+								<td class="table-td-heading">
 									<span>{{ assignee.displayName }}</span>
 									<span class="float-right">
 										<button class="mr-2" type="button" {{ stimulus_action('show-hide', 'toggleEntry') }} data-toggle-id="{{ assignee.key }}" data-toggle-target="button" style="width: 16px;">
@@ -64,46 +64,46 @@
 								{% for sprint in sprints %}
 									{% if assignee.sprintSums.containsKey(sprint.sprintId) %}
 										{% set res = assignee.sprintSums.get(sprint.sprintId).sumHours %}
-										<td class="table-cell-heading{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
+										<td class="table-td-heading{{ res < sprint.sprintGoalLow ? ' low' : '' }}{{ res >= sprint.sprintGoalLow and res <= sprint.sprintGoalHigh ? ' success' : '' }}{{ res > sprint.sprintGoalHigh ? ' high' : '' }}">
 											{{ res }}
 										</td>
 									{% else %}
-										<td class="table-cell-heading"></td>
+										<td class="table-td-heading"></td>
 									{% endif %}
 								{% endfor %}
 							</tr>
 							{% for project in assignee.projects %}
-								<tr {{ stimulus_target('toggle-parent-child', 'parent') }} class="table-row">
-									<td class="table-cell"></td>
-									<td class="table-cell-heading">{{ project.displayName }}<span></span>
+								<tr {{ stimulus_target('toggle-parent-child', 'parent') }} class="table-tr">
+									<td class="table-td"></td>
+									<td class="table-td-heading">{{ project.displayName }}<span></span>
 										<button class="float-right" type="button" {{ stimulus_action('toggle-parent-child', 'toggleChild') }} {{ stimulus_target('toggle-parent-child', 'button') }} data-parent-id="{{ project.key }}" style="width: 16px;">
 											{{ svg_expand }}
 										</button>
 									</td>
 									{% for sprint in sprints %}
 										{% if project.sprintSums.containsKey(sprint.sprintId) %}
-											<td class="table-cell-heading">
+											<td class="table-td-heading">
 												{{ project.sprintSums.get(sprint.sprintId).sumHours }}
 											</td>
 										{% else %}
-											<td class="table-cell-heading"></td>
+											<td class="table-td-heading"></td>
 										{% endif %}
 									{% endfor %}
 								</tr>
 								{% for issue in project.issues %}
 									<tr {{ stimulus_target('toggle-parent-child', 'child') }} data-parent-id="{{ project.key }}">
-										<td class="table-cell"></td>
-										<td class="table-cell">
+										<td class="table-td"></td>
+										<td class="table-td">
 											<a href="{{ issue.link }}" class="link">{{ issue.key }}</a>:
 											{{ issue.displayName }}
 										</td>
 										{% for sprint in sprints %}
 											{% if issue.sprintId == sprint.sprintId %}
-												<td class="table-cell-heading">
+												<td class="table-td-heading">
 													{{ issue.remainingHours ?? 'UE' }}
 												</td>
 											{% else %}
-												<td class="table-cell-heading"></td>
+												<td class="table-td-heading"></td>
 											{% endif %}
 										{% endfor %}
 									</tr>
@@ -124,17 +124,17 @@
 				<table class="table-auto">
 					<thead>
 						<tr>
-							<th class="table-cell"></th>
-							<th class="table-cell"></th>
+							<th class="table-td"></th>
+							<th class="table-td"></th>
 							{% for sprint in sprints %}
-								<th class="table-cell-heading" style="white-space: nowrap;">{{ sprint.displayName }}</th>
+								<th class="table-td-heading" style="white-space: nowrap;">{{ sprint.displayName }}</th>
 							{% endfor %}
 						</tr>
 					</thead>
 					{% for project in projects %}
 						<tbody {{ stimulus_controller('toggle-parent-child') }}>
-							<tr class="table-row">
-								<td class="table-cell-heading">
+							<tr class="table-tr">
+								<td class="table-td-heading">
 									{{ project.displayName }}<span></span>
 									<button class="float-right" type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }} {{ stimulus_target('toggle-parent-child', 'button') }}>
 										{{ svg_expand }}
@@ -144,18 +144,18 @@
 								{% for sprint in sprints %}
 									{% if project.sprintSums.containsKey(sprint.sprintId) %}
 										{% set res = project.sprintSums.get(sprint.sprintId).sumHours %}
-										<td class="table-cell-heading">
+										<td class="table-td-heading">
 											{{ res }}
 										</td>
 									{% else %}
-										<td class="table-cell-heading"></td>
+										<td class="table-td-heading"></td>
 									{% endif %}
 								{% endfor %}
 							</tr>
 							{% for assignee in project.assignees %}
-								<tr {{ stimulus_target('toggle-parent-child', 'parent') }} class="table-row">
-									<td class="table-cell"></td>
-									<td class="table-cell-heading">
+								<tr {{ stimulus_target('toggle-parent-child', 'parent') }} class="table-tr">
+									<td class="table-td"></td>
+									<td class="table-td-heading">
 										{{ assignee.displayName }}<span></span>
 										<button class="float-right" type="button" {{ stimulus_action('toggle-parent-child', 'toggleChild') }} {{ stimulus_target('toggle-parent-child', 'button') }} data-parent-id="{{ assignee.key }}">
 											{{ svg_expand }}
@@ -163,28 +163,28 @@
 									</td>
 									{% for sprint in sprints %}
 										{% if assignee.sprintSums.containsKey(sprint.sprintId) %}
-											<td class="table-cell-heading">
+											<td class="table-td-heading">
 												{{ assignee.sprintSums.get(sprint.sprintId).sumHours }}
 											</td>
 										{% else %}
-											<td class="table-cell-heading"></td>
+											<td class="table-td-heading"></td>
 										{% endif %}
 									{% endfor %}
 								</tr>
 								{% for issue in assignee.issues %}
 									<tr {{ stimulus_target('toggle-parent-child', 'child') }} data-parent-id="{{ assignee.key }}">
-										<td class="table-cell"></td>
-										<td class="table-cell">
+										<td class="table-td"></td>
+										<td class="table-td">
 											<a href="{{ issue.link }}" class="link">{{ issue.key }}</a>:
 											{{ issue.displayName }}
 										</td>
 										{% for sprint in sprints %}
 											{% if issue.sprintId == sprint.sprintId %}
-												<td class="table-cell-heading">
+												<td class="table-td-heading">
 													{{ issue.remainingHours ?? 'UE' }}
 												</td>
 											{% else %}
-												<td class="table-cell-heading"></td>
+												<td class="table-td-heading"></td>
 											{% endif %}
 										{% endfor %}
 									</tr>

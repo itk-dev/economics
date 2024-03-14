@@ -19,7 +19,7 @@
     {% set number_of_columns = 5 %}
 
     <table class="table margin-bottom">
-        <thead class="table-thead">
+        <thead class="table-th">
         <tr>
             {{ macros.knp_pagination_sortable_header(issues, 'issue.id'|trans, 'issue.id') }}
             {{ macros.knp_pagination_sortable_header(issues, 'issue.name'|trans, 'issue.name') }}
