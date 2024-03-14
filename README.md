@@ -184,6 +184,14 @@ docker compose exec phpfpm composer prepare-code
 docker compose run --rm node npm run coding-standards-apply
 ```
 
+### Code analysis
+
+We use [Psalm](https://psalm.dev/) for static code analysis:
+
+``` shell
+docker compose exec phpfpm composer code-analysis
+```
+
 ### Testing
 
 The test setup follows the guidelines from: <https://symfony.com/doc/current/testing.html>.

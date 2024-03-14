@@ -666,7 +666,7 @@ issue:
     manage_products_in_project: "Rediger produkter"
     list_no_records_found: "Ingen opgaver fundet."
 
-    product_added: "Produkt tilføjet"
+    product_added: "Produkt %product% tilføjet"
     error_adding_product: "Fejl under tilføjelse af produkt"
     product_updated: "Produkt %product% opdateret"
     error_editing_product: "Fejl under opdatering af produkt"
