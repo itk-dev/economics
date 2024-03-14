@@ -41,6 +41,8 @@
                         {% include 'components/navigation-item.html.twig' with {icon: 'view', title: 'navigation.views'|trans, role: 'ROLE_ADMIN', route: path('app_view_list', {}|merge(view is defined ? {view: view} : {}))} %}
                     </ul>
                 </li>
+            {% elseif is_granted('ROLE_PRODUCT_MANAGER') %}
+                {% include 'components/navigation-item.html.twig' with {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_PRODUCT_MANAGER', route: path('app_project_index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% endif %}
         </ul>
     </div>
