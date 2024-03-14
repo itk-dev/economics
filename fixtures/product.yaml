@@ -5,6 +5,16 @@ App\Entity\Product:
     price: 87.00
 
   product-002:
-    name: Another roduct
+    name: Another product
     project: '@project-001'
     price: 42.00
+
+  product-003:
+    name: A very cheap product
+    project: '@project-002'
+    price: 0
+
+  product-004:
+    name: A very expensive product
+    project: '@project-002'
+    price: 999_999.99
