@@ -110,8 +110,9 @@ class IssueController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($product);
             $entityManager->flush();
+            $this->addFlash('success', new TranslatableMessage('issue.product_added', ['%product%' => $product->getProduct()->getName()]));
         } else {
-            $this->addFlash('danger', new TranslatableMessage('issue.error_adding_product'));
+            $this->addFlash('danger', new TranslatableMessage('issue.error_adding_product', ['%product%' => $product->getProduct()->getName()]));
         }
 
         return $this->redirectToRoute('app_issue_show', [
@@ -131,8 +132,9 @@ class IssueController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($product);
             $entityManager->flush();
+            $this->addFlash('success', new TranslatableMessage('issue.product_updated', ['%product%' => $product->getProduct()->getName()]));
         } else {
-            $this->addFlash('danger', new TranslatableMessage('issue.error_editing_product'));
+            $this->addFlash('danger', new TranslatableMessage('issue.error_editing_product', ['%product%' => $product->getProduct()->getName()]));
         }
 
         return $this->redirectToRoute('app_issue_show', [
@@ -147,6 +149,7 @@ class IssueController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$product->getId(), (string) $request->request->get('_token'))) {
             $entityManager->remove($product);
             $entityManager->flush();
+            $this->addFlash('success', new TranslatableMessage('issue.product_deleted', ['%product%' => $product->getProduct()->getName()]));
         }
 
         return $this->redirectToRoute('app_issue_show', [

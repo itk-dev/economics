@@ -42,6 +42,7 @@ class IssueProductType extends AbstractType
                 ],
             ])
             ->add('description', TextareaType::class, [
+                'required' => false,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => $builder->getData()?->getId()

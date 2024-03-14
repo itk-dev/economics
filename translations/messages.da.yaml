@@ -665,6 +665,13 @@ issue:
     no_products_defined_in_project: "Projektet har ingen produkter."
     manage_products_in_project: "Rediger produkter"
     list_no_records_found: "Ingen opgaver fundet."
+
+    product_added: "Produkt tilføjet"
+    error_adding_product: "Fejl under tilføjelse af produkt"
+    product_updated: "Produkt %product% opdateret"
+    error_editing_product: "Fejl under opdatering af produkt"
+    product_deleted: "Produkt %product% fjernet"
+
     product:
         action_delete: "Fjern"
         action_add: "Tilføj produkt"
