@@ -73,7 +73,7 @@ class DataSynchronizationService
 
             foreach ($projectDatum->versions as $versionData) {
                 foreach ($versionData as $versionDatum) {
-                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
+                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionDatum->id, 'dataProvider' => $dataProvider]);
 
                     if (!$version) {
                         $version = new Version();
@@ -82,7 +82,7 @@ class DataSynchronizationService
                     }
 
                     $version->setName($versionDatum->name);
-                    $version->setProjectTrackerId($versionDatum->projectTrackerId);
+                    $version->setProjectTrackerId($versionDatum->id);
                     $version->setProject($project);
                 }
             }
