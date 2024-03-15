@@ -64,9 +64,23 @@ class IssueRepository extends ServiceEntityRepository
         $qb->andWhere('issue.resolutionDate <= :periodEnd');
         $qb->setParameter('periodStart', $from);
         $qb->setParameter('periodEnd', $to);
-        $qb->andWhere('issue.status = :status');
-        $qb->setParameter('status', 'Lukket');
+        $qb->andWhere('issue.status IN (:statuses)');
+        $qb->setParameter('statuses', $this->getClosedStatuses($project));
 
         return $qb->getQuery()->execute();
+    }
+
+    /**
+     * Get "closed" statuses for a project.
+     *
+     * @return string[]|array
+     */
+    private function getClosedStatuses(Project $project): array
+    {
+        // @TODO Get this from project somehow.
+        return [
+            'Lukket',
+            '0',
+        ];
     }
 }
