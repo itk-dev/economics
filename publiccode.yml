@@ -22,7 +22,7 @@ intendedAudience:
   scope:
     - society
   countries:
-    - da
+    - dk
 description:
   en:
     localisedName: Economics

@@ -184,7 +184,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         } catch (\Exception) {
         }
 
-        return $date?->getTimestamp() > 0 ? $date : null;
+        return isset($date) && ($date->getTimestamp() > 0) ? $date : null;
     }
 
     public function getProjectDataCollection(): ProjectDataCollection
