@@ -596,6 +596,7 @@ clients:
     list_no_records_found: "Ingen kunder"
     data_provider: "Datakilde"
     version_name: 'Version'
+    standardPrice: Standardpris
 
 delete:
     confirm: "Er du sikker på at du vil slette dette?"

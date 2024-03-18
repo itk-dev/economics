@@ -19,6 +19,7 @@ class ClientController extends AbstractController
 {
     public function __construct(
         private readonly ViewService $viewService,
+        private readonly array $options
     ) {
     }
 
@@ -42,6 +43,10 @@ class ClientController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $client = new Client();
+        if (isset($this->options['standard_price'])) {
+            $client->setStandardPrice((float) $this->options['standard_price']);
+        }
+
         $form = $this->createForm(ClientType::class, $client);
         $form->handleRequest($request);
 
