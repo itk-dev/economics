@@ -78,7 +78,6 @@ class IssueRepository extends ServiceEntityRepository
     private function getClosedStatuses(Project $project): array
     {
         // @TODO Get this from project somehow.
-        // SELECT * FROM zp_settings WHERE `key` = 'projectsettings.«project id».ticketlabels'
         return [
             'Lukket',
             '0',
