@@ -25,6 +25,7 @@ class InvoiceEntryController extends AbstractController
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
         private readonly ViewService $viewService,
+        private readonly array $options
     ) {
     }
 
@@ -47,9 +48,9 @@ class InvoiceEntryController extends AbstractController
 
         $client = $invoice->getClient();
 
-        if ($client) {
-            $invoiceEntry->setPrice($client->getStandardPrice());
-        }
+        // Get standard price from client with fallback to global value.
+        $standardPrice = (float) $this->options['standard_price'];
+        $invoiceEntry->setPrice($client?->getStandardPrice() ?? $standardPrice);
 
         if (InvoiceEntryTypeEnum::WORKLOG == $type) {
             $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry);

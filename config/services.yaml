@@ -42,3 +42,14 @@ services:
             $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
             $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
             $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
+
+    App\Controller\ClientController:
+        arguments:
+            $options:
+                standard_price: '%env(float:CLIENT_STANDARD_PRICE)%'
+
+    App\Controller\InvoiceEntryController:
+        arguments:
+            $options:
+                standard_price: '%env(float:CLIENT_STANDARD_PRICE)%'
+
