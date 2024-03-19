@@ -83,8 +83,11 @@ class ProjectBillingService
             throw new EconomicsException($this->translator->trans('exception.project_billing_no_entity_found'));
         }
 
+        // Delete all non-recorded (ikke-bogført) invoices.
         foreach ($projectBilling->getInvoices() as $invoice) {
-            $this->entityManager->remove($invoice);
+            if (!$invoice->isRecorded()) {
+                $this->entityManager->remove($invoice);
+            }
         }
 
         $this->entityManager->flush();
@@ -203,7 +206,9 @@ class ProjectBillingService
 
                 /** @var Worklog $worklog */
                 foreach ($worklogs as $worklog) {
-                    if (!$worklog->isBilled() && null === $worklog->getInvoiceEntry()) {
+                    // The invoice entry in the worklog may be non-null, but the entry may have a null id
+                    // @TODO Investigate why this is the case
+                    if (!$worklog->isBilled() && null === $worklog->getInvoiceEntry()?->getId()) {
                         $invoiceEntry->addWorklog($worklog);
                     }
                 }
