@@ -51,6 +51,8 @@
         "symfony/debug-bundle": "~6.4.0",
         "symfony/maker-bundle": "^1.48",
         "symfony/phpunit-bridge": "~6.4.0",
+        "symfony/stopwatch": "~6.4.0",
+        "symfony/web-profiler-bundle": "~6.4.0",
         "vimeo/psalm": "^5.0"
     },
     "replace": {
@@ -84,6 +86,7 @@
             "symfony/flex": true,
             "symfony/runtime": true
         },
+        "optimize-autoloader": true,
         "preferred-install": {
             "*": "dist"
         },
