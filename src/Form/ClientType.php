@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatableMessage;
 
 class ClientType extends AbstractType
 {
@@ -47,8 +48,8 @@ class ClientType extends AbstractType
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element', 'min' => 0],
                 'help_attr' => ['class' => 'form-help'],
-                'help' => 'create_client_form.client_standardPrice.help',
-                'required' => true,
+                'help' => new TranslatableMessage('create_client_form.client_standardPrice.help', ['%standard_price%' => $options['standard_price']]),
+                'required' => false,
                 'row_attr' => ['class' => 'form-row'],
                 'html5' => true,
             ])
@@ -131,8 +132,11 @@ class ClientType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'data_class' => Client::class,
-        ]);
+        $resolver
+            ->setDefaults([
+                'data_class' => Client::class,
+            ])
+            ->setRequired('standard_price')
+            ->setAllowedTypes('standard_price', 'float');
     }
 }

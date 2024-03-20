@@ -105,7 +105,7 @@ create_client_form:
         help: ""
     client_standardPrice:
         label: "Standardpris"
-        help: ""
+        help: "Hvis standardpris ikke er sat bruges den globale værdi (pt. %standard_price%)"
     type:
         label: "Kundetype"
         help: ""
@@ -596,7 +596,6 @@ clients:
     list_no_records_found: "Ingen kunder"
     data_provider: "Datakilde"
     version_name: 'Version'
-    standardPrice: Standardpris
 
 delete:
     confirm: "Er du sikker på at du vil slette dette?"

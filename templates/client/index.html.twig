@@ -31,7 +31,6 @@
             <th class="table-th {% if clients.isSorted('client.type') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.type'|trans, 'client.type') }}</th>
             <th class="table-th {% if clients.isSorted('client.psp') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.psp'|trans, 'client.psp') }}</th>
             <th class="table-th {% if clients.isSorted('client.ean') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.ean'|trans, 'client.ean') }}</th>
-            <th class="table-th {% if clients.isSorted('client.standardPrice') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.standardPrice'|trans, 'client.standardPrice') }}</th>
             <th class="table-th {% if clients.isSorted('client.customerKey') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.customer_key'|trans, 'client.customerKey') }}</th>
             <th class="table-th {% if clients.isSorted('client.versionName') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.version_name'|trans, 'client.versionName') }}</th>
             <th class="table-th">{{ 'clients.actions'|trans }}</th>
@@ -43,6 +42,7 @@
                 <td class="table-td">{{ client.id }}</td>
                 <td class="table-td">{{ client.name }}</td>
                 <td class="table-td">{{ client.contact }}</td>
+                {# @TODO Format standardPrice as amount #}
                 <td class="table-td">{{ client.standardPrice }}</td>
                 <td class="table-td">{{ client.dataProvider }}</td>
                 {% if client.type is not null %}
@@ -52,8 +52,6 @@
                 {% endif %}
                 <td class="table-td">{{ client.psp }}</td>
                 <td class="table-td">{{ client.ean }}</td>
-                {# @TODO Format standardPrice as amount #}
-                <td class="table-td">{{ client.standardPrice ? client.standardPrice|number_format }}</td>
                 <td class="table-td">{{ client.customerKey }}</td>
                 <td class="table-td">{{ client.versionName }}</td>
                 <td class="table-td">

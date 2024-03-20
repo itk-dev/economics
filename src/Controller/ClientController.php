@@ -43,11 +43,9 @@ class ClientController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $client = new Client();
-        if (isset($this->options['standard_price'])) {
-            $client->setStandardPrice((float) $this->options['standard_price']);
-        }
-
-        $form = $this->createForm(ClientType::class, $client);
+        $form = $this->createForm(ClientType::class, $client, [
+            'standard_price' => $this->options['standard_price'],
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -74,7 +72,9 @@ class ClientController extends AbstractController
     #[Route('/{id}/edit', name: 'app_client_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Client $client, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ClientType::class, $client);
+        $form = $this->createForm(ClientType::class, $client, [
+            'standard_price' => $this->options['standard_price'],
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
