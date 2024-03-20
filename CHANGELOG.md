@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-93](https://github.com/itk-dev/economics/pull/93)
+  Made price on client optional
 * [PR-87](https://github.com/itk-dev/economics/pull/87)
-  Fixed Leantime API reqeust
+  Fixed Leantime API request
 * [PR-91](https://github.com/itk-dev/economics/pull/91)
   Updated standard price on clients
 * [PR-89](https://github.com/itk-dev/economics/pull/89)
