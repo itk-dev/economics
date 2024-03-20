@@ -12,6 +12,7 @@ use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
+use App\Model\SprintReport\SprintReportVersion;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\DataProviderRepository;
@@ -72,8 +73,9 @@ class DataSynchronizationService
             $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
 
             foreach ($projectDatum->versions as $versionData) {
+                /** @var SprintReportVersion $versionDatum */
                 foreach ($versionData as $versionDatum) {
-                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
+                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionDatum->id, 'dataProvider' => $dataProvider]);
 
                     if (!$version) {
                         $version = new Version();
@@ -82,7 +84,7 @@ class DataSynchronizationService
                     }
 
                     $version->setName($versionDatum->name);
-                    $version->setProjectTrackerId($versionDatum->projectTrackerId);
+                    $version->setProjectTrackerId($versionDatum->id);
                     $version->setProject($project);
                 }
             }

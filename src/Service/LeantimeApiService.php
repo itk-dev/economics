@@ -170,10 +170,21 @@ class LeantimeApiService implements DataProviderServiceInterface
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }
             $issueData->projectId = $issue->projectId;
+            $issueData->resolutionDate = $this->getLeanDateTime($issue->editTo);
             $result[] = $issueData;
         }
 
         return new PagedResult($result, $startAt, count($issues), count($issues));
+    }
+
+    private function getLeanDateTime(string $s): ?\DateTime
+    {
+        try {
+            $date = new \DateTime($s, new \DateTimeZone('UTC'));
+        } catch (\Exception) {
+        }
+
+        return isset($date) && ($date->getTimestamp() > 0) ? $date : null;
     }
 
     public function getProjectDataCollection(): ProjectDataCollection
