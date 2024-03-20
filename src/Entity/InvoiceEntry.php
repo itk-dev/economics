@@ -7,14 +7,19 @@ use App\Enum\MaterialNumberEnum;
 use App\Repository\InvoiceEntryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InvoiceEntryRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class InvoiceEntry extends AbstractBaseEntity
 {
     #[ORM\ManyToOne(inversedBy: 'invoiceEntries')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
+
+    #[ORM\Column(type: Types::INTEGER, name: 'entry_index')]
+    private ?int $index = null;
 
     // TODO: Remove since it is unused.
     #[ORM\Column(length: 255, nullable: true)]
@@ -59,6 +64,18 @@ class InvoiceEntry extends AbstractBaseEntity
     public function setInvoice(?Invoice $invoice): self
     {
         $this->invoice = $invoice;
+
+        return $this;
+    }
+
+    public function getIndex(): ?int
+    {
+        return $this->index;
+    }
+
+    public function setIndex(int $index): self
+    {
+        $this->index = $index;
 
         return $this;
     }
@@ -170,9 +187,11 @@ class InvoiceEntry extends AbstractBaseEntity
         return $this->entryType;
     }
 
-    public function setEntryType(InvoiceEntryTypeEnum $entryType): void
+    public function setEntryType(InvoiceEntryTypeEnum $entryType): self
     {
         $this->entryType = $entryType;
+
+        return $this;
     }
 
     public function getTotalPrice(): ?float
@@ -180,8 +199,17 @@ class InvoiceEntry extends AbstractBaseEntity
         return $this->totalPrice;
     }
 
-    public function setTotalPrice(?float $totalPrice): void
+    public function setTotalPrice(?float $totalPrice): self
     {
         $this->totalPrice = $totalPrice;
+
+        return $this;
+    }
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function setInvoiceIndex()
+    {
+        $this->getInvoice()?->setInvoiceEntryIndexes();
     }
 }
