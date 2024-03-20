@@ -108,6 +108,11 @@
             </tr>
             </thead>
             <tbody>
+            {% set invoice_entry_type_translations = {
+                (constant('App\\Enum\\InvoiceEntryTypeEnum::MANUAL').value): 'invoices.invoice_entry_type_manual'|trans,
+                (constant('App\\Enum\\InvoiceEntryTypeEnum::PRODUCT').value): 'invoices.invoice_entry_type_product'|trans,
+                (constant('App\\Enum\\InvoiceEntryTypeEnum::WORKLOG').value): 'invoices.invoice_entry_type_worklog'|trans,
+            } %}
             {% for index, invoice_entry in invoice.invoiceEntries %}
                 <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                     <td class="table-td">{{ invoice_entry.account }}</td>
@@ -117,8 +122,7 @@
                     <td class="table-td">{{ invoice_entry.price }}</td>
                     <td class="table-td">{{ invoice_entry.totalPrice }}</td>
                     <td class="table-td">
-                        {{ invoice_entry.entryType.value == 'manual' ? 'invoices.invoice_entry_type_manual'|trans : '' }}
-                        {{ invoice_entry.entryType.value == 'worklog' ? 'invoices.invoice_entry_type_worklog'|trans : '' }}
+                        {{ invoice_entry_type_translations[invoice_entry.entryType.value]|default('') }}
                     </td>
                     <td class="table-td">
                         <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoice_entry.id, 'invoice': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_edit'|trans }}</a>

@@ -220,6 +220,34 @@ class ProjectBillingService
                 $invoiceEntry->setInvoice($invoice);
                 $invoice->addInvoiceEntry($invoiceEntry);
                 $this->entityManager->persist($invoiceEntry);
+
+                // Add invoice entries for each product.
+                foreach ($issue->getProducts() as $productIssue) {
+                    $product = $productIssue->getProduct();
+                    if (null === $product) {
+                        continue;
+                    }
+                    $productInvoiceEntry = (new InvoiceEntry())
+                        ->setEntryType(InvoiceEntryTypeEnum::PRODUCT)
+                        ->setDescription($productIssue->getDescription())
+                        ->setProduct($product->getName())
+                        ->setPrice($product->getPriceAsFloat())
+                        ->setAmount($productIssue->getQuantity())
+                        ->setTotalPrice($productIssue->getQuantity() * $product->getPriceAsFloat())
+                        // @TODO Should we duplicate the value here?
+                        // ->setMaterialNumber($invoice->getDefaultMaterialNumber())
+                        ->setAccount($invoice->getDefaultReceiverAccount());
+                    // @TODO Should we add worklogs?
+                    // foreach ($invoiceEntry->getWorklogs() as $worklog) {
+                    //     $worklog = clone $worklog;
+                    //     $productInvoiceEntry->addWorklog($worklog);
+                    //     $this->entityManager->persist($worklog);
+                    // }
+
+                    $productInvoiceEntry->setInvoice($invoice);
+                    $invoice->addInvoiceEntry($productInvoiceEntry);
+                    $this->entityManager->persist($productInvoiceEntry);
+                }
             }
 
             if (0 == count($invoice->getInvoiceEntries())) {

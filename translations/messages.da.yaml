@@ -227,6 +227,7 @@ invoices:
     client_ean: "EAN"
     invoice_entry_type: "Type"
     invoice_entry_type_manual: "Manuel"
+    invoice_entry_type_product: "Produkt"
     invoice_entry_type_worklog: "Worklog"
     action_create_new_invoice_entry_worklog: "Tilføj worklog linje"
     action_create_new_invoice_entry_manual: "Tilføj manuel linje"
