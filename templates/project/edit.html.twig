@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project.edit'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ project.name }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_rest(form) }}
+        <div class="actions-right">
+            <button class="button">{{ 'project.action_save'|trans }}</button>
+        </div>
+    {{ form_end(form) }}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_project_index', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.back_to_list'|trans }}</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% if is_granted(role) %}
+    <li>
+        <a href="{{ route }}" class="navigation-item">
+            {% if icon is defined %}
+              {% include 'components/icons.html.twig' with {icon: icon, class: "w-6 h-6"} %}
+            {% endif %}
+            <span class="flex-1 ml-3 whitespace-nowrap">{{ title }}</span>
+        </a>
+    </li>
+{% endif %}

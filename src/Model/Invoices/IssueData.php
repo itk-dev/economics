@@ -17,7 +17,7 @@ class IssueData
     public ?string $epicName = null;
     public ?string $epicKey = null;
     /** @var Collection<string, VersionData> */
-    public Collection $versions;
+    public ?Collection $versions;
     public ?\DateTime $resolutionDate = null;
     public string $projectId;
 

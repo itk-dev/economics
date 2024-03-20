@@ -6,29 +6,32 @@
     <h1 class="page-title">{{ 'project.title'|trans }}</h1>
 
     {{ form_start(form) }}
-    <div class="invoices-filter-form">
+    <div class="form-default">
         {{ form_row(form.name) }}
         {{ form_row(form.key) }}
         {{ form_row(form.include) }}
-        <button class="button m-5">{{ 'project.search'|trans }}</button>
+         <div>
+            <button class="button form-element">{{ 'client.search'|trans }}</button>
+        </div>
     </div>
     {{ form_end(form) }}
 
-    <div class="alert-info" role="alert">
-        <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"></path>
-        </svg> {{ 'project.information'|trans }}
-    </div>
+    {% include 'components/alert.html.twig' with { text: 'project.information'|trans, level: 'info' } %}
+
+    {% set numberOfColumns = 9 %}
 
     <table class="table margin-bottom">
         <thead class="table-thead">
         <tr>
             <th class="table-th{% if projects.isSorted('project.id') %} sorted{% endif %}">{{ knp_pagination_sortable(projects, 'project.id'|trans, 'project.id') }}</th>
             <th class="table-th{% if projects.isSorted('project.name') %} sorted{% endif %}">{{ knp_pagination_sortable(projects, 'project.name'|trans, 'project.name') }}</th>
+            <th class="table-th">{{ 'project.data_provider_id'|trans }}</th>
+            <th class="table-th">{{ 'project.project_lead'|trans }}</th>
             <th class="table-th{% if projects.isSorted('project.projectTrackerKey') %} sorted{% endif %}">{{ knp_pagination_sortable(projects, 'project.project_tracker_key'|trans, 'project.projectTrackerKey') }}</th>
             <th class="table-th{% if projects.isSorted('project.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(projects, 'project.updated_at'|trans, 'project.updatedAt') }}</th>
             <th class="table-th">{{ 'project.include'|trans }}</th>
             <th class="table-th">{{ 'project.sync'|trans }}</th>
+            <th class="table-th">{{ 'project.actions'|trans }}</th>
         </tr>
         </thead>
         <tbody>
@@ -36,31 +39,35 @@
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                 <td class="table-td">{{ project.id }}</td>
                 <td class="table-td">{{ project.name }}</td>
+                <td class="table-td">{{ project.dataprovider }}</td>
+                <td class="table-td">{{ project.projectLeadName ~ (project.projectLeadMail is not empty ? " (" ~ project.projectLeadMail ~ ")" : '') }}</td>
                 <td class="table-td">{{ project.projectTrackerKey }}</td>
                 <td class="table-td">{{ project.updatedAt ? project.updatedAt|date : '' }}</td>
                 <td class="table-td">
-                    <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_include', { id: project.id }) }}">
+                    <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_include', {id: project.id }) }}">
                         <input type="checkbox" value="" class="sr-only peer" {{ stimulus_action('toggle', 'toggle') }} {{ stimulus_target('toggle', 'checkbox') }} {{ project.include ? 'checked' : '' }}>
-                        {# Cannot be moved to @apply class since it uses peer #}
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        {% include "components/checkbox.html.twig" %}
                         <span class="toggle-text" {{ stimulus_target('toggle', 'text') }}></span>
                     </label>
                 </td>
-                <td class="table-td" {{ stimulus_controller('sync') }} data-update-url="{{ path('app_project_sync', { id: project.id }) }}">
+                <td class="table-td" {{ stimulus_controller('sync') }} data-update-url="{{ path('app_project_sync', {id: project.id }) }}">
                     <button class="button" {{ stimulus_action('sync', 'sync') }} {{ stimulus_target('sync', 'button') }}>
                         {{ 'project.sync_action'|trans }}
                     </button>
                     <span class="sync-text" {{ stimulus_target('sync', 'text') }}></span>
                 </td>
+                <td class="table-td">
+                    <a class="link" href="{{ path('app_project_edit', {'id': project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.action_edit'|trans }}</a>
+                </td>
             </tr>
         {% endfor %}
         {% if projects is empty %}
             <tr class="table-tr">
-                <td class="table-td" colspan="6">{{ 'project.list_no_records_found'|trans }}</td>
+                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'project.list_no_records_found'|trans }}</td>
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="6" class="text-right">
+            <td class="table-td" colspan="{{ numberOfColumns }}" class="text-right">
                 {{ knp_pagination_render(projects) }}
             </td>
         </tr>

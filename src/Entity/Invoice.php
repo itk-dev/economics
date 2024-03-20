@@ -8,20 +8,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Blameable\Traits\BlameableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
-class Invoice
+class Invoice extends AbstractBaseEntity
 {
-    use BlameableEntity;
-    use TimestampableEntity;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -50,7 +40,7 @@ class Invoice
     private ?string $lockedType = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $lockedAccountKey = null;
+    private ?string $lockedEan = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lockedSalesChannel = null;
@@ -73,7 +63,7 @@ class Invoice
     #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceEntry::class, cascade: ['remove'])]
     private Collection $invoiceEntries;
 
-    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'invoices')]
     private ?Project $project = null;
 
     #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'invoices')]
@@ -88,11 +78,6 @@ class Invoice
     public function __construct()
     {
         $this->invoiceEntries = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getName(): ?string
@@ -191,14 +176,14 @@ class Invoice
         return $this;
     }
 
-    public function getLockedAccountKey(): ?string
+    public function getLockedEan(): ?string
     {
-        return $this->lockedAccountKey;
+        return $this->lockedEan;
     }
 
-    public function setLockedAccountKey(?string $lockedAccountKey): self
+    public function setLockedEan(?string $lockedEan): self
     {
-        $this->lockedAccountKey = $lockedAccountKey;
+        $this->lockedEan = $lockedEan;
 
         return $this;
     }

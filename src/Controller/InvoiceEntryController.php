@@ -5,24 +5,38 @@ namespace App\Controller;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Enum\InvoiceEntryTypeEnum;
+use App\Exception\EconomicsException;
 use App\Form\InvoiceEntryType;
 use App\Form\InvoiceEntryWorklogType;
 use App\Repository\InvoiceEntryRepository;
 use App\Service\BillingService;
+use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/invoices/{invoice}/entries')]
 class InvoiceEntryController extends AbstractController
 {
+    public function __construct(
+        private readonly BillingService $billingService,
+        private readonly TranslatorInterface $translator,
+        private readonly ViewService $viewService,
+    ) {
+    }
+
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/new/{type}', name: 'app_invoice_entry_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, Invoice $invoice, InvoiceEntryTypeEnum $type, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
+    #[IsGranted('EDIT', 'invoice')]
+    public function new(Request $request, Invoice $invoice, InvoiceEntryTypeEnum $type, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         if ($invoice->isRecorded()) {
-            throw new HttpException(400, 'Invoice is recorded. Cannot add invoice entries.');
+            throw new EconomicsException($this->translator->trans('exception.invoice_entry_invoice_on_record_cannot_add_entries'), 400);
         }
 
         $invoiceEntry = new InvoiceEntry();
@@ -49,24 +63,28 @@ class InvoiceEntryController extends AbstractController
             $invoiceEntryRepository->save($invoiceEntry, true);
 
             // TODO: Handle this with a doctrine event listener instead.
-            $billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
+            $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
             if (InvoiceEntryTypeEnum::MANUAL == $invoiceEntry->getEntryType()) {
-                return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
             }
 
-            return $this->redirectToRoute('app_invoice_entry_edit', ['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_invoice_entry_edit', $this->viewService->addView(['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('invoice_entry/new.html.twig', [
+        return $this->render('invoice_entry/new.html.twig', $this->viewService->addView([
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
-        ]);
+        ]));
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}/edit', name: 'app_invoice_entry_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
+    #[IsGranted('EDIT', 'invoiceEntry')]
+    public function edit(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
         if ($invoice->isRecorded()) {
@@ -83,36 +101,40 @@ class InvoiceEntryController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($invoice->isRecorded()) {
-                throw new HttpException(400, 'Invoice is recorded. Cannot edit invoice entries.');
+                throw new EconomicsException($this->translator->trans('exception.invoice_entry_invoice_on_record_cannot_edit_entries'), 400);
             }
 
             $invoiceEntryRepository->save($invoiceEntry, true);
 
             // TODO: Handle this with a doctrine event listener instead.
-            $billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
+            $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
         }
 
-        return $this->render('invoice_entry/edit.html.twig', [
+        return $this->render('invoice_entry/edit.html.twig', $this->viewService->addView([
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
-        ]);
+        ]));
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}', name: 'app_invoice_entry_delete', methods: ['POST'])]
-    public function delete(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository, BillingService $billingService): Response
+    #[IsGranted('EDIT', 'invoiceEntry')]
+    public function delete(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         if ($invoice->isRecorded()) {
-            throw new HttpException(400, 'Invoice is recorded. Cannot remove invoice entries.');
+            throw new EconomicsException($this->translator->trans('exception.invoice_entry_invoice_on_record_cannot_delete_entries'), 400);
         }
 
         if ($this->isCsrfTokenValid('delete'.$invoiceEntry->getId(), (string) $request->request->get('_token'))) {
             $invoiceEntryRepository->remove($invoiceEntry, true);
 
             // TODO: Handle this with a doctrine event listener instead.
-            $billingService->updateInvoiceTotalPrice($invoice);
+            $this->billingService->updateInvoiceTotalPrice($invoice);
         }
 
-        return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
     }
 }

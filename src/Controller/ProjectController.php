@@ -3,19 +3,28 @@
 namespace App\Controller;
 
 use App\Entity\Project;
+use App\Exception\EconomicsException;
+use App\Exception\UnsupportedDataProviderException;
 use App\Form\ProjectFilterType;
+use App\Form\ProjectType;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\ProjectRepository;
-use App\Service\BillingService;
+use App\Service\DataSynchronizationService;
+use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/project')]
 class ProjectController extends AbstractController
 {
+    public function __construct(
+        private readonly ViewService $viewService,
+    ) {
+    }
+
     #[Route('/', name: 'app_project_index', methods: ['GET'])]
     public function index(Request $request, ProjectRepository $projectRepository): Response
     {
@@ -25,10 +34,27 @@ class ProjectController extends AbstractController
 
         $pagination = $projectRepository->getFilteredPagination($projectFilterData, $request->query->getInt('page', 1));
 
-        return $this->render('project/index.html.twig', [
+        return $this->render('project/index.html.twig', $this->viewService->addView([
             'projects' => $pagination,
             'form' => $form,
-        ]);
+        ]));
+    }
+
+    #[Route('/{id}/edit', name: 'app_project_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    {
+        $form = $this->createForm(ProjectType::class, $project);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $projectRepository->save($project, true);
+        }
+
+        return $this->render('project/edit.html.twig', $this->viewService->addView([
+            'project' => $project,
+            'form' => $form,
+        ]));
     }
 
     #[Route('/{id}/include', name: 'app_project_include', methods: ['POST'])]
@@ -43,10 +69,11 @@ class ProjectController extends AbstractController
     }
 
     /**
-     * @throws \Exception
+     * @throws EconomicsException
+     * @throws UnsupportedDataProviderException
      */
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]
-    public function sync(Request $request, Project $project, BillingService $billingService): Response
+    public function sync(Project $project, DataSynchronizationService $dataSynchronizationService): Response
     {
         $projectId = $project->getId();
 
@@ -54,9 +81,12 @@ class ProjectController extends AbstractController
             return new Response('Not found', 404);
         }
 
-        $billingService->syncIssuesForProject($projectId);
+        $dataProvider = $project->getDataProvider();
 
-        $billingService->syncWorklogsForProject($projectId);
+        if (null != $dataProvider) {
+            $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
+            $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
+        }
 
         return new JsonResponse([], 200);
     }

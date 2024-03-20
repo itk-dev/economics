@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'account.new'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'account.new'|trans }}</h1>
+
+    {{ form_start(form) }}
+    <div>
+        {{ form_rest(form) }}
+        <button class="button mt-3">{{ 'account.action_create'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_account_index', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'account.back_to_list'|trans }}</a>
+    </div>
+{% endblock %}

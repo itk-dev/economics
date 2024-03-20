@@ -1,16 +1,22 @@
-import {Controller} from '@hotwired/stimulus';
+import { Controller } from "@hotwired/stimulus";
 import Choices from "choices.js";
-import 'choices.js/src/styles/choices.scss';
+import "choices.js/src/styles/choices.scss";
 
-/**
- * Activates choices.js for each element with choices target.
- */
+/** Activates choices.js for each element with choices target. */
 export default class extends Controller {
-    static targets = ['choices'];
+    static targets = ["choices"];
 
     connect() {
         this.choicesTargets.forEach((target) => {
-            new Choices(target, {allowHTML: true, itemSelectText: ''});
-        })
+            const notDisabled = !target.disabled;
+
+            if (notDisabled) {
+                /* eslint-disable-next-line no-new */
+                new Choices(target, {
+                    allowHTML: true,
+                    itemSelectText: "",
+                });
+            }
+        });
     }
 }

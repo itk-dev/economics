@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class OpenIdConnectController extends AbstractController
 {
@@ -14,6 +14,9 @@ class OpenIdConnectController extends AbstractController
         return $this->redirectToRoute('index');
     }
 
+    /**
+     * @throws \Exception
+     */
     #[Route('/logout', name: 'app_logout', methods: ['GET'])]
     public function logout()
     {

@@ -2,23 +2,16 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\DataProviderTrait;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Blameable\Traits\BlameableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
-class Project
+class Project extends AbstractBaseEntity
 {
-    use BlameableEntity;
-    use TimestampableEntity;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    use DataProviderTrait;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -53,6 +46,15 @@ class Project
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Issue::class)]
     private Collection $issues;
 
+    #[ORM\ManyToMany(targetEntity: View::class, mappedBy: 'projects')]
+    private Collection $views;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $projectLeadName = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $projectLeadMail = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -61,11 +63,7 @@ class Project
         $this->worklogs = new ArrayCollection();
         $this->projectBillings = new ArrayCollection();
         $this->issues = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
+        $this->views = new ArrayCollection();
     }
 
     public function getName(): ?string
@@ -294,6 +292,57 @@ class Project
                 $issue->setProject(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, View>
+     */
+    public function getViews(): Collection
+    {
+        return $this->views;
+    }
+
+    public function addView(View $view): static
+    {
+        if (!$this->views->contains($view)) {
+            $this->views->add($view);
+            $view->addProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeView(View $view): static
+    {
+        if ($this->views->removeElement($view)) {
+            $view->removeProject($this);
+        }
+
+        return $this;
+    }
+
+    public function getProjectLeadName(): ?string
+    {
+        return $this->projectLeadName;
+    }
+
+    public function setProjectLeadName(?string $projectLeadName): static
+    {
+        $this->projectLeadName = $projectLeadName;
+
+        return $this;
+    }
+
+    public function getProjectLeadMail(): ?string
+    {
+        return $this->projectLeadMail;
+    }
+
+    public function setProjectLeadMail(?string $projectLeadMail): static
+    {
+        $this->projectLeadMail = $projectLeadMail;
 
         return $this;
     }

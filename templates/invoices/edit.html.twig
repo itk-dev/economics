@@ -9,7 +9,12 @@
     <div class="grid-split selections" {{ stimulus_controller('choices') }}>
         <div>
             {{ form_row(form.name) }}
-            {{ form_row(form.description) }}
+            <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">
+                {% if invoice.project.projectLeadName and invoice.project.projectLeadMail %}
+                    <button type="button" class="link" style="font-size: .8em; float: right" {{ stimulus_action('generate-description', 'generate') }}>{{ 'invoices.generate_description'|trans }}</button>
+                {% endif %}
+                {{ form_row(form.description) }}
+            </div>
             {{ form_row(form.client) }}
             {{ form_row(form.periodFrom) }}
             {{ form_row(form.periodTo) }}
@@ -29,61 +34,60 @@
                 <li class="list-group-item border-bottom">{{ 'invoices.id'|trans }}: {{ invoice.id }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.created_by'|trans }}: {{ invoice.createdBy }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.project'|trans }}: {{ invoice.project }} ({{ invoice.project.projectTrackerId }})</li>
-                <li class="list-group-item">{{ 'invoices.status'|trans }}: {{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.status'|trans }}: {{ invoice.recorded ? 'invoices.status_posted'|trans : 'invoices.status_not_posted'|trans }}</li>
             </ul>
             <ul class="list-group margin-bottom">
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.client_information'|trans }}</li>
                 {% if invoice.client != null %}
                     <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_project_lead'|trans }}: {{ invoice.project.projectLeadName }} ({{ invoice.project.projectLeadMail }})</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
-                    <li class="list-group-item border-bottom">{{ 'invoices.client_sales_channel'|trans }}: {{ invoice.client.salesChannel }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_customer_key'|trans }}: {{ invoice.client.customerKey }}</li>
                     <li class="list-group-item border-bottom">
                         {{ 'invoices.client_type'|trans }}:
-                        {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
-                        {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
+                        {% if invoice.client.type is not null %}
+                            {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
+                            {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
+                        {% else %}
+                            {{ 'invoices.client_type_is_null'|trans }}
+                        {% endif %}
                     </li>
-                    <li class="list-group-item border-bottom">{{ 'invoices.client_account'|trans }}: {{ invoice.client.account }}</li>
                     {% if invoice.client.psp is defined and invoice.client.psp is not null %}
-                        <li class="list-group-item">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
+                        <li class="list-group-item border-bottom">{{ 'invoices.client_psp'|trans }}: {{ invoice.client.psp }}</li>
                     {% endif %}
                     {% if invoice.client.ean is defined and invoice.client.ean is not null %}
-                        <li class="list-group-item">{{ 'invoices.client_ean'|trans }}: {{ invoice.client.ean }}</li>
+                        <li class="list-group-item border-bottom">{{ 'invoices.client_ean'|trans }}: {{ invoice.client.ean }}</li>
                     {% endif %}
                 {% else %}
-                    <li class="list-group-item">{{ 'invoices.no_client'|trans }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.no_client'|trans }}</li>
                 {% endif %}
             </ul>
             {% if invoice.recorded %}
             <ul class="list-group margin-bottom">
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.locked_client_values'|trans }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_type'|trans }}: {{ invoice.lockedType }}</li>
-                <li class="list-group-item border-bottom">{{ 'invoices.locked_sales_channel'|trans }}: {{ invoice.lockedSalesChannel }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_account_key'|trans }}: {{ invoice.lockedAccountKey }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_contact_name'|trans }}: {{ invoice.lockedContactName }}</li>
-                <li class="list-group-item">{{ 'invoices.locked_customer_key'|trans }}: {{ invoice.lockedCustomerKey }}</li>
+                <li class="list-group-item border-bottom">{{ 'invoices.locked_customer_key'|trans }}: {{ invoice.lockedCustomerKey }}</li>
             </ul>
             {% endif %}
             <div class="actions-right">
                 {% if invoice.client is not null %}
-                    <a type="button" href="{{ path('app_invoices_show_export', {'id': invoice.id}) }}" class="button button-green">{{ 'invoices.action_show_export'|trans }}</a>
+                    <a type="button" href="{{ path('app_invoices_show_export', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}" class="button button-green">{{ 'invoices.action_show_export'|trans }}</a>
                     {% if not invoice.recorded and invoice.projectBilling is null %}
-                        <a type="button" href="{{ path('app_invoices_record', {'id': invoice.id}) }}" class="button button-warning">{{ 'invoices.action_record'|trans }}</a>
+                        <a type="button" href="{{ path('app_invoices_record', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}" class="button button-warning">{{ 'invoices.action_record'|trans }}</a>
                     {% endif %}
                     {% if invoice.recorded and invoice.projectBilling is null %}
-                        <a type="button" href="{{ path('app_invoices_export', {'id': invoice.id}) }}" class="button">{{ 'invoices.action_export'|trans }}</a>
+                        <a type="button" href="{{ path('app_invoices_export', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}" class="button">{{ 'invoices.action_export'|trans }}</a>
                     {% endif %}
                 {% else %}
-                    <div class="alert-info" role="alert">
-                        <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"></path>
-                        </svg> {{ 'invoices.export_only_available_when_mandatory_fields_are_set'|trans }}
-                    </div>
+                    {% include 'components/alert.html.twig' with {level: 'info', text: 'invoices.export_only_available_when_mandatory_fields_are_set'|trans} %}
                 {% endif %}
             </div>
         </div>
     </div>
+
     <div>
         <h3 class="subheading">{{ 'invoices.invoice_entries'|trans }}</h3>
 
@@ -114,7 +118,7 @@
                         {{ invoiceEntry.entryType.value == 'worklog' ? 'invoices.invoice_entry_type_worklog'|trans : '' }}
                     </td>
                     <td class="table-td">
-                        <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
+                        <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_edit'|trans }}</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -135,8 +139,12 @@
             {% if not invoice.recorded and invoice.projectBilling is null %}
             <tr class="table-tr">
                 <td colspan="8" class="table-td">
-                    <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
-                    <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
+                    {% if allowAddingEntries %}
+                        <a class="link mr-5" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'manual'}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_create_new_invoice_entry_manual'|trans }}</a>
+                        <a class="link" href="{{ path('app_invoice_entry_new', {'invoice': invoice.id, 'type': 'worklog'}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_create_new_invoice_entry_worklog'|trans }}</a>
+                    {% else %}
+                        {% include 'components/alert.html.twig' with {level: 'info', text: 'invoices.required_fields_not_set_for_creating_entries'|trans} %}
+                    {% endif %}
                 </td>
             </tr>
             {% endif %}
@@ -146,9 +154,9 @@
     {{ form_end(form) }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
-        {% if not invoice.recorded and invoice.projectBilling is null  %}
-        {{ include('invoices/_delete_form.html.twig') }}
+        <a class="link" href="{{ path('app_invoices_index', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.back_to_list'|trans }}</a>
+        {% if not invoice.recorded and invoice.projectBilling is null %}
+            {{ include('invoices/_delete_form.html.twig') }}
         {% endif %}
     </div>
 {% endblock %}

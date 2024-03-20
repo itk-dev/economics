@@ -2,21 +2,14 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\DataProviderTrait;
 use App\Repository\AccountRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Blameable\Traits\BlameableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
-class Account
+class Account extends AbstractBaseEntity
 {
-    use BlameableEntity;
-    use TimestampableEntity;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    use DataProviderTrait;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -26,20 +19,6 @@ class Account
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $source = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $status = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $category = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getName(): ?string
     {
@@ -81,42 +60,6 @@ class Account
     public function setProjectTrackerId(?string $projectTrackerId): self
     {
         $this->projectTrackerId = $projectTrackerId;
-
-        return $this;
-    }
-
-    public function getSource(): ?string
-    {
-        return $this->source;
-    }
-
-    public function setSource(string $source): self
-    {
-        $this->source = $source;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(?string $status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?string $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }

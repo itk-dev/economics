@@ -13,36 +13,41 @@
         "gedmo/doctrine-extensions": "^3.9",
         "itk-dev/openid-connect-bundle": "^3.0",
         "knplabs/knp-paginator-bundle": "^6.1",
-        "mpdf/mpdf": "^v8.1.2",
+        "mpdf/mpdf": "^8.1.2",
+        "openspout/openspout": "^4.23",
         "phpoffice/phpspreadsheet": "^1.25",
         "stof/doctrine-extensions-bundle": "^1.7",
-        "symfony/console": "~6.3.0",
-        "symfony/doctrine-messenger": "~6.3.0",
-        "symfony/dotenv": "~6.3.0",
+        "symfony/console": "~6.4.0",
+        "symfony/doctrine-messenger": "~6.4.0",
+        "symfony/dotenv": "~6.4.0",
         "symfony/flex": "^2",
-        "symfony/form": "~6.3.0",
-        "symfony/framework-bundle": "~6.3.0",
-        "symfony/http-client": "~6.3.0",
-        "symfony/messenger": "~6.3.0",
+        "symfony/form": "~6.4.0",
+        "symfony/framework-bundle": "~6.4.0",
+        "symfony/http-client": "~6.4.0",
+        "symfony/messenger": "~6.4.0",
         "symfony/monolog-bundle": "^3.8",
-        "symfony/proxy-manager-bridge": "~6.3.0",
-        "symfony/runtime": "~6.3.0",
-        "symfony/security-bundle": "~6.3.0",
+        "symfony/proxy-manager-bridge": "~6.4.0",
+        "symfony/runtime": "~6.4.0",
+        "symfony/security-bundle": "~6.4.0",
         "symfony/stimulus-bundle": "^2.10",
-        "symfony/translation": "~6.3.0",
-        "symfony/twig-bundle": "~6.3.0",
-        "symfony/validator": "~6.3.0",
+        "symfony/translation": "~6.4.0",
+        "symfony/twig-bundle": "~6.4.0",
+        "symfony/validator": "~6.4.0",
         "symfony/webpack-encore-bundle": "^2.0",
-        "symfony/yaml": "~6.3.0"
+        "symfony/yaml": "~6.4.0"
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.0",
+        "doctrine/doctrine-fixtures-bundle": "^3.5",
         "ergebnis/composer-normalize": "^2.28",
         "friendsofphp/php-cs-fixer": "^3.13",
         "friendsoftwig/twigcs": "^6.0",
         "phpunit/phpunit": "^10.2",
-        "symfony/debug-bundle": "~6.3.0",
+        "symfony/browser-kit": "~6.4.0",
+        "symfony/css-selector": "~6.4.0",
+        "symfony/debug-bundle": "~6.4.0",
         "symfony/maker-bundle": "^1.48",
-        "symfony/phpunit-bridge": "~6.3.0",
+        "symfony/phpunit-bridge": "~6.4.0",
         "vimeo/psalm": "^5.0"
     },
     "replace": {
@@ -72,9 +77,9 @@
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
+            "ergebnis/composer-normalize": true,
             "symfony/flex": true,
-            "symfony/runtime": true,
-            "ergebnis/composer-normalize": true
+            "symfony/runtime": true
         },
         "optimize-autoloader": true,
         "preferred-install": {
@@ -85,7 +90,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "6.3.*"
+            "require": "6.4.*"
         }
     },
     "scripts": {
@@ -112,16 +117,17 @@
             "@check-coding-standards/php-cs-fixer",
             "@check-coding-standards/twigcs"
         ],
-        "phpunit": [
-            "./vendor/bin/phpunit"
-        ],
         "prepare-code": [
             "composer normalize",
             "@coding-standards-apply",
-            "@psalm"
+            "@psalm",
+            "@tests"
         ],
         "psalm": [
             "./vendor/bin/psalm --no-cache"
+        ],
+        "tests": [
+            "./vendor/bin/phpunit --stop-on-failure"
         ]
     }
 }

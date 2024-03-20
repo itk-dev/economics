@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'account.title'|trans }}{% endblock %}
+
+{% block content %}
+    <a class="link" href="{{ path('app_account_new', {}|merge(view is defined ? {view: view} : {})) }}"
+       style="float: right">{{ 'accounts.action_create_new'|trans }}</a>
+
+    <h1 class="page-title">{{ 'account.title'|trans }}</h1>
+
+    {{ form_start(form) }}
+        <div class="form-default">
+            {{ form_row(form.name) }}
+            <div>
+                <button class="button form-element">{{ 'client.search'|trans }}</button>
+            </div>
+        </div>
+    {{ form_end(form) }}
+
+    {% set numberOfColumns = 6 %}
+
+    <table class="table margin-bottom">
+        <thead class="table-thead">
+        <tr>
+            <th class="table-th {% if accounts.isSorted('accounts.id') %} sorted{% endif %}">{{ knp_pagination_sortable(accounts, 'accounts.id'|trans, 'account.id') }}</th>
+            <th class="table-th {% if accounts.isSorted('accounts.name') %} sorted{% endif %}">{{ knp_pagination_sortable(accounts, 'accounts.name'|trans, 'account.name') }}</th>
+            <th class="table-th {% if accounts.isSorted('accounts.value') %} sorted{% endif %}">{{ knp_pagination_sortable(accounts, 'accounts.value'|trans, 'account.value') }}</th>
+            <th class="table-th">{{ 'accounts.data_provider'|trans }}</th>
+            <th class="table-th">{{ 'accounts.actions'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, account in accounts %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ account.id }}</td>
+                <td class="table-td">{{ account.name }}</td>
+                <td class="table-td">{{ account.value }}</td>
+                <td class="table-td">{{ account.dataProvider }}</td>
+                <td class="table-td">
+                    <a class="link" href="{{ path('app_account_edit', {'id': account.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'accounts.action_edit'|trans }}</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr class="table-tr">
+                <td class="table-td"
+                    colspan="{{ numberOfColumns }}">{{ 'accounts.list_no_records_found'|trans }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="table-tr">
+            <td class="table-td" colspan="2">
+                <a class="link" href="{{ path('app_account_new', {}|merge(view is defined ? {view: view} : {})) }}">
+                    {{ 'accounts.action_create_new'|trans }}
+                </a>
+            </td>
+            <td class="table-td" colspan="{{ numberOfColumns - 2 }}" class="text-right">
+                {{ knp_pagination_render(accounts) }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}

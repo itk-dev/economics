@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Issue;
 use App\Entity\Project;
-use App\Entity\ProjectBilling;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -55,30 +54,33 @@ class IssueRepository extends ServiceEntityRepository
 
     public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
     {
+        $from = new \DateTime($periodStart->format('Y-m-d').' 00:00:00');
+        $to = new \DateTime($periodEnd->format('Y-m-d').' 23:59:59');
+
         $qb = $this->createQueryBuilder('issue');
-        $qb->andWhere($qb->expr()->eq('issue.project', $project->getId()));
+        $qb->andWhere($qb->expr()->eq('issue.project', ':project'));
+        $qb->setParameter('project', $project);
         $qb->andWhere('issue.resolutionDate >= :periodStart');
         $qb->andWhere('issue.resolutionDate <= :periodEnd');
-        $qb->setParameter('periodStart', $periodStart);
-        $qb->setParameter('periodEnd', $periodEnd);
-        $qb->andWhere('issue.status = :status');
-        $qb->setParameter('status', 'Lukket');
+        $qb->setParameter('periodStart', $from);
+        $qb->setParameter('periodEnd', $to);
+        $qb->andWhere('issue.status IN (:statuses)');
+        $qb->setParameter('statuses', $this->getClosedStatuses($project));
 
         return $qb->getQuery()->execute();
     }
 
-    public function getIssuesNotIncludedInProjectBilling(ProjectBilling $projectBilling)
+    /**
+     * Get "closed" statuses for a project.
+     *
+     * @return string[]|array
+     */
+    private function getClosedStatuses(Project $project): array
     {
-        $qb = $this->createQueryBuilder('issue');
-        $qb->andWhere($qb->expr()->eq('issue.project', $projectBilling->getProject()->getId()));
-        $qb->andWhere('issue.resolutionDate >= :periodStart');
-        $qb->andWhere('issue.resolutionDate <= :periodEnd');
-        $qb->setParameter('periodStart', $projectBilling->getPeriodStart());
-        $qb->setParameter('periodEnd', $projectBilling->getPeriodEnd());
-        $qb->andWhere('issue.accountId IS NULL');
-        $qb->andWhere('issue.status = :status');
-        $qb->setParameter('status', 'Lukket');
-
-        return $qb->getQuery()->execute();
+        // @TODO Get this from project somehow.
+        return [
+            'Lukket',
+            '0',
+        ];
     }
 }

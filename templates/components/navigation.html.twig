@@ -1,66 +1,44 @@
-<aside class="w-full sm:w-1/3 md:w-1/4 px-2">
-    <div class="sticky top-0 p-4 w-full">
-        <a href="/" class="flex items-center mb-5">
+<aside {{ stimulus_controller('navigation') }} class="w-full sm:w-1/3 md:w-1/4 px-2">
+    <div id="main-menu" class="sticky top-0 p-4 w-full">
+        <a href="{{ path('index', {}|merge(view is defined ? {view: view} : {})) }}" class="flex items-center mb-5">
             <img src="{{ asset('img/itk-economics.png') }}" class="h-6 ml-3 sm:h-9" alt="{{ 'navigation.title'|trans }}" />
         </a>
-        <!-- navigation -->
+
+        {{ render(controller('App\\Controller\\ViewController::viewSelector')) }}
+
         <ul class="flex flex-col overflow-hidden">
+            {% include 'components/navigation-item.html.twig' with {icon: 'home', title: 'navigation.home'|trans, role: 'ROLE_USER', route: path('index', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% include 'components/navigation-item.html.twig' with {icon: 'invoice', title: 'navigation.invoices'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% include 'components/navigation-item.html.twig' with {icon: 'project-billing', title: 'navigation.project_billing'|trans, role: 'ROLE_PROJECT_BILLING', route: path('app_project_billing_index', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% include 'components/navigation-item.html.twig' with {icon: 'planning', title: 'navigation.planning'|trans, role: 'ROLE_PLANNING', route: path('app_planning', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% if is_granted('ROLE_REPORT') %}
             <li>
-                <a href="{{ path('index') }}" class="navigation-item">
-                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"></path>
-                    </svg>
-                    <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.home'|trans }}</span>
+                <a class="navigation-item collapsible" href="{{ path('app_reports_index', {}|merge(view is defined ? {view: view} : {})) }}">
+                  {% include 'components/icons.html.twig' with {icon: 'report', class: "w-6 h-6"} %}
+                  <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.reporting'|trans }}</span>
                 </a>
+                <ul class="navigation-item-submenu">
+                  {% include 'components/navigation-item.html.twig' with {title: 'navigation.sprint_report'|trans, role: 'ROLE_REPORT', route: path('app_sprint_report', {}|merge(view is defined ? {view: view} : {}))} %}
+                  {% include 'components/navigation-item.html.twig' with {title: 'navigation.management_report'|trans, role: 'ROLE_REPORT', route: path('app_management_reports_create', {}|merge(view is defined ? {view: view} : {}))} %}
+                  {% include 'components/navigation-item.html.twig' with {title: 'navigation.team_report'|trans, role: 'ROLE_REPORT', route: path('app_team_reports_create', {}|merge(view is defined ? {view: view} : {}))} %}
+                </ul>
             </li>
-            <li>
-                <a href="{{ path('app_invoices_index') }}" class="navigation-item">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.invoices'|trans }}</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('app_project_billing_index') }}" class="navigation-item">
-                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 7.756a4.5 4.5 0 100 8.488M7.5 10.5h5.25m-5.25 3h5.25M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.project_billing'|trans }}</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('app_planning') }}" class="navigation-item">
-                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3"></path>
-                    </svg>
-                    <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.planning'|trans }}</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('app_sprint_report') }}" class="navigation-item">
-                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"></path>
-                    </svg>
-                    <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.sprint_report'|trans }}</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('app_project_index') }}" class="navigation-item">
-                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776"></path>
-                    </svg>
-                    <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.projects'|trans }}</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('create_project_form') }}" class="navigation-item">
-                    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 10.5v6m3-3H9m4.06-7.19l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"></path>
-                    </svg>
-                    <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.create_project'|trans }}</span>
-                </a>
-            </li>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') %}
+                <li>
+                    <a class="navigation-item collapsible" {{ stimulus_action('navigation', 'toggle') }}>
+                        {% include 'components/icons.html.twig' with {icon: 'collapse', class: "w-6 h-6"} %}
+                        <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.admin'|trans }}</span>
+                    </a>
+                      <ul class="navigation-item-submenu">
+                        {% include 'components/navigation-item.html.twig' with {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_ADMIN', route: path('app_project_index', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {icon: 'client', title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {icon: 'account', title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {icon: 'user', title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {icon: 'view', title: 'navigation.views'|trans, role: 'ROLE_ADMIN', route: path('app_view_list', {}|merge(view is defined ? {view: view} : {}))} %}
+                    </ul>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </aside>

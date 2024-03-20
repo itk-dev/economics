@@ -2,24 +2,21 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\DataProviderTrait;
 use App\Enum\ClientTypeEnum;
 use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Blameable\Traits\BlameableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
-class Client
+#[Gedmo\SoftDeleteable(fieldName: 'deletedAt', timeAware: false, hardDelete: true)]
+class Client extends AbstractBaseEntity
 {
-    use BlameableEntity;
-    use TimestampableEntity;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    use DataProviderTrait;
+    use SoftDeleteableEntity;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -32,9 +29,6 @@ class Client
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?ClientTypeEnum $type = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $account = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $psp = null;
@@ -52,20 +46,15 @@ class Client
     private ?string $projectTrackerId = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $salesChannel = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $customerKey = null;
+
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    private ?string $versionName = null;
 
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
         $this->projects = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getName(): ?string
@@ -100,18 +89,6 @@ class Client
     public function setStandardPrice(?float $standardPrice): self
     {
         $this->standardPrice = $standardPrice;
-
-        return $this;
-    }
-
-    public function getAccount(): ?string
-    {
-        return $this->account;
-    }
-
-    public function setAccount(?string $account): self
-    {
-        $this->account = $account;
 
         return $this;
     }
@@ -220,18 +197,6 @@ class Client
         return $this->getName() ?? (string) $this->getId();
     }
 
-    public function getSalesChannel(): ?string
-    {
-        return $this->salesChannel;
-    }
-
-    public function setSalesChannel(?string $salesChannel): self
-    {
-        $this->salesChannel = $salesChannel;
-
-        return $this;
-    }
-
     public function getCustomerKey(): ?string
     {
         return $this->customerKey;
@@ -240,6 +205,18 @@ class Client
     public function setCustomerKey(?string $customerKey): self
     {
         $this->customerKey = $customerKey;
+
+        return $this;
+    }
+
+    public function getVersionName(): ?string
+    {
+        return $this->versionName;
+    }
+
+    public function setVersionName(?string $versionName): static
+    {
+        $this->versionName = $versionName;
 
         return $this;
     }

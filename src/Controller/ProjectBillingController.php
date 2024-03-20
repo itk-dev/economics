@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Invoice;
 use App\Entity\ProjectBilling;
+use App\Exception\EconomicsException;
 use App\Form\ProjectBillingFilterType;
 use App\Form\ProjectBillingRecordType;
 use App\Form\ProjectBillingType;
@@ -11,23 +13,29 @@ use App\Message\UpdateProjectBillingMessage;
 use App\Model\Invoices\ConfirmData;
 use App\Model\Invoices\ProjectBillingFilterData;
 use App\Repository\InvoiceRepository;
-use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\BillingService;
 use App\Service\ProjectBillingService;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/project-billing')]
 class ProjectBillingController extends AbstractController
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+        private readonly ViewService $viewService,
+    ) {
+    }
+
     #[Route('/', name: 'app_project_billing_index', methods: ['GET'])]
+    #[IsGranted('EDIT')]
     public function index(Request $request, ProjectBillingRepository $projectBillingRepository): Response
     {
         $projectBillingFilterData = new ProjectBillingFilterData();
@@ -36,18 +44,18 @@ class ProjectBillingController extends AbstractController
 
         $pagination = $projectBillingRepository->getFilteredPagination($projectBillingFilterData, $request->query->getInt('page', 1));
 
-        return $this->render('project_billing/index.html.twig', [
+        return $this->render('project_billing/index.html.twig', $this->viewService->addView([
             'projectBillings' => $pagination,
             'form' => $form,
-        ]);
+        ]));
     }
 
     #[Route('/new', name: 'app_project_billing_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
+    #[IsGranted('EDIT')]
+    public function new(Request $request, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, string $projectBillingDefaultDescription): Response
     {
         $projectBilling = new ProjectBilling();
-        $defaultDescription = $this->getParameter('app.default_invoice_description');
-        $projectBilling->setDescription(is_string($defaultDescription) ? $defaultDescription : '');
+        $projectBilling->setDescription($projectBillingDefaultDescription);
 
         $form = $this->createForm(ProjectBillingType::class, $projectBilling);
         $form->handleRequest($request);
@@ -62,19 +70,23 @@ class ProjectBillingController extends AbstractController
                 $bus->dispatch(new CreateProjectBillingMessage($id));
             }
 
-            return $this->redirectToRoute('app_project_billing_edit', [
+            return $this->redirectToRoute('app_project_billing_edit', $this->viewService->addView([
                 'id' => $id,
-            ], Response::HTTP_SEE_OTHER);
+            ]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('project_billing/new.html.twig', [
+        return $this->render('project_billing/new.html.twig', $this->viewService->addView([
             'projectBilling' => $projectBilling,
             'form' => $form,
-        ]);
+        ]));
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, IssueRepository $issueRepository): Response
+    #[IsGranted('EDIT', 'projectBilling')]
+    public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
     {
         $options = [];
         if ($projectBilling->isRecorded()) {
@@ -84,11 +96,11 @@ class ProjectBillingController extends AbstractController
         $form = $this->createForm(ProjectBillingType::class, $projectBilling, $options);
         $form->handleRequest($request);
 
-        $issuesWithoutAccounts = $issueRepository->getIssuesNotIncludedInProjectBilling($projectBilling);
+        $issuesWithoutAccounts = $projectBillingService->getIssuesNotIncludedInProjectBilling($projectBilling);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($projectBilling->isRecorded()) {
-                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new EconomicsException($this->translator->trans('exception.project_billing_on_record_cannot_edit'), 400);
             }
 
             $projectBillingRepository->save($projectBilling, true);
@@ -99,41 +111,43 @@ class ProjectBillingController extends AbstractController
                 $bus->dispatch(new UpdateProjectBillingMessage($id));
             }
 
-            return $this->redirectToRoute('app_project_billing_edit', [
+            return $this->redirectToRoute('app_project_billing_edit', $this->viewService->addView([
                 'id' => $id,
-            ], Response::HTTP_SEE_OTHER);
+            ]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('project_billing/edit.html.twig', [
+        return $this->render('project_billing/edit.html.twig', $this->viewService->addView([
             'projectBilling' => $projectBilling,
             'form' => $form,
             'issuesWithoutAccounts' => $issuesWithoutAccounts,
-        ]);
+        ]));
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{id}', name: 'app_project_billing_delete', methods: ['POST'])]
+    #[IsGranted('EDIT', 'projectBilling')]
     public function delete(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, InvoiceRepository $invoiceRepository): Response
     {
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$projectBilling->getId(), $token)) {
             if ($projectBilling->isRecorded()) {
-                throw new HttpException(400, 'ProjectBilling is recorded, cannot be deleted.');
+                throw new EconomicsException($this->translator->trans('exception.project_billing_on_record_cannot_delete'), 400);
             }
 
             foreach ($projectBilling->getInvoices() as $invoice) {
                 if (!$invoice->isRecorded()) {
                     $invoiceRepository->remove($invoice);
                 } else {
-                    $invoiceName = $invoice->getName();
-
-                    throw new HttpException(400, "Invoice \"$invoiceName\" is recorded, cannot be deleted.");
+                    throw new EconomicsException($this->translator->trans('exception.project_billing_invoice_on_record_cannot_delete', ['%invoiceId%' => $invoice->getId()]), 400);
                 }
             }
 
             $projectBillingRepository->remove($projectBilling, true);
         }
 
-        return $this->redirectToRoute('app_project_billing_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_project_billing_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -142,81 +156,83 @@ class ProjectBillingController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_project_billing_record', methods: ['GET', 'POST'])]
-    public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService): Response
+    #[IsGranted('EDIT', 'projectBilling')]
+    public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService, BillingService $billingService): Response
     {
         $recordData = new ConfirmData();
         $form = $this->createForm(ProjectBillingRecordType::class, $recordData);
         $form->handleRequest($request);
 
+        $invoiceErrors = [];
+
+        foreach ($projectBilling->getInvoices() as $invoice) {
+            $errors = $billingService->getInvoiceRecordableErrors($invoice);
+
+            $invoiceId = $invoice->getId();
+            if (count($errors) > 0 && null != $invoiceId) {
+                $invoiceErrors[$invoiceId] = $errors;
+            }
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
+            if (count($invoiceErrors) > 0) {
+                throw new EconomicsException($this->translator->trans('exception.invoice_errors_exit_cannot_put_on_record'), 400);
+            }
+
             if ($recordData->confirmed) {
                 $projectBillingService->recordProjectBilling($projectBilling);
             }
 
-            return $this->redirectToRoute('app_project_billing_edit', ['id' => $projectBilling->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_project_billing_edit', $this->viewService->addView(['id' => $projectBilling->getId()]), Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('project_billing/record.html.twig', [
+        return $this->render('project_billing/record.html.twig', $this->viewService->addView([
             'projectBilling' => $projectBilling,
             'form' => $form,
-        ]);
+            'invoiceErrors' => $invoiceErrors,
+        ]));
     }
 
     /**
      * Preview the export.
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/show-export', name: 'app_project_billing_show_export', methods: ['GET'])]
+    #[IsGranted('VIEW', 'projectBilling')]
     public function showExport(Request $request, ProjectBilling $projectBilling, BillingService $billingService): Response
     {
         $ids = array_map(function ($invoice) {
             return $invoice->getId();
         }, $projectBilling->getInvoices()->toArray());
 
-        $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
+        $html = $billingService->generateSpreadsheetHtml($ids);
 
-        $writer = IOFactory::createWriter($spreadsheet, 'Html');
-
-        $html = $billingService->getSpreadsheetOutputAsString($writer);
-
-        if (empty($html)) {
-            $html = '<html lang="da" />';
-        }
-
-        // Extract body content.
-        $d = new \DOMDocument();
-        $mock = new \DOMDocument();
-        $d->loadHTML($html);
-        /** @var \DOMNode $body */
-        $body = $d->getElementsByTagName('div')->item(0);
-
-        foreach ($body->childNodes as $child) {
-            if ($child instanceof \DOMElement) {
-                if ('table' == $child->tagName) {
-                    $child->setAttribute('class', 'table table-export');
-                }
-            }
-            $mock->appendChild($mock->importNode($child, true));
-        }
-
-        return $this->render('project_billing/export_show.html.twig', [
-            'html' => $mock->saveHTML(),
+        return $this->render('project_billing/export_show.html.twig', $this->viewService->addView([
             'projectBilling' => $projectBilling,
-        ]);
+            'html' => $html,
+        ]));
     }
 
     /**
      * Export the project billing to .csv.
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @throws \Exception
+     * @throws EconomicsException
      */
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
+    #[IsGranted('VIEW', 'projectBilling')]
     public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
     {
+        $invoices = $projectBilling->getInvoices();
+
+        // Filter invoices by client.type if type query parameter is set.
+        $type = $request->query->get('type');
+        if (null !== $type) {
+            $invoices = $invoices->filter(fn (Invoice $invoice) => $invoice->getClient()?->getType()?->value == $type);
+        }
+
         // Mark invoice as exported.
-        foreach ($projectBilling->getInvoices() as $invoice) {
+        foreach ($invoices as $invoice) {
             $invoice->setExportedDate(new \DateTime());
             $invoiceRepository->save($invoice, true);
         }
@@ -226,29 +242,8 @@ class ProjectBillingController extends AbstractController
 
         $ids = array_map(function ($invoice) {
             return $invoice->getId();
-        }, $projectBilling->getInvoices()->toArray());
+        }, $invoices->toArray());
 
-        $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
-
-        /** @var Csv $writer */
-        $writer = IOFactory::createWriter($spreadsheet, 'Csv');
-        $writer->setDelimiter(';');
-        $writer->setEnclosure('');
-        $writer->setLineEnding("\r\n");
-        $writer->setSheetIndex(0);
-
-        $csvOutput = $billingService->getSpreadsheetOutputAsString($writer);
-
-        // Change encoding to Windows-1252.
-        $csvOutputEncoded = mb_convert_encoding($csvOutput, 'Windows-1252');
-
-        $response = new Response($csvOutputEncoded);
-        $filename = 'invoices-'.date('d-m-Y').'.csv';
-
-        $response->headers->set('Content-Type', 'text/csv');
-        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
-        return $response;
+        return $billingService->generateSpreadsheetCsvResponse($ids);
     }
 }

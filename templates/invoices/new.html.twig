@@ -8,7 +8,6 @@
     {{ form_start(form) }}
     <div class="selections" {{ stimulus_controller('choices') }}>
         {{ form_row(form.name) }}
-        {{ form_row(form.description) }}
         {{ form_row(form.project) }}
 
         <button class="button">{{ 'invoices.action_create'|trans }}</button>
@@ -16,6 +15,6 @@
     {{ form_end(form) }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_invoices_index') }}">{{ 'invoices.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_invoices_index', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.back_to_list'|trans }}</a>
     </div>
 {% endblock %}

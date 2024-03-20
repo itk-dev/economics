@@ -6,37 +6,45 @@ use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Version;
 use App\Enum\InvoiceEntryTypeEnum;
+use App\Exception\EconomicsException;
 use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillingService;
+use App\Service\ViewService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/invoices/{invoice}/entries')]
 class InvoiceEntryWorklogController extends AbstractController
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+        private readonly ViewService $viewService,
+    ) {
+    }
+
     /**
-     * @throws \Exception
+     * @throws EconomicsException
      */
     #[Route('/{invoiceEntry}/worklogs', name: 'app_invoice_entry_worklogs', methods: ['GET', 'POST'])]
     public function worklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, IssueRepository $issueRepository): Response
     {
         if (InvoiceEntryTypeEnum::WORKLOG != $invoiceEntry->getEntryType()) {
-            throw new \Exception('Invoice entry is not a WORKLOG type.');
+            throw new EconomicsException($this->translator->trans('exception.invoice_entry_not_worklog_type'), 400);
         }
 
         $project = $invoice->getProject();
 
         if (is_null($project)) {
-            throw new \Exception('Project not set on invoice.');
+            throw new EconomicsException($this->translator->trans('exception.invoice_entry_project_not_set_on_invoice'), 400);
         }
 
         $filterData = new InvoiceEntryWorklogsFilterData();
@@ -47,7 +55,7 @@ class InvoiceEntryWorklogController extends AbstractController
             'required' => false,
             'label' => 'worklog.version',
             'label_attr' => ['class' => 'label'],
-            'row_attr' => ['class' => 'form-row'],
+            'row_attr' => ['class' => 'form-row form-choices'],
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
@@ -69,7 +77,7 @@ class InvoiceEntryWorklogController extends AbstractController
             'required' => false,
             'label' => 'worklog.epic',
             'label_attr' => ['class' => 'label'],
-            'row_attr' => ['class' => 'form-row'],
+            'row_attr' => ['class' => 'form-row form-choices'],
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
@@ -82,36 +90,39 @@ class InvoiceEntryWorklogController extends AbstractController
 
         $worklogs = $worklogRepository->findByFilterData($project, $invoiceEntry, $filterData);
 
-        return $this->render('invoice_entry/worklogs.html.twig', [
+        return $this->render('invoice_entry/worklogs.html.twig', $this->viewService->addView([
             'form' => $form->createView(),
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
-            'submitEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', ['invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()]),
-        ]);
+            'submitEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', $this->viewService->addView(['invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()])),
+        ]));
     }
 
+    /**
+     * @throws EconomicsException
+     */
     #[Route('/{invoiceEntry}/worklogs-show', name: 'app_invoice_entry_worklogs_show', methods: ['GET'])]
     public function showWorklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository): Response
     {
         if (InvoiceEntryTypeEnum::WORKLOG != $invoiceEntry->getEntryType()) {
-            throw new \Exception('Invoice entry is not a WORKLOG type.');
+            throw new EconomicsException($this->translator->trans('exception.invoice_entry_not_worklog_type'), 400);
         }
 
         $worklogs = $worklogRepository->findBy(['invoiceEntry' => $invoiceEntry]);
 
-        return $this->render('invoice_entry/worklogs_show.html.twig', [
+        return $this->render('invoice_entry/worklogs_show.html.twig', $this->viewService->addView([
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
-        ]);
+        ]));
     }
 
     /**
      * @throws \Exception
      */
     #[Route('/{invoiceEntry}/select_worklogs', name: 'app_invoice_entry_select_worklogs', methods: ['POST'])]
-    public function selectWorklogs(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, TranslatorInterface $translator, BillingService $billingService): Response
+    public function selectWorklogs(Request $request, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, BillingService $billingService): Response
     {
         $worklogSelections = $request->toArray();
 
@@ -119,16 +130,16 @@ class InvoiceEntryWorklogController extends AbstractController
             $worklog = $worklogRepository->find($worklogSelection['id']);
 
             if (!$worklog) {
-                throw new \Exception('Worklog not found');
+                throw new EconomicsException($this->translator->trans('exception.worklog_not_found'), 404);
             }
 
             if ($worklog->isBilled()) {
-                return new JsonResponse(['message' => $translator->trans('worklog.error_already_billed')], 400);
+                return new JsonResponse(['message' => $this->translator->trans('worklog.error_already_billed')], 400);
             }
 
             if ($worklogSelection['checked']) {
                 if (null !== $worklog->getInvoiceEntry() && $worklog->getInvoiceEntry() !== $invoiceEntry) {
-                    return new JsonResponse(['message' => $translator->trans('worklog.error_added_to_other_invoice_entry')], 400);
+                    return new JsonResponse(['message' => $this->translator->trans('worklog.error_added_to_other_invoice_entry')], 400);
                 }
 
                 $worklog->setInvoiceEntry($invoiceEntry);

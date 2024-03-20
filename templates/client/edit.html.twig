@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'clients.edit'|trans}}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'clients.edit'|trans}}</h1>
+
+    {{ form_start(form) }}
+    <div class="grid-split-2 selections" {{ stimulus_controller('choices') }}>
+        {{ form_rest(form) }}
+    </div>
+    <button class="button mt-3">{{ 'clients.action_save'|trans }}</button>
+    {{ form_end(form) }}
+
+    <div class="bottom-actions">
+        <a href="{{ path('app_client_index', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'client.back_to_list'|trans}}</a>
+        {{ include('client/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

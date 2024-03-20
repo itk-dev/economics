@@ -8,6 +8,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0]
+
+* Adds phpunit.
+* Adds fixtures.
+* Adds project billing tests.
+* Changed to using client->versionName to issue->version mapping for project billing.
+* Added project lead/mail to project.
+* Removed usused fields from account and client.
+* Add team report export
+* Add open spout extension
+* Add choices to views
+* Add team report
+* Add workers to views
+* Add view filtering to management reports
+* Add csv export to management reports
+* Added view delete protection
+* Adds views filtering.
+* Adds user administration.
+* Added view and related form
+* Default to work id worker not longer exists in Leantime worklog sync.
+* Added commands to manage data providers.
+* Changed how errors are handled in Leantime api calls.
+* Modified getSprintReportData to work with Leantime data
+* Added project lead to client when syncing projects.
+* Remove description from create invoice page.
+* Added generate description button to invoice when client is set.
+* Fixed texts.
+* Fixed classes for choices.js fields and disabled state.
+* Added project lead to invoice edit page.
+* Changed InvoiceEntry material number and account to be set only at the invoice level.
+* Added default account to invoices from environment variable.
+* Added check for invoice entries with amount 0 when putting invoice on record.
+* Fixed issue with receiver account for project billing.
+* Fixed invoices overview sorting. Changed default sorting for invoices on record as by exportedDate.
+* Changed monolog config to ignore deprecations.
+* Added Leantime specific header to api service.
+* Added option to only export internal or external invoices from project billing.
+* Added checks for errors before allowing putting project billing on record
+* Added error check for invoice entries with 0 amounts
+* Make sure all issues are selected in project billing period.
+* Refactored error handling.
+* Added support for multiple data providers
+* Removed project creator for Jira.
+* Added client view.
+* Added account view.
+* Added leantime support for projects and project sync.
+* Added week-based planning view, based on issue duedates.
+* Fixed minor leantime integration issues.
+* Added dataprovider as column in project list.
+* Added nested menus and current page highlight in menu.
+* Added filters and sorting to client and account viewws.
+* Added display names when hiding rows in Planning overview.
+* Added a security voter for handling access to Invoice, InvoiceEntry and ProjectBilling.
+* Added javascript style linting.
+* Removed static from stimulus controller.
+* Added data provider to account, client, project_billing and invoice index views.
+
+
+* RELEASE NOTES:
+  * Change name APP_INVOICE_RECEIVER_ACCOUNT to APP_INVOICE_SUPPLIER_ACCOUNT in `.env.local`
+  * Set APP_INVOICE_DESCRIPTION_TEMPLATE in `.env.local`
+  * Set APP_INVOICE_RECEIVER_DEFAULT_ACCOUNT in `.env.local`
+  * Set APP_PROJECT_BILLING_DEFAULT_DESCRIPTION in `.env.local`
+  * Migrate to new DataProvider model. The purpose of this is to couple the previous Jira data synchronizations to a
+    data provider in the new model.
+    - Add a dataProvider for current Jira implementation with the command
+    ```sh
+    bin/console app:project-tracker:create
+    ```
+    - Run the following commands to set `data_provider_id` field in the database for existing synced entities.
+
+      Fill in the data from the `.env.local` values for the Jira connection:
+      - Name: Jira
+      - Url: JIRA_PROJECT_TRACKER_URL
+      - Secret: JIRA_PROJECT_TRACKER_USER:JIRA_PROJECT_TRACKER_TOKEN
+
+      NB! Replace 1 with the relevant DataProvider.id if it differs from 1.
+    ```sh
+    bin/console doctrine:query:sql 'UPDATE account SET data_provider_id = 1';
+    bin/console doctrine:query:sql 'UPDATE client SET data_provider_id = 1';
+    bin/console doctrine:query:sql 'UPDATE issue SET data_provider_id = 1';
+    bin/console doctrine:query:sql 'UPDATE project SET data_provider_id = 1';
+    bin/console doctrine:query:sql 'UPDATE version SET data_provider_id = 1';
+    bin/console doctrine:query:sql 'UPDATE worklog SET data_provider_id = 1';
+    ```
+
+
 ## [1.1.2]
 
 * Changed how project billing is put on record, to allow for finishing a partially
@@ -23,6 +110,7 @@ complete process.
 * Added epic filter to worklog selection page.
 * Removed time from period selections on worklog selection page.
 * Optimized sync memory usage.
+* Composer update to Symfony 6.4.
 
 ## [1.1.0]
 
@@ -92,6 +180,7 @@ complete process.
 * Changed worklog save button styling to be sticky.
 
 [Unreleased]: https://github.com/itk-dev/economics/compare/1.1.2...HEAD
+[2.0.0]: https://github.com/itk-dev/economics/compare/1.1.2...2.0.0
 [1.1.2]: https://github.com/itk-dev/economics/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/itk-dev/economics/compare/1.1.0...1.1.1
 [1.1.0]: https://github.com/itk-dev/economics/compare/1.0.4...1.1.0
