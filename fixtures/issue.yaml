@@ -6,7 +6,8 @@ App\Entity\Issue:
   issue-001 (extends issue):
     project: '@project-001'
     name: The first issue
-    status: Done
+    status: Lukket
+    resolutionDate: '<(new \DateTime("2001-03-01"))>'
 
   issue-002 (extends issue):
     project: '@project-002'
@@ -24,3 +25,13 @@ App\Entity\IssueProduct:
     product: '@product-002'
     quantity: 123
     description: 'This was tricky'
+
+App\Entity\Version:
+  version (template):
+    projectTrackerId: projectTrackerId
+
+  version-001 (extends version):
+    name: 'PB-test'
+    project: '@project-001'
+    issues:
+        - '@issue-001'
