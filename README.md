@@ -48,6 +48,7 @@ accounts.
 Getting started:
 
 ```shell
+docker compose pull
 docker compose run --rm node npm install
 docker compose up --detach
 docker compose exec phpfpm composer install
@@ -107,7 +108,7 @@ The node container will watch for code changes in assets folder and recompile.
 
 We use [AliceBundle](https://github.com/theofidry/AliceBundle) for fixtures.
 
-Load fixtures by running (**warning****: will empty your database!)
+Load fixtures by running (**warning**: will empty your database!)
 
 ``` shell
 docker compose exec phpfpm composer fixtures:load
