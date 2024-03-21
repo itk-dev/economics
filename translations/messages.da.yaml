@@ -253,7 +253,6 @@ invoices:
     locked_client_values: "Låste fakturaværdier. Disse værdier bruges i fakturaen og ændres ikke selvom kunden bliver opdateret."
     locked_type: "Type"
     locked_sales_channel: "Salgskanal"
-    locked_account_key: "Konto"
     locked_contact_name: "Kontakt"
     locked_customer_key: "Ordregiver/Bestiller"
     client_sales_channel: "Salgskanal"
