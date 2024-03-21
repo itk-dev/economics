@@ -227,6 +227,7 @@ class ProjectBillingService
                     if (null === $product) {
                         continue;
                     }
+
                     $productInvoiceEntry = (new InvoiceEntry())
                         ->setEntryType(InvoiceEntryTypeEnum::PRODUCT)
                         ->setDescription($productIssue->getDescription())
@@ -234,15 +235,10 @@ class ProjectBillingService
                         ->setPrice($product->getPriceAsFloat())
                         ->setAmount($productIssue->getQuantity())
                         ->setTotalPrice($productIssue->getQuantity() * $product->getPriceAsFloat())
-                        // @TODO Should we duplicate the value here?
-                        // ->setMaterialNumber($invoice->getDefaultMaterialNumber())
+                        ->setMaterialNumber($invoice->getDefaultMaterialNumber())
                         ->setAccount($invoice->getDefaultReceiverAccount());
-                    // @TODO Should we add worklogs?
-                    // foreach ($invoiceEntry->getWorklogs() as $worklog) {
-                    //     $worklog = clone $worklog;
-                    //     $productInvoiceEntry->addWorklog($worklog);
-                    //     $this->entityManager->persist($worklog);
-                    // }
+                    // We don't add worklogs here, since they're already attached to the main invoice entry
+                    // (and only used to detect if an entry has been added to an invoice).
 
                     $productInvoiceEntry->setInvoice($invoice);
                     $invoice->addInvoiceEntry($productInvoiceEntry);
