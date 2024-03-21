@@ -269,18 +269,9 @@ class BillingService
 
             $today = new \DateTime();
             $todayString = $today->format('d.m.Y');
-            $todayPlus30days = $today->add(new \DateInterval('P30D'));
 
-            // Move ahead if the day is a saturday or sunday to ensure it is a bank day.
-            // TODO: Handle holidays.
-            $weekday = $todayPlus30days->format('N');
-            if ('6' === $weekday) {
-                $todayPlus30days->add(new \DateInterval('P2D'));
-            } elseif ('7' === $weekday) {
-                $todayPlus30days->add(new \DateInterval('P1D'));
-            }
-
-            $todayPlus30daysString = $todayPlus30days->format('d.m.Y');
+            $paymentDate = $this->getPaymentDate($today);
+            $paymentDateString = $paymentDate->format('d.m.Y');
 
             // Generate header line (H).
             // 1. "Linietype"
@@ -328,7 +319,7 @@ class BillingService
                 // 49. Same value as 38 (!)
                 $sheet->setCellValue([35, $row], $sheet->getCell([24, $row])->getValue());
                 // 50. Henstand til: dagsdato + 30 dage. NB det må ikke være før faktura forfald. Skal være en bank dag.
-                $sheet->setCellValue([36, $row], $todayPlus30daysString);
+                $sheet->setCellValue([36, $row], $paymentDateString);
             }
 
             ++$row;
@@ -388,5 +379,16 @@ class BillingService
         }
 
         return $output;
+    }
+
+    /**
+     * Get payment date, i.e. first bank day on or after 30 days from now.
+     *
+     * @see https://aarhus.dk/virksomhed/leverandoer-til-os/betalingsbetingelser-e-handel-fakturering-og-ean/betalingsbetingelser
+     */
+    private function getPaymentDate(\DateTimeInterface $today): \DateTimeInterface
+    {
+        return DanishHolidayHelper::getInstance()
+            ->getNextBankDay($today, 30);
     }
 }
