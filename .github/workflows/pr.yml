@@ -243,25 +243,6 @@ jobs:
                 run: |
                     docker compose exec phpfpm composer coding-standards-check/twigcs
 
-    fixtures:
-        name: Fixtures
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
-
-            -   name: Install
-                run: |
-                    docker network create frontend
-                    docker compose up --detach
-                    docker compose exec --user root phpfpm composer install
-            -   name: Initialize
-                run: |
-                    docker compose exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
-            -   name: Load fixtures
-                run: |
-                   docker compose exec phpfpm composer fixtures:load
-
     phpunit:
         runs-on: ubuntu-latest
         services:

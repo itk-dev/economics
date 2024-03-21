@@ -1,7 +1,0 @@
-App\Entity\Client:
-  client (template):
-    projectTrackerId: projectTrackerId
-
-  client-001 (extends client):
-    name: The first client
-    versionName: 'PB-test'

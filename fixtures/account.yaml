@@ -1,6 +1,0 @@
-App\Entity\Account:
-  account (template):
-
-  account-001 (extends account):
-    name: The first account
-    value: account 001
