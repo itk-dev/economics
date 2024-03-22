@@ -309,7 +309,7 @@ class BillingService
             if (!$internal) {
                 // 38. Stiftelsesdato
                 $sheet->setCellValue([24, $row], $invoice->getCreatedAt()?->format('d.m.Y'));
-                // 39. Same value as in 38 (!)
+                // 39. Periode fra - Same value as in 38 (!)
                 $sheet->setCellValue([25, $row], $sheet->getCell([24, $row])->getValue());
                 // 40. Periode fra
                 $periodFrom = $invoice->getPeriodFrom();
