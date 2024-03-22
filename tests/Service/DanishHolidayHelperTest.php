@@ -163,8 +163,38 @@ final class DanishHolidayHelperTest extends TestCase
 
     public static function dataIsBankHoliday(): iterable
     {
+        yield '2024-12-31' => [
+            new \DateTimeImmutable('2024-12-31'),
+            true,
+        ];
+
+        yield '2024-01-01' => [
+            new \DateTimeImmutable('2024-01-01'),
+            true,
+        ];
+
+        yield '2024-01-02' => [
+            new \DateTimeImmutable('2024-01-02'),
+            false,
+        ];
+
         yield '2024-05-10' => [
             new \DateTimeImmutable('2024-05-10'),
+            true,
+        ];
+
+        yield '2024-12-23' => [
+            new \DateTimeImmutable('2024-12-23'),
+            false,
+        ];
+
+        yield '2024-12-24' => [
+            new \DateTimeImmutable('2024-12-24'),
+            true,
+        ];
+
+        yield '2026-05-15' => [
+            new \DateTimeImmutable('2026-05-15'),
             true,
         ];
     }

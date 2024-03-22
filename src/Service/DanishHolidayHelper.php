@@ -34,9 +34,12 @@ final class DanishHolidayHelper
     private array $holidays = [];
     private array $holidayNames = [];
     private array $bankHolidays = [];
+    private array $bankHolidayNames = [];
 
     /**
      * Get holidays indexed by name.
+     *
+     * @return array<string, \DateTimeImmutable>
      */
     public function getHolidays(int $year): array
     {
@@ -44,7 +47,7 @@ final class DanishHolidayHelper
             $easter = $this->getEaster($year);
 
             $this->holidays[$year] = [
-                'nytårsdag' => $easter->modify('1 January'),
+                'nytårsdag' => $this->createDate($year, 01, 01),
                 'palmesøndag' => $easter->modify('-7 days'),
                 'skærtorsdag' => $easter->modify('-3 days'),
                 'langfredag' => $easter->modify('-2 days'),
@@ -54,8 +57,8 @@ final class DanishHolidayHelper
                 'kristi himmelfartsdag' => $easter->modify('+39 days'),
                 'pinsedag' => $easter->modify('+49 days'),
                 '2. pinsedag' => $easter->modify('+50 days'),
-                'juledag' => $easter->modify('25 December'),
-                '2. juledag' => $easter->modify('26 December'),
+                'juledag' => $this->createDate($year, 12, 25),
+                '2. juledag' => $this->createDate($year, 12, 26),
             ];
         }
 
@@ -68,40 +71,40 @@ final class DanishHolidayHelper
     public function getHolidayNames(int $year): array
     {
         if (!isset($this->holidayNames[$year])) {
-            $holidays = $this->getHolidays($year);
-
-            $names = [];
-            foreach ($holidays as $name => $date) {
-                $names[$this->formatDate($date)] = $name;
-            }
-            $this->holidayNames[$year] = $names;
+            $this->holidayNames[$year] = $this->buildNames($this->getHolidays($year));
         }
 
         return $this->holidayNames[$year];
     }
 
     /**
-     * Get bank holiday names.
+     * Get bank holidays.
      *
      * @see https://www.nationalbanken.dk/da/vores-arbejde/stabile-priser-pengepolitik-og-dansk-oekonomi/banklukkedage
      */
-    public function getBankHolidayNames(int $year): array
+    public function getBankHolidays(int $year): array
     {
         if (!isset($this->bankHolidays[$year])) {
-            $this->bankHolidays[2024] = [
-                $this->formatDate(new \DateTimeImmutable('2024-05-10')) => 'dagen efter kristi himmelfartsdag',
-                $this->formatDate(new \DateTimeImmutable('2024-06-05')) => 'grundlovsdag',
-                $this->formatDate(new \DateTimeImmutable('2024-12-31')) => 'nytårsaftensdag',
-            ];
-
-            $this->bankHolidays[2025] = [
-                $this->formatDate(new \DateTimeImmutable('2025-05-30')) => 'dagen efter kristi himmelfartsdag',
-                $this->formatDate(new \DateTimeImmutable('2025-06-05')) => 'grundlovsdag',
-                $this->formatDate(new \DateTimeImmutable('2025-12-31')) => 'nytårsaftensdag',
+            $holidays = $this->getHolidays($year);
+            $ascensionDay = $holidays['kristi himmelfartsdag'];
+            $this->bankHolidays[$year] = [
+                'dagen efter kristi himmelfartsdag' => $ascensionDay->modify('+1 day'),
+                'grundlovsdag' => $this->createDate($year, 06, 05),
+                'juleaftensdag' => $this->createDate($year, 12, 24),
+                'nytårsaftensdag' => $this->createDate($year, 12, 31),
             ];
         }
 
-        return $this->bankHolidays[$year] ?? [];
+        return $this->bankHolidays[$year];
+    }
+
+    public function getBankHolidayNames(int $year): array
+    {
+        if (!isset($this->bankHolidayNames[$year])) {
+            $this->bankHolidayNames[$year] = $this->buildNames($this->getBankHolidays($year));
+        }
+
+        return $this->bankHolidayNames[$year];
     }
 
     public function getEaster(int $year): \DateTimeImmutable
@@ -114,7 +117,7 @@ final class DanishHolidayHelper
     {
         return array_key_exists(
             $this->formatDate($date),
-            $this->getHolidayNames((int) $date->format('Y'))
+            $this->getHolidayNames($this->getYear($date))
         );
     }
 
@@ -124,7 +127,7 @@ final class DanishHolidayHelper
             || !$this->isWorkday($date)
             || array_key_exists(
                 $this->formatDate($date),
-                $this->getBankHolidayNames((int) $date->format('Y'))
+                $this->getBankHolidayNames($this->getYear($date))
             );
     }
 
@@ -143,7 +146,7 @@ final class DanishHolidayHelper
         return $d;
     }
 
-    public function getNextBankDay(\DateTimeInterface $date, int $daysFromNow = 0): \DateTimeInterface
+    public function getNextBankDay(\DateTimeInterface $date, int $daysFromNow = 0): \DateTimeImmutable
     {
         $d = \DateTime::createFromInterface($date);
         if (0 !== $daysFromNow) {
@@ -154,11 +157,33 @@ final class DanishHolidayHelper
             $d->modify('+1 day');
         }
 
-        return $d;
+        return \DateTimeImmutable::createFromInterface($d);
     }
 
     public function formatDate(\DateTimeInterface $date): string
     {
         return $date->format(\DateTimeInterface::ATOM);
+    }
+
+    private function createDate(int $year, int $month, int $day): \DateTimeImmutable
+    {
+        return (new \DateTimeImmutable())
+            ->setDate($year, $month, $day)
+            ->setTime(0, 0);
+    }
+
+    private function getYear(\DateTimeInterface $date): int
+    {
+        return (int) $date->format('Y');
+    }
+
+    private function buildNames(array $days): array
+    {
+        $names = [];
+        foreach ($days as $name => $date) {
+            $names[$this->formatDate($date)] = $name;
+        }
+
+        return $names;
     }
 }

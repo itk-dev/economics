@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-95](https://github.com/itk-dev/economics/pull/95)
+  Updated bank holiday helper
 * [PR-94](https://github.com/itk-dev/economics/pull/94)
   Updated data in external invoicing
 * [PR-93](https://github.com/itk-dev/economics/pull/93)
