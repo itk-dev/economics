@@ -32,6 +32,9 @@ class IssueProductType extends AbstractType
                         ->setParameter('project', $options['project'])
                         ->orderBy('p.name', Criteria::ASC);
                 },
+                'attr' => [
+                    'class' => 'tom-select',
+                ],
             ])
             ->add('quantity', NumberType::class, [
                 'html5' => true,

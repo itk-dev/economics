@@ -102,7 +102,16 @@ docker compose exec phpfpm bin/console app:sync-worklogs
 
 ### Assets
 
-The node container will watch for code changes in assets folder and recompile.
+The node container will watch for code changes in the `assets` folder and
+recompile.
+
+Use
+
+``` shell
+docker compose logs --tail 0 --follow node
+```
+
+to see the compilation log, e.g. to detect errors.
 
 ## Migration path from JiraEconomics
 

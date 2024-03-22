@@ -471,6 +471,10 @@ product:
     action_create_new: 'Opret nyt produkt'
     action_edit: 'Redigér'
     select_project: "Vælg projekt"
+    # @TODO Provide some useful help if needed.
+    project_helptext: ""
+    name_helptext: ""
+    price_helptext: ""
 
 project:
     title: "Projekter"
