@@ -167,8 +167,8 @@ docker compose run --rm node npm run build
 Copy the `/public/build` folder to the server.
 
 ```shell
-docker compose up -d
-docker compose exec phpfpm composer install --no-dev -o
+docker compose up --detach
+docker compose exec phpfpm composer install --no-dev --classmap-authoritative
 docker compose exec phpfpm bin/console doctrine:migrations:migrate
 ```
 
