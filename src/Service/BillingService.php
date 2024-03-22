@@ -316,7 +316,7 @@ class BillingService
                 $sheet->setCellValue([26, $row], null !== $periodFrom ? $periodFrom->format('d.m.Y') : '');
                 // 46. Fordringstype oprettelse/valg : KOCIVIL
                 $sheet->setCellValue([32, $row], 'KOCIVIL');
-                // 49. Same value as 38 (!)
+                // 49. Forfaldsdato: dagsdato - Same value as 38 (!)
                 $sheet->setCellValue([35, $row], $sheet->getCell([24, $row])->getValue());
                 // 50. Henstand til: dagsdato + 30 dage. NB det må ikke være før faktura forfald. Skal være en bank dag.
                 $sheet->setCellValue([36, $row], $paymentDateString);
