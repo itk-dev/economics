@@ -250,3 +250,19 @@ docker run --interactive italia/publiccode-parser-go /dev/stdin < publiccode.yml
 
 The validation is automatically performed by a GitHub Action whenever a pull
 request is made (cf. [`.github/workflows/pr.yaml`](.github/workflows/pr.yaml)).
+
+## Importing products
+
+We need an initial product import to get going. Use
+
+``` shell
+docker compose exec phpfpm bin/console app:product:import «CSV filename»
+```
+
+to import from a CSV file.
+
+The CSV **must** contain the following headers:
+
+``` csv
+id,name,price,project.id,project.name
+```
