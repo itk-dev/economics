@@ -113,6 +113,43 @@ docker compose logs --tail 0 --follow node
 
 to see the compilation log, e.g. to detect errors.
 
+### Fixtures
+
+We use [AliceBundle](https://github.com/theofidry/AliceBundle) for fixtures.
+
+Load fixtures by running (**warning**: will empty your database!)
+
+``` shell
+docker compose exec phpfpm composer fixtures:load
+```
+
+After loading fixtures you can sign in as `admin@example.com`:
+
+``` shell
+open $(docker compose exec phpfpm bin/console itk-dev:openid-connect:login admin@example.com)
+```
+
+Use
+
+``` shell
+docker run --rm --interactive mikefarah/yq '.["App\Entity\User"].[].email' - < fixtures/user.yaml
+```
+
+to list email of all fixture users.
+
+Generate login URLs for alle users with
+
+``` shell
+for email in $(docker run --rm --interactive mikefarah/yq '.["App\Entity\User"].[].email' - < fixtures/user.yaml); do
+   echo "$email"
+   echo $(docker compose exec phpfpm bin/console itk-dev:openid-connect:login "$email")
+   echo
+done
+```
+
+See [fixtures/user.yaml](fixtures/user.yaml) for additional info on users created when loading
+fixtures.
+
 ## Migration path from JiraEconomics
 
 1. Copy database from JiraEconomics.
