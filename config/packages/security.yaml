@@ -39,7 +39,8 @@ security:
         - { path: ^/admin/management-report/, roles: ROLE_REPORT }
         - { path: ^/admin/team-report/, roles: ROLE_REPORT }
         - { path: ^/admin/sprint-report/, roles: ROLE_REPORT }
-        - { path: ^/admin/project/, roles: ROLE_ADMIN }
+        - { path: ^/admin/products/, roles: ROLE_PRODUCT_MANAGER }
+        - { path: ^/admin/project/, roles: [ROLE_ADMIN, ROLE_PRODUCT_MANAGER] }
         - { path: ^/admin/client/, roles: ROLE_ADMIN }
         - { path: ^/admin/account/, roles: ROLE_ADMIN }
         - { path: ^/admin/users/, roles: ROLE_ADMIN }
@@ -53,10 +54,12 @@ security:
             - ROLE_PROJECT_BILLING
             - ROLE_PLANNING
             - ROLE_REPORT
+            - ROLE_PRODUCT_MANAGER
         ROLE_INVOICE: ROLE_USER
         ROLE_PROJECT_BILLING: ROLE_INVOICE
         ROLE_PLANNING: ROLE_USER
         ROLE_REPORT: ROLE_USER
+        ROLE_PRODUCT_MANAGER: ROLE_USER
 
 when@test:
     security:

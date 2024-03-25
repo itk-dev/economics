@@ -3,10 +3,12 @@
 {% block title %}{{ 'client.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_client_new', {}|merge(view is defined ? {view: view} : {})) }}"
-       style="float: right">{{ 'clients.action_create_new'|trans }}</a>
 
-    <h1 class="page-title">{{ 'client.title'|trans }}</h1>
+    {% include 'components/page-header.html.twig' with {
+        'title': 'client.title'|trans,
+        'link_text': 'clients.action_create_new'|trans,
+        'link_url': 'app_client_new'
+    } %}
 
     {% set number_of_columns = 11 %}
 
@@ -21,7 +23,7 @@
     {{ form_end(form) }}
 
     <table class="table margin-bottom">
-        <thead class="table-thead">
+        <thead class="table-th">
         <tr>
             <th class="table-th {% if clients.isSorted('clients.id') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.id'|trans, 'client.id') }}</th>
             <th class="table-th {% if clients.isSorted('client.name') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.name'|trans, 'client.name') }}</th>

@@ -96,8 +96,6 @@ class ProjectBillingController extends AbstractController
         $form = $this->createForm(ProjectBillingType::class, $projectBilling, $options);
         $form->handleRequest($request);
 
-        $issuesWithoutAccounts = $projectBillingService->getIssuesNotIncludedInProjectBilling($projectBilling);
-
         if ($form->isSubmitted() && $form->isValid()) {
             if ($projectBilling->isRecorded()) {
                 throw new EconomicsException($this->translator->trans('exception.project_billing_on_record_cannot_edit'), 400);
@@ -115,6 +113,8 @@ class ProjectBillingController extends AbstractController
                 'id' => $id,
             ]), Response::HTTP_SEE_OTHER);
         }
+
+        $issuesWithoutAccounts = $projectBillingService->getIssuesNotIncludedInProjectBilling($projectBilling);
 
         return $this->render('project_billing/edit.html.twig', $this->viewService->addView([
             'projectBilling' => $projectBilling,

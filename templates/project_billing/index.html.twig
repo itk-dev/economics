@@ -3,8 +3,12 @@
 {% block title %}{{ 'project_billing.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_project_billing_new', {}|merge(view is defined ? {view: view} : {})) }}" style="float: right">{{ 'project_billing.action_create_new'|trans }}</a>
-    <h1 class="page-title">{{ 'project_billing.title'|trans }}</h1>
+
+    {% include 'components/page-header.html.twig' with {
+        'title': 'project_billing.title'|trans,
+        'link_text': 'project_billing.action_create_new'|trans,
+        'link_url': 'app_project_billing_new'
+    } %}
 
     {{ form_start(form) }}
     <div class="form-default">
@@ -19,7 +23,7 @@
     {% set number_of_columns = 8 %}
 
     <table class="table margin-bottom">
-        <thead class="table-thead">
+        <thead class="table-th">
         <tr>
             <th class="table-th{% if projectBillings.isSorted('projectBilling.id') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_id'|trans, 'projectBilling.id') }}</th>
             <th class="table-th{% if projectBillings.isSorted('projectBilling.name') %} sorted{% endif %}">{{ knp_pagination_sortable(projectBillings, 'project_billing.list_name'|trans, 'projectBilling.name') }}</th>
@@ -53,7 +57,7 @@
         {% endif %}
         <tr class="table-tr">
             <td class="table-td" colspan="{{ number_of_columns - 6 }}"><a class="link" href="{{ path('app_project_billing_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_create_new'|trans }}</a>
-            <td class="table-td" colspan="{{ number_of_columnsemacs - 2 }}" class="text-right">
+            <td class="table-td" colspan="{{ number_of_columns - 2 }}" class="text-right">
                 {{ knp_pagination_render(projectBillings) }}
             </td>
         </tr>

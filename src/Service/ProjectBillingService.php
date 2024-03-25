@@ -220,6 +220,30 @@ class ProjectBillingService
                 $invoiceEntry->setInvoice($invoice);
                 $invoice->addInvoiceEntry($invoiceEntry);
                 $this->entityManager->persist($invoiceEntry);
+
+                // Add invoice entries for each product.
+                foreach ($issue->getProducts() as $productIssue) {
+                    $product = $productIssue->getProduct();
+                    if (null === $product) {
+                        continue;
+                    }
+
+                    $productInvoiceEntry = (new InvoiceEntry())
+                        ->setEntryType(InvoiceEntryTypeEnum::PRODUCT)
+                        ->setDescription($productIssue->getDescription())
+                        ->setProduct($product->getName())
+                        ->setPrice($product->getPriceAsFloat())
+                        ->setAmount($productIssue->getQuantity())
+                        ->setTotalPrice($productIssue->getQuantity() * $product->getPriceAsFloat())
+                        ->setMaterialNumber($invoice->getDefaultMaterialNumber())
+                        ->setAccount($invoice->getDefaultReceiverAccount());
+                    // We don't add worklogs here, since they're already attached to the main invoice entry
+                    // (and only used to detect if an entry has been added to an invoice).
+
+                    $productInvoiceEntry->setInvoice($invoice);
+                    $invoice->addInvoiceEntry($productInvoiceEntry);
+                    $this->entityManager->persist($productInvoiceEntry);
+                }
             }
 
             if (0 == count($invoice->getInvoiceEntries())) {

@@ -45,6 +45,7 @@ navigation:
     title: "Economics"
     accounts: "Konto"
     project_billing: "Projektfakturering"
+    products: "Produkter"
     projects: "Projekter"
     client: "Kunder"
     account: "Konti"
@@ -226,6 +227,7 @@ invoices:
     client_ean: "EAN"
     invoice_entry_type: "Type"
     invoice_entry_type_manual: "Manuel"
+    invoice_entry_type_product: "Produkt"
     invoice_entry_type_worklog: "Worklog"
     action_create_new_invoice_entry_worklog: "Tilføj worklog linje"
     action_create_new_invoice_entry_manual: "Tilføj manuel linje"
@@ -446,6 +448,34 @@ project_billing:
     action_record_internal: "Eksportér interne"
     action_record_external: "Eksportér eksterne"
 
+product:
+    title: "Produkter"
+    id: "#"
+    name: "Navn"
+    price: "Pris"
+    project: "Projekt"
+    created_at: "Oprettet"
+    updated_at: "Opdateret"
+    list_no_records_found: "Ingen produkter fundet"
+    create: "Opret produkt"
+    update: "Gem"
+    search: "Søg"
+    new: "Opret nyt produkt"
+    form_name: "Navn"
+    form_project: "Projekt"
+    edit: 'Redigér produkt'
+    back_to_list: 'Tilbage til listen'
+    action_save: 'Gem produkt'
+    action_delete: 'Slet produkt'
+    actions: 'Handlinger'
+    action_create_new: 'Opret nyt produkt'
+    action_edit: 'Redigér'
+    select_project: "Vælg projekt"
+    # @TODO Provide some useful help if needed.
+    project_helptext: ""
+    name_helptext: ""
+    price_helptext: ""
+
 project:
     title: "Projekter"
     include: "Inkludér"
@@ -475,6 +505,7 @@ project:
     project_lead: 'Project Lead'
     actions: 'Handlinger'
     action_edit: 'Redigér'
+    action_view_issues: "Vis opgaver"
 
 reports:
     title: 'Rapporter'
@@ -620,3 +651,39 @@ roles:
     ROLE_PROJECT_BILLING: 'Projektfakturering'
     ROLE_PLANNING: 'Planlægning'
     ROLE_REPORT: 'Rapporter'
+    ROLE_PRODUCT_MANAGER: 'Produktadministrator'
+
+issue:
+    title: "Opgaver (%project%)"
+    id: "#"
+    project: "Projekt"
+    name: "Navn"
+    status: "Status"
+    actions: "Handlinger"
+    title_show: "Opgave"
+    placeholder_select_product: "Vælg produkt"
+    products: "Produkter"
+    products_total: "I alt"
+    back_to_list: "Tilbage til listen"
+    form_name: "Navn"
+    action_show: "Vis"
+    no_products_defined_in_project: "Projektet har ingen produkter."
+    manage_products_in_project: "Rediger produkter"
+    list_no_records_found: "Ingen opgaver fundet."
+
+    product_added: "Produkt %product% tilføjet"
+    error_adding_product: "Fejl under tilføjelse af produkt"
+    product_updated: "Produkt %product% opdateret"
+    error_editing_product: "Fejl under opdatering af produkt"
+    product_deleted: "Produkt %product% fjernet"
+
+    product:
+        action_delete: "Fjern"
+        action_add: "Tilføj produkt"
+        action_update: "Opdatér"
+        name: "Produkt"
+        price: "Pris"
+        quantity: "Antal"
+        description: "Beskrivelse"
+        total: "I alt"
+        list_no_records_found: "Ingen produkter"

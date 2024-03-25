@@ -6,6 +6,7 @@ use App\Enum\MaterialNumberEnum;
 use App\Repository\InvoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -61,6 +62,7 @@ class Invoice extends AbstractBaseEntity
     private ?\DateTimeInterface $periodTo = null;
 
     #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceEntry::class, cascade: ['remove'])]
+    #[ORM\OrderBy(['index' => Criteria::ASC])]
     private Collection $invoiceEntries;
 
     #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'invoices')]
@@ -252,6 +254,15 @@ class Invoice extends AbstractBaseEntity
         }
 
         return $this;
+    }
+
+    public function setInvoiceEntryIndexes()
+    {
+        $index = 0;
+        foreach ($this->getInvoiceEntries() as $entry) {
+            $entry->setIndex($index);
+            ++$index;
+        }
     }
 
     public function getProject(): ?Project
