@@ -22,12 +22,12 @@
     <table class="table margin-bottom">
         <thead class="table-th">
         <tr>
-            <th class="table-th{% if products.isSorted('product.id') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.id'|trans, 'product.id') }}</th>
-            <th class="table-th{% if products.isSorted('product.name') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.name'|trans, 'product.name') }}</th>
-            <th class="table-th price{% if products.isSorted('product.price') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.price'|trans, 'product.price') }}</th>
-            <th class="table-th{% if products.isSorted('product.project') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.project'|trans, 'product.project') }}</th>
-            <th class="table-th{% if products.isSorted('product.createdAt') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.created_at'|trans, 'product.createdAt') }}</th>
-            <th class="table-th{% if products.isSorted('product.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(products, 'product.updated_at'|trans, 'product.updatedAt') }}</th>
+            {{ macros.knp_pagination_sortable_header(products, 'product.id'|trans, 'product.id') }}
+            {{ macros.knp_pagination_sortable_header(products, 'product.name'|trans, 'product.name') }}
+            {{ macros.knp_pagination_sortable_header(products, 'product.price'|trans, 'product.price', {class: 'price'}) }}
+            <th class="table-th">{{ 'product.project'|trans }}</th>
+            {{ macros.knp_pagination_sortable_header(products, 'product.created_at'|trans, 'product.createdAt') }}
+            {{ macros.knp_pagination_sortable_header(products, 'product.updated_at'|trans, 'product.updatedAt') }}
 
             <th class="table-th">{{ 'product.actions'|trans }}</th>
         </tr>

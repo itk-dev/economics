@@ -76,7 +76,7 @@ class IssueController extends AbstractController
                     'id' => $issue->getId(),
                     'product' => $product->getId(),
                 ]),
-                'method' => Request::METHOD_POST,
+                'method' => Request::METHOD_PUT,
             ])
                 ->createView(),
             $products
@@ -121,11 +121,12 @@ class IssueController extends AbstractController
         ], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/editProduct/{product}', name: 'edit_product', methods: [Request::METHOD_POST])]
+    #[Route('/{id}/editProduct/{product}', name: 'edit_product', methods: [Request::METHOD_PUT])]
     public function editProduct(Request $request, Project $project, Issue $issue, IssueProduct $product, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(IssueProductType::class, $product, [
             'project' => $project,
+            'method' => Request::METHOD_PUT,
         ]);
         $form->handleRequest($request);
 

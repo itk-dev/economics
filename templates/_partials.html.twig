@@ -1,5 +1,5 @@
-{% macro knp_pagination_sortable_header(pagination, label, key) %}
-<th class="table-th{% if pagination.isSorted(key) %} sorted{% endif %}">{{ knp_pagination_sortable(pagination, label, key) }}</th>
+{% macro knp_pagination_sortable_header(pagination, label, key, attr={}) %}
+<th class="table-th {{ attr.class|default('') }} {{ pagination.isSorted(key) ? 'sorted' }}">{{ knp_pagination_sortable(pagination, label, key) }}</th>
 {% endmacro %}
 
 {% macro format_amount(amount) %}

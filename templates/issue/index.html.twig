@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'issue.title'|trans }}{% endblock %}
+{% block title %}{{ 'issue.title'|trans({'%project%': project.name}) }}{% endblock %}
 
 {% import "_partials.html.twig" as macros %}
 
@@ -24,20 +24,6 @@
             {{ macros.knp_pagination_sortable_header(issues, 'issue.id'|trans, 'issue.id') }}
             {{ macros.knp_pagination_sortable_header(issues, 'issue.name'|trans, 'issue.name') }}
             {{ macros.knp_pagination_sortable_header(issues, 'issue.status'|trans, 'issue.status') }}
-
-            {#
-            issue.accountKey
-            issue.accountId
-            issue.projectTrackerId
-            issue.projectTrackerKey
-            issue.epicKey
-            issue.epicName
-            issue.resolutionDate
-            issue.createdBy
-            issue.updatedBy
-            issue.createdAt
-            issue.updatedAt
-            #}
             <th class="table-th">{{ 'issue.products'|trans }}</th>
             <th class="table-th">{{ 'issue.actions'|trans }}</th>
         </tr>

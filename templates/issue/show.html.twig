@@ -39,7 +39,7 @@
 
     {% set number_of_columns = 6 %}
 
-    {# The form theme adds a div element with the (default?) form id inside a form  #}
+    {# The form theme adds a div element with the (default?) form id inside a form #}
     {% set add_product_form_id = 'add_product_form_id' %}
     <table class="table">
         <thead>
@@ -112,7 +112,7 @@
 
     {% if add_product_form %}
         {# Important: The actual add_product_form *must* come after the individual form fields in the table #}
-        {# Furthermore, we must add rou custom id since the form contains a div element with the (default) form id #}
+        {# Furthermore, we must add our custom id since the form contains a div element with the (default) form id #}
         {{ form_start(add_product_form, {attr: {id: add_product_form_id}}) }}
         <div style="display: none">
             {{ form_rest(add_product_form) }}
