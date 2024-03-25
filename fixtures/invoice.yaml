@@ -1,0 +1,13 @@
+App\Entity\Invoice:
+  invoice (template):
+    recorded: false
+    project: '@project-001'
+
+  invoice-001 (extends invoice):
+    name: The first invoice
+    recorded: true
+
+  invoice-002 (extends invoice):
+    name: Another invoice
+    defaultMaterialNumber: '100006'
+    defaultReceiverAccount: '@account-001'
