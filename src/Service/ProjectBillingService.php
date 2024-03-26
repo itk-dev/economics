@@ -28,6 +28,7 @@ class ProjectBillingService
         private readonly BillingService $billingService,
         private readonly IssueRepository $issueRepository,
         private readonly ClientRepository $clientRepository,
+        private readonly ClientHelper $clientHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
         private readonly string $invoiceDefaultReceiverAccount,
@@ -195,7 +196,7 @@ class ProjectBillingService
                 $invoiceEntry->setDescription('');
 
                 $product = $this->getInvoiceEntryProduct($issue);
-                $price = $client->getStandardPrice();
+                $price = $this->clientHelper->getStandardPrice($client);
 
                 $invoiceEntry->setProduct($product);
                 $invoiceEntry->setPrice($price);

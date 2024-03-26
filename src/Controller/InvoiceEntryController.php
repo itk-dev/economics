@@ -10,6 +10,7 @@ use App\Form\InvoiceEntryType;
 use App\Form\InvoiceEntryWorklogType;
 use App\Repository\InvoiceEntryRepository;
 use App\Service\BillingService;
+use App\Service\ClientHelper;
 use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,7 @@ class InvoiceEntryController extends AbstractController
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
         private readonly ViewService $viewService,
-        private readonly array $options
+        private readonly ClientHelper $clientHelper
     ) {
     }
 
@@ -48,9 +49,7 @@ class InvoiceEntryController extends AbstractController
 
         $client = $invoice->getClient();
 
-        // Get standard price from client with fallback to global value.
-        $standardPrice = (float) $this->options['standard_price'];
-        $invoiceEntry->setPrice($client?->getStandardPrice() ?? $standardPrice);
+        $invoiceEntry->setPrice($this->clientHelper->getStandardPrice($client));
 
         if (InvoiceEntryTypeEnum::WORKLOG == $type) {
             $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry);

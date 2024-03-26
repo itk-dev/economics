@@ -44,7 +44,7 @@
                     <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_project_lead'|trans }}: {{ invoice.project.projectLeadName }} ({{ invoice.project.projectLeadMail }})</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
-                    <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ clientHelper.getStandardPrice(invoice.client) }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_customer_key'|trans }}: {{ invoice.client.customerKey }}</li>
                     <li class="list-group-item border-bottom">
                         {{ 'invoices.client_type'|trans }}:
