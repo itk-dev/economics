@@ -41,7 +41,7 @@ class InvoiceEntryController extends AbstractController
         }
 
         $invoiceEntry = new InvoiceEntry();
-        $invoiceEntry->setInvoice($invoice);
+        $invoice->addInvoiceEntry($invoiceEntry);
         $invoiceEntry->setEntryType($type);
         $invoiceEntry->setAccount($invoice->getDefaultReceiverAccount());
         $invoiceEntry->setMaterialNumber($invoice->getDefaultMaterialNumber());

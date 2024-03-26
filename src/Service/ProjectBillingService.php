@@ -217,7 +217,6 @@ class ProjectBillingService
                     continue;
                 }
 
-                $invoiceEntry->setInvoice($invoice);
                 $invoice->addInvoiceEntry($invoiceEntry);
                 $this->entityManager->persist($invoiceEntry);
 
@@ -240,7 +239,6 @@ class ProjectBillingService
                     // We don't add worklogs here, since they're already attached to the main invoice entry
                     // (and only used to detect if an entry has been added to an invoice).
 
-                    $productInvoiceEntry->setInvoice($invoice);
                     $invoice->addInvoiceEntry($productInvoiceEntry);
                     $this->entityManager->persist($productInvoiceEntry);
                 }
