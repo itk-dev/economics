@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-96](https://github.com/itk-dev/economics/pull/96)
+  Miscellaneous fixes
 * [PR-86](https://github.com/itk-dev/economics/pull/86)
   Added products.
 * [PR-95](https://github.com/itk-dev/economics/pull/95)

@@ -17,6 +17,7 @@ use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
+use App\Service\ClientHelper;
 use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -90,7 +91,7 @@ class InvoiceController extends AbstractController
      */
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
     #[IsGranted('EDIT', 'invoice')]
-    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, ClientRepository $clientRepository, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
+    public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, ClientRepository $clientRepository, ClientHelper $clientHelper, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
         if ($invoice->isRecorded()) {
@@ -196,6 +197,7 @@ class InvoiceController extends AbstractController
 
                 return $carry;
             }, 0.0),
+            'clientHelper' => $clientHelper,
         ]));
     }
 

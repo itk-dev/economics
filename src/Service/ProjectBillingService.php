@@ -28,6 +28,7 @@ class ProjectBillingService
         private readonly BillingService $billingService,
         private readonly IssueRepository $issueRepository,
         private readonly ClientRepository $clientRepository,
+        private readonly ClientHelper $clientHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
         private readonly string $invoiceDefaultReceiverAccount,
@@ -195,7 +196,7 @@ class ProjectBillingService
                 $invoiceEntry->setDescription('');
 
                 $product = $this->getInvoiceEntryProduct($issue);
-                $price = $client->getStandardPrice();
+                $price = $this->clientHelper->getStandardPrice($client);
 
                 $invoiceEntry->setProduct($product);
                 $invoiceEntry->setPrice($price);
@@ -217,7 +218,6 @@ class ProjectBillingService
                     continue;
                 }
 
-                $invoiceEntry->setInvoice($invoice);
                 $invoice->addInvoiceEntry($invoiceEntry);
                 $this->entityManager->persist($invoiceEntry);
 
@@ -240,7 +240,6 @@ class ProjectBillingService
                     // We don't add worklogs here, since they're already attached to the main invoice entry
                     // (and only used to detect if an entry has been added to an invoice).
 
-                    $productInvoiceEntry->setInvoice($invoice);
                     $invoice->addInvoiceEntry($productInvoiceEntry);
                     $this->entityManager->persist($productInvoiceEntry);
                 }
