@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-97](https://github.com/itk-dev/economics/pull/97)
+  Twig CS Fixer
 * [PR-96](https://github.com/itk-dev/economics/pull/96)
   Miscellaneous fixes
 * [PR-86](https://github.com/itk-dev/economics/pull/86)

@@ -241,7 +241,7 @@ jobs:
                     docker compose exec --user root phpfpm composer install
             -   name: Coding standards
                 run: |
-                    docker compose exec phpfpm composer coding-standards-check/twigcs
+                    docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
 
     phpunit:
         runs-on: ubuntu-latest
