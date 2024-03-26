@@ -102,15 +102,21 @@ class ClientType extends AbstractType
                 'help' => 'create_client_form.version_id.help',
                 'row_attr' => ['class' => 'form-row form-choices'],
                 'required' => false,
-                'choices' => $this->getVersionOptions(),
+                'choices' => $this->getVersionOptions($builder->getData()),
             ]);
     }
 
-    private function getVersionOptions(): array
+    private function getVersionOptions(?Client $client): array
     {
         $versions = $this->versionRepository->findAll();
 
         $result = [];
+
+        // Make sure that the current client's version name is always included
+        $name = $client?->getVersionName();
+        if (null !== $name) {
+            $result[$name] = $name;
+        }
 
         foreach ($versions as $version) {
             $name = $version->getName();
