@@ -3,7 +3,9 @@
 {% block title %}{{ 'invoices.edit'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ invoice.name }}</h1>
+    {% include 'components/page-header.html.twig' with {
+        'title': invoice.name,
+    } %}
 
     {{ form_start(form) }}
     <div class="grid-split selections" {{ stimulus_controller('choices') }}>
@@ -42,7 +44,7 @@
                     <li class="list-group-item border-bottom">{{ 'invoices.client_name'|trans }}: {{ invoice.client.name }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_project_lead'|trans }}: {{ invoice.project.projectLeadName }} ({{ invoice.project.projectLeadMail }})</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_contact'|trans }}: {{ invoice.client.contact }}</li>
-                    <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ invoice.client.standardPrice }}</li>
+                    <li class="list-group-item border-bottom">{{ 'invoices.client_standard_price'|trans }}: {{ clientHelper.getStandardPrice(invoice.client) }}</li>
                     <li class="list-group-item border-bottom">{{ 'invoices.client_customer_key'|trans }}: {{ invoice.client.customerKey }}</li>
                     <li class="list-group-item border-bottom">
                         {{ 'invoices.client_type'|trans }}:
@@ -67,7 +69,6 @@
             <ul class="list-group margin-bottom">
                 <li class="list-group-item border-bottom text-bold">{{ 'invoices.locked_client_values'|trans }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_type'|trans }}: {{ invoice.lockedType }}</li>
-                <li class="list-group-item border-bottom">{{ 'invoices.locked_account_key'|trans }}: {{ invoice.lockedAccountKey }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_contact_name'|trans }}: {{ invoice.lockedContactName }}</li>
                 <li class="list-group-item border-bottom">{{ 'invoices.locked_customer_key'|trans }}: {{ invoice.lockedCustomerKey }}</li>
             </ul>
@@ -92,7 +93,7 @@
         <h3 class="subheading">{{ 'invoices.invoice_entries'|trans }}</h3>
 
         <table class="table margin-bottom">
-            <thead class="table-thead">
+            <thead class="table-th">
             <tr>
                 <th class="table-th">{{ 'invoices.invoice_entry_receiver_acccount'|trans }}</th>
                 <th class="table-th">{{ 'invoices.invoice_entry_material_number'|trans }}</th>
@@ -105,20 +106,24 @@
             </tr>
             </thead>
             <tbody>
-            {% for index, invoiceEntry in invoice.invoiceEntries %}
+            {% set invoice_entry_type_translations = {
+                (constant('App\\Enum\\InvoiceEntryTypeEnum::MANUAL').value): 'invoices.invoice_entry_type_manual'|trans,
+                (constant('App\\Enum\\InvoiceEntryTypeEnum::PRODUCT').value): 'invoices.invoice_entry_type_product'|trans,
+                (constant('App\\Enum\\InvoiceEntryTypeEnum::WORKLOG').value): 'invoices.invoice_entry_type_worklog'|trans,
+            } %}
+            {% for index, invoice_entry in invoice.invoiceEntries %}
                 <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-                    <td class="table-td">{{ invoiceEntry.account }}</td>
-                    <td class="table-td">{{ invoiceEntry.materialNumber.value ?? '' }}</td>
-                    <td class="table-td">{{ invoiceEntry.product }}</td>
-                    <td class="table-td">{{ invoiceEntry.amount }}</td>
-                    <td class="table-td">{{ invoiceEntry.price }}</td>
-                    <td class="table-td">{{ invoiceEntry.totalPrice }}</td>
+                    <td class="table-td">{{ invoice_entry.account }}</td>
+                    <td class="table-td">{{ invoice_entry.materialNumber.value ?? '' }}</td>
+                    <td class="table-td">{{ invoice_entry.product }}</td>
+                    <td class="table-td">{{ invoice_entry.amount }}</td>
+                    <td class="table-td">{{ invoice_entry.price }}</td>
+                    <td class="table-td">{{ invoice_entry.totalPrice }}</td>
                     <td class="table-td">
-                        {{ invoiceEntry.entryType.value == 'manual' ? 'invoices.invoice_entry_type_manual'|trans : '' }}
-                        {{ invoiceEntry.entryType.value == 'worklog' ? 'invoices.invoice_entry_type_worklog'|trans : '' }}
+                        {{ invoice_entry_type_translations[invoice_entry.entryType.value]|default('') }}
                     </td>
                     <td class="table-td">
-                        <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoiceEntry.id, 'invoice': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_edit'|trans }}</a>
+                        <a class="link" href="{{ path('app_invoice_entry_edit', {'id': invoice_entry.id, 'invoice': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_edit'|trans }}</a>
                     </td>
                 </tr>
             {% endfor %}

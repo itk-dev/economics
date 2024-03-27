@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2024-03-27
+
+* [PR-98](https://github.com/itk-dev/economics/pull/98)
+  Replaced Tom Select with Stimulus
+* [PR-97](https://github.com/itk-dev/economics/pull/97)
+  Twig CS Fixer
+* [PR-96](https://github.com/itk-dev/economics/pull/96)
+  Miscellaneous fixes
+* [PR-86](https://github.com/itk-dev/economics/pull/86)
+  Added products.
+* [PR-95](https://github.com/itk-dev/economics/pull/95)
+  Updated bank holiday helper
+* [PR-94](https://github.com/itk-dev/economics/pull/94)
+  Updated data in external invoicing
+* [PR-93](https://github.com/itk-dev/economics/pull/93)
+  Made price on client optional
+* [PR-87](https://github.com/itk-dev/economics/pull/87)
+  Fixed Leantime API request
+* [PR-91](https://github.com/itk-dev/economics/pull/91)
+  Updated standard price on clients
+* [PR-89](https://github.com/itk-dev/economics/pull/89)
+  Cleaned up Twig templates.
+* [PR-88](https://github.com/itk-dev/economics/pull/88)
+  Miscellaneous clean-ups.
+
 ## [2.0.0]
 
 * Adds phpunit.
@@ -65,7 +90,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Removed static from stimulus controller.
 * Added data provider to account, client, project_billing and invoice index views.
 
-
 * RELEASE NOTES:
   * Change name APP_INVOICE_RECEIVER_ACCOUNT to APP_INVOICE_SUPPLIER_ACCOUNT in `.env.local`
   * Set APP_INVOICE_DESCRIPTION_TEMPLATE in `.env.local`
@@ -73,18 +97,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Set APP_PROJECT_BILLING_DEFAULT_DESCRIPTION in `.env.local`
   * Migrate to new DataProvider model. The purpose of this is to couple the previous Jira data synchronizations to a
     data provider in the new model.
-    - Add a dataProvider for current Jira implementation with the command
+    * Add a dataProvider for current Jira implementation with the command
+
     ```sh
     bin/console app:project-tracker:create
     ```
-    - Run the following commands to set `data_provider_id` field in the database for existing synced entities.
+
+    * Run the following commands to set `data_provider_id` field in the database for existing synced entities.
 
       Fill in the data from the `.env.local` values for the Jira connection:
-      - Name: Jira
-      - Url: JIRA_PROJECT_TRACKER_URL
-      - Secret: JIRA_PROJECT_TRACKER_USER:JIRA_PROJECT_TRACKER_TOKEN
+      * Name: Jira
+      * Url: JIRA_PROJECT_TRACKER_URL
+      * Secret: JIRA_PROJECT_TRACKER_USER:JIRA_PROJECT_TRACKER_TOKEN
 
       NB! Replace 1 with the relevant DataProvider.id if it differs from 1.
+
     ```sh
     bin/console doctrine:query:sql 'UPDATE account SET data_provider_id = 1';
     bin/console doctrine:query:sql 'UPDATE client SET data_provider_id = 1';
@@ -93,7 +120,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     bin/console doctrine:query:sql 'UPDATE version SET data_provider_id = 1';
     bin/console doctrine:query:sql 'UPDATE worklog SET data_provider_id = 1';
     ```
-
 
 ## [1.1.2]
 
@@ -179,7 +205,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/1.1.2...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.1.0...HEAD
+[2.1.0]: https://github.com/itk-dev/economics/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/itk-dev/economics/compare/1.1.2...2.0.0
 [1.1.2]: https://github.com/itk-dev/economics/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/itk-dev/economics/compare/1.1.0...1.1.1

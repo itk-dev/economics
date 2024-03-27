@@ -13,7 +13,7 @@
                 {% block alert %}
                     <h3 class="subheading">{{ 'project_billing.existing_errors_before_on_record'|trans }}</h3>
                     <table class="table">
-                        <thead class="table-thead">
+                        <thead class="table-th">
                         <th class="table-th">
                             {{ 'project_billing.on_record_errors_invoice_id'|trans }}
                         </th>
@@ -25,12 +25,12 @@
                         </th>
                         </thead>
                         <tbody>
-                        {% for key, invoiceError in invoiceErrors %}
-                            {% set invoiceUrl = absolute_url(path('app_invoices_edit', {'id': key}|merge(view is defined ? {view: view} : {}) )) %}
-                            {% for error in invoiceError %}
+                        {% for key, invoice_error in invoiceErrors %}
+                            {% set invoice_url = absolute_url(path('app_invoices_edit', {'id': key}|merge(view is defined ? {view: view} : {}))) %}
+                            {% for error in invoice_error %}
                                 <tr class="table-tr">
                                     <td class="table-td"><strong>{{ key }}</strong></td>
-                                    <td class="table-td"><a href="{{ invoiceUrl }}">{{ invoiceUrl }}</a></td>
+                                    <td class="table-td"><a href="{{ invoice_url }}">{{ invoice_url }}</a></td>
                                     <td class="table-td">{{ error }}</td>
                                 </tr>
                             {% endfor %}
@@ -42,7 +42,7 @@
         {% else %}
             {% embed 'components/alert.html.twig' with {level: 'warning'} %}
                 {% block alert %}
-                    <div class="mb-5">{{ 'project_billing.confirm_record_are_you_sure'|trans({ '%projectBillingName%': projectBilling.name }) }}</div>
+                    <div class="mb-5">{{ 'project_billing.confirm_record_are_you_sure'|trans({'%projectBillingName%': projectBilling.name}) }}</div>
                     <div class="mb-5">{{ 'project_billing.all_worklogs_will_be_marked_as_billed'|trans }}</div>
                     <div>{{ 'project_billing.confirm_record_cannot_be_undone'|trans }}</div>
                 {% endblock %}

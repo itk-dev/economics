@@ -7,6 +7,7 @@ use App\Form\ClientFilterType;
 use App\Form\ClientType;
 use App\Model\Invoices\ClientFilterData;
 use App\Repository\ClientRepository;
+use App\Service\ClientHelper;
 use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +20,7 @@ class ClientController extends AbstractController
 {
     public function __construct(
         private readonly ViewService $viewService,
+        private readonly ClientHelper $clientHelper
     ) {
     }
 
@@ -39,10 +41,12 @@ class ClientController extends AbstractController
     }
 
     #[Route('/new', name: 'app_client_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, ClientHelper $clientHelper): Response
     {
         $client = new Client();
-        $form = $this->createForm(ClientType::class, $client);
+        $form = $this->createForm(ClientType::class, $client, [
+            'standard_price' => $clientHelper->getStandardPrice(),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -69,7 +73,9 @@ class ClientController extends AbstractController
     #[Route('/{id}/edit', name: 'app_client_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Client $client, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ClientType::class, $client);
+        $form = $this->createForm(ClientType::class, $client, [
+            'standard_price' => $this->clientHelper->getStandardPrice(),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

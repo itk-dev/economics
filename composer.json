@@ -34,21 +34,25 @@
         "symfony/twig-bundle": "~6.4.0",
         "symfony/validator": "~6.4.0",
         "symfony/webpack-encore-bundle": "^2.0",
-        "symfony/yaml": "~6.4.0"
+        "symfony/yaml": "~6.4.0",
+        "twig/extra-bundle": "^3.8",
+        "twig/intl-extra": "^3.8"
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.0",
         "doctrine/doctrine-fixtures-bundle": "^3.5",
         "ergebnis/composer-normalize": "^2.28",
         "friendsofphp/php-cs-fixer": "^3.13",
-        "friendsoftwig/twigcs": "^6.0",
         "phpunit/phpunit": "^10.2",
         "symfony/browser-kit": "~6.4.0",
         "symfony/css-selector": "~6.4.0",
         "symfony/debug-bundle": "~6.4.0",
         "symfony/maker-bundle": "^1.48",
         "symfony/phpunit-bridge": "~6.4.0",
-        "vimeo/psalm": "^5.0"
+        "symfony/stopwatch": "~6.4.0",
+        "symfony/web-profiler-bundle": "~6.4.0",
+        "vimeo/psalm": "^5.0",
+        "vincentlanglet/twig-cs-fixer": "^2.6"
     },
     "replace": {
         "symfony/polyfill-ctype": "*",
@@ -89,7 +93,7 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": true,
             "require": "6.4.*"
         }
     },
@@ -104,27 +108,40 @@
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
-        "check-coding-standards/php-cs-fixer": [
-            "php-cs-fixer fix --dry-run --format=checkstyle"
+        "code-analysis": [
+            "@code-analysis/psalm"
         ],
-        "check-coding-standards/twigcs": [
-            "twigcs templates"
+        "code-analysis/psalm": [
+            "psalm --no-cache"
         ],
         "coding-standards-apply": [
+            "@coding-standards-apply/php-cs-fixer",
+            "@coding-standards-apply/twig-cs-fixer"
+        ],
+        "coding-standards-apply/php-cs-fixer": [
             "php-cs-fixer fix"
         ],
+        "coding-standards-apply/twig-cs-fixer": [
+            "twig-cs-fixer lint templates --fix"
+        ],
         "coding-standards-check": [
-            "@check-coding-standards/php-cs-fixer",
-            "@check-coding-standards/twigcs"
+            "@coding-standards-check/php-cs-fixer",
+            "@coding-standards-check/twig-cs-fixer"
+        ],
+        "coding-standards-check/php-cs-fixer": [
+            "php-cs-fixer fix --dry-run --format=checkstyle"
+        ],
+        "coding-standards-check/twig-cs-fixer": [
+            "twig-cs-fixer lint templates"
+        ],
+        "fixtures:load": [
+            "php bin/console hautelook:fixtures:load --no-interaction"
         ],
         "prepare-code": [
             "composer normalize",
             "@coding-standards-apply",
-            "@psalm",
+            "@code-analysis/psalm",
             "@tests"
-        ],
-        "psalm": [
-            "./vendor/bin/psalm --no-cache"
         ],
         "tests": [
             "./vendor/bin/phpunit --stop-on-failure"

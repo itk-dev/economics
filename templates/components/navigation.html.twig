@@ -1,16 +1,18 @@
-<aside {{ stimulus_controller('navigation') }} class="w-full sm:w-1/3 md:w-1/4 px-2">
-    <div id="main-menu" class="sticky top-0 p-4 w-full">
+<aside {{ stimulus_controller('navigation') }} class="h-full">
+    <div id="main-menu" class="sticky top-0 p-4 md:w-64">
         <a href="{{ path('index', {}|merge(view is defined ? {view: view} : {})) }}" class="flex items-center mb-5">
-            <img src="{{ asset('img/itk-economics.png') }}" class="h-6 ml-3 sm:h-9" alt="{{ 'navigation.title'|trans }}" />
+            <img src="{{ asset('img/itk-economics.png') }}" class="mx-1" alt="{{ 'navigation.title'|trans }}" />
         </a>
 
         {{ render(controller('App\\Controller\\ViewController::viewSelector')) }}
 
-        <ul class="flex flex-col overflow-hidden">
+        <ul class="flex flex-col overflow-hidden gap-y-1 mt-4">
             {% include 'components/navigation-item.html.twig' with {icon: 'home', title: 'navigation.home'|trans, role: 'ROLE_USER', route: path('index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% include 'components/navigation-item.html.twig' with {icon: 'invoice', title: 'navigation.invoices'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% include 'components/navigation-item.html.twig' with {icon: 'project-billing', title: 'navigation.project_billing'|trans, role: 'ROLE_PROJECT_BILLING', route: path('app_project_billing_index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% include 'components/navigation-item.html.twig' with {icon: 'planning', title: 'navigation.planning'|trans, role: 'ROLE_PLANNING', route: path('app_planning', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% include 'components/navigation-item.html.twig' with {icon: 'product', title: 'navigation.products'|trans, role: 'ROLE_PRODUCT_MANAGER', route: path('app_product_index', {}|merge(view is defined ? {view: view} : {}))} %}
+
             {% if is_granted('ROLE_REPORT') %}
             <li>
                 <a class="navigation-item collapsible" href="{{ path('app_reports_index', {}|merge(view is defined ? {view: view} : {})) }}">
@@ -24,6 +26,7 @@
                 </ul>
             </li>
             {% endif %}
+
             {% if is_granted('ROLE_ADMIN') %}
                 <li>
                     <a class="navigation-item collapsible" {{ stimulus_action('navigation', 'toggle') }}>
@@ -38,6 +41,8 @@
                         {% include 'components/navigation-item.html.twig' with {icon: 'view', title: 'navigation.views'|trans, role: 'ROLE_ADMIN', route: path('app_view_list', {}|merge(view is defined ? {view: view} : {}))} %}
                     </ul>
                 </li>
+            {% elseif is_granted('ROLE_PRODUCT_MANAGER') %}
+                {% include 'components/navigation-item.html.twig' with {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_PRODUCT_MANAGER', route: path('app_project_index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% endif %}
         </ul>
     </div>

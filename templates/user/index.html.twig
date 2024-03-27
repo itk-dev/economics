@@ -5,12 +5,12 @@
 {% block content %}
     <h1 class="page-title">{{ 'users.title'|trans }}</h1>
 
-    {% set numberOfColumns = 4 %}
+    {% set number_of_columns = 4 %}
 
     {# TODO: Add pagination, sorting and filters #}
 
     <table class="table margin-bottom">
-        <thead class="table-thead">
+        <thead class="table-th">
         <tr>
             <th class="table-th">{{ 'users.id'|trans }}</th>
             <th class="table-th">{{ 'users.name'|trans }}</th>
@@ -35,7 +35,7 @@
                         </label>
                     </td>
                 {% endfor %}
-                <td class="table-td" {{ stimulus_controller('views') }} data-update-url="{{ path('app_user_set_views', {id: user.id }) }}">
+                <td class="table-td" {{ stimulus_controller('views') }} data-update-url="{{ path('app_user_set_views', {id: user.id}) }}">
                     <select multiple {{ stimulus_target('views', 'select') }} {{ stimulus_action('views', 'onChange', 'change') }}>
                         {% for view in views %}
                             <option value="{{ view.id }}" {{ view in user.views ? 'selected' : '' }}>{{ view.name }}</option>
@@ -45,7 +45,7 @@
             </tr>
         {% else %}
             <tr class="table-tr">
-                <td class="table-td" colspan="{{ numberOfColumns }}">{{ 'users.list_no_records_found'|trans }}</td>
+                <td class="table-td" colspan="{{ number_of_columns }}">{{ 'users.list_no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
         </tbody>

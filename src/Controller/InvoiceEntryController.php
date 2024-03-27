@@ -10,6 +10,7 @@ use App\Form\InvoiceEntryType;
 use App\Form\InvoiceEntryWorklogType;
 use App\Repository\InvoiceEntryRepository;
 use App\Service\BillingService;
+use App\Service\ClientHelper;
 use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,7 @@ class InvoiceEntryController extends AbstractController
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
         private readonly ViewService $viewService,
+        private readonly ClientHelper $clientHelper
     ) {
     }
 
@@ -40,16 +42,14 @@ class InvoiceEntryController extends AbstractController
         }
 
         $invoiceEntry = new InvoiceEntry();
-        $invoiceEntry->setInvoice($invoice);
+        $invoice->addInvoiceEntry($invoiceEntry);
         $invoiceEntry->setEntryType($type);
         $invoiceEntry->setAccount($invoice->getDefaultReceiverAccount());
         $invoiceEntry->setMaterialNumber($invoice->getDefaultMaterialNumber());
 
         $client = $invoice->getClient();
 
-        if ($client) {
-            $invoiceEntry->setPrice($client->getStandardPrice());
-        }
+        $invoiceEntry->setPrice($this->clientHelper->getStandardPrice($client));
 
         if (InvoiceEntryTypeEnum::WORKLOG == $type) {
             $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry);

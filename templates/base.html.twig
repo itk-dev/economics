@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>{% block title %}{{ 'title'|trans }}!{% endblock %}</title>
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -16,11 +17,26 @@
     <body class="body">
         {% block body %}
         <div class="container">
-            <div class="flex flex-row flex-wrap py-4">
+            <div class="flex flex-col md:flex-row md:divide-x-[1px] md:divide-y-[0px] divide-y-[1px]  divide-gray-300 dark:divide-gray-600 ">
                 {% block navigation %}
                     {% include 'components/navigation.html.twig' %}
                 {% endblock %}
-                <main role="main" class="w-full sm:w-2/3 md:w-3/4 pt-1 px-2">
+                <main role="main" class="w-full p-8">
+                    {# @TODO Show flash messages #}
+                    {% set flash_messages = app.flashes %}
+                    {% if flash_messages|length > 0 %}
+                        <div id="flash-messages">
+                            {% for type, messages in flash_messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ type }} alert-dismissible fade show" role="alert">
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        {{ message|trans|raw }}
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
                     {% block content %}{% endblock %}
                 </main>
             </div>

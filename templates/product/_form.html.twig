@@ -1,0 +1,6 @@
+{{ form_start(form) }}
+<div {{ stimulus_controller('choices') }}>
+    {{ form_widget(form) }}
+    <button class="button">{{ button_label|default('product.create'|trans) }}</button>
+</div>
+{{ form_end(form) }}

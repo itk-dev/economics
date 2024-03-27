@@ -4,15 +4,11 @@
 
 @layer components {
     .body {
-        @apply bg-white text-black dark:bg-slate-800 dark:text-white;
+        @apply bg-white text-black dark:bg-gray-900 dark:text-white;
     }
 
     select {
         @apply cursor-pointer;
-    }
-
-    .navigation-item {
-        @apply flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 hover:dark:bg-slate-900;
     }
 
     .navigation-title {
@@ -44,7 +40,7 @@
     }
 
     .button.form-element {
-        @apply w-28 bg-blue-700 hover:bg-blue-800  dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800
+        @apply w-28 text-white bg-blue-700 border-blue-700 hover:bg-blue-800 hover:border-blue-800  dark:bg-blue-600 dark:hover:bg-blue-700 dark:border-blue-600 dark:hover:border-blue-700 focus:outline-none dark:focus:ring-blue-800
     }
 
     .bottom-actions {
@@ -137,7 +133,7 @@
     }
 
     .page-title {
-        @apply mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white;
+        @apply my-6 text-4xl font-bold leading-none tracking-tight text-gray-800 md:text-5xl lg:text-6xl dark:text-white;
     }
 
     .hidden {
@@ -164,14 +160,13 @@
         padding: 1em !important;
     }
 
-    .table-export td, tr {
-        border: 1px solid gray;
-        padding: 5px;
-    }
-
     .subheading {
         @apply font-medium leading-tight text-2xl mt-5 mb-5;
     }
+
+    /*
+    ** Alerts
+    */
 
     .alert-info {
         @apply p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-300 dark:border-blue-800;
@@ -185,32 +180,21 @@
         @apply p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800;
     }
 
-    .table-row {
-        @apply border-2;
-    }
+    /*
+    ** Tables
+    */
 
-    .table-cell {
-        @apply border-2 p-2;
-    }
-
-    .table-cell-heading {
-        @apply border-2 p-2 font-bold;
-    }
-
-    .table-wrapper {
-        @apply relative overflow-x-auto shadow-md sm:rounded-lg;
+    .table-export td, .table-export tr {
+        border: 1px solid gray;
+        padding: 5px;
     }
 
     .table {
-        @apply w-full text-sm text-left text-gray-500 dark:text-gray-400;
-    }
-
-    .table-thead {
-        @apply text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400;
+        @apply w-full text-sm text-left border-collapse;
     }
 
     .table-th {
-        @apply px-6 py-3;
+        @apply px-6 py-3 text-xs uppercase text-gray-700 dark:text-gray-400  border-b border-gray-500 dark:border-gray-300;
     }
 
     .table-td {
@@ -218,20 +202,24 @@
     }
 
     .table-tr {
-        @apply bg-white border-b dark:bg-gray-900 dark:border-gray-700;
+        @apply  border-b border-gray-300 dark:border-gray-600;
     }
 
     .table-tr-alt {
-        @apply bg-gray-200 border-b dark:bg-gray-800 dark:border-gray-700;
+        @apply bg-gray-50 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600;
     }
 
     .table-tr-disabled {
-        @apply bg-gray-500 border-gray-600 border-b dark:bg-gray-500 dark:border-gray-400 text-white;
+        @apply text-gray-500 dark:text-gray-300 bg-gray-300 dark:bg-gray-600;
     }
 
     .table-tr-disabled-alt {
         @apply bg-amber-500/75 border-amber-600/75 border-b dark:bg-amber-500/75 dark:border-amber-400/75 text-white;
     }
+
+    /*
+    ** Pagination
+    */
 
     .pagination-ul {
         @apply inline-flex -space-x-px;
@@ -258,7 +246,7 @@
     }
 
     .card {
-        @apply max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700;
+        @apply max-w-sm p-6 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-700;
     }
 
     .card-header {
@@ -270,7 +258,7 @@
     }
 
     .card-link {
-        @apply inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
+        @apply inline-flex place-content-center px-3 py-2 pb-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
     }
 
     .grid-split-three {
@@ -331,9 +319,7 @@
         @apply dark:bg-gray-800 dark:text-white bg-gray-200 text-black;
     }
 
-    .navigation-item.current {
-        @apply  bg-black/[.20] dark:bg-gray-900;
-    }
+
 
     .planning-svg {
         width: 16px;
@@ -376,30 +362,34 @@
         content: ""
     }
 
+    /*
+    ** Navigation
+    */
+
+    .navigation-item {
+        @apply flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 hover:dark:bg-gray-500;
+    }
+
+    .navigation-item.current {
+        @apply  bg-gray-100 dark:bg-gray-500 text-gray-600 dark:text-gray-900;
+    }
+
     .navigation-item + .navigation-item-submenu {
-        padding: 0 18px;
-        display: none;
-        overflow: hidden;
+        @apply hidden overflow-hidden;
     }
 
     .navigation-item-submenu.shown {
-        display: block;
+        @apply flex flex-col visible pt-1 gap-y-1 px-10;
     }
 
     .collapsible:has(+ .navigation-item-submenu):after {
         content: '▲';
-        font-size: 10px;
-        padding-right: 5px;
+        @apply pr-4 text-xs;
     }
 
     .collapsible:has(+ .navigation-item-submenu.shown):after {
         content: '▼';
-        font-size: 10px;
-        padding-right: 5px;
-    }
-
-    .navigation-item.current {
-        text-decoration: underline;
+        @apply pr-4 text-xs;
     }
 
 }

@@ -3,12 +3,14 @@
 {% block title %}{{ 'client.title'|trans }}{% endblock %}
 
 {% block content %}
-    <a class="link" href="{{ path('app_client_new', {}|merge(view is defined ? {view: view} : {})) }}"
-       style="float: right">{{ 'clients.action_create_new'|trans }}</a>
 
-    <h1 class="page-title">{{ 'client.title'|trans }}</h1>
+    {% include 'components/page-header.html.twig' with {
+        'title': 'client.title'|trans,
+        'link_text': 'clients.action_create_new'|trans,
+        'link_url': 'app_client_new'
+    } %}
 
-    {% set numberOfColumns = 11 %}
+    {% set number_of_columns = 11 %}
 
     {{ form_start(form) }}
         <div class="form-default">
@@ -21,7 +23,7 @@
     {{ form_end(form) }}
 
     <table class="table margin-bottom">
-        <thead class="table-thead">
+        <thead class="table-th">
         <tr>
             <th class="table-th {% if clients.isSorted('clients.id') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.id'|trans, 'client.id') }}</th>
             <th class="table-th {% if clients.isSorted('client.name') %} sorted{% endif %}">{{ knp_pagination_sortable(clients, 'clients.name'|trans, 'client.name') }}</th>
@@ -42,6 +44,7 @@
                 <td class="table-td">{{ client.id }}</td>
                 <td class="table-td">{{ client.name }}</td>
                 <td class="table-td">{{ client.contact }}</td>
+                {# @TODO Format standardPrice as amount #}
                 <td class="table-td">{{ client.standardPrice }}</td>
                 <td class="table-td">{{ client.dataProvider }}</td>
                 {% if client.type is not null %}
@@ -60,7 +63,7 @@
         {% else %}
             <tr class="table-tr">
                 <td class="table-td"
-                    colspan="{{ numberOfColumns }}">{{ 'clients.list_no_records_found'|trans }}</td>
+                    colspan="{{ number_of_columns }}">{{ 'clients.list_no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
         <tr class="table-tr">
@@ -69,7 +72,7 @@
                     {{ 'clients.action_create_new'|trans }}
                 </a>
             </td>
-            <td class="table-td" colspan="{{ numberOfColumns - 2 }}">
+            <td class="table-td" colspan="{{ number_of_columns - 2 }}">
                 {{ knp_pagination_render(clients) }}
             </td>
         </tr>

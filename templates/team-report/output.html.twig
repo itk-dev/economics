@@ -17,13 +17,13 @@
     </div>
 
     <div>
-        {{ 'reports.team-result'|trans({'%items_per_page%': result.getItemNumberPerPage > result.getTotalItemCount  ? result.getTotalItemCount: result.getItemNumberPerPage, '%items_total%': result.getTotalItemCount}) }}
+        {{ 'reports.team-result'|trans({'%items_per_page%': result.getItemNumberPerPage > result.getTotalItemCount ? result.getTotalItemCount : result.getItemNumberPerPage, '%items_total%': result.getTotalItemCount}) }}
     </div>
 
     <div class="content">
         <div class="overflow-x-auto">
             <table>
-                <thead class="table-thead">
+                <thead class="table-th">
                 <tr>
                     <th class="table-th {% if result.isSorted('result.project.name') %} sorted{% endif %}">{{ knp_pagination_sortable(result, 'reports.team_project_name'|trans, 'project.name') }}</th>
                     <th class="table-th {% if result.isSorted('result.worker') %} sorted{% endif %}">{{ knp_pagination_sortable(result, 'reports.team_user'|trans, 'wor.worker') }}</th>
