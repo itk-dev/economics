@@ -21,10 +21,13 @@ class ProductType extends AbstractType
                 'class' => Project::class,
                 'choice_label' => 'name',
                 'required' => true,
-                'attr' => ['class' => 'form-element tom-select'],
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-choices-target' => 'choices',
+                ],
                 'label' => 'product.project',
                 'label_attr' => ['class' => 'label'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
                 'help' => 'product.project_helptext',
             ])
             ->add('name', null, [

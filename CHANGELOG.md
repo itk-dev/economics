@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-98](https://github.com/itk-dev/economics/pull/98)
+  Replaced Tom Select with Stimulus
 * [PR-97](https://github.com/itk-dev/economics/pull/97)
   Twig CS Fixer
 * [PR-96](https://github.com/itk-dev/economics/pull/96)
