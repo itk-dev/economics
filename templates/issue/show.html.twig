@@ -41,7 +41,7 @@
 
     {# The form theme adds a div element with the (default?) form id inside a form #}
     {% set add_product_form_id = 'add_product_form_id' %}
-    <table class="table">
+    <table class="table" {{ stimulus_controller('choices') }}>
         <thead>
             <tr>
                 <th class="table-th">{{ 'issue.product.name'|trans }}</th>
