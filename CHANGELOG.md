@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2024-03-27
+
 * [PR-98](https://github.com/itk-dev/economics/pull/98)
   Replaced Tom Select with Stimulus
 * [PR-97](https://github.com/itk-dev/economics/pull/97)
@@ -203,7 +205,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/1.1.2...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.1.0...HEAD
+[2.1.0]: https://github.com/itk-dev/economics/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/itk-dev/economics/compare/1.1.2...2.0.0
 [1.1.2]: https://github.com/itk-dev/economics/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/itk-dev/economics/compare/1.1.0...1.1.1
