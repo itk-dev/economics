@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.1] - 2024-04-04
+
 * [PR-100](https://github.com/itk-dev/economics/pull/100)
   1111: Fixed fetching timesheet data from Leantime
 
@@ -208,7 +210,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.1.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.1.1...HEAD
+[2.1.1]: https://github.com/itk-dev/economics/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/itk-dev/economics/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/itk-dev/economics/compare/1.1.2...2.0.0
 [1.1.2]: https://github.com/itk-dev/economics/compare/1.1.1...1.1.2
