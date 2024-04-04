@@ -71,22 +71,15 @@ class LeantimeApiService implements DataProviderServiceInterface
      * Get all worklogs for project.
      *
      * @param $projectId
-     * @param string $from
-     * @param string $to
      *
      * @return mixed
      *
      * @throws ApiServiceException
      * @throws EconomicsException
      */
-    public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed
+    public function getProjectWorklogs($projectId): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', [
-            'dateFrom' => $from,
-            'dateTo' => $to,
-            'invEmpl' => '-1',
-            'invComp' => '-1',
-            'paid' => '-1',
+        return $this->getTimesheets([
             'id' => $projectId,
         ]);
     }
@@ -757,7 +750,20 @@ class LeantimeApiService implements DataProviderServiceInterface
 
     public function getTimesheetsForTicket(string $ticketId): mixed
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', ['invEmpl' => '-1', 'invComp' => '-1', 'paid' => '-1', 'ticketFilter' => $ticketId]);
+        return $this->getTimesheets([
+            'ticketFilter' => $ticketId,
+        ]);
+    }
+
+    private function getTimesheets(array $params): mixed
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', $params + [
+            'dateFrom' => '2000-01-01',
+            'dateTo' => '3000-01-01',
+            'invEmpl' => '-1',
+            'invComp' => '-1',
+            'paid' => '-1',
+        ]);
     }
 
     /**
