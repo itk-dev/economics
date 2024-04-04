@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-100](https://github.com/itk-dev/economics/pull/100)
+  1111: Fixed fetching timesheet data from Leantime
+
 ## [2.1.0] - 2024-03-27
 
 * [PR-98](https://github.com/itk-dev/economics/pull/98)
