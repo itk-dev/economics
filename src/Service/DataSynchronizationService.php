@@ -250,7 +250,7 @@ class DataSynchronizationService
                 }
             }
 
-            $startAt += self::MAX_RESULTS;
+            $startAt += $pagedIssueData->maxResults;
 
             $this->entityManager->flush();
             $this->entityManager->clear();
