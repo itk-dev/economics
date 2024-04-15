@@ -940,6 +940,9 @@ class LeantimeApiService implements DataProviderServiceInterface
 
                 if (isset($data->error)) {
                     $message = $data->error->message;
+                    if (isset($data->error->data)) {
+                        $message .= ': '.(is_scalar($data->error->data) ? $data->error->data : json_encode($data->error->data));
+                    }
                     throw new ApiServiceException($message, $data->error->code);
                 }
 
