@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-103](https://github.com/itk-dev/economics/pull/103)
+  1169: Made sure that Leantime issues have at most one version (milestone)
 * [PR-102](https://github.com/itk-dev/economics/pull/102)
   1157: Updated external billing export
 
