@@ -231,6 +231,11 @@ class DataSynchronizationService
                 $issue->setResolutionDate($issueDatum->resolutionDate);
                 $issue->setStatus($issueDatum->status);
 
+                // Leantime (as of now) supports only a single version (milestone) per issue.
+                if (LeantimeApiService::class === $dataProvider?->getClass()) {
+                    $issue->getVersions()->clear();
+                }
+
                 foreach ($issueDatum->versions as $versionData) {
                     $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
 
@@ -245,7 +250,7 @@ class DataSynchronizationService
                 }
             }
 
-            $startAt += self::MAX_RESULTS;
+            $startAt += $pagedIssueData->maxResults;
 
             $this->entityManager->flush();
             $this->entityManager->clear();
