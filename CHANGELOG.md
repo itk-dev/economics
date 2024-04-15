@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-102](https://github.com/itk-dev/economics/pull/102)
+  1157: Updated external billing export
+
 ## [2.1.1] - 2024-04-04
 
 * [PR-100](https://github.com/itk-dev/economics/pull/100)
