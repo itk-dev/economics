@@ -10,6 +10,7 @@ use App\Exception\EconomicsException;
 use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -241,6 +242,10 @@ class BillingService
 
         $row = 1;
 
+        // Convenience helper to set a cell value.
+        $setCellValue = static fn (int|string $col, int $row, mixed $value) => $sheet->setCellValue((is_string($col) ? $col : Coordinate::stringFromColumnIndex($col)).$row, $value);
+        $formatDate = static fn (?\DateTimeInterface $date) => null !== $date ? $date->format('d.m.Y') : '';
+
         foreach ($invoiceIds as $invoiceId) {
             $invoice = $this->invoiceRepository->findOneBy(['id' => $invoiceId]);
 
@@ -268,58 +273,56 @@ class BillingService
             }
 
             $today = new \DateTime();
-            $todayString = $today->format('d.m.Y');
-
             $paymentDate = $this->getPaymentDate($today);
-            $paymentDateString = $paymentDate->format('d.m.Y');
 
             // Generate header line (H).
             // 1. "Linietype"
-            $sheet->setCellValue([1, $row], 'H');
+            $setCellValue(1, $row, 'H');
             // 2. "Ordregiver/Bestiller"
-            $sheet->setCellValue([2, $row], str_pad($customerKey ?? '', 10, '0', \STR_PAD_LEFT));
+            $setCellValue(2, $row, str_pad($customerKey ?? '', 10, '0', \STR_PAD_LEFT));
             // 4. "Fakturadato"
             $recordedDate = $invoice->getRecordedDate();
-            $sheet->setCellValue([4, $row], null !== $recordedDate ? $recordedDate->format('d.m.Y') : '');
+            $setCellValue(4, $row, $formatDate($recordedDate));
             // 5. "Bilagsdato"
-            $sheet->setCellValue([5, $row], $todayString);
+            $setCellValue(5, $row, $formatDate($today));
             // 6. "Salgsorganisation"
-            $sheet->setCellValue([6, $row], '0020');
+            $setCellValue(6, $row, '0020');
             // 7. "Salgskanal"
-            $sheet->setCellValue([7, $row], $internal ? 10 : 20);
+            $setCellValue(7, $row, $internal ? 10 : 20);
             // 8. "Division"
-            $sheet->setCellValue([8, $row], '20');
+            $setCellValue(8, $row, '20');
             // 9. "Ordreart"
-            $sheet->setCellValue([9, $row], $internal ? 'ZIRA' : 'ZRA');
+            $setCellValue(9, $row, $internal ? 'ZIRA' : 'ZRA');
             // 15. "Kunderef.ID"
-            $sheet->setCellValue([15, $row], substr('Att: '.$contactName, 0, 35));
+            $setCellValue(15, $row, substr('Att: '.$contactName, 0, 35));
             // 16. "Toptekst, yderligere spec i det hvide felt på fakturaen"
             $description = $invoice->getDescription() ?? '';
-            $sheet->setCellValue([16, $row], substr($description, 0, 500));
+            $setCellValue(16, $row, substr($description, 0, 500));
             // 17. "Leverandør"
             if ($internal) {
-                $sheet->setCellValue([17, $row], str_pad($this->invoiceSupplierAccount, 10, '0', \STR_PAD_LEFT));
+                $setCellValue(17, $row, str_pad($this->invoiceSupplierAccount, 10, '0', \STR_PAD_LEFT));
             }
             // 18. "EAN nr."
             if (!$internal && 13 === \strlen($ean ?? '')) {
-                $sheet->setCellValue([18, $row], $ean);
+                $setCellValue(18, $row, $ean);
             }
 
             // External invoices.
             if (!$internal) {
                 // 38. Stiftelsesdato
-                $sheet->setCellValue([24, $row], $invoice->getCreatedAt()?->format('d.m.Y'));
-                // 39. Periode fra - Same value as in 38 (!)
-                $sheet->setCellValue([25, $row], $sheet->getCell([24, $row])->getValue());
-                // 40. Periode fra
+                $setCellValue(24, $row, $formatDate($invoice->getCreatedAt()));
+                // 39. Periode fra
                 $periodFrom = $invoice->getPeriodFrom();
-                $sheet->setCellValue([26, $row], null !== $periodFrom ? $periodFrom->format('d.m.Y') : '');
+                $setCellValue('Y', $row, $formatDate($periodFrom));
+                // 40. Periode til
+                $periodTo = $invoice->getPeriodTo();
+                $setCellValue('Z', $row, $formatDate($periodTo));
                 // 46. Fordringstype oprettelse/valg : KOCIVIL
-                $sheet->setCellValue([32, $row], 'KOCIVIL');
+                $setCellValue(32, $row, 'KOCIVIL');
                 // 49. Forfaldsdato: dagsdato - Same value as 38 (!)
-                $sheet->setCellValue([35, $row], $sheet->getCell([24, $row])->getValue());
+                $setCellValue(35, $row, $sheet->getCell([24, $row])->getValue());
                 // 50. Henstand til: dagsdato + 30 dage. NB det må ikke være før faktura forfald. Skal være en bank dag.
-                $sheet->setCellValue([36, $row], $paymentDateString);
+                $setCellValue(36, $row, $formatDate($paymentDate));
             }
 
             ++$row;
@@ -338,19 +341,19 @@ class BillingService
 
                 // Generate invoice lines (L).
                 // 1. "Linietype"
-                $sheet->setCellValue([1, $row], 'L');
+                $setCellValue(1, $row, 'L');
                 // 2. "Materiale (vare)nr.
-                $sheet->setCellValue([2, $row], str_pad($materialNumber->value, 18, '0', \STR_PAD_LEFT));
+                $setCellValue(2, $row, str_pad($materialNumber->value, 18, '0', \STR_PAD_LEFT));
                 // 3. "Beskrivelse"
-                $sheet->setCellValue([3, $row], substr($product, 0, 40));
+                $setCellValue(3, $row, substr($product, 0, 40));
                 // 4. "Ordremængde"
-                $sheet->setCellValue([4, $row], number_format($amount, 3, ',', ''));
+                $setCellValue(4, $row, number_format($amount, 3, ',', ''));
                 // 5. "Beløb pr. enhed"
-                $sheet->setCellValue([5, $row], number_format($price, 2, ',', ''));
+                $setCellValue(5, $row, number_format($price, 2, ',', ''));
                 // 6. "Priser fra SAP"
-                $sheet->setCellValue([6, $row], 'NEJ');
+                $setCellValue(6, $row, 'NEJ');
                 // 7. "PSP-element nr."
-                $sheet->setCellValue([7, $row], $account);
+                $setCellValue(7, $row, $account);
 
                 ++$row;
             }
