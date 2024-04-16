@@ -75,19 +75,26 @@ class ProjectController extends AbstractController
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]
     public function sync(Project $project, DataSynchronizationService $dataSynchronizationService): Response
     {
-        $projectId = $project->getId();
+        try {
+            $projectId = $project->getId();
 
-        if (null == $projectId) {
-            return new Response('Not found', 404);
+            if (null == $projectId) {
+                return new Response('Not found', 404);
+            }
+
+            $dataProvider = $project->getDataProvider();
+
+            if (null != $dataProvider) {
+                $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
+                $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
+            }
+
+            return new JsonResponse([], 200);
+        } catch (\Throwable $exception) {
+            return new JsonResponse(
+                ['message' => $exception->getMessage()],
+                (int) ($exception->getCode() > 0 ? $exception->getCode() : 500)
+            );
         }
-
-        $dataProvider = $project->getDataProvider();
-
-        if (null != $dataProvider) {
-            $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
-            $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
-        }
-
-        return new JsonResponse([], 200);
     }
 }
