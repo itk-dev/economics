@@ -758,8 +758,10 @@ class LeantimeApiService implements DataProviderServiceInterface
     private function getTimesheets(array $params): mixed
     {
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', $params + [
-            'dateFrom' => '2000-01-01',
-            'dateTo' => '3000-01-01',
+            // The datatime format must match the internal Leantime date format
+            // (cf. https://github.com/Leantime/leantime/blob/master/app/Core/Support/DateTimeHelper.php#L53)
+            'dateFrom' => '2000-01-01 00:00:00',
+            'dateTo' => '3000-01-01 00:00:00',
             'invEmpl' => '-1',
             'invComp' => '-1',
             'paid' => '-1',
@@ -938,6 +940,9 @@ class LeantimeApiService implements DataProviderServiceInterface
 
                 if (isset($data->error)) {
                     $message = $data->error->message;
+                    if (isset($data->error->data)) {
+                        $message .= ': '.(is_scalar($data->error->data) ? $data->error->data : json_encode($data->error->data));
+                    }
                     throw new ApiServiceException($message, $data->error->code);
                 }
 

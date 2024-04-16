@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.2] - 2024-04-16
+
+* [PR-104](https://github.com/itk-dev/economics/pull/104)
+  1174: Fixed datetime format in Leantime API calls
+* [PR-103](https://github.com/itk-dev/economics/pull/103)
+  1169: Made sure that Leantime issues have at most one version (milestone)
+* [PR-102](https://github.com/itk-dev/economics/pull/102)
+  1157: Updated external billing export
+
 ## [2.1.1] - 2024-04-04
 
 * [PR-100](https://github.com/itk-dev/economics/pull/100)
@@ -210,7 +219,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.1.1...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.1.2...HEAD
+[2.1.2]: https://github.com/itk-dev/economics/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/itk-dev/economics/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/itk-dev/economics/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/itk-dev/economics/compare/1.1.2...2.0.0
