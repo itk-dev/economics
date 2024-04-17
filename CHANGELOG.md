@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-106](https://github.com/itk-dev/economics/pull/106)
+  1202: Handled worklog deletions
+
 ## [2.1.2] - 2024-04-16
 
 * [PR-104](https://github.com/itk-dev/economics/pull/104)

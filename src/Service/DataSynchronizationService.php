@@ -21,6 +21,8 @@ use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -284,6 +286,21 @@ class DataSynchronizationService
             throw new EconomicsException($this->translator->trans('exception.project_tracker_id_not_set'));
         }
 
+        // Some worklogs may have been deleted in the source.
+        // Mark all project worklogs that are NOT
+        //
+        // * billed
+        // * invoiced
+        //
+        // as candidates for deletion.
+        /** @var Collection<int, Worklog> $worklogsToDelete */
+        $worklogsToDelete = new ArrayCollection(
+            array_filter(
+                $this->entityManager->getRepository(Worklog::class)->findBy(['project' => $project]),
+                static fn (Worklog $worklog): bool => !$worklog->isBilled() || null === $worklog->getInvoiceEntry()
+            )
+        );
+
         $worklogData = $service->getWorklogDataCollection($projectTrackerId);
         $worklogsAdded = 0;
         foreach ($worklogData->worklogData as $worklogDatum) {
@@ -303,12 +320,13 @@ class DataSynchronizationService
 
                 $this->entityManager->persist($worklog);
             }
-            $worklog->setWorklogId($worklogDatum->projectTrackerId);
-            $worklog->setDescription($worklogDatum->comment);
-            $worklog->setWorker($worklogDatum->worker);
-            $worklog->setStarted($worklogDatum->started);
-            $worklog->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId);
-            $worklog->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
+            $worklog
+                ->setWorklogId($worklogDatum->projectTrackerId)
+                ->setDescription($worklogDatum->comment)
+                ->setWorker($worklogDatum->worker)
+                ->setStarted($worklogDatum->started)
+                ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
+                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
 
             if (null != $worklog->getProjectTrackerIssueId()) {
                 $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
@@ -321,6 +339,8 @@ class DataSynchronizationService
             }
 
             $project->addWorklog($worklog);
+            // Keep the worklog.
+            $worklogsToDelete->removeElement($worklog);
 
             if (null !== $progressCallback) {
                 $progressCallback($worklogsAdded, count($worklogData->worklogData));
@@ -333,6 +353,12 @@ class DataSynchronizationService
                 $this->entityManager->flush();
                 $this->entityManager->clear();
             }
+        }
+
+        // Remove leftover worklogs from project and remove the worklogs.
+        foreach ($worklogsToDelete as $worklog) {
+            $project->removeWorklog($worklog);
+            $this->entityManager->remove($worklog);
         }
 
         $this->entityManager->flush();
