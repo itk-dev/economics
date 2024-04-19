@@ -280,6 +280,8 @@ invoices:
     client_project_lead: "Project Lead"
     required_fields_not_set_for_creating_entries: "\"Til konto\" og \"Materialenummer\" skal være valgt før der kan oprettes fakturalinjer."
     type: "Kundekonto type"
+    query_label: Søg
+    query_placeholder: Søg på fakturanavn
 
 material_number_enum:
     internal: "Interne: 103361"
