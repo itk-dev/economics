@@ -15,6 +15,7 @@ class InvoiceFilterType extends AbstractType
     {
         $builder
             ->add('query', SearchType::class, [
+                'required' => false,
                 'label' => 'invoices.query_label',
                 'label_attr' => ['class' => 'label'],
                 'attr' => [
