@@ -274,6 +274,7 @@ invoices:
     export_only_available_when_mandatory_fields_are_set: "Eksport kun muligt når der er sat en kundekonto"
     action_export_selected: "Eksporter valg"
     action_view: "Se"
+    list_exported_date: "Eksportdato"
     list_recorded_date: "Bogført"
     client_type_is_null: ""
     generate_description: "Autoudfyld"

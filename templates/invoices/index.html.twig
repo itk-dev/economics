@@ -23,7 +23,7 @@
     {{ form_end(form) }}
 
     {% set recorded_invoices = invoiceFilterData.recorded %}
-    {% set number_of_columns = recorded_invoices ? 10 : 8 %}
+    {% set number_of_columns = recorded_invoices ? 11 : 8 %}
 
     <div {{ stimulus_controller('entry-select') }} data-submit-endpoint="{{ submitEndpoint }}">
         <form id="entry-form">
@@ -46,6 +46,7 @@
                     <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
                     {% if recorded_invoices %}
                         <th class="table-th{% if invoices.isSorted('invoice.recordedDate') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_recorded_date'|trans, 'invoice.recordedDate') }}</th>
+                        <th class="table-th{% if invoices.isSorted('invoice.exportedDate') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_exported_date'|trans, 'invoice.exportedDate') }}</th>
                     {% endif %}
                     <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
                 </tr>
@@ -77,6 +78,7 @@
                         <td class="table-td">{{ invoice.totalPrice }}</td>
                         {% if recorded_invoices %}
                             <td class="table-td">{{ invoice.recordedDate ? invoice.recordedDate|date : '' }}</td>
+                            <td class="table-td">{{ invoice.exportedDate ? invoice.exportedDate|date : '' }}</td>
                         {% endif %}
                         <td class="table-td">
                             <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">
