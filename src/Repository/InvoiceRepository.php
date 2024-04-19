@@ -98,6 +98,10 @@ class InvoiceRepository extends ServiceEntityRepository
             $qb->andWhere('invoice.projectBilling IS NULL');
         }
 
+        if (null !== $invoiceFilterData->noCost) {
+            $qb->andWhere('invoice.noCost = :noCost')->setParameter('noCost', $invoiceFilterData->noCost);
+        }
+
         $defaultSortField = $invoiceFilterData->recorded ? 'invoice.recordedDate' : 'invoice.updatedAt';
 
         return $this->paginator->paginate(

@@ -179,7 +179,7 @@ class ProjectBillingController extends AbstractController
                 throw new EconomicsException($this->translator->trans('exception.invoice_errors_exit_cannot_put_on_record'), 400);
             }
 
-            if ($recordData->confirmed) {
+            if ($recordData->confirmation) {
                 $projectBillingService->recordProjectBilling($projectBilling);
             }
 

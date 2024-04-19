@@ -268,8 +268,11 @@ class InvoiceController extends AbstractController
                 }
             }
 
-            if ($recordData->confirmed) {
-                $this->billingService->recordInvoice($invoice);
+            switch ($recordData->confirmation) {
+                case ConfirmData::INVOICE_RECORD_YES:
+                case ConfirmData::INVOICE_RECORD_YES_NO_COST:
+                    $this->billingService->recordInvoice($invoice, confirmation: $recordData->confirmation);
+                    break;
             }
 
             return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
