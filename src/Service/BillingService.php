@@ -8,6 +8,7 @@ use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Exception\EconomicsException;
 use App\Exception\InvoiceAlreadyOnRecordException;
+use App\Model\Invoices\ConfirmData;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -74,8 +75,12 @@ class BillingService
      * @throws InvoiceAlreadyOnRecordException
      * @throws EconomicsException
      */
-    public function recordInvoice(Invoice $invoice, bool $flush = true): void
+    public function recordInvoice(Invoice $invoice, string $confirmation = ConfirmData::INVOICE_RECORD_NO, bool $flush = true): void
     {
+        if (ConfirmData::INVOICE_RECORD_NO === $confirmation) {
+            return;
+        }
+
         if ($invoice->isRecorded()) {
             throw new InvoiceAlreadyOnRecordException('Invoice is already on record.');
         }
@@ -95,13 +100,14 @@ class BillingService
 
         // Lock client values.
         // The locked type is handled this way to be backwards compatible with Jira Economics.
-        $invoice->setLockedType(ClientTypeEnum::INTERNAL == $client->getType() ? 'INTERN' : 'EKSTERN');
-        $invoice->setLockedCustomerKey($client->getCustomerKey());
-        $invoice->setLockedContactName($client->getContact());
-        $invoice->setLockedEan($client->getEan() ?? '');
-
-        $invoice->setRecorded(true);
-        $invoice->setRecordedDate(new \DateTime());
+        $invoice
+            ->setLockedType(ClientTypeEnum::INTERNAL == $client->getType() ? 'INTERN' : 'EKSTERN')
+            ->setLockedCustomerKey($client->getCustomerKey())
+            ->setLockedContactName($client->getContact())
+            ->setLockedEan($client->getEan() ?? '')
+            ->setNoCost(ConfirmData::INVOICE_RECORD_YES_NO_COST === $confirmation)
+            ->setRecorded(true)
+            ->setRecordedDate(new \DateTime());
 
         foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
             if (InvoiceEntryTypeEnum::WORKLOG === $invoiceEntry->getEntryType()) {

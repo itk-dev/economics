@@ -13,6 +13,7 @@ use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\MaterialNumberEnum;
 use App\Exception\EconomicsException;
 use App\Exception\InvoiceAlreadyOnRecordException;
+use App\Model\Invoices\ConfirmData;
 use App\Repository\ClientRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectBillingRepository;
@@ -273,7 +274,8 @@ class ProjectBillingService
     {
         foreach ($projectBilling->getInvoices() as $invoice) {
             try {
-                $this->billingService->recordInvoice($invoice, false);
+                // Project billing should never be recorded as "no cost".
+                $this->billingService->recordInvoice($invoice, confirmation: ConfirmData::INVOICE_RECORD_YES, flush: false);
             } catch (InvoiceAlreadyOnRecordException) {
                 // Ignore if invoice is already on record.
             }

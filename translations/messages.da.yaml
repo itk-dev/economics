@@ -244,8 +244,9 @@ invoices:
     confirm_record_are_you_sure: "Er du sikker på at du vil bogføre fakturaen \"%invoiceName%\"?"
     confirm_record_cannot_be_undone: "Når fakturaen er bogført kan den ikke ændres mere."
     record_save: "Gennemfør valg"
-    record_invoice_false: "Nej. Gå tilbage."
-    record_invoice_true: "Ja. Bogfør faktura."
+    record_invoice_no: "Nej. Gå tilbage."
+    record_invoice_yes: "Ja. Bogfør faktura."
+    record_invoice_yes_no_cost: "Ja. Bogfør faktura UB."
     record_invoice: "Bogfør faktura?"
     record_invoice_helptext: ""
     cannot_record_errors_exist: "Kan ikke bogføre faktura, idet der er fejl i data:"
@@ -276,6 +277,9 @@ invoices:
     action_view: "Se"
     list_exported_date: "Eksportdato"
     list_recorded_date: "Bogført"
+    list_no_cost: UB
+    list_no_cost_true: 'J'
+    list_no_cost_false: 'N'
     client_type_is_null: ""
     generate_description: "Autoudfyld"
     client_project_lead: "Project Lead"

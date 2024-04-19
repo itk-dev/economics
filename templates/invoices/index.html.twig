@@ -16,6 +16,7 @@
         {{ form_row(form.recorded) }}
         {{ form_row(form.createdBy) }}
         {{ form_row(form.projectBilling) }}
+        {{ form_row(form.noCost) }}
         <div>
         <button class="button form-element">{{ 'project_billing.search'|trans }}</button>
         </div>
@@ -44,6 +45,7 @@
                     <th class="table-th{% if invoices.isSorted('invoice.createdBy') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_created_by'|trans, 'invoice.createdBy') }}</th>
                     <th class="table-th{% if invoices.isSorted('invoice.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_updated_at'|trans, 'invoice.updatedAt') }}</th>
                     <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
+                    <th class="table-th">{{ 'invoices.list_no_cost'|trans }}</th>
                     {% if recorded_invoices %}
                         <th class="table-th{% if invoices.isSorted('invoice.recordedDate') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_recorded_date'|trans, 'invoice.recordedDate') }}</th>
                         <th class="table-th{% if invoices.isSorted('invoice.exportedDate') %} sorted{% endif %}">{{ knp_pagination_sortable(invoices, 'invoices.list_exported_date'|trans, 'invoice.exportedDate') }}</th>
@@ -76,6 +78,7 @@
                         <td class="table-td">{{ invoice.createdBy }}</td>
                         <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date : '' }}</td>
                         <td class="table-td">{{ invoice.totalPrice }}</td>
+                        <td class="table-td">{{ invoice.noCost ? 'invoices.list_no_cost_true'|trans : 'invoices.list_no_cost_false'|trans }}</td>
                         {% if recorded_invoices %}
                             <td class="table-td">{{ invoice.recordedDate ? invoice.recordedDate|date : '' }}</td>
                             <td class="table-td">{{ invoice.exportedDate ? invoice.exportedDate|date : '' }}</td>

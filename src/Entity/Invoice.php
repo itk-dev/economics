@@ -77,6 +77,9 @@ class Invoice extends AbstractBaseEntity
     #[ORM\ManyToOne(inversedBy: 'invoices')]
     private ?ProjectBilling $projectBilling = null;
 
+    #[ORM\Column]
+    private bool $noCost = false;
+
     public function __construct()
     {
         $this->invoiceEntries = new ArrayCollection();
@@ -294,9 +297,11 @@ class Invoice extends AbstractBaseEntity
         return $this->lockedCustomerKey;
     }
 
-    public function setLockedCustomerKey(?string $lockedCustomerKey): void
+    public function setLockedCustomerKey(?string $lockedCustomerKey): self
     {
         $this->lockedCustomerKey = $lockedCustomerKey;
+
+        return $this;
     }
 
     public function getDefaultMaterialNumber(): ?MaterialNumberEnum
@@ -304,9 +309,11 @@ class Invoice extends AbstractBaseEntity
         return $this->defaultMaterialNumber;
     }
 
-    public function setDefaultMaterialNumber(?MaterialNumberEnum $defaultMaterialNumber): void
+    public function setDefaultMaterialNumber(?MaterialNumberEnum $defaultMaterialNumber): self
     {
         $this->defaultMaterialNumber = $defaultMaterialNumber;
+
+        return $this;
     }
 
     public function getTotalPrice(): ?float
@@ -349,6 +356,18 @@ class Invoice extends AbstractBaseEntity
     public function setProjectBilling(?ProjectBilling $projectBilling): self
     {
         $this->projectBilling = $projectBilling;
+
+        return $this;
+    }
+
+    public function isNoCost(): bool
+    {
+        return $this->noCost;
+    }
+
+    public function setNoCost(bool $noCost): self
+    {
+        $this->noCost = $noCost;
 
         return $this;
     }
