@@ -140,8 +140,12 @@
         @apply invisible;
     }
 
-    .form-default, #sprint_report {
+    #sprint_report {
         @apply grid gap-3 mb-6 md:grid-cols-4;
+    }
+
+    .form-default {
+        @apply grid gap-3 mb-6 md:grid-cols-5;
     }
 
     .form-default > div {

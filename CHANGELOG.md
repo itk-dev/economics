@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-107](https://github.com/itk-dev/economics/pull/107)
   1213: Fixed handling of filter value
+* [PR-109](https://github.com/itk-dev/economics/pull/109)
+  1207: Added invoice query
 * [PR-106](https://github.com/itk-dev/economics/pull/106)
   1202: Handled worklog deletions
 
