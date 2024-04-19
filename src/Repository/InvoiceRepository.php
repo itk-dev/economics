@@ -82,8 +82,14 @@ class InvoiceRepository extends ServiceEntityRepository
 
         $qb->andWhere('invoice.recorded = :recorded')->setParameter('recorded', $invoiceFilterData->recorded);
 
+        $getLikeExpression = static fn (string $value) => str_contains($value, '%') ? $value : '%'.$value.'%';
+
+        if (!empty($invoiceFilterData->query)) {
+            $qb->andWhere('invoice.name LIKE :query')->setParameter('query', $getLikeExpression($invoiceFilterData->query));
+        }
+
         if (!empty($invoiceFilterData->createdBy)) {
-            $qb->andWhere('invoice.createdBy LIKE :createdBy')->setParameter('createdBy', $invoiceFilterData->createdBy);
+            $qb->andWhere('invoice.createdBy LIKE :createdBy')->setParameter('createdBy', $getLikeExpression($invoiceFilterData->createdBy));
         }
 
         if ($invoiceFilterData->projectBilling) {
