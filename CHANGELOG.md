@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   1213: Fixed handling of filter value
 * [PR-109](https://github.com/itk-dev/economics/pull/109)
   1207: Added invoice query
+* [PR-108](https://github.com/itk-dev/economics/pull/108)
+  1208: Changed default sorting of recorded invoices
 * [PR-106](https://github.com/itk-dev/economics/pull/106)
   1202: Handled worklog deletions
 
