@@ -67,11 +67,17 @@ class PlanningController extends AbstractController
             $service = $this->dataProviderService->getService($defaultProvider);
         }
 
-        $planningData = $service?->getPlanningDataWeeks();
+        try {
+            $planningData = $service?->getPlanningDataWeeks();
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
+            $planningData = null;
+        }
 
         return $this->render('planning/index.html.twig', $this->viewService->addView([
             'controller_name' => 'PlanningController',
             'planningData' => $planningData,
+            'error' => $error ?? null,
             'form' => $form,
         ]));
     }

@@ -12,6 +12,9 @@
     </div>
     {{ form_end(form) }}
 
+    {% if error is not null %}
+        {% include 'components/alert.html.twig' with {level: "danger", text: error} %}
+    {% endif %}
     {% if planningData is not null %}
         <div class="planning-wrapper">
             <style>
