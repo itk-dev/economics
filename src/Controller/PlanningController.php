@@ -24,8 +24,8 @@ class PlanningController extends AbstractController
     public function __construct(
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly TranslatorInterface $translator,
         private readonly ViewService $viewService,
+        private readonly ?int $planningDefaultDataProvider,
     ) {
     }
 
@@ -39,6 +39,9 @@ class PlanningController extends AbstractController
         $planningFormData = new PlanningFormData();
         $form = $this->createForm(PlanningType::class, $planningFormData);
 
+        $dataProviders = $this->dataProviderRepository->findAll();
+        $defaultProvider = $this->dataProviderRepository->find($this->planningDefaultDataProvider);
+
         $form->add('dataProvider', EntityType::class, [
             'class' => DataProvider::class,
             'required' => true,
@@ -48,56 +51,24 @@ class PlanningController extends AbstractController
                 'class' => 'form-element',
             ],
             'help' => 'planning.data_provider_helptext',
-            'choices' => $this->dataProviderRepository->findAll(),
-        ]);
-
-        $form->add('viewType', ChoiceType::class, [
-            'required' => true,
-            'label' => 'planning.view_type',
-            'label_attr' => ['class' => 'label'],
-            'attr' => [
-                'class' => 'form-element',
-            ],
-            'help' => 'planning.data_provider_helptext',
-            'choices' => $this->getTypeChoices(),
+            'data' => $this->dataProviderRepository->find($this->planningDefaultDataProvider),
+            'choices' => $dataProviders,
         ]);
 
         $form->handleRequest($request);
 
-        $planningData = null;
-        $template = 'planning/index.html.twig';
-
         if ($form->isSubmitted() && $form->isValid()) {
             $service = $this->dataProviderService->getService($planningFormData->dataProvider);
-            $viewType = $form->getData()->viewType;
-
-            switch ($viewType) {
-                case 'week':
-                    $planningData = $service->getPlanningDataWeeks();
-                    $template = 'planning/planning-weeks.html.twig';
-                    break;
-                case 'sprint':
-                    $planningData = $service->getPlanningDataSprints();
-                    $template = 'planning/planning-sprints.html.twig';
-                    break;
-                default:
-                    $planningData = $service->getPlanningDataSprints();
-                    break;
-            }
+        } else {
+            $service = $this->dataProviderService->getService($defaultProvider);
         }
 
-        return $this->render($template, $this->viewService->addView([
+        $planningData = $service->getPlanningDataWeeks();
+
+        return $this->render('planning/index.html.twig', $this->viewService->addView([
             'controller_name' => 'PlanningController',
             'planningData' => $planningData,
             'form' => $form,
         ]));
-    }
-
-    private function getTypeChoices()
-    {
-        return [
-            $this->translator->trans('planning.week_view') => 'week',
-            $this->translator->trans('planning.sprint_view') => 'sprint',
-        ];
     }
 }

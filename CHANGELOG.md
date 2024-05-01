@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-112](https://github.com/itk-dev/economics/pull/112)
+  1280: Simplified planning form. Added default value.
 * [PR-110](https://github.com/itk-dev/economics/pull/110)
   1209: No cost invoices
 * [PR-111](https://github.com/itk-dev/economics/pull/111)
