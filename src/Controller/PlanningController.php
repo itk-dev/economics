@@ -23,7 +23,7 @@ class PlanningController extends AbstractController
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly ViewService $viewService,
-        private readonly ?int $planningDefaultDataProvider,
+        private readonly ?string $planningDefaultDataProvider,
     ) {
     }
 
@@ -39,6 +39,10 @@ class PlanningController extends AbstractController
 
         $dataProviders = $this->dataProviderRepository->findAll();
         $defaultProvider = $this->dataProviderRepository->find($this->planningDefaultDataProvider);
+
+        if (null === $defaultProvider && count($dataProviders) > 0) {
+            $defaultProvider = $dataProviders[0];
+        }
 
         $form->add('dataProvider', EntityType::class, [
             'class' => DataProvider::class,
