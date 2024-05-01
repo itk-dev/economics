@@ -6,7 +6,7 @@
             <th class="table-td"></th>
             <th class="table-td"></th>
             {% for week in weeks %}
-                <th class="table-td-heading" data-span="{{ week.dateSpan }}" style="white-space: nowrap;">{{ week.displayName }}</th>
+                <th class="table-td-heading {{ week.activeSprint is defined and week.activeSprint ? 'active' : '' }}" data-span="{{ week.dateSpan }}" style="white-space: nowrap;">{{ week.displayName }}</th>
             {% endfor %}
         </tr>
         </thead>
@@ -32,9 +32,9 @@
                         {% endif %}
                     {% endfor %}
                     <td class="table-td-heading
-                                                                            {{ res < week.weekGoalLow ? 'low' : '' }}
-                                                                            {{ res >= week.weekGoalLow and res <= week.weekGoalHigh ? 'success' : '' }}
-                                                                            {{ res > week.weekGoalHigh ? 'high' : '' }}">
+                        {{ res < week.weekGoalLow ? 'low' : '' }}
+                        {{ res >= week.weekGoalLow and res <= week.weekGoalHigh ? 'success' : '' }}
+                        {{ res > week.weekGoalHigh ? 'high' : '' }}">
                         {{ res }}
                     </td>
                 {% endfor %}

@@ -6,7 +6,7 @@
             <th class="table-td"></th>
             <th class="table-td"></th>
             {% for week in weeks %}
-                <th class="table-td-heading" data-span="{{ week.dateSpan }}" style="white-space: nowrap;">{{ week.displayName }}</th>
+                <th class="table-td-heading {{ week.activeSprint is defined and week.activeSprint ? 'active' : '' }}" data-span="{{ week.dateSpan }}" style="white-space: nowrap;">{{ week.displayName }}</th>
             {% endfor %}
         </tr>
         </thead>

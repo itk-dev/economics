@@ -17,7 +17,6 @@ use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
 use App\Model\Planning\PlanningData;
 use App\Model\Planning\Project;
-use App\Model\Planning\Sprint;
 use App\Model\Planning\SprintSum;
 use App\Model\Planning\Weeks;
 use App\Model\SprintReport\SprintReportData;
@@ -378,6 +377,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         $weeks = $planning->weeks;
 
         $currentYear = (int) (new \DateTime())->format('Y');
+        $currentWeek = (int) (new \DateTime())->format('W');
 
         for ($weekNumber = 1; $weekNumber <= 52; ++$weekNumber) {
             $date = (new \DateTime())->setISODate($currentYear, $weekNumber);
@@ -394,12 +394,19 @@ class LeantimeApiService implements DataProviderServiceInterface
                 $supportWeek->weekGoalHigh = $this->weekGoalHigh;
                 $supportWeek->displayName = (string) $week;
                 $supportWeek->dateSpan = $weekFirstDay.' - '.$weekLastDay;
+                if ($week == $currentWeek) {
+                    $supportWeek->activeSprint = true;
+                }
                 $weeks->add($supportWeek);
             } else {
                 if (isset($regularWeek)) {
                     $regularWeek->weekCollection->add($week);
                     ++$regularWeek->weeks;
                     $regularWeek->displayName .= '-'.$week;
+                    if ($week == $currentWeek) {
+                        $regularWeek->activeSprint = true;
+                    }
+
                     if (3 === count($regularWeek->weekCollection)) {
                         $regularWeek->dateSpan .= ' - '.$weekLastDay;
                         $weeks->add($regularWeek);
@@ -413,6 +420,9 @@ class LeantimeApiService implements DataProviderServiceInterface
                     $regularWeek->weekGoalHigh = $this->weekGoalHigh * 3;
                     $regularWeek->displayName = (string) $week;
                     $regularWeek->dateSpan = $weekFirstDay;
+                    if ($week == $currentWeek) {
+                        $regularWeek->activeSprint = true;
+                    }
                 }
             }
         }
@@ -433,6 +443,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                 $weekIssues['unscheduled'][] = $issue;
             }
         }
+
         foreach ($weekIssues as $week => $issues) {
             foreach ($issues as $issueData) {
                 if ('0' !== $issueData->status) { // excludes done issues.
