@@ -12,11 +12,9 @@ use App\Service\DataProviderService;
 use App\Service\ViewService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/planning')]
 class PlanningController extends AbstractController
@@ -57,13 +55,15 @@ class PlanningController extends AbstractController
 
         $form->handleRequest($request);
 
+        $service = null;
+
         if ($form->isSubmitted() && $form->isValid()) {
             $service = $this->dataProviderService->getService($planningFormData->dataProvider);
-        } else {
+        } elseif (null !== $defaultProvider) {
             $service = $this->dataProviderService->getService($defaultProvider);
         }
 
-        $planningData = $service->getPlanningDataWeeks();
+        $planningData = $service?->getPlanningDataWeeks();
 
         return $this->render('planning/index.html.twig', $this->viewService->addView([
             'controller_name' => 'PlanningController',

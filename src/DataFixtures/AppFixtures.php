@@ -27,8 +27,6 @@ class AppFixtures extends Fixture
         $dataProvider1->setUrl('http://localhost/');
         $dataProvider1->setSecret('Not so secret');
 
-        $manager->persist($dataProvider1);
-
         $dataProviders[] = $dataProvider1;
 
         $dataProvider2 = new DataProvider();
@@ -38,11 +36,11 @@ class AppFixtures extends Fixture
         $dataProvider2->setUrl('http://localhost/');
         $dataProvider2->setSecret('Not so secret');
 
-        $manager->persist($dataProvider2);
-
         $dataProviders[] = $dataProvider2;
 
         foreach ($dataProviders as $key => $dataProvider) {
+            $manager->persist($dataProvider);
+
             for ($c = 0; $c < 2; ++$c) {
                 $client = new Client();
                 $client->setName("client $key-$c");
@@ -126,8 +124,9 @@ class AppFixtures extends Fixture
                     $manager->flush();
                 }
             }
-        }
 
-        $manager->flush();
+            $manager->flush();
+            $manager->clear();
+        }
     }
 }
