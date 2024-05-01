@@ -17,8 +17,8 @@
                         <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.planning'|trans }}</span>
                     </a>
                     <ul class="navigation-item-submenu">
-                        {% include 'components/navigation-item.html.twig' with {icon: 'user', title: 'navigation.planning_users'|trans, role: 'ROLE_PLANNING', route: path('app_planning_users', {}|merge(view is defined ? {view: view} : {}))} %}
-                        {% include 'components/navigation-item.html.twig' with {icon: 'project', title: 'navigation.planning_projects'|trans, role: 'ROLE_PLANNING', route: path('app_planning_projects', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {title: 'navigation.planning_users'|trans, role: 'ROLE_PLANNING', route: path('app_planning_users', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {title: 'navigation.planning_projects'|trans, role: 'ROLE_PLANNING', route: path('app_planning_projects', {}|merge(view is defined ? {view: view} : {}))} %}
                     </ul>
                 </li>
             {% endif %}
@@ -45,11 +45,11 @@
                         <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.admin'|trans }}</span>
                     </a>
                       <ul class="navigation-item-submenu">
-                        {% include 'components/navigation-item.html.twig' with {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_ADMIN', route: path('app_project_index', {}|merge(view is defined ? {view: view} : {}))} %}
-                        {% include 'components/navigation-item.html.twig' with {icon: 'client', title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index', {}|merge(view is defined ? {view: view} : {}))} %}
-                        {% include 'components/navigation-item.html.twig' with {icon: 'account', title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index', {}|merge(view is defined ? {view: view} : {}))} %}
-                        {% include 'components/navigation-item.html.twig' with {icon: 'user', title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index', {}|merge(view is defined ? {view: view} : {}))} %}
-                        {% include 'components/navigation-item.html.twig' with {icon: 'view', title: 'navigation.views'|trans, role: 'ROLE_ADMIN', route: path('app_view_list', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {title: 'navigation.projects'|trans, role: 'ROLE_ADMIN', route: path('app_project_index', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {title: 'navigation.views'|trans, role: 'ROLE_ADMIN', route: path('app_view_list', {}|merge(view is defined ? {view: view} : {}))} %}
                     </ul>
                 </li>
             {% elseif is_granted('ROLE_PRODUCT_MANAGER') %}

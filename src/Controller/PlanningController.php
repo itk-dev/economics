@@ -27,14 +27,10 @@ class PlanningController extends AbstractController
     ) {
     }
 
-    /**
-     * @throws UnsupportedDataProviderException
-     * @throws EconomicsException
-     */
     #[Route('/', name: 'app_planning')]
     public function index(Request $request): Response
     {
-        return $this->render('planning/index.html.twig');
+        return $this->redirectToRoute('app_planning_users');
     }
 
     /**
