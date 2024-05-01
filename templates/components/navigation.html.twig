@@ -10,7 +10,18 @@
             {% include 'components/navigation-item.html.twig' with {icon: 'home', title: 'navigation.home'|trans, role: 'ROLE_USER', route: path('index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% include 'components/navigation-item.html.twig' with {icon: 'invoice', title: 'navigation.invoices'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% include 'components/navigation-item.html.twig' with {icon: 'project-billing', title: 'navigation.project_billing'|trans, role: 'ROLE_PROJECT_BILLING', route: path('app_project_billing_index', {}|merge(view is defined ? {view: view} : {}))} %}
-            {% include 'components/navigation-item.html.twig' with {icon: 'planning', title: 'navigation.planning'|trans, role: 'ROLE_PLANNING', route: path('app_planning', {}|merge(view is defined ? {view: view} : {}))} %}
+            {% if is_granted('ROLE_PLANNING') %}
+                <li>
+                    <a class="navigation-item collapsible" href="{{ path('app_planning', {}|merge(view is defined ? {view: view} : {})) }}">
+                        {% include 'components/icons.html.twig' with {icon: 'report', class: "w-6 h-6"} %}
+                        <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.planning'|trans }}</span>
+                    </a>
+                    <ul class="navigation-item-submenu">
+                        {% include 'components/navigation-item.html.twig' with {icon: 'user', title: 'navigation.planning_users'|trans, role: 'ROLE_PLANNING', route: path('app_planning_users', {}|merge(view is defined ? {view: view} : {}))} %}
+                        {% include 'components/navigation-item.html.twig' with {icon: 'project', title: 'navigation.planning_projects'|trans, role: 'ROLE_PLANNING', route: path('app_planning_projects', {}|merge(view is defined ? {view: view} : {}))} %}
+                    </ul>
+                </li>
+            {% endif %}
             {% include 'components/navigation-item.html.twig' with {icon: 'product', title: 'navigation.products'|trans, role: 'ROLE_PRODUCT_MANAGER', route: path('app_product_index', {}|merge(view is defined ? {view: view} : {}))} %}
 
             {% if is_granted('ROLE_REPORT') %}

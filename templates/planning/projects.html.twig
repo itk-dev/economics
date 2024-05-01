@@ -1,0 +1,77 @@
+<h3 class="subheading">{{ 'planning.projects'|trans }}</h3>
+<div>
+    <table class="table-auto">
+        <thead>
+        <tr>
+            <th class="table-td"></th>
+            <th class="table-td"></th>
+            {% for week in weeks %}
+                <th class="table-td-heading" data-span="{{ week.dateSpan }}" style="white-space: nowrap;">{{ week.displayName }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        {% for project in projects %}
+            <tbody {{ stimulus_controller('toggle-parent-child') }}>
+            <tr class="table-tr">
+                <td class="table-td-heading nowrap">
+                    {{ project.displayName }}<span></span>
+                    <button class="expand-btn" type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }} data-toggle-target="button" style="width: 16px;">
+                        {{ svg_expand }}
+                    </button>
+                </td>
+                <td></td>
+                {% for week in weeks %}
+                    <td class="table-td-heading">
+                        {% set res = null %}
+                        {% for week_number in week.weekCollection %}
+                            {% if project.sprintSums.containsKey(week_number) %}
+                                {% set res = (res + project.sprintSums.get(week_number).sumHours) %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ res }}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% for assignee in project.assignees %}
+                <tr {{ stimulus_target('toggle-parent-child', 'parent') }} class="table-tr">
+                    <td class="table-td"></td>
+                    <td class="table-td-heading nowrap">
+                        {{ assignee.displayName }}<span></span>
+                        <button class="float-right expand-btn" type="button" {{ stimulus_action('toggle-parent-child', 'toggleChild') }} {{ stimulus_target('toggle-parent-child', 'button') }} data-parent-id="{{ assignee.key }}" style="width: 16px;">
+                            {{ svg_expand }}
+                        </button>
+                    </td>
+                    {% for week in weeks %}
+                        <td class="table-td-heading">
+                            {% for week_number in week.weekCollection %}
+                                {% if assignee.sprintSums.containsKey(week_number) %}
+                                    {{ assignee.sprintSums.get(week_number).sumHours }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% for issue in assignee.issues %}
+                    <tr {{ stimulus_target('toggle-parent-child', 'child') }} data-parent-id="{{ assignee.key }}">
+                        <td class="table-td"></td>
+                        <td class="table-td">
+                            <a href="{{ issue.link }}" class="link">#{{ issue.key }}</a>
+                            <br>
+                            {{ issue.displayName }}
+                        </td>
+                        {% for week in weeks %}
+                            <td class="table-td-heading">
+                                {% for week_number in week.weekCollection %}
+                                    {% if issue.sprintId == week_number %}
+                                        {{ issue.remainingHours ?? 'UE' }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        {% endfor %}
+    </table>
+</div>

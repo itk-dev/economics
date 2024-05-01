@@ -34,6 +34,35 @@ class PlanningController extends AbstractController
     #[Route('/', name: 'app_planning')]
     public function index(Request $request): Response
     {
+        return $this->render('planning/index.html.twig');
+    }
+
+    /**
+     * @throws UnsupportedDataProviderException
+     * @throws EconomicsException
+     */
+    #[Route('/users', name: 'app_planning_users')]
+    public function planningUsers(Request $request): Response
+    {
+        return $this->createResponse($request, 'users');
+    }
+
+    /**
+     * @throws UnsupportedDataProviderException
+     * @throws EconomicsException
+     */
+    #[Route('/projects', name: 'app_planning_projects')]
+    public function planningProjects(Request $request): Response
+    {
+        return $this->createResponse($request, 'projects');
+    }
+
+    /**
+     * @throws UnsupportedDataProviderException
+     * @throws EconomicsException
+     */
+    private function createResponse(Request $request, string $mode): Response
+    {
         $planningFormData = new PlanningFormData();
         $form = $this->createForm(PlanningType::class, $planningFormData);
 
@@ -74,11 +103,12 @@ class PlanningController extends AbstractController
             $planningData = null;
         }
 
-        return $this->render('planning/index.html.twig', $this->viewService->addView([
+        return $this->render('planning/planning.html.twig', $this->viewService->addView([
             'controller_name' => 'PlanningController',
             'planningData' => $planningData,
             'error' => $error ?? null,
             'form' => $form,
+            'mode' => $mode,
         ]));
     }
 }
