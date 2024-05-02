@@ -70,7 +70,9 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         if (!empty($filterData->periodTo)) {
-            $qb->andWhere('worklog.started <= :periodTo')->setParameter('periodTo', $filterData->periodTo);
+            // Period to must include the selected day.
+            $periodTo = $filterData->periodTo->modify('tomorrow');
+            $qb->andWhere('worklog.started < :periodTo')->setParameter('periodTo', $periodTo);
         }
 
         if (!empty($filterData->version) || !empty($filterData->epic)) {
