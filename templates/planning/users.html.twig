@@ -1,31 +1,29 @@
-<h3>{{ 'planning.assignees'|trans }}</h3>
-<i class="fa-solid fa-maximize"></i>
-<div {{ stimulus_controller('show-hide') }} data-storage-key="hidePlanningAssignees">
-    <table class="table-auto border-collapse">
+<div class="overflow-x-auto" {{ stimulus_controller('show-hide') }} data-storage-key="hidePlanningAssignees">
+    <table class="table-auto w-full border-separate border-spacing-0 border border-slate-600 relative">
         <thead>
             <tr>
-                <th class="text-left border bg-slate-100 dark:bg-slate-700 border-slate-600">{{ 'User'|trans }}</th>
+                <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'planning.assignees'|trans }}</th>
                 {% for week in weeks %}
-                    <th class="text-right px-3 border border-slate-600 bg-slate-100 dark:bg-slate-700 {{ week.activeSprint is defined and week.activeSprint ? 'active' : '' }}" data-span="{{ week.dateSpan }}">{{ week.displayName }}</th>
+                    <th class="text-center px-3 py-3 border border-slate-600  {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-700' }}" data-span="{{ week.dateSpan }}">{{ week.displayName }}</th>
                 {% endfor %}
             </tr>
         </thead>
         {% for assignee in assignees %}
             <tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ assignee.key }}" {{ stimulus_target('show-hide', 'entry') }}>
             <tr>
-                <td class="py-2 px-2 whitespace-nowrap border border-slate-600">
+                <th class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
                     <div class="flex flex-row">
                         <span class="flex-grow mr-3">
                             {{ assignee.displayName }}
                         </span>
-                        <button class="hide-btn mr-3" type="button" {{ stimulus_action('show-hide', 'toggleEntry') }} data-toggle-id="{{ assignee.key }}" data-toggle-name="{{ assignee.displayName }}" data-toggle-target="button">
+                        <button class="hide-btn mr-3 w-4" type="button" {{ stimulus_action('show-hide', 'toggleEntry') }} data-toggle-id="{{ assignee.key }}" data-toggle-name="{{ assignee.displayName }}" data-toggle-target="button">
                             {{ svg_hide }}
                         </button>
-                        <button class="expand-btn mr-3" type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }} data-toggle-target="button">
+                        <button class="expand-btn mr-3 w-4" type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }} data-toggle-target="button">
                             {{ svg_expand }}
                         </button>
                     </div>
-                </td>
+                </th>
                 {% for week in weeks %}
                     {% set res = null %}
 
@@ -35,6 +33,9 @@
                         {% endif %}
                     {% endfor %}
                     <td class="text-right px-3 border border-slate-600
+
+                        {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : '' }}
+
                         {{ res < week.weekGoalLow ? 'bg-transperent' : '' }}
                         {{ res >= week.weekGoalLow and res <= week.weekGoalHigh ? 'bg-green-600' : '' }}
                         {{ res > week.weekGoalHigh ? 'bg-orange-500' : '' }}
