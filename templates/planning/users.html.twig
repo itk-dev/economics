@@ -1,28 +1,31 @@
-<h3 class="subheading">{{ 'planning.assignees'|trans }}</h3>
+<h3>{{ 'planning.assignees'|trans }}</h3>
+<i class="fa-solid fa-maximize"></i>
 <div {{ stimulus_controller('show-hide') }} data-storage-key="hidePlanningAssignees">
-    <table class="table-auto">
+    <table class="table-auto border-collapse">
         <thead>
-        <tr>
-            <th class="table-td"></th>
-            <th class="table-td"></th>
-            {% for week in weeks %}
-                <th class="table-td-heading {{ week.activeSprint is defined and week.activeSprint ? 'active' : '' }}" data-span="{{ week.dateSpan }}" style="white-space: nowrap;">{{ week.displayName }}</th>
-            {% endfor %}
-        </tr>
+            <tr>
+                <th class="text-left border bg-slate-100 dark:bg-slate-700 border-slate-600">{{ 'User'|trans }}</th>
+                {% for week in weeks %}
+                    <th class="text-right px-3 border border-slate-600 {{ week.activeSprint is defined and week.activeSprint ? 'active' : '' }}" data-span="{{ week.dateSpan }}">{{ week.displayName }}</th>
+                {% endfor %}
+            </tr>
         </thead>
         {% for assignee in assignees %}
             <tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ assignee.key }}" {{ stimulus_target('show-hide', 'entry') }}>
-            <tr class="table-tr">
-                <td class="table-td-heading nowrap">
-                    <span>{{ assignee.displayName }}</span>
-                    <button class="mr-2 hide-btn" type="button" {{ stimulus_action('show-hide', 'toggleEntry') }} data-toggle-id="{{ assignee.key }}" data-toggle-name="{{ assignee.displayName }}" data-toggle-target="button" style="width: 16px;">
-                        {{ svg_hide }}
-                    </button>
-                    <button class="expand-btn" type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }} data-toggle-target="button" style="width: 16px;">
-                        {{ svg_expand }}
-                    </button>
+            <tr>
+                <td class="py-2 px-2 whitespace-nowrap border border-slate-600">
+                    <div class="flex flex-row">
+                        <span class="flex-grow mr-3">
+                            {{ assignee.displayName }}
+                        </span>
+                        <button class="hide-btn mr-3" type="button" {{ stimulus_action('show-hide', 'toggleEntry') }} data-toggle-id="{{ assignee.key }}" data-toggle-name="{{ assignee.displayName }}" data-toggle-target="button">
+                            {{ svg_hide }}
+                        </button>
+                        <button class="expand-btn mr-3" type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }} data-toggle-target="button">
+                            {{ svg_expand }}
+                        </button>
+                    </div>
                 </td>
-                <td></td>
                 {% for week in weeks %}
                     {% set res = null %}
 
@@ -31,24 +34,35 @@
                             {% set res = assignee.sprintSums.get(week_number).sumHours %}
                         {% endif %}
                     {% endfor %}
-                    <td class="table-td-heading
-                        {{ res < week.weekGoalLow ? 'low' : '' }}
-                        {{ res >= week.weekGoalLow and res <= week.weekGoalHigh ? 'success' : '' }}
-                        {{ res > week.weekGoalHigh ? 'high' : '' }}">
+                    <td class="text-right px-3 border border-slate-600
+                        {{ res < week.weekGoalLow ? 'bg-slate-100' : '' }}
+                        {{ res >= week.weekGoalLow and res <= week.weekGoalHigh ? 'bg-green-600' : '' }}
+                        {{ res > week.weekGoalHigh ? 'bg-orange-500' : '' }}
+                    ">
                         {{ res }}
                     </td>
                 {% endfor %}
             </tr>
             {% for project in assignee.projects %}
-                <tr {{ stimulus_target('toggle-parent-child', 'parent') }} class="table-tr">
-                    <td class="table-td"></td>
-                    <td class="table-td-heading nowrap">{{ project.displayName }}<span></span>
-                        <button class="float-right expand-btn" type="button" {{ stimulus_action('toggle-parent-child', 'toggleChild') }} {{ stimulus_target('toggle-parent-child', 'button') }} data-parent-id="{{ project.key }}" style="width: 16px;">
-                            {{ svg_expand }}
-                        </button>
+                <tr {{ stimulus_target('toggle-parent-child', 'parent') }}>
+                    <td class="border border-slate-600">
+                        <div class="flex flex-row">
+                            <span class="flex-grow mr-3">
+                                {{ project.displayName }}
+                            </span>
+                            <button
+                                class="expand-btn mr-3"
+                                type="button"
+                                data-parent-id="{{ project.key }}"
+                                {{ stimulus_action('toggle-parent-child', 'toggleChild') }}
+                                {{ stimulus_target('toggle-parent-child', 'button') }}
+                                >
+                                {{ svg_expand }}
+                            </button>
+                        </div>
                     </td>
                     {% for week in weeks %}
-                        <td class="table-td-heading">
+                        <td class="border border-slate-600">
                             {% for week_number in week.weekCollection %}
                                 {% if project.sprintSums.containsKey(week_number) %}
                                     {{ project.sprintSums.get(week_number).sumHours }}
@@ -59,13 +73,11 @@
                 </tr>
                 {% for issue in project.issues %}
                     <tr {{ stimulus_target('toggle-parent-child', 'child') }} data-parent-id="{{ project.key }}">
-                        <td class="table-td"></td>
-                        <td class="table-td">
-                            <a href="{{ issue.link }}" target="_blank" class="link">#{{ issue.key }}</a><br>
-                            {{ issue.displayName }}
+                        <td class="border border-slate-600">
+                            {{ issue.displayName }} <a href="{{ issue.link }}" target="_blank" class="link">#{{ issue.key }}</a>
                         </td>
                         {% for week in weeks %}
-                            <td class="table-td-heading">
+                            <td class="border border-slate-600">
                                 {% for week_number in week.weekCollection %}
                                     {% if issue.sprintId == week_number %}
                                         {{ issue.remainingHours ?? 'UE' }}
@@ -80,7 +92,7 @@
         {% endfor %}
     </table>
 
-    <div>
+    <div class="mt-3">
         {{ 'planning.hidden-entries'|trans }}:
         <span {{ stimulus_target('show-hide', 'hiddenEntries') }}></span>
     </div>

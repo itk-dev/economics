@@ -17,58 +17,6 @@
     {% endif %}
     {% if planningData is not null %}
         <div class="planning-wrapper">
-            <style>
-                th.active {
-                    background: red;
-                }
-                td {
-                    text-align: center;
-                    height: 80px;
-                    position: relative;
-                }
-                th:empty,
-                td:empty {
-                    padding: 0;
-                }
-                td.table-td-heading.nowrap {
-                    white-space: nowrap;
-                    font-size: 15px;
-                    text-align: left;
-                    padding-left: 10px;
-                    min-width: 100px;
-                }
-                td .expand-btn {
-                    position: absolute;
-                    right: 5px;
-                    bottom: 5px;
-                }
-                td .hide-btn {
-                    position: absolute;
-                    left: 5px;
-                    bottom: 5px;
-                }
-                td.high {
-                    color: #000;
-                    background-color: #eb886f;
-                }
-                span.high {
-                    color: #eb886f;
-                }
-
-                td.success {
-                    background-color: #2fb1a2;
-                }
-                span.success {
-                    color: #2fb1a2;
-                }
-                th[data-span]:after {
-                    font-family: monospace;
-                    content: attr(data-span);
-                    display: block;
-                    font-size: 11px;
-                    font-weight: 100;
-                }
-            </style>
 
             {% set svg_expand %}
                 <svg class="planning-svg" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
