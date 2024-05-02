@@ -6,7 +6,7 @@
             <tr>
                 <th class="text-left border bg-slate-100 dark:bg-slate-700 border-slate-600">{{ 'User'|trans }}</th>
                 {% for week in weeks %}
-                    <th class="text-right px-3 border border-slate-600 {{ week.activeSprint is defined and week.activeSprint ? 'active' : '' }}" data-span="{{ week.dateSpan }}">{{ week.displayName }}</th>
+                    <th class="text-right px-3 border border-slate-600 bg-slate-100 dark:bg-slate-700 {{ week.activeSprint is defined and week.activeSprint ? 'active' : '' }}" data-span="{{ week.dateSpan }}">{{ week.displayName }}</th>
                 {% endfor %}
             </tr>
         </thead>
@@ -35,7 +35,7 @@
                         {% endif %}
                     {% endfor %}
                     <td class="text-right px-3 border border-slate-600
-                        {{ res < week.weekGoalLow ? 'bg-slate-100' : '' }}
+                        {{ res < week.weekGoalLow ? 'bg-transperent' : '' }}
                         {{ res >= week.weekGoalLow and res <= week.weekGoalHigh ? 'bg-green-600' : '' }}
                         {{ res > week.weekGoalHigh ? 'bg-orange-500' : '' }}
                     ">
