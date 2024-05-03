@@ -55,6 +55,8 @@ navigation:
     admin: "Admin"
     management_report: "Hent ledelsesrapport"
     team_report: "Hent teamrapport"
+    planning_users: 'Brugere'
+    planning_projects: 'Projekter'
 
 planning:
     title: "Planlægning"
@@ -67,6 +69,7 @@ planning:
     view_type: "Vælg visningstype"
     week_view: "Ugevisning"
     sprint_view: "Sprintvisning"
+    description: 'Vælg visning'
 
 client:
     title: "Kunder"
