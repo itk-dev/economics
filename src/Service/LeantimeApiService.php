@@ -453,7 +453,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                     $projectKey = (string) $issueData->projectId;
                     $projectDisplayName = $issueData->projectName;
 
-                    $hoursRemaining = ($issueData->planHours - $issueData->bookedHours);
+                    $hoursRemaining = $issueData->hourRemaining;
                     if (empty($issueData->editorId)) {
                         $assigneeKey = 'unassigned';
                         $assigneeDisplayName = 'Unassigned';
