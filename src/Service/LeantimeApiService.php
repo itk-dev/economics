@@ -379,6 +379,8 @@ class LeantimeApiService implements DataProviderServiceInterface
         $currentYear = (int) (new \DateTime())->format('Y');
         $currentWeek = (int) (new \DateTime())->format('W');
 
+        // TODO: How to handle 53 weeks
+        // A year can actually have 53 weeks (cf. https://en.wikipedia.org/wiki/ISO_week_date#Weeks_per_year), and the year 2026 (in the near future is one of them), so this should be rewritten to iterate over all weeks in the year (or use https://stackoverflow.com/a/21480444).
         for ($weekNumber = 1; $weekNumber <= 52; ++$weekNumber) {
             $date = (new \DateTime())->setISODate($currentYear, $weekNumber);
             $week = (int) $date->format('W'); // Cast as int to remove leading zero.
