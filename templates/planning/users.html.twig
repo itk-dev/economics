@@ -8,7 +8,7 @@
                         class="text-center px-3 py-3 border border-slate-600 {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-700' }}"
                         data-span="{{ week.dateSpan }}"
                         {{ week.activeSprint is defined and week.activeSprint ? 'id="activeSprint"' : '' }}
-                        {{ loop.index == 1 ? 'id="firstSprint"' : ''}}
+                        {{ loop.index == 1 ? 'id="firstSprint"' : '' }}
                         data-index="{{ loop.index }}"
                         {{ week.activeSprint is defined and week.activeSprint ? 'data-active="true"' : '' }}
                         {{ stimulus_target('planning-scroll', 'column') }}
