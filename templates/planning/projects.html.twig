@@ -5,7 +5,7 @@
                 <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'planning.projects'|trans }}</th>
                 {% for week in weeks %}
                     <th
-                        class="text-center px-3 py-3 border border-slate-600 {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-700' }}"
+                        class="text-center whitespace-nowrap px-3 py-3 border border-slate-600 {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-700' }}"
                         data-span="{{ week.dateSpan }}"
                         {{ week.activeSprint is defined and week.activeSprint ? 'id="activeSprint"' : '' }}
                         {{ loop.index == 1 ? 'id="firstSprint"' : '' }}
@@ -73,11 +73,13 @@
                     </th>
                     {% for week in weeks %}
                         <td class="text-right pr-3 border border-slate-600 {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : '' }}">
+                            {% set res = null %}
                             {% for week_number in week.weekCollection %}
                                 {% if assignee.sprintSums.containsKey(week_number) %}
-                                    {{ assignee.sprintSums.get(week_number).sumHours }}
+                                    {% set res = (res + assignee.sprintSums.get(week_number).sumHours) %}
                                 {% endif %}
                             {% endfor %}
+                            {{ res }}
                         </td>
                     {% endfor %}
                 </tr>
