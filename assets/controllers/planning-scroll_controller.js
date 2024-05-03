@@ -24,9 +24,9 @@ export default class extends Controller {
             return;
         }
 
-        const { x } = scrollToColumn.getBoundingClientRect();
-        const { x: firstColumnX } = firstColumn.getBoundingClientRect();
+        const targetColumnX = scrollToColumn.getBoundingClientRect().x;
+        const firstColumnX = firstColumn.getBoundingClientRect().x;
 
-        scrollContainer.scrollTo(x - firstColumnX, 0);
+        scrollContainer.scrollTo(targetColumnX - firstColumnX, 0);
     }
 }
