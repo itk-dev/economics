@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-114](https://github.com/itk-dev/economics/pull/114)
-  1258: Clean up planning view ui and add scrol to active sprint.
+  1258: Clean up planning view ui and add scroll to active sprint.
 * [PR-112](https://github.com/itk-dev/economics/pull/112)
   1280: Simplified planning form. Added default value.
 * [PR-110](https://github.com/itk-dev/economics/pull/110)

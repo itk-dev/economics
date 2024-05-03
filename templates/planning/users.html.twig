@@ -28,10 +28,11 @@
                             {{ assignee.displayName }}
                         </span>
                         <button class="hide-btn mr-3 w-4" type="button" {{ stimulus_action('show-hide', 'toggleEntry') }} data-toggle-id="{{ assignee.key }}" data-toggle-name="{{ assignee.displayName }}" data-toggle-target="button">
-                            {{ svg_hide }}
+                            <i class="fa-solid fa-eye-slash"></i>
                         </button>
                         <button class="expand-btn mr-3 w-4" type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }} data-toggle-target="button">
-                            {{ svg_expand }}
+                            <i class="fa-solid fa-maximize"></i>
+                            <i class="fa-solid fa-minimize hidden"></i>
                         </button>
                     </div>
                 </th>
@@ -44,9 +45,7 @@
                         {% endif %}
                     {% endfor %}
                     <td class="text-right px-3 border border-slate-600
-
                         {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : '' }}
-
                         {{ res < week.weekGoalLow ? 'bg-transperent' : '' }}
                         {{ res >= week.weekGoalLow and res <= week.weekGoalHigh ? 'bg-green-600' : '' }}
                         {{ res > week.weekGoalHigh ? 'bg-orange-500' : '' }}
@@ -69,7 +68,8 @@
                                 {{ stimulus_action('toggle-parent-child', 'toggleChild') }}
                                 {{ stimulus_target('toggle-parent-child', 'button') }}
                                 >
-                                {{ svg_expand }}
+                                <i class="fa-solid fa-maximize"></i>
+                                <i class="fa-solid fa-minimize hidden"></i>
                             </button>
                         </div>
                     </th>
