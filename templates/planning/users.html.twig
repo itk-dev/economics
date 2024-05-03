@@ -40,7 +40,7 @@
 
                     {% for week_number in week.weekCollection %}
                         {% if assignee.sprintSums.containsKey(week_number) %}
-                            {% set res = (res + assignee.sprintSums.get(week_number).sumHours) %}
+                            {% set res = res + assignee.sprintSums.get(week_number).sumHours %}
                         {% endif %}
                     {% endfor %}
                     <td class="text-right px-3 border border-slate-600
