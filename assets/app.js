@@ -5,8 +5,11 @@
  * (and its CSS file) in your base layout (base.html.twig).
  */
 
-// any CSS you import will output into a single css file (app.css in this case)
+// Any CSS you import will output into a single css file (app.css in this case)
 import "./styles/app.css";
 
-// start the Stimulus application
+// Start the Stimulus application
 import "./bootstrap";
+
+// Start the Font Awesome icon to svg replacements
+import "./fontawesome";
