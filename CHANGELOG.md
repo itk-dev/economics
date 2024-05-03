@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   1208: Changed default sorting of recorded invoices
 * [PR-106](https://github.com/itk-dev/economics/pull/106)
   1202: Handled worklog deletions
+* [PR-115](https://github.com/itk-dev/economics/pull/115)
+  1270: Planning hoursRemaining source change
 
 ## [2.1.2] - 2024-04-16
 
