@@ -14,8 +14,6 @@ use App\Model\SprintReport\SprintReportVersions;
 
 interface DataProviderServiceInterface
 {
-    public function getPlanningDataSprints(): PlanningData;
-
     public function getPlanningDataWeeks(): PlanningData;
 
     /**

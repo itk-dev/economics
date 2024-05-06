@@ -61,28 +61,30 @@ class WorklogRepository extends ServiceEntityRepository
             );
         }
 
-        if (isset($filterData->worker)) {
+        if (!empty($filterData->worker)) {
             $qb->andWhere('worklog.worker LIKE :worker')->setParameter('worker', '%'.$filterData->worker.'%');
         }
 
-        if (isset($filterData->periodFrom)) {
+        if (!empty($filterData->periodFrom)) {
             $qb->andWhere('worklog.started >= :periodFrom')->setParameter('periodFrom', $filterData->periodFrom);
         }
 
-        if (isset($filterData->periodTo)) {
-            $qb->andWhere('worklog.started <= :periodTo')->setParameter('periodTo', $filterData->periodTo);
+        if (!empty($filterData->periodTo)) {
+            // Period to must include the selected day.
+            $periodTo = $filterData->periodTo->modify('tomorrow');
+            $qb->andWhere('worklog.started < :periodTo')->setParameter('periodTo', $periodTo);
         }
 
-        if (isset($filterData->version) || isset($filterData->epic)) {
+        if (!empty($filterData->version) || !empty($filterData->epic)) {
             $qb->leftJoin('App\Entity\Issue', 'issue', 'WITH', 'issue.id = worklog.issue');
         }
 
-        if (isset($filterData->version)) {
+        if (!empty($filterData->version)) {
             $qb->andWhere(':version MEMBER OF issue.versions')
                 ->setParameter('version', $filterData->version);
         }
 
-        if (isset($filterData->epic)) {
+        if (!empty($filterData->epic)) {
             $qb->andWhere(':epic = issue.epicKey')
                 ->setParameter('epic', $filterData->epic);
         }

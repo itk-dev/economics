@@ -13,7 +13,7 @@ class ProjectBillingRecordType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('confirmed', ChoiceType::class, [
+            ->add('confirmation', ChoiceType::class, [
                 'required' => true,
                 'label' => 'project_billing.record_project_billing',
                 'label_attr' => ['class' => 'label'],

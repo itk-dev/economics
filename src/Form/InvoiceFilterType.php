@@ -14,6 +14,15 @@ class InvoiceFilterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('query', SearchType::class, [
+                'required' => false,
+                'label' => 'invoices.query_label',
+                'label_attr' => ['class' => 'label'],
+                'attr' => [
+                    'class' => 'form-element',
+                    'placeholder' => 'invoices.query_placeholder',
+                ],
+            ])
             ->add('recorded', ChoiceType::class, [
                 'required' => true,
                 'label' => 'invoices.recorded',
@@ -38,6 +47,17 @@ class InvoiceFilterType extends AbstractType
                     'invoices.without_project_billing' => false,
                     'invoices.with_project_billing' => null,
                     'invoices.only_project_billing' => true,
+                ],
+                'attr' => ['class' => 'form-element'],
+            ])
+            ->add('noCost', ChoiceType::class, [
+                'required' => true,
+                'label' => 'invoices.list_no_cost',
+                'label_attr' => ['class' => 'label'],
+                'choices' => [
+                    '' => null,
+                    'invoices.list_no_cost_true' => true,
+                    'invoices.list_no_cost_false' => false,
                 ],
                 'attr' => ['class' => 'form-element'],
             ])

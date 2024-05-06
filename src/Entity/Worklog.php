@@ -6,11 +6,15 @@ use App\Entity\Trait\DataProviderTrait;
 use App\Repository\WorklogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 
 #[ORM\Entity(repositoryClass: WorklogRepository::class)]
+#[Gedmo\SoftDeleteable()]
 class Worklog extends AbstractBaseEntity
 {
     use DataProviderTrait;
+    use SoftDeleteableEntity;
 
     #[ORM\Column]
     private ?int $worklogId = null;

@@ -8,6 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2024-05-06
+
+* [PR-114](https://github.com/itk-dev/economics/pull/114)
+  1258: Clean up planning view ui and add scroll to active sprint.
+* [PR-112](https://github.com/itk-dev/economics/pull/112)
+  1280: Simplified planning form. Added default value.
+* [PR-113](https://github.com/itk-dev/economics/pull/113)
+  Worklog period filter
+* [PR-110](https://github.com/itk-dev/economics/pull/110)
+  1209: No cost invoices
+* [PR-111](https://github.com/itk-dev/economics/pull/111)
+  1208: Restored exported data column
+* [PR-107](https://github.com/itk-dev/economics/pull/107)
+  1213: Fixed handling of filter value
+* [PR-109](https://github.com/itk-dev/economics/pull/109)
+  1207: Added invoice query
+* [PR-108](https://github.com/itk-dev/economics/pull/108)
+  1208: Changed default sorting of recorded invoices
+* [PR-106](https://github.com/itk-dev/economics/pull/106)
+  1202: Handled worklog deletions
+* [PR-115](https://github.com/itk-dev/economics/pull/115)
+  1270: Planning hoursRemaining source change
+
 ## [2.1.2] - 2024-04-16
 
 * [PR-104](https://github.com/itk-dev/economics/pull/104)
@@ -219,7 +242,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.1.2...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.2.0...HEAD
+[2.2.0]: https://github.com/itk-dev/economics/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/itk-dev/economics/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/itk-dev/economics/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/itk-dev/economics/compare/2.0.0...2.1.0
