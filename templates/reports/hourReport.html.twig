@@ -1,0 +1,73 @@
+<div id="scrollContainer" class="overflow-x-auto w-full" {{ stimulus_controller('show-hide') }}
+     data-storage-key="hidePlanningAssignees">
+    <table
+        class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
+        <thead>
+        <tr>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'planning.projects'|trans }}</th>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                Estimeret
+            </th>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                Logget
+            </th>
+
+        </tr>
+        </thead>
+
+        {% for projectTag in data.projectTags %}
+
+        <tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ projectTag.tag }}" {{ stimulus_target('show-hide', 'entry') }}>
+
+            <tr>
+                <th class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                    <div class="flex flex-row">
+                        <span class="flex-grow mr-3">
+                            {{ projectTag.tag }}
+                        </span>
+                        <button class="hide-btn mr-3 w-4"
+                                type="button" {{ stimulus_action('show-hide', 'toggleEntry') }}
+                                data-toggle-id="{{ projectTag.tag }}" data-toggle-name="{{ projectTag.tag }}"
+                                data-toggle-target="button">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </button>
+                        <button class="expand-btn mr-3 w-4"
+                                type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
+                                data-toggle-target="button">
+                            <i class="fa-solid fa-maximize"></i>
+                            <i class="fa-solid fa-minimize hidden"></i>
+                        </button>
+                    </div>
+                </th>
+                <td class="text-center px-3 border border-slate-600">
+                    {{ projectTag.totalEstimated }}
+                </td>
+                <td class="text-center px-3 border border-slate-600">
+                    {{ projectTag.totalSpent }}
+                </td>
+            </tr>
+            {% for projectTicket in projectTag.projectTickets %}
+                <tr {{ stimulus_target('toggle-parent-child', 'parent') }}>
+                    <td class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                        <div class="flex flex-row">
+                            <span class="flex-grow mx-3 py-1">
+                                {{ projectTicket.headline }}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">{{ projectTicket.totalEstimated }}</td>
+                    <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">{{ projectTicket.totalSpent }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+        {% endfor %}
+        <tbody>
+        <tr>
+            <th class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">Total</th>
+            <td class="text-center px-3 border border-slate-600">{{ data.projectTotalEstimated }}</td>
+            <td class="text-center px-3 border border-slate-600">{{ data.projectTotalSpent }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
