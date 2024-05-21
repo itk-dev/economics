@@ -1,5 +1,45 @@
 # Economics
 
+---
+
+## Import clients from Jira
+
+```shell
+# Apply patch to only sync clients (and not projects)
+git fetch
+git diff origin/develop origin/feature/1486-client-sync src | git apply
+
+# Create jira data provider
+docker compose exec phpfpm bin/console app:data-provider:create
+
+ Name:
+ > jira
+
+ URL:
+ > https://jira.itkdev.dk
+
+ Secret:
+ > 👻
+
+ Implementation class:
+ > App\Service\JiraApiService
+
+# Check and update the jira provider
+docker compose exec phpfpm bin/console app:data-provider:list
+# Disable all providers
+docker compose exec phpfpm bin/console dbal:run-sql "UPDATE data_provider SET enabled = 0"
+# Enable the jira provider and let it sync clients
+docker compose exec phpfpm bin/console dbal:run-sql "UPDATE data_provider SET enabled = 1, enable_client_sync = 1 WHERE name = 'jira'"
+
+# Sync the clients
+docker compose exec phpfpm bin/console app:sync-projects
+
+# Disable jira provider and enable all others
+docker compose exec phpfpm bin/console dbal:run-sql "UPDATE data_provider SET enabled = IF(name = 'jira', 0, 1)"
+docker compose exec phpfpm bin/console app:data-provider:list
+```
+---
+
 Integration with project/issue tracker to ease management. The worklogs
 and projects are synced from a project tracker (e.g. Jira).
 

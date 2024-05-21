@@ -60,37 +60,7 @@ class DataSynchronizationService
         // Get all projects from ApiService.
         $allProjectData = $service->getProjectDataCollection();
         foreach ($allProjectData->projectData as $index => $projectDatum) {
-            $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
-
-            if (!$project) {
-                $project = new Project();
-                $project->setDataProvider($dataProvider);
-                $this->entityManager->persist($project);
-            }
-
-            $project->setName($projectDatum->name);
-            $project->setProjectTrackerId($projectDatum->projectTrackerId);
-            $project->setProjectTrackerKey($projectDatum->projectTrackerKey);
-            $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
-
-            foreach ($projectDatum->versions as $versionData) {
-                /** @var SprintReportVersion $versionDatum */
-                foreach ($versionData as $versionDatum) {
-                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionDatum->id, 'dataProvider' => $dataProvider]);
-
-                    if (!$version) {
-                        $version = new Version();
-                        $version->setDataProvider($dataProvider);
-                        $this->entityManager->persist($version);
-                    }
-
-                    $version->setName($versionDatum->name);
-                    $version->setProjectTrackerId($versionDatum->id);
-                    $version->setProject($project);
-                }
-            }
-
             // Only synchronize clients if this is enabled.
             if (null != $dataProvider && $dataProvider->isEnableClientSync()) {
                 $projectClientData = $service->getClientDataForProject($projectDatum->projectTrackerId);
@@ -112,10 +82,6 @@ class DataSynchronizationService
                     $client->setEan($clientData->ean);
                     $client->setStandardPrice($clientData->standardPrice);
                     $client->setCustomerKey($clientData->customerKey);
-
-                    if (!$client->getProjects()->contains($client)) {
-                        $client->addProject($project);
-                    }
                 }
             }
 
