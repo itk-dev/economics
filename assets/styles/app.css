@@ -371,7 +371,7 @@
     */
 
     .navigation-item {
-        @apply flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 hover:dark:bg-gray-500;
+        @apply flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 hover:dark:bg-gray-500 cursor-pointer;
     }
 
     .navigation-item.current {
@@ -383,7 +383,7 @@
     }
 
     .navigation-item-submenu.shown {
-        @apply flex flex-col visible pt-1 gap-y-1 px-10;
+        @apply flex flex-col visible pt-1 gap-y-1 pl-5;
     }
 
     .collapsible:has(+ .navigation-item-submenu):after {
