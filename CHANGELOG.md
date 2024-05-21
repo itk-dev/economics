@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-118](https://github.com/itk-dev/economics/pull/118)
+  1485: Made product quantity floatable
+
 ## [2.2.0] - 2024-05-06
 
 * [PR-114](https://github.com/itk-dev/economics/pull/114)
