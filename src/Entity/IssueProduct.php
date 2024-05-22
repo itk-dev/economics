@@ -18,7 +18,7 @@ class IssueProduct extends AbstractBaseEntity
     private ?Product $product = null;
 
     #[ORM\Column]
-    private int $quantity = 1;
+    private float $quantity = 1.0;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
@@ -47,12 +47,12 @@ class IssueProduct extends AbstractBaseEntity
         return $this;
     }
 
-    public function getQuantity(): ?int
+    public function getQuantity(): ?float
     {
         return $this->quantity;
     }
 
-    public function setQuantity(int $quantity): static
+    public function setQuantity(float $quantity): static
     {
         $this->quantity = $quantity;
 

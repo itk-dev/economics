@@ -21,6 +21,10 @@ class IssueProductType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $quantityMin = $options['quantity_min'] ?? 0.1;
+        $quantityStep = $options['quantity_step'] ?? $quantityMin;
+        $quantityScale = (int) ceil(-log10($quantityStep));
+
         $builder
             ->add('product', EntityType::class, [
                 'placeholder' => new TranslatableMessage('issue.placeholder_select_product'),
@@ -40,8 +44,10 @@ class IssueProductType extends AbstractType
             ])
             ->add('quantity', NumberType::class, [
                 'html5' => true,
+                'scale' => $quantityScale,
                 'attr' => [
-                    'min' => 1,
+                    'min' => $quantityMin,
+                    'step' => $quantityStep,
                     'class' => 'number text-right',
                     'size' => 4,
                 ],
