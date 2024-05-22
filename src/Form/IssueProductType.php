@@ -28,14 +28,16 @@ class IssueProductType extends AbstractType
         $builder
             ->add('product', EntityType::class, [
                 'placeholder' => new TranslatableMessage('issue.placeholder_select_product'),
+                // Label is provided by table column header (and placeholder)
+                'label' => false,
                 'class' => Product::class,
-                'choice_label' => 'name',
                 'query_builder' => function (EntityRepository $er) use ($options): QueryBuilder {
                     return $er->createQueryBuilder('p')
                         ->andWhere('p.project = :project')
                         ->setParameter('project', $options['project'])
                         ->orderBy('p.name', Criteria::ASC);
                 },
+                'choice_label' => 'name',
                 'row_attr' => ['class' => 'form-row form-choices'],
                 'attr' => [
                     'class' => 'form-element',
@@ -43,22 +45,32 @@ class IssueProductType extends AbstractType
                 ],
             ])
             ->add('quantity', NumberType::class, [
+                // Label is provided by table column header
+                'label' => false,
                 'html5' => true,
                 'scale' => $quantityScale,
+                'row_attr' => ['class' => 'form-row'],
                 'attr' => [
                     'min' => $quantityMin,
                     'step' => $quantityStep,
-                    'class' => 'number text-right',
+                    'class' => 'form-element number text-right',
                     'size' => 4,
                 ],
             ])
             ->add('description', TextareaType::class, [
+                // Label is provided by table column header
+                'label' => false,
                 'required' => false,
+                'row_attr' => ['class' => 'form-row'],
+                'attr' => [
+                    'class' => 'form-element',
+                ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => $builder->getData()?->getId()
                     ? new TranslatableMessage('issue.product.action_update')
                     : new TranslatableMessage('issue.product.action_add'),
+                'row_attr' => ['class' => 'form-row'],
                 'attr' => [
                     'class' => 'button',
                 ],
