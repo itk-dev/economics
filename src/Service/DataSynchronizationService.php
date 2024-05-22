@@ -21,8 +21,6 @@ use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -293,13 +291,19 @@ class DataSynchronizationService
         // * invoiced
         //
         // as candidates for deletion.
-        /** @var Collection<int, Worklog> $worklogsToDelete */
-        $worklogsToDelete = new ArrayCollection(
+        //
+        // Due to flushing below, we store only this worklogs IDs
+        // (if we load worklog entities, they will become detached when flushing).
+        /** @var array<int> $worklogsToDeleteIds */
+        $worklogsToDeleteIds = array_map(
+            static fn (Worklog $worklog) => $worklog->getId(),
             array_filter(
-                $this->entityManager->getRepository(Worklog::class)->findBy(['project' => $project]),
+                $this->worklogRepository->findBy(['project' => $project]),
                 static fn (Worklog $worklog): bool => !$worklog->isBilled() || null === $worklog->getInvoiceEntry()
             )
         );
+        // Index by ID
+        $worklogsToDeleteIds = array_combine($worklogsToDeleteIds, $worklogsToDeleteIds);
 
         $worklogData = $service->getWorklogDataCollection($projectTrackerId);
         $worklogsAdded = 0;
@@ -340,7 +344,10 @@ class DataSynchronizationService
 
             $project->addWorklog($worklog);
             // Keep the worklog.
-            $worklogsToDelete->removeElement($worklog);
+            $worklogId = $worklog->getId();
+            if (null !== $worklogId) {
+                unset($worklogsToDeleteIds[$worklogId]);
+            }
 
             if (null !== $progressCallback) {
                 $progressCallback($worklogsAdded, count($worklogData->worklogData));
@@ -356,6 +363,7 @@ class DataSynchronizationService
         }
 
         // Remove leftover worklogs from project and remove the worklogs.
+        $worklogsToDelete = $this->worklogRepository->findBy(['id' => $worklogsToDeleteIds]);
         foreach ($worklogsToDelete as $worklog) {
             $project->removeWorklog($worklog);
             $this->entityManager->remove($worklog);
