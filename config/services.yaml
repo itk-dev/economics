@@ -53,6 +53,4 @@ services:
         arguments:
             $options:
                 issue_product_type_options:
-                    quantity_min: '%env(float:PRODUCT_QUANTITY_MIN)%'
-                    quantity_step: '%env(float:PRODUCT_QUANTITY_STEP)%'
                     quantity_scale: '%env(int:PRODUCT_QUANTITY_SCALE)%'
