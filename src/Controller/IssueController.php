@@ -24,6 +24,7 @@ class IssueController extends AbstractController
 {
     public function __construct(
         private readonly ViewService $viewService,
+        private readonly array $options,
     ) {
     }
 
@@ -47,6 +48,7 @@ class IssueController extends AbstractController
     #[Route('/{id}', name: 'show', methods: [Request::METHOD_GET])]
     public function show(Project $project, Issue $issue): Response
     {
+        $issueProductTypeOptions = $this->options['issue_product_type_options'] ?? [];
         $product = (new IssueProduct())
             ->setIssue($issue);
         $addProductForm = $project->getProducts()->isEmpty()
@@ -58,7 +60,7 @@ class IssueController extends AbstractController
                     'id' => $issue->getId(),
                 ]),
                 'method' => Request::METHOD_POST,
-            ]);
+            ] + $issueProductTypeOptions);
 
         // Index issue products by id.
         $products = [];
@@ -77,7 +79,7 @@ class IssueController extends AbstractController
                     'product' => $product->getId(),
                 ]),
                 'method' => Request::METHOD_PUT,
-            ])
+            ] + $issueProductTypeOptions)
                 ->createView(),
             $products
         );

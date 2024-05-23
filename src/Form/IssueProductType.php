@@ -21,9 +21,7 @@ class IssueProductType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $quantityMin = $options['quantity_min'] ?? 0.1;
-        $quantityStep = $options['quantity_step'] ?? $quantityMin;
-        $quantityScale = (int) ceil(-log10($quantityStep));
+        $quantityScale = $options['quantity_scale'];
 
         $builder
             ->add('product', EntityType::class, [
@@ -43,11 +41,8 @@ class IssueProductType extends AbstractType
                 ],
             ])
             ->add('quantity', NumberType::class, [
-                'html5' => true,
                 'scale' => $quantityScale,
                 'attr' => [
-                    'min' => $quantityMin,
-                    'step' => $quantityStep,
                     'class' => 'number text-right',
                     'size' => 4,
                 ],
@@ -71,8 +66,10 @@ class IssueProductType extends AbstractType
         $resolver
             ->setDefaults([
                 'data_class' => IssueProduct::class,
+                'quantity_scale' => 2,
             ])
             ->setRequired('project')
-            ->setAllowedTypes('project', Project::class);
+            ->setAllowedTypes('project', Project::class)
+            ->setAllowedTypes('quantity_scale', 'int');
     }
 }
