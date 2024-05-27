@@ -57,6 +57,7 @@ navigation:
     team_report: "Hent teamrapport"
     planning_users: 'Brugere'
     planning_projects: 'Projekter'
+    hour_report: "Hent timerapport"
 
 planning:
     title: "Planlægning"
@@ -542,11 +543,17 @@ reports:
     team-result: 'Viser: %items_per_page% af %items_total% elementer'
     team_project_name: 'Projektnavn'
     team_user: 'Bruger / medarbejder'
-    team_issue_id: 'Issue id'
+    team_issue_id: 'HourReportIssue id'
     team_date: 'Registreringsdato'
     team_time_spent: 'Timeforbrug'
     team_description: 'Beskrivelse'
     team_no_records_found: 'Ingen resultater'
+    hour:
+        title: 'Timerapport'
+        select_option: 'Vælg en mulighed'
+        select_data_provider: 'Vælg datakilde'
+        select_project: 'Vælg projekt'
+        select_milestone: 'Vælg milestone'
 
 view:
     list_title: 'Views'
