@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\DataProvider;
-use App\Model\Reports\ReportsFormData;
+use App\Exception\EconomicsException;
+use App\Exception\UnsupportedDataProviderException;
+use App\Form\HourReportType;
+use App\Model\Reports\HourReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
 use App\Service\ViewService;
@@ -25,14 +28,17 @@ class HourReportController extends AbstractController
     ) {
     }
 
+    /**
+     * @throws EconomicsException
+     * @throws UnsupportedDataProviderException
+     */
     #[Route('/', name: 'app_hour_report')]
     public function index(Request $request): Response
     {
         $reportData = null;
         $mode = 'reports';
-        $reportFormData = new ReportsFormData();
-
-        $form = $this->createForm(ReportsFormData::class, $reportFormData, [
+        $reportFormData = new HourReportFormData();
+        $form = $this->createForm(HourReportType::class, $reportFormData, [
             'action' => $this->generateUrl('app_hour_report', $this->viewService->addView([])),
             'method' => 'GET',
             'attr' => [
@@ -65,7 +71,7 @@ class HourReportController extends AbstractController
                 'class' => 'form-element',
             ],
         ]);
-        $form->add('milestoneId', ChoiceType::class, [
+        $form->add('versionId', ChoiceType::class, [
             'placeholder' => 'reports.hour.select_option',
             'choices' => [],
             'required' => false,
@@ -77,7 +83,7 @@ class HourReportController extends AbstractController
             ],
         ]);
 
-        $requestData = $request->query->all('reports_form_data');
+        $requestData = $request->query->all('hour_report');
 
         if (isset($requestData['sprint_report'])) {
             $requestData = $requestData['sprint_report'];
@@ -126,7 +132,7 @@ class HourReportController extends AbstractController
             }
 
             // Override projectId with element with choices.
-            $form->add('milestoneId', ChoiceType::class, [
+            $form->add('versionId', ChoiceType::class, [
                 'placeholder' => 'sprint_report.select_an_option',
                 'choices' => $milestoneChoices,
                 'required' => false,
@@ -136,7 +142,7 @@ class HourReportController extends AbstractController
                 'attr' => [
                     'class' => 'form-element',
                     'data-sprint-report-target' => 'project',
-                    'data-action' => 'sprint-report#submitFormMilestoneId',
+                    'data-action' => 'sprint-report#submitFormVersionId',
                     'data-choices-target' => 'choices',
                     'onchange' => 'this.form.submit()',
                 ],
@@ -147,7 +153,7 @@ class HourReportController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $projectId = $form->get('projectId')->getData();
-            $milestoneId = $form->has('milestoneId') ? $form->get('milestoneId')->getData() : null;
+            $milestoneId = $form->has('versionId') ? $form->get('versionId')->getData() : null;
             $dataProvider = $form->get('dataProvider')->getData();
 
             if (!empty($milestoneId) && !empty($projectId) && !empty($dataProvider)) {
