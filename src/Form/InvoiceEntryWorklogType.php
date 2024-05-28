@@ -19,10 +19,10 @@ class InvoiceEntryWorklogType extends AbstractType
                 ->add('account', ChoiceType::class, [
                     'required' => true,
                     'attr' => ['class' => 'form-element'],
-                    'label' => 'invoices.invoice_entry_receiver_acccount',
+                    'label' => 'invoices.invoice_entry_receiver_account',
                     'label_attr' => ['class' => 'label'],
                     'row_attr' => ['class' => 'form-row'],
-                    'help' => 'invoices.invoice_entry_receiver_acccount_helptext',
+                    'help' => 'invoices.invoice_entry_receiver_account_helptext',
                     'choices' => $accounts,
                 ]);
         }
