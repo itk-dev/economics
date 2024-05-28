@@ -55,6 +55,12 @@ class Issue extends AbstractBaseEntity
     #[ORM\OrderBy(['createdAt' => Criteria::ASC])]
     private Collection $products;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    public string $tags;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    public float $planHours;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
