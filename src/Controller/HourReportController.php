@@ -9,6 +9,7 @@ use App\Form\HourReportType;
 use App\Model\Reports\HourReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
+use App\Service\HourReportService;
 use App\Service\ViewService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +25,7 @@ class HourReportController extends AbstractController
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly ViewService $viewService,
+        private readonly HourReportService $hourReportService,
         private readonly ?string $defaultDataProvider,
     ) {
     }
@@ -36,8 +38,10 @@ class HourReportController extends AbstractController
     public function index(Request $request): Response
     {
         $reportData = null;
+
         $mode = 'reports';
         $reportFormData = new HourReportFormData();
+
         $form = $this->createForm(HourReportType::class, $reportFormData, [
             'action' => $this->generateUrl('app_hour_report', $this->viewService->addView([])),
             'method' => 'GET',
@@ -56,6 +60,7 @@ class HourReportController extends AbstractController
             'attr' => [
                 'onchange' => 'this.form.submit()',
                 'class' => 'form-element',
+                'data-preselect' => $this->defaultDataProvider ?? '',
             ],
             'help' => 'sprint_report.data_provider_helptext',
             'choices' => $this->dataProviderRepository->findAll(),
@@ -88,14 +93,18 @@ class HourReportController extends AbstractController
         if (isset($requestData['sprint_report'])) {
             $requestData = $requestData['sprint_report'];
         }
-        if (!empty($requestData['dataProvider'])) {
-            $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
+
+        if (!empty($requestData['dataProvider']) || $this->defaultDataProvider) {
+            if (!empty($requestData['dataProvider'])) {
+                $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
+            } else {
+                $dataProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
+            }
 
             if (null != $dataProvider) {
                 $service = $this->dataProviderService->getService($dataProvider);
 
                 $projectCollection = $service->getSprintReportProjects();
-
                 $projectChoices = [];
 
                 foreach ($projectCollection->projects as $project) {
@@ -120,7 +129,10 @@ class HourReportController extends AbstractController
                 ]);
             }
         }
-        if (!empty($requestData['dataProvider']) && !empty($requestData['projectId'])) {
+        if ((!empty($requestData['dataProvider']) || $this->defaultDataProvider) && !empty($requestData['projectId'])) {
+            if (empty($dataProvider)) {
+                throw new EconomicsException('reports.hour.select_data_provider_empty');
+            }
             $service = $this->dataProviderService->getService($dataProvider);
             $projectId = $requestData['projectId'];
 
@@ -153,8 +165,8 @@ class HourReportController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $projectId = $form->get('projectId')->getData();
-            $milestoneId = $form->has('versionId') ? $form->get('versionId')->getData() : null;
-            $dataProvider = $form->get('dataProvider')->getData();
+            $milestoneId = $form->get('versionId')->getData() ?? 0;
+            $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
 
             if (!empty($milestoneId) && !empty($projectId) && !empty($dataProvider)) {
                 $service = $this->dataProviderService->getService($dataProvider);
@@ -164,6 +176,8 @@ class HourReportController extends AbstractController
 
             if (!empty($projectId) && !empty($dataProvider) && 0 === $milestoneId) {
                 $service = $this->dataProviderService->getService($dataProvider);
+                $repData = $this->hourReportService->getHourReport($projectId, $milestoneId);
+                die('<pre>' . print_r($repData, true) . '</pre>');
                 $reportData = $service?->getHourReportData($projectId);
                 $mode = 'hourReport';
             }
