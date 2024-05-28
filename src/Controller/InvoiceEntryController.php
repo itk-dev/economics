@@ -26,7 +26,8 @@ class InvoiceEntryController extends AbstractController
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
         private readonly ViewService $viewService,
-        private readonly ClientHelper $clientHelper
+        private readonly ClientHelper $clientHelper,
+        private readonly array $options,
     ) {
     }
 
@@ -92,6 +93,9 @@ class InvoiceEntryController extends AbstractController
         }
 
         if (InvoiceEntryTypeEnum::WORKLOG == $invoiceEntry->getEntryType()) {
+            if (!empty($this->options['invoice_entry_accounts'])) {
+                $options['invoice_entry_accounts'] = $this->options['invoice_entry_accounts'];
+            }
             $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry, $options);
         } else {
             $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry);

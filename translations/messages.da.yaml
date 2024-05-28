@@ -196,6 +196,7 @@ invoices:
     recorded: "Bogført"
     created_by: "Opretter"
     invoice_entry_receiver_acccount: "Til konto"
+    invoice_entry_receiver_acccount_helptext: "Vælg konto der skal faktureres"
     invoice_entry_material_number: "Materialenummer"
     invoice_entry_product: "Vare"
     invoice_entry_amount: "Antal"

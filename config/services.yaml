@@ -54,3 +54,8 @@ services:
             $options:
                 issue_product_type_options:
                     quantity_scale: '%env(int:PRODUCT_QUANTITY_SCALE)%'
+
+    App\Controller\InvoiceEntryController:
+        arguments:
+            $options:
+                invoice_entry_accounts: '%env(json:INVOICE_ENTRY_ACCOUNTS)%'
