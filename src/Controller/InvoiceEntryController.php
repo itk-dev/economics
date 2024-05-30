@@ -11,6 +11,7 @@ use App\Form\InvoiceEntryWorklogType;
 use App\Repository\InvoiceEntryRepository;
 use App\Service\BillingService;
 use App\Service\ClientHelper;
+use App\Service\InvoiceEntryHelper;
 use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +27,8 @@ class InvoiceEntryController extends AbstractController
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
         private readonly ViewService $viewService,
-        private readonly ClientHelper $clientHelper
+        private readonly ClientHelper $clientHelper,
+        private readonly InvoiceEntryHelper $invoiceEntryHelper,
     ) {
     }
 
@@ -91,10 +93,14 @@ class InvoiceEntryController extends AbstractController
             $options['disabled'] = true;
         }
 
-        if (InvoiceEntryTypeEnum::WORKLOG == $invoiceEntry->getEntryType()) {
+        $accounts = $this->invoiceEntryHelper->getAccounts($invoiceEntry->getAccount());
+        if (!empty($accounts)) {
+            $options['invoice_entry_accounts'] = $accounts;
+        }
+        if (InvoiceEntryTypeEnum::WORKLOG === $invoiceEntry->getEntryType()) {
             $form = $this->createForm(InvoiceEntryWorklogType::class, $invoiceEntry, $options);
         } else {
-            $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry);
+            $form = $this->createForm(InvoiceEntryType::class, $invoiceEntry, $options);
         }
 
         $form->handleRequest($request);
