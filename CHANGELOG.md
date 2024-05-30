@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-121](https://github.com/itk-dev/economics/pull/121)
+  1485: Fixed floating number issues
+* [PR-120](https://github.com/itk-dev/economics/pull/120)
+  1484: Cleaned up worklog cleanup
+* [PR-118](https://github.com/itk-dev/economics/pull/118)
+  1485: Made product quantity floatable
+
+## [2.2.0] - 2024-05-06
+
 * [PR-114](https://github.com/itk-dev/economics/pull/114)
   1258: Clean up planning view ui and add scroll to active sprint.
 * [PR-112](https://github.com/itk-dev/economics/pull/112)
@@ -240,7 +249,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.1.2...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.2.0...HEAD
+[2.2.0]: https://github.com/itk-dev/economics/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/itk-dev/economics/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/itk-dev/economics/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/itk-dev/economics/compare/2.0.0...2.1.0

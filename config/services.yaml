@@ -48,3 +48,9 @@ services:
         arguments:
             $options:
                 standard_price: '%env(float:CLIENT_STANDARD_PRICE)%'
+
+    App\Controller\IssueController:
+        arguments:
+            $options:
+                issue_product_type_options:
+                    quantity_scale: '%env(int:PRODUCT_QUANTITY_SCALE)%'
