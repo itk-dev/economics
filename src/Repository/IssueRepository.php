@@ -110,4 +110,19 @@ class IssueRepository extends ServiceEntityRepository
             '0',
         ];
     }
+
+    public function issueContainsVersion(int $issueId, int $versionId): bool
+    {
+        $qb = $this->createQueryBuilder('issue');
+
+        $qb->select('version.id')
+            ->leftJoin('issue.versions', 'version')
+            ->where('issue.id = :issueId')
+            ->andWhere('version.id = :versionId')
+            ->setParameters(['issueId' => $issueId, 'versionId' => $versionId]);
+
+        // If the query returns any result, that means a versionId match has been found.
+        return (bool) $qb->getQuery()->getOneOrNullResult();
+    }
+
 }

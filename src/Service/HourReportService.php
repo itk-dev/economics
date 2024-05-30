@@ -71,7 +71,7 @@ class HourReportService
         foreach ($projectIssues as $issue) {
             // If version is provided, we only want the issues containing the versionId
             if ($versionId) {
-                $issueHasVersion = $this->checkIssueHasVersionId($issue, $versionId);
+                $issueHasVersion = $this->issueRepository->issueContainsVersion($issue->getId(), $versionId);
 
                 if (!$issueHasVersion) {
                     continue;
@@ -104,19 +104,6 @@ class HourReportService
         }
 
         return $hourReportData;
-    }
-
-    private function checkIssueHasVersionId($issue, int $versionId): bool
-    {
-        $issueVersions = $issue->getVersions();
-        $issueHasVersion = false;
-        foreach ($issueVersions as $issueVersion) {
-            if ($issueVersion->getId() === $versionId) {
-                $issueHasVersion = true;
-            }
-        }
-
-        return $issueHasVersion;
     }
 
     private function processTimesheetsData($timesheetsData): array
