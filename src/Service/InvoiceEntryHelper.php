@@ -14,11 +14,21 @@ class InvoiceEntryHelper
     /**
      * Get all configured accounts.
      *
+     * @param string|null $account
+     *   An account that must exist in the result
+     *
      * @return array<string, string>
      */
-    public function getAccounts(): array
+    public function getAccounts(?string $account): array
     {
-        return $this->options['accounts'] ?? [];
+        $accounts = $this->options['accounts'] ?? [];
+
+        // Make sure that the default account exists.
+        if (isset($account) && !in_array($account, $accounts, true)) {
+            $accounts[$account] = $account;
+        }
+
+        return $accounts;
     }
 
     /**
@@ -27,7 +37,7 @@ class InvoiceEntryHelper
     public function isEditable(InvoiceEntry $entry): bool
     {
         return null === $entry->getInvoice()?->getProjectBilling()
-            || !empty($this->getAccounts());
+            || !empty($this->getAccounts(null));
     }
 
     /**
@@ -35,7 +45,7 @@ class InvoiceEntryHelper
      */
     public function getAccountDisplayName(string $account): string
     {
-        $labels = array_flip($this->getAccounts());
+        $labels = array_flip($this->getAccounts($account));
 
         return $labels[$account] ?? $account;
     }
