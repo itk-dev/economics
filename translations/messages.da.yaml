@@ -548,12 +548,15 @@ reports:
     team_time_spent: 'Timeforbrug'
     team_description: 'Beskrivelse'
     team_no_records_found: 'Ingen resultater'
-    hour:
+    hour_report:
         title: 'Timerapport'
         select_option: 'Vælg en mulighed'
         select_data_provider: 'Vælg datakilde'
         select_project: 'Vælg projekt'
         select_milestone: 'Vælg milestone'
+        estimated_hours: 'Estimeret'
+        logged_hours: 'Logget'
+        total: 'Total'
 
 view:
     list_title: 'Views'
