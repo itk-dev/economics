@@ -8,7 +8,9 @@ use App\Model\Reports\HourReportProjectTag;
 use App\Model\Reports\HourReportProjectTicket;
 use App\Model\Reports\HourReportTimesheet;
 use App\Repository\IssueRepository;
+use App\Repository\ProjectRepository;
 use App\Repository\ProjectVersionBudgetRepository;
+use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -19,24 +21,64 @@ class HourReportService
         private readonly EntityManagerInterface $entityManager,
         private readonly IssueRepository $issueRepository,
         private readonly WorklogRepository $worklogRepository,
+        private readonly ProjectRepository $projectRepository,
+        private readonly VersionRepository $versionRepository,
     ) {
     }
 
     /**
      * @throws EconomicsException
      */
-    public function getHourReport($projectId, $versionId): HourReportData
+    public function getProjects(): array
+    {
+        $projects = $this->projectRepository->findAll();
+        $projectChoices = [];
+        foreach ($projects as $project) {
+            $projectChoices[$project->getName()] = $project->getId();
+        }
+
+        return $projectChoices;
+    }
+
+    /**
+     * @throws EconomicsException
+     */
+    public function getMilestones(string $projectId, bool $allAllOption = false): array
+    {
+        $milestones = $this->versionRepository->findBy(['project' => $projectId]);
+        $milestoneChoices = [];
+        if ($allAllOption) {
+            $milestoneChoices['All milestones'] = '0';
+        }
+        foreach ($milestones as $milestone) {
+            $milestoneChoices[$milestone->getName()] = $milestone->getId();
+        }
+
+        return $milestoneChoices;
+    }
+
+    /**
+     * @throws EconomicsException
+     */
+    public function getHourReport(string $projectId, int $versionId = null): HourReportData
     {
         if (!$projectId) {
             throw new EconomicsException('No project id specified');
         }
         $hourReportData = new HourReportData(0, 0);
-        $projectIssues = $this->issueRepository->findBy(['project_tracker_id' => $projectId]);
+        $projectIssues = $this->issueRepository->findBy(['project' => $projectId]);
 
         foreach ($projectIssues as $issue) {
-            $totalTicketEstimated = (float) $issue->planHours;
-            $timesheetData = $this->worklogRepository->findBy(['issue_id' => $issue->getId()]);
+            // If version is provided, we only want the issues containing the versionId
+            if ($versionId) {
+                $issueHasVersion = $this->checkIssueHasVersionId($issue, $versionId);
 
+                if (!$issueHasVersion) {
+                    continue;
+                }
+            }
+            $totalTicketEstimated = (float) $issue->planHours;
+            $timesheetData = $this->worklogRepository->findBy(['issue' => $issue->getId()]);
             list($timesheets, $totalTicketSpent) = $this->processTimesheetsData($timesheetData);
 
             $projectTicket = new HourReportProjectTicket(
@@ -48,20 +90,33 @@ class HourReportService
 
             $projectTicket->timesheets->add($timesheets);
 
-            if ($hourReportData->projectTags->containsKey($issue->tags)) {
-                $projectTag = $hourReportData->projectTags->get($issue->tags);
+            if ($hourReportData->projectTags->containsKey($issue->getEpicName())) {
+                $projectTag = $hourReportData->projectTags->get($issue->getEpicName());
                 $projectTag->totalEstimated += $totalTicketEstimated;
                 $projectTag->totalSpent += $totalTicketSpent;
             } else {
-                $projectTag = new HourReportProjectTag($totalTicketEstimated, $totalTicketSpent, $issue->tags);
+                $projectTag = new HourReportProjectTag($totalTicketEstimated, $totalTicketSpent, $issue->getEpicName());
             }
             $projectTag->projectTickets->add($projectTicket);
-            $hourReportData->projectTags->set($issue->tags, $projectTag);
+            $hourReportData->projectTags->set($issue->getEpicName(), $projectTag);
             $hourReportData->projectTotalEstimated += $totalTicketEstimated;
             $hourReportData->projectTotalSpent += $totalTicketSpent;
         }
 
         return $hourReportData;
+    }
+
+    private function checkIssueHasVersionId($issue, int $versionId): bool
+    {
+        $issueVersions = $issue->getVersions();
+        $issueHasVersion = false;
+        foreach ($issueVersions as $issueVersion) {
+            if ($issueVersion->getId() === $versionId) {
+                $issueHasVersion = true;
+            }
+        }
+
+        return $issueHasVersion;
     }
 
     private function processTimesheetsData($timesheetsData): array
@@ -70,9 +125,10 @@ class HourReportService
         $totalTicketSpent = 0;
 
         foreach ($timesheetsData as $timesheetDatum) {
-            $timesheet = new HourReportTimesheet($timesheetDatum->id, $timesheetDatum->hours);
+            $hoursSpent = (float) ($timesheetDatum->getTimeSpentSeconds() / 3600);
+            $timesheet = new HourReportTimesheet($timesheetDatum->getId(), $hoursSpent);
             $timesheets[] = $timesheet;
-            $totalTicketSpent += (float) $timesheetDatum->hours;
+            $totalTicketSpent += $hoursSpent;
         }
 
         return [$timesheets, $totalTicketSpent];
