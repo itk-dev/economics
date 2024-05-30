@@ -126,7 +126,6 @@ class HourReportController extends AbstractController
             if (empty($dataProvider)) {
                 throw new EconomicsException('reports.hour.select_data_provider_empty');
             }
-            $service = $this->dataProviderService->getService($dataProvider);
             $projectId = $requestData['projectId'];
 
             $milestoneChoices = $this->hourReportService->getMilestones($projectId, true);
@@ -156,7 +155,6 @@ class HourReportController extends AbstractController
             $milestoneId = $form->get('versionId')->getData() ?? '0';
             $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
 
-            $reportData = $this->hourReportService->getHourReport($projectId, $milestoneId);
             if (!empty($milestoneId) && !empty($projectId) && !empty($dataProvider)) {
                 $reportData = $this->hourReportService->getHourReport($projectId, $milestoneId);
                 $mode = 'hourReport';

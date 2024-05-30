@@ -71,7 +71,7 @@ class HourReportService
         foreach ($projectIssues as $issue) {
             // If version is provided, we only want the issues containing the versionId
             if ($versionId) {
-                $issueHasVersion = $this->issueRepository->issueContainsVersion($issue->getId(), $versionId);
+                $issueHasVersion = $this->issueRepository->issueContainsVersion($issue, $versionId);
 
                 if (!$issueHasVersion) {
                     continue;

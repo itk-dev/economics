@@ -271,20 +271,24 @@ class Issue extends AbstractBaseEntity
 
         return $this;
     }
+
     public function getPlanHours(): ?float
     {
         return $this->planHours;
     }
+
     public function setPlanHours(?float $planHours): self
     {
         $this->planHours = $planHours;
 
         return $this;
     }
+
     public function getHoursRemaining(): ?float
     {
         return $this->planHours;
     }
+
     public function setHoursRemaining(?float $hoursRemaining): self
     {
         $this->hoursRemaining = $hoursRemaining;
