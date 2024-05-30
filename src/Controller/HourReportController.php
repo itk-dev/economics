@@ -102,14 +102,7 @@ class HourReportController extends AbstractController
             }
 
             if (null != $dataProvider) {
-                $service = $this->dataProviderService->getService($dataProvider);
-
-                $projectCollection = $service->getSprintReportProjects();
-                $projectChoices = [];
-
-                foreach ($projectCollection->projects as $project) {
-                    $projectChoices[$project->name] = $project->id;
-                }
+                $projectChoices = $this->hourReportService->getProjects();
 
                 // Override projectId with element with choices.
                 $form->add('projectId', ChoiceType::class, [
@@ -136,12 +129,7 @@ class HourReportController extends AbstractController
             $service = $this->dataProviderService->getService($dataProvider);
             $projectId = $requestData['projectId'];
 
-            $milestoneCollection = $service->getSprintReportVersions($projectId);
-            $milestoneChoices = [];
-            $milestoneChoices['All milestones'] = 0;
-            foreach ($milestoneCollection->versions as $milestone) {
-                $milestoneChoices[$milestone->name] = $milestone->id;
-            }
+            $milestoneChoices = $this->hourReportService->getMilestones($projectId, true);
 
             // Override projectId with element with choices.
             $form->add('versionId', ChoiceType::class, [
@@ -165,20 +153,17 @@ class HourReportController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $projectId = $form->get('projectId')->getData();
-            $milestoneId = $form->get('versionId')->getData() ?? 0;
+            $milestoneId = $form->get('versionId')->getData() ?? '0';
             $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
 
+            $reportData = $this->hourReportService->getHourReport($projectId, $milestoneId);
             if (!empty($milestoneId) && !empty($projectId) && !empty($dataProvider)) {
-                $service = $this->dataProviderService->getService($dataProvider);
-                $reportData = $service?->getHourReportData($projectId, $milestoneId);
+                $reportData = $this->hourReportService->getHourReport($projectId, $milestoneId);
                 $mode = 'hourReport';
             }
 
-            if (!empty($projectId) && !empty($dataProvider) && 0 === $milestoneId) {
-                $service = $this->dataProviderService->getService($dataProvider);
-                $repData = $this->hourReportService->getHourReport($projectId, $milestoneId);
-                die('<pre>' . print_r($repData, true) . '</pre>');
-                $reportData = $service?->getHourReportData($projectId);
+            if (!empty($projectId) && !empty($selectedDataProvider) && '0' === $milestoneId) {
+                $reportData = $this->hourReportService->getHourReport($projectId);
                 $mode = 'hourReport';
             }
         }
