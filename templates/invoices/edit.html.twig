@@ -113,7 +113,7 @@
             } %}
             {% for index, invoice_entry in invoice.invoiceEntries %}
                 <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-                    <td class="table-td">{{ invoice_entry_helper.getAccountDisplayName(invoice_entry.account) }}</td>
+                    <td class="table-td">{{ invoice_entry_helper.getAccountLabel(invoice_entry.account) }}</td>
                     <td class="table-td">{{ invoice_entry.materialNumber.value ?? '' }}</td>
                     <td class="table-td">{{ invoice_entry.product }}</td>
                     <td class="table-td">{{ invoice_entry.amount }}</td>

@@ -32,7 +32,7 @@ class ProjectBillingService
         private readonly ClientHelper $clientHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
-        private readonly string $invoiceDefaultReceiverAccount,
+        private readonly InvoiceEntryHelper $invoiceEntryHelper,
     ) {
     }
 
@@ -198,7 +198,7 @@ class ProjectBillingService
 
             // TODO: MaterialNumberEnum::EXTERNAL_WITH_MOMS or MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS?
             $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
-            $invoice->setDefaultReceiverAccount($this->invoiceDefaultReceiverAccount);
+            $invoice->setDefaultReceiverAccount($this->invoiceEntryHelper->getDefaultAccount());
 
             /** @var Issue $issue */
             foreach ($invoiceArray['issues'] as $issue) {
@@ -251,7 +251,7 @@ class ProjectBillingService
                         ->setAmount($productIssue->getQuantity())
                         ->setTotalPrice($productIssue->getQuantity() * $product->getPriceAsFloat())
                         ->setMaterialNumber($invoice->getDefaultMaterialNumber())
-                        ->setAccount($invoice->getDefaultReceiverAccount())
+                        ->setAccount($this->invoiceEntryHelper->getProductAccount())
                         ->addIssueProduct($productIssue);
                     // We don't add worklogs here, since they're already attached to the main invoice entry
                     // (and only used to detect if an entry has been added to an invoice).
