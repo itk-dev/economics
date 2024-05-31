@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-123](https://github.com/itk-dev/economics/pull/123)
+  1544: Allowed invoicing issues with products and no worklogs
 * [PR-122](https://github.com/itk-dev/economics/pull/122)
   1547: Added invoice entry account selector
 * [PR-121](https://github.com/itk-dev/economics/pull/121)
