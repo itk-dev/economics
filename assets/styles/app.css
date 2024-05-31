@@ -144,6 +144,10 @@
         @apply grid gap-3 mb-6 md:grid-cols-4;
     }
 
+    #hour_report {
+        @apply grid gap-3 mb-6 md:grid-cols-6;
+    }
+
     .form-default {
         @apply grid gap-3 mb-6 md:grid-cols-6;
     }
@@ -152,7 +156,7 @@
         @apply flex flex-col justify-end;
     }
 
-    #sprint_report > div {
+    #sprint_report > div, #hour_report > div {
         @apply flex flex-col;
     }
 
@@ -167,7 +171,13 @@
     .subheading {
         @apply font-medium leading-tight text-2xl mt-5 mb-5;
     }
-
+    .hour-report-submit {
+        @apply mt-6;
+    }
+    .label.required::after {
+        content: '*';
+        @apply text-red-500 ml-1;
+    }
     /*
     ** Alerts
     */

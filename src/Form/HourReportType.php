@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Model\Reports\HourReportFormData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -40,6 +41,18 @@ class HourReportType extends AbstractType
                 ],
                 'row_attr' => ['class' => 'form-row form-choices'],
             ])
+            /*->add('fromDate', DateType::class, [
+                'required' => false,
+                'label' => 'sprint_report.select_version',
+                'label_attr' => ['class' => 'label'],
+                'disabled' => true,
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-sprint-report-target' => 'version',
+                    'data-action' => 'sprint-report#submitForm',
+                ],
+                'row_attr' => ['class' => 'form-row form-choices'],
+            ])*/
         ;
     }
 

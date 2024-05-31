@@ -60,7 +60,7 @@ class HourReportService
     /**
      * @throws EconomicsException
      */
-    public function getHourReport(string $projectId, int $versionId = null): HourReportData
+    public function getHourReport(string $projectId, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, int $versionId = null): HourReportData
     {
         if (!$projectId) {
             throw new EconomicsException('No project id specified');
@@ -71,15 +71,19 @@ class HourReportService
         foreach ($projectIssues as $issue) {
             // If version is provided, we only want the issues containing the versionId
             if ($versionId) {
-                $issueHasVersion = $this->issueRepository->issueContainsVersion($issue, $versionId);
+                $issueHasVersion = $issue->getVersions()->exists(function ($key, $value) use ($versionId) {
+                    return $value->getId() === $versionId;
+                });
 
                 if (!$issueHasVersion) {
                     continue;
                 }
             }
             $totalTicketEstimated = (float) $issue->planHours;
+
             $timesheetData = $this->worklogRepository->findBy(['issue' => $issue->getId()]);
-            list($timesheets, $totalTicketSpent) = $this->processTimesheetsData($timesheetData);
+
+            list($timesheets, $totalTicketSpent) = $this->processTimesheetsData($timesheetData, $fromDate, $toDate);
 
             $projectTicket = new HourReportProjectTicket(
                 $issue->getId(),
@@ -106,18 +110,37 @@ class HourReportService
         return $hourReportData;
     }
 
-    private function processTimesheetsData($timesheetsData): array
+    private function processTimesheetsData($timesheetsData, $fromDate, $toDate): array
     {
         $timesheets = [];
         $totalTicketSpent = 0;
 
         foreach ($timesheetsData as $timesheetDatum) {
+            if ($fromDate && $toDate) {
+                $timesheetDate = $timesheetDatum->getStarted();
+                if ($timesheetDate < $fromDate || $timesheetDate > $toDate) {
+                    continue;
+                }
+            }
+
             $hoursSpent = (float) ($timesheetDatum->getTimeSpentSeconds() / 3600);
             $timesheet = new HourReportTimesheet($timesheetDatum->getId(), $hoursSpent);
             $timesheets[] = $timesheet;
             $totalTicketSpent += $hoursSpent;
         }
-
         return [$timesheets, $totalTicketSpent];
+    }
+
+    public function getFromDate(): string
+    {
+        $fromDate = new \DateTime();
+        $fromDate->modify('first day of this month');
+        return $fromDate->format('Y-m-d');
+    }
+
+    public function getToDate(): string
+    {
+        $fromDate = new \DateTime();
+        return $fromDate->format('Y-m-d');
     }
 }

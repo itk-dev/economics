@@ -13,12 +13,14 @@ use App\Service\HourReportService;
 use App\Service\ViewService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/reports')]
+#[Route('/admin/reports/hour_report')]
 class HourReportController extends AbstractController
 {
     public function __construct(
@@ -33,6 +35,7 @@ class HourReportController extends AbstractController
     /**
      * @throws EconomicsException
      * @throws UnsupportedDataProviderException
+     * @throws \Exception
      */
     #[Route('/', name: 'app_hour_report')]
     public function index(Request $request): Response
@@ -46,7 +49,7 @@ class HourReportController extends AbstractController
             'action' => $this->generateUrl('app_hour_report', $this->viewService->addView([])),
             'method' => 'GET',
             'attr' => [
-                'id' => 'sprint_report',
+                'id' => 'hour_report',
             ],
             // Since this is only a filtering form, csrf is not needed.
             'csrf_protection' => false,
@@ -54,8 +57,8 @@ class HourReportController extends AbstractController
 
         $form->add('dataProvider', EntityType::class, [
             'class' => DataProvider::class,
-            'required' => false,
-            'label' => 'reports.hour.select_data_provider',
+            'required' => true,
+            'label' => 'reports.hour_report.select_data_provider',
             'label_attr' => ['class' => 'label'],
             'attr' => [
                 'onchange' => 'this.form.submit()',
@@ -66,10 +69,10 @@ class HourReportController extends AbstractController
             'choices' => $this->dataProviderRepository->findAll(),
         ]);
         $form->add('projectId', ChoiceType::class, [
-            'placeholder' => 'reports.hour.select_option',
+            'placeholder' => 'reports.hour_report.select_option',
             'choices' => [],
-            'required' => false,
-            'label' => 'reports.hour.select_project',
+            'required' => true,
+            'label' => 'reports.hour_report.select_project',
             'label_attr' => ['class' => 'label'],
             'attr' => [
                 'disabled' => true,
@@ -77,16 +80,18 @@ class HourReportController extends AbstractController
             ],
         ]);
         $form->add('versionId', ChoiceType::class, [
-            'placeholder' => 'reports.hour.select_option',
+            'placeholder' => 'reports.hour_report.select_option',
             'choices' => [],
-            'required' => false,
-            'label' => 'reports.hour.select_milestone',
+            'required' => true,
+            'label' => 'reports.hour_report.select_milestone',
             'label_attr' => ['class' => 'label'],
             'attr' => [
                 'disabled' => true,
                 'class' => 'form-element',
             ],
         ]);
+
+
 
         $requestData = $request->query->all('hour_report');
 
@@ -108,15 +113,12 @@ class HourReportController extends AbstractController
                 $form->add('projectId', ChoiceType::class, [
                     'placeholder' => 'sprint_report.select_an_option',
                     'choices' => $projectChoices,
-                    'required' => false,
+                    'required' => true,
                     'label' => 'sprint_report.select_project',
                     'label_attr' => ['class' => 'label'],
                     'row_attr' => ['class' => 'form-choices'],
                     'attr' => [
                         'class' => 'form-element',
-                        'data-sprint-report-target' => 'project',
-                        'data-action' => 'sprint-report#submitFormProjectId',
-                        'data-choices-target' => 'choices',
                         'onchange' => 'this.form.submit()',
                     ],
                 ]);
@@ -124,7 +126,7 @@ class HourReportController extends AbstractController
         }
         if ((!empty($requestData['dataProvider']) || $this->defaultDataProvider) && !empty($requestData['projectId'])) {
             if (empty($dataProvider)) {
-                throw new EconomicsException('reports.hour.select_data_provider_empty');
+                throw new EconomicsException('reports.hour_report.select_data_provider_empty');
             }
             $projectId = $requestData['projectId'];
 
@@ -132,18 +134,47 @@ class HourReportController extends AbstractController
 
             // Override projectId with element with choices.
             $form->add('versionId', ChoiceType::class, [
-                'placeholder' => 'sprint_report.select_an_option',
+                'placeholder' => 'reports.hour_report.select_an_option',
                 'choices' => $milestoneChoices,
-                'required' => false,
-                'label' => 'sprint_report.select_project',
+                'required' => true,
+                'label' => 'reports.hour_report.select_milestone',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-choices'],
                 'attr' => [
                     'class' => 'form-element',
-                    'data-sprint-report-target' => 'project',
-                    'data-action' => 'sprint-report#submitFormVersionId',
-                    'data-choices-target' => 'choices',
-                    'onchange' => 'this.form.submit()',
+                ],
+            ]);
+            $form->add('fromDate', DateType::class, [
+                'widget' => 'single_text',
+                'input' => 'datetime',
+                'required' => false,
+                'label' => 'reports.hour_report.select_fromdate',
+                'label_attr' => ['class' => 'label'],
+                'empty_data' => '',
+                'by_reference' => true,
+                'attr' => [
+                    'class' => 'form-element',
+                    'data-preselect-date' => $this->hourReportService->getFromDate(),
+                ],
+            ]);
+            $form->add('toDate', DateType::class, [
+                'widget' => 'single_text',
+                'input' => 'datetime',
+                'required' => false,
+                'label' => 'reports.hour_report.select_todate',
+                'label_attr' => ['class' => 'label'],
+                'empty_data' => '',
+                'by_reference' => true,
+                'attr' => [
+                    'class' => 'form-element disabled',
+                    'data-preselect-date' => $this->hourReportService->getToDate(),
+                ],
+            ]);
+            $form->add('submit', ButtonType::class, [
+                'block_name' => 'Submit',
+                'attr' => [
+                    'onclick' => 'this.form.submit()',
+                    'class' => 'hour-report-submit button',
                 ],
             ]);
         }
@@ -152,16 +183,18 @@ class HourReportController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $projectId = $form->get('projectId')->getData();
-            $milestoneId = $form->get('versionId')->getData() ?? '0';
-            $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
+            $milestoneId = $form->get('versionId')->getData();
+            $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider ?? null;
+            $fromDate = $form->has('fromDate') ? $form->get('fromDate')->getData() : new \DateTime($this->hourReportService->getFromDate());
+            $toDate = $form->has('toDate') ? $form->get('toDate')->getData() : new \DateTime($this->hourReportService->getToDate());
 
             if (!empty($milestoneId) && !empty($projectId) && !empty($dataProvider)) {
-                $reportData = $this->hourReportService->getHourReport($projectId, $milestoneId);
+                $reportData = $this->hourReportService->getHourReport($projectId, $fromDate, $toDate, $milestoneId);
                 $mode = 'hourReport';
             }
 
             if (!empty($projectId) && !empty($selectedDataProvider) && '0' === $milestoneId) {
-                $reportData = $this->hourReportService->getHourReport($projectId);
+                $reportData = $this->hourReportService->getHourReport($projectId, $fromDate, $toDate);
                 $mode = 'hourReport';
             }
         }
@@ -169,7 +202,6 @@ class HourReportController extends AbstractController
         return $this->render('reports/reports.html.twig', $this->viewService->addView([
             'controller_name' => 'HourReportController',
             'form' => $form,
-            'error' => $error ?? null,
             'data' => $reportData,
             'mode' => $mode,
         ]));

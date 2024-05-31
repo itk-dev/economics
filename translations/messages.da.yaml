@@ -557,6 +557,9 @@ reports:
         estimated_hours: 'Estimeret'
         logged_hours: 'Logget'
         total: 'Total'
+        select_fromdate: 'Fra dato'
+        select_todate: 'Til dato'
+        select_an_option: 'Vælg en mulighed'
 
 view:
     list_title: 'Views'

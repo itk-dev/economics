@@ -9,4 +9,6 @@ class HourReportFormData
     public DataProvider $dataProvider;
     public string $projectId;
     public string $versionId;
+    public \DateTimeInterface $fromDate;
+    public \DateTimeInterface $toDate;
 }
