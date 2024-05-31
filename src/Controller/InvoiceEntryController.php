@@ -93,7 +93,7 @@ class InvoiceEntryController extends AbstractController
             $options['disabled'] = true;
         }
 
-        $accounts = $this->invoiceEntryHelper->getAccounts($invoiceEntry->getAccount());
+        $accounts = $this->invoiceEntryHelper->getAccountOptions($invoiceEntry->getAccount());
         if (!empty($accounts)) {
             $options['invoice_entry_accounts'] = $accounts;
         }
