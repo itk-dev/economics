@@ -40,20 +40,7 @@ class HourReportType extends AbstractType
                     'data-action' => 'sprint-report#submitForm',
                 ],
                 'row_attr' => ['class' => 'form-row form-choices'],
-            ])
-            /*->add('fromDate', DateType::class, [
-                'required' => false,
-                'label' => 'sprint_report.select_version',
-                'label_attr' => ['class' => 'label'],
-                'disabled' => true,
-                'attr' => [
-                    'class' => 'form-element',
-                    'data-sprint-report-target' => 'version',
-                    'data-action' => 'sprint-report#submitForm',
-                ],
-                'row_attr' => ['class' => 'form-row form-choices'],
-            ])*/
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
