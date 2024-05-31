@@ -8,9 +8,10 @@ class HourReportProjectTicket
 {
     public readonly string $id;
     public readonly string $headline;
-    public string $totalEstimated;
-    public string $totalSpent;
+    public float $totalEstimated;
+    public float $totalSpent;
     public ArrayCollection $timesheets;
+    public ArrayCollection $projectTickets;
 
     public function __construct($id, $headline, $totalEstimated, $totalSpent)
     {
@@ -19,5 +20,6 @@ class HourReportProjectTicket
         $this->totalEstimated = $totalEstimated;
         $this->totalSpent = $totalSpent;
         $this->timesheets = new ArrayCollection();
+        $this->projectTickets = new ArrayCollection();
     }
 }

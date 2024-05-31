@@ -51,7 +51,8 @@ class HourReportService
             $milestoneChoices['All milestones'] = '0';
         }
         foreach ($milestones as $milestone) {
-            $milestoneChoices[$milestone->getName()] = $milestone->getId();
+            $milestoneName = $milestone->getName() ?? '';
+            $milestoneChoices[$milestoneName] = $milestone->getId();
         }
 
         return $milestoneChoices;
@@ -94,15 +95,23 @@ class HourReportService
 
             $projectTicket->timesheets->add($timesheets);
 
-            if ($hourReportData->projectTags->containsKey($issue->getEpicName())) {
-                $projectTag = $hourReportData->projectTags->get($issue->getEpicName());
-                $projectTag->totalEstimated += $totalTicketEstimated;
-                $projectTag->totalSpent += $totalTicketSpent;
+            $issueEpicName = $issue->getEpicName() ?? '';
+
+            if ($hourReportData->projectTags->containsKey($issueEpicName)) {
+                $projectTag = $hourReportData->projectTags->get($issueEpicName);
+                if ($projectTag) {
+                    $projectTag->totalEstimated += $totalTicketEstimated;
+                    $projectTag->totalSpent += $totalTicketSpent;
+                }
             } else {
-                $projectTag = new HourReportProjectTag($totalTicketEstimated, $totalTicketSpent, $issue->getEpicName());
+                $projectTag = new HourReportProjectTag($totalTicketEstimated, $totalTicketSpent, $issueEpicName);
+            }
+            if (!$projectTag) {
+                throw new EconomicsException('Project tag not found');
             }
             $projectTag->projectTickets->add($projectTicket);
-            $hourReportData->projectTags->set($issue->getEpicName(), $projectTag);
+
+            $hourReportData->projectTags->set($issueEpicName, $projectTag);
             $hourReportData->projectTotalEstimated += $totalTicketEstimated;
             $hourReportData->projectTotalSpent += $totalTicketSpent;
         }
@@ -128,6 +137,7 @@ class HourReportService
             $timesheets[] = $timesheet;
             $totalTicketSpent += $hoursSpent;
         }
+
         return [$timesheets, $totalTicketSpent];
     }
 
@@ -135,12 +145,14 @@ class HourReportService
     {
         $fromDate = new \DateTime();
         $fromDate->modify('first day of this month');
+
         return $fromDate->format('Y-m-d');
     }
 
     public function getToDate(): string
     {
         $fromDate = new \DateTime();
+
         return $fromDate->format('Y-m-d');
     }
 }

@@ -9,7 +9,7 @@ class HourReportData
     public readonly string $id;
     public float $projectTotalSpent;
     public float $projectTotalEstimated;
-    /** @var ArrayCollection<string, HourReportProjectTicket> */
+    /** @var ArrayCollection<string, HourReportProjectTag> */
     public ArrayCollection $projectTags;
 
     public function __construct(float $projectTotalSpent, float $projectTotalEstimated)
