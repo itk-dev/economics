@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\DataProvider;
 use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Form\HourReportType;
 use App\Model\Reports\HourReportFormData;
 use App\Repository\DataProviderRepository;
@@ -34,7 +33,6 @@ class HourReportController extends AbstractController
 
     /**
      * @throws EconomicsException
-     * @throws UnsupportedDataProviderException
      * @throws \Exception
      */
     #[Route('/', name: 'app_hour_report')]
@@ -90,8 +88,6 @@ class HourReportController extends AbstractController
                 'class' => 'form-element',
             ],
         ]);
-
-
 
         $requestData = $request->query->all('hour_report');
 
