@@ -32,7 +32,7 @@ class ProjectBillingService
         private readonly ClientHelper $clientHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
-        private readonly string $invoiceDefaultReceiverAccount,
+        private readonly InvoiceEntryHelper $invoiceEntryHelper,
     ) {
     }
 
@@ -63,10 +63,20 @@ class ProjectBillingService
 
         /** @var Issue $issue */
         foreach ($issues as $issue) {
-            foreach ($issue->getWorklogs() as $worklog) {
-                if (!$worklog->isBilled() && $worklog->getTimeSpentSeconds() > 0 && null === $worklog->getInvoiceEntry()) {
-                    $filteredIssues[] = $issue;
-                    break;
+            $worklogs = $issue->getWorklogs();
+            if ($worklogs->isEmpty()) {
+                foreach ($issue->getProducts() as $product) {
+                    if (!$product->isBilled() && null === $product->getInvoiceEntry()) {
+                        $filteredIssues[] = $issue;
+                        break;
+                    }
+                }
+            } else {
+                foreach ($worklogs as $worklog) {
+                    if (!$worklog->isBilled() && $worklog->getTimeSpentSeconds() > 0 && null === $worklog->getInvoiceEntry()) {
+                        $filteredIssues[] = $issue;
+                        break;
+                    }
                 }
             }
         }
@@ -127,7 +137,7 @@ class ProjectBillingService
         //   Create invoice
         //     Create an InvoiceEntry in the invoice
         //     Connect worklogs from the database to the invoice entry.
-        $issues = $this->issueRepository->getClosedIssuesFromInterval($project, $periodStart, $periodEnd);
+        $issues = $this->getIssuesNotIncludedInProjectBilling($projectBilling);
 
         // TODO: Replace with Model.
         $invoices = [];
@@ -188,7 +198,7 @@ class ProjectBillingService
 
             // TODO: MaterialNumberEnum::EXTERNAL_WITH_MOMS or MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS?
             $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
-            $invoice->setDefaultReceiverAccount($this->invoiceDefaultReceiverAccount);
+            $invoice->setDefaultReceiverAccount($this->invoiceEntryHelper->getDefaultAccount());
 
             /** @var Issue $issue */
             foreach ($invoiceArray['issues'] as $issue) {
@@ -215,12 +225,16 @@ class ProjectBillingService
                     }
                 }
 
-                if (0 == count($invoiceEntry->getWorklogs())) {
+                // We only want to invoice entries with worklogs or products.
+                if ($invoiceEntry->getWorklogs()->isEmpty()
+                    && $issue->getProducts()->isEmpty()) {
                     continue;
                 }
 
-                $invoice->addInvoiceEntry($invoiceEntry);
-                $this->entityManager->persist($invoiceEntry);
+                if (!$invoiceEntry->getWorklogs()->isEmpty()) {
+                    $invoice->addInvoiceEntry($invoiceEntry);
+                    $this->entityManager->persist($invoiceEntry);
+                }
 
                 // Add invoice entries for each product.
                 foreach ($issue->getProducts() as $productIssue) {
@@ -237,7 +251,9 @@ class ProjectBillingService
                         ->setAmount($productIssue->getQuantity())
                         ->setTotalPrice($productIssue->getQuantity() * $product->getPriceAsFloat())
                         ->setMaterialNumber($invoice->getDefaultMaterialNumber())
-                        ->setAccount($invoice->getDefaultReceiverAccount());
+                        ->setAccount($this->invoiceEntryHelper->getProductAccount()
+                            ?? $this->invoiceEntryHelper->getDefaultAccount())
+                        ->addIssueProduct($productIssue);
                     // We don't add worklogs here, since they're already attached to the main invoice entry
                     // (and only used to detect if an entry has been added to an invoice).
 
@@ -246,7 +262,7 @@ class ProjectBillingService
                 }
             }
 
-            if (0 == count($invoice->getInvoiceEntries())) {
+            if ($invoice->getInvoiceEntries()->isEmpty()) {
                 continue;
             }
 

@@ -18,6 +18,7 @@ use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
 use App\Service\ClientHelper;
+use App\Service\InvoiceEntryHelper;
 use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,6 +38,7 @@ class InvoiceController extends AbstractController
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
         private readonly ViewService $viewService,
+        private readonly InvoiceEntryHelper $invoiceEntryHelper,
     ) {
     }
 
@@ -60,13 +62,14 @@ class InvoiceController extends AbstractController
 
     #[Route('/new', name: 'app_invoices_new', methods: ['GET', 'POST'])]
     #[IsGranted('EDIT')]
-    public function new(Request $request, InvoiceRepository $invoiceRepository, string $invoiceDefaultReceiverAccount): Response
+    public function new(Request $request, InvoiceRepository $invoiceRepository): Response
     {
         $invoice = new Invoice();
         $form = $this->createForm(InvoiceNewType::class, $invoice);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $invoiceDefaultReceiverAccount = $this->invoiceEntryHelper->getDefaultAccount();
             if (!empty($invoiceDefaultReceiverAccount)) {
                 $invoice->setDefaultReceiverAccount($invoiceDefaultReceiverAccount);
             }

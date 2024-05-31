@@ -51,9 +51,13 @@ class InvoiceEntry extends AbstractBaseEntity
     #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
+    #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: IssueProduct::class)]
+    private Collection $issueProducts;
+
     public function __construct()
     {
         $this->worklogs = new ArrayCollection();
+        $this->issueProducts = new ArrayCollection();
     }
 
     public function getInvoice(): ?Invoice
@@ -176,6 +180,36 @@ class InvoiceEntry extends AbstractBaseEntity
             // set the owning side to null (unless already changed)
             if ($worklog->getInvoiceEntry() === $this) {
                 $worklog->setInvoiceEntry(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, IssueProduct>
+     */
+    public function getIssueProducts(): Collection
+    {
+        return $this->issueProducts;
+    }
+
+    public function addIssueProduct(IssueProduct $issueProduct): self
+    {
+        if (!$this->issueProducts->contains($issueProduct)) {
+            $this->issueProducts->add($issueProduct);
+            $issueProduct->setInvoiceEntry($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIssueProduct(IssueProduct $issueProduct): self
+    {
+        if ($this->issueProducts->removeElement($issueProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($issueProduct->getInvoiceEntry() === $this) {
+                $issueProduct->setInvoiceEntry(null);
             }
         }
 

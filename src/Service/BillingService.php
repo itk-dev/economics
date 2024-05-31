@@ -115,6 +115,10 @@ class BillingService
                     $worklog->setIsBilled(true);
                     $worklog->setBilledSeconds($worklog->getTimeSpentSeconds());
                 }
+            } elseif (InvoiceEntryTypeEnum::PRODUCT === $invoiceEntry->getEntryType()) {
+                foreach ($invoiceEntry->getIssueProducts() as $issueProduct) {
+                    $issueProduct->setIsBilled(true);
+                }
             }
         }
 
