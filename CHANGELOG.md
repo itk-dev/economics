@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-126](https://github.com/itk-dev/economics/pull/126)
+  1590: Added worklog product as prefix on product invoice entries
 * [PR-125](https://github.com/itk-dev/economics/pull/125)
   1547: Set account based on invoice entry type
 * [PR-123](https://github.com/itk-dev/economics/pull/123)
