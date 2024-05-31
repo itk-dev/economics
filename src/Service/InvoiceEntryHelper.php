@@ -111,14 +111,6 @@ class InvoiceEntryHelper
             ];
         }
 
-        // Add default values to all accounts.
-        foreach ($accounts as &$account) {
-            $account += [
-                'default' => false,
-                'product' => false,
-            ];
-        }
-
         return $accounts;
     }
 
@@ -159,6 +151,10 @@ class InvoiceEntryHelper
                     $products = array_filter($values, static fn (array $spec) => $spec['product']);
                     if (1 !== count($products)) {
                         throw new InvalidOptionsException(sprintf('Exactly one invoice entry account must be "product"; %s found.', $formatLabels($products)));
+                    }
+
+                    if ($products === $defaults) {
+                        throw new InvalidOptionsException(sprintf('The account %s cannot be both "default" and "product".', array_key_first($defaults)));
                     }
                 }
 

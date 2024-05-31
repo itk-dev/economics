@@ -251,7 +251,8 @@ class ProjectBillingService
                         ->setAmount($productIssue->getQuantity())
                         ->setTotalPrice($productIssue->getQuantity() * $product->getPriceAsFloat())
                         ->setMaterialNumber($invoice->getDefaultMaterialNumber())
-                        ->setAccount($this->invoiceEntryHelper->getProductAccount())
+                        ->setAccount($this->invoiceEntryHelper->getProductAccount()
+                            ?? $this->invoiceEntryHelper->getDefaultAccount())
                         ->addIssueProduct($productIssue);
                     // We don't add worklogs here, since they're already attached to the main invoice entry
                     // (and only used to detect if an entry has been added to an invoice).
