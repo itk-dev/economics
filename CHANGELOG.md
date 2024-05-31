@@ -8,18 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-<<<<<<< feature/1211-hour-report
 * NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when releasing.
 * [PR-117](https://github.com/itk-dev/economics/pull/117)
   1211: Added hour report
-=======
 * [PR-125](https://github.com/itk-dev/economics/pull/125)
   1547: Set account based on invoice entry type
 * [PR-123](https://github.com/itk-dev/economics/pull/123)
   1544: Allowed invoicing issues with products and no worklogs
 * [PR-122](https://github.com/itk-dev/economics/pull/122)
   1547: Added invoice entry account selector
->>>>>>> develop
 * [PR-121](https://github.com/itk-dev/economics/pull/121)
   1485: Fixed floating number issues
 * [PR-120](https://github.com/itk-dev/economics/pull/120)
