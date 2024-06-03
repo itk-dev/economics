@@ -236,6 +236,7 @@ class ProjectBillingService
                     $this->entityManager->persist($invoiceEntry);
                 }
 
+                $invoiceEntryProductName = $invoiceEntry->getProduct();
                 // Add invoice entries for each product.
                 foreach ($issue->getProducts() as $productIssue) {
                     $product = $productIssue->getProduct();
@@ -243,10 +244,14 @@ class ProjectBillingService
                         continue;
                     }
 
+                    $productName = $product->getName() ?? '';
                     $productInvoiceEntry = (new InvoiceEntry())
                         ->setEntryType(InvoiceEntryTypeEnum::PRODUCT)
                         ->setDescription($productIssue->getDescription())
-                        ->setProduct($product->getName())
+                        ->setProduct(null === $invoiceEntryProductName
+                            ? $productName
+                            : sprintf('%s: %s', $invoiceEntryProductName, $productName)
+                        )
                         ->setPrice($product->getPriceAsFloat())
                         ->setAmount($productIssue->getQuantity())
                         ->setTotalPrice($productIssue->getQuantity() * $product->getPriceAsFloat())
