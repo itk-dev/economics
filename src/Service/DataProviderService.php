@@ -7,7 +7,9 @@ use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Interface\DataProviderServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 
 class DataProviderService
 {
@@ -24,6 +26,8 @@ class DataProviderService
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
+        protected readonly int $httpClientRetryDelayMs = 1000,
+        protected readonly int $httpClientMaxRetries = 3,
     ) {
     }
 
@@ -49,8 +53,10 @@ class DataProviderService
                     'auth_basic' => $dataProvider->getSecret(),
                 ]);
 
+                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([429], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
+
                 $service = new JiraApiService(
-                    $client,
+                    $retryableHttpClient,
                     $this->customFieldMappings,
                     $this->defaultBoard,
                     $url,
@@ -67,8 +73,10 @@ class DataProviderService
                     ],
                 ]);
 
+                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([429], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
+
                 $service = new LeantimeApiService(
-                    $client,
+                    $retryableHttpClient,
                     $url,
                     $this->weekGoalLow,
                     $this->weekGoalHigh,

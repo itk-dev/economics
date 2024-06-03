@@ -42,6 +42,8 @@ services:
             $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
             $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
             $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
+            $httpClientRetryDelayMs: '%env(int:APP_HTTP_CLIENT_RETRY_DELAY_MS)%'
+            $httpClientMaxRetries: '%env(int:APP_HTTP_CLIENT_MAX_RETRIES)%'
 
     App\Service\ClientHelper:
         arguments:
