@@ -15,7 +15,7 @@ class Worker
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    private ?float $email = null;
+    private ?string $email = null;
 
     #[ORM\Column(length: 180, unique: true)]
     private ?float $workload = null;
@@ -27,6 +27,18 @@ class Worker
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
     }
 
     public function getWorkload(): ?string

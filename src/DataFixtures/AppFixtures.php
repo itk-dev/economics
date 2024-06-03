@@ -7,6 +7,7 @@ use App\Entity\DataProvider;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Service\JiraApiService;
@@ -37,6 +38,11 @@ class AppFixtures extends Fixture
         $dataProvider2->setSecret('Not so secret');
 
         $dataProviders[] = $dataProvider2;
+
+        $worker = new Worker();
+        $worker->setEmail('test@test');
+        $worker->setWorkload('34.5');
+        $manager->persist($worker);
 
         foreach ($dataProviders as $key => $dataProvider) {
             $manager->persist($dataProvider);
