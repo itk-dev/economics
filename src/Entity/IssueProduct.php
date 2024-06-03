@@ -18,10 +18,17 @@ class IssueProduct extends AbstractBaseEntity
     private ?Product $product = null;
 
     #[ORM\Column]
-    private int $quantity = 1;
+    private ?float $quantity;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
+
+    #[ORM\ManyToOne(inversedBy: 'issueProducts')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?InvoiceEntry $invoiceEntry = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isBilled = null;
 
     public function getIssue(): ?Issue
     {
@@ -47,12 +54,12 @@ class IssueProduct extends AbstractBaseEntity
         return $this;
     }
 
-    public function getQuantity(): ?int
+    public function getQuantity(): ?float
     {
         return $this->quantity;
     }
 
-    public function setQuantity(int $quantity): static
+    public function setQuantity(float $quantity): static
     {
         $this->quantity = $quantity;
 
@@ -72,6 +79,30 @@ class IssueProduct extends AbstractBaseEntity
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getInvoiceEntry(): ?InvoiceEntry
+    {
+        return $this->invoiceEntry;
+    }
+
+    public function setInvoiceEntry(?InvoiceEntry $invoiceEntry): self
+    {
+        $this->invoiceEntry = $invoiceEntry;
+
+        return $this;
+    }
+
+    public function isBilled(): ?bool
+    {
+        return $this->isBilled;
+    }
+
+    public function setIsBilled(bool $isBilled): self
+    {
+        $this->isBilled = $isBilled;
 
         return $this;
     }

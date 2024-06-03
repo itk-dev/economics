@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2024-06-03
+
+* [PR-126](https://github.com/itk-dev/economics/pull/126)
+  1590: Added worklog product as prefix on product invoice entries
+* [PR-125](https://github.com/itk-dev/economics/pull/125)
+  1547: Set account based on invoice entry type
+* [PR-123](https://github.com/itk-dev/economics/pull/123)
+  1544: Allowed invoicing issues with products and no worklogs
+* [PR-122](https://github.com/itk-dev/economics/pull/122)
+  1547: Added invoice entry account selector
+* [PR-121](https://github.com/itk-dev/economics/pull/121)
+  1485: Fixed floating number issues
+* [PR-120](https://github.com/itk-dev/economics/pull/120)
+  1484: Cleaned up worklog cleanup
+* [PR-118](https://github.com/itk-dev/economics/pull/118)
+  1485: Made product quantity floatable
+
 ## [2.2.0] - 2024-05-06
 
 * [PR-114](https://github.com/itk-dev/economics/pull/114)
@@ -242,7 +259,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.2.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.3.0...HEAD
+[2.3.0]: https://github.com/itk-dev/economics/compare/2.2.0...2.3.0
 [2.2.0]: https://github.com/itk-dev/economics/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/itk-dev/economics/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/itk-dev/economics/compare/2.1.0...2.1.1
