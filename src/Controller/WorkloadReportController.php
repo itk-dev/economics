@@ -38,7 +38,7 @@ class WorkloadReportController extends AbstractController
     {
         $reportData = null;
 
-        $mode = 'workload_report';
+        $mode = 'workloadReport';
         $reportFormData = new WorkloadReportFormData();
 
         $form = $this->createForm(WorkloadReportType::class, $reportFormData, [
@@ -79,8 +79,7 @@ class WorkloadReportController extends AbstractController
                 $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
 
                 if ($selectedDataProvider) {
-                    $repData = $this->workloadReportService->getWorkloadReport($selectedDataProvider);
-                    exit('<pre>'.print_r($repData, true).'</pre>');
+                    $reportData = $this->workloadReportService->getWorkloadReport();
                 }
 
             }
