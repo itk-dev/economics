@@ -41,6 +41,7 @@ class HourReportController extends AbstractController
         $reportData = null;
 
         $mode = 'reports';
+        $error = null;
         $reportFormData = new HourReportFormData();
 
         $form = $this->createForm(HourReportType::class, $reportFormData, [
@@ -200,6 +201,7 @@ class HourReportController extends AbstractController
             'form' => $form,
             'data' => $reportData,
             'mode' => $mode,
+            'error' => $error,
         ]));
     }
 }
