@@ -8,10 +8,11 @@
             <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
                 {{ 'reports.workload_report.workload'|trans }}
             </th>
-            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
-                {{ 'reports.workload_report.logged_hours'|trans }}
-            </th>
-
+            {% for weeks in data.yearWeeks %}
+                <th class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap">
+                    {{  "Uge " ~ weeks }}
+                </th>
+            {% endfor %}
         </tr>
         </thead>
 
@@ -42,9 +43,11 @@
                 <td class="text-center px-3 border border-slate-600">
                     {{ worker.workload }}
                 </td>
-                <td class="text-center px-3 border border-slate-600">
-                    {{ worker.hoursLogged }}
-                </td>
+                {% for week in worker.hoursLogged %}
+                    <td class="text-center px-3 border border-slate-600">
+                        {{ week ~ "%" }}
+                    </td>
+                {% endfor %}
             </tr>
             {#
             {% for projectTicket in projectTag.projectTickets %}
