@@ -50,6 +50,7 @@
                         {% include 'components/navigation-item.html.twig' with {title: 'navigation.projects'|trans, role: 'ROLE_ADMIN', route: path('app_project_index', {}|merge(view is defined ? {view: view} : {}))} %}
                         {% include 'components/navigation-item.html.twig' with {title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index', {}|merge(view is defined ? {view: view} : {}))} %}
                         {% include 'components/navigation-item.html.twig' with {title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index', {}|merge(view is defined ? {view: view} : {}))} %}
+                          {% include 'components/navigation-item.html.twig' with {title: 'navigation.worker'|trans, role: 'ROLE_ADMIN', route: path('app_worker_index', {}|merge(view is defined ? {view: view} : {}))} %}
                         {% include 'components/navigation-item.html.twig' with {title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index', {}|merge(view is defined ? {view: view} : {}))} %}
                         {% include 'components/navigation-item.html.twig' with {title: 'navigation.views'|trans, role: 'ROLE_ADMIN', route: path('app_view_list', {}|merge(view is defined ? {view: view} : {}))} %}
                     </ul>
