@@ -38,7 +38,7 @@ class WorkloadReportController extends AbstractController
     {
         $reportData = null;
 
-        $mode = 'workloadReport';
+        $mode = 'workload_report';
         $reportFormData = new WorkloadReportFormData();
 
         $form = $this->createForm(WorkloadReportType::class, $reportFormData, [
