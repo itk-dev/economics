@@ -563,6 +563,9 @@ reports:
         select_an_option: 'Vælg en mulighed'
     workload_report:
         title: 'Workloadrapport'
+        select_data_provider: 'Vælg datakilde'
+        workload: 'Normtid'
+        logged_hours: 'Loggede timer'
 
 view:
     list_title: 'Views'
@@ -713,3 +716,7 @@ issue:
         description: "Beskrivelse"
         total: "I alt"
         list_no_records_found: "Ingen produkter"
+
+worker:
+    title: 'Medarbejdere'
+    index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
