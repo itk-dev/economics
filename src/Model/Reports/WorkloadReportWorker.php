@@ -3,23 +3,22 @@
 namespace App\Model\Reports;
 
 use App\Entity\Worker;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class WorkloadReportWorker extends Worker
 {
-    public float $hoursLogged;
+    /** @var ArrayCollection<int, float> */
+    public arrayCollection $hoursLogged;
+
 
     public function __construct()
     {
+        $this->hoursLogged = new ArrayCollection();
     }
 
-    public function getHoursLogged(): float
+    public function getHoursLogged(): ArrayCollection
     {
         return $this->hoursLogged;
-    }
-
-    public function setHoursLogged(float $hoursLogged): void
-    {
-        $this->hoursLogged = $hoursLogged;
     }
 
 }
