@@ -65,24 +65,30 @@ class WorkloadReportService
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
-                // Add period number to general data for table headers.
+                // Get period specific readable period representation for table headers.
                 $readablePeriod = $getReadablePeriod($period);
                 $workloadReportData->period->add($readablePeriod);
 
-                // Workload is per week, so for a month, it has to be times 4.
-                $periodWorkload = ($viewMode == 'month') ? $worker->getWorkload() * 4 : $worker->getWorkload();
-
-                // Get percentage of logged hours based on worker workload.
-                $loggedPercentage = round(($loggedHours / $periodWorkload) * 100);
+                // Get total logged percentage based on weekly workload.
+                $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $worker->getWorkload(), $viewMode);
 
                 // Add percentage result to worker for current period.
-                $workloadReportWorker->loggedPercentage->set($period, $loggedPercentage);
+                $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
             }
 
             $workloadReportData->workers->add($workloadReportWorker);
         }
 
         return $workloadReportData;
+    }
+
+    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, string $viewMode): float
+    {
+        // Workload is weekly hours, so for expanded views, it has to be multiplied.
+        return match ($viewMode) {
+            'week' => round(($loggedHours / $workloadWeekBase)*100),
+            'month' => round(($loggedHours / ($workloadWeekBase*4))*100)
+        };
     }
 
     public function getViewModes(): array
