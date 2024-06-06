@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when releasing.
 * [PR-117](https://github.com/itk-dev/economics/pull/117)
   1211: Added hour report
-  
+* [PR-124](https://github.com/itk-dev/economics/pull/124)
+  710: Workload report
+
 ## [2.3.0] - 2024-06-03
 
 * [PR-126](https://github.com/itk-dev/economics/pull/126)
@@ -263,8 +265,7 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.3.0...HEAD
-[2.3.0]: https://github.com/itk-dev/economics/compare/2.2.0...2.3.0
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.2.0...HEAD
 [2.2.0]: https://github.com/itk-dev/economics/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/itk-dev/economics/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/itk-dev/economics/compare/2.1.0...2.1.1
