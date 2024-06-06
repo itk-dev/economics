@@ -725,7 +725,7 @@ worker:
     index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
     id: 'Id'
     email: 'Email'
-    workload: 'Normtid'
+    workload: 'Normtid (inkl. middagspause)'
     actions: 'Handlinger'
     action_edit: 'Rediger'
     edit: 'Rediger medarbejder'
