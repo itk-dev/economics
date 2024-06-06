@@ -47,6 +47,11 @@ class WorkloadReportService
         $workloadReportData = new WorkloadReportData($viewMode);
         $workers = $this->workerRepository->findAll();
 
+        foreach ($periods as $period) {
+            // Get period specific readable period representation for table headers.
+            $readablePeriod = $getReadablePeriod($period);
+            $workloadReportData->period->add($readablePeriod);
+        }
         foreach ($workers as $worker) {
             $workloadReportWorker = new WorkloadReportWorker();
             $workloadReportWorker->setEmail($worker->getUserIdentifier());
@@ -65,10 +70,6 @@ class WorkloadReportService
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
-                // Get period specific readable period representation for table headers.
-                $readablePeriod = $getReadablePeriod($period);
-                $workloadReportData->period->add($readablePeriod);
-
                 // Get total logged percentage based on weekly workload.
                 $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $worker->getWorkload(), $viewMode);
 
@@ -86,7 +87,7 @@ class WorkloadReportService
     {
         // Since lunch is paid, subtract this from the actual workload (0.5 * 5)
         $actualWeeklyWorkload = $workloadWeekBase - 2.5;
-        
+
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewMode) {
             'week' => round(($loggedHours / $actualWeeklyWorkload) * 100),
