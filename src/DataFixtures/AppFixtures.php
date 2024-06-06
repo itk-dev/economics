@@ -121,7 +121,7 @@ class AppFixtures extends Fixture
                         $worklog->setProject($project);
                         $worklog->setWorker('test@test');
                         $worklog->setTimeSpentSeconds(60 * 15 * ($k + 1));
-                        $worklog->setStarted(new \DateTime());
+                        $worklog->setStarted(\DateTime::createFromFormat('U', rand(strtotime(date('Y-01-01')), strtotime(date('Y-12-31')))));
                         $worklog->setIssue($issue);
                         $worklog->setDataProvider($dataProvider);
 
