@@ -17,7 +17,7 @@ class Worker
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column(length: 180, unique: true)]
+    #[ORM\Column(length: 180)]
     private ?float $workload = null;
 
     public function __construct()
