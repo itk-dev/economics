@@ -8,8 +8,7 @@ class DateTimeHelper
     ) {
     }
 
-
-    public function getFirstAndLastDateOfWeek(int $weekNumber, ?int $year = null, ?string $format = 'Y-m-d H:i:s'): array
+    public function getFirstAndLastDateOfWeek(int $weekNumber, int $year = null, ?string $format = 'Y-m-d H:i:s'): array
     {
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
@@ -20,17 +19,35 @@ class DateTimeHelper
         $firstDate = $firstDateTime->format($format);
 
         $lastDateTime = (new \DateTime())->setISODate($year, $weekNumber, 7);
-        $lastDateTime->setTime(0, 0, 0);
+        $lastDateTime->setTime(23, 59, 59);
         $lastDate = $lastDateTime->format($format);
 
-        return [$firstDate, $lastDate];
+        return ['first' => $firstDate, 'last' => $lastDate];
     }
+
+    public function getFirstAndLastDateOfMonth(int $monthNumber, int $year = null, ?string $format = 'Y-m-d H:i:s'): array
+    {
+        if (!$year) {
+            $year = (int) (new \DateTime())->format('Y');
+        }
+
+        $firstDateTime = (new \DateTime())->setDate($year, $monthNumber, 1);
+        $firstDateTime->setTime(0, 0, 0);
+        $firstDate = $firstDateTime->format($format);
+
+        $lastDateTime = (new \DateTime())->setDate($year, $monthNumber, 1)->modify('last day of this month');
+        $lastDateTime->setTime(23, 59, 59);
+        $lastDate = $lastDateTime->format($format);
+
+        return ['first' => $firstDate, 'last' => $lastDate];
+    }
+
     /**
      * Returns an array of the weeks for the current year (ISO 8601).
      *
      * @return array
      */
-    public function getWeeksOfYear(?int $year = null): array
+    public function getWeeksOfYear(int $year = null): array
     {
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
@@ -53,5 +70,21 @@ class DateTimeHelper
         }
 
         return $weekArray;
+    }
+
+    public function getMonthsOfYear(): array
+    {
+        $months = [];
+        for ($i = 1; $i <= 12; ++$i) {
+            $monthName = \DateTime::createFromFormat('!m', $i)->format('F');
+            $months[$monthName] = $i;
+        }
+
+        return $months;
+    }
+
+    public function getMonthName(int $monthNumber): string
+    {
+        return \DateTime::createFromFormat('!m', $monthNumber)->format('F');
     }
 }

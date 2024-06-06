@@ -166,7 +166,7 @@ class WorklogRepository extends ServiceEntityRepository
         return $workers;
     }
 
-    public function findWorklogsByWorkerAndStartDateRange($worker, $date_from, $date_to)
+    public function findWorklogsByWorkerAndDateRange($worker, $date_from, $date_to)
     {
         $qb = $this->createQueryBuilder('wor');
 

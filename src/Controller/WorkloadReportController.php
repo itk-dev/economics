@@ -9,10 +9,11 @@ use App\Form\WorkloadReportType;
 use App\Model\Reports\WorkloadReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
-use App\Service\WorkloadReportService;
 use App\Service\ViewService;
+use App\Service\WorkloadReportService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -64,6 +65,18 @@ class WorkloadReportController extends AbstractController
             'choices' => $this->dataProviderRepository->findAll(),
         ]);
 
+        $form->add('viewMode', ChoiceType::class, [
+            'required' => false,
+            'label' => 'reports.workload_report.select_viewmode',
+            'label_attr' => ['class' => 'label'],
+            'placeholder' => false,
+            'attr' => [
+                'onchange' => 'this.form.submit()',
+                'class' => 'form-element',
+            ],
+            'choices' => $this->workloadReportService->getViewModes(),
+        ]);
+
         $form->handleRequest($request);
 
         $requestData = $request->query->all('workload_report');
@@ -77,11 +90,11 @@ class WorkloadReportController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
+                $viewMode = $form->get('viewMode')->getData() ?? 'week';
 
                 if ($selectedDataProvider) {
-                    $reportData = $this->workloadReportService->getWorkloadReport();
+                    $reportData = $this->workloadReportService->getWorkloadReport($viewMode);
                 }
-
             }
         }
 
