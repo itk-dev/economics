@@ -59,6 +59,7 @@ navigation:
     planning_projects: 'Projekter'
     hour_report: "Hent timerapport"
     workload_report: "Hent workloadrapport"
+    worker: "Medarbejdere"
 
 planning:
     title: "Planlægning"
@@ -722,3 +723,11 @@ issue:
 worker:
     title: 'Medarbejdere'
     index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
+    id: 'Id'
+    email: 'Email'
+    workload: 'Normtid'
+    actions: 'Handlinger'
+    action_edit: 'Rediger'
+    edit: 'Rediger medarbejder'
+    action_save: 'Gem'
+    back_to_list: "Tilbage til listen"
