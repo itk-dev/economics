@@ -84,10 +84,13 @@ class WorkloadReportService
 
     private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, string $viewMode): float
     {
+        // Since lunch is paid, subtract this from the actual workload (0.5 * 5)
+        $actualWeeklyWorkload = $workloadWeekBase - 2.5;
+        
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewMode) {
-            'week' => round(($loggedHours / $workloadWeekBase) * 100),
-            'month' => round(($loggedHours / ($workloadWeekBase * 4)) * 100)
+            'week' => round(($loggedHours / $actualWeeklyWorkload) * 100),
+            'month' => round(($loggedHours / ($actualWeeklyWorkload * 4)) * 100)
         };
     }
 
