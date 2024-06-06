@@ -39,10 +39,16 @@ class AppFixtures extends Fixture
 
         $dataProviders[] = $dataProvider2;
 
-        $worker = new Worker();
-        $worker->setEmail('test@test');
-        $worker->setWorkload('34.5');
-        $manager->persist($worker);
+        $workerArray = [];
+
+        for ($i = 0; $i < 10; ++$i) {
+            $worker = new Worker();
+            $worker->setEmail('test'.$i.'@test');
+            $worker->setWorkload(37);
+            $manager->persist($worker);
+            $workerArray[] = 'test'.$i.'@test';
+        }
+
 
         foreach ($dataProviders as $key => $dataProvider) {
             $manager->persist($dataProvider);
@@ -119,7 +125,7 @@ class AppFixtures extends Fixture
                         $worklog->setDescription("Beskrivelse af worklog-$key-$i-$j-$k");
                         $worklog->setIsBilled(false);
                         $worklog->setProject($project);
-                        $worklog->setWorker('test@test');
+                        $worklog->setWorker($workerArray[(string) rand(0, 9)]);
                         $worklog->setTimeSpentSeconds(60 * 15 * ($k + 1));
                         $worklog->setStarted(\DateTime::createFromFormat('U', rand(strtotime(date('Y-01-01')), strtotime(date('Y-12-31')))));
                         $worklog->setIssue($issue);
