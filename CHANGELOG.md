@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-128](https://github.com/itk-dev/economics/pull/128)
+  1595: Added retryable http client decorator for handling rate limiting.
 * [PR-126](https://github.com/itk-dev/economics/pull/126)
   1590: Added worklog product as prefix on product invoice entries
 * [PR-125](https://github.com/itk-dev/economics/pull/125)
