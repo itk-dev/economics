@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-128](https://github.com/itk-dev/economics/pull/128)
   1595: Added retryable http client decorator for handling rate limiting.
+
+## [2.3.0] - 2024-06-03
+
 * [PR-126](https://github.com/itk-dev/economics/pull/126)
   1590: Added worklog product as prefix on product invoice entries
 * [PR-125](https://github.com/itk-dev/economics/pull/125)
@@ -259,7 +262,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.2.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.3.0...HEAD
+[2.3.0]: https://github.com/itk-dev/economics/compare/2.2.0...2.3.0
 [2.2.0]: https://github.com/itk-dev/economics/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/itk-dev/economics/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/itk-dev/economics/compare/2.1.0...2.1.1
