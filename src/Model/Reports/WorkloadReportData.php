@@ -7,14 +7,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 class WorkloadReportData
 {
     public readonly string $id;
-    /** @var ArrayCollection<string, int> */
-    public ArrayCollection $yearWeeks;
+    public readonly string $viewmode;
+    /** @var ArrayCollection<string, string> */
+    public ArrayCollection $period;
     /** @var ArrayCollection<string, WorkloadReportWorker> */
     public ArrayCollection $workers;
 
-    public function __construct()
+    public function __construct(string $viewmode)
     {
-        $this->yearWeeks = new ArrayCollection();
+        $this->viewmode = $viewmode;
+        $this->period = new ArrayCollection();
         $this->workers = new ArrayCollection();
     }
 }

@@ -7,4 +7,5 @@ use App\Entity\DataProvider;
 class WorkloadReportFormData
 {
     public DataProvider $dataProvider;
+    public string $viewMode;
 }

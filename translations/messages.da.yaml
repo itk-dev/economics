@@ -566,6 +566,8 @@ reports:
         select_data_provider: 'Vælg datakilde'
         workload: 'Normtid'
         logged_hours: 'Loggede timer'
+        select_viewmode: 'Vælg visningstype'
+        week: 'Uge'
 
 view:
     list_title: 'Views'
