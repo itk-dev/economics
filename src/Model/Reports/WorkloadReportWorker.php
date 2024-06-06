@@ -10,12 +10,9 @@ class WorkloadReportWorker extends Worker
     /** @var ArrayCollection<int, float> */
     public arrayCollection $loggedPercentage;
 
-
     public function __construct()
     {
         parent::__construct();
         $this->loggedPercentage = new ArrayCollection();
     }
-
-
 }
