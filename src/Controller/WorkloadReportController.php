@@ -42,6 +42,13 @@ class WorkloadReportController extends AbstractController
         $mode = 'workload_report';
         $reportFormData = new WorkloadReportFormData();
 
+        $dataProviders = $this->dataProviderRepository->findAll();
+        $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
+
+        if (null === $defaultProvider && count($dataProviders) > 0) {
+            $defaultProvider = $dataProviders[0];
+        }
+
         $form = $this->createForm(WorkloadReportType::class, $reportFormData, [
             'action' => $this->generateUrl('app_workload_report', $this->viewService->addView([])),
             'method' => 'GET',
@@ -60,9 +67,9 @@ class WorkloadReportController extends AbstractController
             'attr' => [
                 'onchange' => 'this.form.submit()',
                 'class' => 'form-element',
-                'data-preselect' => $this->defaultDataProvider ?? '',
             ],
-            'choices' => $this->dataProviderRepository->findAll(),
+            'data' => $this->dataProviderRepository->find($this->defaultDataProvider),
+            'choices' => $dataProviders,
         ]);
 
         $form->add('viewMode', ChoiceType::class, [
@@ -98,6 +105,13 @@ class WorkloadReportController extends AbstractController
                     } catch (\Exception $e) {
                         $error = $e->getMessage();
                     }
+                }
+            } elseif (null !== $defaultProvider) {
+                $viewMode = $form->get('viewMode')->getData() ?? 'week';
+                try {
+                    $reportData = $this->workloadReportService->getWorkloadReport($viewMode);
+                } catch (\Exception $e) {
+                    $error = $e->getMessage();
                 }
             }
         }
