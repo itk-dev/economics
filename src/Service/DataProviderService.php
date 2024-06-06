@@ -7,9 +7,9 @@ use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Interface\DataProviderServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 
 class DataProviderService
 {
