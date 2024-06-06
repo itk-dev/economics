@@ -8,9 +8,13 @@
             <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
                 {{ 'reports.workload_report.workload'|trans }}
             </th>
-            {% for weeks in data.yearWeeks %}
+            {% for period in data.period %}
                 <th class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap">
-                    {{  "Uge " ~ weeks }}
+                    {% if data.viewmode == 'week' %}
+                        {{ 'reports.workload_report.week'|trans }} {{ period }}
+                    {% else %}
+                        {{ period }}
+                    {% endif %}
                 </th>
             {% endfor %}
         </tr>
@@ -43,7 +47,7 @@
                 <td class="text-center px-3 border border-slate-600">
                     {{ worker.workload }}
                 </td>
-                {% for week in worker.hoursLogged %}
+                {% for week in worker.loggedPercentage %}
                     <td class="text-center px-3 border border-slate-600">
                         {{ week ~ "%" }}
                     </td>
