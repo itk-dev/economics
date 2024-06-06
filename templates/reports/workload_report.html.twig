@@ -4,7 +4,7 @@
         class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
         <thead>
         <tr>
-            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'planning.projects'|trans }}</th>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'reports.workload_report.worker'|trans }}</th>
             <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
                 {{ 'reports.workload_report.workload'|trans }}
             </th>
@@ -36,12 +36,6 @@
                                 data-toggle-target="button">
                             <i class="fa-solid fa-eye-slash"></i>
                         </button>
-                        <button class="expand-btn mr-3 w-4"
-                                type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
-                                data-toggle-target="button">
-                            <i class="fa-solid fa-maximize"></i>
-                            <i class="fa-solid fa-minimize hidden"></i>
-                        </button>
                     </div>
                 </th>
                 <td class="text-center px-3 border border-slate-600">
@@ -53,22 +47,7 @@
                     </td>
                 {% endfor %}
             </tr>
-            {#
-            {% for projectTicket in projectTag.projectTickets %}
-                <tr {{ stimulus_target('toggle-parent-child', 'parent') }}>
-                    <td class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900">
-                        <div class="flex flex-row">
-                            <span class="flex-grow mx-3 py-1">
-                                {{ projectTicket.headline }}
-                            </span>
-                        </div>
-                    </td>
-                    <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">{{ projectTicket.totalEstimated }}</td>
-                    <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">{{ projectTicket.totalSpent }}</td>
-                </tr>
-            {% endfor %}
-            </tbody> #}
-
+            </tbody>
         {% endfor %}
     </table>
 </div>
