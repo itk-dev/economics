@@ -38,7 +38,7 @@ class WorkloadReportController extends AbstractController
     public function index(Request $request): Response
     {
         $reportData = null;
-
+        $error = null;
         $mode = 'workload_report';
         $reportFormData = new WorkloadReportFormData();
 
@@ -93,7 +93,11 @@ class WorkloadReportController extends AbstractController
                 $viewMode = $form->get('viewMode')->getData() ?? 'week';
 
                 if ($selectedDataProvider) {
-                    $reportData = $this->workloadReportService->getWorkloadReport($viewMode);
+                    try {
+                        $reportData = $this->workloadReportService->getWorkloadReport($viewMode);
+                    } catch (\Exception $e) {
+                        $error = $e->getMessage();
+                    }
                 }
             }
         }
@@ -101,7 +105,7 @@ class WorkloadReportController extends AbstractController
         return $this->render('reports/reports.html.twig', $this->viewService->addView([
             'controller_name' => 'WorkloadReportController',
             'form' => $form,
-            'error' => $error ?? null,
+            'error' => $error,
             'data' => $reportData,
             'mode' => $mode,
         ]));

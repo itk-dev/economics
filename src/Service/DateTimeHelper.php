@@ -8,7 +8,7 @@ class DateTimeHelper
     ) {
     }
 
-    public function getFirstAndLastDateOfWeek(int $weekNumber, int $year = null, ?string $format = 'Y-m-d H:i:s'): array
+    public function getFirstAndLastDateOfWeek(int $weekNumber, int $year = null, string $format = 'Y-m-d H:i:s'): array
     {
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
@@ -25,7 +25,7 @@ class DateTimeHelper
         return ['first' => $firstDate, 'last' => $lastDate];
     }
 
-    public function getFirstAndLastDateOfMonth(int $monthNumber, int $year = null, ?string $format = 'Y-m-d H:i:s'): array
+    public function getFirstAndLastDateOfMonth(int $monthNumber, int $year = null, string $format = 'Y-m-d H:i:s'): array
     {
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
@@ -58,7 +58,8 @@ class DateTimeHelper
         $interval = new \DateInterval('P1W');
 
         foreach (new \DatePeriod($start, $interval, $end) as $date) {
-            $yearOfTheWeek = $date->format('o'); // Year of week.
+            // Year of week.
+            $yearOfTheWeek = $date->format('o');
 
             // If the "year of the week" is greater than the current year, skip this iteration.
             if ($yearOfTheWeek > $year) {
@@ -76,7 +77,7 @@ class DateTimeHelper
     {
         $months = [];
         for ($i = 1; $i <= 12; ++$i) {
-            $monthName = \DateTime::createFromFormat('!m', $i)->format('F');
+            $monthName = \DateTime::createFromFormat('!m', (string) $i)->format('F');
             $months[$monthName] = $i;
         }
 
@@ -85,6 +86,6 @@ class DateTimeHelper
 
     public function getMonthName(int $monthNumber): string
     {
-        return \DateTime::createFromFormat('!m', $monthNumber)->format('F');
+        return \DateTime::createFromFormat('!m', (string) $monthNumber)->format('F');
     }
 }

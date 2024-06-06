@@ -41,12 +41,12 @@ class Worker
         return $this;
     }
 
-    public function getWorkload(): ?string
+    public function getWorkload(): ?float
     {
         return $this->workload;
     }
 
-    public function setWorkload(string $workload): self
+    public function setWorkload(?float $workload): self
     {
         $this->workload = $workload;
 

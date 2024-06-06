@@ -19,7 +19,7 @@ class WorkloadReportService
     /**
      * @throws \Exception
      */
-    public function getWorkloadReport($viewMode): WorkloadReportData
+    public function getWorkloadReport($viewMode = 'week'): WorkloadReportData
     {
         // Get period based on viewmode.
         $periods = match ($viewMode) {
@@ -86,8 +86,8 @@ class WorkloadReportService
     {
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewMode) {
-            'week' => round(($loggedHours / $workloadWeekBase)*100),
-            'month' => round(($loggedHours / ($workloadWeekBase*4))*100)
+            'week' => round(($loggedHours / $workloadWeekBase) * 100),
+            'month' => round(($loggedHours / ($workloadWeekBase * 4)) * 100)
         };
     }
 
