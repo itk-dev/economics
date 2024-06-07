@@ -122,9 +122,6 @@ class HourReportController extends AbstractController
             }
         }
         if ((!empty($requestData['dataProvider']) || $this->defaultDataProvider) && !empty($requestData['projectId'])) {
-            if (empty($dataProvider)) {
-                throw new EconomicsException('reports.hour_report.select_data_provider_empty');
-            }
             $projectId = $requestData['projectId'];
 
             $milestoneChoices = $this->hourReportService->getMilestones($projectId, true);
@@ -190,6 +187,7 @@ class HourReportController extends AbstractController
                 $mode = 'hourReport';
             }
 
+            // If milestone is '0', it will evaluate as empty above, but really we want to get the report for all milestones
             if (!empty($projectId) && !empty($selectedDataProvider) && '0' === $milestoneId) {
                 $reportData = $this->hourReportService->getHourReport($projectId, $fromDate, $toDate);
                 $mode = 'hourReport';

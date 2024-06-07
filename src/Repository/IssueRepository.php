@@ -111,13 +111,12 @@ class IssueRepository extends ServiceEntityRepository
         ];
     }
 
-    public function issueContainsVersion(int $versionId): bool
+    public function issueContainingVersion(int $versionId): array
     {
         $qb = $this->createQueryBuilder('issue')
             ->where(':version MEMBER OF issue.versions')
             ->setParameter('version', $versionId);
 
-        // If the query returns any result, that means a versionId match has been found.
-        return (bool) $qb->getQuery()->getOneOrNullResult();
+        return $qb->getQuery()->getResult();
     }
 }

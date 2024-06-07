@@ -1,15 +1,10 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}{{ 'planning.title'|trans }}{% endblock %}
+{% extends 'base.html.twig' {% block title %}{{ 'reports.hour_report.title'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ 'planning.title'|trans }}</h1>
+    <h1 class="page-title">{{ 'reports.hour_report.title'|trans }}</h1>
 
     {{ form_start(form) }}
     {{ form_row(form.dataProvider) }}
-    <div>
-        <button class="button form-element">{{ 'planning.search'|trans }}</button>
-    </div>
     {{ form_end(form) }}
 
     {% if error is not null %}

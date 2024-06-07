@@ -20,7 +20,7 @@
         <tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ projectTag.tag }}" {{ stimulus_target('show-hide', 'entry') }}>
 
             <tr>
-                <th class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
                     <div class="flex flex-row">
                         <span class="flex-grow mr-3">
                             {{ projectTag.tag }}
@@ -38,7 +38,7 @@
                             <i class="fa-solid fa-minimize hidden"></i>
                         </button>
                     </div>
-                </th>
+                </td>
                 <td class="text-center px-3 border border-slate-600">
                     {{ projectTag.totalEstimated }}
                 </td>
@@ -59,12 +59,10 @@
                     <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">{{ projectTicket.totalSpent }}</td>
                 </tr>
             {% endfor %}
-        </tbody>
 
         {% endfor %}
-        <tbody>
         <tr>
-            <th class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">{{ 'reports.hour_report.total'|trans }}</th>
+            <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">{{ 'reports.hour_report.total'|trans }}</td>
             <td class="text-center px-3 border border-slate-600">{{ data.projectTotalEstimated }}</td>
             <td class="text-center px-3 border border-slate-600">{{ data.projectTotalSpent }}</td>
         </tr>
