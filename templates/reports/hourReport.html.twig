@@ -25,12 +25,6 @@
                         <span class="flex-grow mr-3">
                             {{ projectTag.tag }}
                         </span>
-                        <button class="hide-btn mr-3 w-4"
-                                type="button" {{ stimulus_action('show-hide', 'toggleEntry') }}
-                                data-toggle-id="{{ projectTag.tag }}" data-toggle-name="{{ projectTag.tag }}"
-                                data-toggle-target="button">
-                            <i class="fa-solid fa-eye-slash"></i>
-                        </button>
                         <button class="expand-btn mr-3 w-4"
                                 type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
                                 data-toggle-target="button">
