@@ -84,7 +84,7 @@ class HourReportService
 
             $projectTicket->timesheets->add($timesheets);
 
-            $issueEpicName = (string) $issue->getEpicName() ?? '';
+            $issueEpicName = $issue->getEpicName() ?? '';
 
             if ($hourReportData->projectTags->containsKey($issueEpicName)) {
                 $projectTag = $hourReportData->projectTags->get($issueEpicName);
