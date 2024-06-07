@@ -11,13 +11,11 @@ class DateTimeHelper
     /**
      * Returns the first and last date of a given week in a year (ISO 8601).
      *
-     * @param int $weekNumber The week number.
-     *
+     * @param int $weekNumber the week number
      * @param int|null $year The year. If not provided, the current year will be used.
-     *
      * @param string $format The date format to be returned. Defaults to 'Y-m-d H:i:s'.
      *
-     * @return array An array with the first and last date of the week.
+     * @return array an array with the first and last date of the week
      */
     public function getFirstAndLastDateOfWeek(int $weekNumber, int $year = null, string $format = 'Y-m-d H:i:s'): array
     {
@@ -39,13 +37,11 @@ class DateTimeHelper
     /**
      * Returns the first and last date of the specified month and year.
      *
-     * @param int $monthNumber The month number (1-12).
-     *
+     * @param int $monthNumber the month number (1-12)
      * @param int|null $year The year. If null, the current year will be used.
+     * @param string $format the format to use for the returned dates
      *
-     * @param string $format The format to use for the returned dates.
-     *
-     * @return array An array containing the first and last date of the specified month and year.
+     * @return array an array containing the first and last date of the specified month and year
      */
     public function getFirstAndLastDateOfMonth(int $monthNumber, int $year = null, string $format = 'Y-m-d H:i:s'): array
     {
@@ -69,7 +65,7 @@ class DateTimeHelper
      *
      * @param int|null $year The year for which to retrieve the week numbers. If null, the current year is used.
      *
-     * @return array An array of week numbers.
+     * @return array an array of week numbers
      */
     public function getWeeksOfYear(int $year = null): array
     {
@@ -100,7 +96,7 @@ class DateTimeHelper
     /**
      * Retrieves an array of months and their corresponding numeric representation of a year.
      *
-     * @return array An array where the keys are month names and the values are their corresponding numeric representation (1-12).
+     * @return array an array where the keys are month names and the values are their corresponding numeric representation (1-12)
      */
     public function getMonthsOfYear(): array
     {
@@ -115,9 +111,9 @@ class DateTimeHelper
     /**
      * Retrieves the name of the month for a given month number.
      *
-     * @param int $monthNumber The month number for which to retrieve the month name.
+     * @param int $monthNumber the month number for which to retrieve the month name
      *
-     * @return string The name of the month.
+     * @return string the name of the month
      */
     public function getMonthName(int $monthNumber): string
     {

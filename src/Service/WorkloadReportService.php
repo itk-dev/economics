@@ -6,30 +6,30 @@
 
 namespace App\Service;
 
-use /**
+use /*
  * Class WorkloadReportData
  *
  * This class retrieves workload data for generating reports.
  */
-    App\Model\Reports\WorkloadReportData;
-use /**
+App\Model\Reports\WorkloadReportData;
+use /*
  * @var Connection
  */
-    App\Model\Reports\WorkloadReportWorker;
-use /**
+App\Model\Reports\WorkloadReportWorker;
+use /*
  * @method Worker|null find($id, $lockMode = null, $lockVersion = null)
  * @method Worker|null findOneBy(array $criteria, array $orderBy = null)
  * @method Worker[]    findAll()
  * @method Worker[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-    App\Repository\WorkerRepository;
-use /**
+App\Repository\WorkerRepository;
+use /*
  * @method Worklog|null find($id, $lockMode = null, $lockVersion = null)
  * @method Worklog|null findOneBy(array $criteria, array $orderBy = null)
  * @method Worklog[]    findAll()
  * @method Worklog[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-    App\Repository\WorklogRepository;
+App\Repository\WorklogRepository;
 
 class WorkloadReportService
 {
@@ -80,11 +80,8 @@ class WorkloadReportService
      * and view mode.
      *
      * @param array $periods The list of periods
-     *
      * @param callable $getDatesOfPeriod The callable to get the first and last date of a given period
-     *
      * @param callable $getReadablePeriod The callable to get a readable representation of a given period
-     *
      * @param string $viewMode The view mode
      *
      * @return WorkloadReportData The workload report data
@@ -119,12 +116,12 @@ class WorkloadReportService
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
+                if (!$worker->getWorkload()) {
+                    $workerId = $worker->getUserIdentifier();
+                    throw new \Exception("Workload of worker: $workerId cannot be unset when generating workload report.");
+                }
                 // Get total logged percentage based on weekly workload.
                 $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $worker->getWorkload(), $viewMode);
-
-                if (!$roundedLoggedPercentage) {
-                    throw new \Exception("Value of calculated roundedLoggedPercentage: $roundedLoggedPercentage cannot be null");
-                }
 
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
@@ -139,13 +136,11 @@ class WorkloadReportService
     /**
      * Calculates the rounded percentage of logged hours based on the workload and view mode.
      *
-     * @param float $loggedHours The number of logged hours.
+     * @param float $loggedHours the number of logged hours
+     * @param float $workloadWeekBase the base weekly workload (including lunch hours)
+     * @param string $viewMode the view mode ('week' or 'month')
      *
-     * @param float $workloadWeekBase The base weekly workload (including lunch hours).
-     *
-     * @param string $viewMode The view mode ('week' or 'month').
-     *
-     * @return float The rounded percentage of logged hours.
+     * @return float the rounded percentage of logged hours
      */
     private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, string $viewMode): float
     {
@@ -162,7 +157,7 @@ class WorkloadReportService
     /**
      * Retrieves the available view modes.
      *
-     * @return array The array containing the available view modes.
+     * @return array the array containing the available view modes
      */
     public function getViewModes(): array
     {

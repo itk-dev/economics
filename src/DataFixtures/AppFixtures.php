@@ -118,7 +118,6 @@ class AppFixtures extends Fixture
                     $manager->persist($issue);
 
                     for ($k = 0; $k < 100; ++$k) {
-
                         $worklog = new Worklog();
                         $worklog->setProjectTrackerIssueId("worklog-$key-$i-$j-$k");
                         $worklog->setWorklogId($i * 100000 + $j * 1000 + $k);
