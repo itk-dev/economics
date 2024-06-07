@@ -93,14 +93,14 @@ class HourReportService
                     $projectTag->totalSpent += $totalTicketSpent;
                 }
             } else {
-                $projectTag = new HourReportProjectTag($totalTicketEstimated, $totalTicketSpent, $issueEpicName);
+                $projectTag = new HourReportProjectTag($totalTicketEstimated, $totalTicketSpent, (string) $issueEpicName);
             }
             if (!$projectTag) {
                 throw new EconomicsException('Project tag not found');
             }
             $projectTag->projectTickets->add($projectTicket);
 
-            $hourReportData->projectTags->set($issueEpicName, $projectTag);
+            $hourReportData->projectTags->set((string) $issueEpicName, $projectTag);
             $hourReportData->projectTotalEstimated += $totalTicketEstimated;
             $hourReportData->projectTotalSpent += $totalTicketSpent;
         }
