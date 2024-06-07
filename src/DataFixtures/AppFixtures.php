@@ -49,7 +49,6 @@ class AppFixtures extends Fixture
             $workerArray[] = 'test'.$i.'@test';
         }
 
-
         foreach ($dataProviders as $key => $dataProvider) {
             $manager->persist($dataProvider);
 
@@ -119,15 +118,16 @@ class AppFixtures extends Fixture
                     $manager->persist($issue);
 
                     for ($k = 0; $k < 100; ++$k) {
+
                         $worklog = new Worklog();
                         $worklog->setProjectTrackerIssueId("worklog-$key-$i-$j-$k");
                         $worklog->setWorklogId($i * 100000 + $j * 1000 + $k);
                         $worklog->setDescription("Beskrivelse af worklog-$key-$i-$j-$k");
                         $worklog->setIsBilled(false);
                         $worklog->setProject($project);
-                        $worklog->setWorker($workerArray[(string) rand(0, 9)]);
+                        $worklog->setWorker($workerArray[rand(0, 9)]);
                         $worklog->setTimeSpentSeconds(60 * 15 * ($k + 1));
-                        $worklog->setStarted(\DateTime::createFromFormat('U', rand(strtotime(date('Y-01-01')), strtotime(date('Y-12-31')))));
+                        $worklog->setStarted(\DateTime::createFromFormat('U', (string) rand(strtotime(date('Y-01-01')), strtotime(date('Y-12-31')))));
                         $worklog->setIssue($issue);
                         $worklog->setDataProvider($dataProvider);
 

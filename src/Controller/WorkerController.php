@@ -71,7 +71,8 @@ class WorkerController extends AbstractController
     #[Route('/{id}', name: 'app_worker_delete', methods: ['POST'])]
     public function delete(Request $request, Worker $worker, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$worker->getId(), $request->request->get('_token'))) {
+        $token = $request->request->get('_token');
+        if (is_string($token) && $this->isCsrfTokenValid('delete'.$worker->getId(), $token)) {
             $entityManager->remove($worker);
             $entityManager->flush();
         }
