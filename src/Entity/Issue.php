@@ -152,7 +152,7 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
-    public function getEpicName(): ?string
+    public function getEpicName(): string
     {
         return $this->epicName;
     }
