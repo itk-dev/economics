@@ -371,8 +371,8 @@ class DataSynchronizationService
             if (!$workerExists) {
                 $worker = new Worker();
                 $workerEmail = $worklog->getWorker();
-                if ($workerEmail) {
-                    $worker->setEmail($worklog->getWorker());
+                if (isset($workerEmail)) {
+                    $worker->setEmail($workerEmail);
                 }
                 $this->entityManager->persist($worker);
             }
