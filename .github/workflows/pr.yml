@@ -238,7 +238,7 @@ jobs:
             mariadb:
                 image: mariadb:lts
                 ports:
-                    - 3306
+                    - 3306:3306
                 env:
                     MYSQL_USER: db
                     MYSQL_PASSWORD: db
