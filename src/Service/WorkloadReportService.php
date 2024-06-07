@@ -120,8 +120,13 @@ class WorkloadReportService
                     $workerId = $worker->getUserIdentifier();
                     throw new \Exception("Workload of worker: $workerId cannot be unset when generating workload report.");
                 }
+
                 // Get total logged percentage based on weekly workload.
                 $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $worker->getWorkload(), $viewMode);
+
+                if (!$roundedLoggedPercentage) {
+                    throw new \Exception("Value of calculated roundedLoggedPercentage: $roundedLoggedPercentage cannot be null");
+                }
 
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
