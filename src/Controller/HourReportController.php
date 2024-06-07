@@ -40,7 +40,7 @@ class HourReportController extends AbstractController
     {
         $reportData = null;
 
-        $mode = 'reports';
+        $mode = 'hour_report';
         $error = null;
         $reportFormData = new HourReportFormData();
 
