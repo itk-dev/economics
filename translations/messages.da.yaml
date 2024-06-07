@@ -59,6 +59,7 @@ navigation:
     planning_projects: 'Projekter'
     hour_report: "Hent timerapport"
     workload_report: "Hent workloadrapport"
+    worker: "Medarbejdere"
 
 planning:
     title: "Planlægning"
@@ -569,6 +570,7 @@ reports:
         select_viewmode: 'Vælg visningstype'
         week: 'Uge'
         workers: 'Medarbejdere'
+        worker: 'Medarbejder'
 
 view:
     list_title: 'Views'
