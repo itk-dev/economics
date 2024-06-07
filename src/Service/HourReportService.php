@@ -87,7 +87,7 @@ class HourReportService
             $issueEpicName = $issue->getEpicName() ?? '';
 
             if ($hourReportData->projectTags->containsKey($issueEpicName)) {
-                $projectTag = $hourReportData->projectTags->get($issueEpicName);
+                $projectTag = $hourReportData->projectTags->get((string) $issueEpicName);
                 if ($projectTag) {
                     $projectTag->totalEstimated += $totalTicketEstimated;
                     $projectTag->totalSpent += $totalTicketSpent;
