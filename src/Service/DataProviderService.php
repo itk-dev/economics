@@ -9,6 +9,7 @@ use App\Interface\DataProviderServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DataProviderService
@@ -53,7 +54,7 @@ class DataProviderService
                     'auth_basic' => $dataProvider->getSecret(),
                 ]);
 
-                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([429], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
+                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([Response::HTTP_TOO_MANY_REQUESTS], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
 
                 $service = new JiraApiService(
                     $retryableHttpClient,
@@ -73,7 +74,7 @@ class DataProviderService
                     ],
                 ]);
 
-                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([429], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
+                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([Response::HTTP_TOO_MANY_REQUESTS], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
 
                 $service = new LeantimeApiService(
                     $retryableHttpClient,
