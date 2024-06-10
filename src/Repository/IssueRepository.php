@@ -110,4 +110,13 @@ class IssueRepository extends ServiceEntityRepository
             '0',
         ];
     }
+
+    public function issuesContainingVersion(int $versionId): array
+    {
+        $qb = $this->createQueryBuilder('issue')
+            ->where(':version MEMBER OF issue.versions')
+            ->setParameter('version', $versionId);
+
+        return $qb->getQuery()->getResult();
+    }
 }

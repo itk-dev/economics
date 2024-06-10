@@ -102,7 +102,8 @@ class AppFixtures extends Fixture
                     $issue->setDataProvider($dataProvider);
                     $issue->addVersion($versions[$j % count($versions)]);
                     $issue->setResolutionDate(new \DateTime());
-
+                    $issue->setPlanHours($j);
+                    $issue->setHoursRemaining($j);
                     $manager->persist($issue);
 
                     for ($k = 0; $k < 100; ++$k) {

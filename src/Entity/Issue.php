@@ -55,6 +55,12 @@ class Issue extends AbstractBaseEntity
     #[ORM\OrderBy(['createdAt' => Criteria::ASC])]
     private Collection $products;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    public ?float $planHours;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    public ?float $hoursRemaining;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -262,6 +268,30 @@ class Issue extends AbstractBaseEntity
                 $issueProduct->setIssue(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPlanHours(): ?float
+    {
+        return $this->planHours;
+    }
+
+    public function setPlanHours(?float $planHours): self
+    {
+        $this->planHours = $planHours;
+
+        return $this;
+    }
+
+    public function getHoursRemaining(): ?float
+    {
+        return $this->planHours;
+    }
+
+    public function setHoursRemaining(?float $hoursRemaining): self
+    {
+        $this->hoursRemaining = $hoursRemaining;
 
         return $this;
     }

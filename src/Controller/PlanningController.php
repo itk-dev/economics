@@ -23,7 +23,7 @@ class PlanningController extends AbstractController
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly ViewService $viewService,
-        private readonly ?string $planningDefaultDataProvider,
+        private readonly ?string $defaultDataProvider,
     ) {
     }
 
@@ -63,7 +63,7 @@ class PlanningController extends AbstractController
         $form = $this->createForm(PlanningType::class, $planningFormData);
 
         $dataProviders = $this->dataProviderRepository->findAll();
-        $defaultProvider = $this->dataProviderRepository->find($this->planningDefaultDataProvider);
+        $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
 
         if (null === $defaultProvider && count($dataProviders) > 0) {
             $defaultProvider = $dataProviders[0];
@@ -78,7 +78,7 @@ class PlanningController extends AbstractController
                 'class' => 'form-element',
             ],
             'help' => 'planning.data_provider_helptext',
-            'data' => $this->dataProviderRepository->find($this->planningDefaultDataProvider),
+            'data' => $this->dataProviderRepository->find($this->defaultDataProvider),
             'choices' => $dataProviders,
         ]);
 
