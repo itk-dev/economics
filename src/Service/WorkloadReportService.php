@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @throws \Exception
- */
-
 namespace App\Service;
 
 use App\Model\Reports\WorkloadReportData;
