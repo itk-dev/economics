@@ -347,7 +347,7 @@ class DataSynchronizationService
                 ->setWorker($worklogDatum->worker)
                 ->setStarted($worklogDatum->started)
                 ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
-                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
+                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
                 ->setKind($worklogDatum->kind);
                 ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
                 ->setIssue($issue);
