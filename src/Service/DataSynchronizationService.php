@@ -339,6 +339,7 @@ class DataSynchronizationService
                 ->setStarted($worklogDatum->started)
                 ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
                 ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
+                ->setKind($worklogDatum->kind);
 
             if (null != $worklog->getProjectTrackerIssueId()) {
                 $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);

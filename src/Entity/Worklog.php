@@ -52,6 +52,9 @@ class Worklog extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $projectTrackerIssueId = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $kind = null;
+
     public function getWorklogId(): ?int
     {
         return $this->worklogId;
@@ -180,6 +183,18 @@ class Worklog extends AbstractBaseEntity
     public function setProjectTrackerIssueId(string $projectTrackerIssueId): self
     {
         $this->projectTrackerIssueId = $projectTrackerIssueId;
+
+        return $this;
+    }
+
+    public function getKind(): ?string
+    {
+        return $this->kind;
+    }
+
+    public function setKind(string $kind): self
+    {
+        $this->kind = $kind;
 
         return $this;
     }
