@@ -360,12 +360,6 @@ class DataSynchronizationService
                 ++$worklogsAdded;
             }
 
-            // Flush and clear for each batch.
-            if (0 === $worklogsAdded % self::BATCH_SIZE) {
-                $this->entityManager->flush();
-                $this->entityManager->clear();
-            }
-
             $workerExists = $this->workerRepository->findOneBy(['email' => $worklog->getWorker()]);
 
             if (!$workerExists) {
@@ -375,6 +369,12 @@ class DataSynchronizationService
                     $worker->setEmail($workerEmail);
                 }
                 $this->entityManager->persist($worker);
+            }
+
+            // Flush and clear for each batch.
+            if (0 === $worklogsAdded % self::BATCH_SIZE) {
+                $this->entityManager->flush();
+                $this->entityManager->clear();
             }
         }
 
