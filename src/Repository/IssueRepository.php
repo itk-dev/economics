@@ -111,7 +111,7 @@ class IssueRepository extends ServiceEntityRepository
         ];
     }
 
-    public function issueContainingVersion(int $versionId): array
+    public function issuesContainingVersion(int $versionId): array
     {
         $qb = $this->createQueryBuilder('issue')
             ->where(':version MEMBER OF issue.versions')

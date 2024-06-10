@@ -95,6 +95,7 @@ class HourReportService
             } else {
                 $projectTag = new HourReportProjectTag($totalTicketEstimated, $totalTicketSpent, (string) $issueEpicName);
             }
+
             if (!$projectTag) {
                 throw new EconomicsException('Project tag not found');
             }
