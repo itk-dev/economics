@@ -63,7 +63,7 @@ class HourReportService
 
         // If version is provided, we only want the issues containing the versionId
         if ($versionId) {
-            $projectIssues = $this->issueRepository->issueContainingVersion($versionId);
+            $projectIssues = $this->issueRepository->issuesContainingVersion($versionId);
         } else {
             $projectIssues = $this->issueRepository->findBy(['project' => $projectId]);
         }
