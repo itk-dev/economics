@@ -571,6 +571,7 @@ reports:
         week: 'Uge'
         workers: 'Medarbejdere'
         worker: 'Medarbejder'
+        hidden-entries: 'Skjulte medarbejdere'
 
 view:
     list_title: 'Views'

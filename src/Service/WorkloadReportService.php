@@ -6,30 +6,10 @@
 
 namespace App\Service;
 
-use /*
- * Class WorkloadReportData
- *
- * This class retrieves workload data for generating reports.
- */
-App\Model\Reports\WorkloadReportData;
-use /*
- * @var Connection
- */
-App\Model\Reports\WorkloadReportWorker;
-use /*
- * @method Worker|null find($id, $lockMode = null, $lockVersion = null)
- * @method Worker|null findOneBy(array $criteria, array $orderBy = null)
- * @method Worker[]    findAll()
- * @method Worker[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
-App\Repository\WorkerRepository;
-use /*
- * @method Worklog|null find($id, $lockMode = null, $lockVersion = null)
- * @method Worklog|null findOneBy(array $criteria, array $orderBy = null)
- * @method Worklog[]    findAll()
- * @method Worklog[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
-App\Repository\WorklogRepository;
+use App\Model\Reports\WorkloadReportData;
+use App\Model\Reports\WorkloadReportWorker;
+use App\Repository\WorkerRepository;
+use App\Repository\WorklogRepository;
 
 class WorkloadReportService
 {
@@ -72,7 +52,14 @@ class WorkloadReportService
             default => throw new \Exception("Unexpected value for viewMode: $viewMode in getReadablePeriod match"),
         };
 
-        return $this->getWorkloadData($periods, $getDatesOfPeriod, $getReadablePeriod, $viewMode);
+        // Callable to get a current representation of a given period.
+        $currentPeriodNumeric = match ($viewMode) {
+            'month' => (int) (new \DateTime())->format('n'),
+            'week' => (int) (new \DateTime())->format('W'),
+            default => throw new \Exception("Unexpected value for viewMode: $viewMode in getCurrentPeriodNumeric match"),
+        };
+
+        return $this->getWorkloadData($periods, $getDatesOfPeriod, $getReadablePeriod, $currentPeriodNumeric, $viewMode);
     }
 
     /**
@@ -88,7 +75,7 @@ class WorkloadReportService
      *
      * @throws \Exception When the calculated roundedLoggedPercentage is null
      */
-    private function getWorkloadData(array $periods, callable $getDatesOfPeriod, callable $getReadablePeriod, string $viewMode): WorkloadReportData
+    private function getWorkloadData(array $periods, callable $getDatesOfPeriod, callable $getReadablePeriod, int $currentPeriodNumeric, string $viewMode): WorkloadReportData
     {
         $workloadReportData = new WorkloadReportData($viewMode);
         $workers = $this->workerRepository->findAll();
@@ -96,7 +83,7 @@ class WorkloadReportService
         foreach ($periods as $period) {
             // Get period specific readable period representation for table headers.
             $readablePeriod = $getReadablePeriod($period);
-            $workloadReportData->period->add($readablePeriod);
+            $workloadReportData->period->set($period, $readablePeriod);
         }
         foreach ($workers as $worker) {
             $workloadReportWorker = new WorkloadReportWorker();
@@ -104,6 +91,10 @@ class WorkloadReportService
             $workloadReportWorker->setWorkload($worker->getWorkload());
 
             foreach ($periods as $period) {
+                // Add current period match-point (current week-number, month-number etc.)
+                if ($period === $currentPeriodNumeric) {
+                    $workloadReportData->setCurrentPeriodNumeric($period);
+                }
                 // Get first and last date in period.
                 $firstAndLastDate = $getDatesOfPeriod($period);
 

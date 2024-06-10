@@ -8,8 +8,17 @@
             <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
                 {{ 'reports.workload_report.workload'|trans }}
             </th>
-            {% for period in data.period %}
-                <th class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap">
+            {% for periodNumeric, period in data.period %}
+                <th class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap
+{{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'bg-slate-300 dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-700' }}
+"
+                    {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'id="activeSprint"' : '' }}
+                    {{ loop.index == 1 ? 'id="firstSprint"' : '' }}
+                    data-index="{{ loop.index }}"
+                    {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'data-active="true"' : '' }}
+                    {{ stimulus_target('planning-scroll', 'column') }}
+                >
+
                     {% if data.viewmode == 'week' %}
                         {{ 'reports.workload_report.week'|trans }} {{ period }}
                     {% else %}
@@ -25,7 +34,7 @@
             <tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ worker.email }}" {{ stimulus_target('show-hide', 'entry') }}>
 
             <tr>
-                <th class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
                     <div class="flex flex-row">
                         <span class="flex-grow mr-3">
                             {{ worker.email }}
@@ -37,12 +46,14 @@
                             <i class="fa-solid fa-eye-slash"></i>
                         </button>
                     </div>
-                </th>
+                </td>
                 <td class="text-center px-3 border border-slate-600">
                     {{ worker.workload }}
                 </td>
-                {% for week in worker.loggedPercentage %}
-                    <td class="text-center px-3 border border-slate-600">
+                {% for periodNumeric, week in worker.loggedPercentage %}
+                    <td class="text-center px-3 border border-slate-600
+{{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'bg-slate-300 dark:bg-slate-800' : '' }}
+">
                         {{ week ~ "%" }}
                     </td>
                 {% endfor %}
@@ -50,4 +61,8 @@
             </tbody>
         {% endfor %}
     </table>
+    <div class="my-5 sticky left-0">
+        {{ 'reports.workload_report.hidden-entries'|trans }}:
+        <span {{ stimulus_target('show-hide', 'hiddenEntries') }}></span>
+    </div>
 </div>
