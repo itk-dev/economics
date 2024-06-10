@@ -96,7 +96,7 @@ class DateTimeHelper
     /**
      * Retrieves an array of months and their corresponding numeric representation of a year.
      *
-     * @return array an array where the keys are month names and the values are their corresponding numeric representation (1-12)
+     * @return array an array of months with corresponding numeric representation (1-12)
      */
     public function getMonthsOfYear(): array
     {
