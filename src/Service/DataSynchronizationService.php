@@ -230,6 +230,8 @@ class DataSynchronizationService
                 $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
                 $issue->setResolutionDate($issueDatum->resolutionDate);
                 $issue->setStatus($issueDatum->status);
+                $issue->setPlanHours($issueDatum->planHours);
+                $issue->setHoursRemaining($issueDatum->hourRemaining);
 
                 // Leantime (as of now) supports only a single version (milestone) per issue.
                 if (LeantimeApiService::class === $dataProvider?->getClass()) {

@@ -22,7 +22,7 @@ services:
             $defaultInvoiceDescriptionTemplate: '%env(APP_INVOICE_DESCRIPTION_TEMPLATE)%'
             $invoiceSupplierAccount: '%env(string:APP_INVOICE_SUPPLIER_ACCOUNT)%'
             $projectBillingDefaultDescription: '%env(string:APP_PROJECT_BILLING_DEFAULT_DESCRIPTION)%'
-            $planningDefaultDataProvider: '%env(string:APP_DEFAULT_PLANNING_DATA_PROVIDER)%'
+            $defaultDataProvider: '%env(string:APP_DEFAULT_DATA_PROVIDER)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
