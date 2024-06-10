@@ -347,8 +347,16 @@ class DataSynchronizationService
                 ->setWorker($worklogDatum->worker)
                 ->setStarted($worklogDatum->started)
                 ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
+                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
+                ->setKind($worklogDatum->kind);
                 ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
                 ->setIssue($issue);
+
+            if (null != $worklog->getProjectTrackerIssueId()) {
+                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
+                $worklog->setIssue($issue);
+            }
+
 
             if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
                 $worklog->setIsBilled(true);
