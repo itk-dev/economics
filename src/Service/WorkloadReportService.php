@@ -48,7 +48,7 @@ class WorkloadReportService
             default => throw new \Exception("Unexpected value for viewMode: $viewMode in getReadablePeriod match"),
         };
 
-        // Callable to get a current representation of a given period (current week-number, month-number etc.).
+        // Get current numeric representation of a given period type (current week-number, month-number etc.).
         $currentPeriodNumeric = match ($viewMode) {
             'month' => (int) (new \DateTime())->format('n'),
             'week' => (int) (new \DateTime())->format('W'),
