@@ -17,46 +17,15 @@ class WorkloadReportService
     }
 
     /**
-     * Get the workload report based on the specified view mode.
+     * Retrieves the workload report data for the given view mode.
      *
-     * @param string $viewMode The view mode (default: 'week')
+     * @param string $viewMode the view mode to generate the report for
      *
-     * @return WorkloadReportData The workload report data
+     * @return WorkloadReportData the workload report data
      *
-     * @throws \Exception When an unexpected value for viewMode is provided
+     * @throws \Exception when the workload of a worker cannot be unset
      */
     public function getWorkloadReport(string $viewMode = 'week'): WorkloadReportData
-    {
-        // Callable to get first and last date of a given period.
-        $getDatesOfPeriod = match ($viewMode) {
-            'month' => function ($monthNumber) { return $this->dateTimeHelper->getFirstAndLastDateOfMonth($monthNumber); },
-            'week' => function ($weekNumber) { return $this->dateTimeHelper->getFirstAndLastDateOfWeek($weekNumber); },
-            default => throw new \Exception("Unexpected value for viewMode: $viewMode in getDatesOfPeriod match"),
-        };
-
-        // Callable to get a readable representation of a given period.
-        $getReadablePeriod = match ($viewMode) {
-            'month' => fn ($monthNumber) => $this->dateTimeHelper->getMonthName($monthNumber),
-            'week' => fn ($period) => $period,
-            default => throw new \Exception("Unexpected value for viewMode: $viewMode in getReadablePeriod match"),
-        };
-
-        return $this->getWorkloadData($getDatesOfPeriod, $getReadablePeriod, $viewMode);
-    }
-
-    /**
-     * Get the workload data based on the specified periods, date calculation method, readable period representation method
-     * and view mode.
-     *
-     * @param callable $getDatesOfPeriod The callable to get the first and last date of a given period
-     * @param callable $getReadablePeriod The callable to get a readable representation of a given period
-     * @param string $viewMode The view mode
-     *
-     * @return WorkloadReportData The workload report data
-     *
-     * @throws \Exception When the calculated roundedLoggedPercentage is null
-     */
-    private function getWorkloadData(callable $getDatesOfPeriod, callable $getReadablePeriod, string $viewMode): WorkloadReportData
     {
         $workloadReportData = new WorkloadReportData($viewMode);
         $workers = $this->workerRepository->findAll();
@@ -64,8 +33,8 @@ class WorkloadReportService
 
         foreach ($periods as $period) {
             // Get period specific readable period representation for table headers.
-            $readablePeriod = $getReadablePeriod($period);
-            $workloadReportData->period->set($period, $readablePeriod);
+            $readablePeriod = $this->getReadablePeriod($period, $viewMode);
+            $workloadReportData->period->set((string) $period, $readablePeriod);
         }
 
         foreach ($workers as $worker) {
@@ -80,7 +49,7 @@ class WorkloadReportService
                     $workloadReportData->setCurrentPeriodNumeric($period);
                 }
                 // Get first and last date in period.
-                $firstAndLastDate = $getDatesOfPeriod($period);
+                $firstAndLastDate = $this->getDatesOfPeriod($period, $viewMode);
 
                 // Get all worklogs between the two dates.
                 $worklogs = $this->worklogRepository->findWorklogsByWorkerAndDateRange($worker->getUserIdentifier(), $firstAndLastDate['first'], $firstAndLastDate['last']);
@@ -161,6 +130,48 @@ class WorkloadReportService
             'week' => (int) (new \DateTime())->format('W'),
             default => throw new \Exception("Unexpected value for viewMode: $viewMode in getCurrentPeriodNumeric match"),
         };
+    }
+
+    /**
+     * Retrieves an array of dates for a given period based on the view mode.
+     *
+     * @param int $period the period for which to retrieve dates
+     * @param string $viewMode the view mode to determine the dates of the period
+     *
+     * @return array an array of dates for the given period
+     *
+     * @throws \Exception when an unexpected value for viewMode is provided
+     */
+    private function getDatesOfPeriod(int $period, string $viewMode): array
+    {
+        $periodDates = match ($viewMode) {
+            'month' => function ($monthNumber) { return $this->dateTimeHelper->getFirstAndLastDateOfMonth($monthNumber); },
+            'week' => function ($weekNumber) { return $this->dateTimeHelper->getFirstAndLastDateOfWeek($weekNumber); },
+            default => throw new \Exception("Unexpected value for viewMode: $viewMode in getDatesOfPeriod match"),
+        };
+
+        return $periodDates($period);
+    }
+
+    /**
+     * Retrieves the readable period based on the given period and view mode.
+     *
+     * @param int $period the period to be made readable
+     * @param string $viewMode the view mode to determine the format of the readable period
+     *
+     * @return string the readable period
+     *
+     * @throws \Exception when an unexpected value for viewMode is provided
+     */
+    private function getReadablePeriod(int $period, string $viewMode): string
+    {
+        $readablePeriod = match ($viewMode) {
+            'month' => fn ($monthNumber) => $this->dateTimeHelper->getMonthName($monthNumber),
+            'week' => fn ($weekNumber) => (string) $weekNumber,
+            default => throw new \Exception("Unexpected value for viewMode: $viewMode in getReadablePeriod match"),
+        };
+
+        return $readablePeriod($period);
     }
 
     /**
