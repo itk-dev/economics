@@ -13,6 +13,7 @@ class WorkloadReportType extends AbstractType
     {
         $builder
             ->add('dataProvider')
+            ->add('viewPeriodType')
             ->add('viewMode')
         ;
     }

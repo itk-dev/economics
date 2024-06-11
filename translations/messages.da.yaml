@@ -518,6 +518,7 @@ project:
     actions: 'Handlinger'
     action_edit: 'Redigér'
     action_view_issues: "Vis opgaver"
+    is_billable: "Fakturerbart"
 
 reports:
     title: 'Rapporter'
@@ -543,6 +544,7 @@ reports:
         workload: 'Normtid'
         logged_hours: 'Loggede timer'
         select_viewmode: 'Vælg visningstype'
+        select_view_period_type: 'Vælg periodetype'
         week: 'Uge'
         workers: 'Medarbejdere'
         worker: 'Medarbejder'

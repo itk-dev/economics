@@ -12,6 +12,7 @@ use App\Service\DataProviderService;
 use App\Service\WorkloadReportService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,46 +73,54 @@ class WorkloadReportController extends AbstractController
             'choices' => $dataProviders,
         ]);
 
+        $form->add('viewPeriodType', ChoiceType::class, [
+            'required' => false,
+            'label' => 'reports.workload_report.select_view_period_type',
+            'label_attr' => ['class' => 'label'],
+            'placeholder' => false,
+            'attr' => [
+                'class' => 'form-element',
+            ],
+            'choices' => $this->workloadReportService->getViewPeriodTypes(),
+        ]);
+
         $form->add('viewMode', ChoiceType::class, [
             'required' => false,
             'label' => 'reports.workload_report.select_viewmode',
             'label_attr' => ['class' => 'label'],
             'placeholder' => false,
             'attr' => [
-                'onchange' => 'this.form.submit()',
                 'class' => 'form-element',
             ],
             'choices' => $this->workloadReportService->getViewModes(),
+        ]);
+
+        $form->add('submit', ButtonType::class, [
+            'block_name' => 'Submit',
+            'attr' => [
+                'onclick' => 'this.form.submit()',
+                'class' => 'hour-report-submit button',
+            ],
         ]);
 
         $form->handleRequest($request);
 
         $requestData = $request->query->all('workload_report');
 
-        if (!empty($requestData['dataProvider']) || $this->defaultDataProvider) {
-            if (!empty($requestData['dataProvider'])) {
-                $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
-            } else {
-                $dataProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
-            }
+        if (!empty($requestData['dataProvider'])) {
+            $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
-                $viewMode = $form->get('viewMode')->getData() ?? 'week';
+                $viewPeriodType = $form->get('viewPeriodType')->getData() ?? 'week';
+                $viewMode = $form->get('viewMode')->getData() ?? 'percentage_logged';
 
                 if ($selectedDataProvider) {
                     try {
-                        $reportData = $this->workloadReportService->getWorkloadReport($viewMode);
+                        $reportData = $this->workloadReportService->getWorkloadReport($viewPeriodType, $viewMode);
                     } catch (\Exception $e) {
                         $error = $e->getMessage();
                     }
-                }
-            } elseif (null !== $defaultProvider) {
-                $viewMode = $form->get('viewMode')->getData() ?? 'week';
-                try {
-                    $reportData = $this->workloadReportService->getWorkloadReport($viewMode);
-                } catch (\Exception $e) {
-                    $error = $e->getMessage();
                 }
             }
         }
