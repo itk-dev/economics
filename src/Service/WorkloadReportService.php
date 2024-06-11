@@ -19,15 +19,17 @@ class WorkloadReportService
     /**
      * Retrieves the workload report data for the given view mode.
      *
+     * @param string $viewPeriodType The view period type (default: 'week')
+     *
      * @param string $viewMode the view mode to generate the report for
      *
      * @return WorkloadReportData the workload report data
      *
      * @throws \Exception when the workload of a worker cannot be unset
      */
-    public function getWorkloadReport(string $viewMode = 'week'): WorkloadReportData
+    public function getWorkloadReport(string $viewPeriodType = 'week', string $viewMode = 'workload_percentage_logged'): WorkloadReportData
     {
-        $workloadReportData = new WorkloadReportData($viewMode);
+        $workloadReportData = new WorkloadReportData($viewPeriodType);
         $workers = $this->workerRepository->findAll();
         $periods = $this->getPeriods($viewMode);
 
@@ -68,7 +70,7 @@ class WorkloadReportService
                 }
 
                 // Get total logged percentage based on weekly workload.
-                $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewMode);
+                $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewPeriodType);
 
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
@@ -85,20 +87,34 @@ class WorkloadReportService
      *
      * @param float $loggedHours the number of logged hours
      * @param float $workloadWeekBase the base weekly workload (including lunch hours)
-     * @param string $viewMode the view mode ('week' or 'month')
+     * @param string $viewPeriodType the view mode ('week' or 'month')
      *
      * @return float the rounded percentage of logged hours
      */
-    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, string $viewMode): float
+    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, string $viewPeriodType): float
     {
         // Since lunch is paid, subtract this from the actual workload (0.5 * 5)
         $actualWeeklyWorkload = $workloadWeekBase - 2.5;
 
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
-        return match ($viewMode) {
+        return match ($viewPeriodType) {
             'week' => round(($loggedHours / $actualWeeklyWorkload) * 100),
             'month' => round(($loggedHours / ($actualWeeklyWorkload * 4)) * 100)
         };
+    }
+
+
+    /**
+     * Retrieves the available view period types.
+     *
+     * @return array the array containing the available view period types
+     */
+    public function getViewPeriodTypes(): array
+    {
+        return [
+            'Week' => 'week',
+            'Month' => 'month',
+        ];
     }
 
     /**
@@ -109,8 +125,8 @@ class WorkloadReportService
     public function getViewModes(): array
     {
         return [
-            'Week' => 'week',
-            'Month' => 'month',
+            'Workload %' => 'workload_percentage_logged',
+            'Billable %' => 'billable_percentage_logged',
         ];
     }
 
