@@ -6,7 +6,9 @@ use App\Entity\DataProvider;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Form\WorkloadReportType;
+use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportFormData;
+use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
 use App\Service\WorkloadReportService;
@@ -113,7 +115,9 @@ class WorkloadReportController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
                 $viewPeriodType = $form->get('viewPeriodType')->getData() ?? 'week';
+                $viewPeriodType = PeriodTypeEnum::from($viewPeriodType);
                 $viewMode = $form->get('viewMode')->getData() ?? 'percentage_logged';
+                $viewMode = ViewModeEnum::from($viewMode);
 
                 if ($selectedDataProvider) {
                     try {

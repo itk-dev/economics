@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
+use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportData;
+use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Model\Reports\WorkloadReportWorker;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
@@ -19,7 +21,7 @@ class WorkloadReportService
     /**
      * Retrieves the workload report data for the given view mode.
      *
-     * @param string $viewPeriodType The view period type (default: 'week')
+     * @param PeriodTypeEnum $viewPeriodType The view period type (default: 'week')
      *
      * @param string $viewMode the view mode to generate the report for
      *
@@ -27,9 +29,9 @@ class WorkloadReportService
      *
      * @throws \Exception when the workload of a worker cannot be unset
      */
-    public function getWorkloadReport(string $viewPeriodType = 'week', string $viewMode = 'workload_percentage_logged'): WorkloadReportData
+    public function getWorkloadReport(PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
     {
-        $workloadReportData = new WorkloadReportData($viewPeriodType);
+        $workloadReportData = new WorkloadReportData($viewPeriodType->value);
         $workers = $this->workerRepository->findAll();
         $periods = $this->getPeriods($viewMode);
 
@@ -87,22 +89,21 @@ class WorkloadReportService
      *
      * @param float $loggedHours the number of logged hours
      * @param float $workloadWeekBase the base weekly workload (including lunch hours)
-     * @param string $viewPeriodType the view mode ('week' or 'month')
+     * @param PeriodTypeEnum $viewPeriodType the view mode ('week' or 'month')
      *
      * @return float the rounded percentage of logged hours
      */
-    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, string $viewPeriodType): float
+    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, PeriodTypeEnum $viewPeriodType): float
     {
         // Since lunch is paid, subtract this from the actual workload (0.5 * 5)
         $actualWeeklyWorkload = $workloadWeekBase - 2.5;
 
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewPeriodType) {
-            'week' => round(($loggedHours / $actualWeeklyWorkload) * 100),
-            'month' => round(($loggedHours / ($actualWeeklyWorkload * 4)) * 100)
+            PeriodTypeEnum::WEEK => round(($loggedHours / $actualWeeklyWorkload) * 100),
+            PeriodTypeEnum::MONTH => round(($loggedHours / ($actualWeeklyWorkload * 4)) * 100)
         };
     }
-
 
     /**
      * Retrieves the available view period types.
@@ -112,8 +113,8 @@ class WorkloadReportService
     public function getViewPeriodTypes(): array
     {
         return [
-            'Week' => 'week',
-            'Month' => 'month',
+            'Week' => PeriodTypeEnum::WEEK->value,
+            'Month' => PeriodTypeEnum::MONTH->value,
         ];
     }
 
@@ -125,8 +126,8 @@ class WorkloadReportService
     public function getViewModes(): array
     {
         return [
-            'Workload %' => 'workload_percentage_logged',
-            'Billable %' => 'billable_percentage_logged',
+            'Workload %' => ViewModeEnum::WORKLOAD->value,
+            'Billable %' => ViewModeEnum::BILLABLE->value,
         ];
     }
 
