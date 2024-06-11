@@ -94,21 +94,6 @@ class DateTimeHelper
     }
 
     /**
-     * Retrieves an array of months and their corresponding numeric representation of a year.
-     *
-     * @return array an array of months with corresponding numeric representation (1-12)
-     */
-    public function getMonthsOfYear(): array
-    {
-        $months = [];
-        for ($i = 1; $i <= 12; ++$i) {
-            $months[] = $i;
-        }
-
-        return $months;
-    }
-
-    /**
      * Retrieves the name of the month for a given month number.
      *
      * @param int $monthNumber the month number for which to retrieve the month name

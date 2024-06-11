@@ -29,7 +29,7 @@ class WorkloadReportService
     {
         // Get period based on viewmode.
         $periods = match ($viewMode) {
-            'month' => $this->dateTimeHelper->getMonthsOfYear(),
+            'month' => range(1, 12),
             'week' => $this->dateTimeHelper->getWeeksOfYear(),
             default => throw new \Exception("Unexpected value for viewMode: $viewMode in periods match"),
         };
@@ -81,6 +81,7 @@ class WorkloadReportService
             $readablePeriod = $getReadablePeriod($period);
             $workloadReportData->period->set($period, $readablePeriod);
         }
+
         foreach ($workers as $worker) {
             $workloadReportWorker = new WorkloadReportWorker();
             $workloadReportWorker->setEmail($worker->getUserIdentifier());
@@ -112,10 +113,6 @@ class WorkloadReportService
 
                 // Get total logged percentage based on weekly workload.
                 $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewMode);
-
-                if (!$roundedLoggedPercentage) {
-                    throw new \Exception("Value of calculated roundedLoggedPercentage: $roundedLoggedPercentage cannot be null");
-                }
 
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
