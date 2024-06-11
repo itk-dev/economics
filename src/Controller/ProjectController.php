@@ -68,6 +68,17 @@ class ProjectController extends AbstractController
         return new JsonResponse([$body], 200);
     }
 
+    #[Route('/{id}/isBillable', name: 'app_project_isBillable', methods: ['POST'])]
+    public function is_billable(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    {
+        $body = $request->toArray();
+
+        $project->setIsBillable($body['value']);
+        $projectRepository->save($project, true);
+
+        return new JsonResponse([$body], 200);
+    }
+
     /**
      * @throws EconomicsException
      * @throws UnsupportedDataProviderException
