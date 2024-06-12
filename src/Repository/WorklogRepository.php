@@ -165,4 +165,19 @@ class WorklogRepository extends ServiceEntityRepository
 
         return $workers;
     }
+
+    public function findWorklogsByWorkerAndDateRange(string $worker, string $dateFrom, string $dateTo)
+    {
+        $qb = $this->createQueryBuilder('wor');
+
+        return $qb
+            ->where($qb->expr()->between('wor.started', ':date_from', ':date_to'))
+            ->andWhere('wor.worker = :worker')
+            ->setParameters([
+                'worker' => $worker,
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
+            ])
+            ->getQuery()->getResult();
+    }
 }

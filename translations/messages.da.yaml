@@ -58,6 +58,8 @@ navigation:
     planning_users: 'Brugere'
     planning_projects: 'Projekter'
     hour_report: "Hent timerapport"
+    workload_report: "Hent workloadrapport"
+    worker: "Medarbejdere"
 
 planning:
     title: "Planlægning"
@@ -560,6 +562,16 @@ reports:
         select_fromdate: 'Fra dato'
         select_todate: 'Til dato'
         select_an_option: 'Vælg en mulighed'
+    workload_report:
+        title: 'Workloadrapport'
+        select_data_provider: 'Vælg datakilde'
+        workload: 'Normtid'
+        logged_hours: 'Loggede timer'
+        select_viewmode: 'Vælg visningstype'
+        week: 'Uge'
+        workers: 'Medarbejdere'
+        worker: 'Medarbejder'
+        hidden-entries: 'Skjulte medarbejdere'
 
 view:
     list_title: 'Views'
@@ -710,3 +722,15 @@ issue:
         description: "Beskrivelse"
         total: "I alt"
         list_no_records_found: "Ingen produkter"
+
+worker:
+    title: 'Medarbejdere'
+    index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
+    id: 'Id'
+    email: 'Email'
+    workload: 'Normtid (inkl. middagspause)'
+    actions: 'Handlinger'
+    action_edit: 'Rediger'
+    edit: 'Rediger medarbejder'
+    action_save: 'Gem'
+    back_to_list: "Tilbage til listen"
