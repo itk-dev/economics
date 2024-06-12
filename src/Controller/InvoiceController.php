@@ -18,7 +18,7 @@ use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
 use App\Service\ClientHelper;
-use App\Service\InvoiceEntryHelper;
+use App\Service\InvoiceHelper;
 use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,7 +38,7 @@ class InvoiceController extends AbstractController
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
         private readonly ViewService $viewService,
-        private readonly InvoiceEntryHelper $invoiceEntryHelper,
+        private readonly InvoiceHelper $invoiceEntryHelper,
     ) {
     }
 
