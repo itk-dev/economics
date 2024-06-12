@@ -87,6 +87,16 @@ class InvoiceEntryHelper
     }
 
     /**
+     * Get account invoice entry pretix based on configured accounts.
+     */
+    public function getAccountInvoiceEntryPrefix(string $account): ?string
+    {
+        $accounts = $this->getAccounts(null);
+
+        return $accounts[$account]['invoice_entry_prefix'] ?? null;
+    }
+
+    /**
      * Decide if an invoice entry is editable.
      */
     public function isEditable(InvoiceEntry $entry): bool
@@ -127,6 +137,7 @@ class InvoiceEntryHelper
                     ->setDefaults([
                         'default' => false,
                         'product' => false,
+                        'invoice_entry_prefix' => null,
                     ])
                     ->setAllowedTypes('default', 'bool')
                     ->setAllowedTypes('product', 'bool');

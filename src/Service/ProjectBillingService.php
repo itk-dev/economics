@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
+use App\Entity\IssueProduct;
 use App\Entity\ProjectBilling;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
@@ -180,6 +181,23 @@ class ProjectBillingService
             }
         }
 
+        $defaultAccount = $this->invoiceEntryHelper->getDefaultAccount();
+        $productAccount = $this->invoiceEntryHelper->getProductAccount();
+
+        // Add invoice entry account prefix, if any, to (product) name.
+        $prefixWithAccount = function (?string $account, ?string $name): ?string {
+            if (null === $name) {
+                return null;
+            }
+
+            $prefix = $account ? $this->invoiceEntryHelper->getAccountInvoiceEntryPrefix($account) : null;
+            if (null !== $prefix) {
+                $name = $prefix.': '.$name;
+            }
+
+            return $name;
+        };
+
         foreach ($invoices as $invoiceArray) {
             /** @var Client $client */
             $client = $invoiceArray['client'];
@@ -198,7 +216,7 @@ class ProjectBillingService
 
             // TODO: MaterialNumberEnum::EXTERNAL_WITH_MOMS or MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS?
             $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
-            $invoice->setDefaultReceiverAccount($this->invoiceEntryHelper->getDefaultAccount());
+            $invoice->setDefaultReceiverAccount($defaultAccount);
 
             /** @var Issue $issue */
             foreach ($invoiceArray['issues'] as $issue) {
@@ -206,7 +224,10 @@ class ProjectBillingService
                 $invoiceEntry->setEntryType(InvoiceEntryTypeEnum::WORKLOG);
                 $invoiceEntry->setDescription('');
 
-                $product = $this->getInvoiceEntryProduct($issue);
+                $product = $prefixWithAccount(
+                    $defaultAccount,
+                    $this->getInvoiceEntryProduct($issue)
+                );
                 $price = $this->clientHelper->getStandardPrice($client);
 
                 $invoiceEntry->setProduct($product);
@@ -236,29 +257,26 @@ class ProjectBillingService
                     $this->entityManager->persist($invoiceEntry);
                 }
 
-                $invoiceEntryProductName = $invoiceEntry->getProduct();
-                // Add invoice entries for each product.
-                foreach ($issue->getProducts() as $productIssue) {
-                    $product = $productIssue->getProduct();
-                    if (null === $product) {
-                        continue;
-                    }
-
-                    $productName = $product->getName() ?? '';
+                // Add a single product entry summing all product expenses.
+                $products = $issue->getProducts();
+                if (!$products->isEmpty()) {
+                    $price = $products->reduce(static fn (?float $sum, IssueProduct $product) => $sum + $product->getTotal(), 0.0);
+                    $product = $prefixWithAccount(
+                        $productAccount,
+                        $issue->getName()
+                    );
                     $productInvoiceEntry = (new InvoiceEntry())
                         ->setEntryType(InvoiceEntryTypeEnum::PRODUCT)
-                        ->setDescription($productIssue->getDescription())
-                        ->setProduct(null === $invoiceEntryProductName
-                            ? $productName
-                            : sprintf('%s: %s', $invoiceEntryProductName, $productName)
-                        )
-                        ->setPrice($product->getPriceAsFloat())
-                        ->setAmount($productIssue->getQuantity())
-                        ->setTotalPrice($productIssue->getQuantity() * $product->getPriceAsFloat())
+                        ->setDescription($issue->getName())
+                        ->setProduct($product)
+                        ->setPrice($price)
+                        ->setAmount(1)
+                        ->setTotalPrice($price)
                         ->setMaterialNumber($invoice->getDefaultMaterialNumber())
-                        ->setAccount($this->invoiceEntryHelper->getProductAccount()
-                            ?? $this->invoiceEntryHelper->getDefaultAccount())
-                        ->addIssueProduct($productIssue);
+                        ->setAccount($productAccount ?? $this->invoiceEntryHelper->getDefaultAccount());
+                    foreach ($issue->getProducts() as $productIssue) {
+                        $productInvoiceEntry->addIssueProduct($productIssue);
+                    }
                     // We don't add worklogs here, since they're already attached to the main invoice entry
                     // (and only used to detect if an entry has been added to an invoice).
 
