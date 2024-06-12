@@ -56,10 +56,11 @@ services:
                 issue_product_type_options:
                     quantity_scale: '%env(int:PRODUCT_QUANTITY_SCALE)%'
 
-    App\Service\InvoiceEntryHelper:
+    App\Service\InvoiceHelper:
         arguments:
             $options:
                 accounts: '%env(json:INVOICE_ENTRY_ACCOUNTS)%'
+                one_invoice_per_issue: '%env(bool:INVOICE_ONE_INVOICE_PER_ISSUE)%'
 
     App\Service\PlanningService:
         arguments:

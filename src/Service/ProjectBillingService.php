@@ -33,7 +33,7 @@ class ProjectBillingService
         private readonly ClientHelper $clientHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
-        private readonly InvoiceEntryHelper $invoiceEntryHelper,
+        private readonly InvoiceHelper $invoiceEntryHelper,
     ) {
     }
 
@@ -167,17 +167,21 @@ class ProjectBillingService
                 continue;
             }
 
-            $clientId = $client->getId();
+            $invoiceKey = $client->getId();
 
-            if (null !== $clientId) {
-                if (!isset($invoices[$clientId])) {
-                    $invoices[$clientId] = [
+            if (null !== $invoiceKey) {
+                if ($this->invoiceEntryHelper->getOneInvoicePerIssue()) {
+                    $invoiceKey .= '|||'.$issue->getId();
+                }
+
+                if (!isset($invoices[$invoiceKey])) {
+                    $invoices[$invoiceKey] = [
                         'client' => $client,
                         'issues' => [],
                     ];
                 }
 
-                $invoices[$clientId]['issues'][] = $issue;
+                $invoices[$invoiceKey]['issues'][] = $issue;
             }
         }
 
@@ -202,12 +206,24 @@ class ProjectBillingService
             /** @var Client $client */
             $client = $invoiceArray['client'];
 
+            $invoiceName = sprintf('%s: %s (%s - %s)',
+                $project->getName() ?? '',
+                $client->getName() ?? '',
+                $periodStart->format('d/m/Y'),
+                $periodEnd->format('d/m/Y')
+            );
+            if ($this->invoiceEntryHelper->getOneInvoicePerIssue()) {
+                // We know that we have at least one issue.
+                $issue = reset($invoiceArray['issues']);
+                $invoiceName = $issue->getName().': '.$invoiceName;
+            }
+
             $invoice = new Invoice();
             $invoice->setRecorded(false);
             $invoice->setProject($projectBilling->getProject());
             $invoice->setProjectBilling($projectBilling);
             $invoice->setDescription($projectBilling->getDescription());
-            $invoice->setName($project->getName().': '.$client->getName().' ('.$periodStart->format('d/m/Y').' - '.$periodEnd->format('d/m/Y').')');
+            $invoice->setName($invoiceName);
             $invoice->setPeriodFrom($periodStart);
             $invoice->setPeriodTo($periodEnd);
             $invoice->setClient($client);

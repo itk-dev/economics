@@ -7,7 +7,7 @@ use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class InvoiceEntryHelper
+class InvoiceHelper
 {
     private readonly array $options;
 
@@ -15,6 +15,11 @@ class InvoiceEntryHelper
         array $options
     ) {
         $this->options = $this->resolveOptions($options);
+    }
+
+    public function getOneInvoicePerIssue()
+    {
+        return $this->options['one_invoice_per_issue'];
     }
 
     /**
@@ -99,7 +104,7 @@ class InvoiceEntryHelper
     /**
      * Decide if an invoice entry is editable.
      */
-    public function isEditable(InvoiceEntry $entry): bool
+    public function isEntryEditable(InvoiceEntry $entry): bool
     {
         return null === $entry->getInvoice()?->getProjectBilling()
             || count($this->getAccountOptions(null)) > 1;
@@ -140,7 +145,8 @@ class InvoiceEntryHelper
                         'invoice_entry_prefix' => null,
                     ])
                     ->setAllowedTypes('default', 'bool')
-                    ->setAllowedTypes('product', 'bool');
+                    ->setAllowedTypes('product', 'bool')
+                    ->setAllowedTypes('invoice_entry_prefix', ['null', 'string']);
             })
             ->setAllowedValues('accounts', function (array $values) {
                 if (empty($values)) {
@@ -179,6 +185,9 @@ class InvoiceEntryHelper
 
                 return $values;
             })
+
+            ->setDefault('one_invoice_per_issue', false)
+            ->setAllowedTypes('one_invoice_per_issue', 'bool')
 
             ->resolve($options);
     }
