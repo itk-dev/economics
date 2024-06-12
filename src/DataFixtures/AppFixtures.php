@@ -7,6 +7,7 @@ use App\Entity\DataProvider;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Service\JiraApiService;
@@ -37,6 +38,16 @@ class AppFixtures extends Fixture
         $dataProvider2->setSecret('Not so secret');
 
         $dataProviders[] = $dataProvider2;
+
+        $workerArray = [];
+
+        for ($i = 0; $i < 10; ++$i) {
+            $worker = new Worker();
+            $worker->setEmail('test'.$i.'@test');
+            $worker->setWorkload(37);
+            $manager->persist($worker);
+            $workerArray[] = 'test'.$i.'@test';
+        }
 
         foreach ($dataProviders as $key => $dataProvider) {
             $manager->persist($dataProvider);
@@ -113,9 +124,9 @@ class AppFixtures extends Fixture
                         $worklog->setDescription("Beskrivelse af worklog-$key-$i-$j-$k");
                         $worklog->setIsBilled(false);
                         $worklog->setProject($project);
-                        $worklog->setWorker('test@test');
+                        $worklog->setWorker($workerArray[rand(0, 9)]);
                         $worklog->setTimeSpentSeconds(60 * 15 * ($k + 1));
-                        $worklog->setStarted(new \DateTime());
+                        $worklog->setStarted(\DateTime::createFromFormat('U', (string) rand(strtotime(date('Y-01-01')), strtotime(date('Y-12-31')))));
                         $worklog->setIssue($issue);
                         $worklog->setDataProvider($dataProvider);
 

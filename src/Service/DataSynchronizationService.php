@@ -9,6 +9,7 @@ use App\Entity\Invoice;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
@@ -20,6 +21,7 @@ use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
+use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -41,6 +43,7 @@ class DataSynchronizationService
         private readonly InvoiceRepository $invoiceRepository,
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
+        private readonly WorkerRepository $workerRepository,
     ) {
     }
 
@@ -355,6 +358,17 @@ class DataSynchronizationService
                 $progressCallback($worklogsAdded, count($worklogData->worklogData));
 
                 ++$worklogsAdded;
+            }
+
+            $workerExists = $this->workerRepository->findOneBy(['email' => $worklog->getWorker()]);
+
+            if (!$workerExists) {
+                $worker = new Worker();
+                $workerEmail = $worklog->getWorker();
+                if (isset($workerEmail)) {
+                    $worker->setEmail($workerEmail);
+                }
+                $this->entityManager->persist($worker);
             }
 
             // Flush and clear for each batch.
