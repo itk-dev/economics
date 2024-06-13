@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   1211: Added hour report
 * [PR-124](https://github.com/itk-dev/economics/pull/124)
   710: Added workload report
+* [PR-129](https://github.com/itk-dev/economics/pull/129)
+  1632: Added invoicing rate view to workload report
 
 ## [2.3.0] - 2024-06-03
 
