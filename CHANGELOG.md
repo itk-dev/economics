@@ -19,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-130](https://github.com/itk-dev/economics/pull/130)
   Reduced product invoice entries to a single entry
   Added option to generate one invoice per issue
-  1635: Reduced product invoice entries to a single entry
 * [PR-133](https://github.com/itk-dev/economics/pull/133)
   1742: Simplified hour report form.
 * [PR-132](https://github.com/itk-dev/economics/pull/132)

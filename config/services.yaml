@@ -61,6 +61,7 @@ services:
             $options:
                 accounts: '%env(json:INVOICE_ENTRY_ACCOUNTS)%'
                 one_invoice_per_issue: '%env(bool:INVOICE_ONE_INVOICE_PER_ISSUE)%'
+                set_invoice_description_from_entries: '%env(bool:SET_INVOICE_DESCRIPTION_FROM_ENTRIES)%'
 
     App\Service\PlanningService:
         arguments:
