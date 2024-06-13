@@ -242,7 +242,7 @@ class ProjectBillingService
 
                 $product = $prefixWithAccount(
                     $defaultAccount,
-                    $this->getInvoiceEntryProduct($issue)
+                    $issue->getName()
                 );
                 $price = $this->clientHelper->getStandardPrice($client);
 
