@@ -120,6 +120,7 @@ class DateTimeHelperTest extends TestCase
             ],
         ];
     }
+
     /**
      * @dataProvider weeksOfYearProvider
      */
@@ -146,6 +147,7 @@ class DateTimeHelperTest extends TestCase
             ],
         ];
     }
+
     /**
      * @dataProvider monthNameDataProvider
      */

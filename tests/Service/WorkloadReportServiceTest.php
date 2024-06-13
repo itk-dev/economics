@@ -10,7 +10,6 @@ use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\DateTimeHelper;
 use App\Service\WorkloadReportService;
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
 class WorkloadReportServiceTest extends TestCase
@@ -23,7 +22,6 @@ class WorkloadReportServiceTest extends TestCase
         $dependency1 = $this->createMock(WorkerRepository::class);
         $dependency2 = $this->createMock(WorklogRepository::class);
         $dependency3 = $this->createMock(DateTimeHelper::class);
-
 
         $workloadReportService = new WorkloadReportService($dependency1, $dependency2, $dependency3);
         $result = $workloadReportService->getViewPeriodTypes();
