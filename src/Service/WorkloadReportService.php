@@ -108,7 +108,7 @@ class WorkloadReportService
         return match ($viewPeriodType) {
             PeriodTypeEnum::WEEK => round(($loggedHours / $actualWeeklyWorkload) * 100),
             PeriodTypeEnum::MONTH => round(($loggedHours / ($actualWeeklyWorkload * 4)) * 100),
-            PeriodTypeEnum::YEAR => round(($loggedHours / ($actualWeeklyWorkload * 52)) * 100),
+            PeriodTypeEnum::YEAR => round(($loggedHours / ($actualWeeklyWorkload * 52)) * 100, 2),
         };
     }
 
