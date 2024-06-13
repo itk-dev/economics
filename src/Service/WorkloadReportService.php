@@ -48,6 +48,7 @@ class WorkloadReportService
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
                 $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
+
                 if ($period === $currentPeriodNumeric) {
                     $workloadReportData->setCurrentPeriodNumeric($period);
                 }
@@ -106,7 +107,8 @@ class WorkloadReportService
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewPeriodType) {
             PeriodTypeEnum::WEEK => round(($loggedHours / $actualWeeklyWorkload) * 100),
-            PeriodTypeEnum::MONTH => round(($loggedHours / ($actualWeeklyWorkload * 4)) * 100)
+            PeriodTypeEnum::MONTH => round(($loggedHours / ($actualWeeklyWorkload * 4)) * 100),
+            PeriodTypeEnum::YEAR => round(($loggedHours / ($actualWeeklyWorkload * 52)) * 100),
         };
     }
 
@@ -120,6 +122,7 @@ class WorkloadReportService
         return [
             'Week' => PeriodTypeEnum::WEEK->value,
             'Month' => PeriodTypeEnum::MONTH->value,
+            'Year' => PeriodTypeEnum::YEAR->value,
         ];
     }
 
@@ -148,6 +151,7 @@ class WorkloadReportService
         return match ($viewMode) {
             PeriodTypeEnum::MONTH => (int) (new \DateTime())->format('n'),
             PeriodTypeEnum::WEEK => (int) (new \DateTime())->format('W'),
+            PeriodTypeEnum::YEAR => (int) (new \DateTime())->format('Y'),
         };
     }
 
@@ -164,6 +168,7 @@ class WorkloadReportService
         return match ($viewMode) {
             PeriodTypeEnum::MONTH => $this->dateTimeHelper->getFirstAndLastDateOfMonth($period),
             PeriodTypeEnum::WEEK => $this->dateTimeHelper->getFirstAndLastDateOfWeek($period),
+            PeriodTypeEnum::YEAR => $this->dateTimeHelper->getFirstAndLastDateOfYear($period),
         };
     }
 
@@ -179,7 +184,7 @@ class WorkloadReportService
     {
         return match ($viewMode) {
             PeriodTypeEnum::MONTH => $this->dateTimeHelper->getMonthName($period),
-            PeriodTypeEnum::WEEK => (string) $period,
+            PeriodTypeEnum::WEEK, PeriodTypeEnum::YEAR => (string) $period,
         };
     }
 
@@ -195,6 +200,7 @@ class WorkloadReportService
         return match ($viewMode) {
             PeriodTypeEnum::MONTH => range(1, 12),
             PeriodTypeEnum::WEEK => $this->dateTimeHelper->getWeeksOfYear(),
+            PeriodTypeEnum::YEAR => [(int) (new \DateTime())->format('Y')],
         };
     }
 
