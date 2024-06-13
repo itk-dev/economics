@@ -104,4 +104,29 @@ class DateTimeHelper
     {
         return \DateTime::createFromFormat('!m', (string) $monthNumber)->format('F');
     }
+
+    /**
+     * Returns the first and last date of the specified year.
+     *
+     * @param int|null $year The year. If null, the current year will be used.
+     * @param string $format the format to use for the returned dates
+     *
+     * @return array an array containing the first and last date of the specified year
+     */
+    public function getFirstAndLastDateOfYear(int $year = null, string $format = 'Y-m-d H:i:s'): array
+    {
+        if (!$year) {
+            $year = (int) (new \DateTime())->format('Y');
+        }
+
+        $firstDateTime = (new \DateTime())->setDate($year, 1, 1);
+        $firstDateTime->setTime(0, 0, 0);
+        $firstDate = $firstDateTime->format($format);
+
+        $lastDateTime = (new \DateTime())->setDate($year, 12, 31);
+        $lastDateTime->setTime(23, 59, 59);
+        $lastDate = $lastDateTime->format($format);
+
+        return ['first' => $firstDate, 'last' => $lastDate];
+    }
 }
