@@ -414,5 +414,4 @@ class DataSynchronizationService
 
         $this->entityManager->flush();
     }
-
 }
