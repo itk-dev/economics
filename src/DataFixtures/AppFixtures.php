@@ -10,6 +10,7 @@ use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
+use App\Model\Reports\WorkloadReportBillableKindsEnum as BillableKindsEnum;
 use App\Service\JiraApiService;
 use App\Service\LeantimeApiService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -133,7 +134,7 @@ class AppFixtures extends Fixture
                         $worklog->setStarted(\DateTime::createFromFormat('U', (string) rand(strtotime(date('Y-01-01')), strtotime(date('Y-12-31')))));
                         $worklog->setIssue($issue);
                         $worklog->setDataProvider($dataProvider);
-
+                        $worklog->setKind(BillableKindsEnum::GENERAL_BILLABLE);
                         $manager->persist($worklog);
                     }
 
