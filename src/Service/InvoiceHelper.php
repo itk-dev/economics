@@ -22,6 +22,11 @@ class InvoiceHelper
         return $this->options['one_invoice_per_issue'];
     }
 
+    public function getSetInvoiceDescriptionFromEntries()
+    {
+        return $this->options['set_invoice_description_from_entries'];
+    }
+
     /**
      * Get all configured accounts.
      *
@@ -188,6 +193,9 @@ class InvoiceHelper
 
             ->setDefault('one_invoice_per_issue', false)
             ->setAllowedTypes('one_invoice_per_issue', 'bool')
+
+            ->setDefault('set_invoice_description_from_entries', false)
+            ->setAllowedTypes('set_invoice_description_from_entries', 'bool')
 
             ->resolve($options);
     }

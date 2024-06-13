@@ -213,7 +213,7 @@ class ProjectBillingService
                 $periodEnd->format('d/m/Y')
             );
             if ($this->invoiceEntryHelper->getOneInvoicePerIssue()) {
-                // We know that we have at least one issue.
+                // We know that we have exactly one issue.
                 $issue = reset($invoiceArray['issues']);
                 $invoiceName = $issue->getName().': '.$invoiceName;
             }
@@ -303,6 +303,27 @@ class ProjectBillingService
 
             if ($invoice->getInvoiceEntries()->isEmpty()) {
                 continue;
+            }
+
+            if ($this->invoiceEntryHelper->getOneInvoicePerIssue()
+                && $this->invoiceEntryHelper->getSetInvoiceDescriptionFromEntries()) {
+                // We know that we have exactly one issue.
+                $issue = reset($invoiceArray['issues']);
+                // Generate an invoice description starting with the issue name
+                // followed by an “Ordrelinjer:” heading
+                // and a line per invoice entry.
+                $description = array_merge(
+                    [
+                        $issue->getName(),
+                        'Ordrelinjer:',
+                    ],
+                    $invoice->getInvoiceEntries()
+                        ->map(
+                            static fn (InvoiceEntry $entry) => preg_replace('/^[A-Z0-9-]+: /', '', $entry->getDescription() ?? '')
+                        )
+                        ->toArray()
+                );
+                $invoice->setDescription(join(PHP_EOL, $description));
             }
 
             $projectBilling->addInvoice($invoice);
