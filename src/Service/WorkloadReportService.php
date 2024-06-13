@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportData;
+use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Model\Reports\WorkloadReportWorker;
 use App\Repository\WorkerRepository;
@@ -22,8 +22,7 @@ class WorkloadReportService
      * Retrieves the workload report data for the given view mode.
      *
      * @param PeriodTypeEnum $viewPeriodType The view period type (default: 'week')
-     *
-     * @param string $viewMode the view mode to generate the report for
+     * @param ViewModeEnum $viewMode the view mode to generate the report for
      *
      * @return WorkloadReportData the workload report data
      *
@@ -33,11 +32,11 @@ class WorkloadReportService
     {
         $workloadReportData = new WorkloadReportData($viewPeriodType->value);
         $workers = $this->workerRepository->findAll();
-        $periods = $this->getPeriods($viewMode);
+        $periods = $this->getPeriods($viewPeriodType);
 
         foreach ($periods as $period) {
             // Get period specific readable period representation for table headers.
-            $readablePeriod = $this->getReadablePeriod($period, $viewMode);
+            $readablePeriod = $this->getReadablePeriod($period, $viewPeriodType);
             $workloadReportData->period->set((string) $period, $readablePeriod);
         }
 
@@ -48,15 +47,21 @@ class WorkloadReportService
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
-                $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewMode);
+                $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
                 if ($period === $currentPeriodNumeric) {
                     $workloadReportData->setCurrentPeriodNumeric($period);
                 }
                 // Get first and last date in period.
-                $firstAndLastDate = $this->getDatesOfPeriod($period, $viewMode);
+                $firstAndLastDate = $this->getDatesOfPeriod($period, $viewPeriodType);
 
                 // Get all worklogs between the two dates.
-                $worklogs = $this->worklogRepository->findWorklogsByWorkerAndDateRange($worker->getUserIdentifier(), $firstAndLastDate['first'], $firstAndLastDate['last']);
+                $workerIdentifier = $worker->getUserIdentifier();
+
+                if (empty($workerIdentifier)) {
+                    throw new \Exception('Worker identifier cannot be empty');
+                }
+
+                $worklogs = $this->getWorkloads($viewMode, $workerIdentifier, $firstAndLastDate);
 
                 // Tally up logged hours in gathered worklogs for current period.
                 $loggedHours = 0;
@@ -134,18 +139,15 @@ class WorkloadReportService
     /**
      * Retrieves the current period as a numeric value based on the given view mode.
      *
-     * @param string $viewMode the view mode to determine the current period
+     * @param PeriodTypeEnum $viewMode the view mode to determine the current period
      *
      * @return int the current period as a numeric value
-     *
-     * @throws \Exception when an unexpected value for viewMode is provided
      */
-    private function getCurrentPeriodNumeric(string $viewMode): int
+    private function getCurrentPeriodNumeric(PeriodTypeEnum $viewMode): int
     {
         return match ($viewMode) {
-            'month' => (int) (new \DateTime())->format('n'),
-            'week' => (int) (new \DateTime())->format('W'),
-            default => throw new \Exception("Unexpected value for viewMode: $viewMode in getCurrentPeriodNumeric match"),
+            PeriodTypeEnum::MONTH => (int) (new \DateTime())->format('n'),
+            PeriodTypeEnum::WEEK => (int) (new \DateTime())->format('W'),
         };
     }
 
@@ -153,60 +155,63 @@ class WorkloadReportService
      * Retrieves an array of dates for a given period based on the view mode.
      *
      * @param int $period the period for which to retrieve dates
-     * @param string $viewMode the view mode to determine the dates of the period
+     * @param PeriodTypeEnum $viewMode the view mode to determine the dates of the period
      *
      * @return array an array of dates for the given period
-     *
-     * @throws \Exception when an unexpected value for viewMode is provided
      */
-    private function getDatesOfPeriod(int $period, string $viewMode): array
+    private function getDatesOfPeriod(int $period, PeriodTypeEnum $viewMode): array
     {
-        $periodDates = match ($viewMode) {
-            'month' => function ($monthNumber) { return $this->dateTimeHelper->getFirstAndLastDateOfMonth($monthNumber); },
-            'week' => function ($weekNumber) { return $this->dateTimeHelper->getFirstAndLastDateOfWeek($weekNumber); },
-            default => throw new \Exception("Unexpected value for viewMode: $viewMode in getDatesOfPeriod match"),
+        return match ($viewMode) {
+            PeriodTypeEnum::MONTH => $this->dateTimeHelper->getFirstAndLastDateOfMonth($period),
+            PeriodTypeEnum::WEEK => $this->dateTimeHelper->getFirstAndLastDateOfWeek($period),
         };
-
-        return $periodDates($period);
     }
 
     /**
      * Retrieves the readable period based on the given period and view mode.
      *
      * @param int $period the period to be made readable
-     * @param string $viewMode the view mode to determine the format of the readable period
+     * @param PeriodTypeEnum $viewMode the view mode to determine the format of the readable period
      *
      * @return string the readable period
-     *
-     * @throws \Exception when an unexpected value for viewMode is provided
      */
-    private function getReadablePeriod(int $period, string $viewMode): string
+    private function getReadablePeriod(int $period, PeriodTypeEnum $viewMode): string
     {
-        $readablePeriod = match ($viewMode) {
-            'month' => fn ($monthNumber) => $this->dateTimeHelper->getMonthName($monthNumber),
-            'week' => fn ($weekNumber) => (string) $weekNumber,
-            default => throw new \Exception("Unexpected value for viewMode: $viewMode in getReadablePeriod match"),
+        return match ($viewMode) {
+            PeriodTypeEnum::MONTH => $this->dateTimeHelper->getMonthName($period),
+            PeriodTypeEnum::WEEK => (string) $period,
         };
-
-        return $readablePeriod($period);
     }
 
     /**
      * Retrieves an array of periods based on the given view mode.
      *
-     * @param string $viewMode the view mode to determine the periods
+     * @param PeriodTypeEnum $viewMode the view mode to determine the periods
      *
      * @return array an array of periods
-     *
-     * @throws \Exception when an unexpected value for viewMode is provided
      */
-    private function getPeriods(string $viewMode): array
+    private function getPeriods(PeriodTypeEnum $viewMode): array
     {
-        // Get period based on viewmode.
         return match ($viewMode) {
-            'month' => range(1, 12),
-            'week' => $this->dateTimeHelper->getWeeksOfYear(),
-            default => throw new \Exception("Unexpected value for viewMode: $viewMode in periods match"),
+            PeriodTypeEnum::MONTH => range(1, 12),
+            PeriodTypeEnum::WEEK => $this->dateTimeHelper->getWeeksOfYear(),
+        };
+    }
+
+    /**
+     * Returns workloads based on the provided view mode, worker, and date range.
+     *
+     * @param ViewModeEnum $viewMode defines the view mode
+     * @param string $worker the worker's identifier
+     * @param array $firstAndLastDate contains the date range (first and last dates)
+     *
+     * @return array the list of workloads matching the criteria defined by the parameters
+     */
+    private function getWorkloads(ViewModeEnum $viewMode, string $worker, array $firstAndLastDate): array
+    {
+        return match ($viewMode) {
+            ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($worker, $firstAndLastDate['first'], $firstAndLastDate['last']),
+            ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($worker, $firstAndLastDate['first'], $firstAndLastDate['last']),
         };
     }
 }
