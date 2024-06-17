@@ -22,16 +22,6 @@ class WorkloadReportData
     }
 
     /**
-     * Get current week.
-     *
-     * @return int $currentPeriodNumeric
-     */
-    public function getCurrentPeriodNumeric(): int
-    {
-        return $this->currentPeriodNumeric;
-    }
-
-    /**
      * Set current week.
      *
      * @param int $currentPeriodNumeric
