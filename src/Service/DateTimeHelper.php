@@ -12,18 +12,14 @@ class DateTimeHelper
      * Returns the first and last date of a given week in a year (ISO 8601).
      *
      * @param int $weekNumber the week number
-     * @param int|null $year The year. If not provided, the current year will be used.
+     * @param int $year the year
      * @param string $format The date format to be returned. Defaults to 'Y-m-d H:i:s'.
      *
      * @return array an array with the first and last date of the week
      */
-    public function getFirstAndLastDateOfWeek(int $weekNumber, int $year = null, string $format = 'Y-m-d H:i:s'): array
+    public function getFirstAndLastDateOfWeek(int $weekNumber, int $year, string $format = 'Y-m-d H:i:s'): array
     {
-        if (!$year) {
-            $year = (int) (new \DateTime())->format('Y');
-        }
-
-        $firstDateTime = (new \DateTime())->setISODate($year, $weekNumber);
+        $firstDateTime = (new \DateTime())->setISODate($year, $weekNumber, 1);
         $firstDateTime->setTime(0, 0, 0);
         $firstDate = $firstDateTime->format($format);
 
@@ -38,17 +34,13 @@ class DateTimeHelper
      * Returns the first and last date of the specified month and year.
      *
      * @param int $monthNumber the month number (1-12)
-     * @param int|null $year The year. If null, the current year will be used.
+     * @param int $year the year
      * @param string $format the format to use for the returned dates
      *
      * @return array an array containing the first and last date of the specified month and year
      */
-    public function getFirstAndLastDateOfMonth(int $monthNumber, int $year = null, string $format = 'Y-m-d H:i:s'): array
+    public function getFirstAndLastDateOfMonth(int $monthNumber, int $year, string $format = 'Y-m-d H:i:s'): array
     {
-        if (!$year) {
-            $year = (int) (new \DateTime())->format('Y');
-        }
-
         $firstDateTime = (new \DateTime())->setDate($year, $monthNumber, 1);
         $firstDateTime->setTime(0, 0, 0);
         $firstDate = $firstDateTime->format($format);
@@ -63,15 +55,12 @@ class DateTimeHelper
     /**
      * Retrieves an array of week numbers for a given year.
      *
-     * @param int|null $year The year for which to retrieve the week numbers. If null, the current year is used.
+     * @param int $year the year for which to retrieve the week numbers
      *
      * @return array an array of week numbers
      */
-    public function getWeeksOfYear(int $year = null): array
+    public function getWeeksOfYear(int $year): array
     {
-        if (!$year) {
-            $year = (int) (new \DateTime())->format('Y');
-        }
         $weekArray = [];
         $start = new \DateTime("{$year}-01-04"); // 4th of Jan always falls in the first week of the year.
         $end = (new \DateTime("{$year}-12-28"))->modify('+1 week'); // 28th of Dec always falls in the last week of the year.
@@ -108,17 +97,13 @@ class DateTimeHelper
     /**
      * Returns the first and last date of the specified year.
      *
-     * @param int|null $year The year. If null, the current year will be used.
+     * @param int $year the year
      * @param string $format the format to use for the returned dates
      *
      * @return array an array containing the first and last date of the specified year
      */
-    public function getFirstAndLastDateOfYear(int $year = null, string $format = 'Y-m-d H:i:s'): array
+    public function getFirstAndLastDateOfYear(int $year, string $format = 'Y-m-d H:i:s'): array
     {
-        if (!$year) {
-            $year = (int) (new \DateTime())->format('Y');
-        }
-
         $firstDateTime = (new \DateTime())->setDate($year, 1, 1);
         $firstDateTime->setTime(0, 0, 0);
         $firstDate = $firstDateTime->format($format);
