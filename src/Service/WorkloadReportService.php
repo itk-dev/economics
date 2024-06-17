@@ -31,8 +31,9 @@ class WorkloadReportService
     public function getWorkloadReport(PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
     {
         $workloadReportData = new WorkloadReportData($viewPeriodType->value);
+        $year = (new \DateTime())->format('Y');
         $workers = $this->workerRepository->findAll();
-        $periods = $this->getPeriods($viewPeriodType);
+        $periods = $this->getPeriods($viewPeriodType, $year);
 
         foreach ($periods as $period) {
             // Get period specific readable period representation for table headers.
@@ -53,7 +54,7 @@ class WorkloadReportService
                     $workloadReportData->setCurrentPeriodNumeric($period);
                 }
                 // Get first and last date in period.
-                $firstAndLastDate = $this->getDatesOfPeriod($period, $viewPeriodType);
+                $firstAndLastDate = $this->getDatesOfPeriod($period, $year, $viewPeriodType);
 
                 // Get all worklogs between the two dates.
                 $workerIdentifier = $worker->getUserIdentifier();
@@ -159,16 +160,17 @@ class WorkloadReportService
      * Retrieves an array of dates for a given period based on the view mode.
      *
      * @param int $period the period for which to retrieve dates
+     * @param int $year the year for the period
      * @param PeriodTypeEnum $viewMode the view mode to determine the dates of the period
      *
      * @return array an array of dates for the given period
      */
-    private function getDatesOfPeriod(int $period, PeriodTypeEnum $viewMode): array
+    private function getDatesOfPeriod(int $period, int $year, PeriodTypeEnum $viewMode): array
     {
         return match ($viewMode) {
-            PeriodTypeEnum::MONTH => $this->dateTimeHelper->getFirstAndLastDateOfMonth($period),
-            PeriodTypeEnum::WEEK => $this->dateTimeHelper->getFirstAndLastDateOfWeek($period),
-            PeriodTypeEnum::YEAR => $this->dateTimeHelper->getFirstAndLastDateOfYear($period),
+            PeriodTypeEnum::MONTH => $this->dateTimeHelper->getFirstAndLastDateOfMonth($period, $year),
+            PeriodTypeEnum::WEEK => $this->dateTimeHelper->getFirstAndLastDateOfWeek($period, $year),
+            PeriodTypeEnum::YEAR => $this->dateTimeHelper->getFirstAndLastDateOfYear($period, $year),
         };
     }
 
@@ -192,14 +194,15 @@ class WorkloadReportService
      * Retrieves an array of periods based on the given view mode.
      *
      * @param PeriodTypeEnum $viewMode the view mode to determine the periods
+     * @param int $year the year containing the periods
      *
      * @return array an array of periods
      */
-    private function getPeriods(PeriodTypeEnum $viewMode): array
+    private function getPeriods(PeriodTypeEnum $viewMode, int $year): array
     {
         return match ($viewMode) {
             PeriodTypeEnum::MONTH => range(1, 12),
-            PeriodTypeEnum::WEEK => $this->dateTimeHelper->getWeeksOfYear(),
+            PeriodTypeEnum::WEEK => $this->dateTimeHelper->getWeeksOfYear($year),
             PeriodTypeEnum::YEAR => [(int) (new \DateTime())->format('Y')],
         };
     }
