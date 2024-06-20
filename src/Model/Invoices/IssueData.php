@@ -20,6 +20,8 @@ class IssueData
     public ?Collection $versions;
     public ?\DateTime $resolutionDate = null;
     public string $projectId;
+    public ?int $planHours;
+    public ?int $hourRemaining;
 
     public function __construct()
     {

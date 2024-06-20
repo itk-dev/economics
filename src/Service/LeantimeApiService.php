@@ -158,6 +158,8 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->accountKey = '';
             $issueData->epicKey = $issue->tags;
             $issueData->epicName = $issue->tags;
+            $issueData->planHours = $issue->planHours;
+            $issueData->hourRemaining = $issue->hourRemaining;
             if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }

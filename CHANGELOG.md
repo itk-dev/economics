@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-132](https://github.com/itk-dev/economics/pull/132)
+  1742: Fixed synchronization issues.
 * [PR-128](https://github.com/itk-dev/economics/pull/128)
   1595: Added retryable http client decorator for handling rate limiting.
 * [PR-117](https://github.com/itk-dev/economics/pull/117)
