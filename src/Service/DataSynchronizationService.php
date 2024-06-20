@@ -320,6 +320,7 @@ class DataSynchronizationService
             }
 
             $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
+
             if (!$worklog) {
                 $worklog = new Worklog();
 
@@ -329,6 +330,7 @@ class DataSynchronizationService
 
                 $this->entityManager->persist($worklog);
             }
+
             $worklog
                 ->setWorklogId($worklogDatum->projectTrackerId)
                 ->setDescription($worklogDatum->comment)
@@ -350,6 +352,7 @@ class DataSynchronizationService
             $project->addWorklog($worklog);
             // Keep the worklog.
             $worklogId = $worklog->getId();
+
             if (null !== $worklogId) {
                 unset($worklogsToDeleteIds[$worklogId]);
             }
@@ -360,15 +363,17 @@ class DataSynchronizationService
                 ++$worklogsAdded;
             }
 
-            $workerExists = $this->workerRepository->findOneBy(['email' => $worklog->getWorker()]);
+            $workerEmail = $worklog->getWorker();
+
+            $workerExists = $this->workerRepository->findOneBy(['email' => $workerEmail]);
 
             if (!$workerExists) {
-                $worker = new Worker();
-                $workerEmail = $worklog->getWorker();
                 if (isset($workerEmail)) {
+                    $worker = new Worker();
                     $worker->setEmail($workerEmail);
+                    $this->entityManager->persist($worker);
+                    $this->entityManager->flush();
                 }
-                $this->entityManager->persist($worker);
             }
 
             // Flush and clear for each batch.
