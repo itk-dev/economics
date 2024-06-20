@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when releasing.
+* [PR-128](https://github.com/itk-dev/economics/pull/128)
+  1595: Added retryable http client decorator for handling rate limiting.
 * [PR-117](https://github.com/itk-dev/economics/pull/117)
   1211: Added hour report
+  NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when releasing.
 * [PR-124](https://github.com/itk-dev/economics/pull/124)
   710: Added workload report
 
