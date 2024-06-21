@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worklog;
 use App\Exception\EconomicsException;
 use App\Model\Reports\HourReportData;
 use App\Model\Reports\HourReportProjectTag;
@@ -27,7 +28,7 @@ class HourReportService
     {
         $hourReportData = new HourReportData(0, 0);
 
-        // If version is provided, we only want the issues containing the versionId
+        // If version is provided, we only want the issues containing the version.
         if ($version) {
             $projectIssues = $this->issueRepository->issuesContainingVersion($version);
         } else {
@@ -36,10 +37,17 @@ class HourReportService
 
         foreach ($projectIssues as $issue) {
             $totalTicketEstimated = (float) $issue->planHours;
+            $dueDate = $issue->getDueDate();
 
             $timesheetData = $this->worklogRepository->findBy(['issue' => $issue->getId()]);
 
             list($timesheets, $totalTicketSpent) = $this->processTimesheetsData($timesheetData, $fromDate, $toDate);
+
+            // If no worklogs have been registered in the interval or if the due date is not in the interval,
+            // ignore the issue in the report.
+            if ($totalTicketSpent === 0 || $dueDate < $fromDate || $dueDate > $toDate) {
+                continue;
+            }
 
             $projectTicket = new HourReportProjectTicket(
                 $issue->getId(),
@@ -65,6 +73,7 @@ class HourReportService
             if (!$projectTag) {
                 throw new EconomicsException('Project tag not found');
             }
+
             $projectTag->projectTickets->add($projectTicket);
 
             $hourReportData->projectTags->set((string) $issueEpicName, $projectTag);
@@ -75,20 +84,28 @@ class HourReportService
         return $hourReportData;
     }
 
-    private function processTimesheetsData($timesheetsData, $fromDate, $toDate): array
+    private function processTimesheetsData(array $timesheetsData, \DateTimeInterface $fromDate = null, \DateTimeInterface $toDate = null): array
     {
         $timesheets = [];
         $totalTicketSpent = 0;
 
+        /** @var Worklog $timesheetDatum */
         foreach ($timesheetsData as $timesheetDatum) {
-            if ($fromDate && $toDate) {
-                $timesheetDate = $timesheetDatum->getStarted();
-                if ($timesheetDate < $fromDate || $timesheetDate > $toDate) {
+            $timesheetDate = $timesheetDatum->getStarted();
+
+            if ($fromDate !== null) {
+                if ($timesheetDate < $fromDate) {
                     continue;
                 }
             }
 
-            $hoursSpent = (float) ($timesheetDatum->getTimeSpentSeconds() / 3600);
+            if ($toDate !== null) {
+                if ($timesheetDate > $toDate) {
+                    continue;
+                }
+            }
+
+            $hoursSpent = $timesheetDatum->getTimeSpentSeconds() / 3600;
             $timesheet = new HourReportTimesheet($timesheetDatum->getId(), $hoursSpent);
             $timesheets[] = $timesheet;
             $totalTicketSpent += $hoursSpent;
