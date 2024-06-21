@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Project;
+use App\Entity\Version;
 use App\Exception\EconomicsException;
 use App\Model\Reports\HourReportData;
 use App\Model\Reports\HourReportProjectTag;
@@ -22,13 +23,13 @@ class HourReportService
     /**
      * @throws EconomicsException
      */
-    public function getHourReport(Project $project, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, int $versionId = null): HourReportData
+    public function getHourReport(Project $project, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, Version $version = null): HourReportData
     {
         $hourReportData = new HourReportData(0, 0);
 
         // If version is provided, we only want the issues containing the versionId
-        if ($versionId) {
-            $projectIssues = $this->issueRepository->issuesContainingVersion($versionId);
+        if ($version) {
+            $projectIssues = $this->issueRepository->issuesContainingVersion($version);
         } else {
             $projectIssues = $this->issueRepository->findBy(['project' => $project]);
         }

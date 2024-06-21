@@ -52,8 +52,8 @@ class HourReportType extends AbstractType
                     return $query;
                 },
                 'placeholder' => 'hour_report.select_project',
-                'choice_label' => function (Project $pr) {
-                    return $pr->getName().' ('.$pr->getDataProvider().')';
+                'choice_label' => function (Project $project) {
+                    return $project->getName();
                 },
                 'attr' => [
                     'class' => 'form-element',
@@ -75,7 +75,7 @@ class HourReportType extends AbstractType
                     return $query;
                 },
                 'choice_label' => function (Version $version) {
-                    return $version->getName().' ('.$version->getProject().')';
+                    return $version->getName();
                 },
                 'attr' => [
                     'class' => 'form-element',
