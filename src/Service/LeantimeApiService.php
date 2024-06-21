@@ -160,7 +160,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->epicName = $issue->tags;
             $issueData->planHours = $issue->planHours;
             $issueData->hourRemaining = $issue->hourRemaining;
-            $issueData->dueDate = !empty($issue->dateToFinish) && $issue->dateToFinish !== '0000-00-00 00:00:00' ? new \DateTime($issue->dateToFinish) : null;
+            $issueData->dueDate = !empty($issue->dateToFinish) && '0000-00-00 00:00:00' !== $issue->dateToFinish ? new \DateTime($issue->dateToFinish) : null;
             if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }

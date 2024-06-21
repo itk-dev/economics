@@ -9,7 +9,7 @@ use App\Exception\EconomicsException;
 use App\Model\Reports\HourReportData;
 use App\Model\Reports\HourReportProjectTag;
 use App\Model\Reports\HourReportProjectTicket;
-use App\Model\Reports\HourReportTimesheet;
+use App\Model\Reports\HourReportWorklog;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 
@@ -45,7 +45,7 @@ class HourReportService
 
             // If no worklogs have been registered in the interval or if the due date is not in the interval,
             // ignore the issue in the report.
-            if ($totalTicketSpent === 0 || $dueDate < $fromDate || $dueDate > $toDate) {
+            if (0 === $totalTicketSpent || $dueDate < $fromDate || $dueDate > $toDate) {
                 continue;
             }
 
@@ -84,29 +84,29 @@ class HourReportService
         return $hourReportData;
     }
 
-    private function processTimesheetsData(array $timesheetsData, \DateTimeInterface $fromDate = null, \DateTimeInterface $toDate = null): array
+    private function processTimesheetsData(array $worklogs, \DateTimeInterface $fromDate = null, \DateTimeInterface $toDate = null): array
     {
         $timesheets = [];
         $totalTicketSpent = 0;
 
-        /** @var Worklog $timesheetDatum */
-        foreach ($timesheetsData as $timesheetDatum) {
-            $timesheetDate = $timesheetDatum->getStarted();
+        /** @var Worklog $worklog */
+        foreach ($worklogs as $worklog) {
+            $timesheetDate = $worklog->getStarted();
 
-            if ($fromDate !== null) {
+            if (null !== $fromDate) {
                 if ($timesheetDate < $fromDate) {
                     continue;
                 }
             }
 
-            if ($toDate !== null) {
+            if (null !== $toDate) {
                 if ($timesheetDate > $toDate) {
                     continue;
                 }
             }
 
-            $hoursSpent = $timesheetDatum->getTimeSpentSeconds() / 3600;
-            $timesheet = new HourReportTimesheet($timesheetDatum->getId(), $hoursSpent);
+            $hoursSpent = $worklog->getTimeSpentSeconds() / 3600;
+            $timesheet = new HourReportWorklog($worklog->getId(), $hoursSpent);
             $timesheets[] = $timesheet;
             $totalTicketSpent += $hoursSpent;
         }
