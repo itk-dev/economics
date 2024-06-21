@@ -2,23 +2,15 @@
 
 namespace App\Controller;
 
-use App\Entity\DataProvider;
-use App\Entity\Project;
-use App\Entity\Version;
 use App\Exception\EconomicsException;
 use App\Form\HourReportType;
 use App\Model\Reports\HourReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
-use App\Service\DataProviderService;
 use App\Service\HourReportService;
 use App\Service\ViewService;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,10 +20,10 @@ class HourReportController extends AbstractController
 {
     public function __construct(
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ViewService            $viewService,
-        private readonly HourReportService      $hourReportService,
-        private readonly ?string                $defaultDataProvider,
-        private readonly ProjectRepository      $projectRepository,
+        private readonly ViewService $viewService,
+        private readonly HourReportService $hourReportService,
+        private readonly ?string $defaultDataProvider,
+        private readonly ProjectRepository $projectRepository,
         private readonly VersionRepository $versionRepository,
     ) {
     }
@@ -54,7 +46,7 @@ class HourReportController extends AbstractController
 
         if (!empty($requestData['dataProvider'])) {
             $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
-        } else if ($this->defaultDataProvider !== null) {
+        } elseif (null !== $this->defaultDataProvider) {
             $dataProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
         }
 
@@ -87,7 +79,7 @@ class HourReportController extends AbstractController
             $fromDate = $form->get('fromDate')->getData() ?? null;
             $toDate = $form->get('toDate')->getData() ?? null;
 
-            if ($project !== null) {
+            if (null !== $project) {
                 $reportData = $this->hourReportService->getHourReport($project, $fromDate, $toDate, $version);
             }
         }

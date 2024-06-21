@@ -21,8 +21,7 @@ class HourReportType extends AbstractType
     public function __construct(
         private readonly HourReportService $hourReportService,
         private readonly DataProviderRepository $dataProviderRepository,
-    )
-    {
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -46,14 +45,15 @@ class HourReportType extends AbstractType
                 'required' => false,
                 'query_builder' => function (ProjectRepository $projectRepository) use ($options) {
                     $query = $projectRepository->getIncluded();
-                    if ($options['data_provider'] !== null) {
+                    if (null !== $options['data_provider']) {
                         $query->where('project.dataProvider = :dataProvider')->setParameter('dataProvider', $options['data_provider']);
                     }
+
                     return $query;
                 },
                 'placeholder' => 'hour_report.select_project',
                 'choice_label' => function (Project $pr) {
-                    return $pr->getName() . ' (' . $pr->getDataProvider() . ')';
+                    return $pr->getName().' ('.$pr->getDataProvider().')';
                 },
                 'attr' => [
                     'class' => 'form-element',
@@ -68,13 +68,14 @@ class HourReportType extends AbstractType
                 'required' => false,
                 'query_builder' => function (VersionRepository $versionRepository) use ($options) {
                     $query = $versionRepository->createQueryBuilder('version');
-                    if ($options['project'] !== null) {
+                    if (null !== $options['project']) {
                         $query->where('version.project = :project')->setParameter('project', $options['project']);
                     }
+
                     return $query;
                 },
                 'choice_label' => function (Version $version) {
-                    return $version->getName() . ' (' . $version->getProject() . ')';
+                    return $version->getName().' ('.$version->getProject().')';
                 },
                 'attr' => [
                     'class' => 'form-element',
@@ -112,7 +113,6 @@ class HourReportType extends AbstractType
                     'onchange' => 'this.form.submit()',
                 ],
             ]);
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void
