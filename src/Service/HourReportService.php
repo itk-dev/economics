@@ -2,14 +2,13 @@
 
 namespace App\Service;
 
+use App\Entity\Project;
 use App\Exception\EconomicsException;
 use App\Model\Reports\HourReportData;
 use App\Model\Reports\HourReportProjectTag;
 use App\Model\Reports\HourReportProjectTicket;
 use App\Model\Reports\HourReportTimesheet;
 use App\Repository\IssueRepository;
-use App\Repository\ProjectRepository;
-use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 
 class HourReportService
@@ -17,55 +16,21 @@ class HourReportService
     public function __construct(
         private readonly IssueRepository $issueRepository,
         private readonly WorklogRepository $worklogRepository,
-        private readonly ProjectRepository $projectRepository,
-        private readonly VersionRepository $versionRepository,
     ) {
     }
 
     /**
      * @throws EconomicsException
      */
-    public function getProjects(): array
+    public function getHourReport(Project $project, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, int $versionId = null): HourReportData
     {
-        $projects = $this->projectRepository->findAll();
-        $projectChoices = [];
-        foreach ($projects as $project) {
-            $projectChoices[$project->getName()] = $project->getId();
-        }
-
-        return $projectChoices;
-    }
-
-    public function getMilestones(string $projectId, bool $includeAllOption = false): array
-    {
-        $milestones = $this->versionRepository->findBy(['project' => $projectId]);
-        $milestoneChoices = [];
-        if ($includeAllOption) {
-            $milestoneChoices['All milestones'] = '0';
-        }
-        foreach ($milestones as $milestone) {
-            $milestoneName = $milestone->getName() ?? '';
-            $milestoneChoices[$milestoneName] = $milestone->getId();
-        }
-
-        return $milestoneChoices;
-    }
-
-    /**
-     * @throws EconomicsException
-     */
-    public function getHourReport(string $projectId, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, int $versionId = null): HourReportData
-    {
-        if (!$projectId) {
-            throw new EconomicsException('No project id specified');
-        }
         $hourReportData = new HourReportData(0, 0);
 
         // If version is provided, we only want the issues containing the versionId
         if ($versionId) {
             $projectIssues = $this->issueRepository->issuesContainingVersion($versionId);
         } else {
-            $projectIssues = $this->issueRepository->findBy(['project' => $projectId]);
+            $projectIssues = $this->issueRepository->findBy(['project' => $project]);
         }
 
         foreach ($projectIssues as $issue) {
@@ -131,18 +96,19 @@ class HourReportService
         return [$timesheets, $totalTicketSpent];
     }
 
-    public function getFromDate(): string
+    public function getDefaultFromDate(): \DateTime
     {
         $fromDate = new \DateTime();
         $fromDate->modify('first day of this month');
 
-        return $fromDate->format('Y-m-d');
+        return $fromDate;
     }
 
-    public function getToDate(): string
+    public function getDefaultToDate(): \DateTime
     {
         $fromDate = new \DateTime();
+        $fromDate->modify('last day of this month');
 
-        return $fromDate->format('Y-m-d');
+        return $fromDate;
     }
 }

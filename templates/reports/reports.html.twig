@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'reports.hour_report.title'|trans }}{% endblock %}
+{% block title %}{{ 'hour_report.title'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ ('reports.' ~ mode ~ '.title')|trans() }}</h1>
+    <h1 class="page-title">{{ (mode ~ '.title')|trans() }}</h1>
 
     {{ form_start(form) }}
     {{ form_row(form.dataProvider) }}
     {{ form_end(form) }}
 
-    {% if error is not null %}
+    {% if error is defined and error is not null %}
         {% include 'components/alert.html.twig' with {level: "danger", text: error} %}
     {% endif %}
     {% if data is not empty %}
