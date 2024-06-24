@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Form\ManagementReportDateIntervalType;
 use App\Repository\InvoiceRepository;
 use App\Service\ManagementReportService;
-use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class ManagementReportController extends AbstractController
 {
     public function __construct(
-        private readonly ViewService $viewService,
     ) {
     }
 
@@ -33,14 +31,13 @@ class ManagementReportController extends AbstractController
             ManagementReportDateIntervalType::class,
             [
                 'firstLog' => $firstRecordedInvoice->getRecordedDate(),
-                'view' => $this->viewService->getCurrentViewId(),
             ],
-            ['action' => $this->generateUrl('app_management_reports_output', $this->viewService->addView([])), 'method' => 'GET']
+            ['action' => $this->generateUrl('app_management_reports_output', []), 'method' => 'GET']
         );
 
-        return $this->render('management-report/create.html.twig', $this->viewService->addView([
+        return $this->render('management-report/create.html.twig', [
             'form' => $form,
-        ]));
+        ]);
     }
 
     /**
@@ -54,7 +51,7 @@ class ManagementReportController extends AbstractController
         $dateInterval = $queryElements['management_report_date_interval'] ?? null;
 
         if (empty($dateInterval['dateFrom']) || empty($dateInterval['dateTo'])) {
-            return $this->redirectToRoute('app_management_reports_create', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_management_reports_create', [], Response::HTTP_SEE_OTHER);
         }
 
         $invoices = $this->getInvoicesDataFromDates($dateInterval, $invoiceRepository, $view);

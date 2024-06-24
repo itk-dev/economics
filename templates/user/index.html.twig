@@ -15,9 +15,6 @@
             <th class="table-th">{{ 'users.id'|trans }}</th>
             <th class="table-th">{{ 'users.name'|trans }}</th>
             <th class="table-th">{{ 'users.email'|trans }}</th>
-            {% for role in roles %}
-                <th class="table-th">{{ ("roles." ~ role.value)|trans }}</th>
-            {% endfor %}
             <th class="table-th">{{ 'users.views'|trans }}</th>
         </tr>
         </thead>
@@ -35,13 +32,6 @@
                         </label>
                     </td>
                 {% endfor %}
-                <td class="table-td" {{ stimulus_controller('views') }} data-update-url="{{ path('app_user_set_views', {id: user.id}) }}">
-                    <select multiple {{ stimulus_target('views', 'select') }} {{ stimulus_action('views', 'onChange', 'change') }}>
-                        {% for view in views %}
-                            <option value="{{ view.id }}" {{ view in user.views ? 'selected' : '' }}>{{ view.name }}</option>
-                        {% endfor %}
-                    </select>
-                </td>
             </tr>
         {% else %}
             <tr class="table-tr">

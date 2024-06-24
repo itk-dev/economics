@@ -16,7 +16,6 @@ use App\Repository\InvoiceRepository;
 use App\Repository\ProjectBillingRepository;
 use App\Service\BillingService;
 use App\Service\ProjectBillingService;
-use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +29,6 @@ class ProjectBillingController extends AbstractController
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private readonly ViewService $viewService,
     ) {
     }
 
@@ -44,10 +42,10 @@ class ProjectBillingController extends AbstractController
 
         $pagination = $projectBillingRepository->getFilteredPagination($projectBillingFilterData, $request->query->getInt('page', 1));
 
-        return $this->render('project_billing/index.html.twig', $this->viewService->addView([
+        return $this->render('project_billing/index.html.twig', [
             'projectBillings' => $pagination,
             'form' => $form,
-        ]));
+        ]);
     }
 
     #[Route('/new', name: 'app_project_billing_new', methods: ['GET', 'POST'])]
@@ -70,15 +68,15 @@ class ProjectBillingController extends AbstractController
                 $bus->dispatch(new CreateProjectBillingMessage($id));
             }
 
-            return $this->redirectToRoute('app_project_billing_edit', $this->viewService->addView([
+            return $this->redirectToRoute('app_project_billing_edit', [
                 'id' => $id,
-            ]), Response::HTTP_SEE_OTHER);
+            ], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('project_billing/new.html.twig', $this->viewService->addView([
+        return $this->render('project_billing/new.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
-        ]));
+        ]);
     }
 
     /**
@@ -109,18 +107,18 @@ class ProjectBillingController extends AbstractController
                 $bus->dispatch(new UpdateProjectBillingMessage($id));
             }
 
-            return $this->redirectToRoute('app_project_billing_edit', $this->viewService->addView([
+            return $this->redirectToRoute('app_project_billing_edit', [
                 'id' => $id,
-            ]), Response::HTTP_SEE_OTHER);
+            ], Response::HTTP_SEE_OTHER);
         }
 
         $issuesWithoutAccounts = $projectBillingService->getIssuesNotIncludedInProjectBilling($projectBilling);
 
-        return $this->render('project_billing/edit.html.twig', $this->viewService->addView([
+        return $this->render('project_billing/edit.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
             'issuesWithoutAccounts' => $issuesWithoutAccounts,
-        ]));
+        ]);
     }
 
     /**

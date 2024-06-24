@@ -3,10 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
-use App\Entity\Project;
 use App\Exception\EconomicsException;
 use App\Model\Invoices\InvoiceFilterData;
-use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -22,7 +20,7 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class InvoiceRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator, private readonly ViewService $viewService)
+    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {
         parent::__construct($registry, Invoice::class);
     }
@@ -59,12 +57,6 @@ class InvoiceRepository extends ServiceEntityRepository
         $qb
             ->where('inv.recorded = true')
             ->andWhere($qb->expr()->between('inv.recordedDate', ':date_from', ':date_to'));
-
-        $projectIds = $this->getProjectIdsFromViewId($view);
-        if (!empty($projectIds)) {
-            $qb->andWhere('inv.project IN (:projectIds)');
-            $parameters['projectIds'] = $projectIds;
-        }
 
         $qb->setParameters($parameters);
 
@@ -110,29 +102,5 @@ class InvoiceRepository extends ServiceEntityRepository
             10,
             ['defaultSortFieldName' => $defaultSortField, 'defaultSortDirection' => 'desc']
         );
-    }
-
-    private function getProjectIdsFromViewId(string $viewId): array
-    {
-        $view = $this->viewService->getViewFromId($viewId);
-
-        if (empty($view)) {
-            return [];
-        }
-
-        $dataProviders = $view->getDataProviders();
-
-        $dataProviderIds = [];
-        foreach ($dataProviders as $dataProvider) {
-            $dataProviderIds[] = $dataProvider->getId();
-        }
-
-        $projects = $this->getEntityManager()->getRepository(Project::class)->findBy(['dataProvider' => $dataProviderIds]);
-        $projectIds = [];
-        foreach ($projects as $project) {
-            $projectIds[] = $project->getId();
-        }
-
-        return $projectIds;
     }
 }

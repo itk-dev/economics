@@ -16,6 +16,5 @@
     {% include 'home/card.html.twig' with {title: 'home.clients'|trans, description: 'home.clients_description'|trans, role: 'ROLE_ADMIN', route: path("app_client_index", {}|merge(view is defined ? {view: view} : {}))} %}
     {% include 'home/card.html.twig' with {title: 'home.accounts'|trans, description: 'home.accounts_description'|trans, role: 'ROLE_ADMIN', route: path("app_account_index", {}|merge(view is defined ? {view: view} : {}))} %}
     {% include 'home/card.html.twig' with {title: 'home.users'|trans, description: 'home.users_description'|trans, role: 'ROLE_ADMIN', route: path("app_user_index", {}|merge(view is defined ? {view: view} : {}))} %}
-    {% include 'home/card.html.twig' with {title: 'home.views'|trans, description: 'home.views_description'|trans, role: 'ROLE_ADMIN', route: path("app_view_list", {}|merge(view is defined ? {view: view} : {}))} %}
   </div>
 {% endblock %}

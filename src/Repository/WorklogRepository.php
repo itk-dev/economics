@@ -6,7 +6,6 @@ use App\Entity\InvoiceEntry;
 use App\Entity\Project;
 use App\Entity\Worklog;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
-use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -24,7 +23,7 @@ class WorklogRepository extends ServiceEntityRepository
 {
     private const WORKLOGS_PAGINATOR_LIMIT = 50;
 
-    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator, private readonly ViewService $viewService)
+    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {
         parent::__construct($registry, Worklog::class);
     }
@@ -101,17 +100,10 @@ class WorklogRepository extends ServiceEntityRepository
 
     public function getTeamReportData(\DateTime $from, \DateTime $to, $viewId, $page): PaginationInterface
     {
-        $view = $this->viewService->getViewFromId($viewId);
         $parameters = [
             'date_from' => $from->format('Y-m-d H:i:s'),
             'date_to' => $to->format('Y-m-d H:i:s'),
         ];
-
-        if (!empty($view)) {
-            $dataProviders = $view->getDataProviders()->getValues();
-            $projects = $view->getProjects()->getValues();
-            $workers = $view->getWorkers();
-        }
 
         $qb = $this->createQueryBuilder('wor');
         $qb->where($qb->expr()->between('wor.started', ':date_from', ':date_to'));

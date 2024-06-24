@@ -10,7 +10,6 @@ use App\Model\SprintReport\SprintReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
 use App\Service\SprintReportService;
-use App\Service\ViewService;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -29,7 +28,6 @@ class SprintReportController extends AbstractController
         private readonly SprintReportService $sprintReportService,
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ViewService $viewService,
     ) {
     }
 
@@ -44,7 +42,7 @@ class SprintReportController extends AbstractController
         $sprintReportFormData = new SprintReportFormData();
 
         $form = $this->createForm(SprintReportType::class, $sprintReportFormData, [
-            'action' => $this->generateUrl('app_sprint_report', $this->viewService->addView([])),
+            'action' => $this->generateUrl('app_sprint_report', []),
             'method' => 'GET',
             // Since this is only a filtering form, csrf is not needed.
             'csrf_protection' => false,
@@ -142,13 +140,13 @@ class SprintReportController extends AbstractController
             }
         }
 
-        return $this->render('sprint_report/index.html.twig', $this->viewService->addView([
+        return $this->render('sprint_report/index.html.twig', [
             'form' => $form->createView(),
             'data' => $sprintReportFormData,
             'report' => $reportData,
             'budget' => $budget ?? null,
-            'budgetEndpoint' => $this->generateUrl('app_sprint_report_budget', $this->viewService->addView([])),
-        ]));
+            'budgetEndpoint' => $this->generateUrl('app_sprint_report_budget', []),
+        ]);
     }
 
     #[Route('/budget', name: 'app_sprint_report_budget', methods: ['POST'])]

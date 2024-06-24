@@ -9,7 +9,6 @@ use App\Form\WorkloadReportType;
 use App\Model\Reports\WorkloadReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
-use App\Service\ViewService;
 use App\Service\WorkloadReportService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +23,6 @@ class WorkloadReportController extends AbstractController
     public function __construct(
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ViewService $viewService,
         private readonly WorkloadReportService $workloadReportService,
         private readonly ?string $defaultDataProvider,
     ) {
@@ -116,12 +114,12 @@ class WorkloadReportController extends AbstractController
             }
         }
 
-        return $this->render('reports/reports.html.twig', $this->viewService->addView([
+        return $this->render('reports/reports.html.twig', [
             'controller_name' => 'WorkloadReportController',
             'form' => $form,
             'error' => $error,
             'data' => $reportData,
             'mode' => $mode,
-        ]));
+        ]);
     }
 }

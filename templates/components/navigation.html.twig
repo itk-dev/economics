@@ -4,8 +4,6 @@
             <img src="{{ asset('img/itk-economics.png') }}" class="mx-1" alt="{{ 'navigation.title'|trans }}" />
         </a>
 
-        {{ render(controller('App\\Controller\\ViewController::viewSelector')) }}
-
         <ul class="flex flex-col overflow-hidden gap-y-1 mt-4">
             {% include 'components/navigation-item.html.twig' with {icon: 'home', title: 'navigation.home'|trans, role: 'ROLE_USER', route: path('index', {}|merge(view is defined ? {view: view} : {}))} %}
             {% include 'components/navigation-item.html.twig' with {icon: 'invoice', title: 'navigation.invoices'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index', {}|merge(view is defined ? {view: view} : {}))} %}
@@ -52,7 +50,6 @@
                         {% include 'components/navigation-item.html.twig' with {title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index', {}|merge(view is defined ? {view: view} : {}))} %}
                           {% include 'components/navigation-item.html.twig' with {title: 'navigation.worker'|trans, role: 'ROLE_ADMIN', route: path('app_worker_index', {}|merge(view is defined ? {view: view} : {}))} %}
                         {% include 'components/navigation-item.html.twig' with {title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index', {}|merge(view is defined ? {view: view} : {}))} %}
-                        {% include 'components/navigation-item.html.twig' with {title: 'navigation.views'|trans, role: 'ROLE_ADMIN', route: path('app_view_list', {}|merge(view is defined ? {view: view} : {}))} %}
                     </ul>
                 </li>
             {% elseif is_granted('ROLE_PRODUCT_MANAGER') %}

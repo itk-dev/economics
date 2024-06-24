@@ -4,7 +4,7 @@ namespace App\Form;
 
 use App\Entity\Invoice;
 use App\Entity\Project;
-use App\Repository\ProjectRepository;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,8 +20,10 @@ class InvoiceNewType extends AbstractType
             ])
             ->add('project', null, [
                 'required' => true,
-                'query_builder' => function (ProjectRepository $projectRepository) {
-                    return $projectRepository->getIncluded();
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('p')
+                        ->where('p.include IS NOT NULL')
+                        ->orderBy('p.name', 'ASC');
                 },
                 'attr' => ['class' => 'form-element'],
                 'choice_label' => function (Project $pr) {

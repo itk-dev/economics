@@ -9,7 +9,6 @@ use App\Model\Reports\HourReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
 use App\Service\HourReportService;
-use App\Service\ViewService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
@@ -25,7 +24,6 @@ class HourReportController extends AbstractController
     public function __construct(
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ViewService $viewService,
         private readonly HourReportService $hourReportService,
         private readonly ?string $defaultDataProvider,
     ) {
@@ -45,7 +43,7 @@ class HourReportController extends AbstractController
         $reportFormData = new HourReportFormData();
 
         $form = $this->createForm(HourReportType::class, $reportFormData, [
-            'action' => $this->generateUrl('app_hour_report', $this->viewService->addView([])),
+            'action' => $this->generateUrl('app_hour_report'),
             'method' => 'GET',
             'attr' => [
                 'id' => 'hour_report',
@@ -194,12 +192,12 @@ class HourReportController extends AbstractController
             }
         }
 
-        return $this->render('reports/reports.html.twig', $this->viewService->addView([
+        return $this->render('reports/reports.html.twig', [
             'controller_name' => 'HourReportController',
             'form' => $form,
             'data' => $reportData,
             'mode' => $mode,
             'error' => $error,
-        ]));
+        ]);
     }
 }

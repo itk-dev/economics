@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Form\TeamReportDateIntervalType;
 use App\Repository\WorklogRepository;
 use App\Service\TeamReportService;
-use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -18,7 +17,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class TeamReportController extends AbstractController
 {
     public function __construct(
-        private readonly ViewService $viewService
     ) {
     }
 
@@ -38,12 +36,12 @@ class TeamReportController extends AbstractController
                 'firstLog' => $firstWorklog->getStarted(),
                 'view' => $this->viewService->getCurrentViewId(),
             ],
-            ['action' => $this->generateUrl('app_team_reports_output', $this->viewService->addView([])), 'method' => 'GET']
+            ['action' => $this->generateUrl('app_team_reports_output', []), 'method' => 'GET']
         );
 
-        return $this->render('team-report/create.html.twig', $this->viewService->addView([
+        return $this->render('team-report/create.html.twig', [
             'form' => $form,
-        ]));
+        ]);
     }
 
     /**
@@ -56,7 +54,7 @@ class TeamReportController extends AbstractController
         $dateInterval = $queryElements['team_report_date_interval'] ?? null;
 
         if (empty($dateInterval['dateFrom']) || empty($dateInterval['dateTo'])) {
-            return $this->redirectToRoute('app_team_reports_create', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_team_reports_create', [], Response::HTTP_SEE_OTHER);
         }
 
         $page = $queryElements['page'] ?? '1';

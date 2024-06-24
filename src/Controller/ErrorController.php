@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Exception\EconomicsException;
-use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -12,7 +11,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ErrorController extends AbstractController
 {
     public function __construct(
-        private readonly ViewService $viewService,
     ) {
     }
 
@@ -33,9 +31,9 @@ class ErrorController extends AbstractController
             $message = $exception->getMessage();
         }
 
-        return $this->render('error/error.html.twig', $this->viewService->addView([
+        return $this->render('error/error.html.twig', [
             'code' => $code,
             'message' => $message ?? null,
-        ]));
+        ]);
     }
 }
