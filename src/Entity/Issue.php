@@ -64,6 +64,9 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dueDate = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $editorId = null;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -307,6 +310,18 @@ class Issue extends AbstractBaseEntity
     public function setDueDate(?\DateTimeInterface $dueDate): static
     {
         $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    public function getEditorId(): ?int
+    {
+        return $this->editorId;
+    }
+
+    public function setEditorId(?int $editorId): static
+    {
+        $this->editorId = $editorId;
 
         return $this;
     }
