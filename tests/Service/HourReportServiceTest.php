@@ -2,6 +2,10 @@
 
 namespace App\Tests\Service;
 
+use App\Repository\IssueRepository;
+use App\Repository\ProjectRepository;
+use App\Repository\VersionRepository;
+use App\Repository\WorklogRepository;
 use App\Service\HourReportService;
 use PHPUnit\Framework\TestCase;
 
