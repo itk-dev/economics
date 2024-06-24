@@ -31,7 +31,7 @@ class WorkloadReportService
     public function getWorkloadReport(PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
     {
         $workloadReportData = new WorkloadReportData($viewPeriodType->value);
-        $year = (new \DateTime())->format('Y');
+        $year = (int) (new \DateTime())->format('Y');
         $workers = $this->workerRepository->findAll();
         $periods = $this->getPeriods($viewPeriodType, $year);
 
@@ -170,7 +170,7 @@ class WorkloadReportService
         return match ($viewMode) {
             PeriodTypeEnum::MONTH => $this->dateTimeHelper->getFirstAndLastDateOfMonth($period, $year),
             PeriodTypeEnum::WEEK => $this->dateTimeHelper->getFirstAndLastDateOfWeek($period, $year),
-            PeriodTypeEnum::YEAR => $this->dateTimeHelper->getFirstAndLastDateOfYear($period, $year),
+            PeriodTypeEnum::YEAR => $this->dateTimeHelper->getFirstAndLastDateOfYear($year),
         };
     }
 
