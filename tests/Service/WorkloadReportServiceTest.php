@@ -26,9 +26,9 @@ class WorkloadReportServiceTest extends TestCase
         $this->dateTimeHelper = $this->createMock(DateTimeHelper::class);
         $this->workloadReportService = new WorkloadReportService($this->workerRepository, $this->worklogRepository, $this->dateTimeHelper);
     }
+
     public function testGetViewModes()
     {
-
         $results = $this->workloadReportService->getViewModes();
 
         $expectedResults = [
