@@ -20,11 +20,8 @@ class PlanningService
     ) {
     }
 
-    public function getPlanningData(string $viewMode = 'week'): PlanningData
+    private function buildPlanningWeeks(PlanningData $planning): ArrayCollection
     {
-        $planning = new PlanningData();
-        $assignees = $planning->assignees;
-        $projects = $planning->projects;
         $weeks = $planning->weeks;
 
         $currentYear = (int) (new \DateTime())->format('Y');
@@ -75,6 +72,14 @@ class PlanningService
                 }
             }
         }
+        return $weeks;
+    }
+    public function getPlanningData(string $viewMode = 'week'): PlanningData
+    {
+        $planning = new PlanningData();
+        $planning->weeks = $this->buildPlanningWeeks($planning);
+        $assignees = $planning->assignees;
+        $projects = $planning->projects;
 
         $weekIssues = [];
         $allIssues = $this->issueRepository->findAll();
