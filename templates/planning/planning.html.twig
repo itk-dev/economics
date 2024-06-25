@@ -16,7 +16,7 @@
         {% include 'components/alert.html.twig' with {level: "danger", text: error} %}
     {% endif %}
     {% if planningData is not null %}
-        <div class="planning-wrapper">
+        <div class="planning-wrapper loading" {{ stimulus_controller('loader')}}>
 
             {% set weeks = planningData.weeks %}
             {% set assignees = planningData.assignees %}

@@ -405,5 +405,25 @@
         content: '▼';
         @apply pr-4 text-xs;
     }
-
+    div.loading {
+        position: relative;
+    }
+    div.loading::before {
+        content: '';
+        @apply bg-white dark:bg-gray-900;
+        z-index: 999;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+    div.loading::after {
+        content: 'Loading...';
+        color: #fff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+    }
 }
