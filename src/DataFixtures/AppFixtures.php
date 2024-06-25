@@ -115,6 +115,7 @@ class AppFixtures extends Fixture
                     $issue->setResolutionDate(new \DateTime());
                     $issue->setPlanHours($j);
                     $issue->setHoursRemaining($j);
+                    $issue->setWorker($workerArray[rand(0, 9)]);
                     $issue->setDueDate(new \DateTime());
                     $issue->setWorker($workerArray[rand(0, 9)]);
                     $issue->setLinkToIssue('www.example.com');
