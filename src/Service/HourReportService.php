@@ -2,14 +2,15 @@
 
 namespace App\Service;
 
+use App\Entity\Project;
+use App\Entity\Version;
+use App\Entity\Worklog;
 use App\Exception\EconomicsException;
 use App\Model\Reports\HourReportData;
 use App\Model\Reports\HourReportProjectTag;
 use App\Model\Reports\HourReportProjectTicket;
-use App\Model\Reports\HourReportTimesheet;
+use App\Model\Reports\HourReportWorklog;
 use App\Repository\IssueRepository;
-use App\Repository\ProjectRepository;
-use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 
 class HourReportService
@@ -17,63 +18,36 @@ class HourReportService
     public function __construct(
         private readonly IssueRepository $issueRepository,
         private readonly WorklogRepository $worklogRepository,
-        private readonly ProjectRepository $projectRepository,
-        private readonly VersionRepository $versionRepository,
     ) {
     }
 
     /**
      * @throws EconomicsException
      */
-    public function getProjects(): array
+    public function getHourReport(Project $project, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, Version $version = null): HourReportData
     {
-        $projects = $this->projectRepository->findAll();
-        $projectChoices = [];
-        foreach ($projects as $project) {
-            $projectChoices[$project->getName()] = $project->getId();
-        }
-
-        return $projectChoices;
-    }
-
-    public function getMilestones(string $projectId, bool $includeAllOption = false): array
-    {
-        $milestones = $this->versionRepository->findBy(['project' => $projectId]);
-        $milestoneChoices = [];
-        if ($includeAllOption) {
-            $milestoneChoices['All milestones'] = '0';
-        }
-        foreach ($milestones as $milestone) {
-            $milestoneName = $milestone->getName() ?? '';
-            $milestoneChoices[$milestoneName] = $milestone->getId();
-        }
-
-        return $milestoneChoices;
-    }
-
-    /**
-     * @throws EconomicsException
-     */
-    public function getHourReport(string $projectId, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, int $versionId = null): HourReportData
-    {
-        if (!$projectId) {
-            throw new EconomicsException('No project id specified');
-        }
         $hourReportData = new HourReportData(0, 0);
 
-        // If version is provided, we only want the issues containing the versionId
-        if ($versionId) {
-            $projectIssues = $this->issueRepository->issuesContainingVersion($versionId);
+        // If version is provided, we only want the issues containing the version.
+        if ($version) {
+            $projectIssues = $this->issueRepository->issuesContainingVersion($version);
         } else {
-            $projectIssues = $this->issueRepository->findBy(['project' => $projectId]);
+            $projectIssues = $this->issueRepository->findBy(['project' => $project]);
         }
 
         foreach ($projectIssues as $issue) {
             $totalTicketEstimated = (float) $issue->planHours;
+            $dueDate = $issue->getDueDate();
 
             $timesheetData = $this->worklogRepository->findBy(['issue' => $issue->getId()]);
 
             list($timesheets, $totalTicketSpent) = $this->processTimesheetsData($timesheetData, $fromDate, $toDate);
+
+            // If no worklogs have been registered in the interval or if the due date is not in the interval,
+            // ignore the issue in the report.
+            if (0 === $totalTicketSpent || $dueDate < $fromDate || $dueDate > $toDate) {
+                continue;
+            }
 
             $projectTicket = new HourReportProjectTicket(
                 $issue->getId(),
@@ -99,6 +73,7 @@ class HourReportService
             if (!$projectTag) {
                 throw new EconomicsException('Project tag not found');
             }
+
             $projectTag->projectTickets->add($projectTicket);
 
             $hourReportData->projectTags->set((string) $issueEpicName, $projectTag);
@@ -109,21 +84,29 @@ class HourReportService
         return $hourReportData;
     }
 
-    private function processTimesheetsData($timesheetsData, $fromDate, $toDate): array
+    private function processTimesheetsData(array $worklogs, \DateTimeInterface $fromDate = null, \DateTimeInterface $toDate = null): array
     {
         $timesheets = [];
         $totalTicketSpent = 0;
 
-        foreach ($timesheetsData as $timesheetDatum) {
-            if ($fromDate && $toDate) {
-                $timesheetDate = $timesheetDatum->getStarted();
-                if ($timesheetDate < $fromDate || $timesheetDate > $toDate) {
+        /** @var Worklog $worklog */
+        foreach ($worklogs as $worklog) {
+            $timesheetDate = $worklog->getStarted();
+
+            if (null !== $fromDate) {
+                if ($timesheetDate < $fromDate) {
                     continue;
                 }
             }
 
-            $hoursSpent = (float) ($timesheetDatum->getTimeSpentSeconds() / 3600);
-            $timesheet = new HourReportTimesheet($timesheetDatum->getId(), $hoursSpent);
+            if (null !== $toDate) {
+                if ($timesheetDate > $toDate) {
+                    continue;
+                }
+            }
+
+            $hoursSpent = $worklog->getTimeSpentSeconds() / 3600;
+            $timesheet = new HourReportWorklog($worklog->getId(), $hoursSpent);
             $timesheets[] = $timesheet;
             $totalTicketSpent += $hoursSpent;
         }
@@ -131,18 +114,19 @@ class HourReportService
         return [$timesheets, $totalTicketSpent];
     }
 
-    public function getFromDate(): string
+    public function getDefaultFromDate(): \DateTime
     {
         $fromDate = new \DateTime();
         $fromDate->modify('first day of this month');
 
-        return $fromDate->format('Y-m-d');
+        return $fromDate;
     }
 
-    public function getToDate(): string
+    public function getDefaultToDate(): \DateTime
     {
         $fromDate = new \DateTime();
+        $fromDate->modify('last day of this month');
 
-        return $fromDate->format('Y-m-d');
+        return $fromDate;
     }
 }

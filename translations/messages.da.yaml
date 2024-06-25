@@ -550,18 +550,6 @@ reports:
     team_time_spent: 'Timeforbrug'
     team_description: 'Beskrivelse'
     team_no_records_found: 'Ingen resultater'
-    hour_report:
-        title: 'Timerapport'
-        select_option: 'Vælg en mulighed'
-        select_data_provider: 'Vælg datakilde'
-        select_project: 'Vælg projekt'
-        select_milestone: 'Vælg milestone'
-        estimated_hours: 'Estimeret'
-        logged_hours: 'Logget'
-        total: 'Total'
-        select_fromdate: 'Fra dato'
-        select_todate: 'Til dato'
-        select_an_option: 'Vælg en mulighed'
     workload_report:
         title: 'Workloadrapport'
         select_data_provider: 'Vælg datakilde'
@@ -572,6 +560,20 @@ reports:
         workers: 'Medarbejdere'
         worker: 'Medarbejder'
         hidden-entries: 'Skjulte medarbejdere'
+
+hour_report:
+    title: 'Timerapport'
+    data_provider: 'Datakilde'
+    project: 'Projekt'
+    version: 'Version'
+    estimated_hours: 'Estimeret'
+    logged_hours: 'Registeret'
+    total: 'Total'
+    from_date: 'Fra dato'
+    to_date: 'Til dato'
+    select_data_provider: 'Vælg datakilde'
+    select_project: 'Vælg project'
+    all_versions: 'Alle versioner'
 
 view:
     list_title: 'Views'

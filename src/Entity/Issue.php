@@ -61,6 +61,9 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     public ?float $hoursRemaining;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dueDate = null;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -292,6 +295,18 @@ class Issue extends AbstractBaseEntity
     public function setHoursRemaining(?float $hoursRemaining): self
     {
         $this->hoursRemaining = $hoursRemaining;
+
+        return $this;
+    }
+
+    public function getDueDate(): ?\DateTimeInterface
+    {
+        return $this->dueDate;
+    }
+
+    public function setDueDate(?\DateTimeInterface $dueDate): static
+    {
+        $this->dueDate = $dueDate;
 
         return $this;
     }
