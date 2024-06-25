@@ -74,7 +74,7 @@ class PlanningService
         }
         return $weeks;
     }
-    public function getPlanningData(string $viewMode = 'week'): PlanningData
+    public function getPlanningData(): PlanningData
     {
         $planning = new PlanningData();
         $planning->weeks = $this->buildPlanningWeeks($planning);
@@ -85,10 +85,10 @@ class PlanningService
         $allIssues = $this->issueRepository->findAll();
 
         foreach ($allIssues as $issue) {
-            $issueYear = new \DateTime($issue->getDueDate());
+            $issueYear = $issue->getDueDate();
             $issueYear = $issueYear->format('Y');
 
-            $issueWeek = new \DateTime($issue->getDueDate());
+            $issueWeek = $issue->getDueDate();
             $issueWeek = (int) $issueWeek->format('W');
 
             if ('-0001' !== $issueYear) {
@@ -107,16 +107,12 @@ class PlanningService
                     $projectDisplayName = $issueProject->getName();
 
                     $hoursRemaining = $issueData->getHoursRemaining();
-                    if (empty($issueData->getEditorId())) {
+                    if (empty($issueData->getWorker())) {
                         $assigneeKey = 'unassigned';
                         $assigneeDisplayName = 'Unassigned';
                     } else {
-                        $assigneeKey = (string) $issueData->getEditorId();
-                        if (isset($issueData->editorFirstname) || isset($issueData->editorLastname)) {
-                            $assigneeDisplayName = $issueData->editorFirstname.' '.$issueData->editorLastname;
-                        } else {
-                            $assigneeDisplayName = 'Name missing';
-                        }
+                        $assigneeKey = (string) $issueData->getWorker();
+                        $assigneeDisplayName = $assigneeKey;
                     }
                     // Add assignee if not already added.
                     if (!$assignees->containsKey($assigneeKey)) {
