@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Issue;
 use App\Entity\Project;
+use App\Entity\Version;
 use App\Model\Invoices\IssueFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -109,5 +110,14 @@ class IssueRepository extends ServiceEntityRepository
             'Lukket',
             '0',
         ];
+    }
+
+    public function issuesContainingVersion(Version $version): array
+    {
+        $qb = $this->createQueryBuilder('issue')
+            ->where(':version MEMBER OF issue.versions')
+            ->setParameter('version', $version);
+
+        return $qb->getQuery()->getResult();
     }
 }

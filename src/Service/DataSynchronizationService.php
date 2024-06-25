@@ -9,6 +9,7 @@ use App\Entity\Invoice;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
@@ -20,9 +21,8 @@ use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
+use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -43,6 +43,7 @@ class DataSynchronizationService
         private readonly InvoiceRepository $invoiceRepository,
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
+        private readonly WorkerRepository $workerRepository,
     ) {
     }
 
@@ -232,6 +233,9 @@ class DataSynchronizationService
                 $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
                 $issue->setResolutionDate($issueDatum->resolutionDate);
                 $issue->setStatus($issueDatum->status);
+                $issue->setPlanHours($issueDatum->planHours);
+                $issue->setHoursRemaining($issueDatum->hourRemaining);
+                $issue->setDueDate($issueDatum->dueDate);
 
                 // Leantime (as of now) supports only a single version (milestone) per issue.
                 if (LeantimeApiService::class === $dataProvider?->getClass()) {
@@ -293,13 +297,19 @@ class DataSynchronizationService
         // * invoiced
         //
         // as candidates for deletion.
-        /** @var Collection<int, Worklog> $worklogsToDelete */
-        $worklogsToDelete = new ArrayCollection(
+        //
+        // Due to flushing below, we store only this worklogs IDs
+        // (if we load worklog entities, they will become detached when flushing).
+        /** @var array<int> $worklogsToDeleteIds */
+        $worklogsToDeleteIds = array_map(
+            static fn (Worklog $worklog) => $worklog->getId(),
             array_filter(
-                $this->entityManager->getRepository(Worklog::class)->findBy(['project' => $project]),
+                $this->worklogRepository->findBy(['project' => $project]),
                 static fn (Worklog $worklog): bool => !$worklog->isBilled() || null === $worklog->getInvoiceEntry()
             )
         );
+        // Index by ID
+        $worklogsToDeleteIds = array_combine($worklogsToDeleteIds, $worklogsToDeleteIds);
 
         $worklogData = $service->getWorklogDataCollection($projectTrackerId);
         $worklogsAdded = 0;
@@ -311,6 +321,7 @@ class DataSynchronizationService
             }
 
             $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
+
             if (!$worklog) {
                 $worklog = new Worklog();
 
@@ -320,6 +331,7 @@ class DataSynchronizationService
 
                 $this->entityManager->persist($worklog);
             }
+
             $worklog
                 ->setWorklogId($worklogDatum->projectTrackerId)
                 ->setDescription($worklogDatum->comment)
@@ -340,12 +352,29 @@ class DataSynchronizationService
 
             $project->addWorklog($worklog);
             // Keep the worklog.
-            $worklogsToDelete->removeElement($worklog);
+            $worklogId = $worklog->getId();
+
+            if (null !== $worklogId) {
+                unset($worklogsToDeleteIds[$worklogId]);
+            }
 
             if (null !== $progressCallback) {
                 $progressCallback($worklogsAdded, count($worklogData->worklogData));
 
                 ++$worklogsAdded;
+            }
+
+            $workerEmail = $worklog->getWorker();
+
+            $workerExists = $this->workerRepository->findOneBy(['email' => $workerEmail]);
+
+            if (!$workerExists) {
+                if (isset($workerEmail)) {
+                    $worker = new Worker();
+                    $worker->setEmail($workerEmail);
+                    $this->entityManager->persist($worker);
+                    $this->entityManager->flush();
+                }
             }
 
             // Flush and clear for each batch.
@@ -356,6 +385,7 @@ class DataSynchronizationService
         }
 
         // Remove leftover worklogs from project and remove the worklogs.
+        $worklogsToDelete = $this->worklogRepository->findBy(['id' => $worklogsToDeleteIds]);
         foreach ($worklogsToDelete as $worklog) {
             $project->removeWorklog($worklog);
             $this->entityManager->remove($worklog);

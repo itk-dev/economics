@@ -9,7 +9,7 @@
     <div class="grid-split">
         <div>
             {{ form_widget(form) }}
-            {% if not invoice.recorded and invoice.projectBilling is null %}
+            {% if not invoice.recorded and invoice_entry_helper.isEditable(invoice_entry) %}
             <div class="actions-right">
                 <button class="button mt-3">{{ 'invoices.action_save_invoice_entry'|trans }}</button>
             </div>

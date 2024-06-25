@@ -8,6 +8,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-133](https://github.com/itk-dev/economics/pull/133)
+  1742: Simplified hour report form.
+* [PR-132](https://github.com/itk-dev/economics/pull/132)
+  1742: Fixed synchronization issues.
+* [PR-128](https://github.com/itk-dev/economics/pull/128)
+  1595: Added retryable http client decorator for handling rate limiting.
+* [PR-117](https://github.com/itk-dev/economics/pull/117)
+  1211: Added hour report
+  NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when releasing.
+* [PR-124](https://github.com/itk-dev/economics/pull/124)
+  710: Added workload report
+
+## [2.3.0] - 2024-06-03
+
+* [PR-126](https://github.com/itk-dev/economics/pull/126)
+  1590: Added worklog product as prefix on product invoice entries
+* [PR-125](https://github.com/itk-dev/economics/pull/125)
+  1547: Set account based on invoice entry type
+* [PR-123](https://github.com/itk-dev/economics/pull/123)
+  1544: Allowed invoicing issues with products and no worklogs
+* [PR-122](https://github.com/itk-dev/economics/pull/122)
+  1547: Added invoice entry account selector
+* [PR-121](https://github.com/itk-dev/economics/pull/121)
+  1485: Fixed floating number issues
+* [PR-120](https://github.com/itk-dev/economics/pull/120)
+  1484: Cleaned up worklog cleanup
 * [PR-118](https://github.com/itk-dev/economics/pull/118)
   1485: Made product quantity floatable
 
@@ -245,7 +271,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.2.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.3.0...HEAD
+[2.3.0]: https://github.com/itk-dev/economics/compare/2.2.0...2.3.0
 [2.2.0]: https://github.com/itk-dev/economics/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/itk-dev/economics/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/itk-dev/economics/compare/2.1.0...2.1.1

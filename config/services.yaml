@@ -21,9 +21,8 @@ services:
         bind:
             $defaultInvoiceDescriptionTemplate: '%env(APP_INVOICE_DESCRIPTION_TEMPLATE)%'
             $invoiceSupplierAccount: '%env(string:APP_INVOICE_SUPPLIER_ACCOUNT)%'
-            $invoiceDefaultReceiverAccount: '%env(string:APP_INVOICE_RECEIVER_DEFAULT_ACCOUNT)%'
             $projectBillingDefaultDescription: '%env(string:APP_PROJECT_BILLING_DEFAULT_DESCRIPTION)%'
-            $planningDefaultDataProvider: '%env(string:APP_DEFAULT_PLANNING_DATA_PROVIDER)%'
+            $defaultDataProvider: '%env(string:APP_DEFAULT_DATA_PROVIDER)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -43,9 +42,21 @@ services:
             $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
             $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
             $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
+            $httpClientRetryDelayMs: '%env(int:APP_HTTP_CLIENT_RETRY_DELAY_MS)%'
+            $httpClientMaxRetries: '%env(int:APP_HTTP_CLIENT_MAX_RETRIES)%'
 
     App\Service\ClientHelper:
         arguments:
             $options:
                 standard_price: '%env(float:CLIENT_STANDARD_PRICE)%'
 
+    App\Controller\IssueController:
+        arguments:
+            $options:
+                issue_product_type_options:
+                    quantity_scale: '%env(int:PRODUCT_QUANTITY_SCALE)%'
+
+    App\Service\InvoiceEntryHelper:
+        arguments:
+            $options:
+                accounts: '%env(json:INVOICE_ENTRY_ACCOUNTS)%'
