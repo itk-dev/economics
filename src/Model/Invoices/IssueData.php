@@ -23,6 +23,7 @@ class IssueData
     public ?int $planHours;
     public ?int $hourRemaining;
     public ?\DateTime $dueDate = null;
+    public ?string $worker;
 
     public function __construct()
     {

@@ -116,6 +116,8 @@ class AppFixtures extends Fixture
                     $issue->setPlanHours($j);
                     $issue->setHoursRemaining($j);
                     $issue->setDueDate(new \DateTime());
+                    $issue->setWorker($workerArray[rand(0, 9)]);
+
                     $manager->persist($issue);
 
                     for ($k = 0; $k < 100; ++$k) {
