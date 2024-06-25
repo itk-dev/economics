@@ -64,8 +64,8 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dueDate = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $editorId = null;
+    #[ORM\Column(length: 255)]
+    private ?string $worker = null;
 
     public function __construct()
     {
@@ -314,14 +314,14 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
-    public function getEditorId(): ?int
+    public function getWorker(): ?string
     {
-        return $this->editorId;
+        return $this->worker;
     }
 
-    public function setEditorId(?int $editorId): static
+    public function setWorker(string $worker): self
     {
-        $this->editorId = $editorId;
+        $this->worker = $worker;
 
         return $this;
     }

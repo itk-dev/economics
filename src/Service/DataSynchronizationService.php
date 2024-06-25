@@ -236,6 +236,7 @@ class DataSynchronizationService
                 $issue->setPlanHours($issueDatum->planHours);
                 $issue->setHoursRemaining($issueDatum->hourRemaining);
                 $issue->setDueDate($issueDatum->dueDate);
+                $issue->setWorker($issueDatum->worker);
 
                 // Leantime (as of now) supports only a single version (milestone) per issue.
                 if (LeantimeApiService::class === $dataProvider?->getClass()) {
