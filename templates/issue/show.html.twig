@@ -56,12 +56,18 @@
         {% if add_product_form %}
             <tr>
                 <td class="table-td" colspan="2">
-                    {{ form_widget(add_product_form.product, {attr: {form: add_product_form_id}}) }}
+                    {{ form_row(add_product_form.product, {attr: {form: add_product_form_id}}) }}
                 </td>
-                <td class="table-td number text-right">{{ form_widget(add_product_form.quantity, {attr: {form: add_product_form_id}}) }}</td>
+                <td class="table-td number text-right">
+                    {{ form_row(add_product_form.quantity, {attr: {form: add_product_form_id}}) }}
+                </td>
                 <td></td>
-                <td class="table-td">{{ form_widget(add_product_form.description, {attr: {form: add_product_form_id}}) }}</td>
-                <td class="table-td">{{ form_widget(add_product_form.submit, {attr: {form: add_product_form_id}}) }}</td>
+                <td class="table-td">
+                    {{ form_row(add_product_form.description, {attr: {form: add_product_form_id}}) }}
+                </td>
+                <td class="table-td">
+                    {{ form_row(add_product_form.submit, {attr: {form: add_product_form_id}}) }}
+                </td>
             </tr>
         {% endif %}
             <tr>
