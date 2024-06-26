@@ -41,7 +41,7 @@ navigation:
     create_project: "Projektopretter"
     invoices: "Faktura"
     planning: "Planlægning"
-    sprint_report: "Hent sprintrapport"
+    sprint_report: "Sprintrapport"
     title: "Economics"
     accounts: "Konto"
     project_billing: "Projektfakturering"
@@ -53,12 +53,11 @@ navigation:
     user: "Brugere"
     data: "Data"
     admin: "Admin"
-    management_report: "Hent ledelsesrapport"
-    team_report: "Hent teamrapport"
+    management_report: "Ledelsesrapport"
     planning_users: 'Brugere'
     planning_projects: 'Projekter'
-    hour_report: "Hent timerapport"
-    workload_report: "Hent workloadrapport"
+    hour_report: "Timerapport"
+    workload_report: "Normtidsrapport"
     worker: "Medarbejdere"
 
 planning:
@@ -526,7 +525,6 @@ reports:
     fetch_sprint_report: 'Hent sprintrapport'
     management-title: 'Ny ledelsesrapport'
     fetch_management_report: 'Hent ledelsesrapport'
-    fetch_team_report: 'Hent teamrapport'
     from: 'Fra'
     to: 'Til'
     management-title-output: 'Ledelsesrapport %from% - %to%'
@@ -538,30 +536,7 @@ reports:
     management-3rd-quarter: '3. Kvartal'
     management-4th-quarter: '4. Kvartal'
     management-export-xls: 'Eksportér til excel'
-    team-title: 'Ny teamrapport'
-    team-title-output: 'Teamrapport %from% - %to%'
-    team-description: 'Hent worklogs på tværs af projekter og teams'
-    team-export-xls: 'Eksportér til excel'
-    team-result: 'Viser: %items_per_page% af %items_total% elementer'
-    team_project_name: 'Projektnavn'
-    team_user: 'Bruger / medarbejder'
-    team_issue_id: 'HourReportIssue id'
-    team_date: 'Registreringsdato'
-    team_time_spent: 'Timeforbrug'
-    team_description: 'Beskrivelse'
-    team_no_records_found: 'Ingen resultater'
-    hour_report:
-        title: 'Timerapport'
-        select_option: 'Vælg en mulighed'
-        select_data_provider: 'Vælg datakilde'
-        select_project: 'Vælg projekt'
-        select_milestone: 'Vælg milestone'
-        estimated_hours: 'Estimeret'
-        logged_hours: 'Logget'
-        total: 'Total'
-        select_fromdate: 'Fra dato'
-        select_todate: 'Til dato'
-        select_an_option: 'Vælg en mulighed'
+
     workload_report:
         title: 'Workloadrapport'
         select_data_provider: 'Vælg datakilde'
@@ -572,6 +547,20 @@ reports:
         workers: 'Medarbejdere'
         worker: 'Medarbejder'
         hidden-entries: 'Skjulte medarbejdere'
+
+hour_report:
+    title: 'Timerapport'
+    data_provider: 'Datakilde'
+    project: 'Projekt'
+    version: 'Version'
+    estimated_hours: 'Estimeret'
+    logged_hours: 'Registeret'
+    total: 'Total'
+    from_date: 'Fra dato'
+    to_date: 'Til dato'
+    select_data_provider: 'Vælg datakilde'
+    select_project: 'Vælg project'
+    all_versions: 'Alle versioner'
 
 view:
     list_title: 'Views'

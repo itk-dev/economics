@@ -31,7 +31,6 @@
                 <ul class="navigation-item-submenu">
                   {% include 'components/navigation-item.html.twig' with {title: 'navigation.sprint_report'|trans, role: 'ROLE_REPORT', route: path('app_sprint_report', {}|merge(view is defined ? {view: view} : {}))} %}
                   {% include 'components/navigation-item.html.twig' with {title: 'navigation.management_report'|trans, role: 'ROLE_REPORT', route: path('app_management_reports_create', {}|merge(view is defined ? {view: view} : {}))} %}
-                  {% include 'components/navigation-item.html.twig' with {title: 'navigation.team_report'|trans, role: 'ROLE_REPORT', route: path('app_team_reports_create', {}|merge(view is defined ? {view: view} : {}))} %}
                   {% include 'components/navigation-item.html.twig' with {title: 'navigation.hour_report'|trans, role: 'ROLE_REPORT', route: path('app_hour_report', {}|merge(view is defined ? {view: view} : {}))} %}
                     {% include 'components/navigation-item.html.twig' with {title: 'navigation.workload_report'|trans, role: 'ROLE_REPORT', route: path('app_workload_report', {}|merge(view is defined ? {view: view} : {}))} %}
                 </ul>

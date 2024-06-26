@@ -6,19 +6,16 @@
         <tr>
             <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'planning.projects'|trans }}</th>
             <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
-                {{ 'reports.hour_report.estimated_hours'|trans }}
+                {{ 'hour_report.estimated_hours'|trans }}
             </th>
             <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
-                {{ 'reports.hour_report.logged_hours'|trans }}
+                {{ 'hour_report.logged_hours'|trans }}
             </th>
-
         </tr>
         </thead>
 
         {% for projectTag in data.projectTags %}
-
         <tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ projectTag.tag }}" {{ stimulus_target('show-hide', 'entry') }}>
-
             <tr>
                 <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
                     <div class="flex flex-row">
@@ -45,7 +42,7 @@
                     <td class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900">
                         <div class="flex flex-row">
                             <span class="flex-grow mx-3 py-1">
-                                {{ projectTicket.headline }}
+                                &nbsp;&nbsp;{{ projectTicket.headline }}
                             </span>
                         </div>
                     </td>
@@ -56,7 +53,7 @@
 
         {% endfor %}
         <tr>
-            <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">{{ 'reports.hour_report.total'|trans }}</td>
+            <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">{{ 'hour_report.total'|trans }}</td>
             <td class="text-center px-3 border border-slate-600">{{ data.projectTotalEstimated }}</td>
             <td class="text-center px-3 border border-slate-600">{{ data.projectTotalSpent }}</td>
         </tr>

@@ -8,8 +8,6 @@ use App\Entity\Worklog;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Worklog>
@@ -21,9 +19,7 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class WorklogRepository extends ServiceEntityRepository
 {
-    private const WORKLOGS_PAGINATOR_LIMIT = 50;
-
-    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Worklog::class);
     }
@@ -96,66 +92,6 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->execute();
-    }
-
-    public function getTeamReportData(\DateTime $from, \DateTime $to, $viewId, $page): PaginationInterface
-    {
-        $parameters = [
-            'date_from' => $from->format('Y-m-d H:i:s'),
-            'date_to' => $to->format('Y-m-d H:i:s'),
-        ];
-
-        $qb = $this->createQueryBuilder('wor');
-        $qb->where($qb->expr()->between('wor.started', ':date_from', ':date_to'));
-        $qb->leftJoin('wor.project', 'project');
-        $qb->leftJoin('wor.issue', 'issue');
-        $qb->select('wor', 'project', 'issue');
-
-        if (!empty($projects)) {
-            $qb->andWhere('wor.project IN (:projects)');
-            $parameters['projects'] = [];
-            foreach ($projects as $project) {
-                $parameters['projects'][] = $project->getId();
-            }
-        }
-
-        if (!empty($dataProviders)) {
-            $qb->andWhere('wor.dataProvider IN (:dataProviders)');
-            $parameters['dataProviders'] = [];
-            foreach ($dataProviders as $dataProvider) {
-                $parameters['dataProviders'][] = $dataProvider->getId();
-            }
-        }
-
-        if (!empty($workers)) {
-            $qb->andWhere('wor.worker IN (:workers)');
-            $parameters['workers'] = $workers;
-        }
-
-        $qb->setParameters($parameters);
-
-        return $this->paginator->paginate(
-            $qb,
-            $page,
-            self::WORKLOGS_PAGINATOR_LIMIT,
-            ['defaultSortFieldName' => 'wor.started', 'defaultSortDirection' => 'asc']
-        );
-    }
-
-    public function getDistinctWorklogUsers(): array
-    {
-        $qb = $this->createQueryBuilder('wor');
-        $result = $qb
-            ->distinct()
-            ->select('wor.worker')
-            ->getQuery()->getResult();
-
-        $workers = [];
-        foreach ($result as $workLogWorker) {
-            $workers[$workLogWorker['worker']] = $workLogWorker['worker'];
-        }
-
-        return $workers;
     }
 
     public function findWorklogsByWorkerAndDateRange(string $worker, string $dateFrom, string $dateTo)
