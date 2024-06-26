@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-134](https://github.com/itk-dev/economics/pull/134)
   1632: Remove team report.
+* [PR-133](https://github.com/itk-dev/economics/pull/133)
+  1742: Simplified hour report form.
 * [PR-132](https://github.com/itk-dev/economics/pull/132)
   1742: Fixed synchronization issues.
 * [PR-128](https://github.com/itk-dev/economics/pull/128)
