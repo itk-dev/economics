@@ -31,9 +31,6 @@ class ManagementReportDateIntervalType extends AbstractType
                     'max' => (new \DateTime())->format('Y-m-d'),
                 ],
                 'label' => 'reports.to',
-            ])
-            ->add('view', HiddenType::class, [
-                'data' => $options['data']['view'],
             ]);
     }
 }

@@ -4,20 +4,20 @@
             <ul class="pagination-ul">
                 {% if first is defined and current != first %}
                     <li>
-                        <a class="pagination-item" href="{{ path(route, query|merge({(pageParameterName): first})|merge(view is defined ? {view: view} : {})) }}">&lt;&lt;</a>
+                        <a class="pagination-item" href="{{ path(route, query|merge({(pageParameterName): first})) }}">&lt;&lt;</a>
                     </li>
                 {% endif %}
 
                 {% if previous is defined %}
                     <li>
-                        <a class="pagination-item" rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})|merge(view is defined ? {view: view} : {})) }}">&lt;</a>
+                        <a class="pagination-item" rel="prev" href="{{ path(route, query|merge({(pageParameterName): previous})) }}">&lt;</a>
                     </li>
                 {% endif %}
 
                 {% for page in pagesInRange %}
                     {% if page != current %}
                         <li>
-                            <a class="pagination-item" href="{{ path(route, query|merge({(pageParameterName): page})|merge(view is defined ? {view: view} : {})) }}">{{ page }}</a>
+                            <a class="pagination-item" href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a>
                         </li>
                     {% else %}
                         <li>
@@ -28,13 +28,13 @@
 
                 {% if next is defined %}
                     <li>
-                        <a class="pagination-item" rel="next" href="{{ path(route, query|merge({(pageParameterName): next})|merge(view is defined ? {view: view} : {})) }}">&gt;</a>
+                        <a class="pagination-item" rel="next" href="{{ path(route, query|merge({(pageParameterName): next})) }}">&gt;</a>
                     </li>
                 {% endif %}
 
                 {% if last is defined and current != last %}
                     <li>
-                        <a class="pagination-item" href="{{ path(route, query|merge({(pageParameterName): last})|merge(view is defined ? {view: view} : {})) }}">&gt;&gt;</a>
+                        <a class="pagination-item" href="{{ path(route, query|merge({(pageParameterName): last})) }}">&gt;&gt;</a>
                     </li>
                 {% endif %}
             </ul>
