@@ -9,7 +9,6 @@ use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
 /**
@@ -97,57 +96,6 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->execute();
-    }
-
-    public function getTeamReportData(\DateTime $from, \DateTime $to, $viewId, $page): PaginationInterface
-    {
-        $view = $this->viewService->getViewFromId($viewId);
-        $parameters = [
-            'date_from' => $from->format('Y-m-d H:i:s'),
-            'date_to' => $to->format('Y-m-d H:i:s'),
-        ];
-
-        if (!empty($view)) {
-            $dataProviders = $view->getDataProviders()->getValues();
-            $projects = $view->getProjects()->getValues();
-            $workers = $view->getWorkers();
-        }
-
-        $qb = $this->createQueryBuilder('wor');
-        $qb->where($qb->expr()->between('wor.started', ':date_from', ':date_to'));
-        $qb->leftJoin('wor.project', 'project');
-        $qb->leftJoin('wor.issue', 'issue');
-        $qb->select('wor', 'project', 'issue');
-
-        if (!empty($projects)) {
-            $qb->andWhere('wor.project IN (:projects)');
-            $parameters['projects'] = [];
-            foreach ($projects as $project) {
-                $parameters['projects'][] = $project->getId();
-            }
-        }
-
-        if (!empty($dataProviders)) {
-            $qb->andWhere('wor.dataProvider IN (:dataProviders)');
-            $parameters['dataProviders'] = [];
-            foreach ($dataProviders as $dataProvider) {
-                $parameters['dataProviders'][] = $dataProvider->getId();
-            }
-        }
-
-        if (!empty($workers)) {
-            $qb->andWhere('wor.worker IN (:workers)');
-            $parameters['workers'] = $workers;
-        }
-
-        $qb->setParameters($parameters);
-
-        return $this->paginator->paginate(
-            $qb,
-            $page,
-            self::WORKLOGS_PAGINATOR_LIMIT,
-            ['defaultSortFieldName' => 'wor.started', 'defaultSortDirection' => 'asc']
-        );
     }
 
     public function getDistinctWorklogUsers(): array
