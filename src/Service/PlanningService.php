@@ -72,8 +72,10 @@ class PlanningService
                 }
             }
         }
+
         return $weeks;
     }
+
     public function getPlanningData(): PlanningData
     {
         $planning = new PlanningData();
@@ -85,11 +87,14 @@ class PlanningService
         $allIssues = $this->issueRepository->findAll();
 
         foreach ($allIssues as $issue) {
-            $issueYear = $issue->getDueDate();
-            $issueYear = $issueYear->format('Y');
+            $issueDueDate = $issue->getDueDate();
 
-            $issueWeek = $issue->getDueDate();
-            $issueWeek = (int) $issueWeek->format('W');
+            if (!$issueDueDate) {
+                continue;
+            }
+
+            $issueYear = $issueDueDate->format('Y');
+            $issueWeek = (int) $issueDueDate->format('W');
 
             if ('-0001' !== $issueYear) {
                 $weekIssues[$issueWeek][] = $issue;
@@ -103,8 +108,11 @@ class PlanningService
                 if ('0' !== $issueData->getStatus()) { // excludes done issues.
                     $week = (string) $week;
                     $issueProject = $issueData->getProject();
+                    if (!$issueProject) {
+                        continue;
+                    }
                     $projectKey = (string) $issueProject->getProjectTrackerId();
-                    $projectDisplayName = $issueProject->getName();
+                    $projectDisplayName = $issueProject->getName() ?? 'unnamed';
 
                     $hoursRemaining = $issueData->getHoursRemaining();
                     if (empty($issueData->getWorker())) {
@@ -153,8 +161,8 @@ class PlanningService
 
                     $assigneeProject->issues->add(
                         new Issue(
-                            $issueData->getId(),
-                            $issueData->getName(),
+                            (string) $issueData->getId(),
+                            $issueData->getName() ?? 'unnamed',
                             $hoursRemaining ?? null,
                             '/tickets/showKanban?showTicketModal='.$issueData->getId().'#/tickets/showTicket/'.$issueData->getId(),
                             $week
@@ -201,8 +209,8 @@ class PlanningService
                     $projectAssigneeSprintSum->sumHours += $hoursRemaining;
 
                     $projectAssignee->issues->add(new Issue(
-                        $issueData->getId(),
-                        $issueData->getName(),
+                        (string) $issueData->getId(),
+                        $issueData->getName() ?? 'unnamed',
                         isset($issueData->hourRemaining) ? $hoursRemaining : null,
                         '/tickets/showKanban?showTicketModal='.$issueData->getId().'#/tickets/showTicket/'.$issueData->getId(),
                         $week
