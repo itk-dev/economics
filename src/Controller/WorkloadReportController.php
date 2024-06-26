@@ -16,8 +16,10 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/reports/workload_report')]
+#[IsGranted('ROLE_REPORT')]
 class WorkloadReportController extends AbstractController
 {
     public function __construct(
@@ -48,7 +50,7 @@ class WorkloadReportController extends AbstractController
         }
 
         $form = $this->createForm(WorkloadReportType::class, $reportFormData, [
-            'action' => $this->generateUrl('app_workload_report', $this->viewService->addView([])),
+            'action' => $this->generateUrl('app_workload_report'),
             'method' => 'GET',
             'attr' => [
                 'id' => 'sprint_report',

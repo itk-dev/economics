@@ -14,9 +14,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Translation\TranslatableMessage;
 
 #[Route('/admin/project/{project}/issues', name: 'app_issue_')]
+#[IsGranted('ROLE_PRODUCT_MANAGER')]
 class IssueController extends AbstractController
 {
     public function __construct(

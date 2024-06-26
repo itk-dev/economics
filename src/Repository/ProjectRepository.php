@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Project;
 use App\Model\Invoices\ProjectFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -40,6 +41,17 @@ class ProjectRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getIncluded(): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('project');
+
+        $qb
+            ->where('project.include IS NOT NULL')
+            ->orderBy('project.name', 'ASC');
+
+        return $qb;
     }
 
     public function getFilteredPagination(ProjectFilterData $projectFilterData, int $page = 1): PaginationInterface

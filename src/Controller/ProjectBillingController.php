@@ -25,6 +25,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/project-billing')]
+#[IsGranted('ROLE_PROJECT_BILLING')]
 class ProjectBillingController extends AbstractController
 {
     public function __construct(
@@ -33,7 +34,6 @@ class ProjectBillingController extends AbstractController
     }
 
     #[Route('/', name: 'app_project_billing_index', methods: ['GET'])]
-    #[IsGranted('EDIT')]
     public function index(Request $request, ProjectBillingRepository $projectBillingRepository): Response
     {
         $projectBillingFilterData = new ProjectBillingFilterData();
@@ -49,7 +49,6 @@ class ProjectBillingController extends AbstractController
     }
 
     #[Route('/new', name: 'app_project_billing_new', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT')]
     public function new(Request $request, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus, string $projectBillingDefaultDescription): Response
     {
         $projectBilling = new ProjectBilling();
@@ -83,7 +82,6 @@ class ProjectBillingController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/edit', name: 'app_project_billing_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT', 'projectBilling')]
     public function edit(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService, ProjectBillingRepository $projectBillingRepository, MessageBusInterface $bus): Response
     {
         $options = [];
@@ -125,7 +123,6 @@ class ProjectBillingController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}', name: 'app_project_billing_delete', methods: ['POST'])]
-    #[IsGranted('EDIT', 'projectBilling')]
     public function delete(Request $request, ProjectBilling $projectBilling, ProjectBillingRepository $projectBillingRepository, InvoiceRepository $invoiceRepository): Response
     {
         $token = $request->request->get('_token');
@@ -145,7 +142,7 @@ class ProjectBillingController extends AbstractController
             $projectBillingRepository->remove($projectBilling, true);
         }
 
-        return $this->redirectToRoute('app_project_billing_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_project_billing_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -154,7 +151,6 @@ class ProjectBillingController extends AbstractController
      * @throws \Exception
      */
     #[Route('/{id}/record', name: 'app_project_billing_record', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT', 'projectBilling')]
     public function record(Request $request, ProjectBilling $projectBilling, ProjectBillingService $projectBillingService, BillingService $billingService): Response
     {
         $recordData = new ConfirmData();
@@ -181,14 +177,14 @@ class ProjectBillingController extends AbstractController
                 $projectBillingService->recordProjectBilling($projectBilling);
             }
 
-            return $this->redirectToRoute('app_project_billing_edit', $this->viewService->addView(['id' => $projectBilling->getId()]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_project_billing_edit', ['id' => $projectBilling->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('project_billing/record.html.twig', $this->viewService->addView([
+        return $this->render('project_billing/record.html.twig', [
             'projectBilling' => $projectBilling,
             'form' => $form,
             'invoiceErrors' => $invoiceErrors,
-        ]));
+        ]);
     }
 
     /**
@@ -197,7 +193,6 @@ class ProjectBillingController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/show-export', name: 'app_project_billing_show_export', methods: ['GET'])]
-    #[IsGranted('VIEW', 'projectBilling')]
     public function showExport(Request $request, ProjectBilling $projectBilling, BillingService $billingService): Response
     {
         $ids = array_map(function ($invoice) {
@@ -206,10 +201,10 @@ class ProjectBillingController extends AbstractController
 
         $html = $billingService->generateSpreadsheetHtml($ids);
 
-        return $this->render('project_billing/export_show.html.twig', $this->viewService->addView([
+        return $this->render('project_billing/export_show.html.twig', [
             'projectBilling' => $projectBilling,
             'html' => $html,
-        ]));
+        ]);
     }
 
     /**
@@ -218,7 +213,6 @@ class ProjectBillingController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/export', name: 'app_project_billing_export', methods: ['GET'])]
-    #[IsGranted('VIEW', 'projectBilling')]
     public function export(Request $request, ProjectBilling $projectBilling, InvoiceRepository $invoiceRepository, BillingService $billingService, ProjectBillingRepository $projectBillingRepository): Response
     {
         $invoices = $projectBilling->getInvoices();

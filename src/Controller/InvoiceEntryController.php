@@ -20,6 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/invoices/{invoice}/entries')]
+#[IsGranted('ROLE_INVOICE')]
 class InvoiceEntryController extends AbstractController
 {
     public function __construct(
@@ -34,7 +35,6 @@ class InvoiceEntryController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/new/{type}', name: 'app_invoice_entry_new', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT', 'invoice')]
     public function new(Request $request, Invoice $invoice, InvoiceEntryTypeEnum $type, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         if ($invoice->isRecorded()) {
@@ -83,7 +83,6 @@ class InvoiceEntryController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/edit', name: 'app_invoice_entry_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT', 'invoiceEntry')]
     public function edit(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
@@ -125,7 +124,6 @@ class InvoiceEntryController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}', name: 'app_invoice_entry_delete', methods: ['POST'])]
-    #[IsGranted('EDIT', 'invoiceEntry')]
     public function delete(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         if ($invoice->isRecorded()) {

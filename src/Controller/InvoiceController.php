@@ -31,6 +31,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/invoices')]
+#[IsGranted('ROLE_INVOICE')]
 class InvoiceController extends AbstractController
 {
     public function __construct(
@@ -41,7 +42,6 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/', name: 'app_invoices_index', methods: ['GET'])]
-    #[IsGranted('VIEW')]
     public function index(Request $request, InvoiceRepository $invoiceRepository): Response
     {
         $invoiceFilterData = new InvoiceFilterData();
@@ -59,7 +59,6 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/new', name: 'app_invoices_new', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT')]
     public function new(Request $request, InvoiceRepository $invoiceRepository): Response
     {
         $invoice = new Invoice();
@@ -91,7 +90,6 @@ class InvoiceController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}/edit', name: 'app_invoices_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT', 'invoice')]
     public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository, ClientRepository $clientRepository, ClientHelper $clientHelper, AccountRepository $accountRepository, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
@@ -203,7 +201,6 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}/generate-description', name: 'app_invoices_generate_description', methods: ['GET'])]
-    #[IsGranted('VIEW', 'invoice')]
     public function generateDescription(Invoice $invoice, $defaultInvoiceDescriptionTemplate): JsonResponse
     {
         $projectLeadName = $invoice->getProject()?->getProjectLeadName() ?? null;
@@ -223,7 +220,6 @@ class InvoiceController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{id}', name: 'app_invoices_delete', methods: ['POST'])]
-    #[IsGranted('EDIT', 'invoice')]
     public function delete(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         $token = $request->request->get('_token');
@@ -249,7 +245,6 @@ class InvoiceController extends AbstractController
      * @throws InvoiceAlreadyOnRecordException
      */
     #[Route('/{id}/record', name: 'app_invoices_record', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT', 'invoice')]
     public function record(Request $request, Invoice $invoice): Response
     {
         $recordData = new ConfirmData();
