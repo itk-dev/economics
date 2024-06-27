@@ -406,4 +406,9 @@
         @apply pr-4 text-xs;
     }
 
+    .hours,
+    .price,
+    .quantity {
+        text-align: right;
+    }
 }
