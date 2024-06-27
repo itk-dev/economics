@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
-use App\Exception\EconomicsException;
 use App\Model\Invoices\InvoiceFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

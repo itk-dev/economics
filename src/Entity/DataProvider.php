@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\DataProviderRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DataProviderRepository::class)]
@@ -32,7 +30,8 @@ class DataProvider extends AbstractBaseEntity
     private ?bool $enabled = null;
 
     public function __construct()
-    {}
+    {
+    }
 
     public function __toString(): string
     {
