@@ -9,7 +9,6 @@ use App\Form\IssueFilterType;
 use App\Form\IssueProductType;
 use App\Model\Invoices\IssueFilterData;
 use App\Repository\IssueRepository;
-use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +22,6 @@ use Symfony\Component\Translation\TranslatableMessage;
 class IssueController extends AbstractController
 {
     public function __construct(
-        private readonly ViewService $viewService,
         private readonly array $options,
     ) {
     }
@@ -38,11 +36,11 @@ class IssueController extends AbstractController
 
         $pagination = $issueRepository->getFilteredPagination($issueFilterData, $request->query->getInt('page', 1));
 
-        return $this->render('issue/index.html.twig', $this->viewService->addView([
+        return $this->render('issue/index.html.twig', [
             'project' => $issueFilterData->project,
             'issues' => $pagination,
             'form' => $form,
-        ]));
+        ]);
     }
 
     #[Route('/{id}', name: 'show', methods: [Request::METHOD_GET])]

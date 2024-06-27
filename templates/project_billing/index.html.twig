@@ -46,7 +46,7 @@
                 <td class="table-td">{{ project_billing.createdBy }}</td>
                 <td class="table-td">{{ project_billing.updatedAt ? project_billing.updatedAt|date : '' }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_project_billing_edit', {'id': project_billing.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_project_billing_edit', {'id': project_billing.id}) }}">{{ 'project_billing.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% endfor %}
@@ -56,7 +56,7 @@
             </tr>
         {% endif %}
         <tr class="table-tr">
-            <td class="table-td" colspan="{{ number_of_columns - 6 }}"><a class="link" href="{{ path('app_project_billing_new', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.action_create_new'|trans }}</a>
+            <td class="table-td" colspan="{{ number_of_columns - 6 }}"><a class="link" href="{{ path('app_project_billing_new') }}">{{ 'project_billing.action_create_new'|trans }}</a>
             <td class="table-td" colspan="{{ number_of_columns - 2 }}" class="text-right">
                 {{ knp_pagination_render(projectBillings) }}
             </td>

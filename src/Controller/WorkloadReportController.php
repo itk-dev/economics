@@ -9,7 +9,6 @@ use App\Form\WorkloadReportType;
 use App\Model\Reports\WorkloadReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
-use App\Service\ViewService;
 use App\Service\WorkloadReportService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,14 +16,15 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/reports/workload_report')]
+#[IsGranted('ROLE_REPORT')]
 class WorkloadReportController extends AbstractController
 {
     public function __construct(
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ViewService $viewService,
         private readonly WorkloadReportService $workloadReportService,
         private readonly ?string $defaultDataProvider,
     ) {
@@ -50,7 +50,7 @@ class WorkloadReportController extends AbstractController
         }
 
         $form = $this->createForm(WorkloadReportType::class, $reportFormData, [
-            'action' => $this->generateUrl('app_workload_report', $this->viewService->addView([])),
+            'action' => $this->generateUrl('app_workload_report'),
             'method' => 'GET',
             'attr' => [
                 'id' => 'sprint_report',
@@ -116,12 +116,12 @@ class WorkloadReportController extends AbstractController
             }
         }
 
-        return $this->render('reports/reports.html.twig', $this->viewService->addView([
+        return $this->render('reports/reports.html.twig', [
             'controller_name' => 'WorkloadReportController',
             'form' => $form,
             'error' => $error,
             'data' => $reportData,
             'mode' => $mode,
-        ]));
+        ]);
     }
 }

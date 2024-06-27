@@ -7,18 +7,18 @@ use App\Form\AccountFilterType;
 use App\Form\AccountType;
 use App\Model\Invoices\AccountFilterData;
 use App\Repository\AccountRepository;
-use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/account')]
+#[IsGranted('ROLE_ADMIN')]
 class AccountController extends AbstractController
 {
     public function __construct(
-        private readonly ViewService $viewService,
     ) {
     }
 
@@ -34,7 +34,6 @@ class AccountController extends AbstractController
         return $this->render('account/index.html.twig', [
             'accounts' => $pagination,
             'form' => $form,
-            'viewId' => $request->attributes->get('viewId'),
         ]);
     }
 
@@ -49,13 +48,13 @@ class AccountController extends AbstractController
             $entityManager->persist($account);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_account_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_account_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('account/new.html.twig', $this->viewService->addView([
+        return $this->render('account/new.html.twig', [
             'account' => $account,
             'form' => $form,
-        ]));
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'app_account_edit', methods: ['GET', 'POST'])]
@@ -67,13 +66,13 @@ class AccountController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_account_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_account_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('account/edit.html.twig', $this->viewService->addView([
+        return $this->render('account/edit.html.twig', [
             'account' => $account,
             'form' => $form,
-        ]));
+        ]);
     }
 
     #[Route('/{id}', name: 'app_account_delete', methods: ['POST'])]
@@ -85,6 +84,6 @@ class AccountController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_account_index', $this->viewService->addView([]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_account_index', [], Response::HTTP_SEE_OTHER);
     }
 }

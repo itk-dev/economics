@@ -121,6 +121,6 @@
     {% endif %}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_issue_index', {project: issue.project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'issue.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_issue_index', {project: issue.project.id}) }}">{{ 'issue.back_to_list'|trans }}</a>
     </div>
 {% endblock %}

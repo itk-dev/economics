@@ -8,6 +8,6 @@
     {{ include('product/_form.html.twig') }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_product_index', app.request.query.all|merge(view is defined ? {view: view} : {})) }}">{{ 'product.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_product_index', app.request.query.all) }}">{{ 'product.back_to_list'|trans }}</a>
     </div>
 {% endblock %}

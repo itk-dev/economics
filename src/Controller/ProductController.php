@@ -9,7 +9,6 @@ use App\Form\ProductType;
 use App\Model\Invoices\ProductFilterData;
 use App\Repository\ProductRepository;
 use App\Repository\ProjectRepository;
-use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +21,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ProductController extends AbstractController
 {
     public function __construct(
-        private readonly ViewService $viewService,
         private readonly ProjectRepository $projectRepository
     ) {
     }
@@ -37,11 +35,11 @@ class ProductController extends AbstractController
 
         $pagination = $productRepository->getFilteredPagination($productFilterData, $request->query->getInt('page', 1));
 
-        return $this->render('product/index.html.twig', $this->viewService->addView([
+        return $this->render('product/index.html.twig', [
             'project' => $productFilterData->project,
             'products' => $pagination,
             'form' => $form,
-        ]));
+        ]);
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]

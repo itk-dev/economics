@@ -27,9 +27,9 @@
                     </li>
                     <li class="list-group-item">
                         {% if not invoice.recorded and invoice.projectBilling is null %}
-                        <a class="button" type="button" href="{{ path('app_invoice_entry_worklogs', {'invoice': invoice.id, 'invoiceEntry': invoice_entry.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.add_worklogs'|trans }}</a>
+                        <a class="button" type="button" href="{{ path('app_invoice_entry_worklogs', {'invoice': invoice.id, 'invoiceEntry': invoice_entry.id}) }}">{{ 'invoices.add_worklogs'|trans }}</a>
                         {% else %}
-                            <a class="link" href="{{ path('app_invoice_entry_worklogs_show', {'invoice': invoice.id, 'invoiceEntry': invoice_entry.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.show_worklogs'|trans }}</a>
+                            <a class="link" href="{{ path('app_invoice_entry_worklogs_show', {'invoice': invoice.id, 'invoiceEntry': invoice_entry.id}) }}">{{ 'invoices.show_worklogs'|trans }}</a>
                         {% endif %}
                     </li>
                 {% endif %}
@@ -39,7 +39,7 @@
     {{ form_end(form) }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
+        <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.back_to_invoice'|trans }}</a>
         {% if not invoice.recorded and invoice.projectBilling is null %}
             {{ include('invoice_entry/_delete_form.html.twig') }}
         {% endif %}

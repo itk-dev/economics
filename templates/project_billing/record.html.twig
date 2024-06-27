@@ -26,7 +26,7 @@
                         </thead>
                         <tbody>
                         {% for key, invoice_error in invoiceErrors %}
-                            {% set invoice_url = absolute_url(path('app_invoices_edit', {'id': key}|merge(view is defined ? {view: view} : {}))) %}
+                            {% set invoice_url = absolute_url(path('app_invoices_edit', {'id': key})) %}
                             {% for error in invoice_error %}
                                 <tr class="table-tr">
                                     <td class="table-td"><strong>{{ key }}</strong></td>
@@ -58,6 +58,6 @@
     {% endif %}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.back_to_invoice'|trans }}</a>
+        <a class="link" href="{{ path('app_project_billing_edit', {'id': projectBilling.id}) }}">{{ 'project_billing.back_to_invoice'|trans }}</a>
     </div>
 {% endblock %}

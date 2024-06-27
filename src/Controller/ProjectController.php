@@ -10,18 +10,18 @@ use App\Form\ProjectType;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\ProjectRepository;
 use App\Service\DataSynchronizationService;
-use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/project')]
+#[IsGranted('ROLE_ADMIN')]
 class ProjectController extends AbstractController
 {
     public function __construct(
-        private readonly ViewService $viewService,
     ) {
     }
 
@@ -34,10 +34,10 @@ class ProjectController extends AbstractController
 
         $pagination = $projectRepository->getFilteredPagination($projectFilterData, $request->query->getInt('page', 1));
 
-        return $this->render('project/index.html.twig', $this->viewService->addView([
+        return $this->render('project/index.html.twig', [
             'projects' => $pagination,
             'form' => $form,
-        ]));
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'app_project_edit', methods: ['GET', 'POST'])]
@@ -51,10 +51,10 @@ class ProjectController extends AbstractController
             $projectRepository->save($project, true);
         }
 
-        return $this->render('project/edit.html.twig', $this->viewService->addView([
+        return $this->render('project/edit.html.twig', [
             'project' => $project,
             'form' => $form,
-        ]));
+        ]);
     }
 
     #[Route('/{id}/include', name: 'app_project_include', methods: ['POST'])]
