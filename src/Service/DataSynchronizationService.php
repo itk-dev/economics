@@ -13,6 +13,7 @@ use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
+use App\Model\Reports\WorkloadReportBillableKindsEnum;
 use App\Model\SprintReport\SprintReportVersion;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
@@ -356,7 +357,6 @@ class DataSynchronizationService
                 $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
                 $worklog->setIssue($issue);
             }
-
 
             if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
                 $worklog->setIsBilled(true);

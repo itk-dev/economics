@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\DataProvider;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Form\WorkloadReportType;
@@ -12,10 +11,7 @@ use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
 use App\Service\WorkloadReportService;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -29,7 +25,6 @@ class WorkloadReportController extends AbstractController
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly WorkloadReportService $workloadReportService,
-        private readonly ?string $defaultDataProvider,
     ) {
     }
 
@@ -45,64 +40,13 @@ class WorkloadReportController extends AbstractController
         $mode = 'workload_report';
         $reportFormData = new WorkloadReportFormData();
 
-        $dataProviders = $this->dataProviderRepository->findAll();
-        $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
-
-        if (null === $defaultProvider && count($dataProviders) > 0) {
-            $defaultProvider = $dataProviders[0];
-        }
-
         $form = $this->createForm(WorkloadReportType::class, $reportFormData, [
             'action' => $this->generateUrl('app_workload_report'),
             'method' => 'GET',
             'attr' => [
                 'id' => 'sprint_report',
             ],
-            // Since this is only a filtering form, csrf is not needed.
             'csrf_protection' => false,
-        ]);
-
-        $form->add('dataProvider', EntityType::class, [
-            'class' => DataProvider::class,
-            'required' => false,
-            'label' => 'reports.workload_report.select_data_provider',
-            'label_attr' => ['class' => 'label'],
-            'attr' => [
-                'onchange' => 'this.form.submit()',
-                'class' => 'form-element',
-            ],
-            'data' => $this->dataProviderRepository->find($this->defaultDataProvider),
-            'choices' => $dataProviders,
-        ]);
-
-        $form->add('viewPeriodType', ChoiceType::class, [
-            'required' => false,
-            'label' => 'reports.workload_report.select_view_period_type',
-            'label_attr' => ['class' => 'label'],
-            'placeholder' => false,
-            'attr' => [
-                'class' => 'form-element',
-            ],
-            'choices' => $this->workloadReportService->getViewPeriodTypes(),
-        ]);
-
-        $form->add('viewMode', ChoiceType::class, [
-            'required' => false,
-            'label' => 'reports.workload_report.select_viewmode',
-            'label_attr' => ['class' => 'label'],
-            'placeholder' => false,
-            'attr' => [
-                'class' => 'form-element',
-            ],
-            'choices' => $this->workloadReportService->getViewModes(),
-        ]);
-
-        $form->add('submit', ButtonType::class, [
-            'block_name' => 'Submit',
-            'attr' => [
-                'onclick' => 'this.form.submit()',
-                'class' => 'hour-report-submit button',
-            ],
         ]);
 
         $form->handleRequest($request);
@@ -114,10 +58,8 @@ class WorkloadReportController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
-                $viewPeriodType = $form->get('viewPeriodType')->getData() ?? 'week';
-                $viewPeriodType = PeriodTypeEnum::from($viewPeriodType);
-                $viewMode = $form->get('viewMode')->getData() ?? 'percentage_logged';
-                $viewMode = ViewModeEnum::from($viewMode);
+                $viewPeriodType = $form->get('viewPeriodType')->getData() ?? PeriodTypeEnum::WEEK;
+                $viewMode = $form->get('viewMode')->getData() ?? ViewModeEnum::WORKLOAD;
 
                 if ($selectedDataProvider) {
                     try {

@@ -121,9 +121,9 @@ class WorkloadReportService
     public function getViewPeriodTypes(): array
     {
         return [
-            'Week' => PeriodTypeEnum::WEEK->value,
-            'Month' => PeriodTypeEnum::MONTH->value,
-            'Year' => PeriodTypeEnum::YEAR->value,
+            'Week' => PeriodTypeEnum::WEEK,
+            'Month' => PeriodTypeEnum::MONTH,
+            'Year' => PeriodTypeEnum::YEAR,
         ];
     }
 

@@ -549,6 +549,7 @@ reports:
         workers: 'Medarbejdere'
         worker: 'Medarbejder'
         hidden-entries: 'Skjulte medarbejdere'
+        submit: 'Hent'
 
 hour_report:
     title: 'Timerapport'
@@ -726,3 +727,17 @@ worker:
     edit: 'Rediger medarbejder'
     action_save: 'Gem'
     back_to_list: "Tilbage til listen"
+
+WorkloadReportPeriodTypeEnum:
+    week:
+        label: 'Uge'
+    month:
+        label: 'Måned'
+    year:
+        label: 'År'
+
+WorkloadReportViewModeEnum:
+    workload:
+        label: 'Loggede timer'
+    billable:
+        label: 'Fakturerbare timer'
