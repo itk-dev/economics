@@ -55,13 +55,10 @@ class ClientController extends AbstractController
             return $this->redirectToRoute('app_client_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('client/new.html.twig');
-    }
-
-    #[Route('/{id}', name: 'app_client_show', methods: ['GET'])]
-    public function show(): Response
-    {
-        return $this->render('client/show.html.twig');
+        return $this->render('client/new.html.twig', [
+            'client' => $client,
+            'form' => $form,
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'app_client_edit', methods: ['GET', 'POST'])]
@@ -78,7 +75,10 @@ class ClientController extends AbstractController
             return $this->redirectToRoute('app_client_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('client/edit.html.twig');
+        return $this->render('client/edit.html.twig', [
+            'client' => $client,
+            'form' => $form,
+        ]);
     }
 
     #[Route('/{id}', name: 'app_client_delete', methods: ['POST'])]

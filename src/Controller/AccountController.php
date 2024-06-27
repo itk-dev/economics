@@ -66,13 +66,13 @@ class AccountController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_account_index', [
-                'account' => $account,
-                'form' => $form,
-            ], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_account_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('account/edit.html.twig');
+        return $this->render('account/edit.html.twig', [
+            'account' => $account,
+            'form' => $form,
+        ]);
     }
 
     #[Route('/{id}', name: 'app_account_delete', methods: ['POST'])]
