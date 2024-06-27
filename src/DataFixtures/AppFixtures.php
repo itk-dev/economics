@@ -13,7 +13,6 @@ use App\Enum\ClientTypeEnum;
 use App\Model\Reports\WorkloadReportBillableKindsEnum as BillableKindsEnum;
 use App\Service\JiraApiService;
 use App\Service\LeantimeApiService;
-use DateTimeZone;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -127,8 +126,8 @@ class AppFixtures extends Fixture
                         $year = (new \DateTime())->format('Y');
 
                         // Use modulo to get months and dates to create started-dates spanning the entire year
-                        $modMonth = str_pad($k % 12 + 1, 2, '0', STR_PAD_LEFT);
-                        $modDay = str_pad($k % 28 + 1, 2, '0', STR_PAD_LEFT);
+                        $modMonth = str_pad((string) $k % 12 + 1, 2, '0', STR_PAD_LEFT);
+                        $modDay = str_pad((string) $k % 28 + 1, 2, '0', STR_PAD_LEFT);
 
                         $worklog = new Worklog();
                         $worklog->setProjectTrackerIssueId("worklog-$key-$i-$j-$k");
@@ -138,7 +137,7 @@ class AppFixtures extends Fixture
                         $worklog->setProject($project);
                         $worklog->setWorker($workerArray[$i % 10]);
                         $worklog->setTimeSpentSeconds(60 * 15 * ($k + 1));
-                        $worklog->setStarted(\DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new DateTimeZone('Europe/Copenhagen')));
+                        $worklog->setStarted(\DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new \DateTimeZone('Europe/Copenhagen')));
                         $worklog->setIssue($issue);
                         $worklog->setDataProvider($dataProvider);
                         $worklog->setKind(BillableKindsEnum::tryFrom(BillableKindsEnum::GENERAL_BILLABLE));
