@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Form\WorkloadReportType;
 use App\Model\Reports\WorkloadReportFormData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
@@ -12,8 +10,6 @@ use App\Repository\DataProviderRepository;
 use App\Service\ViewService;
 use App\Service\WorkloadReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
