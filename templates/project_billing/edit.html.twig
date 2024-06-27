@@ -37,7 +37,7 @@
             <th class="table-th">{{ 'invoices.id'|trans }}</th>
             <th class="table-th">{{ 'invoices.name'|trans }}</th>
             <th class="table-th">{{ 'invoices.type'|trans }}</th>
-            <th class="table-th">{{ 'invoices.list_total_price'|trans }}</th>
+            <th class="table-th price">{{ 'invoices.list_total_price'|trans }}</th>
             <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
         </tr>
         </thead>
@@ -52,7 +52,7 @@
                         {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
                     {% endif %}
                 </td>
-                <td class="table-td">{{ invoice.totalPrice }}</td>
+                <td class="table-td price">{{ invoice.totalPrice|format_price }}</td>
                 <td class="table-td">
                     <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
                 </td>
@@ -77,7 +77,7 @@
                 <th class="table-th">{{ 'project_billing.issue.key'|trans }}</th>
                 <th class="table-th">{{ 'project_billing.issue.name'|trans }}</th>
                 <th class="table-th">{{ 'project_billing.issue.versions'|trans }}</th>
-                <th class="table-th">{{ 'project_billing.issue.worklog_time_spent'|trans }}</th>
+                <th class="table-th hours">{{ 'project_billing.issue.worklog_time_spent'|trans }}</th>
                 <th class="table-th">{{ 'project_billing.issue.status'|trans }}</th>
             </tr>
             </thead>
@@ -87,7 +87,7 @@
                     <td class="table-td">{{ issue.projectTrackerKey }}</td>
                     <td class="table-td">{{ issue.name }}</td>
                     <td class="table-td">{{ issue.versions|map(p => p.name)|join(', ') }}</td>
-                    <td class="table-td">{{ issue.worklogs|reduce((carry, v, k) => carry + v.timeSpentSeconds / 3600) }}</td>
+                    <td class="table-td hours">{{ issue.worklogs|reduce((carry, v, k) => carry + v.timeSpentSeconds / 3600)|format_hours }}</td>
                     <td class="table-td">{{ issue.status }}</td>
                 </tr>
             {% endfor %}

@@ -98,9 +98,9 @@
                 <th class="table-th">{{ 'invoices.invoice_entry_receiver_account'|trans }}</th>
                 <th class="table-th">{{ 'invoices.invoice_entry_material_number'|trans }}</th>
                 <th class="table-th">{{ 'invoices.invoice_entry_product'|trans }}</th>
-                <th class="table-th">{{ 'invoices.invoice_entry_amount'|trans }}</th>
-                <th class="table-th">{{ 'invoices.invoice_entry_price'|trans }}</th>
-                <th class="table-th">{{ 'invoices.invoice_entry_total_price'|trans }}</th>
+                <th class="table-th quantity">{{ 'invoices.invoice_entry_amount'|trans }}</th>
+                <th class="table-th price">{{ 'invoices.invoice_entry_price'|trans }}</th>
+                <th class="table-th price">{{ 'invoices.invoice_entry_total_price'|trans }}</th>
                 <th class="table-th">{{ 'invoices.invoice_entry_type'|trans }}</th>
                 <th class="table-th">{{ 'invoices.list_actions'|trans }}</th>
             </tr>
@@ -116,9 +116,9 @@
                     <td class="table-td">{{ invoice_helper.getAccountLabel(invoice_entry.account) }}</td>
                     <td class="table-td">{{ invoice_entry.materialNumber.value ?? '' }}</td>
                     <td class="table-td">{{ invoice_entry.product }}</td>
-                    <td class="table-td">{{ invoice_entry.amount }}</td>
-                    <td class="table-td">{{ invoice_entry.price }}</td>
-                    <td class="table-td">{{ invoice_entry.totalPrice }}</td>
+                    <td class="table-td quantity">{{ invoice_entry.amount|format_quantity }}</td>
+                    <td class="table-td price">{{ invoice_entry.price|format_price }}</td>
+                    <td class="table-td price">{{ invoice_entry.totalPrice|format_price }}</td>
                     <td class="table-td">
                         {{ invoice_entry_type_translations[invoice_entry.entryType.value]|default('') }}
                     </td>
@@ -134,9 +134,9 @@
             {% elseif invoice.totalPrice %}
                 <tr class="table-tr">
                     <td colspan="3" class="table-td"></td>
-                    <td class="table-td">{{ invoiceTotalAmount }}</td>
+                    <td class="table-td quantity">{{ invoiceTotalAmount|format_quantity }}</td>
                     <td class="table-td"></td>
-                    <td class="table-td">{{ invoice.totalPrice }}</td>
+                    <td class="table-td price">{{ invoice.totalPrice|format_price }}</td>
                     <td></td>
                     <td></td>
                 </tr>
