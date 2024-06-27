@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Trait\DataProviderTrait;
+use App\Model\Reports\WorkloadReportBillableKindsEnum;
 use App\Repository\WorklogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -52,8 +53,8 @@ class Worklog extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $projectTrackerIssueId = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $kind = null;
+    #[ORM\Column(type: 'string', nullable: true, enumType: WorkloadReportBillableKindsEnum::class)]
+    private ?WorkloadReportBillableKindsEnum $kind;
 
     public function getWorklogId(): ?int
     {
@@ -187,12 +188,12 @@ class Worklog extends AbstractBaseEntity
         return $this;
     }
 
-    public function getKind(): ?string
+    public function getKind(): ?WorkloadReportBillableKindsEnum
     {
         return $this->kind;
     }
 
-    public function setKind(string $kind): self
+    public function setKind(?WorkloadReportBillableKindsEnum $kind): self
     {
         $this->kind = $kind;
 
