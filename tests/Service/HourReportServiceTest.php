@@ -3,8 +3,6 @@
 namespace App\Tests\Service;
 
 use App\Repository\IssueRepository;
-use App\Repository\ProjectRepository;
-use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use App\Service\HourReportService;
 use PHPUnit\Framework\TestCase;
@@ -18,17 +16,17 @@ class HourReportServiceTest extends TestCase
         $this->hourReportService = new HourReportService(
             $this->createMock(IssueRepository::class),
             $this->createMock(WorklogRepository::class),
-            $this->createMock(ProjectRepository::class),
-            $this->createMock(VersionRepository::class)
         );
     }
 
-    public function testGetFromDate()
+    public function testGetDefaultFromDate()
     {
-        $fromDate = $this->hourReportService->getFromDate();
+        $fromDate = $this->hourReportService->getDefaultFromDate();
 
-        $expectedFromDate = (new \DateTime())->modify('first day of this month')->format('Y-m-d');
+        $expectedFromDate = (new \DateTime())->modify('first day of this month');
 
-        $this->assertSame($expectedFromDate, $fromDate);
+        $format = 'Y-m-d H:i:s';
+
+        $this->assertEquals($expectedFromDate->format($format), $fromDate->format($format));
     }
 }
