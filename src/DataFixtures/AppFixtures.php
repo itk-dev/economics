@@ -126,8 +126,8 @@ class AppFixtures extends Fixture
                         $year = (new \DateTime())->format('Y');
 
                         // Use modulo to get months and dates to create started-dates spanning the entire year
-                        $modMonth = str_pad((string) $k % 12 + 1, 2, '0', STR_PAD_LEFT);
-                        $modDay = str_pad((string) $k % 28 + 1, 2, '0', STR_PAD_LEFT);
+                        $modMonth = str_pad((string) ($k % 12 + 1), 2, '0', STR_PAD_LEFT);
+                        $modDay = str_pad((string) ($k % 28 + 1), 2, '0', STR_PAD_LEFT);
 
                         $worklog = new Worklog();
                         $worklog->setProjectTrackerIssueId("worklog-$key-$i-$j-$k");

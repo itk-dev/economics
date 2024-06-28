@@ -47,9 +47,9 @@ class WorkloadReportServiceTest extends TestCase
         $result = $this->workloadReportService->getViewPeriodTypes();
 
         $expectedResult = [
-            'Week' => 'week',
-            'Month' => 'month',
-            'Year' => 'year',
+            'Week' => PeriodTypeEnum::WEEK,
+            'Month' => PeriodTypeEnum::MONTH,
+            'Year' => PeriodTypeEnum::YEAR,
         ];
 
         $this->assertEquals($expectedResult, $result);
