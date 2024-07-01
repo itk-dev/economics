@@ -57,8 +57,9 @@ class PlanningService
     {
         $weeks = $planning->weeks;
 
-        $currentYear = (int) (new \DateTime())->format('Y');
-        $currentWeek = (int) (new \DateTime())->format('W');
+        $now = new \DateTime();
+        $currentYear = (int) $now->format('Y');
+        $currentWeek = (int) $now->format('W');
 
         $weeksOfYear = $this->dateTimeHelper->getWeeksOfYear($currentYear);
         foreach ($weeksOfYear as $week) {
