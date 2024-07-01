@@ -71,6 +71,8 @@ class AppFixtures extends Fixture
             }
 
             for ($i = 0; $i < 10; ++$i) {
+                $modBillable = 0 == $i % 2 ? true : false;
+
                 $project = new Project();
                 $project->setName("project-$key-$i");
                 $project->setProjectTrackerId("project-$key-$i");
@@ -80,6 +82,7 @@ class AppFixtures extends Fixture
                 $project->setProjectLeadMail('test@economics.local.itkdev.dk');
                 $project->setProjectLeadName('Test Testesen');
                 $project->setDataProvider($dataProvider);
+                $project->setIsBillable($modBillable);
 
                 $manager->persist($project);
 
