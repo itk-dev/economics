@@ -10,7 +10,7 @@ use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
-use App\Model\Reports\WorkloadReportBillableKindsEnum as BillableKindsEnum;
+use App\Model\Reports\BillableKindsEnum;
 use App\Service\JiraApiService;
 use App\Service\LeantimeApiService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
