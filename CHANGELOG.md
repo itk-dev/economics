@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-136](https://github.com/itk-dev/economics/pull/136)
+  1774: Planning view use service.
 * [PR-134](https://github.com/itk-dev/economics/pull/134)
   1632: Remove team report.
 * [PR-133](https://github.com/itk-dev/economics/pull/133)
