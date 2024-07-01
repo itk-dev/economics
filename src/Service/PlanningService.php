@@ -51,7 +51,7 @@ class PlanningService
      *
      * @param PlanningData $planning The PlanningData object containing the weeks data
      *
-     * @return ArrayCollection<Weeks> The ArrayCollection of Weeks objects representing the weeks in the planning
+     * @return ArrayCollection<string, Weeks> The ArrayCollection of Weeks objects representing the weeks in the planning
      */
     private function buildPlanningWeeks(PlanningData $planning): ArrayCollection
     {
