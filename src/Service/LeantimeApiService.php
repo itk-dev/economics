@@ -158,6 +158,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData = new IssueData();
 
             $issueData->name = $issue->headline;
+            $issueData->description = $issue->description;
             $issueData->status = $issue->status;
             $issueData->projectTrackerId = $issue->id;
             // Leantime does not have a key for each issue.

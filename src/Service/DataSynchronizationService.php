@@ -13,6 +13,7 @@ use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
+use App\Model\Invoices\IssueData;
 use App\Model\SprintReport\SprintReportVersion;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
@@ -214,6 +215,7 @@ class DataSynchronizationService
             $pagedIssueData = $service->getIssuesDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
             $total = $pagedIssueData->total;
 
+            /** @var IssueData $issueDatum */
             foreach ($pagedIssueData->items as $issueDatum) {
                 $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
 
@@ -224,6 +226,7 @@ class DataSynchronizationService
                     $this->entityManager->persist($issue);
                 }
                 $issue->setName($issueDatum->name);
+                $issue->setDescription($issueDatum->description);
                 $issue->setAccountId($issueDatum->accountId);
                 $issue->setAccountKey($issueDatum->accountKey);
                 $issue->setEpicKey($issueDatum->epicKey);
@@ -244,11 +247,13 @@ class DataSynchronizationService
                     $issue->getVersions()->clear();
                 }
 
-                foreach ($issueDatum->versions as $versionData) {
-                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
+                if (null !== $issueDatum->versions) {
+                    foreach ($issueDatum->versions as $versionData) {
+                        $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
 
-                    if (null !== $version) {
-                        $issue->addVersion($version);
+                        if (null !== $version) {
+                            $issue->addVersion($version);
+                        }
                     }
                 }
 
