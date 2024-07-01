@@ -64,6 +64,12 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dueDate = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $worker = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $linkToIssue = null;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -307,6 +313,30 @@ class Issue extends AbstractBaseEntity
     public function setDueDate(?\DateTimeInterface $dueDate): static
     {
         $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    public function getWorker(): ?string
+    {
+        return $this->worker;
+    }
+
+    public function setWorker(string $worker): self
+    {
+        $this->worker = $worker;
+
+        return $this;
+    }
+
+    public function getLinkToIssue(): ?string
+    {
+        return $this->linkToIssue;
+    }
+
+    public function setLinkToIssue(?string $linkToIssue): self
+    {
+        $this->linkToIssue = $linkToIssue;
 
         return $this;
     }
