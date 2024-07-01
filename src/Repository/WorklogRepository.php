@@ -5,8 +5,8 @@ namespace App\Repository;
 use App\Entity\InvoiceEntry;
 use App\Entity\Project;
 use App\Entity\Worklog;
+use App\Enum\BillableKindsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
-use App\Model\Reports\BillableKindsEnum;
 use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -129,7 +129,7 @@ class WorklogRepository extends ServiceEntityRepository
                 'worker' => $worker,
                 'date_from' => $dateFrom,
                 'date_to' => $dateTo,
-                'billableKinds' => BillableKindsEnum::getValues(),
+                'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
             ])
             ->getQuery()->getResult();
     }

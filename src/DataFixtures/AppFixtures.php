@@ -9,8 +9,8 @@ use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\Worklog;
+use App\Enum\BillableKindsEnum;
 use App\Enum\ClientTypeEnum;
-use App\Model\Reports\BillableKindsEnum;
 use App\Service\JiraApiService;
 use App\Service\LeantimeApiService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -129,6 +129,8 @@ class AppFixtures extends Fixture
                         $modMonth = str_pad((string) ($k % 12 + 1), 2, '0', STR_PAD_LEFT);
                         $modDay = str_pad((string) ($k % 28 + 1), 2, '0', STR_PAD_LEFT);
 
+                        $modKind = 0 == $i % 2 ? BillableKindsEnum::GENERAL_BILLABLE : null;
+
                         $worklog = new Worklog();
                         $worklog->setProjectTrackerIssueId("worklog-$key-$i-$j-$k");
                         $worklog->setWorklogId($i * 100000 + $j * 1000 + $k);
@@ -140,7 +142,7 @@ class AppFixtures extends Fixture
                         $worklog->setStarted(\DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new \DateTimeZone('Europe/Copenhagen')));
                         $worklog->setIssue($issue);
                         $worklog->setDataProvider($dataProvider);
-                        $worklog->setKind(BillableKindsEnum::tryFrom(BillableKindsEnum::GENERAL_BILLABLE));
+                        $worklog->setKind($modKind);
                         $manager->persist($worklog);
                     }
 
