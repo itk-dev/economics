@@ -13,10 +13,14 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 class Invoice extends AbstractBaseEntity
 {
+    // Opus allows at most 500 characters (cf. BillingService::exportInvoicesToSpreadsheet).
+    public const DESCRIPTION_MAX_LENGTH = 500;
+
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+
+    #[ORM\Column(length: self::DESCRIPTION_MAX_LENGTH, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column]
