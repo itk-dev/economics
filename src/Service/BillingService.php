@@ -307,7 +307,7 @@ class BillingService
             $setCellValue(15, $row, substr('Att: '.$contactName, 0, 35));
             // 16. "Toptekst, yderligere spec i det hvide felt på fakturaen"
             $description = $invoice->getDescription() ?? '';
-            $setCellValue(16, $row, substr($description, 0, 500));
+            $setCellValue(16, $row, substr($description, 0, Invoice::DESCRIPTION_MAX_LENGTH));
             // 17. "Leverandør"
             if ($internal) {
                 $setCellValue(17, $row, str_pad($this->invoiceSupplierAccount, 10, '0', \STR_PAD_LEFT));
