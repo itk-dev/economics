@@ -2,29 +2,66 @@
 
 namespace App\Service;
 
+use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
+use function Symfony\Component\String\s;
 
 class InvoiceHelper
 {
     private readonly array $options;
 
     public function __construct(
-        array $options
+        private readonly HtmlHelper $htmlHelper,
+        array $options,
     ) {
         $this->options = $this->resolveOptions($options);
     }
 
-    public function getOneInvoicePerIssue()
+    public function getOneInvoicePerIssue(): bool
     {
         return $this->options['one_invoice_per_issue'];
     }
 
-    public function getSetInvoiceDescriptionFromEntries()
+    public function getSetInvoiceDescriptionFromIssueDescription(): bool
     {
-        return $this->options['set_invoice_description_from_entries'];
+        return $this->options['set_invoice_description_from_issue_description'];
+    }
+
+    public function getInvoiceDescription(?string $description): ?string
+    {
+        if (empty($description)) {
+            return $description;
+        }
+
+        $heading = $this->getInvoiceDescriptionIssueHeading();
+        if ($description = $this->htmlHelper->getSection($description, $heading)) {
+            foreach ($this->getInvoiceDescriptionElementReplacements() as $elementName => [$before, $after]) {
+                $description = $this->htmlHelper->element2separator($description, $elementName, $before, $after);
+            }
+
+            $description = strip_tags($description);
+
+            $description = s($description)->trim()->truncate(Invoice::DESCRIPTION_MAX_LENGTH)->toString();
+
+            // HACK! Replace some duplicated punctuation.
+            return preg_replace('/([;:] )\1/', '$1', $description);
+        }
+
+        return null;
+    }
+
+    public function getInvoiceDescriptionIssueHeading(): string
+    {
+        return $this->options['invoice_description_issue_heading'];
+    }
+
+    public function getInvoiceDescriptionElementReplacements(): array
+    {
+        return $this->options['invoice_description_element_replacements'];
     }
 
     /**
@@ -194,8 +231,14 @@ class InvoiceHelper
             ->setDefault('one_invoice_per_issue', false)
             ->setAllowedTypes('one_invoice_per_issue', 'bool')
 
-            ->setDefault('set_invoice_description_from_entries', false)
-            ->setAllowedTypes('set_invoice_description_from_entries', 'bool')
+            ->setDefault('set_invoice_description_from_issue_description', false)
+            ->setAllowedTypes('set_invoice_description_from_issue_description', 'bool')
+
+            ->setDefault('invoice_description_issue_heading', '')
+            ->setAllowedTypes('invoice_description_issue_heading', 'string')
+
+            ->setDefault('invoice_description_element_replacements', [])
+            ->setAllowedTypes('invoice_description_element_replacements', 'array')
 
             ->resolve($options);
     }

@@ -34,6 +34,7 @@ class ProjectBillingService
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
         private readonly InvoiceHelper $invoiceEntryHelper,
+        private readonly HtmlHelper $htmlHelper,
     ) {
     }
 
@@ -306,24 +307,12 @@ class ProjectBillingService
             }
 
             if ($this->invoiceEntryHelper->getOneInvoicePerIssue()
-                && $this->invoiceEntryHelper->getSetInvoiceDescriptionFromEntries()) {
+                && $this->invoiceEntryHelper->getSetInvoiceDescriptionFromIssueDescription()) {
                 // We know that we have exactly one issue.
                 $issue = reset($invoiceArray['issues']);
-                // Generate an invoice description starting with the issue name
-                // followed by an “Ordrelinjer:” heading
-                // and a line per invoice entry.
-                $description = array_merge(
-                    [
-                        $issue->getName(),
-                        'Ordrelinjer:',
-                    ],
-                    $invoice->getInvoiceEntries()
-                        ->map(
-                            static fn (InvoiceEntry $entry) => preg_replace('/^[A-Z0-9-]+: /', '', $entry->getDescription() ?? '')
-                        )
-                        ->toArray()
-                );
-                $invoice->setDescription(join(PHP_EOL, $description));
+                if ($description = $this->invoiceEntryHelper->getInvoiceDescription($issue->getDescription())) {
+                    $invoice->setDescription($description);
+                }
             }
 
             $projectBilling->addInvoice($invoice);
