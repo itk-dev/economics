@@ -117,6 +117,7 @@ class AppFixtures extends Fixture
                     $issue->setHoursRemaining($j);
                     $issue->setDueDate(\DateTime::createFromFormat('U', (string) rand(strtotime(date('Y-01-01')), strtotime(date('Y-12-31')))));
                     $issue->setWorker($workerArray[rand(0, 9)]);
+                    $issue->setLinkToIssue('www.hest.dk');
                     $manager->persist($issue);
 
                     for ($k = 0; $k < 100; ++$k) {
