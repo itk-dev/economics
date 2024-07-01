@@ -48,7 +48,6 @@ class PlanningService
 
     /**
      * Builds and returns an ArrayCollection of Weeks objects based on the given PlanningData object.
-     * Each Weeks object represents a week in the planning.
      *
      * @param PlanningData $planning The PlanningData object containing the weeks data
      *
