@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Trait\DataProviderTrait;
-use App\Model\Reports\BillableKindsEnum;
+use App\Enum\BillableKindsEnum;
 use App\Repository\WorklogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
