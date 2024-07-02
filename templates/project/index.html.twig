@@ -31,6 +31,7 @@
             <th class="table-th{% if projects.isSorted('project.updatedAt') %} sorted{% endif %}">{{ knp_pagination_sortable(projects, 'project.updated_at'|trans, 'project.updatedAt') }}</th>
             {% if is_granted('ROLE_ADMIN') %}
             <th class="table-th">{{ 'project.include'|trans }}</th>
+            <th class="table-th">{{ 'project.is_billable'|trans }}</th>
             <th class="table-th">{{ 'project.sync'|trans }}</th>
             {% endif %}
             <th class="table-th">{{ 'project.actions'|trans }}</th>
@@ -49,6 +50,13 @@
                 <td class="table-td">
                     <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_include', {id: project.id}) }}">
                         <input type="checkbox" value="" class="sr-only peer" {{ stimulus_action('toggle', 'toggle') }} {{ stimulus_target('toggle', 'checkbox') }} {{ project.include ? 'checked' : '' }}>
+                        {% include "components/checkbox.html.twig" %}
+                        <span class="toggle-text" {{ stimulus_target('toggle', 'text') }}></span>
+                    </label>
+                </td>
+                <td class="table-td">
+                    <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_isBillable', {id: project.id}) }}">
+                        <input type="checkbox" value="" class="sr-only peer" {{ stimulus_action('toggle', 'toggle') }} {{ stimulus_target('toggle', 'checkbox') }} {{ project.isBillable ? 'checked' : '' }}>
                         {% include "components/checkbox.html.twig" %}
                         <span class="toggle-text" {{ stimulus_target('toggle', 'text') }}></span>
                     </label>

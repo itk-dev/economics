@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\InvoiceEntry;
 use App\Entity\Project;
 use App\Entity\Worklog;
+use App\Enum\BillableKindsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -125,6 +126,29 @@ class WorklogRepository extends ServiceEntityRepository
                 'worker' => $worker,
                 'date_from' => $dateFrom,
                 'date_to' => $dateTo,
+            ])
+            ->getQuery()->getResult();
+    }
+
+    public function findBillableWorklogsByWorkerAndDateRange(string $worker, mixed $dateFrom, mixed $dateTo)
+    {
+        $qb = $this->createQueryBuilder('wor');
+
+        $qb->leftJoin('App\Entity\Project', 'pro', 'WITH', 'pro.id = wor.project');
+
+        return $qb
+            ->where($qb->expr()->between('wor.started', ':date_from', ':date_to'))
+            ->andWhere('wor.worker = :worker')
+            ->andWhere($qb->expr()->in('wor.kind', ':billableKinds'))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('wor.isBilled', '1'),
+                $qb->expr()->eq('pro.is_billable', '1'),
+            ))
+            ->setParameters([
+                'worker' => $worker,
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
+                'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
             ])
             ->getQuery()->getResult();
     }
