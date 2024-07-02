@@ -33,8 +33,7 @@ class ProjectBillingService
         private readonly ClientHelper $clientHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
-        private readonly InvoiceHelper $invoiceEntryHelper,
-        private readonly HtmlHelper $htmlHelper,
+        private readonly InvoiceHelper $invoiceHelper,
     ) {
     }
 
@@ -171,7 +170,7 @@ class ProjectBillingService
             $invoiceKey = $client->getId();
 
             if (null !== $invoiceKey) {
-                if ($this->invoiceEntryHelper->getOneInvoicePerIssue()) {
+                if ($this->invoiceHelper->getOneInvoicePerIssue()) {
                     $invoiceKey .= '|||'.$issue->getId();
                 }
 
@@ -186,8 +185,8 @@ class ProjectBillingService
             }
         }
 
-        $defaultAccount = $this->invoiceEntryHelper->getDefaultAccount();
-        $productAccount = $this->invoiceEntryHelper->getProductAccount();
+        $defaultAccount = $this->invoiceHelper->getDefaultAccount();
+        $productAccount = $this->invoiceHelper->getProductAccount();
 
         // Add invoice entry account prefix, if any, to (product) name.
         $prefixWithAccount = function (?string $account, ?string $name): ?string {
@@ -195,7 +194,7 @@ class ProjectBillingService
                 return null;
             }
 
-            $prefix = $account ? $this->invoiceEntryHelper->getAccountInvoiceEntryPrefix($account) : null;
+            $prefix = $account ? $this->invoiceHelper->getAccountInvoiceEntryPrefix($account) : null;
             if (null !== $prefix) {
                 $name = $prefix.': '.$name;
             }
@@ -213,7 +212,7 @@ class ProjectBillingService
                 $periodStart->format('d/m/Y'),
                 $periodEnd->format('d/m/Y')
             );
-            if ($this->invoiceEntryHelper->getOneInvoicePerIssue()) {
+            if ($this->invoiceHelper->getOneInvoicePerIssue()) {
                 // We know that we have exactly one issue.
                 $issue = reset($invoiceArray['issues']);
                 $invoiceName = $issue->getName().': '.$invoiceName;
@@ -290,7 +289,7 @@ class ProjectBillingService
                         ->setAmount(1)
                         ->setTotalPrice($price)
                         ->setMaterialNumber($invoice->getDefaultMaterialNumber())
-                        ->setAccount($productAccount ?? $this->invoiceEntryHelper->getDefaultAccount());
+                        ->setAccount($productAccount ?? $this->invoiceHelper->getDefaultAccount());
                     foreach ($issue->getProducts() as $productIssue) {
                         $productInvoiceEntry->addIssueProduct($productIssue);
                     }
@@ -306,11 +305,11 @@ class ProjectBillingService
                 continue;
             }
 
-            if ($this->invoiceEntryHelper->getOneInvoicePerIssue()
-                && $this->invoiceEntryHelper->getSetInvoiceDescriptionFromIssueDescription()) {
+            if ($this->invoiceHelper->getOneInvoicePerIssue()
+                && $this->invoiceHelper->getSetInvoiceDescriptionFromIssueDescription()) {
                 // We know that we have exactly one issue.
                 $issue = reset($invoiceArray['issues']);
-                if ($description = $this->invoiceEntryHelper->getInvoiceDescription($issue->getDescription())) {
+                if ($description = $this->invoiceHelper->getInvoiceDescription($issue->getDescription())) {
                     $invoice->setDescription($description);
                 }
             }
