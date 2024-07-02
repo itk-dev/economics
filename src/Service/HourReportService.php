@@ -45,7 +45,7 @@ class HourReportService
 
             // If no worklogs have been registered in the interval or if the due date is not in the interval,
             // ignore the issue in the report.
-            if ($dueDate < $fromDate || $dueDate > $toDate) {
+            if (0 === $totalTicketSpent || $dueDate < $fromDate || $dueDate > $toDate) {
                 continue;
             }
 
