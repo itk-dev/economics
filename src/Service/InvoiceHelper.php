@@ -2,19 +2,66 @@
 
 namespace App\Service;
 
+use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class InvoiceEntryHelper
+use function Symfony\Component\String\s;
+
+class InvoiceHelper
 {
     private readonly array $options;
 
     public function __construct(
-        array $options
+        private readonly HtmlHelper $htmlHelper,
+        array $options,
     ) {
         $this->options = $this->resolveOptions($options);
+    }
+
+    public function getOneInvoicePerIssue(): bool
+    {
+        return $this->options['one_invoice_per_issue'];
+    }
+
+    public function getSetInvoiceDescriptionFromIssueDescription(): bool
+    {
+        return $this->options['set_invoice_description_from_issue_description'];
+    }
+
+    public function getInvoiceDescription(?string $description): ?string
+    {
+        if (empty($description)) {
+            return $description;
+        }
+
+        $heading = $this->getInvoiceDescriptionIssueHeading();
+        if ($description = $this->htmlHelper->getSection($description, $heading)) {
+            foreach ($this->getInvoiceDescriptionElementReplacements() as $elementName => [$before, $after]) {
+                $description = $this->htmlHelper->element2separator($description, $elementName, $before, $after);
+            }
+
+            $description = strip_tags($description);
+
+            $description = s($description)->trim()->truncate(Invoice::DESCRIPTION_MAX_LENGTH)->toString();
+
+            // HACK! Replace some duplicated punctuation.
+            return preg_replace('/([;:] )\1/', '$1', $description);
+        }
+
+        return null;
+    }
+
+    public function getInvoiceDescriptionIssueHeading(): string
+    {
+        return $this->options['invoice_description_issue_heading'];
+    }
+
+    public function getInvoiceDescriptionElementReplacements(): array
+    {
+        return $this->options['invoice_description_element_replacements'];
     }
 
     /**
@@ -87,9 +134,19 @@ class InvoiceEntryHelper
     }
 
     /**
+     * Get account invoice entry pretix based on configured accounts.
+     */
+    public function getAccountInvoiceEntryPrefix(string $account): ?string
+    {
+        $accounts = $this->getAccounts(null);
+
+        return $accounts[$account]['invoice_entry_prefix'] ?? null;
+    }
+
+    /**
      * Decide if an invoice entry is editable.
      */
-    public function isEditable(InvoiceEntry $entry): bool
+    public function isEntryEditable(InvoiceEntry $entry): bool
     {
         return null === $entry->getInvoice()?->getProjectBilling()
             || count($this->getAccountOptions(null)) > 1;
@@ -127,9 +184,11 @@ class InvoiceEntryHelper
                     ->setDefaults([
                         'default' => false,
                         'product' => false,
+                        'invoice_entry_prefix' => null,
                     ])
                     ->setAllowedTypes('default', 'bool')
-                    ->setAllowedTypes('product', 'bool');
+                    ->setAllowedTypes('product', 'bool')
+                    ->setAllowedTypes('invoice_entry_prefix', ['null', 'string']);
             })
             ->setAllowedValues('accounts', function (array $values) {
                 if (empty($values)) {
@@ -168,6 +227,18 @@ class InvoiceEntryHelper
 
                 return $values;
             })
+
+            ->setDefault('one_invoice_per_issue', false)
+            ->setAllowedTypes('one_invoice_per_issue', 'bool')
+
+            ->setDefault('set_invoice_description_from_issue_description', false)
+            ->setAllowedTypes('set_invoice_description_from_issue_description', 'bool')
+
+            ->setDefault('invoice_description_issue_heading', '')
+            ->setAllowedTypes('invoice_description_issue_heading', 'string')
+
+            ->setDefault('invoice_description_element_replacements', [])
+            ->setAllowedTypes('invoice_description_element_replacements', 'array')
 
             ->resolve($options);
     }

@@ -11,7 +11,7 @@ use App\Form\InvoiceEntryWorklogType;
 use App\Repository\InvoiceEntryRepository;
 use App\Service\BillingService;
 use App\Service\ClientHelper;
-use App\Service\InvoiceEntryHelper;
+use App\Service\InvoiceHelper;
 use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +28,7 @@ class InvoiceEntryController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly ViewService $viewService,
         private readonly ClientHelper $clientHelper,
-        private readonly InvoiceEntryHelper $invoiceEntryHelper,
+        private readonly InvoiceHelper $invoiceHelper,
     ) {
     }
 
@@ -93,7 +93,7 @@ class InvoiceEntryController extends AbstractController
             $options['disabled'] = true;
         }
 
-        $accounts = $this->invoiceEntryHelper->getAccountOptions($invoiceEntry->getAccount());
+        $accounts = $this->invoiceHelper->getAccountOptions($invoiceEntry->getAccount());
         if (!empty($accounts)) {
             $options['invoice_entry_accounts'] = $accounts;
         }
