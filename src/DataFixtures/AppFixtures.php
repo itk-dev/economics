@@ -115,6 +115,7 @@ class AppFixtures extends Fixture
                     $issue->setResolutionDate(new \DateTime());
                     $issue->setPlanHours($j);
                     $issue->setHoursRemaining($j);
+                    $issue->setDueDate(new \DateTime());
                     $manager->persist($issue);
 
                     for ($k = 0; $k < 100; ++$k) {
