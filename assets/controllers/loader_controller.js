@@ -4,6 +4,6 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
 
     connect() {
-        this.element.classList.toggle('loading');
+        this.element.classList.remove('loading');
     }
 }

@@ -62,14 +62,10 @@ class PlanningController extends AbstractController
     private function createResponse(Request $request, string $mode): Response
     {
         $planningFormData = new PlanningFormData();
+        $planningData = null;
         $form = $this->createForm(PlanningType::class, $planningFormData);
 
         $dataProviders = $this->dataProviderRepository->findAll();
-        $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
-
-        if (null === $defaultProvider && count($dataProviders) > 0) {
-            $defaultProvider = $dataProviders[0];
-        }
 
         $form->add('dataProvider', EntityType::class, [
             'class' => DataProvider::class,
@@ -91,7 +87,6 @@ class PlanningController extends AbstractController
                 $planningData = $this->planningService->getPlanningData();
             } catch (\Exception $e) {
                 $error = $e->getMessage();
-                $planningData = null;
             }
         }
 
