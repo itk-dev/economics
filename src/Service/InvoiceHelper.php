@@ -8,8 +8,6 @@ use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use function Symfony\Component\String\s;
-
 class InvoiceHelper
 {
     private readonly array $options;
@@ -45,10 +43,10 @@ class InvoiceHelper
 
             $description = strip_tags($description);
 
-            $description = s($description)->trim()->truncate(Invoice::DESCRIPTION_MAX_LENGTH)->toString();
-
             // HACK! Replace some duplicated punctuation.
-            return preg_replace('/([;:] )\1/', '$1', $description);
+            $description = preg_replace('/([;:] )\1/', '$1', $description);
+
+            return mb_strcut(trim($description), 0, Invoice::DESCRIPTION_MAX_LENGTH);
         }
 
         return null;
