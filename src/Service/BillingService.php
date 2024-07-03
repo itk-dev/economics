@@ -168,6 +168,7 @@ class BillingService
             /** @var Csv $writer */
             $writer = IOFactory::createWriter($spreadsheet, 'Csv');
             $writer->setDelimiter(';');
+            // SAP/Opus cannot read CSV!
             $writer->setEnclosure('');
             $writer->setLineEnding("\r\n");
             $writer->setSheetIndex(0);
@@ -306,7 +307,7 @@ class BillingService
             // 15. "Kunderef.ID"
             $setCellValue(15, $row, substr('Att: '.$contactName, 0, 35));
             // 16. "Toptekst, yderligere spec i det hvide felt på fakturaen"
-            $description = $invoice->getDescription() ?? '';
+            $description = $this->formatCsvText($invoice->getDescription() ?? '');
             $setCellValue(16, $row, substr($description, 0, Invoice::DESCRIPTION_MAX_LENGTH));
             // 17. "Leverandør"
             if ($internal) {
@@ -370,6 +371,22 @@ class BillingService
         }
 
         return $spreadsheet;
+    }
+
+    /**
+     * Does something to make SAP/Opus accept a text value.
+     *
+     * @param string $text
+     *
+     * @return string
+     */
+    private function formatCsvText(string $text): string
+    {
+        return str_replace(
+            ["\n", "\r", ';'],
+            [' ',  '',   '.'],
+            $text
+        );
     }
 
     /**
