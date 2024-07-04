@@ -101,7 +101,6 @@ class AppFixtures extends Fixture
                 }
 
                 for ($j = 0; $j < 10; ++$j) {
-
                     $modStatus = 0 == $i % 2 ? IssueStatusEnum::DONE : IssueStatusEnum::NEW;
                     $issue = new Issue();
                     $issue->setName("issue-$i-$j");

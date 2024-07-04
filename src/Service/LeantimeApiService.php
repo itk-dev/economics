@@ -195,7 +195,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             4 => IssueStatusEnum::IN_PROGRESS,
         ];
 
-        if (array_key_exists((int) $statusNumber, $statusMapping)) {
+        if (array_key_exists($statusNumber, $statusMapping)) {
             return $statusMapping[$statusNumber];
         }
 
