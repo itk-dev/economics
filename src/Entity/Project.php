@@ -56,7 +56,7 @@ class Project extends AbstractBaseEntity
     private Collection $products;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $is_billable = null;
+    private ?bool $isBillable = null;
 
     public function __construct()
     {
@@ -354,12 +354,12 @@ class Project extends AbstractBaseEntity
     }
     public function isBillable(): ?bool
     {
-        return $this->is_billable;
+        return $this->isBillable;
     }
 
-    public function setIsBillable(?bool $is_billable): self
+    public function setIsBillable(?bool $isBillable): self
     {
-        $this->is_billable = $is_billable;
+        $this->isBillable = $isBillable;
 
         return $this;
     }

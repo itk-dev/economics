@@ -37,7 +37,7 @@ class ProjectFilterType extends AbstractType
                 ],
                 'attr' => ['class' => 'form-element'],
             ])
-            ->add('is_billable', ChoiceType::class, [
+            ->add('isBillable', ChoiceType::class, [
                 'required' => true,
                 'label' => 'project.form_is_billable',
                 'label_attr' => ['class' => 'label'],

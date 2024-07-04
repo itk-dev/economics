@@ -728,7 +728,7 @@ worker:
     action_save: 'Gem'
     back_to_list: "Tilbage til listen"
 
-WorkloadReportPeriodTypeEnum:
+workload_report_period_type_enum:
     week:
         label: 'Uge'
     month:
@@ -736,7 +736,7 @@ WorkloadReportPeriodTypeEnum:
     year:
         label: 'År'
 
-WorkloadReportViewModeEnum:
+workload_report_view_mode_enum:
     workload:
         label: 'Loggede timer'
     billable:

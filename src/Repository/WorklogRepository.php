@@ -123,7 +123,7 @@ class WorklogRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->in('wor.kind', ':billableKinds'))
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->eq('wor.isBilled', '1'),
-                $qb->expr()->eq('pro.is_billable', '1'),
+                $qb->expr()->eq('pro.isBillable', '1'),
             ))
             ->setParameters([
                 'worker' => $worker,

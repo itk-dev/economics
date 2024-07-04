@@ -43,7 +43,6 @@ class WorkloadReportType extends AbstractType
                 'data' => $defaultProvider,
                 'choices' => $dataProviders,
             ])
-            ->add('viewPeriodType')
             ->add('viewMode', EnumType::class, [
                 'required' => false,
                 'label' => 'reports.workload_report.select_viewmode',

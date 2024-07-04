@@ -27,34 +27,6 @@ class WorkloadReportServiceTest extends TestCase
         $this->workloadReportService = new WorkloadReportService($this->workerRepository, $this->worklogRepository, $this->dateTimeHelper);
     }
 
-    public function testGetViewModes()
-    {
-        $results = $this->workloadReportService->getViewModes();
-
-        $expectedResults = [
-            'Workload %' => ViewModeEnum::WORKLOAD->value,
-            'Billable %' => ViewModeEnum::BILLABLE->value,
-        ];
-
-        $this->assertEquals($expectedResults, $results);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testGetViewPeriodTypes()
-    {
-        $result = $this->workloadReportService->getViewPeriodTypes();
-
-        $expectedResult = [
-            'Week' => PeriodTypeEnum::WEEK,
-            'Month' => PeriodTypeEnum::MONTH,
-            'Year' => PeriodTypeEnum::YEAR,
-        ];
-
-        $this->assertEquals($expectedResult, $result);
-    }
-
     /**
      * @throws Exception
      */

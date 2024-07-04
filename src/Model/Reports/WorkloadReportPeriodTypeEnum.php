@@ -14,9 +14,9 @@ enum WorkloadReportPeriodTypeEnum: string implements TranslatableInterface
     public function trans(TranslatorInterface $translator, string $locale = null): string
     {
         return match ($this) {
-            self::WEEK => $translator->trans('WorkloadReportPeriodTypeEnum.week.label', locale: $locale),
-            self::MONTH => $translator->trans('WorkloadReportPeriodTypeEnum.month.label', locale: $locale),
-            self::YEAR => $translator->trans('WorkloadReportPeriodTypeEnum.year.label', locale: $locale),
+            self::WEEK => $translator->trans('workload_report_period_type_enum.week.label', locale: $locale),
+            self::MONTH => $translator->trans('workload_report_period_type_enum.month.label', locale: $locale),
+            self::YEAR => $translator->trans('workload_report_period_type_enum.year.label', locale: $locale),
         };
     }
 }

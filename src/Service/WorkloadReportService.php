@@ -114,33 +114,6 @@ class WorkloadReportService
     }
 
     /**
-     * Retrieves the available view period types.
-     *
-     * @return array the array containing the available view period types
-     */
-    public function getViewPeriodTypes(): array
-    {
-        return [
-            'Week' => PeriodTypeEnum::WEEK,
-            'Month' => PeriodTypeEnum::MONTH,
-            'Year' => PeriodTypeEnum::YEAR,
-        ];
-    }
-
-    /**
-     * Retrieves the available view modes.
-     *
-     * @return array the array containing the available view modes
-     */
-    public function getViewModes(): array
-    {
-        return [
-            'Workload %' => ViewModeEnum::WORKLOAD->value,
-            'Billable %' => ViewModeEnum::BILLABLE->value,
-        ];
-    }
-
-    /**
      * Retrieves the current period as a numeric value based on the given view mode.
      *
      * @param PeriodTypeEnum $viewMode the view mode to determine the current period

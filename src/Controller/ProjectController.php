@@ -69,7 +69,7 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/isBillable', name: 'app_project_isBillable', methods: ['POST'])]
-    public function is_billable(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    public function isBillable(Request $request, Project $project, ProjectRepository $projectRepository): Response
     {
         $body = $request->toArray();
 

@@ -13,8 +13,8 @@ enum WorkloadReportViewModeEnum: string implements TranslatableInterface
     public function trans(TranslatorInterface $translator, string $locale = null): string
     {
         return match ($this) {
-            self::WORKLOAD => $translator->trans('WorkloadReportViewModeEnum.workload.label', locale: $locale),
-            self::BILLABLE => $translator->trans('WorkloadReportViewModeEnum.billable.label', locale: $locale),
+            self::WORKLOAD => $translator->trans('workload_report_view_mode_enum.workload.label', locale: $locale),
+            self::BILLABLE => $translator->trans('workload_report_view_mode_enum.billable.label', locale: $locale),
         };
     }
 }
