@@ -7,7 +7,6 @@ use App\Entity\Project;
 use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
-use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

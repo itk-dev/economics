@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -73,13 +74,14 @@ class ProjectController extends AbstractController
     {
         $body = $request->toArray();
 
-    if (!empty($body['value'])) {
-        $project->setIsBillable($body['value']);
-        $projectRepository->save($project, true);
-        return new JsonResponse([$body], 200);
-    } else {
-        throw new BadRequestHttpException('Value not set.');
-    }
+        if (!empty($body['value'])) {
+            $project->setIsBillable($body['value']);
+            $projectRepository->save($project, true);
+
+            return new JsonResponse([$body], 200);
+        } else {
+            throw new BadRequestHttpException('Value not set.');
+        }
         $projectRepository->save($project, true);
 
         return new JsonResponse([$body], 200);

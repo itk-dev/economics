@@ -352,6 +352,7 @@ class Project extends AbstractBaseEntity
 
         return $this;
     }
+
     public function isBillable(): ?bool
     {
         return $this->isBillable;

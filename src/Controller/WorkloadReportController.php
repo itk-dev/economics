@@ -7,7 +7,6 @@ use App\Model\Reports\WorkloadReportFormData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Repository\DataProviderRepository;
-use App\Service\DataProviderService;
 use App\Service\WorkloadReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,16 +19,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class WorkloadReportController extends AbstractController
 {
     public function __construct(
-        private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly WorkloadReportService $workloadReportService,
     ) {
     }
 
-    /**
-     * @throws EconomicsException
-     * @throws UnsupportedDataProviderException
-     */
     #[Route('/', name: 'app_workload_report')]
     public function index(Request $request): Response
     {
