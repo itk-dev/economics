@@ -63,7 +63,7 @@ class WorkloadReportService
                     throw new \Exception('Worker identifier cannot be empty');
                 }
 
-                $worklogs = $this->getWorkloads($viewMode, $workerIdentifier, $firstAndLastDate);
+                $worklogs = $this->getWorklogs($viewMode, $workerIdentifier, $firstAndLastDate);
 
                 // Tally up logged hours in gathered worklogs for current period.
                 $loggedHours = 0;
@@ -80,11 +80,9 @@ class WorkloadReportService
 
                 // Get total logged percentage based on weekly workload.
                 $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewPeriodType);
-
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
             }
-
             $workloadReportData->workers->add($workloadReportWorker);
         }
 
@@ -189,7 +187,7 @@ class WorkloadReportService
      *
      * @return array the list of workloads matching the criteria defined by the parameters
      */
-    private function getWorkloads(ViewModeEnum $viewMode, string $worker, array $firstAndLastDate): array
+    private function getWorklogs(ViewModeEnum $viewMode, string $worker, array $firstAndLastDate): array
     {
         return match ($viewMode) {
             ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($worker, $firstAndLastDate['first'], $firstAndLastDate['last']),
