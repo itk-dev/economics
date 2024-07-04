@@ -15,4 +15,16 @@ enum IssueStatusEnum: string
     case BLOCKED = 'blocked';
     case DONE = 'done';
     case ARCHIVED = 'archived';
+
+    /**
+     * @return array<string,string>
+     */
+    public static function getAsArray(): array
+    {
+        return array_reduce(
+            self::cases(),
+            static fn (array $choices, IssueStatusEnum $type) => $choices + [$type->name => $type->value],
+            [],
+        );
+    }
 }

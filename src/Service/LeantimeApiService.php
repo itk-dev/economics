@@ -183,8 +183,9 @@ class LeantimeApiService implements DataProviderServiceInterface
         return new PagedResult($result, $startAt, count($issues), count($issues));
     }
 
-    private function convertStatusToEnum($statusNumber)
+    private function convertStatusToEnum(string $statusNumber)
     {
+        $statusNumber = (int) $statusNumber;
         $statusMapping = [
             -1 => IssueStatusEnum::ARCHIVED,
             0 => IssueStatusEnum::DONE,
@@ -194,7 +195,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             4 => IssueStatusEnum::IN_PROGRESS,
         ];
 
-        if (array_key_exists($statusNumber, $statusMapping)) {
+        if (array_key_exists((int) $statusNumber, $statusMapping)) {
             return $statusMapping[$statusNumber];
         }
 

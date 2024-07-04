@@ -101,6 +101,8 @@ class AppFixtures extends Fixture
                 }
 
                 for ($j = 0; $j < 10; ++$j) {
+
+                    $modStatus = 0 == $i % 2 ? IssueStatusEnum::DONE : IssueStatusEnum::NEW;
                     $issue = new Issue();
                     $issue->setName("issue-$i-$j");
                     $issue->setProject($project);
@@ -110,7 +112,7 @@ class AppFixtures extends Fixture
                     $issue->setAccountKey('Account 1');
                     $issue->setEpicName('Epic 1');
                     $issue->setEpicKey('Epic 1');
-                    $issue->setStatus(IssueStatusEnum::NEW);
+                    $issue->setStatus($modStatus);
                     $issue->setDataProvider($dataProvider);
                     $issue->addVersion($versions[$j % count($versions)]);
                     $issue->setResolutionDate(new \DateTime());

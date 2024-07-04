@@ -2,6 +2,7 @@
 
 namespace App\Model\Invoices;
 
+use App\Enum\IssueStatusEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -9,7 +10,7 @@ class IssueData
 {
     public \DateTime $started;
     public string $name;
-    public string $status;
+    public ?IssueStatusEnum $status;
     public string $projectTrackerId;
     public string $projectTrackerKey;
     public ?string $accountId = null;
