@@ -12,7 +12,6 @@ use App\Repository\InvoiceEntryRepository;
 use App\Service\BillingService;
 use App\Service\ClientHelper;
 use App\Service\InvoiceEntryHelper;
-use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,12 +20,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/invoices/{invoice}/entries')]
+#[IsGranted('ROLE_INVOICE')]
 class InvoiceEntryController extends AbstractController
 {
     public function __construct(
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
-        private readonly ViewService $viewService,
         private readonly ClientHelper $clientHelper,
         private readonly InvoiceEntryHelper $invoiceEntryHelper,
     ) {
@@ -36,7 +35,6 @@ class InvoiceEntryController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/new/{type}', name: 'app_invoice_entry_new', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT', 'invoice')]
     public function new(Request $request, Invoice $invoice, InvoiceEntryTypeEnum $type, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         if ($invoice->isRecorded()) {
@@ -68,24 +66,23 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
             if (InvoiceEntryTypeEnum::MANUAL == $invoiceEntry->getEntryType()) {
-                return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
             }
 
-            return $this->redirectToRoute('app_invoice_entry_edit', $this->viewService->addView(['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_invoice_entry_edit', ['id' => $invoiceEntry->getId(), 'invoice' => $invoice->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('invoice_entry/new.html.twig', $this->viewService->addView([
+        return $this->render('invoice_entry/new.html.twig', [
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
-        ]));
+        ]);
     }
 
     /**
      * @throws EconomicsException
      */
     #[Route('/{id}/edit', name: 'app_invoice_entry_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('EDIT', 'invoiceEntry')]
     public function edit(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         $options = [];
@@ -116,18 +113,17 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
         }
 
-        return $this->render('invoice_entry/edit.html.twig', $this->viewService->addView([
+        return $this->render('invoice_entry/edit.html.twig', [
             'invoice_entry' => $invoiceEntry,
             'invoice' => $invoice,
             'form' => $form,
-        ]));
+        ]);
     }
 
     /**
      * @throws EconomicsException
      */
     #[Route('/{id}', name: 'app_invoice_entry_delete', methods: ['POST'])]
-    #[IsGranted('EDIT', 'invoiceEntry')]
     public function delete(Request $request, Invoice $invoice, InvoiceEntry $invoiceEntry, InvoiceEntryRepository $invoiceEntryRepository): Response
     {
         if ($invoice->isRecorded()) {
@@ -141,6 +137,6 @@ class InvoiceEntryController extends AbstractController
             $this->billingService->updateInvoiceTotalPrice($invoice);
         }
 
-        return $this->redirectToRoute('app_invoices_edit', $this->viewService->addView(['id' => $invoice->getId()]), Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_invoices_edit', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
     }
 }

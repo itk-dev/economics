@@ -39,7 +39,7 @@
                 <td class="table-td">{{ account.value }}</td>
                 <td class="table-td">{{ account.dataProvider }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_account_edit', {'id': account.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'accounts.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_account_edit', {'id': account.id}) }}">{{ 'accounts.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}
@@ -50,7 +50,7 @@
         {% endfor %}
         <tr class="table-tr">
             <td class="table-td" colspan="2">
-                <a class="link" href="{{ path('app_account_new', {}|merge(view is defined ? {view: view} : {})) }}">
+                <a class="link" href="{{ path('app_account_new') }}">
                     {{ 'accounts.action_create_new'|trans }}
                 </a>
             </td>

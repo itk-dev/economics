@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Project;
 use App\Model\Invoices\ProjectFilterData;
-use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,7 +20,7 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class ProjectRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator, private readonly ViewService $viewService)
+    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {
         parent::__construct($registry, Project::class);
     }
@@ -52,7 +51,7 @@ class ProjectRepository extends ServiceEntityRepository
             ->where('project.include IS NOT NULL')
             ->orderBy('project.name', 'ASC');
 
-        return $this->viewService->addWhere($qb, Project::class, 'project');
+        return $qb;
     }
 
     public function getFilteredPagination(ProjectFilterData $projectFilterData, int $page = 1): PaginationInterface

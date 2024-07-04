@@ -6,10 +6,8 @@ use App\Entity\InvoiceEntry;
 use App\Entity\Project;
 use App\Entity\Worklog;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
-use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Worklog>
@@ -21,9 +19,7 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class WorklogRepository extends ServiceEntityRepository
 {
-    private const WORKLOGS_PAGINATOR_LIMIT = 50;
-
-    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator, private readonly ViewService $viewService)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Worklog::class);
     }
@@ -96,22 +92,6 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->execute();
-    }
-
-    public function getDistinctWorklogUsers(): array
-    {
-        $qb = $this->createQueryBuilder('wor');
-        $result = $qb
-            ->distinct()
-            ->select('wor.worker')
-            ->getQuery()->getResult();
-
-        $workers = [];
-        foreach ($result as $workLogWorker) {
-            $workers[$workLogWorker['worker']] = $workLogWorker['worker'];
-        }
-
-        return $workers;
     }
 
     public function findWorklogsByWorkerAndDateRange(string $worker, string $dateFrom, string $dateTo)

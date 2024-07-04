@@ -9,20 +9,20 @@ use App\Form\PlanningType;
 use App\Model\Planning\PlanningFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
-use App\Service\ViewService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/planning')]
+#[IsGranted('ROLE_PLANNING')]
 class PlanningController extends AbstractController
 {
     public function __construct(
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ViewService $viewService,
         private readonly ?string $defaultDataProvider,
     ) {
     }
@@ -99,12 +99,12 @@ class PlanningController extends AbstractController
             $planningData = null;
         }
 
-        return $this->render('planning/planning.html.twig', $this->viewService->addView([
+        return $this->render('planning/planning.html.twig', [
             'controller_name' => 'PlanningController',
             'planningData' => $planningData,
             'error' => $error ?? null,
             'form' => $form,
             'mode' => $mode,
-        ]));
+        ]);
     }
 }

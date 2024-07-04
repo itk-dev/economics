@@ -62,10 +62,10 @@
                 {% endif %}
                 <td class="table-td">
                     {% if is_granted('ROLE_ADMIN') %}
-                        <a class="link whitespace-nowrap" href="{{ path('app_project_edit', {'id': project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.action_edit'|trans }}</a>
+                        <a class="link whitespace-nowrap" href="{{ path('app_project_edit', {'id': project.id}) }}">{{ 'project.action_edit'|trans }}</a>
                     {% endif %}
                     {% if project.issues is not empty %}
-                        <a class="link whitespace-nowrap" href="{{ path('app_issue_index', {'project': project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'project.action_view_issues'|trans }}</a>
+                        <a class="link whitespace-nowrap" href="{{ path('app_issue_index', {'project': project.id}) }}">{{ 'project.action_view_issues'|trans }}</a>
                     {% endif %}
                 </td>
             </tr>
