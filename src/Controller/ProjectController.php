@@ -82,9 +82,6 @@ class ProjectController extends AbstractController
         } else {
             throw new BadRequestHttpException('Value not set.');
         }
-        $projectRepository->save($project, true);
-
-        return new JsonResponse([$body], 200);
     }
 
     /**

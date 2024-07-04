@@ -182,16 +182,16 @@ class WorkloadReportService
      * Returns workloads based on the provided view mode, worker, and date range.
      *
      * @param ViewModeEnum $viewMode defines the view mode
-     * @param string $worker the worker's identifier
+     * @param string $workerIdentifier the worker's identifier
      * @param array $firstAndLastDate contains the date range (first and last dates)
      *
      * @return array the list of workloads matching the criteria defined by the parameters
      */
-    private function getWorklogs(ViewModeEnum $viewMode, string $worker, array $firstAndLastDate): array
+    private function getWorklogs(ViewModeEnum $viewMode, string $workerIdentifier, array $firstAndLastDate): array
     {
         return match ($viewMode) {
-            ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($worker, $firstAndLastDate['first'], $firstAndLastDate['last']),
-            ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($worker, $firstAndLastDate['first'], $firstAndLastDate['last']),
+            ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($workerIdentifier, $firstAndLastDate['first'], $firstAndLastDate['last']),
+            ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($workerIdentifier, $firstAndLastDate['first'], $firstAndLastDate['last']),
         };
     }
 }

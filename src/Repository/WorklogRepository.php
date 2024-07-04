@@ -95,7 +95,7 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    public function findWorklogsByWorkerAndDateRange(string $worker, string $dateFrom, string $dateTo)
+    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, string $dateFrom, string $dateTo)
     {
         $qb = $this->createQueryBuilder('wor');
 
@@ -103,14 +103,14 @@ class WorklogRepository extends ServiceEntityRepository
             ->where($qb->expr()->between('wor.started', ':date_from', ':date_to'))
             ->andWhere('wor.worker = :worker')
             ->setParameters([
-                'worker' => $worker,
+                'worker' => $workerIdentifier,
                 'date_from' => $dateFrom,
                 'date_to' => $dateTo,
             ])
             ->getQuery()->getResult();
     }
 
-    public function findBillableWorklogsByWorkerAndDateRange(string $worker, mixed $dateFrom, mixed $dateTo)
+    public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, string $dateFrom, string $dateTo)
     {
         $qb = $this->createQueryBuilder('wor');
 
@@ -125,7 +125,7 @@ class WorklogRepository extends ServiceEntityRepository
                 $qb->expr()->eq('pro.isBillable', '1'),
             ))
             ->setParameters([
-                'worker' => $worker,
+                'worker' => $workerIdentifier,
                 'date_from' => $dateFrom,
                 'date_to' => $dateTo,
                 'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
