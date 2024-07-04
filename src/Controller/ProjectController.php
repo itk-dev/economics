@@ -73,7 +73,13 @@ class ProjectController extends AbstractController
     {
         $body = $request->toArray();
 
+    if (!empty($body['value'])) {
         $project->setIsBillable($body['value']);
+        $projectRepository->save($project, true);
+        return new JsonResponse([$body], 200);
+    } else {
+        throw new BadRequestHttpException('Value not set.');
+    }
         $projectRepository->save($project, true);
 
         return new JsonResponse([$body], 200);
