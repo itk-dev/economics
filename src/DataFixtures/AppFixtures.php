@@ -10,6 +10,7 @@ use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
+use App\Enum\IssueStatusEnum;
 use App\Service\JiraApiService;
 use App\Service\LeantimeApiService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -109,7 +110,7 @@ class AppFixtures extends Fixture
                     $issue->setAccountKey('Account 1');
                     $issue->setEpicName('Epic 1');
                     $issue->setEpicKey('Epic 1');
-                    $issue->setStatus('Lukket');
+                    $issue->setStatus(IssueStatusEnum::NEW);
                     $issue->setDataProvider($dataProvider);
                     $issue->addVersion($versions[$j % count($versions)]);
                     $issue->setResolutionDate(new \DateTime());
