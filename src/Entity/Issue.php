@@ -19,7 +19,7 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'string', nullable: true, enumType: IssueStatusEnum::class)]
     private ?IssueStatusEnum $status = null;
 
     #[ORM\Column(length: 255, nullable: true)]
