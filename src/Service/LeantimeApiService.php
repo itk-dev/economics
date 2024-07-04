@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Enum\IssueStatusEnum;
 use App\Exception\ApiServiceException;
 use App\Exception\EconomicsException;
 use App\Interface\DataProviderServiceInterface;
@@ -158,7 +159,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData = new IssueData();
 
             $issueData->name = $issue->headline;
-            $issueData->status = $issue->status;
+            $issueData->status = $this->convertStatusToEnum($issue->status);
             $issueData->projectTrackerId = $issue->id;
             // Leantime does not have a key for each issue.
             $issueData->projectTrackerKey = $issue->id;
@@ -180,6 +181,24 @@ class LeantimeApiService implements DataProviderServiceInterface
         }
 
         return new PagedResult($result, $startAt, count($issues), count($issues));
+    }
+
+    private function convertStatusToEnum($statusNumber)
+    {
+        $statusMapping = [
+            -1 => IssueStatusEnum::ARCHIVED,
+            0 => IssueStatusEnum::DONE,
+            1 => IssueStatusEnum::BLOCKED,
+            2 => IssueStatusEnum::WAITING,
+            3 => IssueStatusEnum::NEW,
+            4 => IssueStatusEnum::IN_PROGRESS,
+        ];
+
+        if (array_key_exists($statusNumber, $statusMapping)) {
+            return $statusMapping[$statusNumber];
+        }
+
+        throw new \InvalidArgumentException('Invalid status number');
     }
 
     private function getLeanDateTime(string $s): ?\DateTime
