@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-138](https://github.com/itk-dev/economics/pull/138)
+  1867: Issue status as enum.
 * [PR-135](https://github.com/itk-dev/economics/pull/135)
   1772: Removed views.
 * [PR-136](https://github.com/itk-dev/economics/pull/136)
