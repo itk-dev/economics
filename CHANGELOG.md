@@ -28,6 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-124](https://github.com/itk-dev/economics/pull/124)
   710: Added workload report
 
+## [2.3.1] - 2024-07-05
+
+* [PR-139](https://github.com/itk-dev/economics/pull/139)
+  1890: Added check that issue exists before adding worklog to database.
+
 ## [2.3.0] - 2024-06-03
 
 * [PR-126](https://github.com/itk-dev/economics/pull/126)

@@ -322,6 +322,13 @@ class DataSynchronizationService
                 throw new EconomicsException($this->translator->trans('exception.project_not_found'));
             }
 
+            $issue = !empty($worklogDatum->projectTrackerIssueId) ? $this->issueRepository->findOneBy(['projectTrackerId' => $worklogDatum->projectTrackerIssueId]) : null;
+
+            if (null === $issue) {
+                // A worklog should always have an issue, so ignore the worklog.
+                continue;
+            }
+
             $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
 
             if (!$worklog) {
@@ -340,12 +347,8 @@ class DataSynchronizationService
                 ->setWorker($worklogDatum->worker)
                 ->setStarted($worklogDatum->started)
                 ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
-                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds);
-
-            if (null != $worklog->getProjectTrackerIssueId()) {
-                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
-                $worklog->setIssue($issue);
-            }
+                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
+                ->setIssue($issue);
 
             if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
                 $worklog->setIsBilled(true);
