@@ -61,7 +61,6 @@ services:
             $options:
                 accounts: '%env(json:INVOICE_ENTRY_ACCOUNTS)%'
                 one_invoice_per_issue: '%env(bool:INVOICE_ONE_INVOICE_PER_ISSUE)%'
-                set_invoice_description_from_entries: '%env(bool:SET_INVOICE_DESCRIPTION_FROM_ENTRIES)%'
                 set_invoice_description_from_issue_description: '%env(bool:SET_INVOICE_DESCRIPTION_FROM_ISSUE_DESCRIPTION)%'
                 invoice_description_issue_heading: '%env(INVOICE_DESCRIPTION_ISSUE_HEADING)%'
                 invoice_description_element_replacements: '%env(json:INVOICE_DESCRIPTION_ELEMENT_REPLACEMENTS)%'

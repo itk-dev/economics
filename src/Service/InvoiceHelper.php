@@ -248,7 +248,7 @@ class InvoiceHelper
             ->setAllowedTypes('invoice_issue_far_past_cutoff_date', ['null', 'string'])
             ->setAllowedValues('invoice_issue_far_past_cutoff_date', static function (?string $value) {
                 try {
-                    new \DateTimeImmutable($value);
+                    new \DateTimeImmutable($value ?: '0000-00-00');
 
                     return true;
                 } catch (Exception) {

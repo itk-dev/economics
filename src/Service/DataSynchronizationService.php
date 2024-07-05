@@ -239,6 +239,7 @@ class DataSynchronizationService
                 $issue->setPlanHours($issueDatum->planHours);
                 $issue->setHoursRemaining($issueDatum->hourRemaining);
                 $issue->setDueDate($issueDatum->dueDate);
+                assert(null !== $issueDatum->worker);
                 $issue->setWorker($issueDatum->worker);
                 $issue->setLinkToIssue($issueDatum->linkToIssue);
 

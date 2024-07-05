@@ -12,7 +12,6 @@ use App\Repository\InvoiceEntryRepository;
 use App\Service\BillingService;
 use App\Service\ClientHelper;
 use App\Service\InvoiceHelper;
-use App\Service\ViewService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
