@@ -316,7 +316,7 @@ class DataSynchronizationService
 
             $issue = !empty($worklogDatum->projectTrackerIssueId) ? $this->issueRepository->findOneBy(['projectTrackerId' => $worklogDatum->projectTrackerIssueId]) : null;
 
-            if ($issue === null) {
+            if (null === $issue) {
                 // A worklog should always have an issue, so ignore the worklog.
                 continue;
             }
