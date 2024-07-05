@@ -350,7 +350,7 @@ class DataSynchronizationService
                 ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
                 ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
                 ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
-                ->setIssue($issue);
+                ->setIssue($issue)
                 ->setKind(BillableKindsEnum::tryFrom($worklogDatum->kind));
 
             if (null != $worklog->getProjectTrackerIssueId()) {

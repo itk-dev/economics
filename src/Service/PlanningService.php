@@ -69,7 +69,7 @@ class PlanningService
 
         $weeksOfYear = $this->dateTimeHelper->getWeeksOfYear($currentYear);
         foreach ($weeksOfYear as $week) {
-            $firstAndLastDateOfWeek = $this->dateTimeHelper->getFirstAndLastDateOfWeek($week);
+            $firstAndLastDateOfWeek = $this->dateTimeHelper->getFirstAndLastDateOfWeek($week, $currentYear);
             $weekIsSupport = 1 === $week % (self::WEEKS_IN_SUPPORT_PERIOD + self::WEEKS_IN_SPRINT_PERIOD);
 
             if ($weekIsSupport) {
