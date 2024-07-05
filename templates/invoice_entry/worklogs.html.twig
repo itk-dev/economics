@@ -53,7 +53,7 @@
                                 </label>
                             {% endif %}
                             {% if owned_by_other_invoice_entry %}
-                                {{ 'worklog.owned_by_other'|trans }}
+                                <a href="{{ path('app_invoice_entry_edit', {'invoice': worklog.invoiceEntry.invoice.id, 'id': worklog.invoiceEntry.id}) }}" target="_blank">{{ 'worklog.owned_by_other'|trans }}</a>
                             {% endif %}
                         </td>
                         <td class="table-td">
