@@ -23,6 +23,8 @@ class PlanningService
     }
 
     private const UNNAMED_STR = 'unnamed';
+    private const WEEKS_IN_SPRINT_PERIOD = 3;
+    private const WEEKS_IN_SUPPORT_PERIOD = 1;
 
     /**
      * Retrieves the planning data containing the weeks, issues, assignees, and projects.
@@ -64,44 +66,44 @@ class PlanningService
         $weeksOfYear = $this->dateTimeHelper->getWeeksOfYear($currentYear);
         foreach ($weeksOfYear as $week) {
             $firstAndLastDateOfWeek = $this->dateTimeHelper->getFirstAndLastDateOfWeek($week);
-            $weekIsSupport = 1 === $week % 4;
+            $weekIsSupport = 1 === $week % (self::WEEKS_IN_SUPPORT_PERIOD + self::WEEKS_IN_SPRINT_PERIOD);
 
             if ($weekIsSupport) {
-                $supportWeek = new Weeks();
-                $supportWeek->weekCollection->add($week);
-                $supportWeek->weeks = 1;
-                $supportWeek->weekGoalLow = $this->weekGoalLow;
-                $supportWeek->weekGoalHigh = $this->weekGoalHigh;
-                $supportWeek->displayName = (string) $week;
-                $supportWeek->dateSpan = $firstAndLastDateOfWeek['first'].' - '.$firstAndLastDateOfWeek['last'];
+                $supportPeriod = new Weeks();
+                $supportPeriod->weekCollection->add($week);
+                $supportPeriod->weeks = self::WEEKS_IN_SUPPORT_PERIOD;
+                $supportPeriod->weekGoalLow = $this->weekGoalLow;
+                $supportPeriod->weekGoalHigh = $this->weekGoalHigh;
+                $supportPeriod->displayName = (string) $week;
+                $supportPeriod->dateSpan = $firstAndLastDateOfWeek['first'].' - '.$firstAndLastDateOfWeek['last'];
                 if ($week == $currentWeek) {
-                    $supportWeek->activeSprint = true;
+                    $supportPeriod->activeSprint = true;
                 }
-                $weeks->add($supportWeek);
+                $weeks->add($supportPeriod);
             } else {
-                if (isset($regularWeek)) {
-                    $regularWeek->weekCollection->add($week);
-                    ++$regularWeek->weeks;
-                    $regularWeek->displayName .= '-'.$week;
+                if (isset($sprintPeriod)) {
+                    $sprintPeriod->weekCollection->add($week);
+                    ++$sprintPeriod->weeks;
+                    $sprintPeriod->displayName .= '-'.$week;
                     if ($week == $currentWeek) {
-                        $regularWeek->activeSprint = true;
+                        $sprintPeriod->activeSprint = true;
                     }
 
-                    if (3 === count($regularWeek->weekCollection)) {
-                        $regularWeek->dateSpan .= ' - '.$firstAndLastDateOfWeek['last'];
-                        $weeks->add($regularWeek);
-                        unset($regularWeek);
+                    if (self::WEEKS_IN_SPRINT_PERIOD === count($sprintPeriod->weekCollection)) {
+                        $sprintPeriod->dateSpan .= ' - '.$firstAndLastDateOfWeek['last'];
+                        $weeks->add($sprintPeriod);
+                        unset($sprintPeriod);
                     }
                 } else {
-                    $regularWeek = new Weeks();
-                    $regularWeek->weekCollection->add($week);
-                    $regularWeek->weeks = 1;
-                    $regularWeek->weekGoalLow = $this->weekGoalLow * 3;
-                    $regularWeek->weekGoalHigh = $this->weekGoalHigh * 3;
-                    $regularWeek->displayName = (string) $week;
-                    $regularWeek->dateSpan = $firstAndLastDateOfWeek['first'];
+                    $sprintPeriod = new Weeks();
+                    $sprintPeriod->weekCollection->add($week);
+                    $sprintPeriod->weeks = 1;
+                    $sprintPeriod->weekGoalLow = $this->weekGoalLow * self::WEEKS_IN_SPRINT_PERIOD;
+                    $sprintPeriod->weekGoalHigh = $this->weekGoalHigh * self::WEEKS_IN_SPRINT_PERIOD;
+                    $sprintPeriod->displayName = (string) $week;
+                    $sprintPeriod->dateSpan = $firstAndLastDateOfWeek['first'];
                     if ($week == $currentWeek) {
-                        $regularWeek->activeSprint = true;
+                        $sprintPeriod->activeSprint = true;
                     }
                 }
             }
