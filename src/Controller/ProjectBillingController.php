@@ -116,7 +116,8 @@ class ProjectBillingController extends AbstractController
             'projectBilling' => $projectBilling,
             'form' => $form,
             'issuesWithoutAccounts' => $issuesWithoutAccounts,
-        ]);
+            'issuesInTheFarPast' => $projectBillingService->getIssuesNotIncludedInProjectBillingFromTheFarPast($projectBilling),
+        ]));
     }
 
     /**

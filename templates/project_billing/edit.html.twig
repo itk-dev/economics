@@ -2,8 +2,43 @@
 
 {% block title %}{{ 'project_billing.edit'|trans }}{% endblock %}
 
+{% macro issue_list(issues) %}
+    <table class="table margin-bottom">
+        <thead class="table-th">
+        <tr>
+            <th class="table-th">{{ 'project_billing.issue.key'|trans }}</th>
+            <th class="table-th">{{ 'project_billing.issue.name'|trans }}</th>
+            <th class="table-th">{{ 'project_billing.issue.versions'|trans }}</th>
+            <th class="table-th hours">{{ 'project_billing.issue.worklog_time_spent'|trans }}</th>
+            <th class="table-th">{{ 'project_billing.issue.status'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, issue in issues %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ issue.projectTrackerKey }}</td>
+                <td class="table-td">{{ issue.name }}</td>
+                <td class="table-td">{{ issue.versions|map(p => p.name)|join(', ') }}</td>
+                <td class="table-td hours">{{ issue.worklogs|reduce((carry, v, k) => carry + v.timeSpentSeconds / 3600)|format_hours }}</td>
+                <td class="table-td">{{ issue.status }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endmacro %}
+
 {% block content %}
     <h1 class="page-title">{{ 'project_billing.edit'|trans }}</h1>
+
+    {% if issuesInTheFarPast.issues|default([])|length > 0 %}
+        <div class="alert alert-warning">
+            <a href="#issues-in-the-far-past" class="alert-link">
+            {{ 'project_billing.issues_in_the_far_past_alert'|trans({
+                '%date%': issuesInTheFarPast.cutoff_date|date
+            }) }}
+        </div>
+    {% endif %}
 
     {{ form_start(form) }}
     <div>
@@ -71,28 +106,7 @@
 
         {% include 'components/alert.html.twig' with {level: 'info', text: 'project_billing.issues_not_included_helptext'|trans} %}
 
-        <table class="table margin-bottom">
-            <thead class="table-th">
-            <tr>
-                <th class="table-th">{{ 'project_billing.issue.key'|trans }}</th>
-                <th class="table-th">{{ 'project_billing.issue.name'|trans }}</th>
-                <th class="table-th">{{ 'project_billing.issue.versions'|trans }}</th>
-                <th class="table-th hours">{{ 'project_billing.issue.worklog_time_spent'|trans }}</th>
-                <th class="table-th">{{ 'project_billing.issue.status'|trans }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for index, issue in issuesWithoutAccounts %}
-                <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-                    <td class="table-td">{{ issue.projectTrackerKey }}</td>
-                    <td class="table-td">{{ issue.name }}</td>
-                    <td class="table-td">{{ issue.versions|map(p => p.name)|join(', ') }}</td>
-                    <td class="table-td hours">{{ issue.worklogs|reduce((carry, v, k) => carry + v.timeSpentSeconds / 3600)|format_hours }}</td>
-                    <td class="table-td">{{ issue.status }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        {{ _self.issue_list(issuesWithoutAccounts) }}
     {% endif %}
 
     <div class="bottom-actions">
@@ -101,4 +115,17 @@
             {{ include('project_billing/_delete_form.html.twig') }}
         {% endif %}
     </div>
+
+    {% if issuesInTheFarPast.issues|default([])|length > 0 %}
+        <div id="issues-in-the-far-past">
+            <h2 class="subheading">{{ 'project_billing.issues_in_the_far_past'|trans }}</h2>
+
+            {% include 'components/alert.html.twig' with {level: 'warning', text: 'project_billing.issues_in_the_far_past_info'|trans({
+                    '%count%': issuesInTheFarPast.issues|length,
+                    '%date%': issuesInTheFarPast.cutoff_date|date
+            })} %}
+
+            {{ _self.issue_list(issuesInTheFarPast.issues) }}
+        </div>
+    {% endif %}
 {% endblock %}

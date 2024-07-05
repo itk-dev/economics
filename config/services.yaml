@@ -65,6 +65,7 @@ services:
                 set_invoice_description_from_issue_description: '%env(bool:SET_INVOICE_DESCRIPTION_FROM_ISSUE_DESCRIPTION)%'
                 invoice_description_issue_heading: '%env(INVOICE_DESCRIPTION_ISSUE_HEADING)%'
                 invoice_description_element_replacements: '%env(json:INVOICE_DESCRIPTION_ELEMENT_REPLACEMENTS)%'
+                invoice_issue_far_past_cutoff_date: '%env(INVOICE_ISSUE_FAR_PAST_CUTOFF_DATE)%'
 
     App\Service\PlanningService:
         arguments:

@@ -37,6 +37,20 @@ class ProjectBillingService
     ) {
     }
 
+    public function getIssuesNotIncludedInProjectBillingFromTheFarPast(ProjectBilling $projectBilling): array
+    {
+        $cutoffDate = $this->invoiceHelper->getIssueFarPastCutoffDate();
+
+        $projectBilling = clone $projectBilling;
+        $projectBilling->setPeriodStart(new \DateTimeImmutable('0001-01-01'));
+        $projectBilling->setPeriodEnd($cutoffDate);
+
+        return [
+            'cutoff_date' => $cutoffDate,
+            'issues' => $this->getIssuesNotIncludedInProjectBilling($projectBilling),
+        ];
+    }
+
     /**
      * @throws EconomicsException
      * @throws \Exception

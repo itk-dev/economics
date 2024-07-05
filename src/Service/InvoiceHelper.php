@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
+use Doctrine\DBAL\Driver\Exception;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -169,6 +170,11 @@ class InvoiceHelper
         return $accounts;
     }
 
+    public function getIssueFarPastCutoffDate(): ?\DateTimeInterface
+    {
+        return $this->options['invoice_issue_far_past_cutoff_date'];
+    }
+
     private function resolveOptions(array $options): array
     {
         return (new OptionsResolver())
@@ -238,6 +244,18 @@ class InvoiceHelper
             ->setDefault('invoice_description_element_replacements', [])
             ->setAllowedTypes('invoice_description_element_replacements', 'array')
 
+            ->setDefault('invoice_issue_far_past_cutoff_date', null)
+            ->setAllowedTypes('invoice_issue_far_past_cutoff_date', ['null', 'string'])
+            ->setAllowedValues('invoice_issue_far_past_cutoff_date', static function (?string $value) {
+                try {
+                    new \DateTimeImmutable($value);
+
+                    return true;
+                } catch (Exception) {
+                    return false;
+                }
+            })
+            ->setNormalizer('invoice_issue_far_past_cutoff_date', static fn (Options $options, ?string $value) => new \DateTimeImmutable($value ?: '0000-00-00'))
             ->resolve($options);
     }
 }

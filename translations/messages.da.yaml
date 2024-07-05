@@ -459,6 +459,9 @@ project_billing:
     on_record_errors_invoice_link: "Link til faktura"
     action_record_internal: "Eksportér interne"
     action_record_external: "Eksportér eksterne"
+    issues_in_the_far_past: 'Opgaver fra fortiden'
+    issues_in_the_far_past_alert: 'Nogle opgaver er lukket før %date%.'
+    issues_in_the_far_past_info: '{1}Bemærk: Denne opgave er lukket før %date%.|]1,Inf[Bemærk: Disse opgaver er lukket før %date%.'
 
 product:
     title: "Produkter"

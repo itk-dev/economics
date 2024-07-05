@@ -98,6 +98,19 @@ class IssueRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
+    public function getIssuesClosedBefore(Project $project, \DateTimeInterface $date)
+    {
+        $qb = $this->createQueryBuilder('issue');
+        $qb->andWhere($qb->expr()->eq('issue.project', ':project'));
+        $qb->setParameter('project', $project);
+        $qb->andWhere('issue.resolutionDate < :date');
+        $qb->setParameter('date', $date);
+        $qb->andWhere('issue.status IN (:statuses)');
+        $qb->setParameter('statuses', $this->getClosedStatuses($project));
+
+        return $qb->getQuery()->execute();
+    }
+
     /**
      * Get "closed" statuses for a project.
      *
