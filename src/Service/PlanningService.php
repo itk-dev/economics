@@ -35,7 +35,11 @@ class PlanningService
     {
         $planning = new PlanningData();
         $planning->weeks = $this->buildPlanningWeeks($planning);
-        $allIssues = $this->issueRepository->findAll();
+
+        $thisYear = (new \DateTime('first day of January this year'))->setTime(0, 0)->format('Y-m-d H:i:s');
+        $nextYear = (new \DateTime('first day of January next year'))->setTime(0, 0)->format('Y-m-d H:i:s');
+
+        $allIssues = $this->issueRepository->findIssuesInDateRange($thisYear, $nextYear);
         $sortedIssues = $this->sortIssuesByWeek($allIssues);
 
         foreach ($sortedIssues as $week => $issues) {
