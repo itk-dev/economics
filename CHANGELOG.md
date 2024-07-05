@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.2] - 2024-07-05
+
 * [PR-140](https://github.com/itk-dev/economics/pull/140)
   1768: Added link to invoice entry that binds worklog.
 
