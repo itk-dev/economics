@@ -9,6 +9,7 @@ use App\Form\PlanningType;
 use App\Model\Planning\PlanningFormData;
 use App\Repository\DataProviderRepository;
 use App\Service\DataProviderService;
+use App\Service\PlanningService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,7 @@ class PlanningController extends AbstractController
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly ?string $defaultDataProvider,
+        private readonly PlanningService $planningService,
     ) {
     }
 
@@ -60,14 +62,10 @@ class PlanningController extends AbstractController
     private function createResponse(Request $request, string $mode): Response
     {
         $planningFormData = new PlanningFormData();
+        $planningData = null;
         $form = $this->createForm(PlanningType::class, $planningFormData);
 
         $dataProviders = $this->dataProviderRepository->findAll();
-        $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
-
-        if (null === $defaultProvider && count($dataProviders) > 0) {
-            $defaultProvider = $dataProviders[0];
-        }
 
         $form->add('dataProvider', EntityType::class, [
             'class' => DataProvider::class,
@@ -84,19 +82,12 @@ class PlanningController extends AbstractController
 
         $form->handleRequest($request);
 
-        $service = null;
-
         if ($form->isSubmitted() && $form->isValid()) {
-            $service = $this->dataProviderService->getService($planningFormData->dataProvider);
-        } elseif (null !== $defaultProvider) {
-            $service = $this->dataProviderService->getService($defaultProvider);
-        }
-
-        try {
-            $planningData = $service?->getPlanningDataWeeks();
-        } catch (\Exception $e) {
-            $error = $e->getMessage();
-            $planningData = null;
+            try {
+                $planningData = $this->planningService->getPlanningData();
+            } catch (\Exception $e) {
+                $error = $e->getMessage();
+            }
         }
 
         return $this->render('planning/planning.html.twig', [

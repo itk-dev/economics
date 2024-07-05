@@ -146,6 +146,14 @@ class LeantimeApiService implements DataProviderServiceInterface
 
         $issues = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
 
+        $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
+
+        $workers = array_reduce($workersData, function ($carry, $item) {
+            $carry[$item->id] = $item->username;
+
+            return $carry;
+        }, []);
+
         foreach ($issues as $issue) {
             $issueData = new IssueData();
 
@@ -166,6 +174,8 @@ class LeantimeApiService implements DataProviderServiceInterface
             }
             $issueData->projectId = $issue->projectId;
             $issueData->resolutionDate = $this->getLeanDateTime($issue->editTo);
+            $issueData->worker = $workers[$issue->editorId] ?? $issue->editorId;
+            $issueData->linkToIssue = $this->leantimeUrl.'/tickets/showKanban?showTicketModal='.$issue->id.'#/tickets/showTicket/'.$issue->id;
             $result[] = $issueData;
         }
 

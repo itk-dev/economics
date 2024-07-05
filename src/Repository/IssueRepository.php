@@ -120,4 +120,15 @@ class IssueRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findIssuesInDateRange(string $startDate, string $endDate)
+    {
+        return $this->createQueryBuilder('i')
+            ->where('i.dueDate >= :start')
+            ->andWhere('i.dueDate < :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->getQuery()
+            ->getResult();
+    }
 }

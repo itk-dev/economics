@@ -60,3 +60,8 @@ services:
         arguments:
             $options:
                 accounts: '%env(json:INVOICE_ENTRY_ACCOUNTS)%'
+
+    App\Service\PlanningService:
+        arguments:
+            $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
+            $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'

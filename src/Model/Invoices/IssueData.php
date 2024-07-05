@@ -23,6 +23,8 @@ class IssueData
     public ?int $planHours;
     public ?int $hourRemaining;
     public ?\DateTime $dueDate = null;
+    public ?string $worker;
+    public ?string $linkToIssue;
 
     public function __construct()
     {

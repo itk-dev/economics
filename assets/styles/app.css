@@ -405,5 +405,18 @@
         content: '▼';
         @apply pr-4 text-xs;
     }
-
+    .loading {
+        position: relative;
+    }
+    .loading::before {
+        content: '';
+        z-index: 999;
+        @apply bg-white dark:bg-gray-900 absolute w-full h-full top-0 left-0;
+    }
+    .loading::after {
+        content: 'Loading...';
+        @apply text-white absolute top-0 left-0;
+        z-index: 9999;
+        left: 0;
+    }
 }
