@@ -19,7 +19,6 @@ use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
 use App\Service\ClientHelper;
 use App\Service\InvoiceHelper;
-use App\Service\ViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -38,7 +37,6 @@ class InvoiceController extends AbstractController
     public function __construct(
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
-        private readonly ViewService $viewService,
         private readonly InvoiceHelper $invoiceEntryHelper,
     ) {
     }
