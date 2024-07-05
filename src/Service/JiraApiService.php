@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Enum\ClientTypeEnum;
+use App\Enum\IssueStatusEnum;
 use App\Exception\ApiServiceException;
 use App\Interface\DataProviderServiceInterface;
 use App\Model\Invoices\AccountData;
@@ -749,6 +750,25 @@ class JiraApiService implements DataProviderServiceInterface
 
         return new PagedResult($result, $startAt, $maxResults, $pagedResult['total']);
     }
+
+ /*   private function convertStatusToEnum(string $statusName)
+    {
+        $statusNumber = (int) $statusNumber;
+        $statusMapping = [
+            -1 => IssueStatusEnum::ARCHIVED,
+            0 => IssueStatusEnum::DONE,
+            1 => IssueStatusEnum::BLOCKED,
+            2 => IssueStatusEnum::WAITING,
+            3 => IssueStatusEnum::NEW,
+            4 => IssueStatusEnum::IN_PROGRESS,
+        ];
+
+        if (array_key_exists($statusNumber, $statusMapping)) {
+            return $statusMapping[$statusNumber];
+        }
+
+        throw new \InvalidArgumentException('Invalid status number');
+    }*/
 
     /**
      * @throws ApiServiceException
