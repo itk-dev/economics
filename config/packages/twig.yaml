@@ -3,7 +3,7 @@ twig:
     date:
         format: 'd.m.Y'
     globals:
-        invoice_entry_helper: '@App\Service\InvoiceEntryHelper'
+        invoice_helper: '@App\Service\InvoiceHelper'
 
 when@test:
     twig:

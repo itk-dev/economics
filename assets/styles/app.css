@@ -405,6 +405,7 @@
         content: '▼';
         @apply pr-4 text-xs;
     }
+
     .loading {
         position: relative;
     }
@@ -418,5 +419,11 @@
         @apply text-white absolute top-0 left-0;
         z-index: 9999;
         left: 0;
+    }
+
+    .hours,
+    .price,
+    .quantity {
+        text-align: right;
     }
 }

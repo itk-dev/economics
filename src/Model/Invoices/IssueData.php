@@ -9,6 +9,7 @@ class IssueData
 {
     public \DateTime $started;
     public string $name;
+    public string $description;
     public string $status;
     public string $projectTrackerId;
     public string $projectTrackerKey;

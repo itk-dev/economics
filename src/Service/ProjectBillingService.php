@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
+use App\Entity\IssueProduct;
 use App\Entity\ProjectBilling;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
@@ -32,8 +33,26 @@ class ProjectBillingService
         private readonly ClientHelper $clientHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
-        private readonly InvoiceEntryHelper $invoiceEntryHelper,
+        private readonly InvoiceHelper $invoiceHelper,
     ) {
+    }
+
+    public function getIssuesNotIncludedInProjectBillingFromTheFarPast(ProjectBilling $projectBilling): array
+    {
+        $issues = null;
+
+        if ($cutoffDate = $this->invoiceHelper->getIssueFarPastCutoffDate()) {
+            $projectBilling = clone $projectBilling;
+            $projectBilling->setPeriodStart(new \DateTimeImmutable('0001-01-01'));
+            $projectBilling->setPeriodEnd($cutoffDate);
+
+            $issues = $this->getIssuesNotIncludedInProjectBilling($projectBilling);
+        }
+
+        return [
+            'cutoff_date' => $cutoffDate,
+            'issues' => $issues,
+        ];
     }
 
     /**
@@ -166,30 +185,63 @@ class ProjectBillingService
                 continue;
             }
 
-            $clientId = $client->getId();
+            $invoiceKey = $client->getId();
 
-            if (null !== $clientId) {
-                if (!isset($invoices[$clientId])) {
-                    $invoices[$clientId] = [
+            if (null !== $invoiceKey) {
+                if ($this->invoiceHelper->getOneInvoicePerIssue()) {
+                    $invoiceKey .= '|||'.$issue->getId();
+                }
+
+                if (!isset($invoices[$invoiceKey])) {
+                    $invoices[$invoiceKey] = [
                         'client' => $client,
                         'issues' => [],
                     ];
                 }
 
-                $invoices[$clientId]['issues'][] = $issue;
+                $invoices[$invoiceKey]['issues'][] = $issue;
             }
         }
+
+        $defaultAccount = $this->invoiceHelper->getDefaultAccount();
+        $productAccount = $this->invoiceHelper->getProductAccount();
+
+        // Add invoice entry account prefix, if any, to (product) name.
+        $prefixWithAccount = function (?string $account, ?string $name): ?string {
+            if (null === $name) {
+                return null;
+            }
+
+            $prefix = $account ? $this->invoiceHelper->getAccountInvoiceEntryPrefix($account) : null;
+            if (null !== $prefix) {
+                $name = $prefix.': '.$name;
+            }
+
+            return $name;
+        };
 
         foreach ($invoices as $invoiceArray) {
             /** @var Client $client */
             $client = $invoiceArray['client'];
+
+            $invoiceName = sprintf('%s: %s (%s - %s)',
+                $project->getName() ?? '',
+                $client->getName() ?? '',
+                $periodStart->format('d/m/Y'),
+                $periodEnd->format('d/m/Y')
+            );
+            if ($this->invoiceHelper->getOneInvoicePerIssue()) {
+                // We know that we have exactly one issue.
+                $issue = reset($invoiceArray['issues']);
+                $invoiceName = $issue->getName().': '.$invoiceName;
+            }
 
             $invoice = new Invoice();
             $invoice->setRecorded(false);
             $invoice->setProject($projectBilling->getProject());
             $invoice->setProjectBilling($projectBilling);
             $invoice->setDescription($projectBilling->getDescription());
-            $invoice->setName($project->getName().': '.$client->getName().' ('.$periodStart->format('d/m/Y').' - '.$periodEnd->format('d/m/Y').')');
+            $invoice->setName($invoiceName);
             $invoice->setPeriodFrom($periodStart);
             $invoice->setPeriodTo($periodEnd);
             $invoice->setClient($client);
@@ -198,7 +250,7 @@ class ProjectBillingService
 
             // TODO: MaterialNumberEnum::EXTERNAL_WITH_MOMS or MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS?
             $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
-            $invoice->setDefaultReceiverAccount($this->invoiceEntryHelper->getDefaultAccount());
+            $invoice->setDefaultReceiverAccount($defaultAccount);
 
             /** @var Issue $issue */
             foreach ($invoiceArray['issues'] as $issue) {
@@ -206,7 +258,10 @@ class ProjectBillingService
                 $invoiceEntry->setEntryType(InvoiceEntryTypeEnum::WORKLOG);
                 $invoiceEntry->setDescription('');
 
-                $product = $this->getInvoiceEntryProduct($issue);
+                $product = $prefixWithAccount(
+                    $defaultAccount,
+                    $issue->getName()
+                );
                 $price = $this->clientHelper->getStandardPrice($client);
 
                 $invoiceEntry->setProduct($product);
@@ -236,29 +291,26 @@ class ProjectBillingService
                     $this->entityManager->persist($invoiceEntry);
                 }
 
-                $invoiceEntryProductName = $invoiceEntry->getProduct();
-                // Add invoice entries for each product.
-                foreach ($issue->getProducts() as $productIssue) {
-                    $product = $productIssue->getProduct();
-                    if (null === $product) {
-                        continue;
-                    }
-
-                    $productName = $product->getName() ?? '';
+                // Add a single product entry summing all product expenses.
+                $products = $issue->getProducts();
+                if (!$products->isEmpty()) {
+                    $price = $products->reduce(static fn (?float $sum, IssueProduct $product) => $sum + $product->getTotal(), 0.0);
+                    $product = $prefixWithAccount(
+                        $productAccount,
+                        $issue->getName()
+                    );
                     $productInvoiceEntry = (new InvoiceEntry())
                         ->setEntryType(InvoiceEntryTypeEnum::PRODUCT)
-                        ->setDescription($productIssue->getDescription())
-                        ->setProduct(null === $invoiceEntryProductName
-                            ? $productName
-                            : sprintf('%s: %s', $invoiceEntryProductName, $productName)
-                        )
-                        ->setPrice($product->getPriceAsFloat())
-                        ->setAmount($productIssue->getQuantity())
-                        ->setTotalPrice($productIssue->getQuantity() * $product->getPriceAsFloat())
+                        ->setDescription($issue->getName())
+                        ->setProduct($product)
+                        ->setPrice($price)
+                        ->setAmount(1)
+                        ->setTotalPrice($price)
                         ->setMaterialNumber($invoice->getDefaultMaterialNumber())
-                        ->setAccount($this->invoiceEntryHelper->getProductAccount()
-                            ?? $this->invoiceEntryHelper->getDefaultAccount())
-                        ->addIssueProduct($productIssue);
+                        ->setAccount($productAccount ?? $this->invoiceHelper->getDefaultAccount());
+                    foreach ($issue->getProducts() as $productIssue) {
+                        $productInvoiceEntry->addIssueProduct($productIssue);
+                    }
                     // We don't add worklogs here, since they're already attached to the main invoice entry
                     // (and only used to detect if an entry has been added to an invoice).
 
@@ -269,6 +321,15 @@ class ProjectBillingService
 
             if ($invoice->getInvoiceEntries()->isEmpty()) {
                 continue;
+            }
+
+            if ($this->invoiceHelper->getOneInvoicePerIssue()
+                && $this->invoiceHelper->getSetInvoiceDescriptionFromIssueDescription()) {
+                // We know that we have exactly one issue.
+                $issue = reset($invoiceArray['issues']);
+                if ($description = $this->invoiceHelper->getInvoiceDescription($issue->getDescription())) {
+                    $invoice->setDescription($description);
+                }
             }
 
             $projectBilling->addInvoice($invoice);
