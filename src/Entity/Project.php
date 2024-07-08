@@ -7,8 +7,11 @@ use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
+#[ORM\UniqueConstraint(name: 'data_provider_project_tracker', columns: ['data_provider_id', 'project_tracker_id'])]
+#[UniqueEntity(fields: ['dataProvider', 'projectTrackerId'])]
 class Project extends AbstractBaseEntity
 {
     use DataProviderTrait;
