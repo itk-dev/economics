@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.3] - 2024-07-10
+
 * [PR-141](https://github.com/itk-dev/economics/pull/141)
   Data provider stuff
 * [PR-135](https://github.com/itk-dev/economics/pull/135)
@@ -291,7 +293,10 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.3.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.3.3...HEAD
+[2.3.3]: https://github.com/itk-dev/economics/compare/2.3.2...2.3.3
+[2.3.2]: https://github.com/itk-dev/economics/compare/2.3.1...2.3.2
+[2.3.1]: https://github.com/itk-dev/economics/compare/2.3.0...2.3.2
 [2.3.0]: https://github.com/itk-dev/economics/compare/2.2.0...2.3.0
 [2.2.0]: https://github.com/itk-dev/economics/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/itk-dev/economics/compare/2.1.1...2.1.2
