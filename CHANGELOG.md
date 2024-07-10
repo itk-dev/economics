@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-141](https://github.com/itk-dev/economics/pull/141)
+  Data provider stuff
+
 ## [2.3.2] - 2024-07-05
 
 * [PR-140](https://github.com/itk-dev/economics/pull/140)

@@ -9,8 +9,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: IssueRepository::class)]
+#[ORM\UniqueConstraint(name: 'data_provider_project_tracker', columns: ['data_provider_id', 'project_tracker_id'])]
+#[UniqueEntity(fields: ['dataProvider', 'projectTrackerId'])]
 class Issue extends AbstractBaseEntity
 {
     use DataProviderTrait;

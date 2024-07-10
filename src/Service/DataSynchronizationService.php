@@ -58,7 +58,10 @@ class DataSynchronizationService
         // Get all projects from ApiService.
         $allProjectData = $service->getProjectDataCollection();
         foreach ($allProjectData->projectData as $index => $projectDatum) {
-            $project = $this->projectRepository->findOneBy(['projectTrackerId' => $projectDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
+            $project = $this->projectRepository->findOneBy([
+                'projectTrackerId' => $projectDatum->projectTrackerId,
+                'dataProvider' => $dataProvider,
+            ]);
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
 
             if (!$project) {
@@ -75,7 +78,10 @@ class DataSynchronizationService
             foreach ($projectDatum->versions as $versionData) {
                 /** @var SprintReportVersion $versionDatum */
                 foreach ($versionData as $versionDatum) {
-                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionDatum->id, 'dataProvider' => $dataProvider]);
+                    $version = $this->versionRepository->findOneBy([
+                        'projectTrackerId' => $versionDatum->id,
+                        'dataProvider' => $dataProvider,
+                    ]);
 
                     if (!$version) {
                         $version = new Version();
@@ -94,7 +100,10 @@ class DataSynchronizationService
                 $projectClientData = $service->getClientDataForProject($projectDatum->projectTrackerId);
 
                 foreach ($projectClientData as $clientData) {
-                    $client = $this->clientRepository->findOneBy(['projectTrackerId' => $clientData->projectTrackerId]);
+                    $client = $this->clientRepository->findOneBy([
+                        'projectTrackerId' => $clientData->projectTrackerId,
+                        'dataProvider' => $dataProvider,
+                    ]);
 
                     if (!$client) {
                         $client = new Client();
@@ -146,7 +155,10 @@ class DataSynchronizationService
             $allAccountData = $service->getAllAccountData();
 
             foreach ($allAccountData as $index => $accountDatum) {
-                $account = $this->accountRepository->findOneBy(['projectTrackerId' => $accountDatum->projectTrackerId, 'dataProvider' => $dataProvider]);
+                $account = $this->accountRepository->findOneBy([
+                    'projectTrackerId' => $accountDatum->projectTrackerId,
+                    'dataProvider' => $dataProvider,
+                ]);
 
                 if (!$account) {
                     $account = new Account();
@@ -212,7 +224,10 @@ class DataSynchronizationService
             $total = $pagedIssueData->total;
 
             foreach ($pagedIssueData->items as $issueDatum) {
-                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $issueDatum->projectTrackerId]);
+                $issue = $this->issueRepository->findOneBy([
+                    'projectTrackerId' => $issueDatum->projectTrackerId,
+                    'dataProvider' => $dataProvider,
+                ]);
 
                 if (!$issue) {
                     $issue = new Issue();
@@ -237,7 +252,10 @@ class DataSynchronizationService
                 }
 
                 foreach ($issueDatum->versions as $versionData) {
-                    $version = $this->versionRepository->findOneBy(['projectTrackerId' => $versionData->projectTrackerId]);
+                    $version = $this->versionRepository->findOneBy([
+                        'projectTrackerId' => $versionData->projectTrackerId,
+                        'dataProvider' => $dataProvider,
+                    ]);
 
                     if (null !== $version) {
                         $issue->addVersion($version);
@@ -314,14 +332,20 @@ class DataSynchronizationService
                 throw new EconomicsException($this->translator->trans('exception.project_not_found'));
             }
 
-            $issue = !empty($worklogDatum->projectTrackerIssueId) ? $this->issueRepository->findOneBy(['projectTrackerId' => $worklogDatum->projectTrackerIssueId]) : null;
+            $issue = !empty($worklogDatum->projectTrackerIssueId) ? $this->issueRepository->findOneBy([
+                'projectTrackerId' => $worklogDatum->projectTrackerIssueId,
+                'dataProvider' => $dataProvider,
+            ]) : null;
 
             if (null === $issue) {
                 // A worklog should always have an issue, so ignore the worklog.
                 continue;
             }
 
-            $worklog = $this->worklogRepository->findOneBy(['worklogId' => $worklogDatum->projectTrackerId]);
+            $worklog = $this->worklogRepository->findOneBy([
+                'worklogId' => $worklogDatum->projectTrackerId,
+                'dataProvider' => $dataProvider,
+            ]);
 
             if (!$worklog) {
                 $worklog = new Worklog();
@@ -392,7 +416,9 @@ class DataSynchronizationService
             $customerAccountId = $invoice->getCustomerAccountId();
 
             if (null == $invoice->getClient() && null !== $customerAccountId) {
-                $client = $this->clientRepository->findOneBy(['projectTrackerId' => $invoice->getCustomerAccountId()]);
+                $client = $this->clientRepository->findOneBy([
+                    'projectTrackerId' => $invoice->getCustomerAccountId(),
+                ]);
 
                 if (null !== $client) {
                     $invoice->setClient($client);

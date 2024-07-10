@@ -6,15 +6,14 @@ use App\Entity\Trait\DataProviderTrait;
 use App\Repository\WorklogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: WorklogRepository::class)]
-#[Gedmo\SoftDeleteable()]
+#[ORM\UniqueConstraint(name: 'data_provider_project_tracker', columns: ['data_provider_id', 'worklog_id'])]
+#[UniqueEntity(fields: ['dataProvider', 'worklogId'])]
 class Worklog extends AbstractBaseEntity
 {
     use DataProviderTrait;
-    use SoftDeleteableEntity;
 
     #[ORM\Column]
     private ?int $worklogId = null;
