@@ -8,10 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.3.3] - 2024-07-10
-
-* [PR-141](https://github.com/itk-dev/economics/pull/141)
-  Data provider stuff
 * [PR-135](https://github.com/itk-dev/economics/pull/135)
   1772: Removed views.
 * [PR-136](https://github.com/itk-dev/economics/pull/136)
@@ -31,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when releasing.
 * [PR-124](https://github.com/itk-dev/economics/pull/124)
   710: Added workload report
+
+## [2.3.3] - 2024-07-10
+
+* [PR-141](https://github.com/itk-dev/economics/pull/141)
+  Data provider stuff
 
 ## [2.3.2] - 2024-07-05
 
