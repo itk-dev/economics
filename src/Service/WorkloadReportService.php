@@ -100,14 +100,11 @@ class WorkloadReportService
      */
     private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, PeriodTypeEnum $viewPeriodType): float
     {
-        // Since lunch is paid, subtract this from the actual workload (0.5 * 5)
-        $actualWeeklyWorkload = $workloadWeekBase - 2.5;
-
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewPeriodType) {
-            PeriodTypeEnum::WEEK => round(($loggedHours / $actualWeeklyWorkload) * 100),
-            PeriodTypeEnum::MONTH => round(($loggedHours / ($actualWeeklyWorkload * 4)) * 100),
-            PeriodTypeEnum::YEAR => round(($loggedHours / ($actualWeeklyWorkload * 52)) * 100, 2),
+            PeriodTypeEnum::WEEK => round(($loggedHours / $workloadWeekBase) * 100),
+            PeriodTypeEnum::MONTH => round(($loggedHours / ($workloadWeekBase * 4)) * 100),
+            PeriodTypeEnum::YEAR => round(($loggedHours / ($workloadWeekBase * 52)) * 100, 2),
         };
     }
 
