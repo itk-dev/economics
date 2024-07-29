@@ -382,7 +382,7 @@ class DataSynchronizationService
             $workerExists = $this->workerRepository->findOneBy(['email' => $workerEmail]);
 
             if (!$workerExists) {
-                if (isset($workerEmail)) {
+                if (isset($workerEmail) && filter_var($workerEmail, FILTER_VALIDATE_EMAIL)) {
                     $worker = new Worker();
                     $worker->setEmail($workerEmail);
                     $this->entityManager->persist($worker);
