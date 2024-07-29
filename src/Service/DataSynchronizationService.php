@@ -379,12 +379,13 @@ class DataSynchronizationService
 
             $workerEmail = $worklog->getWorker();
 
-            $workerExists = $this->workerRepository->findOneBy(['email' => $workerEmail]);
+            if ($workerEmail && filter_var($workerEmail, FILTER_VALIDATE_EMAIL)) {
+                $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
 
-            if (!$workerExists) {
-                if (isset($workerEmail) && filter_var($workerEmail, FILTER_VALIDATE_EMAIL)) {
+                if (!$worker) {
                     $worker = new Worker();
                     $worker->setEmail($workerEmail);
+
                     $this->entityManager->persist($worker);
                     $this->entityManager->flush();
                 }
