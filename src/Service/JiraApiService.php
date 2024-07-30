@@ -719,7 +719,7 @@ class JiraApiService implements DataProviderServiceInterface
 
             $issueData = new IssueData();
             $issueData->name = $fields->summary;
-            $issueData->status = $fields->status->name;
+            $issueData->status = $this->convertStatusToEnum($fields->status->name);
             $issueData->projectTrackerId = $issue->id;
             $issueData->projectTrackerKey = $issue->key;
             $issueData->resolutionDate = isset($fields->resolutiondate) ? new \DateTime($fields->resolutiondate) : null;
@@ -751,24 +751,29 @@ class JiraApiService implements DataProviderServiceInterface
         return new PagedResult($result, $startAt, $maxResults, $pagedResult['total']);
     }
 
- /*   private function convertStatusToEnum(string $statusName)
+    private function convertStatusToEnum(string $statusName)
     {
-        $statusNumber = (int) $statusNumber;
         $statusMapping = [
-            -1 => IssueStatusEnum::ARCHIVED,
-            0 => IssueStatusEnum::DONE,
-            1 => IssueStatusEnum::BLOCKED,
-            2 => IssueStatusEnum::WAITING,
-            3 => IssueStatusEnum::NEW,
-            4 => IssueStatusEnum::IN_PROGRESS,
+            'Lukket' => IssueStatusEnum::DONE,
+            'Åben' => IssueStatusEnum::NEW,
+            'Afventer' => IssueStatusEnum::WAITING,
+            'I gang' => IssueStatusEnum::IN_PROGRESS,
+            'Til test' => IssueStatusEnum::READY_FOR_TEST,
+            'Klar til planlægning' => IssueStatusEnum::READY_FOR_PLANNING,
+            'Klar til release' => IssueStatusEnum::READY_FOR_RELEASE,
+            'Til review' => IssueStatusEnum::IN_REVIEW,
+            'Done' => IssueStatusEnum::DONE,
+            'To Do' => IssueStatusEnum::NEW,
+            'In Progress' => IssueStatusEnum::IN_PROGRESS,
+            'Closed' => IssueStatusEnum::DONE,
         ];
 
-        if (array_key_exists($statusNumber, $statusMapping)) {
-            return $statusMapping[$statusNumber];
+        if (array_key_exists($statusName, $statusMapping)) {
+            return $statusMapping[$statusName];
         }
 
-        throw new \InvalidArgumentException('Invalid status number');
-    }*/
+        throw new \InvalidArgumentException('Invalid status name');
+    }
 
     /**
      * @throws ApiServiceException
