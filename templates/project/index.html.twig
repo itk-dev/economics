@@ -55,7 +55,7 @@
                     </label>
                 </td>
                 <td class="table-td">
-                    <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_isBillable', {id: project.id}) }}">
+                    <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_is_billable', {id: project.id}) }}">
                         <input type="checkbox" value="" class="sr-only peer" {{ stimulus_action('toggle', 'toggle') }} {{ stimulus_target('toggle', 'checkbox') }} {{ project.isBillable ? 'checked' : '' }}>
                         {% include "components/checkbox.html.twig" %}
                         <span class="toggle-text" {{ stimulus_target('toggle', 'text') }}></span>

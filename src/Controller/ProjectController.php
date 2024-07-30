@@ -69,7 +69,7 @@ class ProjectController extends AbstractController
         return new JsonResponse([$body], 200);
     }
 
-    #[Route('/{id}/isBillable', name: 'app_project_isBillable', methods: ['POST'])]
+    #[Route('/{id}/isBillable', name: 'app_project_is_billable', methods: ['POST'])]
     public function isBillable(Request $request, Project $project, ProjectRepository $projectRepository): Response
     {
         $body = $request->toArray();

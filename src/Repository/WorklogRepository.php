@@ -97,37 +97,37 @@ class WorklogRepository extends ServiceEntityRepository
 
     public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, string $dateFrom, string $dateTo)
     {
-        $qb = $this->createQueryBuilder('wor');
+        $qb = $this->createQueryBuilder('worklog');
 
         return $qb
-            ->where($qb->expr()->between('wor.started', ':date_from', ':date_to'))
-            ->andWhere('wor.worker = :worker')
+            ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
+            ->andWhere('worklog.worker = :worker')
             ->setParameters([
                 'worker' => $workerIdentifier,
-                'date_from' => $dateFrom,
-                'date_to' => $dateTo,
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
             ])
             ->getQuery()->getResult();
     }
 
     public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, string $dateFrom, string $dateTo)
     {
-        $qb = $this->createQueryBuilder('wor');
+        $qb = $this->createQueryBuilder('worklog');
 
-        $qb->leftJoin('App\Entity\Project', 'pro', 'WITH', 'pro.id = wor.project');
+        $qb->leftJoin('App\Entity\Project', 'pro', 'WITH', 'pro.id = worklog.project');
 
         return $qb
-            ->where($qb->expr()->between('wor.started', ':date_from', ':date_to'))
-            ->andWhere('wor.worker = :worker')
-            ->andWhere($qb->expr()->in('wor.kind', ':billableKinds'))
+            ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
+            ->andWhere('worklog.worker = :worker')
+            ->andWhere($qb->expr()->in('worklog.kind', ':billableKinds'))
             ->andWhere($qb->expr()->orX(
-                $qb->expr()->eq('wor.isBilled', '1'),
+                $qb->expr()->eq('worklog.isBilled', '1'),
                 $qb->expr()->eq('pro.isBillable', '1'),
             ))
             ->setParameters([
                 'worker' => $workerIdentifier,
-                'date_from' => $dateFrom,
-                'date_to' => $dateTo,
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
                 'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
             ])
             ->getQuery()->getResult();
