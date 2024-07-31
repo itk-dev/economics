@@ -31,6 +31,12 @@ final class Version20240729132206 extends AbstractMigration
                 WHEN status = 'To Do' THEN 'new'
                 WHEN status = 'In Progress' THEN 'in progress'
                 WHEN status = 'Closed' THEN 'done'
+                WHEN status = '-1' THEN 'archived'
+                WHEN status = '0' THEN 'done'
+                WHEN status = '1' THEN 'blocked'
+                WHEN status = '2' THEN 'waiting'
+                WHEN status = '3' THEN 'new'
+                WHEN status = '4' THEN 'in progress'
             END
         ");
     }
@@ -48,10 +54,8 @@ final class Version20240729132206 extends AbstractMigration
                 WHEN status = 'ready for planning' THEN 'Klar til planlægning'
                 WHEN status = 'ready for release' THEN 'Klar til release'
                 WHEN status = 'in review' THEN 'Til review'
-                WHEN status = 'done' THEN 'Done'
-                WHEN status = 'new' THEN 'To Do'
-                WHEN status = 'in progress' THEN 'In Progress'
-                WHEN status = 'done' THEN 'Closed'
+                WHEN status = 'blocked' THEN '1'
+                WHEN status = 'archived' THEN '-1'
             END
         ");
     }
