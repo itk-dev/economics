@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\InvoiceEntry;
+use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
+use App\Enum\BillableKindsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -71,7 +73,7 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         if (!empty($filterData->version) || !empty($filterData->epic)) {
-            $qb->leftJoin('App\Entity\Issue', 'issue', 'WITH', 'issue.id = worklog.issue');
+            $qb->leftJoin(Issue::class, 'issue', 'WITH', 'issue.id = worklog.issue');
         }
 
         if (!empty($filterData->version)) {
@@ -94,17 +96,40 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    public function findWorklogsByWorkerAndDateRange(string $worker, string $dateFrom, string $dateTo)
+    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, string $dateFrom, string $dateTo)
     {
-        $qb = $this->createQueryBuilder('wor');
+        $qb = $this->createQueryBuilder('worklog');
 
         return $qb
-            ->where($qb->expr()->between('wor.started', ':date_from', ':date_to'))
-            ->andWhere('wor.worker = :worker')
+            ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
+            ->andWhere('worklog.worker = :worker')
             ->setParameters([
-                'worker' => $worker,
-                'date_from' => $dateFrom,
-                'date_to' => $dateTo,
+                'worker' => $workerIdentifier,
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+            ])
+            ->getQuery()->getResult();
+    }
+
+    public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, string $dateFrom, string $dateTo)
+    {
+        $qb = $this->createQueryBuilder('worklog');
+
+        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project');
+
+        return $qb
+            ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
+            ->andWhere('worklog.worker = :worker')
+            ->andWhere($qb->expr()->in('worklog.kind', ':billableKinds'))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('worklog.isBilled', '1'),
+                $qb->expr()->eq('project.isBillable', '1'),
+            ))
+            ->setParameters([
+                'worker' => $workerIdentifier,
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+                'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
             ])
             ->getQuery()->getResult();
     }

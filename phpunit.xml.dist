@@ -17,7 +17,8 @@
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <coverage/>
+    <coverage includeUncoveredFiles="true">
+    </coverage>
     <extensions>
         <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
     </extensions>

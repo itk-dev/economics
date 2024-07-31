@@ -11,6 +11,7 @@ use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\Worklog;
+use App\Enum\BillableKindsEnum;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Model\SprintReport\SprintReportVersion;
@@ -372,7 +373,14 @@ class DataSynchronizationService
                 ->setStarted($worklogDatum->started)
                 ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
                 ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
-                ->setIssue($issue);
+                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
+                ->setIssue($issue)
+                ->setKind(BillableKindsEnum::tryFrom($worklogDatum->kind));
+
+            if (null != $worklog->getProjectTrackerIssueId()) {
+                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
+                $worklog->setIssue($issue);
+            }
 
             if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
                 $worklog->setIsBilled(true);
@@ -395,12 +403,13 @@ class DataSynchronizationService
 
             $workerEmail = $worklog->getWorker();
 
-            $workerExists = $this->workerRepository->findOneBy(['email' => $workerEmail]);
+            if ($workerEmail && filter_var($workerEmail, FILTER_VALIDATE_EMAIL)) {
+                $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
 
-            if (!$workerExists) {
-                if (isset($workerEmail)) {
+                if (!$worker) {
                     $worker = new Worker();
                     $worker->setEmail($workerEmail);
+
                     $this->entityManager->persist($worker);
                     $this->entityManager->flush();
                 }

@@ -518,6 +518,7 @@ project:
     actions: 'Handlinger'
     action_edit: 'Redigér'
     action_view_issues: "Vis opgaver"
+    is_billable: "Fakturerbart"
 
 reports:
     title: 'Rapporter'
@@ -543,10 +544,12 @@ reports:
         workload: 'Normtid'
         logged_hours: 'Loggede timer'
         select_viewmode: 'Vælg visningstype'
+        select_view_period_type: 'Vælg periodetype'
         week: 'Uge'
         workers: 'Medarbejdere'
         worker: 'Medarbejder'
         hidden-entries: 'Skjulte medarbejdere'
+        submit: 'Hent'
 
 hour_report:
     title: 'Timerapport'
@@ -724,3 +727,17 @@ worker:
     edit: 'Rediger medarbejder'
     action_save: 'Gem'
     back_to_list: "Tilbage til listen"
+
+workload_report_period_type_enum:
+    week:
+        label: 'Uge'
+    month:
+        label: 'Måned'
+    year:
+        label: 'År'
+
+workload_report_view_mode_enum:
+    workload:
+        label: 'Loggede timer'
+    billable:
+        label: 'Fakturerbare timer'

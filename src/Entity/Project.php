@@ -58,6 +58,9 @@ class Project extends AbstractBaseEntity
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Product::class, orphanRemoval: true)]
     private Collection $products;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isBillable = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -349,6 +352,18 @@ class Project extends AbstractBaseEntity
                 $product->setProject(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isBillable(): ?bool
+    {
+        return $this->isBillable;
+    }
+
+    public function setIsBillable(?bool $isBillable): self
+    {
+        $this->isBillable = $isBillable;
 
         return $this;
     }
