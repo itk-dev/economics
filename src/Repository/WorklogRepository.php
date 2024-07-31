@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\InvoiceEntry;
+use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
@@ -72,7 +73,7 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         if (!empty($filterData->version) || !empty($filterData->epic)) {
-            $qb->leftJoin('App\Entity\Issue', 'issue', 'WITH', 'issue.id = worklog.issue');
+            $qb->leftJoin(Issue::class, 'issue', 'WITH', 'issue.id = worklog.issue');
         }
 
         if (!empty($filterData->version)) {
@@ -114,7 +115,7 @@ class WorklogRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('worklog');
 
-        $qb->leftJoin('App\Entity\Project', 'pro', 'WITH', 'pro.id = worklog.project');
+        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project');
 
         return $qb
             ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
@@ -122,7 +123,7 @@ class WorklogRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->in('worklog.kind', ':billableKinds'))
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->eq('worklog.isBilled', '1'),
-                $qb->expr()->eq('pro.isBillable', '1'),
+                $qb->expr()->eq('project.isBillable', '1'),
             ))
             ->setParameters([
                 'worker' => $workerIdentifier,
