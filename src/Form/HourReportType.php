@@ -71,6 +71,7 @@ class HourReportType extends AbstractType
                     if (null !== $options['project']) {
                         $query->where('version.project = :project')->setParameter('project', $options['project']);
                     }
+
                     return $query;
                 },
                 'choice_label' => function (Version $version) {
