@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Trait\DataProviderTrait;
+use App\Enum\IssueStatusEnum;
 use App\Repository\IssueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,8 +22,8 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(type: 'string', nullable: true, enumType: IssueStatusEnum::class)]
+    private ?IssueStatusEnum $status = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $accountKey = null;
@@ -92,12 +93,12 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?IssueStatusEnum
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(IssueStatusEnum $status): self
     {
         $this->status = $status;
 

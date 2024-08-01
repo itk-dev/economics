@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Enum\ClientTypeEnum;
+use App\Enum\IssueStatusEnum;
 use App\Exception\ApiServiceException;
 use App\Interface\DataProviderServiceInterface;
 use App\Model\Invoices\AccountData;
@@ -718,7 +719,7 @@ class JiraApiService implements DataProviderServiceInterface
 
             $issueData = new IssueData();
             $issueData->name = $fields->summary;
-            $issueData->status = $fields->status->name;
+            $issueData->status = $this->convertStatusToEnum($fields->status->name);
             $issueData->projectTrackerId = $issue->id;
             $issueData->projectTrackerKey = $issue->key;
             $issueData->resolutionDate = isset($fields->resolutiondate) ? new \DateTime($fields->resolutiondate) : null;
@@ -748,6 +749,30 @@ class JiraApiService implements DataProviderServiceInterface
         }
 
         return new PagedResult($result, $startAt, $maxResults, $pagedResult['total']);
+    }
+
+    private function convertStatusToEnum(string $statusName)
+    {
+        $statusMapping = [
+            'Lukket' => IssueStatusEnum::DONE,
+            'Åben' => IssueStatusEnum::NEW,
+            'Afventer' => IssueStatusEnum::WAITING,
+            'I gang' => IssueStatusEnum::IN_PROGRESS,
+            'Til test' => IssueStatusEnum::READY_FOR_TEST,
+            'Klar til planlægning' => IssueStatusEnum::READY_FOR_PLANNING,
+            'Klar til release' => IssueStatusEnum::READY_FOR_RELEASE,
+            'Til review' => IssueStatusEnum::IN_REVIEW,
+            'Done' => IssueStatusEnum::DONE,
+            'To Do' => IssueStatusEnum::NEW,
+            'In Progress' => IssueStatusEnum::IN_PROGRESS,
+            'Closed' => IssueStatusEnum::DONE,
+        ];
+
+        if (array_key_exists($statusName, $statusMapping)) {
+            return $statusMapping[$statusName];
+        }
+
+        throw new \InvalidArgumentException('Invalid status name');
     }
 
     /**

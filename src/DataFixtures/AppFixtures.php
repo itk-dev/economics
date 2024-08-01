@@ -11,6 +11,7 @@ use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
 use App\Enum\ClientTypeEnum;
+use App\Enum\IssueStatusEnum;
 use App\Service\JiraApiService;
 use App\Service\LeantimeApiService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -104,6 +105,7 @@ class AppFixtures extends Fixture
                 }
 
                 for ($j = 0; $j < 10; ++$j) {
+                    $modStatus = 0 == $i % 2 ? IssueStatusEnum::DONE : IssueStatusEnum::NEW;
                     $issue = new Issue();
                     $issue->setName("issue-$i-$j");
                     $issue->setProject($project);
@@ -113,12 +115,13 @@ class AppFixtures extends Fixture
                     $issue->setAccountKey('Account 1');
                     $issue->setEpicName('Epic 1');
                     $issue->setEpicKey('Epic 1');
-                    $issue->setStatus('Lukket');
+                    $issue->setStatus($modStatus);
                     $issue->setDataProvider($dataProvider);
                     $issue->addVersion($versions[$j % count($versions)]);
                     $issue->setResolutionDate(new \DateTime());
                     $issue->setPlanHours($j);
                     $issue->setHoursRemaining($j);
+                    $issue->setWorker($workerArray[rand(0, 9)]);
                     $issue->setDueDate(new \DateTime());
                     $issue->setWorker($workerArray[rand(0, 9)]);
                     $issue->setLinkToIssue('www.example.com');
