@@ -74,7 +74,14 @@ class LeantimeApiService implements DataProviderServiceInterface
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
     }
 
-    private function getProjectTicketStatusSettings(string $projectId): mixed
+    /**
+     * Retrieves the ticket status settings for a specific project.
+     *
+     * @param string $projectId the ID of the project
+     *
+     * @return array the ticket status settings of the project
+     */
+    private function getProjectTicketStatusSettings(string $projectId): \stdClass
     {
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getStatusLabels', ['projectId' => $projectId]);
     }
@@ -204,7 +211,8 @@ class LeantimeApiService implements DataProviderServiceInterface
             return self::STATUS_MAPPING[$statusType];
         }
 
-        throw new \InvalidArgumentException('Invalid status key '.$statusType);
+        // Default fallback for unmatched statuses
+        return IssueStatusEnum::OTHER;
     }
 
     private function getLeanDateTime(string $s): ?\DateTime

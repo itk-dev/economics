@@ -19,6 +19,7 @@ enum IssueStatusEnum: string
     case READY_FOR_TEST = 'ready for test';
     case DONE = 'done';
     case ARCHIVED = 'archived';
+    case OTHER = 'other';
 
     /**
      * @return array<string,string>

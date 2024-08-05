@@ -772,7 +772,8 @@ class JiraApiService implements DataProviderServiceInterface
             return $statusMapping[$statusName];
         }
 
-        throw new \InvalidArgumentException('Invalid status name');
+        // Default fallback for unmatched statuses
+        return IssueStatusEnum::OTHER;
     }
 
     /**
