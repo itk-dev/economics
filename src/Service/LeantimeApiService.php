@@ -79,7 +79,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      *
      * @param string $projectId the ID of the project
      *
-     * @return array the ticket status settings of the project
+     * @return \stdClass the ticket status settings of the project
      */
     private function getProjectTicketStatusSettings(string $projectId): \stdClass
     {
