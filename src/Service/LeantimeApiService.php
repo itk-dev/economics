@@ -41,6 +41,13 @@ class LeantimeApiService implements DataProviderServiceInterface
     private const PRESENT = 'PRESENT';
     private const FUTURE = 'FUTURE';
 
+    private const STATUS_MAPPING = [
+        'NEW' => IssueStatusEnum::NEW,
+        'INPROGRESS' => IssueStatusEnum::IN_PROGRESS,
+        'DONE' => IssueStatusEnum::DONE,
+        'NONE' => IssueStatusEnum::ARCHIVED,
+    ];
+
     public function __construct(
         protected readonly HttpClientInterface $leantimeProjectTrackerApi,
         protected readonly string $leantimeUrl,
@@ -65,6 +72,11 @@ class LeantimeApiService implements DataProviderServiceInterface
     public function getAllProjects(): mixed
     {
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
+    }
+
+    private function getProjectTicketStatusSettings(string $projectId): mixed
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getStatusLabels', ['projectId' => $projectId]);
     }
 
     /**
@@ -145,6 +157,8 @@ class LeantimeApiService implements DataProviderServiceInterface
     {
         $result = [];
 
+        $projectTicketStatusSettings = $this->getProjectTicketStatusSettings($projectId);
+
         $issues = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
 
         $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
@@ -154,12 +168,11 @@ class LeantimeApiService implements DataProviderServiceInterface
 
             return $carry;
         }, []);
-
         foreach ($issues as $issue) {
             $issueData = new IssueData();
 
             $issueData->name = $issue->headline;
-            $issueData->status = $this->convertStatusToEnum($issue->status);
+            $issueData->status = $this->convertStatusToEnum($issue->status, $projectTicketStatusSettings);
             $issueData->projectTrackerId = $issue->id;
             // Leantime does not have a key for each issue.
             $issueData->projectTrackerKey = $issue->id;
@@ -183,23 +196,15 @@ class LeantimeApiService implements DataProviderServiceInterface
         return new PagedResult($result, $startAt, count($issues), count($issues));
     }
 
-    private function convertStatusToEnum(string $statusNumber)
+    private function convertStatusToEnum(string $statusKey, \stdClass $projectTicketStatusSettings): IssueStatusEnum
     {
-        $statusNumber = (int) $statusNumber;
-        $statusMapping = [
-            -1 => IssueStatusEnum::ARCHIVED,
-            0 => IssueStatusEnum::DONE,
-            1 => IssueStatusEnum::BLOCKED,
-            2 => IssueStatusEnum::WAITING,
-            3 => IssueStatusEnum::NEW,
-            4 => IssueStatusEnum::IN_PROGRESS,
-        ];
+        $statusType = $projectTicketStatusSettings->{$statusKey}->statusType;
 
-        if (array_key_exists($statusNumber, $statusMapping)) {
-            return $statusMapping[$statusNumber];
+        if (array_key_exists($statusType, self::STATUS_MAPPING)) {
+            return self::STATUS_MAPPING[$statusType];
         }
 
-        throw new \InvalidArgumentException('Invalid status number');
+        throw new \InvalidArgumentException('Invalid status key '.$statusType);
     }
 
     private function getLeanDateTime(string $s): ?\DateTime
