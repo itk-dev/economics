@@ -53,6 +53,22 @@ class DateTimeHelper
     }
 
     /**
+     * Calculate the number of days between two dates in an associative array.
+     *
+     * @param array $firstAndLastDate Associative array with 'first' and 'last' keys
+     * @return int
+     */
+    public function daysBetween(array $firstAndLastDate): int
+    {
+        $date1 = new \DateTime($firstAndLastDate['first']);
+        $date2 = new \DateTime($firstAndLastDate['last']);
+
+        $interval = $date1->diff($date2);
+
+        return (int) $interval->format('%a');
+    }
+
+    /**
      * Retrieves an array of week numbers for a given year.
      *
      * @param int $year the year for which to retrieve the week numbers

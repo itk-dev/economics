@@ -79,7 +79,7 @@ class WorkloadReportService
                 }
 
                 // Get total logged percentage based on weekly workload.
-                $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewPeriodType);
+                $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewPeriodType, $firstAndLastDate);
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
             }
@@ -98,13 +98,13 @@ class WorkloadReportService
      *
      * @return float the rounded percentage of logged hours
      */
-    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, PeriodTypeEnum $viewPeriodType): float
+    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, PeriodTypeEnum $viewPeriodType, array $firstAndLastDate): float
     {
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewPeriodType) {
             PeriodTypeEnum::WEEK => round(($loggedHours / $workloadWeekBase) * 100),
-            PeriodTypeEnum::MONTH => round(($loggedHours / ($workloadWeekBase * 4)) * 100),
-            PeriodTypeEnum::YEAR => round(($loggedHours / ($workloadWeekBase * 52)) * 100, 2),
+            PeriodTypeEnum::MONTH => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->daysBetween($firstAndLastDate) / 7))) * 100),
+            PeriodTypeEnum::YEAR => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->daysBetween($firstAndLastDate) / 7))) * 100, 2),
         };
     }
 
