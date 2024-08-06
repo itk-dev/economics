@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-144](https://github.com/itk-dev/economics/pull/144)
+  2051: Convert worklog workdate timezone from UTC to local.
 * [PR-143](https://github.com/itk-dev/economics/pull/143)
   2050: Hour-report issue duedate ignore.
 * [PR-142](https://github.com/itk-dev/economics/pull/142)
