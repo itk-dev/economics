@@ -54,6 +54,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
+        private readonly DateTimeHelper $dateTimeHelper,
     ) {
     }
 
@@ -321,12 +322,14 @@ class LeantimeApiService implements DataProviderServiceInterface
 
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
+            // All dates retrieved from Leantime is UTC, therefore convert it to local timezone
+            $workDate = $this->dateTimeHelper->convertToLocalTimezone($worklog->workDate);
             if (isset($worklog->ticketId)) {
                 $worklogData->projectTrackerId = $worklog->id;
                 $worklogData->comment = $worklog->description ?? '';
                 $worklogData->worker = $workers[$worklog->userId] ?? $worklog->userId;
                 $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
-                $worklogData->started = new \DateTime($worklog->workDate);
+                $worklogData->started = $workDate;
                 $worklogData->projectTrackerIsBilled = false;
                 $worklogData->projectTrackerIssueId = $worklog->ticketId;
                 $worklogData->kind = $worklog->kind;

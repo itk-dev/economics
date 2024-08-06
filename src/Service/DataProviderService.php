@@ -29,6 +29,7 @@ class DataProviderService
         protected readonly string $sprintNameRegex,
         protected readonly int $httpClientRetryDelayMs = 1000,
         protected readonly int $httpClientMaxRetries = 3,
+        private readonly DateTimeHelper $dateTimeHelper,
     ) {
     }
 
@@ -82,6 +83,7 @@ class DataProviderService
                     $this->weekGoalLow,
                     $this->weekGoalHigh,
                     $this->sprintNameRegex,
+                    $this->dateTimeHelper
                 );
                 break;
             default:

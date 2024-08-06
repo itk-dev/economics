@@ -114,4 +114,26 @@ class DateTimeHelper
 
         return ['first' => $firstDate, 'last' => $lastDate];
     }
+
+    /**
+     * Converts the date to Europe/Copenhagen timezone.
+     *
+     * @param \DateTime|string $datetime
+     *
+     * @return \DateTime
+     */
+    public function convertToLocalTimezone(\DateTime|string $datetime): \DateTime
+    {
+        if (is_string($datetime)) {
+            $datetime = \DateTime::createFromFormat('Y-m-d H:i:s', $datetime, new \DateTimeZone('UTC'));
+        }
+
+        $datetime->setTimezone(new \DateTimeZone('UTC'));
+
+        if ($datetime instanceof \DateTime) {
+            $datetime->setTimezone(new \DateTimeZone('Europe/Copenhagen'));
+        }
+
+        return $datetime;
+    }
 }
