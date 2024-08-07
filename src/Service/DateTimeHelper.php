@@ -53,19 +53,27 @@ class DateTimeHelper
     }
 
     /**
-     * Calculate the number of days between two dates in an associative array.
+     * Calculate the number of weekdays (Mon-Fri) between two dates in an associative array.
      *
      * @param array $firstAndLastDate Associative array with 'first' and 'last' keys
+     *
      * @return int
      */
-    public function daysBetween(array $firstAndLastDate): int
+    public function getWeekdaysBetween(array $firstAndLastDate): int
     {
         $date1 = new \DateTime($firstAndLastDate['first']);
         $date2 = new \DateTime($firstAndLastDate['last']);
 
-        $interval = $date1->diff($date2);
+        $weekdays = 0;
+        // Formatted 'N' Monday is 1, Sunday is 7. So, 1-5 will be weekdays
+        while ($date1 <= $date2) {
+            if ($date1->format('N') < 6) {
+                ++$weekdays;
+            }
+            $date1->modify('+1 day');
+        }
 
-        return (int) $interval->format('%a');
+        return $weekdays;
     }
 
     /**
@@ -129,27 +137,5 @@ class DateTimeHelper
         $lastDate = $lastDateTime->format($format);
 
         return ['first' => $firstDate, 'last' => $lastDate];
-    }
-
-    /**
-     * Converts the date to Europe/Copenhagen timezone.
-     *
-     * @param \DateTime|string $datetime
-     *
-     * @return \DateTime
-     */
-    public function convertToLocalTimezone(\DateTime|string $datetime): \DateTime
-    {
-        if (is_string($datetime)) {
-            $datetime = \DateTime::createFromFormat('Y-m-d H:i:s', $datetime, new \DateTimeZone('UTC'));
-        }
-
-        $datetime->setTimezone(new \DateTimeZone('UTC'));
-
-        if ($datetime instanceof \DateTime) {
-            $datetime->setTimezone(new \DateTimeZone('Europe/Copenhagen'));
-        }
-
-        return $datetime;
     }
 }
