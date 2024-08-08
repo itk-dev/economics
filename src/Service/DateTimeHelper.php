@@ -53,6 +53,30 @@ class DateTimeHelper
     }
 
     /**
+     * Calculate the number of weekdays (Mon-Fri) between two dates in an associative array.
+     *
+     * @param array $firstAndLastDate Associative array with 'first' and 'last' keys
+     *
+     * @return int
+     */
+    public function getWeekdaysBetween(array $firstAndLastDate): int
+    {
+        $date1 = new \DateTime($firstAndLastDate['first']);
+        $date2 = new \DateTime($firstAndLastDate['last']);
+
+        $weekdays = 0;
+        // Formatted 'N' Monday is 1, Sunday is 7. So, 1-5 will be weekdays
+        while ($date1 <= $date2) {
+            if ($date1->format('N') < 6) {
+                ++$weekdays;
+            }
+            $date1->modify('+1 day');
+        }
+
+        return $weekdays;
+    }
+
+    /**
      * Retrieves an array of week numbers for a given year.
      *
      * @param int $year the year for which to retrieve the week numbers

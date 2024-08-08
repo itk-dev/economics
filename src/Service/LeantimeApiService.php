@@ -54,6 +54,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
+        private readonly DateTimeHelper $dateTimeHelper,
     ) {
     }
 
