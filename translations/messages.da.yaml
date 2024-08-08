@@ -519,6 +519,9 @@ project:
     action_edit: 'Redigér'
     action_view_issues: "Vis opgaver"
     is_billable: "Fakturerbart"
+    is_billable_null: ""
+    is_billable_true: "Fakturerbart"
+    is_billable_false: "Ikke fakturerbart"
 
 reports:
     title: 'Rapporter'
