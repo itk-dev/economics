@@ -48,7 +48,8 @@ export default class extends Controller {
                     syncButton.disabled = false;
                     syncButton.classList.remove("btn-success");
                     syncButton.innerText = originalText;
-                }, 3000);
+                    window.location.reload();
+                }, 2000);
 
             });
     }
