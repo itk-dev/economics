@@ -352,6 +352,7 @@ worklog:
     only_available_helptext: "Worklogs der ikke er i en anden fakturalinje."
     title_show: "Worklogs"
     sync_worklogs: "Synkroniser worklogs"
+    sync_worklogs_success: "Synkronisering fuldført"
 
 invoice_entry:
     amount: "Antal enheder"
