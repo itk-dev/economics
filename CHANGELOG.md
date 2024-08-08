@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-148](https://github.com/itk-dev/economics/pull/148)
+  2031: Project overview standard settings.
 * [PR-146](https://github.com/itk-dev/economics/pull/146)
   2034: Invoice date select continuity.
 * [PR-145](https://github.com/itk-dev/economics/pull/145)
