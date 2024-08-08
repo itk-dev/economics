@@ -76,9 +76,10 @@ class ProjectController extends AbstractController
         if (!empty($body['value'])) {
             $project->setIsBillable($body['value']);
         } else {
-            $project->setIsBillable(0);
+            $project->setIsBillable(false);
         }
         $projectRepository->save($project, true);
+
         return new JsonResponse([$body], 200);
     }
 
