@@ -3,13 +3,18 @@
 {% block title %}{{ 'worklog.title'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ 'worklog.title'|trans }}</h1>
+    {{ dump(invoice.id) }}
+    <div class="worklogs-filter-form-header-group" {{ stimulus_controller('invoice-sync-worklogs') }} data-update-url="{{ path('app_invoice_entry_project_worklogs_sync', {projectId: invoice.project.id, invoice: invoice.id}) }}">
+        <h1 class="page-title">{{ 'worklog.title'|trans }}</h1>
+        <button id="sync-worklogs"  {{ stimulus_action('invoice-sync-worklogs', 'syncWorklogs') }} class="button btn-default">{{ 'worklog.sync_worklogs'|trans }}</button>
+    </div>
 
     {{ form_start(form) }}
     <div class="worklogs-filter-form selections" {{ stimulus_controller('choices') }}>
         {{ form_rest(form) }}
         <button class="button m-5">{{ 'invoices.search'|trans }}</button>
     </div>
+
     {{ form_end(form) }}
 
     <div {{ stimulus_controller('entry-select') }} data-submit-endpoint="{{ submitEndpoint }}">

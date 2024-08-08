@@ -158,4 +158,62 @@ class InvoiceEntryWorklogController extends AbstractController
 
         return new Response(null, 200);
     }
+
+    /**
+     * @throws EconomicsException
+     */
+    #[Route('/{projectId}/sync', name: 'app_invoice_entry_project_worklogs_sync', methods: ['POST'])]
+    public function sync(): Response
+    {
+        die('hgest');
+        /*$dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
+
+        foreach ($dataProviders as $dataProvider) {
+            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
+
+            $numberOfProjects = count($projects);
+
+            $io->info("Processing worklogs for $numberOfProjects projects that are included (project.include)");
+
+            foreach ($projects as $project) {
+                $io->writeln("Processing worklogs for {$project->getName()}");
+
+                $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
+                    if (0 == $i) {
+                        $io->progressStart($length);
+                    } elseif ($i >= $length - 1) {
+                        $io->progressFinish();
+                    } else {
+                        $io->progressAdvance();
+                    }
+                }, $dataProvider);
+
+                $io->writeln('');
+            }
+        }*/
+
+
+
+        /*try {
+            $projectId = $project->getId();
+
+            if (null == $projectId) {
+                return new Response('Not found', 404);
+            }
+
+            $dataProvider = $project->getDataProvider();
+
+            if (null != $dataProvider) {
+                $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
+                $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
+            }
+
+            return new JsonResponse([], 200);
+        } catch (\Throwable $exception) {
+            return new JsonResponse(
+                ['message' => $exception->getMessage()],
+                (int) ($exception->getCode() > 0 ? $exception->getCode() : 500)
+            );
+        }*/
+    }
 }
