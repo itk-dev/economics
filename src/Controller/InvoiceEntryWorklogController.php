@@ -10,8 +10,10 @@ use App\Exception\EconomicsException;
 use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\IssueRepository;
+use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillingService;
+use App\Service\DataSynchronizationService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -163,42 +165,17 @@ class InvoiceEntryWorklogController extends AbstractController
      * @throws EconomicsException
      */
     #[Route('/{projectId}/sync', name: 'app_invoice_entry_project_worklogs_sync', methods: ['POST'])]
-    public function sync(): Response
+    public function sync(Request $request, DataSynchronizationService $dataSynchronizationService, ProjectRepository $projectRepository, $projectId): Response
     {
-        die('hgest');
-        /*$dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
-
-        foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
-
-            $numberOfProjects = count($projects);
-
-            $io->info("Processing worklogs for $numberOfProjects projects that are included (project.include)");
-
-            foreach ($projects as $project) {
-                $io->writeln("Processing worklogs for {$project->getName()}");
-
-                $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
-                    if (0 == $i) {
-                        $io->progressStart($length);
-                    } elseif ($i >= $length - 1) {
-                        $io->progressFinish();
-                    } else {
-                        $io->progressAdvance();
-                    }
-                }, $dataProvider);
-
-                $io->writeln('');
-            }
-        }*/
-
-
-
-        /*try {
-            $projectId = $project->getId();
-
+        try {
             if (null == $projectId) {
-                return new Response('Not found', 404);
+                throw new \Exception('No projectId provided');
+            }
+
+            $project = $projectRepository->find($projectId);
+
+            if (null == $project) {
+                throw new \Exception('No project found');
             }
 
             $dataProvider = $project->getDataProvider();
@@ -214,6 +191,6 @@ class InvoiceEntryWorklogController extends AbstractController
                 ['message' => $exception->getMessage()],
                 (int) ($exception->getCode() > 0 ? $exception->getCode() : 500)
             );
-        }*/
+        }
     }
 }
