@@ -35,6 +35,7 @@ class ProjectFilterType extends AbstractType
                     'project.include_false' => false,
                     'project.include_true' => true,
                 ],
+                'data' => true,
                 'attr' => ['class' => 'form-element'],
             ])
             ->add('isBillable', ChoiceType::class, [
