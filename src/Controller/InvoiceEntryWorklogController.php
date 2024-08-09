@@ -10,8 +10,10 @@ use App\Exception\EconomicsException;
 use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\IssueRepository;
+use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillingService;
+use App\Service\DataSynchronizationService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -157,5 +159,38 @@ class InvoiceEntryWorklogController extends AbstractController
         $billingService->updateInvoiceEntryTotalPrice($invoiceEntry);
 
         return new Response(null, 200);
+    }
+
+    /**
+     * @throws EconomicsException
+     */
+    #[Route('/{projectId}/sync', name: 'app_invoice_entry_project_worklogs_sync', methods: ['POST'])]
+    public function sync(Request $request, DataSynchronizationService $dataSynchronizationService, ProjectRepository $projectRepository, $projectId): Response
+    {
+        try {
+            if (null == $projectId) {
+                throw new \Exception('No projectId provided');
+            }
+
+            $project = $projectRepository->find($projectId);
+
+            if (null == $project) {
+                throw new \Exception('No project found');
+            }
+
+            $dataProvider = $project->getDataProvider();
+
+            if (null != $dataProvider) {
+                $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
+                $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
+            }
+
+            return new JsonResponse([], 200);
+        } catch (\Throwable $exception) {
+            return new JsonResponse(
+                ['message' => $exception->getMessage()],
+                (int) ($exception->getCode() > 0 ? $exception->getCode() : 500)
+            );
+        }
     }
 }

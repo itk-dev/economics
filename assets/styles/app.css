@@ -163,7 +163,25 @@
     .worklogs-filter-form {
         @apply grid gap-3 mb-6 md:grid-cols-4;
     }
-
+    .worklogs-filter-form-header-group {
+        @apply flex;
+    }
+    .worklogs-filter-form-header-group h1 {
+        flex: 5;
+    }
+    .worklogs-filter-form-header-group #sync-worklogs {
+        flex: 1;
+        @apply p-4 h-16 m-auto;
+    }
+    .worklogs-filter-form-header-group #sync-worklogs svg {
+        max-height: 85%;
+        margin: auto;
+        animation: spin 2s linear infinite
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
     .choices__list--dropdown .choices__item--selectable {
         padding: 1em !important;
     }
