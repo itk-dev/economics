@@ -3,10 +3,14 @@
 {% block title %}{{ 'worklog.title'|trans }}{% endblock %}
 
 {% block content %}
-    <div class="worklogs-filter-form-header-group" {{ stimulus_controller('invoice-sync-worklogs') }} data-update-url="{{ path('app_invoice_entry_project_worklogs_sync', {projectId: invoice.project.id, invoice: invoice.id}) }}">
-        <h1 class="page-title">{{ 'worklog.title'|trans }}</h1>
-        <button id="sync-worklogs"  {{ stimulus_action('invoice-sync-worklogs', 'syncWorklogs') }}  data-successText="{{ 'worklog.sync_worklogs_success'|trans }}" data-originalText="{{ 'worklog.sync_worklogs'|trans }}" class="button">{{ 'worklog.sync_worklogs'|trans }}</button>
-    </div>
+    {% include 'components/page-header.html.twig' with {
+        'title': 'invoices.title'|trans,
+        'type': 'action',
+        'default_text': 'worklog.sync_worklogs'|trans,
+        'success_text': 'worklog.sync_worklogs_success'|trans,
+        'url': path('app_invoice_entry_project_worklogs_sync', {'projectId': invoice.project.id, 'invoice': invoice.id}),
+        'reload': true,
+    } %}
 
     {{ form_start(form) }}
     <div class="worklogs-filter-form selections" {{ stimulus_controller('choices') }}>
