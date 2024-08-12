@@ -37,15 +37,14 @@ class HourReportService
 
         foreach ($projectIssues as $issue) {
             $totalTicketEstimated = (float) $issue->planHours;
-            $dueDate = $issue->getDueDate();
 
             $timesheetData = $this->worklogRepository->findBy(['issue' => $issue->getId()]);
 
             list($timesheets, $totalTicketSpent) = $this->processTimesheetsData($timesheetData, $fromDate, $toDate);
 
-            // If no worklogs have been registered in the interval or if the due date is not in the interval,
+            // If no worklogs have been registered in the interval,
             // ignore the issue in the report.
-            if (0 === $totalTicketSpent || $dueDate < $fromDate || $dueDate > $toDate) {
+            if (0 === $totalTicketSpent) {
                 continue;
             }
 
@@ -94,13 +93,13 @@ class HourReportService
             $timesheetDate = $worklog->getStarted();
 
             if (null !== $fromDate) {
-                if ($timesheetDate < $fromDate) {
+                if ($timesheetDate <= $fromDate) {
                     continue;
                 }
             }
 
             if (null !== $toDate) {
-                if ($timesheetDate > $toDate) {
+                if ($timesheetDate >= $toDate) {
                     continue;
                 }
             }

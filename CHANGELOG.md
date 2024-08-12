@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-143](https://github.com/itk-dev/economics/pull/143)
+  2050: Hour-report issue duedate ignore.
 * [PR-142](https://github.com/itk-dev/economics/pull/142)
   2041: Revise Leantime issue status sync.
 * [PR-138](https://github.com/itk-dev/economics/pull/138)
