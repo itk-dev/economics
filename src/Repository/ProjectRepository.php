@@ -64,8 +64,6 @@ class ProjectRepository extends ServiceEntityRepository
                     ? 'project.include = TRUE'
                     : 'project.include = FALSE OR project.include IS NULL'
             );
-        } else {
-            $qb->andWhere('project.include = TRUE');
         }
 
         if (!is_null($projectFilterData->name)) {
