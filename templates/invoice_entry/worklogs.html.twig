@@ -6,9 +6,9 @@
     {% include 'components/page-header.html.twig' with {
         'title': 'invoices.title'|trans,
         'type': 'action',
-        'default_text': 'worklog.sync_worklogs'|trans,
+        'default_text': 'fest',
         'success_text': 'worklog.sync_worklogs_success'|trans,
-        'url': path('app_invoice_entry_project_worklogs_sync', {'projectId': invoice.project.id, 'invoice': invoice.id}),
+        'url': path('app_project_sync', {'id': invoice.project.id}),
         'reload': true,
     } %}
 

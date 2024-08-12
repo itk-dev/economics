@@ -6,7 +6,12 @@
         {% endif %}
         {% if type == 'action' %}
             {% include 'components/action-button.html.twig' with {
-                'url': url
+                'url': url|default,
+                'reload': reload|default,
+                'default_text': default_text|default,
+                'loader_text': loader_text|default,
+                'success_text': success_text|default,
+                'error_text': error_text|default,
             } %}
         {% endif %}
     {% endif %}

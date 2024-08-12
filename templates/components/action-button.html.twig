@@ -21,7 +21,7 @@ Parameters:
       class="action-default pointer-events-none"{{ stimulus_target('action-button', 'actionDefault') }}> {{ default_text|default('default') }}
   </span>
   <span
-      class="action-loading hidden pointer-events-none" {{ stimulus_target('action-button', 'actionLoading') }}> {{ loader_text is defined ? link_text : include('components/icons.html.twig', {icon: 'spinner', class: 'w-6 h-6'}) }}
+      class="action-loading hidden pointer-events-none" {{ stimulus_target('action-button', 'actionLoading') }}> {{ loader_text is defined ? loader_text : include('components/icons.html.twig', {icon: 'spinner', class: 'w-6 h-6'}) }}
   </span>
   <span
       class="action-success hidden pointer-events-none" {{ stimulus_target('action-button', 'actionSuccess') }}>{{ success_text|default('success') }}
