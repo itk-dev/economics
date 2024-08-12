@@ -57,7 +57,9 @@ class DateTimeHelper
      *
      * @param string $dateFrom
      * @param string $dateTo
+     *
      * @return int
+     *
      * @throws \Exception
      */
     public function getWeekdaysBetween(string $dateFrom, string $dateTo): int
