@@ -104,7 +104,9 @@ class ProjectController extends AbstractController
                 $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
                 $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
             }
-
+            return new JsonResponse(
+                ['message' => "hest"],
+                (int) (500 > 0 ? 500 : 500));
             return new JsonResponse([], 200);
         } catch (\Throwable $exception) {
             return new JsonResponse(
