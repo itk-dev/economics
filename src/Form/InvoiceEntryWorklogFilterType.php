@@ -13,13 +13,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class InvoiceEntryWorklogFilterType extends AbstractType
 {
     public function __construct(
-        private readonly InvoiceRepository $invoiceRepository,
     ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $invoice = $this->invoiceRepository->find($options['invoiceId'] ?? null);
         $builder
             ->add('isBilled', ChoiceType::class, [
                 'required' => false,
@@ -38,7 +36,7 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'worklog.period_from_helptext',
-                'data' => $invoice?->getPeriodFrom(),
+                'data' => $options['periodFrom'],
                 'widget' => 'single_text',
                 'html5' => true,
                 'attr' => ['class' => 'form-element'],
@@ -50,7 +48,7 @@ class InvoiceEntryWorklogFilterType extends AbstractType
                 'row_attr' => ['class' => 'form-row'],
                 'attr' => ['class' => 'form-element'],
                 'help' => 'worklog.period_to_helptext',
-                'data' => $invoice?->getPeriodTo(),
+                'data' => $options['periodTo'],
                 'widget' => 'single_text',
                 'html5' => true,
             ])
@@ -81,7 +79,8 @@ class InvoiceEntryWorklogFilterType extends AbstractType
         $resolver->setDefaults([
             'method' => 'GET',
             'data_class' => InvoiceEntryWorklogsFilterData::class,
-            'invoiceId' => null,
+            'periodFrom' => null,
+            'periodTo' => null,
         ]);
     }
 }
