@@ -49,7 +49,8 @@ class InvoiceEntryWorklogController extends AbstractController
 
         $filterData = new InvoiceEntryWorklogsFilterData();
         $form = $this->createForm(InvoiceEntryWorklogFilterType::class, $filterData, [
-            'invoiceId' => $invoice->getId(),
+            'periodFrom' => $invoice->getPeriodFrom(),
+            'periodTo' => $invoice->getPeriodTo(),
         ]);
 
         $form->add('version', EntityType::class, [

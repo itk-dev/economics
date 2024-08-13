@@ -103,8 +103,8 @@ class WorkloadReportService
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewPeriodType) {
             PeriodTypeEnum::WEEK => round(($loggedHours / $workloadWeekBase) * 100),
-            PeriodTypeEnum::MONTH => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->getWeekdaysBetween($firstAndLastDate) / 5))) * 100),
-            PeriodTypeEnum::YEAR => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->getWeekdaysBetween($firstAndLastDate) / 5))) * 100, 2),
+            PeriodTypeEnum::MONTH => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->getWeekdaysBetween($firstAndLastDate['first'], $firstAndLastDate['last']) / 5))) * 100),
+            PeriodTypeEnum::YEAR => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->getWeekdaysBetween($firstAndLastDate['first'], $firstAndLastDate['last']) / 5))) * 100, 2),
         };
     }
 

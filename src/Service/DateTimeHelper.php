@@ -55,14 +55,17 @@ class DateTimeHelper
     /**
      * Calculate the number of weekdays (Mon-Fri) between two dates in an associative array.
      *
-     * @param array $firstAndLastDate Associative array with 'first' and 'last' keys
+     * @param string $dateFrom
+     * @param string $dateTo
      *
      * @return int
+     *
+     * @throws \Exception
      */
-    public function getWeekdaysBetween(array $firstAndLastDate): int
+    public function getWeekdaysBetween(string $dateFrom, string $dateTo): int
     {
-        $date1 = new \DateTime($firstAndLastDate['first']);
-        $date2 = new \DateTime($firstAndLastDate['last']);
+        $date1 = new \DateTime($dateFrom);
+        $date2 = new \DateTime($dateTo);
 
         $weekdays = 0;
         // Formatted 'N' Monday is 1, Sunday is 7. So, 1-5 will be weekdays
