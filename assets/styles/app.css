@@ -377,8 +377,7 @@
     }
 
     .sticky-row {
-        position: sticky;
-        bottom: 0;
+        @apply sticky bg-white text-black dark:bg-gray-900 dark:text-white border-0 bottom-0;
     }
 
     .comma-list span:after {
