@@ -432,8 +432,6 @@ class LeantimeApiService implements DataProviderServiceInterface
         for ($weekNumber = 1; $weekNumber <= 52; ++$weekNumber) {
             $date = (new \DateTime())->setISODate($currentYear, $weekNumber);
             $week = (int) $date->format('W'); // Cast as int to remove leading zero.
-            $weekFirstDay = $date->setISODate($currentYear, $week, 1)->format('j/n');
-            $weekLastDay = $date->setISODate($currentYear, $week, 5)->format('j/n');
             $weekIsSupport = 1 === $week % 4;
 
             if ($weekIsSupport) {
@@ -443,7 +441,6 @@ class LeantimeApiService implements DataProviderServiceInterface
                 $supportWeek->weekGoalLow = $this->weekGoalLow;
                 $supportWeek->weekGoalHigh = $this->weekGoalHigh;
                 $supportWeek->displayName = (string) $week;
-                $supportWeek->dateSpan = $weekFirstDay.' - '.$weekLastDay;
                 if ($week == $currentWeek) {
                     $supportWeek->activeSprint = true;
                 }
@@ -458,7 +455,6 @@ class LeantimeApiService implements DataProviderServiceInterface
                     }
 
                     if (3 === count($regularWeek->weekCollection)) {
-                        $regularWeek->dateSpan .= ' - '.$weekLastDay;
                         $weeks->add($regularWeek);
                         unset($regularWeek);
                     }
@@ -469,7 +465,6 @@ class LeantimeApiService implements DataProviderServiceInterface
                     $regularWeek->weekGoalLow = $this->weekGoalLow * 3;
                     $regularWeek->weekGoalHigh = $this->weekGoalHigh * 3;
                     $regularWeek->displayName = (string) $week;
-                    $regularWeek->dateSpan = $weekFirstDay;
                     if ($week == $currentWeek) {
                         $regularWeek->activeSprint = true;
                     }
