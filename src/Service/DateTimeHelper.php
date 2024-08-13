@@ -9,25 +9,22 @@ class DateTimeHelper
     }
 
     /**
-     * Returns the first and last date of a given week in a year (ISO 8601).
+     * Retrieves the first and last date of a given week number in a year.
      *
-     * @param int $weekNumber the week number
-     * @param int $year the year
-     * @param string $format The date format to be returned. Defaults to 'Y-m-d H:i:s'.
+     * @param int $weekNumber the week number for which to retrieve the dates
+     * @param int $year the year for which to retrieve the dates
      *
-     * @return array an array with the first and last date of the week
+     * @return array an array containing the first and last date of the week
      */
-    public function getFirstAndLastDateOfWeek(int $weekNumber, int $year, string $format = 'Y-m-d H:i:s'): array
+    public function getFirstAndLastDateOfWeek(int $weekNumber, int $year): array
     {
-        $firstDateTime = (new \DateTime())->setISODate($year, $weekNumber, 1);
-        $firstDateTime->setTime(0, 0, 0);
-        $firstDate = $firstDateTime->format($format);
+        $dateFrom = (new \DateTime())->setISODate($year, $weekNumber, 1);
+        $dateFrom->setTime(0, 0, 0);
 
-        $lastDateTime = (new \DateTime())->setISODate($year, $weekNumber, 7);
-        $lastDateTime->setTime(23, 59, 59);
-        $lastDate = $lastDateTime->format($format);
+        $dateTo = (new \DateTime())->setISODate($year, $weekNumber, 7);
+        $dateTo->setTime(23, 59, 59);
 
-        return ['first' => $firstDate, 'last' => $lastDate];
+        return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
     }
 
     /**
@@ -35,45 +32,39 @@ class DateTimeHelper
      *
      * @param int $monthNumber the month number (1-12)
      * @param int $year the year
-     * @param string $format the format to use for the returned dates
      *
      * @return array an array containing the first and last date of the specified month and year
      */
-    public function getFirstAndLastDateOfMonth(int $monthNumber, int $year, string $format = 'Y-m-d H:i:s'): array
+    public function getFirstAndLastDateOfMonth(int $monthNumber, int $year): array
     {
-        $firstDateTime = (new \DateTime())->setDate($year, $monthNumber, 1);
-        $firstDateTime->setTime(0, 0, 0);
-        $firstDate = $firstDateTime->format($format);
+        $dateFrom = (new \DateTime())->setDate($year, $monthNumber, 1);
+        $dateFrom->setTime(0, 0, 0);
 
-        $lastDateTime = (new \DateTime())->setDate($year, $monthNumber, 1)->modify('last day of this month');
-        $lastDateTime->setTime(23, 59, 59);
-        $lastDate = $lastDateTime->format($format);
+        $dateTo = (new \DateTime())->setDate($year, $monthNumber, 1)->modify('last day of this month');
+        $dateTo->setTime(23, 59, 59);
 
-        return ['first' => $firstDate, 'last' => $lastDate];
+        return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
     }
 
     /**
      * Calculate the number of weekdays (Mon-Fri) between two dates in an associative array.
      *
-     * @param string $dateFrom
-     * @param string $dateTo
+     * @param \DateTime $dateFrom
+     * @param \DateTime $dateTo
      *
      * @return int
      *
      * @throws \Exception
      */
-    public function getWeekdaysBetween(string $dateFrom, string $dateTo): int
+    public function getWeekdaysBetween(\DateTime $dateFrom, \DateTime $dateTo): int
     {
-        $date1 = new \DateTime($dateFrom);
-        $date2 = new \DateTime($dateTo);
-
         $weekdays = 0;
         // Formatted 'N' Monday is 1, Sunday is 7. So, 1-5 will be weekdays
-        while ($date1 <= $date2) {
-            if ($date1->format('N') < 6) {
+        while ($dateFrom <= $dateTo) {
+            if ($dateFrom->format('N') < 6) {
                 ++$weekdays;
             }
-            $date1->modify('+1 day');
+            $dateFrom->modify('+1 day');
         }
 
         return $weekdays;
@@ -125,20 +116,17 @@ class DateTimeHelper
      * Returns the first and last date of the specified year.
      *
      * @param int $year the year
-     * @param string $format the format to use for the returned dates
      *
      * @return array an array containing the first and last date of the specified year
      */
-    public function getFirstAndLastDateOfYear(int $year, string $format = 'Y-m-d H:i:s'): array
+    public function getFirstAndLastDateOfYear(int $year): array
     {
-        $firstDateTime = (new \DateTime())->setDate($year, 1, 1);
-        $firstDateTime->setTime(0, 0, 0);
-        $firstDate = $firstDateTime->format($format);
+        $dateFrom = (new \DateTime())->setDate($year, 1, 1);
+        $dateFrom->setTime(0, 0, 0);
 
-        $lastDateTime = (new \DateTime())->setDate($year, 12, 31);
-        $lastDateTime->setTime(23, 59, 59);
-        $lastDate = $lastDateTime->format($format);
+        $dateTo = (new \DateTime())->setDate($year, 12, 31);
+        $dateTo->setTime(23, 59, 59);
 
-        return ['first' => $firstDate, 'last' => $lastDate];
+        return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
     }
 }
