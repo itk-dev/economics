@@ -11,9 +11,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class InvoiceEntryWorklogFilterType extends AbstractType
 {
-    public function __construct(
-    ) {
-    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
