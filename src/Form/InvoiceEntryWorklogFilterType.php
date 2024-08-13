@@ -12,14 +12,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class InvoiceEntryWorklogFilterType extends AbstractType
 {
-    public function __construct(
-        private readonly InvoiceRepository $invoiceRepository,
-    ) {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $invoice = $this->invoiceRepository->find($options['invoiceId'] ?? null);
         $builder
             ->add('isBilled', ChoiceType::class, [
                 'required' => false,
