@@ -96,7 +96,7 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, string $dateFrom, string $dateTo)
+    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
     {
         $qb = $this->createQueryBuilder('worklog');
 
@@ -111,7 +111,7 @@ class WorklogRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
-    public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, string $dateFrom, string $dateTo)
+    public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
     {
         $qb = $this->createQueryBuilder('worklog');
 
