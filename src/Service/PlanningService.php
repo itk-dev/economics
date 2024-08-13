@@ -69,7 +69,7 @@ class PlanningService
 
         $weeksOfYear = $this->dateTimeHelper->getWeeksOfYear($currentYear);
         foreach ($weeksOfYear as $week) {
-            $firstAndLastDateOfWeek = $this->dateTimeHelper->getFirstAndLastDateOfWeek($week, $currentYear);
+            ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $this->dateTimeHelper->getFirstAndLastDateOfWeek($week, $currentYear);
             $weekIsSupport = 1 === $week % (self::WEEKS_IN_SUPPORT_PERIOD + self::WEEKS_IN_SPRINT_PERIOD);
 
             if ($weekIsSupport) {
@@ -79,7 +79,6 @@ class PlanningService
                 $supportPeriod->weekGoalLow = $this->weekGoalLow;
                 $supportPeriod->weekGoalHigh = $this->weekGoalHigh;
                 $supportPeriod->displayName = (string) $week;
-                $supportPeriod->dateSpan = $firstAndLastDateOfWeek['first'].' - '.$firstAndLastDateOfWeek['last'];
                 if ($week == $currentWeek) {
                     $supportPeriod->activeSprint = true;
                 }
@@ -94,7 +93,6 @@ class PlanningService
                     }
 
                     if (self::WEEKS_IN_SPRINT_PERIOD === count($sprintPeriod->weekCollection)) {
-                        $sprintPeriod->dateSpan .= ' - '.$firstAndLastDateOfWeek['last'];
                         $weeks->add($sprintPeriod);
                         unset($sprintPeriod);
                     }
@@ -105,7 +103,6 @@ class PlanningService
                     $sprintPeriod->weekGoalLow = $this->weekGoalLow * self::WEEKS_IN_SPRINT_PERIOD;
                     $sprintPeriod->weekGoalHigh = $this->weekGoalHigh * self::WEEKS_IN_SPRINT_PERIOD;
                     $sprintPeriod->displayName = (string) $week;
-                    $sprintPeriod->dateSpan = $firstAndLastDateOfWeek['first'];
                     if ($week == $currentWeek) {
                         $sprintPeriod->activeSprint = true;
                     }
