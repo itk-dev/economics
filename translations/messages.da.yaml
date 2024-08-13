@@ -543,18 +543,18 @@ reports:
     management-4th-quarter: '4. Kvartal'
     management-export-xls: 'Eksportér til excel'
 
-    workload_report:
-        title: 'Workloadrapport'
-        select_data_provider: 'Vælg datakilde'
-        workload: 'Normtid'
-        logged_hours: 'Loggede timer'
-        select_viewmode: 'Vælg visningstype'
-        select_view_period_type: 'Vælg periodetype'
-        week: 'Uge'
-        workers: 'Medarbejdere'
-        worker: 'Medarbejder'
-        hidden-entries: 'Skjulte medarbejdere'
-        submit: 'Hent'
+workload_report:
+    title: 'Workloadrapport'
+    select_data_provider: 'Vælg datakilde'
+    workload: 'Normtid'
+    logged_hours: 'Loggede timer'
+    select_viewmode: 'Vælg visningstype'
+    select_view_period_type: 'Vælg periodetype'
+    week: 'Uge'
+    workers: 'Medarbejdere'
+    worker: 'Medarbejder'
+    hidden-entries: 'Skjulte medarbejdere'
+    submit: 'Hent'
 
 hour_report:
     title: 'Timerapport'

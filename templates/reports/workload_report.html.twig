@@ -4,9 +4,9 @@
         class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
         <thead>
         <tr>
-            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'reports.workload_report.worker'|trans }}</th>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'workload_report.worker'|trans }}</th>
             <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
-                {{ 'reports.workload_report.workload'|trans }}
+                {{ 'workload_report.workload'|trans }}
             </th>
             {% for periodNumeric, period in data.period %}
                 <th class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap
@@ -20,7 +20,7 @@
                 >
 
                     {% if data.viewmode == 'week' %}
-                        {{ 'reports.workload_report.week'|trans }} {{ period }}
+                        {{ 'workload_report.week'|trans }} {{ period }}
                     {% else %}
                         {{ period }}
                     {% endif %}
@@ -62,7 +62,7 @@
         {% endfor %}
     </table>
     <div class="my-5 sticky left-0">
-        {{ 'reports.workload_report.hidden-entries'|trans }}:
+        {{ 'workload_report.hidden-entries'|trans }}:
         <span {{ stimulus_target('show-hide', 'hiddenEntries') }}></span>
     </div>
 </div>
