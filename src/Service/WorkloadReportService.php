@@ -98,7 +98,7 @@ class WorkloadReportService
      *
      * @return float the rounded percentage of logged hours
      */
-    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, PeriodTypeEnum $viewPeriodType, \DateTimeInterface $dateFrom, \DateTimeInterface $dateTo): float
+    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, PeriodTypeEnum $viewPeriodType, \DateTime $dateFrom, \DateTime $dateTo): float
     {
         // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewPeriodType) {
@@ -180,15 +180,16 @@ class WorkloadReportService
      *
      * @param ViewModeEnum $viewMode defines the view mode
      * @param string $workerIdentifier the worker's identifier
-     * @param array $firstAndLastDate contains the date range (first and last dates)
+     * @param \DateTime $dateFrom
+     * @param \DateTime $dateTo
      *
      * @return array the list of workloads matching the criteria defined by the parameters
      */
-    private function getWorklogs(ViewModeEnum $viewMode, string $workerIdentifier, \DateTimeInterface $firstDate, \DateTimeInterface $lastDate): array
+    private function getWorklogs(ViewModeEnum $viewMode, string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo): array
     {
         return match ($viewMode) {
-            ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($workerIdentifier, $firstDate, $lastDate),
-            ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($workerIdentifier, $firstDate, $lastDate),
+            ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
+            ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
         };
     }
 }

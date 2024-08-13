@@ -65,16 +65,16 @@ class WorkloadReportServiceTest extends TestCase
             return date('F', mktime(0, 0, 0, $month, 10));
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
-            'first' => '2024-01-01 00:00:00',
-            'last' => '2024-01-07 23:59:59',
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-01-07 23:59:59'),
         ]);
         $dateTimeHelperMock->method('getFirstAndLastDateOfMonth')->willReturn([
-            'first' => '2024-01-01 00:00:00',
-            'last' => '2024-01-31 23:59:59',
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-01-31 23:59:59'),
         ]);
         $dateTimeHelperMock->method('getFirstAndLastDateOfYear')->willReturn([
-            'first' => '2024-01-01 00:00:00',
-            'last' => '2024-12-31 23:59:59',
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-12-31 23:59:59'),
         ]);
         $dateTimeHelperMock->method('getWeekdaysBetween')->willReturn(5);
         $dateTimeHelperMock->method('getWeekdaysBetween')->willReturn(23);
@@ -127,16 +127,16 @@ class WorkloadReportServiceTest extends TestCase
             return date('F', mktime(0, 0, 0, $month, 10));
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
-            'first' => '2024-01-01 00:00:00',
-            'last' => '2024-01-07 23:59:59',
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-01-07 23:59:59'),
         ]);
         $dateTimeHelperMock->method('getFirstAndLastDateOfMonth')->willReturn([
-            'first' => '2024-01-01 00:00:00',
-            'last' => '2024-01-31 23:59:59',
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-01-31 23:59:59'),
         ]);
         $dateTimeHelperMock->method('getFirstAndLastDateOfYear')->willReturn([
-            'first' => '2024-01-01 00:00:00',
-            'last' => '2024-12-31 23:59:59',
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-12-31 23:59:59'),
         ]);
 
         $workloadReportService = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $dateTimeHelperMock);
@@ -183,16 +183,16 @@ class WorkloadReportServiceTest extends TestCase
             return date('F', mktime(0, 0, 0, $month, 10));
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
-            'first' => '2024-01-01 00:00:00',
-            'last' => '2024-01-07 23:59:59',
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-01-07 23:59:59'),
         ]);
         $dateTimeHelperMock->method('getFirstAndLastDateOfMonth')->willReturn([
-            'first' => '2024-01-01 00:00:00',
-            'last' => '2024-01-31 23:59:59',
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-01-31 23:59:59'),
         ]);
         $dateTimeHelperMock->method('getFirstAndLastDateOfYear')->willReturn([
-            'first' => '2024-01-01 00:00:00',
-            'last' => '2024-12-31 23:59:59',
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-12-31 23:59:59'),
         ]);
 
         $workloadReportService = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $dateTimeHelperMock);
