@@ -63,10 +63,14 @@ class ProjectController extends AbstractController
     {
         $body = $request->toArray();
 
-        $project->setInclude($body['value']);
-        $projectRepository->save($project, true);
+        if (isset($body['value'])) {
+            $project->setInclude($body['value']);
+            $projectRepository->save($project, true);
 
-        return new JsonResponse([$body], 200);
+            return new JsonResponse([$body], 200);
+        } else {
+            throw new BadRequestHttpException('Value not set.');
+        }
     }
 
     #[Route('/{id}/isBillable', name: 'app_project_is_billable', methods: ['POST'])]
@@ -74,7 +78,7 @@ class ProjectController extends AbstractController
     {
         $body = $request->toArray();
 
-        if (!empty($body['value'])) {
+        if (isset($body['value'])) {
             $project->setIsBillable($body['value']);
             $projectRepository->save($project, true);
 

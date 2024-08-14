@@ -12,7 +12,6 @@ class Weeks
     public float $weekGoalLow;
     public float $weekGoalHigh;
     public string $displayName;
-    public string $dateSpan;
     public ?bool $activeSprint;
 
     public function __construct()
