@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-148](https://github.com/itk-dev/economics/pull/148)
   2031: Project overview standard settings.
+* [PR-147](https://github.com/itk-dev/economics/pull/147)
+  2033: Sync worklogs from invoice entry.
 * [PR-146](https://github.com/itk-dev/economics/pull/146)
   2034: Invoice date select continuity.
 * [PR-145](https://github.com/itk-dev/economics/pull/145)

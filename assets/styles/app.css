@@ -163,6 +163,19 @@
     .worklogs-filter-form {
         @apply grid gap-3 mb-6 md:grid-cols-4;
     }
+    .action-button > span:not(.hidden) > svg {
+        margin: auto;
+        animation: spin 2s linear infinite
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
 
     .choices__list--dropdown .choices__item--selectable {
         padding: 1em !important;
@@ -364,8 +377,7 @@
     }
 
     .sticky-row {
-        position: sticky;
-        bottom: 0;
+        @apply sticky bg-white text-black dark:bg-gray-900 dark:text-white border-0 bottom-0;
     }
 
     .comma-list span:after {

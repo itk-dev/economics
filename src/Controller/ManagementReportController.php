@@ -29,6 +29,9 @@ class ManagementReportController extends AbstractController
 
         $firstRecordedInvoice = reset($recordedInvoicesSorted);
 
+        if (!$firstRecordedInvoice) {
+            throw $this->createNotFoundException('No recorded invoices found.');
+        }
         $form = $this->createForm(
             ManagementReportDateIntervalType::class,
             [

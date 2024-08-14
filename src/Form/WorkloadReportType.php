@@ -35,7 +35,7 @@ class WorkloadReportType extends AbstractType
             ->add('dataProvider', EntityType::class, [
                 'class' => DataProvider::class,
                 'required' => false,
-                'label' => 'reports.workload_report.select_data_provider',
+                'label' => 'workload_report.select_data_provider',
                 'label_attr' => ['class' => 'label'],
                 'attr' => [
                     'class' => 'form-element',
@@ -45,7 +45,7 @@ class WorkloadReportType extends AbstractType
             ])
             ->add('viewMode', EnumType::class, [
                 'required' => false,
-                'label' => 'reports.workload_report.select_viewmode',
+                'label' => 'workload_report.select_viewmode',
                 'label_attr' => ['class' => 'label'],
                 'placeholder' => false,
                 'attr' => [
@@ -55,7 +55,7 @@ class WorkloadReportType extends AbstractType
             ])
             ->add('viewPeriodType', EnumType::class, [
                 'required' => false,
-                'label' => 'reports.workload_report.select_view_period_type',
+                'label' => 'workload_report.select_view_period_type',
                 'label_attr' => ['class' => 'label'],
                 'placeholder' => false,
                 'attr' => [
@@ -64,7 +64,7 @@ class WorkloadReportType extends AbstractType
                 'class' => PeriodTypeEnum::class,
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'reports.workload_report.submit',
+                'label' => 'workload_report.submit',
                 'attr' => [
                     'class' => 'hour-report-submit button',
                 ],

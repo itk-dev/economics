@@ -1,0 +1,32 @@
+{#
+This Twig template represents a stylized button component with different states that could be managed by a StumilusJS Controller.
+
+Parameters:
+- url (string, optional):
+    An URL which can be accessed when the button is clicked. Defaults to an empty string.
+- reload (boolean, optional):
+    If set to true, triggers a page reload when the button is clicked. Defaults to false.
+- default_text (string, optional):
+    The default text displayed on the button. Defaults to 'default'.
+- loader_text (string, optional):
+    The text displayed when the button is in the state of loading. Should be defined together with link_text variable.
+- success_text (string, optional):
+    The text displayed when an action related to the button is successfully finished. Defaults to 'success'.
+- error_text (string, optional):
+    The text displayed when an action related to the button has failed. Defaults to 'error'.
+#}
+
+<button class="action-button button w-48 h-16"  data-url="{{ url|default("") }}" data-reload="{{ reload|default(false) }}" {{ stimulus_controller('action-button') }}  {{ stimulus_action('action-button', 'action') }}>
+  <span
+      class="action-default pointer-events-none"{{ stimulus_target('action-button', 'actionDefault') }}> {{ default_text|default('default') }}
+  </span>
+  <span
+      class="action-loading hidden pointer-events-none" {{ stimulus_target('action-button', 'actionLoading') }}> {{ loader_text is defined ? loader_text : include('components/icons.html.twig', {icon: 'spinner', class: 'w-6 h-6'}) }}
+  </span>
+  <span
+      class="action-success hidden pointer-events-none" {{ stimulus_target('action-button', 'actionSuccess') }}>{{ success_text|default('success') }}
+  </span>
+  <span
+      class="action-error hidden pointer-events-none" {{ stimulus_target('action-button', 'actionError') }}>{{ error_text|default('error') }}
+  </span>
+</button>

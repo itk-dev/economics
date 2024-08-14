@@ -6,6 +6,7 @@
 
     {% include 'components/page-header.html.twig' with {
         'title': 'invoices.title'|trans,
+        'type': 'link',
         'link_text': 'invoices.action_create_new'|trans,
         'link_url': 'app_invoices_new'
     } %}

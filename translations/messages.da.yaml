@@ -351,6 +351,8 @@ worklog:
     only_available: "Kun \"frie\" worklogs"
     only_available_helptext: "Worklogs der ikke er i en anden fakturalinje."
     title_show: "Worklogs"
+    sync_worklogs: "Synkroniser worklogs"
+    sync_worklogs_success: "Succes - siden opdateres.."
 
 invoice_entry:
     amount: "Antal enheder"
@@ -541,18 +543,18 @@ reports:
     management-4th-quarter: '4. Kvartal'
     management-export-xls: 'Eksportér til excel'
 
-    workload_report:
-        title: 'Workloadrapport'
-        select_data_provider: 'Vælg datakilde'
-        workload: 'Normtid'
-        logged_hours: 'Loggede timer'
-        select_viewmode: 'Vælg visningstype'
-        select_view_period_type: 'Vælg periodetype'
-        week: 'Uge'
-        workers: 'Medarbejdere'
-        worker: 'Medarbejder'
-        hidden-entries: 'Skjulte medarbejdere'
-        submit: 'Hent'
+workload_report:
+    title: 'Workloadrapport'
+    select_data_provider: 'Vælg datakilde'
+    workload: 'Normtid'
+    logged_hours: 'Loggede timer'
+    select_viewmode: 'Vælg visningstype'
+    select_view_period_type: 'Vælg periodetype'
+    week: 'Uge'
+    workers: 'Medarbejdere'
+    worker: 'Medarbejder'
+    hidden-entries: 'Skjulte medarbejdere'
+    submit: 'Hent'
 
 hour_report:
     title: 'Timerapport'

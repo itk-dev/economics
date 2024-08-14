@@ -3,13 +3,21 @@
 {% block title %}{{ 'worklog.title'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ 'worklog.title'|trans }}</h1>
+    {% include 'components/page-header.html.twig' with {
+        'title': 'worklog.title'|trans,
+        'type': 'action',
+        'default_text': 'worklog.sync_worklogs'|trans,
+        'success_text': 'worklog.sync_worklogs_success'|trans,
+        'url': path('app_project_sync', {'id': invoice.project.id}),
+        'reload': true,
+    } %}
 
     {{ form_start(form) }}
     <div class="worklogs-filter-form selections" {{ stimulus_controller('choices') }}>
         {{ form_rest(form) }}
         <button class="button m-5">{{ 'invoices.search'|trans }}</button>
     </div>
+
     {{ form_end(form) }}
 
     <div {{ stimulus_controller('entry-select') }} data-submit-endpoint="{{ submitEndpoint }}">
