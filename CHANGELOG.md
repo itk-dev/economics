@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-149](https://github.com/itk-dev/economics/pull/149)
+  2096: Set default dataprovider on hourReport.
 * [PR-148](https://github.com/itk-dev/economics/pull/148)
   2031: Project overview standard settings.
 * [PR-147](https://github.com/itk-dev/economics/pull/147)

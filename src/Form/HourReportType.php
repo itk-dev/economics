@@ -21,11 +21,19 @@ class HourReportType extends AbstractType
     public function __construct(
         private readonly HourReportService $hourReportService,
         private readonly DataProviderRepository $dataProviderRepository,
+        private readonly ?string $defaultDataProvider,
     ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $dataProviders = $this->dataProviderRepository->findAll();
+        $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
+
+        if (null === $defaultProvider && count($dataProviders) > 0) {
+            $defaultProvider = $dataProviders[0];
+        }
+
         $builder
             ->add('dataProvider', EntityType::class, [
                 'class' => DataProvider::class,
@@ -38,7 +46,8 @@ class HourReportType extends AbstractType
                     'class' => 'form-element',
                 ],
                 'help' => 'sprint_report.data_provider_helptext',
-                'choices' => $this->dataProviderRepository->findAll(),
+                'data' => $defaultProvider,
+                'choices' => $dataProviders,
             ])
             ->add('project', EntityType::class, [
                 'class' => Project::class,
