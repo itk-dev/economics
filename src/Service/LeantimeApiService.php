@@ -41,6 +41,10 @@ class LeantimeApiService implements DataProviderServiceInterface
     private const PRESENT = 'PRESENT';
     private const FUTURE = 'FUTURE';
 
+    private const LEANTIME_TIMEZONE = 'UTC';
+
+    private static \DateTimeZone $leantimeTimeZone;
+
     private const STATUS_MAPPING = [
         'NEW' => IssueStatusEnum::NEW,
         'INPROGRESS' => IssueStatusEnum::IN_PROGRESS,
@@ -190,7 +194,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->epicName = $issue->tags;
             $issueData->planHours = $issue->planHours;
             $issueData->hourRemaining = $issue->hourRemaining;
-            $issueData->dueDate = !empty($issue->dateToFinish) && '0000-00-00 00:00:00' !== $issue->dateToFinish ? new \DateTime($issue->dateToFinish) : null;
+            $issueData->dueDate = !empty($issue->dateToFinish) && '0000-00-00 00:00:00' !== $issue->dateToFinish ? new \DateTime($issue->dateToFinish, self::getLeantimeTimeZone()) : null;
             if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }
@@ -327,7 +331,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                 $worklogData->comment = $worklog->description ?? '';
                 $worklogData->worker = $workers[$worklog->userId] ?? $worklog->userId;
                 $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
-                $worklogData->started = new \DateTime($worklog->workDate);
+                $worklogData->started = new \DateTime($worklog->workDate, self::getLeantimeTimeZone());
                 $worklogData->projectTrackerIsBilled = false;
                 $worklogData->projectTrackerIssueId = $worklog->ticketId;
                 $worklogData->kind = $worklog->kind;
@@ -844,5 +848,10 @@ class LeantimeApiService implements DataProviderServiceInterface
         } else {
             return self::FUTURE;
         }
+    }
+
+    private function getLeantimeTimeZone(): \DateTimeZone
+    {
+        return self::$leantimeTimeZone ??= new \DateTimeZone(self::LEANTIME_TIMEZONE);
     }
 }
