@@ -43,7 +43,7 @@ class LeantimeApiService implements DataProviderServiceInterface
 
     private const LEANTIME_TIMEZONE = 'UTC';
 
-    private static \DateTimeZone $leantimeTimeZone;
+    private static ?\DateTimeZone $leantimeTimeZone = null;
 
     private const STATUS_MAPPING = [
         'NEW' => IssueStatusEnum::NEW,
@@ -852,6 +852,10 @@ class LeantimeApiService implements DataProviderServiceInterface
 
     private function getLeantimeTimeZone(): \DateTimeZone
     {
-        return self::$leantimeTimeZone ??= new \DateTimeZone(self::LEANTIME_TIMEZONE);
+        if (null === self::$leantimeTimeZone) {
+            self::$leantimeTimeZone = new \DateTimeZone(self::LEANTIME_TIMEZONE);
+        }
+
+        return self::$leantimeTimeZone;
     }
 }

@@ -8,7 +8,7 @@ use Doctrine\DBAL\Types\DateTimeImmutableType;
 
 class EuropeCopenhagenDateTimeImmutableType extends DateTimeImmutableType
 {
-    private static \DateTimeZone $europeCopenhagenTimeZone;
+    private static ?\DateTimeZone $europeCopenhagenTimeZone = null;
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
@@ -45,6 +45,10 @@ class EuropeCopenhagenDateTimeImmutableType extends DateTimeImmutableType
 
     private static function getEuropeCopenhagenTimeZone(): \DateTimeZone
     {
-        return self::$europeCopenhagenTimeZone ??= new \DateTimeZone('Europe/Copenhagen');
+        if (null === self::$europeCopenhagenTimeZone) {
+            self::$europeCopenhagenTimeZone = new \DateTimeZone('Europe/Copenhagen');
+        }
+
+        return self::$europeCopenhagenTimeZone;
     }
 }
