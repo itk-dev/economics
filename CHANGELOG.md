@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-152](https://github.com/itk-dev/economics/pull/152)
+  2244: Handling Leantime timestamps when importing.
+
 ## [2.4.0] - 2024-08-20
 
 * [PR-149](https://github.com/itk-dev/economics/pull/149)
