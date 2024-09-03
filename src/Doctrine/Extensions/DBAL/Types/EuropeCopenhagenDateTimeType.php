@@ -19,9 +19,9 @@ class EuropeCopenhagenDateTimeType extends DateTimeType
         return parent::convertToDatabaseValue($value, $platform);
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?\DateTime
+    public function convertToPHPValue($value, AbstractPlatform $platform): \DateTime
     {
-        if (null === $value || $value instanceof \DateTime) {
+        if ($value instanceof \DateTime) {
             return $value;
         }
 
