@@ -21,6 +21,14 @@ class WorkerType extends AbstractType
                 'required' => false,
                 'row_attr' => ['class' => 'form-row'],
             ])
+            ->add('name', TextType::class, [
+                'label' => 'worker.name',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element'],
+                'help_attr' => ['class' => 'form-help'],
+                'required' => false,
+                'row_attr' => ['class' => 'form-row'],
+            ])
             ->add('workload', TextType::class, [
                 'label' => 'worker.workload',
                 'label_attr' => ['class' => 'label'],

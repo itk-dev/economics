@@ -10,6 +10,7 @@ use App\Model\Planning\Project;
 use App\Model\Planning\SprintSum;
 use App\Model\Planning\Weeks;
 use App\Repository\IssueRepository;
+use App\Repository\WorkerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class PlanningService
@@ -18,7 +19,7 @@ class PlanningService
         private readonly DateTimeHelper $dateTimeHelper,
         private readonly IssueRepository $issueRepository,
         protected readonly float $weekGoalLow,
-        protected readonly float $weekGoalHigh,
+        protected readonly float $weekGoalHigh, private readonly WorkerRepository $workerRepository,
     ) {
     }
 
@@ -212,10 +213,17 @@ class PlanningService
             ];
         } else {
             $assigneeKey = (string) $issue->getWorker();
+            $assigneeName = $assigneeKey;
+
+            $worker = $this->workerRepository->findOneBy(['email' => $assigneeKey]);
+
+            if ($worker !== null && $worker->getName() !== null) {
+                $assigneeName = $worker->getName();
+            }
 
             return [
                 'key' => $assigneeKey,
-                'displayName' => $assigneeKey,
+                'displayName' => $assigneeName,
             ];
         }
     }

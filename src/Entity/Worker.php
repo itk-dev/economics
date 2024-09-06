@@ -20,6 +20,9 @@ class Worker
     #[ORM\Column(length: 180, nullable: true)]
     private ?float $workload = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
+
     public function __construct()
     {
     }
@@ -61,5 +64,17 @@ class Worker
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
     }
 }

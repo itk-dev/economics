@@ -725,6 +725,7 @@ worker:
     title: 'Medarbejdere'
     index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
     id: 'Id'
+    name: 'Navn'
     email: 'Email'
     workload: 'Normtid (inkl. middagspause)'
     actions: 'Handlinger'
@@ -732,6 +733,7 @@ worker:
     edit: 'Rediger medarbejder'
     action_save: 'Gem'
     back_to_list: "Tilbage til listen"
+    no_records_found: 'Ingen arbejdere'
 
 workload_report_period_type_enum:
     week:
