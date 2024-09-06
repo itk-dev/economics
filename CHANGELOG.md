@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-153](https://github.com/itk-dev/economics/pull/153)
+  2265: Changed X column in external exported csv.
+
 ## [2.4.1] - 2024-09-04
 
 * [PR-152](https://github.com/itk-dev/economics/pull/152)
