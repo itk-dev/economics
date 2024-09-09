@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class WorkloadReportWorker extends Worker
 {
     /** @var ArrayCollection<int, float> */
-    public arrayCollection $loggedPercentage;
+    public ArrayCollection $loggedPercentage;
 
     public function __construct()
     {

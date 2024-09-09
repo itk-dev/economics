@@ -24,7 +24,7 @@ class HourReportService
     /**
      * @throws EconomicsException
      */
-    public function getHourReport(Project $project, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, Version $version = null): HourReportData
+    public function getHourReport(Project $project, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, ?Version $version = null): HourReportData
     {
         $hourReportData = new HourReportData(0, 0);
 
@@ -83,7 +83,7 @@ class HourReportService
         return $hourReportData;
     }
 
-    private function processTimesheetsData(array $worklogs, \DateTimeInterface $fromDate = null, \DateTimeInterface $toDate = null): array
+    private function processTimesheetsData(array $worklogs, ?\DateTimeInterface $fromDate = null, ?\DateTimeInterface $toDate = null): array
     {
         $timesheets = [];
         $totalTicketSpent = 0;

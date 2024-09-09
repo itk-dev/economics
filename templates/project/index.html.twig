@@ -17,7 +17,7 @@
     </div>
     {{ form_end(form) }}
 
-    {% include 'components/alert.html.twig' with {text: 'project.information'|trans, level: 'info'} %}
+    {{ include('components/alert.html.twig', {text: 'project.information'|trans, level: 'info'}) }}
 
     {% set number_of_columns = 9 %}
 
@@ -44,21 +44,21 @@
                 <td class="table-td">{{ project.id }}</td>
                 <td class="table-td">{{ project.name }}</td>
                 <td class="table-td">{{ project.dataprovider }}</td>
-                <td class="table-td">{{ project.projectLeadName ~ (project.projectLeadMail is not empty ? " (" ~ project.projectLeadMail ~ ")" : '') }}</td>
+                <td class="table-td">{{ project.projectLeadName ~ (project.projectLeadMail is not empty ? ' (' ~ project.projectLeadMail ~ ')' : '') }}</td>
                 <td class="table-td">{{ project.projectTrackerKey }}</td>
                 <td class="table-td">{{ project.updatedAt ? project.updatedAt|date : '' }}</td>
                 {% if is_granted('ROLE_ADMIN') %}
                 <td class="table-td">
                     <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_include', {id: project.id}) }}">
                         <input type="checkbox" value="" class="sr-only peer" {{ stimulus_action('toggle', 'toggle') }} {{ stimulus_target('toggle', 'checkbox') }} {{ project.include ? 'checked' : '' }}>
-                        {% include "components/checkbox.html.twig" %}
+                        {{ include('components/checkbox.html.twig') }}
                         <span class="toggle-text" {{ stimulus_target('toggle', 'text') }}></span>
                     </label>
                 </td>
                 <td class="table-td">
                     <label class="toggle-label" {{ stimulus_controller('toggle') }} data-update-url="{{ path('app_project_is_billable', {id: project.id}) }}">
                         <input type="checkbox" value="" class="sr-only peer" {{ stimulus_action('toggle', 'toggle') }} {{ stimulus_target('toggle', 'checkbox') }} {{ project.isBillable ? 'checked' : '' }}>
-                        {% include "components/checkbox.html.twig" %}
+                        {{ include('components/checkbox.html.twig') }}
                         <span class="toggle-text" {{ stimulus_target('toggle', 'text') }}></span>
                     </label>
                 </td>
@@ -71,10 +71,10 @@
                 {% endif %}
                 <td class="table-td">
                     {% if is_granted('ROLE_ADMIN') %}
-                        <a class="link whitespace-nowrap" href="{{ path('app_project_edit', {'id': project.id}) }}">{{ 'project.action_edit'|trans }}</a>
+                        <a class="link whitespace-nowrap" href="{{ path('app_project_edit', {id: project.id}) }}">{{ 'project.action_edit'|trans }}</a>
                     {% endif %}
                     {% if project.issues is not empty %}
-                        <a class="link whitespace-nowrap" href="{{ path('app_issue_index', {'project': project.id}) }}">{{ 'project.action_view_issues'|trans }}</a>
+                        <a class="link whitespace-nowrap" href="{{ path('app_issue_index', {project: project.id}) }}">{{ 'project.action_view_issues'|trans }}</a>
                     {% endif %}
                 </td>
             </tr>

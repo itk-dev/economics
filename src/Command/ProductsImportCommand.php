@@ -25,7 +25,7 @@ class ProductsImportCommand extends Command
     public function __construct(
         private readonly ProductRepository $productRepository,
         private readonly ProjectRepository $projectRepository,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -51,7 +51,7 @@ class ProductsImportCommand extends Command
             static fn ($value) => match (true) {
                 $value instanceof \DateTimeInterface,
                 $value instanceof \DateInterval => throw new RuntimeException(sprintf('Unexpected type: %s', $value::class)),
-                default => (string) $value
+                default => (string) $value,
             },
             $row->toArray()
         );
