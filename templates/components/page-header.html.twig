@@ -5,7 +5,7 @@
             <a class="link border border-blue-600 rounded px-3 py-2 no-underline hover:bg-blue-50" href="{{ path(link_url) }}">{{ link_text }}</a>
         {% endif %}
         {% if type == 'action' %}
-            {% include 'components/action-button.html.twig' %}
+            {{ include('components/action-button.html.twig') }}
         {% endif %}
     {% endif %}
 

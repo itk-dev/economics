@@ -21,7 +21,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ProductController extends AbstractController
 {
     public function __construct(
-        private readonly ProjectRepository $projectRepository
+        private readonly ProjectRepository $projectRepository,
     ) {
     }
 

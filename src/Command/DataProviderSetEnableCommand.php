@@ -17,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class DataProviderSetEnableCommand extends Command
 {
     public function __construct(
-        private readonly DataProviderRepository $dataProviderRepository
+        private readonly DataProviderRepository $dataProviderRepository,
     ) {
         parent::__construct($this->getName());
     }

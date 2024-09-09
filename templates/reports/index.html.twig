@@ -10,7 +10,7 @@
     {{ form_end(form) }}
 
     {% if error is not null %}
-        {% include 'components/alert.html.twig' with {level: "danger", text: error} %}
+        {{ include('components/alert.html.twig', {level: 'danger', text: error}) }}
     {% endif %}
     {% if planningData is not null %}
         <div class="planning-wrapper">
@@ -20,7 +20,7 @@
             {% set projects = planningData.projects %}
 
             {% if mode is defined %}
-                {% include 'reports/' ~ mode ~ '.html.twig' %}
+                {{ include('reports/' ~ mode ~ '.html.twig') }}
             {% endif %}
         </div>
     {% endif %}

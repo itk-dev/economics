@@ -196,7 +196,7 @@ class DataSynchronizationService
      * @throws EconomicsException
      * @throws UnsupportedDataProviderException
      */
-    public function syncIssuesForProject(int $projectId, callable $progressCallback = null, DataProvider $dataProvider): void
+    public function syncIssuesForProject(int $projectId, ?callable $progressCallback = null, DataProvider $dataProvider): void
     {
         $dataProviderId = $dataProvider->getId();
 
@@ -293,7 +293,7 @@ class DataSynchronizationService
      * @throws EconomicsException
      * @throws UnsupportedDataProviderException
      */
-    public function syncWorklogsForProject(int $projectId, callable $progressCallback = null, DataProvider $dataProvider): void
+    public function syncWorklogsForProject(int $projectId, ?callable $progressCallback = null, DataProvider $dataProvider): void
     {
         $dataProviderId = $dataProvider->getId();
 

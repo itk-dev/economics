@@ -24,7 +24,7 @@
 
         <div class="hidden" id="report" {{ stimulus_target('sprint-report', 'content') }}>
             {% if report is defined and report is not null %}
-                {% include 'sprint_report/report.html.twig' %}
+                {{ include('sprint_report/report.html.twig') }}
             {% endif %}
         </div>
     </div>

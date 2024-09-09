@@ -16,7 +16,7 @@ Parameters:
     The text displayed when an action related to the button has failed. Defaults to 'error'.
 #}
 
-<button class="action-button button w-48 h-16"  data-url="{{ url|default("") }}" data-reload="{{ reload|default(false) }}" {{ stimulus_controller('action-button') }}  {{ stimulus_action('action-button', 'action') }}>
+<button class="action-button button w-48 h-16"  data-url="{{ url|default('') }}" data-reload="{{ reload|default(false) }}" {{ stimulus_controller('action-button') }}  {{ stimulus_action('action-button', 'action') }}>
   <span
       class="action-default pointer-events-none"{{ stimulus_target('action-button', 'actionDefault') }}> {{ default_text|default('default') }}
   </span>
