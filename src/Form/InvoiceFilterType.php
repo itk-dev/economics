@@ -51,11 +51,10 @@ class InvoiceFilterType extends AbstractType
                 'attr' => ['class' => 'form-element'],
             ])
             ->add('noCost', ChoiceType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => 'invoices.list_no_cost',
                 'label_attr' => ['class' => 'label'],
                 'choices' => [
-                    '' => null,
                     'invoices.list_no_cost_true' => true,
                     'invoices.list_no_cost_false' => false,
                 ],

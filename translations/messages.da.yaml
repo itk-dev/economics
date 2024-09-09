@@ -61,7 +61,10 @@ navigation:
     worker: "Medarbejdere"
 
 planning:
-    title: "Planlægning"
+    title: 'Planlægning'
+    titles:
+        projects: "Planlægning: Projekter"
+        users: "Planlægning: Brugere"
     assignees: "Brugere"
     projects: "Projekter"
     hidden-entries: "Skjulte brugere"
@@ -283,8 +286,8 @@ invoices:
     list_exported_date: "Eksportdato"
     list_recorded_date: "Bogført"
     list_no_cost: UB
-    list_no_cost_true: 'J'
-    list_no_cost_false: 'N'
+    list_no_cost_true: 'Ja'
+    list_no_cost_false: 'Nej'
     client_type_is_null: ""
     generate_description: "Autoudfyld"
     client_project_lead: "Project Lead"

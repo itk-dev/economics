@@ -11,7 +11,7 @@
             {% if is_granted('ROLE_PLANNING') %}
                 <li>
                     <a class="navigation-item collapsible" href="{{ path('app_planning') }}">
-                        {{ include('components/icons.html.twig', {icon: 'report', class: 'w-6 h-6'}) }}
+                        {{ include('components/icons.html.twig', {icon: 'planning', class: 'w-6 h-6'}) }}
                         <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.planning'|trans }}</span>
                     </a>
                     <ul class="navigation-item-submenu">

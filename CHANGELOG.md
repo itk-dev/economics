@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-158](https://github.com/itk-dev/economics/pull/158)
+  2299: Fixed isBillable filter for project list.
+  2299: Removed unused code from planning overviews.
 * [PR-157](https://github.com/itk-dev/economics/pull/157)
   2299: Npm audit fixes.
 * [PR-156](https://github.com/itk-dev/economics/pull/156)
