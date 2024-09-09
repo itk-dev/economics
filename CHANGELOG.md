@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* [PR-154](https://github.com/itk-dev/economics/pull/154)
+* [PR-155](https://github.com/itk-dev/economics/pull/155)
   2294: Added worker name field and added to planning overview.
-* [PR-153](https://github.com/itk-dev/economics/pull/153)
+* [PR-154](https://github.com/itk-dev/economics/pull/154)
   2265: Changed X column in external exported csv.
 
 ## [2.4.1] - 2024-09-04

@@ -217,7 +217,7 @@ class PlanningService
 
             $worker = $this->workerRepository->findOneBy(['email' => $assigneeKey]);
 
-            if ($worker !== null && $worker->getName() !== null) {
+            if (null !== $worker && null !== $worker->getName()) {
                 $assigneeName = $worker->getName();
             }
 
