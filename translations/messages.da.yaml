@@ -61,7 +61,10 @@ navigation:
     worker: "Medarbejdere"
 
 planning:
-    title: "Planlægning"
+    title: 'Planlægning'
+    titles:
+        projects: "Planlægning: Projekter"
+        users: "Planlægning: Brugere"
     assignees: "Brugere"
     projects: "Projekter"
     hidden-entries: "Skjulte brugere"

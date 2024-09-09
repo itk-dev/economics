@@ -1,9 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'planning.title'|trans }}{% endblock %}
+{% set title = ('planning.titles.' ~ mode|default('users'))|trans %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ 'planning.title'|trans }}</h1>
+    <h1 class="page-title">{{ title }}</h1>
 
     {% if error is not null %}
         {{ include('components/alert.html.twig', {level: 'danger', text: error}) }}
