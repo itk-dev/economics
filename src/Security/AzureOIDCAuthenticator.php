@@ -34,7 +34,7 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
         private readonly EntityManagerInterface $entityManager,
         private readonly UrlGeneratorInterface $router,
         private readonly UserRepository $userRepository,
-        OpenIdConfigurationProviderManager $providerManager
+        OpenIdConfigurationProviderManager $providerManager,
     ) {
         parent::__construct($providerManager);
     }
@@ -81,7 +81,7 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
     }
 
     /** {@inheritDoc} */
-    public function start(Request $request, AuthenticationException $authException = null): Response
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
         return new RedirectResponse($this->router->generate('itkdev_openid_connect_login', [
             'providerKey' => 'user',

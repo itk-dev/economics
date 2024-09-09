@@ -20,7 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ClientController extends AbstractController
 {
     public function __construct(
-        private readonly ClientHelper $clientHelper
+        private readonly ClientHelper $clientHelper,
     ) {
     }
 

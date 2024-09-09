@@ -2,7 +2,7 @@
 
 {% block title %}{{ 'product.title'|trans }}{% endblock %}
 
-{% import "_partials.html.twig" as macros %}
+{% import '_partials.html.twig' as macros %}
 
 {% block content %}
     <h1 class="page-title">{{ 'product.title'|trans }}</h1>
@@ -43,7 +43,7 @@
                 <td class="table-td">{{ product.updatedAt ? product.updatedAt|date : '' }}</td>
 
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_product_edit', {'id': product.id}) }}">{{ 'product.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_product_edit', {id: product.id}) }}">{{ 'product.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% endfor %}

@@ -24,7 +24,7 @@ class IssueRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
-        private readonly PaginatorInterface $paginator
+        private readonly PaginatorInterface $paginator,
     ) {
         parent::__construct($registry, Issue::class);
     }

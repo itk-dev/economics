@@ -5,7 +5,7 @@
 {% block content %}
     <h1 class="page-title">{{ 'product.edit'|trans }}</h1>
 
-    {{ include('product/_form.html.twig', {'button_label': 'product.update'|trans}) }}
+    {{ include('product/_form.html.twig', {button_label: 'product.update'|trans}) }}
 
     <div class="bottom-actions">
         <a class="link" href="{{ path('app_product_index') }}">{{ 'product.back_to_list'|trans }}</a>

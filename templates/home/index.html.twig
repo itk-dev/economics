@@ -8,13 +8,13 @@
   <h1 class="page-title">{{ 'home.title'|trans }}</h1>
 
   <div class="grid-split-three">
-    {% include 'home/card.html.twig' with {title: 'home.invoice'|trans, description: 'home.invoice_desctiption'|trans, role: 'ROLE_INVOICE', route: path("app_invoices_index")} %}
-    {% include 'home/card.html.twig' with {title: 'home.project_billing'|trans, description: 'home.project_billing_description'|trans, role: 'ROLE_PROJECT_BILLING', route: path("app_project_billing_index")} %}
-    {% include 'home/card.html.twig' with {title: 'home.planning'|trans, description: 'home.planning_description'|trans, role: 'ROLE_PLANNING', route: path("app_planning")} %}
-    {% include 'home/card.html.twig' with {title: 'home.sprint_report'|trans, description: 'home.sprint_report_description'|trans, role: 'ROLE_REPORT', route: path("app_sprint_report")} %}
-    {% include 'home/card.html.twig' with {title: 'home.projects'|trans, description: 'home.projects_description'|trans, role: 'ROLE_ADMIN', route: path("app_project_index")} %}
-    {% include 'home/card.html.twig' with {title: 'home.clients'|trans, description: 'home.clients_description'|trans, role: 'ROLE_ADMIN', route: path("app_client_index")} %}
-    {% include 'home/card.html.twig' with {title: 'home.accounts'|trans, description: 'home.accounts_description'|trans, role: 'ROLE_ADMIN', route: path("app_account_index")} %}
-    {% include 'home/card.html.twig' with {title: 'home.users'|trans, description: 'home.users_description'|trans, role: 'ROLE_ADMIN', route: path("app_user_index")} %}
+    {{ include('home/card.html.twig', {title: 'home.invoice'|trans, description: 'home.invoice_desctiption'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index')}) }}
+    {{ include('home/card.html.twig', {title: 'home.project_billing'|trans, description: 'home.project_billing_description'|trans, role: 'ROLE_PROJECT_BILLING', route: path('app_project_billing_index')}) }}
+    {{ include('home/card.html.twig', {title: 'home.planning'|trans, description: 'home.planning_description'|trans, role: 'ROLE_PLANNING', route: path('app_planning')}) }}
+    {{ include('home/card.html.twig', {title: 'home.sprint_report'|trans, description: 'home.sprint_report_description'|trans, role: 'ROLE_REPORT', route: path('app_sprint_report')}) }}
+    {{ include('home/card.html.twig', {title: 'home.projects'|trans, description: 'home.projects_description'|trans, role: 'ROLE_ADMIN', route: path('app_project_index')}) }}
+    {{ include('home/card.html.twig', {title: 'home.clients'|trans, description: 'home.clients_description'|trans, role: 'ROLE_ADMIN', route: path('app_client_index')}) }}
+    {{ include('home/card.html.twig', {title: 'home.accounts'|trans, description: 'home.accounts_description'|trans, role: 'ROLE_ADMIN', route: path('app_account_index')}) }}
+    {{ include('home/card.html.twig', {title: 'home.users'|trans, description: 'home.users_description'|trans, role: 'ROLE_ADMIN', route: path('app_user_index')}) }}
   </div>
 {% endblock %}

@@ -412,12 +412,10 @@ class JiraApiService implements DataProviderServiceInterface
 
                 $issue->epic->remainingSum += $remainingEstimateSeconds;
 
-                if (!empty($issue->assignedToSprint)) {
-                    $assignedToSprint = $issue->assignedToSprint;
-                    $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
-                    $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
-                    $issue->epic->plannedWorkSum += $remainingEstimateSeconds;
-                }
+                $assignedToSprint = $issue->assignedToSprint;
+                $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
+                $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
+                $issue->epic->plannedWorkSum += $remainingEstimateSeconds;
             }
 
             // Accumulate originalEstimateSum.

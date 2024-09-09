@@ -19,7 +19,7 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:divide-x-[1px] md:divide-y-[0px] divide-y-[1px]  divide-gray-300 dark:divide-gray-600 ">
                 {% block navigation %}
-                    {% include 'components/navigation.html.twig' %}
+                    {{ include('components/navigation.html.twig') }}
                 {% endblock %}
                 <main role="main" class="w-full p-8">
                     {# @TODO Show flash messages #}

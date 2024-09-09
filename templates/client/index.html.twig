@@ -4,12 +4,12 @@
 
 {% block content %}
 
-    {% include 'components/page-header.html.twig' with {
-        'title': 'client.title'|trans,
-        'type': 'link',
-        'link_text': 'clients.action_create_new'|trans,
-        'link_url': 'app_client_new'
-    } %}
+    {{ include('components/page-header.html.twig', {
+        title: 'client.title'|trans,
+        type: 'link',
+        link_text: 'clients.action_create_new'|trans,
+        link_url: 'app_client_new'
+    }) }}
 
     {% set number_of_columns = 11 %}
 
@@ -58,7 +58,7 @@
                 <td class="table-td">{{ client.customerKey }}</td>
                 <td class="table-td">{{ client.versionName }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_client_edit', {'id': client.id}) }}">{{ 'clients.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_client_edit', {id: client.id}) }}">{{ 'clients.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}

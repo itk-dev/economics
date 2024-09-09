@@ -4,9 +4,9 @@
 
 {% block content %}
 
-    {% include 'components/page-header.html.twig' with {
-        'title': 'worker.title'|trans,
-    } %}
+    {{ include('components/page-header.html.twig', {
+        title: 'worker.title'|trans,
+    }) }}
 
     <p class="mb-5 text-sm">{{ 'worker.index_description'|trans }}</p>
 
@@ -28,7 +28,7 @@
                 <td class="table-td">{{ worker.name }}</td>
                 <td class="table-td">{{ worker.workload }}</td>
                 <td class="table-td">
-                    <a href="{{ path('app_worker_edit', {'id': worker.id}) }}">{{ 'worker.action_edit'|trans }}</a>
+                    <a href="{{ path('app_worker_edit', {id: worker.id}) }}">{{ 'worker.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% else %}

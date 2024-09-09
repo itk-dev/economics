@@ -12,7 +12,7 @@ use Doctrine\ORM\Events;
 class ProtectedDeletableSubscriber
 {
     /**
-     * @throws \App\Exception\DeleteProtectedViewException
+     * @throws DeleteProtectedViewException
      */
     public function preRemove(PreRemoveEventArgs $args): void
     {
