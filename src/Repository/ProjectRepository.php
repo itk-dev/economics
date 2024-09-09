@@ -66,6 +66,14 @@ class ProjectRepository extends ServiceEntityRepository
             );
         }
 
+        if (!is_null($projectFilterData->isBillable)) {
+            $qb->andWhere(
+                $projectFilterData->isBillable
+                    ? 'project.isBillable = TRUE'
+                    : 'project.isBillable = FALSE OR project.isBillable IS NULL'
+            );
+        }
+
         if (!is_null($projectFilterData->name)) {
             $name = $projectFilterData->name;
             $qb->andWhere('project.name LIKE :name')->setParameter('name', "%$name%");
