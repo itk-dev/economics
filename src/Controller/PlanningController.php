@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Service\PlanningService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -25,27 +24,25 @@ class PlanningController extends AbstractController
     }
 
     #[Route('/users', name: 'app_planning_users')]
-    public function planningUsers(Request $request): Response
+    public function planningUsers(): Response
     {
-        return $this->createResponse($request, 'users');
+        return $this->createResponse('users');
     }
 
     #[Route('/projects', name: 'app_planning_projects')]
-    public function planningProjects(Request $request): Response
+    public function planningProjects(): Response
     {
-        return $this->createResponse($request, 'projects');
+        return $this->createResponse('projects');
     }
 
-    private function createResponse(Request $request, string $mode): Response
+    private function createResponse(string $mode): Response
     {
         $planningData = $this->planningService->getPlanningData();
 
         return $this->render('planning/planning.html.twig', [
             'controller_name' => 'PlanningController',
             'planningData' => $planningData,
-            'error' => $error ?? null,
             'mode' => $mode,
-            'syncForm' => $syncForm ?? null,
         ]);
     }
 }
