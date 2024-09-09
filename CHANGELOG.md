@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-157](https://github.com/itk-dev/economics/pull/157)
+  2299: Npm audit fixes.
 * [PR-155](https://github.com/itk-dev/economics/pull/155)
   2294: Added worker name field and added to planning overview.
 * [PR-154](https://github.com/itk-dev/economics/pull/154)
