@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-157](https://github.com/itk-dev/economics/pull/157)
+  2299: Npm audit fixes.
 * [PR-156](https://github.com/itk-dev/economics/pull/156)
   2299: Composer update.
 * [PR-155](https://github.com/itk-dev/economics/pull/155)
