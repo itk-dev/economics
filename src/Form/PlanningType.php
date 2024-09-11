@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Model\Planning\PlanningFormData;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -11,8 +12,20 @@ class PlanningType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        [$currentYear, $nextYear] = $options['years'];
+
         $builder
-            ->add('dataProvider')
+            ->add('year', ChoiceType::class, [
+                'label' => 'planning.year',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element ', 'data-choices-target' => 'choices', 'onchange' => 'this.form.submit()'],
+                'help_attr' => ['class' => 'form-help'],
+                'row_attr' => ['class' => 'form-row form-choices'],
+                'required' => false,
+                'data' => $currentYear,
+                'choices' => [$currentYear => $currentYear, $nextYear => $nextYear],
+                'placeholder' => null,
+            ])
         ;
     }
 
@@ -23,6 +36,7 @@ class PlanningType extends AbstractType
             'attr' => [
                 'class' => 'form-default',
             ],
+            'years' => null,
         ]);
     }
 }
