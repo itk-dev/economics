@@ -7,5 +7,5 @@ use App\Entity\DataProvider;
 class PlanningFormData
 {
     public DataProvider $dataProvider;
-    public string $viewType;
+    public int $year;
 }
