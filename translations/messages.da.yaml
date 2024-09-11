@@ -9,8 +9,8 @@ sprint_report:
     heading: "Sprintrapport"
     heading_overview: "Overblik"
     heading_phases: "Projektets faser"
-    heading_spent_hours: "Forbrugt pr. uge"
-    heading_planned_hours: "Planlagt pr. uge"
+    heading_spent_hours: "Forbrugt pr. måned"
+    heading_planned_hours: "Planlagt pr. måned"
     pdf_title: "Sprint rapport eksport"
     render_as_pdf: "Hent som PDF"
     sub:
@@ -24,7 +24,7 @@ sprint_report:
         project_forecast: "Projekt total forecast"
         over_under_index: "Over/underløb - index"
     table:
-        epic: "Tag / Epic"
+        epic: "Fase"
         estimate: "Est."
         remaining_hours: "Resterende arbejde est."
         remaining_hours_short: "Rest. arb."
@@ -32,6 +32,8 @@ sprint_report:
         reg: "Reg."
         no_sprint: "Ingen sprint"
         planned_work_sum: "Sum af est. planlagt arb."
+    no_epic: 'Uden fase'
+    no_sprint: 'Uden tidspunkt'
 
 navigation:
     reporting: 'Rapportering'
@@ -330,7 +332,7 @@ worklog:
     title: "Tilføj worklogs til fakturalinje"
     name: "Worklog"
     is_billed: "Faktureret"
-    epic: "Tag / Epic"
+    epic: "Fase"
     version: "Milestone / Version"
     worker: "Arbejder"
     time_spent: "Timer"

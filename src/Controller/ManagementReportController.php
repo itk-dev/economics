@@ -37,7 +37,7 @@ class ManagementReportController extends AbstractController
             [
                 'firstLog' => $firstRecordedInvoice->getRecordedDate(),
             ],
-            ['action' => $this->generateUrl('app_management_reports_output', []), 'method' => 'GET']
+            ['action' => $this->generateUrl('app_management_reports_output'), 'method' => 'GET']
         );
 
         return $this->render('management-report/create.html.twig', [

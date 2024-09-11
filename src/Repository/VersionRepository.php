@@ -2,8 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\Project;
 use App\Entity\Version;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -37,5 +39,12 @@ class VersionRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getQueryBuilderByProject(Project $project): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('version');
+        $qb->where('version.project = :project')->setParameter('project', $project);
+        return $qb;
     }
 }

@@ -81,6 +81,17 @@ class IssueRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
+    public function getIssuesByProjectAndVersion(Project $project, Version $version): array
+    {
+        $qb = $this->createQueryBuilder('issue');
+        $qb->where('issue.project = :project')
+            ->andWhere($qb->expr()->isMemberOf(':version', 'issue.versions'))
+            ->setParameter('project', $project)
+            ->setParameter('version', $version);
+
+        return $qb->getQuery()->execute();
+    }
+
     public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
     {
         $from = new \DateTime($periodStart->format('Y-m-d').' 00:00:00');
