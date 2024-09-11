@@ -12,6 +12,7 @@ use App\Model\Planning\Weeks;
 use App\Repository\IssueRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Enum\IssueStatusEnum;
 
 class PlanningService
 {
@@ -148,7 +149,7 @@ class PlanningService
     private function processIssuesForWeek(PlanningData $planning, int $week, array $issues): void
     {
         foreach ($issues as $issueData) {
-            if ('0' !== $issueData->getStatus()) {
+            if (IssueStatusEnum::DONE !== $issueData->getStatus()) {
                 $week = (string) $week;
                 $issueProject = $issueData->getProject();
                 if (!$issueProject) {
