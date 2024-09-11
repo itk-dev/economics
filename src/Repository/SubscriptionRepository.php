@@ -4,5 +4,4 @@ namespace App\Repository;
 
 class SubscriptionRepository
 {
-
 }
