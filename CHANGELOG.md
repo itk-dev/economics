@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-159](https://github.com/itk-dev/economics/pull/159)
+  2396: Added year select to planning overview.
 * [PR-158](https://github.com/itk-dev/economics/pull/158)
   2299: Fixed isBillable filter for project list.
   2299: Removed unused code from planning overviews.
