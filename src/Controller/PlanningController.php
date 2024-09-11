@@ -26,9 +26,9 @@ class PlanningController extends AbstractController
     private function preparePlaningData(Request $request): array
     {
         $planningFormData = new PlanningFormData();
-        $planningFormData->year = (new \DateTime())->format('Y');
+        $planningFormData->year = (int) (new \DateTime())->format('Y');
         $form = $this->createForm(PlanningType::class, $planningFormData, [
-            'action' => $this->generateUrl('app_planning'),
+            'action' => $this->generateUrl($request->attributes->get('_route')),
             'attr' => [
                 'id' => 'sprint_report',
             ],
