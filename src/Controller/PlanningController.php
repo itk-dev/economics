@@ -23,7 +23,7 @@ class PlanningController extends AbstractController
     /**
      * @throws \Exception
      */
-    private function preparePlaningData(Request $request): array
+    private function preparePlanningData(Request $request): array
     {
         $planningFormData = new PlanningFormData();
         $planningFormData->year = (int) (new \DateTime())->format('Y');
@@ -60,7 +60,7 @@ class PlanningController extends AbstractController
     #[Route('/users', name: 'app_planning_users')]
     public function planningUsers(Request $request): Response
     {
-        $data = $this->preparePlaningData($request);
+        $data = $this->preparePlanningData($request);
 
         return $this->createResponse('users', $data);
     }
@@ -71,7 +71,7 @@ class PlanningController extends AbstractController
     #[Route('/projects', name: 'app_planning_projects')]
     public function planningProjects(Request $request): Response
     {
-        $data = $this->preparePlaningData($request);
+        $data = $this->preparePlanningData($request);
 
         return $this->createResponse('projects', $data);
     }
