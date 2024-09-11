@@ -18,9 +18,9 @@ class PlanningType extends AbstractType
             ->add('year', ChoiceType::class, [
                 'label' => 'planning.year',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element ', 'data-choices-target' => 'choices', 'onchange' => 'this.form.submit()'],
+                'attr' => ['class' => 'form-element ', 'onchange' => 'this.form.submit()'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row form-choices'],
+                'row_attr' => ['class' => 'form-row'],
                 'required' => false,
                 'data' => $currentYear,
                 'choices' => [$currentYear => $currentYear, $nextYear => $nextYear],
