@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Enum\IssueStatusEnum;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
@@ -12,7 +13,6 @@ use App\Model\Planning\Weeks;
 use App\Repository\IssueRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use App\Enum\IssueStatusEnum;
 
 class PlanningService
 {
