@@ -8,16 +8,13 @@ use App\Entity\ProjectVersionBudget;
 use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\IssueStatusEnum;
-use App\Exception\ApiServiceException;
 use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
 use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintStateEnum;
 use App\Repository\IssueRepository;
-use App\Repository\ProjectRepository;
 use App\Repository\ProjectVersionBudgetRepository;
-use App\Repository\VersionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -44,8 +41,10 @@ class SprintReportService
         $sprintReportSprints = $sprintReportData->sprints;
 
         // TODO: Translations.
-        $sprintReportEpics->set(self::NO_EPIC, new SprintReportEpic(self::NO_EPIC, $this->translator->trans('sprint_report.no_epic')));
-        $sprintReportSprints->set(self::NO_SPRINT, new SprintReportSprint(self::NO_SPRINT, $this->translator->trans('sprint_report.no_sprint'), SprintStateEnum::OTHER));
+        $noEpicEpic = new SprintReportEpic(self::NO_EPIC, $this->translator->trans('sprint_report.no_epic'));
+        $sprintReportEpics->set(self::NO_EPIC, $noEpicEpic);
+        $noSprintSprint = new SprintReportSprint(self::NO_SPRINT, $this->translator->trans('sprint_report.no_sprint'), SprintStateEnum::OTHER);
+        $sprintReportSprints->set(self::NO_SPRINT, $noSprintSprint);
 
         $issues = $this->issueRepository->getIssuesByProjectAndVersion($project, $version);
 
@@ -53,19 +52,22 @@ class SprintReportService
         foreach ($issues as $issue) {
             $sprintReportIssue = new SprintReportIssue();
             $sprintReportIssues->add($sprintReportIssue);
+            $epicKey = $issue->getEpicKey();
 
-            if (!empty($issue->getEpicKey())) {
-                $epic = new SprintReportEpic($issue->getEpicKey(), $issue->getEpicName());
-                $sprintReportEpics->set($issue->getEpicKey(), $epic);
+            if (!empty($epicKey)) {
+                $epic = new SprintReportEpic($epicKey, $issue->getEpicName() ?? $epicKey);
+                $sprintReportEpics->set($epicKey, $epic);
             } else {
-                $epic = $sprintReportEpics->get(self::NO_EPIC);
+                $epic = $noEpicEpic;
             }
 
             $sprintReportIssue->epic = $epic;
 
             $dueDate = $issue->getDueDate();
 
-            if ($dueDate !== null) {
+            $sprintReportSprint = null;
+
+            if (null !== $dueDate) {
                 $nowSprintId = $this->mapDateToSprintId(new \DateTime());
                 $sprintName = $this->mapDateToSprintName($dueDate);
                 $sprintId = $this->mapDateToSprintId($dueDate);
@@ -73,7 +75,7 @@ class SprintReportService
                 if (!$sprintReportSprints->containsKey($sprintName)) {
                     if ($sprintId > $nowSprintId) {
                         $sprintState = SprintStateEnum::FUTURE;
-                    } else if ($sprintId == $nowSprintId) {
+                    } elseif ($sprintId == $nowSprintId) {
                         $sprintState = SprintStateEnum::ACTIVE;
                     } else {
                         $sprintState = SprintStateEnum::PAST;
@@ -89,8 +91,10 @@ class SprintReportService
                 } else {
                     $sprintReportSprint = $sprintReportSprints->get($sprintName);
                 }
-            } else {
-                $sprintReportSprint = $sprintReportSprints->get(self::NO_SPRINT);
+            }
+
+            if (null == $sprintReportSprint) {
+                $sprintReportSprint = $noSprintSprint;
             }
 
             $sprintReportIssue->assignedToSprint = $sprintReportSprint;
@@ -107,7 +111,7 @@ class SprintReportService
 
                 $worklogSprints = array_filter($sprintReportSprints->toArray(), function ($sprintEntry) use ($workLogStarted) {
                     /* @var SprintReportSprint $sprintEntry */
-                    return $sprintEntry->id == $this->mapDateToSprintId($workLogStarted);
+                    return null !== $workLogStarted && $sprintEntry->id == $this->mapDateToSprintId($workLogStarted);
                 });
 
                 $worklogSprintId = self::NO_SPRINT;
@@ -135,26 +139,32 @@ class SprintReportService
             }
 
             // Accumulate originalEstimateSum.
-            if ($issue->getPlanHours() !== null) {
+            if (null !== $issue->getPlanHours()) {
                 $sprintReportIssue->epic->originalEstimateSum += ($issue->getPlanHours() * self::SECONDS_IN_HOUR);
             }
         }
 
         // Sort sprints by key.
-        // @var \ArrayIterator $iterator
-        $iterator = $sprintReportSprints->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return mb_strtolower($a->id) <=> mb_strtolower($b->id);
-        });
-        $sprintReportSprints = new ArrayCollection(iterator_to_array($iterator));
+        try {
+            $arr = $sprintReportSprints->toArray();
+            uasort($arr, function ($a, $b) {
+                return mb_strtolower($a->id) <=> mb_strtolower($b->id);
+            });
+            $sprintReportSprints = new ArrayCollection($arr);
+        } catch (\Exception) {
+            // Ignore. Results will not be sorted.
+        }
 
         // Sort epics by name.
-        // @var \ArrayIterator $iterator
-        $iterator = $sprintReportEpics->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return mb_strtolower($a->name) <=> mb_strtolower($b->name);
-        });
-        $sprintReportEpics = new ArrayCollection(iterator_to_array($iterator));
+        try {
+            $arr = $sprintReportEpics->toArray();
+            uasort($arr, function ($a, $b) {
+                return mb_strtolower($a->name) <=> mb_strtolower($b->name);
+            });
+            $sprintReportEpics = new ArrayCollection($arr);
+        } catch (\Exception) {
+            // Ignore. Results will not be sorted.
+        }
 
         $remainingSum = array_reduce($sprintReportEpics->toArray(), function ($carry, $epic) {
             return $carry + $epic->remainingSum;
@@ -172,8 +182,8 @@ class SprintReportService
         $spentHours = $spentSum / self::SECONDS_IN_HOUR;
         $remainingHours = $remainingSum / self::SECONDS_IN_HOUR;
 
-        $sprintReportData->projectName = $project->getName();
-        $sprintReportData->versionName = $version->getName();
+        $sprintReportData->projectName = $project->getName() ?? 'No project name';
+        $sprintReportData->versionName = $version->getName() ?? 'No version name';
         $sprintReportData->remainingHours = $remainingHours;
         $sprintReportData->spentHours = $spentHours;
         $sprintReportData->spentSum = $spentSum;
@@ -209,12 +219,12 @@ class SprintReportService
         return $this->budgetRepository->findOneBy(['projectId' => $projectId, 'versionId' => $versionId]);
     }
 
-    private function mapDateToSprintName(\DateTime $date): string
+    private function mapDateToSprintName(\DateTimeInterface $date): string
     {
         return $date->format('M Y');
     }
 
-    private function mapDateToSprintId(\DateTime $date): string
+    private function mapDateToSprintId(\DateTimeInterface $date): string
     {
         return $date->format('Y.m');
     }

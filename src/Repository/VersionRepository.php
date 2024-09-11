@@ -45,6 +45,7 @@ class VersionRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('version');
         $qb->where('version.project = :project')->setParameter('project', $project);
+
         return $qb;
     }
 }

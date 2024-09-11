@@ -2,26 +2,19 @@
 
 namespace App\Controller;
 
-use App\Entity\DataProvider;
-use App\Exception\ApiServiceException;
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Form\SprintReportType;
 use App\Model\SprintReport\SprintReportFormData;
-use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
-use App\Service\DataProviderService;
 use App\Service\SprintReportService;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -70,7 +63,7 @@ class SprintReportController extends AbstractController
             $project = $form->get('project')->getData();
             $version = $form->get('version')->getData();
 
-            if ($project !== null && $version !== null) {
+            if (null !== $project && null !== $version) {
                 $reportData = $this->sprintReportService->getSprintReportData($project, $version);
 
                 $budget = $this->sprintReportService->getBudget($project->getId(), $version->getId());
@@ -106,7 +99,6 @@ class SprintReportController extends AbstractController
 
     /**
      * @throws MpdfException
-     * @throws ApiServiceException
      */
     #[Route('/generate-pdf', name: 'app_sprint_report_pdf', methods: ['GET'])]
     public function generatePdf(Request $request): void
@@ -116,6 +108,10 @@ class SprintReportController extends AbstractController
 
         $project = $this->projectRepository->find($projectId);
         $version = $this->versionRepository->find($versionId);
+
+        if (null == $project || null == $version) {
+            throw new NotFoundHttpException('Project or version not found.');
+        }
 
         $reportData = $this->sprintReportService->getSprintReportData($project, $version);
 
