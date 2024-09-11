@@ -31,14 +31,16 @@ class PlanningService
      * Retrieves the planning data containing the weeks, issues, assignees, and projects.
      *
      * @return PlanningData The planning data object
+     *
+     * @throws \Exception
      */
-    public function getPlanningData(): PlanningData
+    public function getPlanningData(int $selectedYear): PlanningData
     {
         $planning = new PlanningData();
-        $planning->weeks = $this->buildPlanningWeeks($planning);
+        $planning->weeks = $this->buildPlanningWeeks($planning, $selectedYear);
 
-        $thisYear = (new \DateTime('first day of January this year'))->setTime(0, 0)->format('Y-m-d H:i:s');
-        $nextYear = (new \DateTime('first day of January next year'))->setTime(0, 0)->format('Y-m-d H:i:s');
+        $thisYear = (new \DateTime('first day of January '.$selectedYear))->setTime(0, 0)->format('Y-m-d H:i:s');
+        $nextYear = (new \DateTime('first day of January '.($selectedYear + 1)))->setTime(0, 0)->format('Y-m-d H:i:s');
 
         $allIssues = $this->issueRepository->findIssuesInDateRange($thisYear, $nextYear);
         $sortedIssues = $this->sortIssuesByWeek($allIssues);
@@ -60,15 +62,14 @@ class PlanningService
      *
      * @return ArrayCollection<string, Weeks> The ArrayCollection of Weeks objects representing the weeks in the planning
      */
-    private function buildPlanningWeeks(PlanningData $planning): ArrayCollection
+    private function buildPlanningWeeks(PlanningData $planning, int $year): ArrayCollection
     {
         $weeks = $planning->weeks;
 
         $now = new \DateTime();
-        $currentYear = (int) $now->format('Y');
-        $currentWeek = (int) $now->format('W');
+        $currentWeek = ($year !== (int) $now->format('Y')) ? null : (int) $now->format('W');
 
-        $weeksOfYear = $this->dateTimeHelper->getWeeksOfYear($currentYear);
+        $weeksOfYear = $this->dateTimeHelper->getWeeksOfYear($year);
         foreach ($weeksOfYear as $week) {
             $weekIsSupport = 1 === $week % (self::WEEKS_IN_SUPPORT_PERIOD + self::WEEKS_IN_SPRINT_PERIOD);
 
