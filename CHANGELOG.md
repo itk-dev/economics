@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.2] - 2024-09-11
+
 * [PR-159](https://github.com/itk-dev/economics/pull/159)
   2396: Added year select to planning overview.
 * [PR-158](https://github.com/itk-dev/economics/pull/158)
@@ -333,7 +335,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.4.1...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.4.2...HEAD
+[2.4.2]: https://github.com/itk-dev/economics/compare/2.4.1...2.4.2
 [2.4.1]: https://github.com/itk-dev/economics/compare/2.4.0...2.4.1
 [2.4.0]: https://github.com/itk-dev/economics/compare/2.3.3...2.4.0
 [2.3.3]: https://github.com/itk-dev/economics/compare/2.3.2...2.3.3
