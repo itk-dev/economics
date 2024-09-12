@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
 class Subscription extends AbstractBaseEntity
 {
-    #[ORM\Column(length: 180, unique: true)]
+    #[ORM\Column(length: 180, unique: false)]
     private ?string $email = null;
 
     #[ORM\Column(type: 'string', nullable: true, enumType: SubscriptionSubjectEnum::class)]
@@ -39,23 +39,23 @@ class Subscription extends AbstractBaseEntity
         return $this;
     }
 
-    public function getSubject(): ?string
+    public function getSubject(): SubscriptionSubjectEnum
     {
         return $this->subject;
     }
 
-    public function setSubject(string $subject): self
+    public function setSubject(SubscriptionSubjectEnum $subject): self
     {
         $this->subject = $subject;
         return $this;
     }
 
-    public function getFrequency(): ?string
+    public function getFrequency(): SubscriptionFrequencyEnum
     {
         return $this->frequency;
     }
 
-    public function setFrequency(string $frequency): self
+    public function setFrequency(SubscriptionFrequencyEnum $frequency): self
     {
         $this->frequency = $frequency;
         return $this;
