@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Enum\IssueStatusEnum;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
 use App\Model\Planning\Issue;
@@ -148,7 +149,7 @@ class PlanningService
     private function processIssuesForWeek(PlanningData $planning, int $week, array $issues): void
     {
         foreach ($issues as $issueData) {
-            if ('0' !== $issueData->getStatus()) {
+            if (IssueStatusEnum::DONE !== $issueData->getStatus()) {
                 $week = (string) $week;
                 $issueProject = $issueData->getProject();
                 if (!$issueProject) {
