@@ -17,6 +17,9 @@ class Subscription extends AbstractBaseEntity
     #[ORM\Column(type: 'string', nullable: true, enumType: SubscriptionSubjectEnum::class)]
     private ?SubscriptionSubjectEnum $subject = null;
 
+    #[ORM\Column(length: 180, unique: false)]
+    private ?string $urlParams = null;
+
     #[ORM\Column(type: 'string', nullable: true, enumType: SubscriptionFrequencyEnum::class)]
     private ?SubscriptionFrequencyEnum $frequency = null;
 
@@ -47,6 +50,17 @@ class Subscription extends AbstractBaseEntity
     public function setSubject(SubscriptionSubjectEnum $subject): self
     {
         $this->subject = $subject;
+        return $this;
+    }
+
+    public function getUrlParams(): ?string
+    {
+        return $this->urlParams;
+    }
+
+    public function setUrlParams(string $urlParams): self
+    {
+        $this->urlParams = $urlParams;
         return $this;
     }
 
