@@ -1,4 +1,4 @@
-export const postRequestHandler = async (updateUrl) => {
+export const postRequestHandler = async (updateUrl, data = null) => {
     let result = {
         success: false,
         status: null,
@@ -14,7 +14,8 @@ export const postRequestHandler = async (updateUrl) => {
             credentials: "same-origin",
             headers: { "Content-Type": "application/json" },
             redirect: "follow",
-            referrerPolicy: "no-referrer"
+            referrerPolicy: "no-referrer",
+            body: data && JSON.stringify(data),
         });
 
         result.status = response.status;
