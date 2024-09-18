@@ -3,7 +3,16 @@
 {% block title %}{{ 'hour_report.title'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ (mode ~ '.title')|trans() }}</h1>
+
+    {{ include('components/page-header.html.twig', {
+        title: 'hour_report.title'|trans,
+        type: 'subscribe',
+        default_text: 'subscribe_button.subscribe'|trans,
+        success_text: 'subscribe_button.unsubscribe'|trans,
+        url: path('app_subscription_check', {id: 1}),
+        params: app.request.query.all|json_encode,
+        reload: false,
+    }) }}
 
     {{ form_start(form) }}
     {{ form_row(form.dataProvider) }}
