@@ -8,6 +8,7 @@ use App\Enum\SubscriptionSubjectEnum;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Repository\SubscriptionRepository;
+use App\Service\SubscriptionHandlerService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +23,7 @@ class SubscriptionHandlerCommand extends Command
 {
     public function __construct(
         private readonly SubscriptionRepository $subscriptionRepository,
+        private readonly SubscriptionHandlerService  $subscriptionHandlerService,
     ) {
         parent::__construct($this->getName());
     }
@@ -38,22 +40,32 @@ class SubscriptionHandlerCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        /*$hest = new Subscription();
+/*        $hest = new Subscription();
         $hest->setEmail('kjej@aarhus.dk');
         $hest->setSubject(SubscriptionSubjectEnum::HOUR_REPORT);
-        $hest->setFrequency(SubscriptionFrequencyEnum::FREQUENCY_QUARTERLY);
+        $hest->setFrequency(SubscriptionFrequencyEnum::FREQUENCY_MONTHLY);
         $hest->setLastSent(new \DateTime());
         $this->subscriptionRepository->save($hest, true);*/
 
+
         $subscriptions = $this->subscriptionRepository->findAll();
+        $now = new \DateTime();
 
         foreach ($subscriptions as $subscription) {
+            $lastSent = $subscription->getLastSent();
+            $interval = $lastSent->diff($now);
             switch ($subscription->getFrequency()) {
                 case SubscriptionFrequencyEnum::FREQUENCY_MONTHLY:
-                    $io->writeln('Sending monthly '.$subscription->getSubject()->value.' to '.$subscription->getEmail());
+                    if ($interval->m >= 1) {
+                        $io->writeln('Sending monthly '.$subscription->getSubject()->value.' to '.$subscription->getEmail());
+                        $this->subscriptionHandlerService->handleSubscription($subscription);
+                    }
                     break;
                 case SubscriptionFrequencyEnum::FREQUENCY_QUARTERLY:
-                    $io->writeln('Sending quarterly '.$subscription->getSubject()->value.' to '.$subscription->getEmail());
+                    if ($interval->m >= 3) {
+                        $io->writeln('Sending quarterly '.$subscription->getSubject()->value.' to '.$subscription->getEmail());
+                        $this->subscriptionHandlerService->handleSubscription($subscription);
+                    }
                     break;
             }
         }
