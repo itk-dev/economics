@@ -1,0 +1,9 @@
+<button class="action-button button w-48 h-16"  data-url="{{ url|default('') }}" data-params="{{ params|default(false) }}" data-url="{{ url|default(false) }}" {{ stimulus_controller('subscribe-button') }}  {{ stimulus_action('subscribe-button', 'action') }}>
+  <span
+      class="action-unsubscribed pointer-events-none"{{ stimulus_target('subscribe-button', 'actionUnsubscribed') }}> {#{{ default_text|default('default') }}#} unsubscribed
+  </span>
+    <span
+        class="action-subscribed hidden pointer-events-none" {{ stimulus_target('subscribe-button', 'actionSubscribed') }}> {#{{ default_text|default('default') }} #} subscribed
+  </span>
+
+</button>
