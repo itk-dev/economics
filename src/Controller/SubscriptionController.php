@@ -74,11 +74,17 @@ class SubscriptionController extends AbstractController
         $report_type = key($content);
         switch ($report_type) {
             case 'hour_report':
+                if (empty($content[$report_type]['dataProvider']) || empty($content[$report_type]['project'])) {
+                    return new JsonResponse([], 404);
+                }
+                // If version is unset, remove it from data
+                if (empty($content[$report_type]['version'])) {
+                    unset($content[$report_type]['version']);
+                }
                 // Unset data irrelevant for subscription
                 unset(
                     $content[$report_type]['fromDate'],
                     $content[$report_type]['toDate'],
-                    $content[$report_type]['version'],
                 );
 
                 // If subscriptionType exists, either subscribe or unsubscribe
@@ -86,6 +92,7 @@ class SubscriptionController extends AbstractController
 
                 if ($subscriptionType) {
                     unset($content[$report_type]['subscriptionType']);
+
                     return $this->subscriptionHandler($userEmail, $subscriptionType, $content);
                 }
 
@@ -111,9 +118,13 @@ class SubscriptionController extends AbstractController
     {
         $report_type = key($content);
         $subscription = $this->subscriptionRepository->findOneBy(['email' => $userEmail, 'frequency' => $subscriptionType, 'urlParams' => json_encode($content)]);
+
         if ($subscription) {
             $this->subscriptionRepository->remove($subscription, true);
-            return new JsonResponse(['success' => true, 'action' => 'unsubscribed'], 200);
+            $subscriptions = $this->subscriptionRepository->findBy(['email' => $userEmail, 'urlParams' => json_encode($content)]);
+            $frequencies = $this->getFrequencies($subscriptions);
+
+            return new JsonResponse(['success' => true, 'action' => 'unsubscribed', 'frequencies' => $frequencies], 200);
         } else {
             $subscription = new Subscription();
             $subscription->setEmail($userEmail);
@@ -124,10 +135,9 @@ class SubscriptionController extends AbstractController
 
             $subscriptions = $this->subscriptionRepository->findBy(['email' => $userEmail, 'urlParams' => json_encode($content)]);
             $frequencies = $this->getFrequencies($subscriptions);
+
             return new JsonResponse(['success' => true, 'action' => 'subscribed', 'frequencies' => $frequencies], 200);
         }
-
-
     }
 
     private function getFrequencies(array $subscriptions): string
