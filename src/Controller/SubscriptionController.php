@@ -156,6 +156,6 @@ class SubscriptionController extends AbstractController
         });
 
         // Implode array with comma to get a pretty string
-        return implode(' and ', $frequencies);
+        return implode(', ', $frequencies);
     }
 }
