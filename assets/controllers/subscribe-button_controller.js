@@ -25,10 +25,11 @@ export default class extends Controller {
         postRequestHandler(url, params)
             .then(result => {
                 if (result.data.success) {
+                    triggerState(states.subscribed, targets);
+
                     if (result.data.frequencies) {
                         data.frequencies = result.data.frequencies;
                     }
-                    triggerState(states.subscribed, targets);
                 } else {
                     triggerState(states.unsubscribed, targets);
                 }
@@ -44,19 +45,30 @@ export default class extends Controller {
         const data = e.target.dataset;
         const url = data.url;
         const encodedParams = data.params;
+        const type = data.type;
 
         let params = JSON.parse(encodedParams);
         let reportType = Object.keys(params)[0];
-        //params[reportType].subscriptionType = "monthly";
+        params[reportType].subscriptionType = type
 
+        triggerState(states.fetching, targets);
         postRequestHandler(url, params)
             .then(result => {
                 if (result.success) {
-                    triggerState(states.subscribed, targets);
-                    console.log('jaaa');
+                    if (result.data.action) {
+                        if (result.data.action === 'subscribed') {
+                            triggerState(states.subscribed, targets);
+
+                            if (result.data.frequencies) {
+                                data.frequencies = result.data.frequencies;
+                            }
+                        }
+                        if (result.data.action === 'unsubscribed') {
+                            triggerState(states.unsubscribed, targets);
+                        }
+                    }
                 } else {
                     triggerState(states.unsubscribed, targets);
-                    console.log('neiii');
                 }
             });
     }
@@ -77,6 +89,10 @@ function triggerState(state, targets) {
             break;
         case states.subscribed:
             targets.subscribed.classList.remove("hidden");
+            targets.parent.classList.add('btn-success');
+            break;
+        case states.fetching:
+            targets.fetching.classList.remove("hidden");
             break;
         default:
             console.log("State not recognized");
@@ -92,6 +108,8 @@ function triggerState(state, targets) {
 function resetState(targets)
 {
     Object.entries(targets).forEach(([type, target]) => {
+        target.classList.remove('btn-success');
+        target.dataset.frequencies = '';
         if (type === "parent") {
             return;
         }

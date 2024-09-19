@@ -1,13 +1,14 @@
-<button class="action-button subscribe-button button w-48 h-16 relative"  data-url="{{ url|default('') }}" data-params="{{ params|default(false) }}" data-url="{{ url|default(false) }}" {{ stimulus_controller('subscribe-button') }}  {{ stimulus_action('subscribe-button', 'action') }} {{ stimulus_target('subscribe-button', 'actionButton') }}>
-
+<button class="action-button subscribe-button button w-48 h-16 relative focus:outline-none focus:ring-0" data-url="{{ url|default('') }}"
+        data-params="{{ params|default(false) }}"
+        data-type="monthly"
+        data-url="{{ url|default(false) }}" {{ stimulus_controller('subscribe-button') }}  {{ stimulus_action('subscribe-button', 'action') }} {{ stimulus_target('subscribe-button', 'actionButton') }}>
     <span
-        class="action-unsubscribed pointer-events-none"{{ stimulus_target('subscribe-button', 'actionFetchingSubscription') }}> {{ loader_text is defined ? loader_text : include('components/icons.html.twig', {icon: 'spinner', class: 'w-6 h-6'}) }}
+        class="action-fetching pointer-events-none"{{ stimulus_target('subscribe-button', 'actionFetchingSubscription') }}> {{ loader_text is defined ? loader_text : include('components/icons.html.twig', {icon: 'spinner', class: 'w-6 h-6'}) }}
   </span>
     <span
-      class="action-unsubscribed hidden pointer-events-none"{{ stimulus_target('subscribe-button', 'actionUnsubscribed') }}> {#{{ default_text|default('default') }}#} unsubscribed
+        class="action-unsubscribed hidden pointer-events-none"{{ stimulus_target('subscribe-button', 'actionUnsubscribed') }}> {# {{ default_text|default('default') }} #} Subscribe
   </span>
     <span
-        class="action-subscribed hidden pointer-events-none" {{ stimulus_target('subscribe-button', 'actionSubscribed') }}> {#{{ default_text|default('default') }} #} subscribed
+        class="action-subscribed hidden pointer-events-none" {{ stimulus_target('subscribe-button', 'actionSubscribed') }}> {# {{ default_text|default('default') }} #} Subscribed
   </span>
-
 </button>
