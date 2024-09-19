@@ -8,7 +8,7 @@ const states = {
 
 export default class extends Controller {
 
-    static targets = ["actionButton", "actionFetchingSubscription", "actionUnsubscribed", "actionSubscribed"];
+    static targets = ["actionButton", "actionFetchingSubscription", "actionUnsubscribed", "actionSubscribed", "menu"];
 
     connect() {
         const targets = {
@@ -35,19 +35,23 @@ export default class extends Controller {
                 }
             });
     }
-    action(e) {
+    action = (e) => {
         const targets = {
-            parent: e.target,
+            menuTarget: this.menuTarget,
+            parent: this.actionButtonTarget,
             fetching: this.actionFetchingSubscriptionTarget,
             unsubscribed: this.actionUnsubscribedTarget,
             subscribed: this.actionSubscribedTarget,
         };
-        const data = e.target.dataset;
+        const data = targets.parent.dataset;
         const url = data.url;
         const encodedParams = data.params;
-        const type = data.type;
+        const params = JSON.parse(encodedParams);
 
-        let params = JSON.parse(encodedParams);
+        const type = e.target.dataset.subscriptiontype;
+
+        targets.menuTarget.classList.toggle('hidden');
+
         let reportType = Object.keys(params)[0];
         params[reportType].subscriptionType = type
 
@@ -56,14 +60,11 @@ export default class extends Controller {
             .then(result => {
                 if (result.success) {
                     if (result.data.action) {
-                        if (result.data.action === 'subscribed') {
+                        if (result.data.frequencies) {
+                            data.frequencies = result.data.frequencies;
                             triggerState(states.subscribed, targets);
-
-                            if (result.data.frequencies) {
-                                data.frequencies = result.data.frequencies;
-                            }
-                        }
-                        if (result.data.action === 'unsubscribed') {
+                        } else {
+                            data.frequencies = '';
                             triggerState(states.unsubscribed, targets);
                         }
                     }
@@ -71,6 +72,12 @@ export default class extends Controller {
                     triggerState(states.unsubscribed, targets);
                 }
             });
+    }
+    toggle() {
+        const targets = {
+            menuTarget: this.menuTarget,
+        };
+        targets.menuTarget.classList.toggle('hidden');
     }
 }
 
@@ -89,7 +96,6 @@ function triggerState(state, targets) {
             break;
         case states.subscribed:
             targets.subscribed.classList.remove("hidden");
-            targets.parent.classList.add('btn-success');
             break;
         case states.fetching:
             targets.fetching.classList.remove("hidden");
@@ -108,8 +114,6 @@ function triggerState(state, targets) {
 function resetState(targets)
 {
     Object.entries(targets).forEach(([type, target]) => {
-        target.classList.remove('btn-success');
-        target.dataset.frequencies = '';
         if (type === "parent") {
             return;
         }
