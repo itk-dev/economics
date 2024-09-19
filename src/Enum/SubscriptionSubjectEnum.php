@@ -4,7 +4,7 @@ namespace App\Enum;
 
 enum SubscriptionSubjectEnum: string
 {
-    case HOUR_REPORT = 'hour report';
+    case HOUR_REPORT = 'hour_report';
 
     /**
      * @return array<string,string>
