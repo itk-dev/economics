@@ -147,7 +147,15 @@ class SubscriptionController extends AbstractController
             $frequencies[] = $subscription->getFrequency()->value;
         }
 
+        // Getting the order from Enum
+        $order = array_values(SubscriptionFrequencyEnum::getAsArray());
+
+        // Sort by order of enum definition
+        usort($frequencies, function ($a, $b) use ($order) {
+            return array_search($a, $order) > array_search($b, $order);
+        });
+
         // Implode array with comma to get a pretty string
-        return implode(', ', $frequencies);
+        return implode(' and ', $frequencies);
     }
 }
