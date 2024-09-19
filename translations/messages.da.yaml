@@ -752,3 +752,10 @@ workload_report_view_mode_enum:
         label: 'Loggede timer'
     billable:
         label: 'Fakturerbare timer'
+
+subscription:
+    button:
+        subscribe: 'Abonér'
+        edit: 'Rediger'
+        monthly: 'Månedligt'
+        quarterly: 'Kvartalsvist'
