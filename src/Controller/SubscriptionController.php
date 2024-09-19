@@ -70,41 +70,33 @@ class SubscriptionController extends AbstractController
         $report_type = key($content);
         switch ($report_type) {
             case 'hour_report':
-                unset($content[$report_type]['fromDate'], $content[$report_type]['toDate']);
+                // Unset data irrelevant for subscription
+                unset(
+                    $content[$report_type]['fromDate'],
+                    $content[$report_type]['toDate'],
+                    $content[$report_type]['version']
+                );
 
-                $subscription = $this->subscriptionRepository->findOneBy(['urlParams' => json_encode($content)]);
+                $subscriptions = $this->subscriptionRepository->findBy(['urlParams' => json_encode($content)]);
 
-                if ($subscription) {
-                    return new JsonResponse([], 200);
+                if ($subscriptions) {
+                    $frequencies = [];
+                    foreach ($subscriptions as $subscription) {
+                        $frequencies[] = $subscription->getFrequency()->value;
+                    }
+
+                    // Implode array with comma to get a pretty string
+                    $frequencies = implode(', ', $frequencies);
+
+                    return new JsonResponse(['success' => true, 'frequencies' => $frequencies], 200);
                 } else {
-                    return new JsonResponse([], 404);
+                    return new JsonResponse(['success' => false], 200);
                 }
 
                 break;
             default:
                 throw new EconomicsException('Unsupported report type: '.$report_type);
                 break;
-        }
-        try {
-            /* $projectId = $project->getId();
-
-             if (null == $projectId) {
-                 return new Response('Not found', 404);
-             }
-
-             $dataProvider = $project->getDataProvider();
-
-             if (null != $dataProvider) {
-                 $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
-                 $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
-             }*/
-
-            return new JsonResponse([], 200);
-        } catch (\Throwable $exception) {
-            return new JsonResponse(
-                ['message' => $exception->getMessage()],
-                (int) ($exception->getCode() > 0 ? $exception->getCode() : 500)
-            );
         }
     }
 }
