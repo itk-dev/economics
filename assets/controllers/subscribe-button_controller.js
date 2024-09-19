@@ -8,16 +8,38 @@ const states = {
 
 export default class extends Controller {
 
-    static targets = ["actionUnsubscribed", "actionSubscribed"];
+    static targets = ["actionButton", "actionFetchingSubscription", "actionUnsubscribed", "actionSubscribed"];
 
     connect() {
-        console.log('hallo');
+        const targets = {
+            parent: this.actionButtonTarget,
+            fetching: this.actionFetchingSubscriptionTarget,
+            unsubscribed: this.actionUnsubscribedTarget,
+            subscribed: this.actionSubscribedTarget,
+        };
+        const data = targets.parent.dataset;
+        const url = data.url;
+        const encodedParams = data.params;
+        const params = JSON.parse(encodedParams);
+
+        postRequestHandler(url, params)
+            .then(result => {
+                if (result.data.success) {
+                    if (result.data.frequencies) {
+                        data.frequencies = result.data.frequencies;
+                    }
+                    triggerState(states.subscribed, targets);
+                } else {
+                    triggerState(states.unsubscribed, targets);
+                }
+            });
     }
     action(e) {
         const targets = {
+            parent: e.target,
+            fetching: this.actionFetchingSubscriptionTarget,
             unsubscribed: this.actionUnsubscribedTarget,
             subscribed: this.actionSubscribedTarget,
-            parent: e.target,
         };
         const data = e.target.dataset;
         const url = data.url;
@@ -37,33 +59,7 @@ export default class extends Controller {
                     console.log('neiii');
                 }
             });
-/*        const targets = {
-            default: this.actionDefaultTarget,
-            loading: this.actionLoadingTarget,
-            success: this.actionSuccessTarget,
-            error: this.actionErrorTarget,
-            parent: e.target,
-        };
-        const data = e.target.dataset;
-        const url = data.url;
-        const reload = data.reload;
-
-        triggerState(states.loading, targets);
-        postRequestHandler(url)
-            .then(result => {
-                if (result.success) {
-                    triggerState(states.success, targets);
-                    setTimeout(()=>{
-                        reload && window.location.reload();
-                        triggerState(states.default, targets);
-                    }, 2000)
-                } else {
-                    triggerState(states.error, targets);
-                    alert(result.error);
-                }
-            });*/
     }
-
 }
 
 /**
