@@ -9,7 +9,7 @@
         type: 'subscribe',
         default_text: 'subscribe_button.subscribe'|trans,
         success_text: 'subscribe_button.unsubscribe'|trans,
-        url: path('app_subscription_check', {id: 1}),
+        url: path('app_subscription_check', {id: app.user.id}),
         params: app.request.query.all|json_encode,
         reload: false,
     }) }}
