@@ -767,7 +767,7 @@ subscription:
         hour_report: 'Timerapport'
     frequencies:
         monthly: 'Månedligt'
-        quarterly: 'kvartalsvist'
+        quarterly: 'Kvartalsvist'
     button:
         subscribe: 'Abonér'
         edit: 'Rediger'
