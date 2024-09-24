@@ -3,8 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Subscription;
+use App\Model\Invoices\SubscriptionFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Subscription>
@@ -16,7 +19,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * */
 class SubscriptionRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {
         parent::__construct($registry, Subscription::class);
     }
@@ -37,5 +40,20 @@ class SubscriptionRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /*
+     * Due to the way searching is implemented in the controller,
+     * the repository does not return a paginated element.
+     */
+    public function getFilteredData(string $email): array
+    {
+        $qb = $this->createQueryBuilder('subscription')
+            ->where('subscription.email = :email')
+            ->setParameter('email', $email);
+
+        $results = $qb->getQuery()->getResult();
+
+        return $results;
     }
 }
