@@ -59,6 +59,7 @@ navigation:
     hour_report: "Timerapport"
     workload_report: "Normtidsrapport"
     worker: "Medarbejdere"
+    subscription: "Abonnementer"
 
 planning:
     title: 'Planlægning'
@@ -754,6 +755,19 @@ workload_report_view_mode_enum:
         label: 'Fakturerbare timer'
 
 subscription:
+    title: 'Dine abonnementer'
+    subject: 'Rapporttype'
+    frequency: 'Frekvens'
+    urlParams: 'Abonnement'
+    urlParams_search: 'Søg i Abonnementer'
+    delete: 'Slet'
+    confirm_delete: "Er du sikker på at du vil slette dette abonnement?"
+    search: 'Søg'
+    subjects:
+        hour_report: 'Timerapport'
+    frequencies:
+        monthly: 'Månedligt'
+        quarterly: 'kvartalsvist'
     button:
         subscribe: 'Abonér'
         edit: 'Rediger'
