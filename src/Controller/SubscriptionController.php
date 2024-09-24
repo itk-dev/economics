@@ -41,7 +41,7 @@ class SubscriptionController extends AbstractController
         $subscriptionFilterData = new SubscriptionFilterData();
         $form = $this->createForm(SubscriptionFilterType::class, $subscriptionFilterData);
         $form->handleRequest($request);
-        $email = $user->getEmail();
+        $email = $user->getUserIdentifier();
         $filteredData = $subscriptionRepository->getFilteredData($email);
 
         $filteredItems = array_filter(
@@ -137,8 +137,10 @@ class SubscriptionController extends AbstractController
         } else {
             $subscription = new Subscription();
             $subscription->setEmail($userEmail);
-            $subscription->setSubject(SubscriptionSubjectEnum::tryFrom($report_type));
-            $subscription->setFrequency(SubscriptionFrequencyEnum::tryFrom($subscriptionType));
+            $subject = SubscriptionSubjectEnum::tryFrom($report_type);
+            $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: ' . $report_type));
+            $frequency = SubscriptionFrequencyEnum::tryFrom($subscriptionType);
+            $subscription->setFrequency($frequency ?? throw new \InvalidArgumentException('Invalid frequency type: ' . $subscriptionType));
             $subscription->setUrlParams(json_encode($content));
             $this->subscriptionRepository->save($subscription, true);
 
@@ -161,7 +163,7 @@ class SubscriptionController extends AbstractController
 
         // Sort by order of enum definition
         usort($frequencies, function ($a, $b) use ($order) {
-            return array_search($a, $order) > array_search($b, $order);
+            return array_search($a, $order) <=> array_search($b, $order);
         });
 
         // Implode array with comma to get a pretty string
@@ -174,13 +176,14 @@ class SubscriptionController extends AbstractController
      * Is required because search has to be performed in the controller,
      * as data is stored json_encoded and only contains ids.
      *
-     * @param Subscription $subscription The Subscription object to apply the filter to.
-     * @param SubscriptionFilterData $subscriptionFilterData The filter criteria.
-     * @return bool True if the filter is satisfied, false otherwise.
+     * @param Subscription $subscription the Subscription object to apply the filter to
+     * @param SubscriptionFilterData $subscriptionFilterData the filter criteria
+     *
+     * @return bool true if the filter is satisfied, false otherwise
      */
     private function subscriptionFilterHandler(Subscription $subscription, SubscriptionFilterData $subscriptionFilterData): bool
     {
-        $urlParamsArray = json_decode($subscription->getUrlParams(), true);
+        $urlParamsArray = json_decode($subscription->getUrlParams() ?? '', true);
         $dataProviderId = $urlParamsArray['hour_report']['dataProvider'];
         $projectId = $urlParamsArray['hour_report']['project'];
         $versionId = $urlParamsArray['hour_report']['version'] ?? null;
@@ -206,6 +209,7 @@ class SubscriptionController extends AbstractController
         foreach ($urlParams as $paramValue) {
             if (str_contains(strtolower($paramValue), $lowercasedFilter)) {
                 $subscription->setUrlParams(json_encode($urlParams));
+
                 return true;
             }
         }

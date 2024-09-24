@@ -3,10 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Subscription;
-use App\Model\Invoices\SubscriptionFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
 /**

@@ -13,9 +13,8 @@ class SubscriptionHandlerService
 
     public function handleSubscription(Subscription $subscription)
     {
-        switch($subscription->getSubject()) {
+        switch ($subscription->getSubject()) {
             case SubscriptionSubjectEnum::HOUR_REPORT:
-
                 break;
         }
     }

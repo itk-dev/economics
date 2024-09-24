@@ -39,10 +39,11 @@ class Subscription extends AbstractBaseEntity
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
         return $this;
     }
 
-    public function getSubject(): SubscriptionSubjectEnum
+    public function getSubject(): ?SubscriptionSubjectEnum
     {
         return $this->subject;
     }
@@ -50,6 +51,7 @@ class Subscription extends AbstractBaseEntity
     public function setSubject(SubscriptionSubjectEnum $subject): self
     {
         $this->subject = $subject;
+
         return $this;
     }
 
@@ -61,10 +63,11 @@ class Subscription extends AbstractBaseEntity
     public function setUrlParams(string $urlParams): self
     {
         $this->urlParams = $urlParams;
+
         return $this;
     }
 
-    public function getFrequency(): SubscriptionFrequencyEnum
+    public function getFrequency(): ?SubscriptionFrequencyEnum
     {
         return $this->frequency;
     }
@@ -72,6 +75,7 @@ class Subscription extends AbstractBaseEntity
     public function setFrequency(SubscriptionFrequencyEnum $frequency): self
     {
         $this->frequency = $frequency;
+
         return $this;
     }
 
