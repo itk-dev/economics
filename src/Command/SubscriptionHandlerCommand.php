@@ -47,7 +47,7 @@ class SubscriptionHandlerCommand extends Command
             $lastSent = $subscription->getLastSent();
             /* If $lastSent is undefined, we should assume that this is the first run since subscribing
             and set interval to always be true when checking below */
-            $interval = $lastSent ? $lastSent->diff($now) : new \DateInterval('P10Y');
+            $interval = $lastSent ? $lastSent->diff($now) : new \DateInterval('P12M');
             $subject = $subscription->getSubject()->value ?? null;
             if (!$subject) {
                 $this->logger->error('Subject was not found on subscription with ID='.$subscription->getId());
@@ -56,8 +56,11 @@ class SubscriptionHandlerCommand extends Command
             switch ($subscription->getFrequency()) {
                 case SubscriptionFrequencyEnum::FREQUENCY_MONTHLY:
                     if ($interval->m >= 1) {
+                        $fromDate = new \DateTime('first day of previous month');
+                        $toDate = new \DateTime('last day of previous month');
                         $io->writeln('Sending monthly '.$subject.' to '.$subscription->getEmail());
-                        $this->subscriptionHandlerService->handleSubscription($subscription);
+                        $message = $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
+                        $io->writeln($message);
                     }
                     break;
                 case SubscriptionFrequencyEnum::FREQUENCY_QUARTERLY:
