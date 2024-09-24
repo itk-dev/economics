@@ -47,7 +47,7 @@
                 <td class="table-td">{{ ('subscription.subjects.' ~ subscription.subject.value)|trans }}</td>
                 <td class="table-td">{{ ('subscription.frequencies.' ~ subscription.frequency.value)|trans }}</td>
                 <td class="table-td w-10">
-                    <a class="link" href="{{ path('app_subscription_delete', {'id': subscription.id}) }}"
+                    <a class="link" href="{{ path('app_subscription_delete', {id: subscription.id}) }}"
                        onclick="return confirm('{{ 'subscription.confirm_delete'|trans }}')">Delete</a>
                 </td>
             </tr>

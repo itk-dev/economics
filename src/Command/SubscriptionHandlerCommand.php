@@ -2,9 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Subscription;
 use App\Enum\SubscriptionFrequencyEnum;
-use App\Enum\SubscriptionSubjectEnum;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Repository\SubscriptionRepository;
@@ -51,10 +49,10 @@ class SubscriptionHandlerCommand extends Command
             and set interval to always be true when checking below */
             $interval = $lastSent ? $lastSent->diff($now) : new \DateInterval('P10Y');
             $subject = $subscription->getSubject()->value ?? null;
-                if (!$subject) {
-                    $this->logger->error('Subject was not found on subscription with ID='.$subscription->getId());
-                    continue;
-                }
+            if (!$subject) {
+                $this->logger->error('Subject was not found on subscription with ID='.$subscription->getId());
+                continue;
+            }
             switch ($subscription->getFrequency()) {
                 case SubscriptionFrequencyEnum::FREQUENCY_MONTHLY:
                     if ($interval->m >= 1) {

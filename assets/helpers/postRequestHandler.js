@@ -1,9 +1,9 @@
 export const postRequestHandler = async (updateUrl, data = null) => {
-    let result = {
+    const result = {
         success: false,
         status: null,
         data: null,
-        error: null
+        error: null,
     };
 
     try {

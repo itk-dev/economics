@@ -28,7 +28,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class SubscriptionController extends AbstractController
 {
     public function __construct(
-        private readonly subscriptionRepository $subscriptionRepository,
+        private readonly SubscriptionRepository $subscriptionRepository,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly ProjectRepository $projectRepository,
         private readonly VersionRepository $versionRepository,
@@ -138,9 +138,9 @@ class SubscriptionController extends AbstractController
             $subscription = new Subscription();
             $subscription->setEmail($userEmail);
             $subject = SubscriptionSubjectEnum::tryFrom($report_type);
-            $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: ' . $report_type));
+            $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: '.$report_type));
             $frequency = SubscriptionFrequencyEnum::tryFrom($subscriptionType);
-            $subscription->setFrequency($frequency ?? throw new \InvalidArgumentException('Invalid frequency type: ' . $subscriptionType));
+            $subscription->setFrequency($frequency ?? throw new \InvalidArgumentException('Invalid frequency type: '.$subscriptionType));
             $subscription->setUrlParams(json_encode($content));
             $this->subscriptionRepository->save($subscription, true);
 
