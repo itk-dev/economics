@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-164](https://github.com/itk-dev/economics/pull/164)
+  3298: Added report notification subscription
 * [PR-159](https://github.com/itk-dev/economics/pull/159)
   2396: Added year select to planning overview.
 * [PR-158](https://github.com/itk-dev/economics/pull/158)
