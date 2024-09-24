@@ -450,5 +450,15 @@
     .subscribe-button svg {
         display: inline-block;
     }
+    .subscription-details {
+        @apply w-80;
+    }
+    .subscription-details div {
+        @apply flex justify-between mb-1;
+    }
+    .subscription-details div span:last-child {
+        @apply text-right;
+        max-width: 200px;
+    }
 
 }
