@@ -2,64 +2,73 @@
 
 namespace App\Controller;
 
-use App\Entity\Project;
 use App\Entity\Subscription;
 use App\Entity\User;
 use App\Enum\SubscriptionFrequencyEnum;
 use App\Enum\SubscriptionSubjectEnum;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
-use App\Form\ProjectFilterType;
-use App\Form\ProjectType;
-use App\Model\Invoices\ProjectFilterData;
+use App\Form\SubscriptionFilterType;
+use App\Model\Invoices\SubscriptionFilterData;
+use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\SubscriptionRepository;
+use App\Repository\VersionRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/project')]
+#[Route('/admin/subscription')]
 #[IsGranted('ROLE_ADMIN')]
 class SubscriptionController extends AbstractController
 {
     public function __construct(
         private readonly subscriptionRepository $subscriptionRepository,
+        private readonly DataProviderRepository $dataProviderRepository,
+        private readonly ProjectRepository $projectRepository,
+        private readonly VersionRepository $versionRepository,
     ) {
     }
 
     #[Route('/', name: 'app_subscription_index', methods: ['GET'])]
-    public function index(Request $request, ProjectRepository $projectRepository): Response
+    public function index(Request $request, SubscriptionRepository $subscriptionRepository, UserInterface $user): Response
     {
-        $projectFilterData = new ProjectFilterData();
-        $form = $this->createForm(ProjectFilterType::class, $projectFilterData);
+        $subscriptionFilterData = new SubscriptionFilterData();
+        $form = $this->createForm(SubscriptionFilterType::class, $subscriptionFilterData);
         $form->handleRequest($request);
+        $email = $user->getEmail();
+        $filteredData = $subscriptionRepository->getFilteredData($email);
 
-        $pagination = $projectRepository->getFilteredPagination($projectFilterData, $request->query->getInt('page', 1));
+        $filteredItems = array_filter(
+            $filteredData,
+            function ($subscription) use ($subscriptionFilterData) {
+                return $this->subscriptionFilterHandler($subscription, $subscriptionFilterData);
+            }
+        );
 
-        return $this->render('project/index.html.twig', [
-            'projects' => $pagination,
+        return $this->render('subscription/index.html.twig', [
+            'subscriptions' => $filteredItems,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_subscription_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    #[Route('/{id}/delete', name: 'app_subscription_delete', methods: ['GET', 'POST'])]
+    public function delete(Request $request, Subscription $subscription, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ProjectType::class, $project);
+        $subscriptionId = $subscription->getId();
+        $subscription = $this->subscriptionRepository->find($subscriptionId);
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $projectRepository->save($project, true);
+        if ($subscription) {
+            $entityManager->remove($subscription);
+            $entityManager->flush();
         }
 
-        return $this->render('project/edit.html.twig', [
-            'project' => $project,
-            'form' => $form,
-        ]);
+        return $this->redirectToRoute('app_subscription_index', [], Response::HTTP_SEE_OTHER);
     }
 
     /**
@@ -157,5 +166,50 @@ class SubscriptionController extends AbstractController
 
         // Implode array with comma to get a pretty string
         return implode(', ', $frequencies);
+    }
+
+    /**
+     * Handles the subscription filter logic.
+     *
+     * Is required because search has to be performed in the controller,
+     * as data is stored json_encoded and only contains ids.
+     *
+     * @param Subscription $subscription The Subscription object to apply the filter to.
+     * @param SubscriptionFilterData $subscriptionFilterData The filter criteria.
+     * @return bool True if the filter is satisfied, false otherwise.
+     */
+    private function subscriptionFilterHandler(Subscription $subscription, SubscriptionFilterData $subscriptionFilterData): bool
+    {
+        $urlParamsArray = json_decode($subscription->getUrlParams(), true);
+        $dataProviderId = $urlParamsArray['hour_report']['dataProvider'];
+        $projectId = $urlParamsArray['hour_report']['project'];
+        $versionId = $urlParamsArray['hour_report']['version'] ?? null;
+
+        $dataProvider = $this->dataProviderRepository->find($dataProviderId);
+        $project = $this->projectRepository->find($projectId);
+        $version = $versionId ? $this->versionRepository->find($versionId) : null;
+
+        $urlParams = [
+            'dataProvider' => $dataProvider?->getName() ?? '',
+            'project' => $project?->getName() ?? '',
+            'version' => $version?->getName() ?? '',
+        ];
+
+        $subscription->setUrlParams(json_encode($urlParams));
+
+        if (!isset($subscriptionFilterData->urlParams)) {
+            return true;
+        }
+
+        $lowercasedFilter = strtolower($subscriptionFilterData->urlParams);
+
+        foreach ($urlParams as $paramValue) {
+            if (str_contains(strtolower($paramValue), $lowercasedFilter)) {
+                $subscription->setUrlParams(json_encode($urlParams));
+                return true;
+            }
+        }
+
+        return false;
     }
 }
