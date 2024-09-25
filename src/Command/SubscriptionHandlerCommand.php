@@ -41,13 +41,13 @@ class SubscriptionHandlerCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $subscriptions = $this->subscriptionRepository->findAll();
-        $now = new \DateTime();
+        $dateNow = new \DateTime();
 
         foreach ($subscriptions as $subscription) {
             $lastSent = $subscription->getLastSent();
             /* If $lastSent is undefined, we should assume that this is the first run since subscribing
             and set interval to always be true when checking below */
-            $interval = $lastSent ? $lastSent->diff($now) : new \DateInterval('P12M');
+            $interval = $lastSent ? $lastSent->diff($dateNow) : new \DateInterval('P12M');
             $subject = $subscription->getSubject()->value ?? null;
             if (!$subject) {
                 $this->logger->error('Subject was not found on subscription with ID='.$subscription->getId());
@@ -65,8 +65,10 @@ class SubscriptionHandlerCommand extends Command
                     break;
                 case SubscriptionFrequencyEnum::FREQUENCY_QUARTERLY:
                     if ($interval->m >= 3) {
+                        [$fromDate, $toDate] = $this->getLastQuarter($dateNow);
                         $io->writeln('Sending quarterly '.$subject.' to '.$subscription->getEmail());
-                        $this->subscriptionHandlerService->handleSubscription($subscription);
+                        $message = $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
+                        $io->writeln($message);
                     }
                     break;
             }
@@ -75,5 +77,50 @@ class SubscriptionHandlerCommand extends Command
         $io->writeln('Done! :D');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Get the start and end dates of the last quarter based on the given date.
+     *
+     * @param \Datetime $dateNow the current date
+     *
+     * @return array an array containing the start and end dates of the last quarter
+     */
+    private function getLastQuarter(\DateTime $dateNow): array
+    {
+        // Get current month
+        $currentMonth = (int) $dateNow->format('m');
+        $currentYear = (int) $dateNow->format('Y');
+
+        // Define previous quarter based on current month
+        if ($currentMonth <= 3) {
+            $quarterStartMonth = 10;
+            $quarterEndMonth = 12;
+            $yearAdjustment = -1;
+        } elseif ($currentMonth <= 6) {
+            $quarterStartMonth = 1;
+            $quarterEndMonth = 3;
+            $yearAdjustment = 0;
+        } elseif ($currentMonth <= 9) {
+            $quarterStartMonth = 4;
+            $quarterEndMonth = 6;
+            $yearAdjustment = 0;
+        } else {
+            $quarterStartMonth = 7;
+            $quarterEndMonth = 9;
+            $yearAdjustment = 0;
+        }
+
+        // adjust year if previous quarter was last year
+        $year = $currentYear + $yearAdjustment;
+
+        $fromDate = new \DateTime("$year-$quarterStartMonth-01");
+        $toDate = new \DateTime("$year-$quarterEndMonth-01");
+        $toDate->modify('last day of this month');
+
+        return [
+            'fromDate' => $fromDate->format('Y-m-d'),
+            'toDate' => $toDate->format('Y-m-d'),
+        ];
     }
 }

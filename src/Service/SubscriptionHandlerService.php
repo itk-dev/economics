@@ -9,6 +9,7 @@ use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
+use Psr\Log\LoggerInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -21,6 +22,7 @@ class SubscriptionHandlerService
         private readonly VersionRepository $versionRepository,
         private readonly HourReportService $hourReportService,
         private readonly Environment $environment,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -39,7 +41,7 @@ class SubscriptionHandlerService
                 $projectId = $hourReport->project ?? null;
                 $project = $this->projectRepository->find($projectId);
                 if (!$project) {
-                    exit('error');
+                    $this->logger->error('Project was not found with ID='.$projectId);
                 }
                 $versionId = $hourReport->version ?? null;
                 $version = null;
@@ -48,16 +50,21 @@ class SubscriptionHandlerService
                 }
                 $reportData = $this->hourReportService->getHourReport($project, $fromDate, $toDate, $version);
 
-                $renderedReport = $this->environment->render('reports/hour_report.html.twig', [
+                $renderedReport = $this->environment->render('subscription/subscription_hour_report.html.twig', [
                     'controller_name' => 'HourReportController',
                     'data' => $reportData,
                     'mode' => 'hour_report',
+                    'fromDate' => $fromDate->format('d-m-Y'),
+                    'toDate' => $toDate->format('d-m-Y'),
                 ]);
 
                 $mpdf = new Mpdf();
                 $mpdf->WriteHTML($renderedReport);
                 $mpdf->Output('testhest.pdf', \Mpdf\Output\Destination::FILE);
                 return 'Hello World!';
+                break;
+            default:
+
                 break;
         }
     }
