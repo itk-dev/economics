@@ -28,14 +28,18 @@ export default class extends Controller {
         const params = JSON.parse(encodedParams);
 
         postRequestHandler(url, params).then((result) => {
+            console.log(result.data);
             if (result.data.success) {
-                triggerState(states.subscribed, targets);
 
                 if (result.data.frequencies) {
+                    triggerState(states.subscribed, targets);
+
                     data.frequencies = result.data.frequencies;
+                } else {
+                    triggerState(states.unsubscribed, targets);
                 }
             } else {
-                triggerState(states.unsubscribed, targets);
+                document.getElementById('subscribe-module').style.display = 'none';
             }
         });
     }
@@ -73,7 +77,7 @@ export default class extends Controller {
                     }
                 }
             } else {
-                triggerState(states.unsubscribed, targets);
+                document.getElementById('subscribe-module').style.display = 'none';
             }
         });
     };

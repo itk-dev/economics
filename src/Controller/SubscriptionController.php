@@ -110,16 +110,13 @@ class SubscriptionController extends AbstractController
 
                 if ($subscriptions) {
                     $frequencies = $this->getFrequencies($subscriptions);
-
                     return new JsonResponse(['success' => true, 'frequencies' => $frequencies], 200);
                 } else {
-                    return new JsonResponse(['success' => false], 200);
+                    return new JsonResponse(['success' => true], 200);
                 }
-
                 break;
             default:
-                throw new EconomicsException('Unsupported report type: '.$report_type);
-                break;
+                return new JsonResponse(['success' => false], 200);
         }
     }
 
