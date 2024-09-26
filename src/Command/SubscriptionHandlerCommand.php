@@ -7,6 +7,7 @@ use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Repository\SubscriptionRepository;
 use App\Service\SubscriptionHandlerService;
+use Mpdf\MpdfException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -44,6 +45,7 @@ class SubscriptionHandlerCommand extends Command
         $dateNow = new \DateTime();
 
         foreach ($subscriptions as $subscription) {
+            $subscriptionId = $subscription->getId();
             $lastSent = $subscription->getLastSent();
             /* If $lastSent is undefined, we should assume that this is the first run since subscribing
             and set interval to always be true when checking below */
@@ -59,22 +61,28 @@ class SubscriptionHandlerCommand extends Command
                         $fromDate = new \DateTime('first day of previous month');
                         $toDate = new \DateTime('last day of previous month');
                         $io->writeln('Sending monthly '.$subject.' to '.$subscription->getEmail());
-                        $message = $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
-                        $io->writeln($message);
+                        try {
+                            $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
+                        } catch (MpdfException $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
+                        }
                     }
                     break;
                 case SubscriptionFrequencyEnum::FREQUENCY_QUARTERLY:
                     if ($interval->m >= 3) {
-                        [$fromDate, $toDate] = $this->getLastQuarter($dateNow);
+                        ['fromDate' => $fromDate, 'toDate' => $toDate] = $this->getLastQuarter($dateNow);
                         $io->writeln('Sending quarterly '.$subject.' to '.$subscription->getEmail());
-                        $message = $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
-                        $io->writeln($message);
+                        try {
+                            $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
+                        } catch (MpdfException $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
+                        }
                     }
                     break;
             }
         }
 
-        $io->writeln('Done! :D');
+        $io->writeln('Done processing '.count($subscriptions).' subscriptions.');
 
         return Command::SUCCESS;
     }
@@ -119,8 +127,8 @@ class SubscriptionHandlerCommand extends Command
         $toDate->modify('last day of this month');
 
         return [
-            'fromDate' => $fromDate->format('Y-m-d'),
-            'toDate' => $toDate->format('Y-m-d'),
+            'fromDate' => $fromDate,
+            'toDate' => $toDate,
         ];
     }
 }

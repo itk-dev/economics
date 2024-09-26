@@ -4,16 +4,12 @@ namespace App\Service;
 
 use App\Entity\Subscription;
 use App\Enum\SubscriptionSubjectEnum;
-use App\Exception\EconomicsException;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
 use Psr\Log\LoggerInterface;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 class SubscriptionHandlerService
 {
@@ -27,13 +23,15 @@ class SubscriptionHandlerService
     }
 
     /**
-     * @throws MpdfException
-     * @throws SyntaxError
-     * @throws EconomicsException
-     * @throws RuntimeError
-     * @throws LoaderError
+     * Handles a subscription.
+     *
+     * @param Subscription $subscription the subscription to handle
+     * @param mixed $fromDate the start date of the report to generate
+     * @param mixed $toDate the end date of the report to generate
+     *
+     * @throws MpdfException if there is an error with the PDF
      */
-    public function handleSubscription(Subscription $subscription, $fromDate, $toDate)
+    public function handleSubscription(Subscription $subscription, $fromDate, $toDate): void
     {
         switch ($subscription->getSubject()) {
             case SubscriptionSubjectEnum::HOUR_REPORT:
@@ -60,11 +58,9 @@ class SubscriptionHandlerService
 
                 $mpdf = new Mpdf();
                 $mpdf->WriteHTML($renderedReport);
-                $mpdf->Output('testhest.pdf', \Mpdf\Output\Destination::FILE);
-                return 'Hello World!';
+                $mpdf->Output('testhest'.$subscription->getId().'.pdf', \Mpdf\Output\Destination::FILE);
                 break;
             default:
-
                 break;
         }
     }
