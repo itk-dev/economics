@@ -44,6 +44,7 @@ class WorkloadReportService
             $workloadReportWorker = new WorkloadReportWorker();
             $workloadReportWorker->setEmail($worker->getUserIdentifier());
             $workloadReportWorker->setWorkload($worker->getWorkload());
+            $workloadReportWorker->setName($worker->getName());
             $currentPeriodReached = false;
             $percentageTotal = 0;
             $count = 0;
