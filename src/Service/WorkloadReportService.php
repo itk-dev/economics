@@ -36,7 +36,6 @@ class WorkloadReportService
         $periods = $this->getPeriods($viewPeriodType, $year);
 
         foreach ($periods as $period) {
-            // Get period specific readable period representation for table headers.
             $readablePeriod = $this->getReadablePeriod($period, $viewPeriodType);
             $workloadReportData->period->set((string) $period, $readablePeriod);
         }
@@ -45,18 +44,20 @@ class WorkloadReportService
             $workloadReportWorker = new WorkloadReportWorker();
             $workloadReportWorker->setEmail($worker->getUserIdentifier());
             $workloadReportWorker->setWorkload($worker->getWorkload());
+            $currentPeriodReached = false;
+            $percentageTotal = 0;
+            $count = 0;
+
 
             foreach ($periods as $period) {
-                // Add current period match-point (current week-number, month-number etc.)
                 $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
 
                 if ($period === $currentPeriodNumeric) {
                     $workloadReportData->setCurrentPeriodNumeric($period);
+                    $currentPeriodReached = true;
                 }
-                // Get first and last date in period.
-                ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $this->getDatesOfPeriod($period, $year, $viewPeriodType);
 
-                // Get all worklogs between the two dates.
+                ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $this->getDatesOfPeriod($period, $year, $viewPeriodType);
                 $workerIdentifier = $worker->getUserIdentifier();
 
                 if (empty($workerIdentifier)) {
@@ -64,25 +65,30 @@ class WorkloadReportService
                 }
 
                 $worklogs = $this->getWorklogs($viewMode, $workerIdentifier, $dateFrom, $dateTo);
-
-                // Tally up logged hours in gathered worklogs for current period.
                 $loggedHours = 0;
                 foreach ($worklogs as $worklog) {
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
                 $workerWorkload = $worker->getWorkload();
-
                 if (!$workerWorkload) {
                     $workerId = $worker->getUserIdentifier();
                     throw new \Exception("Workload of worker: $workerId cannot be unset when generating workload report.");
                 }
-                // Get total logged percentage based on weekly workload.
+
                 $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
 
-                // Add percentage result to worker for current period.
+                if (!$currentPeriodReached || $count == 0) {
+                    $percentageTotal += $roundedLoggedPercentage;
+                    ++$count;
+                }
+
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
             }
+
+
+            $workloadReportWorker->average = round($percentageTotal / $count, 2);
+
             $workloadReportData->workers->add($workloadReportWorker);
         }
 
