@@ -1,9 +1,9 @@
 export const postRequestHandler = async (updateUrl) => {
-    let result = {
+    const result = {
         success: false,
         status: null,
         data: null,
-        error: null
+        error: null,
     };
 
     try {
@@ -14,7 +14,7 @@ export const postRequestHandler = async (updateUrl) => {
             credentials: "same-origin",
             headers: { "Content-Type": "application/json" },
             redirect: "follow",
-            referrerPolicy: "no-referrer"
+            referrerPolicy: "no-referrer",
         });
 
         result.status = response.status;
