@@ -48,7 +48,6 @@ class WorkloadReportService
             $percentageTotal = 0;
             $count = 0;
 
-
             foreach ($periods as $period) {
                 $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
 
@@ -78,14 +77,13 @@ class WorkloadReportService
 
                 $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
 
-                if (!$currentPeriodReached || $count == 0) {
+                if (!$currentPeriodReached || 0 == $count) {
                     $percentageTotal += $roundedLoggedPercentage;
                     ++$count;
                 }
 
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
             }
-
 
             $workloadReportWorker->average = round($percentageTotal / $count, 2);
 
