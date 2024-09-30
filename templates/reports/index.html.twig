@@ -1,19 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'reports.title'|trans }}{% endblock %}
+{% block title %}{{ 'reports.hour_report.title'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ 'reports.title'|trans }}</h1>
+    <h1 class="page-title">{{ 'reports.hour_report.title'|trans }}</h1>
 
-    <div class="content">
-      <div class="mt-3 mb-3">
-        {{ 'reports.description'|trans }}
-      </div>
+    {{ form_start(form) }}
+    {{ form_row(form.dataProvider) }}
+    {{ form_end(form) }}
 
-      <div class="actions">
-        <a class="btn-primary" href="{{ path('app_sprint_report', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'reports.fetch_sprint_report'|trans }}</a>
-        <a class="btn-primary" href="{{ path('app_management_reports_create', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'reports.fetch_management_report'|trans }}</a>
-        <a class="btn-primary" href="{{ path('app_team_reports_create', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'reports.fetch_team_report'|trans }}</a>
-      </div>
-    </div>
+    {% if error is not null %}
+        {{ include('components/alert.html.twig', {level: 'danger', text: error}) }}
+    {% endif %}
+    {% if planningData is not null %}
+        <div class="planning-wrapper">
+
+            {% set weeks = planningData.weeks %}
+            {% set assignees = planningData.assignees %}
+            {% set projects = planningData.projects %}
+
+            {% if mode is defined %}
+                {{ include('reports/' ~ mode ~ '.html.twig') }}
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}

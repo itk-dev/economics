@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'worker.title'|trans }}{% endblock %}
+
+{% block content %}
+
+    {{ include('components/page-header.html.twig', {
+        title: 'worker.title'|trans,
+    }) }}
+
+    <p class="mb-5 text-sm">{{ 'worker.index_description'|trans }}</p>
+
+    <table class="table margin-bottom">
+        <thead class="table-th">
+            <tr>
+                <th class="table-th">{{ 'worker.id'|trans }}</th>
+                <th class="table-th">{{ 'worker.email'|trans }}</th>
+                <th class="table-th">{{ 'worker.name'|trans }}</th>
+                <th class="table-th">{{ 'worker.workload'|trans }}</th>
+                <th class="table-th">{{ 'worker.actions'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for index, worker in workers %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ worker.id }}</td>
+                <td class="table-td">{{ worker.email }}</td>
+                <td class="table-td">{{ worker.name }}</td>
+                <td class="table-td">{{ worker.workload }}</td>
+                <td class="table-td">
+                    <a href="{{ path('app_worker_edit', {id: worker.id}) }}">{{ 'worker.action_edit'|trans }}</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">{{ 'worker.no_records_found'|trans }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -3,14 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\InvoiceEntry;
+use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
+use App\Enum\BillableKindsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
-use App\Service\ViewService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Knp\Component\Pager\Pagination\PaginationInterface;
-use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Worklog>
@@ -22,9 +21,7 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class WorklogRepository extends ServiceEntityRepository
 {
-    private const WORKLOGS_PAGINATOR_LIMIT = 50;
-
-    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator, private readonly ViewService $viewService)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Worklog::class);
     }
@@ -76,7 +73,7 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         if (!empty($filterData->version) || !empty($filterData->epic)) {
-            $qb->leftJoin('App\Entity\Issue', 'issue', 'WITH', 'issue.id = worklog.issue');
+            $qb->leftJoin(Issue::class, 'issue', 'WITH', 'issue.id = worklog.issue');
         }
 
         if (!empty($filterData->version)) {
@@ -99,70 +96,41 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    public function getTeamReportData(\DateTime $from, \DateTime $to, $viewId, $page): PaginationInterface
+    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
     {
-        $view = $this->viewService->getViewFromId($viewId);
-        $parameters = [
-            'date_from' => $from->format('Y-m-d H:i:s'),
-            'date_to' => $to->format('Y-m-d H:i:s'),
-        ];
+        $qb = $this->createQueryBuilder('worklog');
 
-        if (!empty($view)) {
-            $dataProviders = $view->getDataProviders()->getValues();
-            $projects = $view->getProjects()->getValues();
-            $workers = $view->getWorkers();
-        }
-
-        $qb = $this->createQueryBuilder('wor');
-        $qb->where($qb->expr()->between('wor.started', ':date_from', ':date_to'));
-        $qb->leftJoin('wor.project', 'project');
-        $qb->leftJoin('wor.issue', 'issue');
-        $qb->select('wor', 'project', 'issue');
-
-        if (!empty($projects)) {
-            $qb->andWhere('wor.project IN (:projects)');
-            $parameters['projects'] = [];
-            foreach ($projects as $project) {
-                $parameters['projects'][] = $project->getId();
-            }
-        }
-
-        if (!empty($dataProviders)) {
-            $qb->andWhere('wor.dataProvider IN (:dataProviders)');
-            $parameters['dataProviders'] = [];
-            foreach ($dataProviders as $dataProvider) {
-                $parameters['dataProviders'][] = $dataProvider->getId();
-            }
-        }
-
-        if (!empty($workers)) {
-            $qb->andWhere('wor.worker IN (:workers)');
-            $parameters['workers'] = $workers;
-        }
-
-        $qb->setParameters($parameters);
-
-        return $this->paginator->paginate(
-            $qb,
-            $page,
-            self::WORKLOGS_PAGINATOR_LIMIT,
-            ['defaultSortFieldName' => 'wor.started', 'defaultSortDirection' => 'asc']
-        );
+        return $qb
+            ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
+            ->andWhere('worklog.worker = :worker')
+            ->setParameters([
+                'worker' => $workerIdentifier,
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+            ])
+            ->getQuery()->getResult();
     }
 
-    public function getDistinctWorklogUsers(): array
+    public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
     {
-        $qb = $this->createQueryBuilder('wor');
-        $result = $qb
-            ->distinct()
-            ->select('wor.worker')
+        $qb = $this->createQueryBuilder('worklog');
+
+        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project');
+
+        return $qb
+            ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
+            ->andWhere('worklog.worker = :worker')
+            ->andWhere($qb->expr()->in('worklog.kind', ':billableKinds'))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('worklog.isBilled', '1'),
+                $qb->expr()->eq('project.isBillable', '1'),
+            ))
+            ->setParameters([
+                'worker' => $workerIdentifier,
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+                'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
+            ])
             ->getQuery()->getResult();
-
-        $workers = [];
-        foreach ($result as $workLogWorker) {
-            $workers[$workLogWorker['worker']] = $workLogWorker['worker'];
-        }
-
-        return $workers;
     }
 }

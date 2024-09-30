@@ -1,30 +1,23 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'planning.title'|trans }}{% endblock %}
+{% set title = ('planning.titles.' ~ mode|default('users'))|trans %}
+
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ 'planning.title'|trans }}</h1>
+    <h1 class="page-title">{{ title }}</h1>
 
     {{ form_start(form) }}
-    {{ form_row(form.dataProvider) }}
-    <div>
-        <button class="button form-element">{{ 'planning.search'|trans }}</button>
-    </div>
+        {{ form_rest(form) }}
     {{ form_end(form) }}
 
-    {% if error is not null %}
-        {% include 'components/alert.html.twig' with {level: "danger", text: error} %}
-    {% endif %}
     {% if planningData is not null %}
-        <div class="planning-wrapper">
+        {% set weeks = planningData.weeks %}
+        {% set assignees = planningData.assignees %}
+        {% set projects = planningData.projects %}
 
-            {% set weeks = planningData.weeks %}
-            {% set assignees = planningData.assignees %}
-            {% set projects = planningData.projects %}
-
-            {% if mode is defined %}
-                {% include 'planning/' ~ mode ~ '.html.twig' %}
-            {% endif %}
+        <div class="planning-wrapper loading" {{ stimulus_controller('loader') }}>
+            {{ include('planning/' ~ mode|default('users') ~ '.html.twig') }}
         </div>
     {% endif %}
 {% endblock %}

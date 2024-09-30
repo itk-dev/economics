@@ -8,6 +8,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.2] - 2024-09-12
+
+* [PR-163](https://github.com/itk-dev/economics/pull/163)
+  2454: Hide done tasks in planning overview.
+* [PR-159](https://github.com/itk-dev/economics/pull/159)
+  2396: Added year select to planning overview.
+* [PR-158](https://github.com/itk-dev/economics/pull/158)
+  2299: Fixed isBillable filter for project list.
+  2299: Removed unused code from planning overviews.
+* [PR-157](https://github.com/itk-dev/economics/pull/157)
+  2299: Npm audit fixes.
+* [PR-156](https://github.com/itk-dev/economics/pull/156)
+  2299: Composer update.
+* [PR-155](https://github.com/itk-dev/economics/pull/155)
+  2294: Added worker name field and added to planning overview.
+* [PR-154](https://github.com/itk-dev/economics/pull/154)
+  2265: Changed X column in external exported csv.
+
+## [2.4.1] - 2024-09-04
+
+* [PR-152](https://github.com/itk-dev/economics/pull/152)
+  2244: Handling Leantime timestamps when importing.
+
+## [2.4.0] - 2024-08-20
+
+* [PR-149](https://github.com/itk-dev/economics/pull/149)
+  2096: Set default dataprovider on hourReport.
+* [PR-148](https://github.com/itk-dev/economics/pull/148)
+  2031: Project overview standard settings.
+* [PR-147](https://github.com/itk-dev/economics/pull/147)
+  2033: Sync worklogs from invoice entry.
+* [PR-146](https://github.com/itk-dev/economics/pull/146)
+  2034: Invoice date select continuity.
+* [PR-145](https://github.com/itk-dev/economics/pull/145)
+  2059: Specify workload report week definition.
+* [PR-143](https://github.com/itk-dev/economics/pull/143)
+  2050: Hour-report issue duedate ignore.
+* [PR-142](https://github.com/itk-dev/economics/pull/142)
+  2041: Revise Leantime issue status sync.
+* [PR-138](https://github.com/itk-dev/economics/pull/138)
+  1867: Issue status as enum.
+* [PR-135](https://github.com/itk-dev/economics/pull/135)
+  1772: Removed views.
+* [PR-136](https://github.com/itk-dev/economics/pull/136)
+  1774: Planning view use service.
+* [PR-137](https://github.com/itk-dev/economics/pull/137)
+  1812: Minor hour report improvements.
+* [PR-134](https://github.com/itk-dev/economics/pull/134)
+  1632: Remove team report.
+* [PR-133](https://github.com/itk-dev/economics/pull/133)
+  1742: Simplified hour report form.
+* [PR-132](https://github.com/itk-dev/economics/pull/132)
+  1742: Fixed synchronization issues.
+* [PR-128](https://github.com/itk-dev/economics/pull/128)
+  1595: Added retryable http client decorator for handling rate limiting.
+* [PR-117](https://github.com/itk-dev/economics/pull/117)
+  1211: Added hour report
+  NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when releasing.
+* [PR-124](https://github.com/itk-dev/economics/pull/124)
+  710: Added workload report
+* [PR-129](https://github.com/itk-dev/economics/pull/129)
+  1632: Added invoicing rate view to workload report
+
 ## [2.3.3] - 2024-07-10
 
 * [PR-141](https://github.com/itk-dev/economics/pull/141)
@@ -274,7 +337,10 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.3.3...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.4.2...HEAD
+[2.4.2]: https://github.com/itk-dev/economics/compare/2.4.1...2.4.2
+[2.4.1]: https://github.com/itk-dev/economics/compare/2.4.0...2.4.1
+[2.4.0]: https://github.com/itk-dev/economics/compare/2.3.3...2.4.0
 [2.3.3]: https://github.com/itk-dev/economics/compare/2.3.2...2.3.3
 [2.3.2]: https://github.com/itk-dev/economics/compare/2.3.1...2.3.2
 [2.3.1]: https://github.com/itk-dev/economics/compare/2.3.0...2.3.2

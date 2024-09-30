@@ -2,7 +2,7 @@
 
 {% block title %}{{ 'issue.title'|trans({'%project%': project.name}) }}{% endblock %}
 
-{% import "_partials.html.twig" as macros %}
+{% import '_partials.html.twig' as macros %}
 
 {% block content %}
     <h1 class="page-title">{{ 'issue.title'|trans({'%project%': project.name}) }}</h1>
@@ -35,13 +35,13 @@
                 <td class="table-td">{{ issue.name }}</td>
                 <td class="table-td">{{ issue.status }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_issue_show', {project: issue.project.id, id: issue.id, _fragment: 'products'}|merge(view is defined ? {view: view} : {})) }}">
+                    <a class="link" href="{{ path('app_issue_show', {project: issue.project.id, id: issue.id, _fragment: 'products'}) }}">
                         {{ issue.products|length }}
                     </a>
                 </td>
 
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_issue_show', {project: issue.project.id, id: issue.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'issue.action_show'|trans }}</a>
+                    <a class="link" href="{{ path('app_issue_show', {project: issue.project.id, id: issue.id}) }}">{{ 'issue.action_show'|trans }}</a>
                 </td>
             </tr>
         {% endfor %}

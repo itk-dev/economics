@@ -244,7 +244,24 @@ jobs:
                     MYSQL_PASSWORD: db
                     MYSQL_DATABASE: db_test
                     MYSQL_ROOT_PASSWORD: password
-                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+                # https://mariadb.org/mariadb-server-docker-official-images-healthcheck-without-mysqladmin/
+                # healthcheck:
+                #     test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+                #     start_period: 1m
+                #     start_interval: 10s
+                #     interval: 5s
+                #     timeout: 2s
+                #     retries: 3
+                #
+                # Actions report
+                #
+                #     The workflow is not valid. .github/workflows/pr.yml (Line: 17, Col: 17): Unexpected value 'healthcheck'
+                #
+                options: >-
+                    --health-cmd="healthcheck.sh --connect --innodb_initialized"
+                    --health-interval=5s
+                    --health-timeout=2s
+                    --health-retries=3
         strategy:
             fail-fast: false
             matrix:

@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -25,12 +23,8 @@ class User implements UserInterface
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: View::class, inversedBy: 'users')]
-    private Collection $views;
-
     public function __construct()
     {
-        $this->views = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,30 +88,6 @@ class User implements UserInterface
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, View>
-     */
-    public function getViews(): Collection
-    {
-        return $this->views;
-    }
-
-    public function addView(View $view): static
-    {
-        if (!$this->views->contains($view)) {
-            $this->views->add($view);
-        }
-
-        return $this;
-    }
-
-    public function removeView(View $view): static
-    {
-        $this->views->removeElement($view);
 
         return $this;
     }

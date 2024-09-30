@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Issue;
 use App\Entity\Project;
+use App\Entity\Version;
+use App\Enum\IssueStatusEnum;
 use App\Model\Invoices\IssueFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,7 +24,7 @@ class IssueRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
-        private readonly PaginatorInterface $paginator
+        private readonly PaginatorInterface $paginator,
     ) {
         parent::__construct($registry, Issue::class);
     }
@@ -86,28 +88,34 @@ class IssueRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('issue');
         $qb->andWhere($qb->expr()->eq('issue.project', ':project'));
-        $qb->setParameter('project', $project);
+        $qb->setParameter('project', $project->getId());
         $qb->andWhere('issue.resolutionDate >= :periodStart');
         $qb->andWhere('issue.resolutionDate <= :periodEnd');
         $qb->setParameter('periodStart', $from);
         $qb->setParameter('periodEnd', $to);
-        $qb->andWhere('issue.status IN (:statuses)');
-        $qb->setParameter('statuses', $this->getClosedStatuses($project));
+        $qb->andWhere($qb->expr()->eq('issue.status', ':closedStatus'));
+        $qb->setParameter('closedStatus', IssueStatusEnum::DONE->value);
 
         return $qb->getQuery()->execute();
     }
 
-    /**
-     * Get "closed" statuses for a project.
-     *
-     * @return string[]|array
-     */
-    private function getClosedStatuses(Project $project): array
+    public function issuesContainingVersion(Version $version): array
     {
-        // @TODO Get this from project somehow.
-        return [
-            'Lukket',
-            '0',
-        ];
+        $qb = $this->createQueryBuilder('issue')
+            ->where(':version MEMBER OF issue.versions')
+            ->setParameter('version', $version);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findIssuesInDateRange(string $startDate, string $endDate)
+    {
+        return $this->createQueryBuilder('i')
+            ->where('i.dueDate >= :start')
+            ->andWhere('i.dueDate < :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->getQuery()
+            ->getResult();
     }
 }

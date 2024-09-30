@@ -11,4 +11,5 @@ class WorklogData
     public \DateTime $started;
     public ?bool $projectTrackerIsBilled = null;
     public string $projectTrackerIssueId;
+    public string $kind;
 }

@@ -9,7 +9,9 @@ use App\Entity\Invoice;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
+use App\Enum\BillableKindsEnum;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Model\SprintReport\SprintReportVersion;
@@ -20,6 +22,7 @@ use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
+use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -41,6 +44,7 @@ class DataSynchronizationService
         private readonly InvoiceRepository $invoiceRepository,
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
+        private readonly WorkerRepository $workerRepository,
     ) {
     }
 
@@ -192,7 +196,7 @@ class DataSynchronizationService
      * @throws EconomicsException
      * @throws UnsupportedDataProviderException
      */
-    public function syncIssuesForProject(int $projectId, callable $progressCallback = null, DataProvider $dataProvider): void
+    public function syncIssuesForProject(int $projectId, ?callable $progressCallback = null, DataProvider $dataProvider): void
     {
         $dataProviderId = $dataProvider->getId();
 
@@ -245,6 +249,11 @@ class DataSynchronizationService
                 $issue->setProjectTrackerKey($issueDatum->projectTrackerKey);
                 $issue->setResolutionDate($issueDatum->resolutionDate);
                 $issue->setStatus($issueDatum->status);
+                $issue->setPlanHours($issueDatum->planHours);
+                $issue->setHoursRemaining($issueDatum->hourRemaining);
+                $issue->setDueDate($issueDatum->dueDate);
+                $issue->setWorker($issueDatum->worker);
+                $issue->setLinkToIssue($issueDatum->linkToIssue);
 
                 // Leantime (as of now) supports only a single version (milestone) per issue.
                 if (LeantimeApiService::class === $dataProvider?->getClass()) {
@@ -284,7 +293,7 @@ class DataSynchronizationService
      * @throws EconomicsException
      * @throws UnsupportedDataProviderException
      */
-    public function syncWorklogsForProject(int $projectId, callable $progressCallback = null, DataProvider $dataProvider): void
+    public function syncWorklogsForProject(int $projectId, ?callable $progressCallback = null, DataProvider $dataProvider): void
     {
         $dataProviderId = $dataProvider->getId();
 
@@ -364,7 +373,14 @@ class DataSynchronizationService
                 ->setStarted($worklogDatum->started)
                 ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
                 ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
-                ->setIssue($issue);
+                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
+                ->setIssue($issue)
+                ->setKind(BillableKindsEnum::tryFrom($worklogDatum->kind));
+
+            if (null != $worklog->getProjectTrackerIssueId()) {
+                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
+                $worklog->setIssue($issue);
+            }
 
             if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
                 $worklog->setIsBilled(true);
@@ -374,6 +390,7 @@ class DataSynchronizationService
             $project->addWorklog($worklog);
             // Keep the worklog.
             $worklogId = $worklog->getId();
+
             if (null !== $worklogId) {
                 unset($worklogsToDeleteIds[$worklogId]);
             }
@@ -382,6 +399,20 @@ class DataSynchronizationService
                 $progressCallback($worklogsAdded, count($worklogData->worklogData));
 
                 ++$worklogsAdded;
+            }
+
+            $workerEmail = $worklog->getWorker();
+
+            if ($workerEmail && filter_var($workerEmail, FILTER_VALIDATE_EMAIL)) {
+                $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
+
+                if (!$worker) {
+                    $worker = new Worker();
+                    $worker->setEmail($workerEmail);
+
+                    $this->entityManager->persist($worker);
+                    $this->entityManager->flush();
+                }
             }
 
             // Flush and clear for each batch.

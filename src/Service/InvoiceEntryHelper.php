@@ -12,7 +12,7 @@ class InvoiceEntryHelper
     private readonly array $options;
 
     public function __construct(
-        array $options
+        array $options,
     ) {
         $this->options = $this->resolveOptions($options);
     }

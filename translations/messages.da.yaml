@@ -41,7 +41,7 @@ navigation:
     create_project: "Projektopretter"
     invoices: "Faktura"
     planning: "Planlægning"
-    sprint_report: "Hent sprintrapport"
+    sprint_report: "Sprintrapport"
     title: "Economics"
     accounts: "Konto"
     project_billing: "Projektfakturering"
@@ -53,13 +53,18 @@ navigation:
     user: "Brugere"
     data: "Data"
     admin: "Admin"
-    management_report: "Hent ledelsesrapport"
-    team_report: "Hent teamrapport"
+    management_report: "Ledelsesrapport"
     planning_users: 'Brugere'
     planning_projects: 'Projekter'
+    hour_report: "Timerapport"
+    workload_report: "Normtidsrapport"
+    worker: "Medarbejdere"
 
 planning:
-    title: "Planlægning"
+    title: 'Planlægning'
+    titles:
+        projects: "Planlægning: Projekter"
+        users: "Planlægning: Brugere"
     assignees: "Brugere"
     projects: "Projekter"
     hidden-entries: "Skjulte brugere"
@@ -70,6 +75,7 @@ planning:
     week_view: "Ugevisning"
     sprint_view: "Sprintvisning"
     description: 'Vælg visning'
+    year: 'Vælg år'
 
 client:
     title: "Kunder"
@@ -281,8 +287,8 @@ invoices:
     list_exported_date: "Eksportdato"
     list_recorded_date: "Bogført"
     list_no_cost: UB
-    list_no_cost_true: 'J'
-    list_no_cost_false: 'N'
+    list_no_cost_true: 'Ja'
+    list_no_cost_false: 'Nej'
     client_type_is_null: ""
     generate_description: "Autoudfyld"
     client_project_lead: "Project Lead"
@@ -349,6 +355,8 @@ worklog:
     only_available: "Kun \"frie\" worklogs"
     only_available_helptext: "Worklogs der ikke er i en anden fakturalinje."
     title_show: "Worklogs"
+    sync_worklogs: "Synkroniser worklogs"
+    sync_worklogs_success: "Succes - siden opdateres.."
 
 invoice_entry:
     amount: "Antal enheder"
@@ -516,6 +524,10 @@ project:
     actions: 'Handlinger'
     action_edit: 'Redigér'
     action_view_issues: "Vis opgaver"
+    is_billable: "Fakturerbart"
+    is_billable_null: ""
+    is_billable_true: "Fakturerbart"
+    is_billable_false: "Ikke fakturerbart"
 
 reports:
     title: 'Rapporter'
@@ -523,7 +535,6 @@ reports:
     fetch_sprint_report: 'Hent sprintrapport'
     management-title: 'Ny ledelsesrapport'
     fetch_management_report: 'Hent ledelsesrapport'
-    fetch_team_report: 'Hent teamrapport'
     from: 'Fra'
     to: 'Til'
     management-title-output: 'Ledelsesrapport %from% - %to%'
@@ -535,18 +546,34 @@ reports:
     management-3rd-quarter: '3. Kvartal'
     management-4th-quarter: '4. Kvartal'
     management-export-xls: 'Eksportér til excel'
-    team-title: 'Ny teamrapport'
-    team-title-output: 'Teamrapport %from% - %to%'
-    team-description: 'Hent worklogs på tværs af projekter og teams'
-    team-export-xls: 'Eksportér til excel'
-    team-result: 'Viser: %items_per_page% af %items_total% elementer'
-    team_project_name: 'Projektnavn'
-    team_user: 'Bruger / medarbejder'
-    team_issue_id: 'Issue id'
-    team_date: 'Registreringsdato'
-    team_time_spent: 'Timeforbrug'
-    team_description: 'Beskrivelse'
-    team_no_records_found: 'Ingen resultater'
+
+workload_report:
+    title: 'Workloadrapport'
+    select_data_provider: 'Vælg datakilde'
+    workload: 'Normtid'
+    logged_hours: 'Loggede timer'
+    select_viewmode: 'Vælg visningstype'
+    select_view_period_type: 'Vælg periodetype'
+    week: 'Uge'
+    workers: 'Medarbejdere'
+    worker: 'Medarbejder'
+    hidden-entries: 'Skjulte medarbejdere'
+    submit: 'Hent'
+
+hour_report:
+    title: 'Timerapport'
+    data_provider: 'Datakilde'
+    project: 'Projekt'
+    version: 'Version'
+    estimated_hours: 'Estimeret'
+    logged_hours: 'Registeret'
+    total: 'Total'
+    from_date: 'Fra dato'
+    to_date: 'Til dato'
+    select_data_provider: 'Vælg datakilde'
+    select_project: 'Vælg project'
+    all_versions: 'Alle versioner'
+    tags: 'Tags'
 
 view:
     list_title: 'Views'
@@ -697,3 +724,31 @@ issue:
         description: "Beskrivelse"
         total: "I alt"
         list_no_records_found: "Ingen produkter"
+
+worker:
+    title: 'Medarbejdere'
+    index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
+    id: 'Id'
+    name: 'Navn'
+    email: 'Email'
+    workload: 'Normtid (inkl. middagspause)'
+    actions: 'Handlinger'
+    action_edit: 'Rediger'
+    edit: 'Rediger medarbejder'
+    action_save: 'Gem'
+    back_to_list: "Tilbage til listen"
+    no_records_found: 'Ingen arbejdere'
+
+workload_report_period_type_enum:
+    week:
+        label: 'Uge'
+    month:
+        label: 'Måned'
+    year:
+        label: 'År'
+
+workload_report_view_mode_enum:
+    workload:
+        label: 'Loggede timer'
+    billable:
+        label: 'Fakturerbare timer'

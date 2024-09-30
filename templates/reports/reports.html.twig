@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'hour_report.title'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ (mode ~ '.title')|trans() }}</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.dataProvider) }}
+    {{ form_end(form) }}
+
+    {% if error is defined and error is not null %}
+        {{ include('components/alert.html.twig', {level: 'danger', text: error}) }}
+    {% endif %}
+    {% if data is not empty %}
+            <div class="planning-wrapper">
+                {% if mode is defined %}
+                    {{ include('reports/' ~ mode ~ '.html.twig') }}
+                {% endif %}
+            </div>
+    {% endif %}
+{% endblock %}

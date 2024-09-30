@@ -7,8 +7,11 @@ use App\Entity\DataProvider;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
+use App\Enum\BillableKindsEnum;
 use App\Enum\ClientTypeEnum;
+use App\Enum\IssueStatusEnum;
 use App\Service\JiraApiService;
 use App\Service\LeantimeApiService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -38,6 +41,16 @@ class AppFixtures extends Fixture
 
         $dataProviders[] = $dataProvider2;
 
+        $workerArray = [];
+
+        for ($i = 0; $i < 10; ++$i) {
+            $worker = new Worker();
+            $worker->setEmail('test'.$i.'@test');
+            $worker->setWorkload(37);
+            $manager->persist($worker);
+            $workerArray[] = 'test'.$i.'@test';
+        }
+
         foreach ($dataProviders as $key => $dataProvider) {
             $manager->persist($dataProvider);
 
@@ -59,6 +72,8 @@ class AppFixtures extends Fixture
             }
 
             for ($i = 0; $i < 10; ++$i) {
+                $modBillable = 0 == $i % 2 ? true : false;
+
                 $project = new Project();
                 $project->setName("project-$key-$i");
                 $project->setProjectTrackerId("project-$key-$i");
@@ -68,6 +83,7 @@ class AppFixtures extends Fixture
                 $project->setProjectLeadMail('test@economics.local.itkdev.dk');
                 $project->setProjectLeadName('Test Testesen');
                 $project->setDataProvider($dataProvider);
+                $project->setIsBillable($modBillable);
 
                 $manager->persist($project);
 
@@ -89,6 +105,7 @@ class AppFixtures extends Fixture
                 }
 
                 for ($j = 0; $j < 10; ++$j) {
+                    $modStatus = 0 == $i % 2 ? IssueStatusEnum::DONE : IssueStatusEnum::NEW;
                     $issue = new Issue();
                     $issue->setName("issue-$i-$j");
                     $issue->setProject($project);
@@ -98,26 +115,40 @@ class AppFixtures extends Fixture
                     $issue->setAccountKey('Account 1');
                     $issue->setEpicName('Epic 1');
                     $issue->setEpicKey('Epic 1');
-                    $issue->setStatus('Lukket');
+                    $issue->setStatus($modStatus);
                     $issue->setDataProvider($dataProvider);
                     $issue->addVersion($versions[$j % count($versions)]);
                     $issue->setResolutionDate(new \DateTime());
+                    $issue->setPlanHours($j);
+                    $issue->setHoursRemaining($j);
+                    $issue->setWorker($workerArray[rand(0, 9)]);
+                    $issue->setDueDate(new \DateTime());
+                    $issue->setWorker($workerArray[rand(0, 9)]);
+                    $issue->setLinkToIssue('www.example.com');
 
                     $manager->persist($issue);
 
                     for ($k = 0; $k < 100; ++$k) {
+                        $year = (new \DateTime())->format('Y');
+
+                        // Use modulo to get months and dates to create started-dates spanning the entire year
+                        $modMonth = str_pad((string) ($k % 12 + 1), 2, '0', STR_PAD_LEFT);
+                        $modDay = str_pad((string) ($k % 28 + 1), 2, '0', STR_PAD_LEFT);
+
+                        $modKind = 0 == $i % 2 ? BillableKindsEnum::GENERAL_BILLABLE : null;
+
                         $worklog = new Worklog();
                         $worklog->setProjectTrackerIssueId("worklog-$key-$i-$j-$k");
                         $worklog->setWorklogId($i * 100000 + $j * 1000 + $k);
                         $worklog->setDescription("Beskrivelse af worklog-$key-$i-$j-$k");
                         $worklog->setIsBilled(false);
                         $worklog->setProject($project);
-                        $worklog->setWorker('test@test');
+                        $worklog->setWorker($workerArray[$i % 10]);
                         $worklog->setTimeSpentSeconds(60 * 15 * ($k + 1));
-                        $worklog->setStarted(new \DateTime());
+                        $worklog->setStarted(\DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new \DateTimeZone('Europe/Copenhagen')));
                         $worklog->setIssue($issue);
                         $worklog->setDataProvider($dataProvider);
-
+                        $worklog->setKind($modKind);
                         $manager->persist($worklog);
                     }
 

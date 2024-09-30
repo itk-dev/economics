@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Enum\IssueStatusEnum;
 use App\Exception\ApiServiceException;
 use App\Exception\EconomicsException;
 use App\Interface\DataProviderServiceInterface;
@@ -40,12 +41,24 @@ class LeantimeApiService implements DataProviderServiceInterface
     private const PRESENT = 'PRESENT';
     private const FUTURE = 'FUTURE';
 
+    private const LEANTIME_TIMEZONE = 'UTC';
+
+    private static ?\DateTimeZone $leantimeTimeZone = null;
+
+    private const STATUS_MAPPING = [
+        'NEW' => IssueStatusEnum::NEW,
+        'INPROGRESS' => IssueStatusEnum::IN_PROGRESS,
+        'DONE' => IssueStatusEnum::DONE,
+        'NONE' => IssueStatusEnum::ARCHIVED,
+    ];
+
     public function __construct(
         protected readonly HttpClientInterface $leantimeProjectTrackerApi,
         protected readonly string $leantimeUrl,
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
+        private readonly DateTimeHelper $dateTimeHelper,
     ) {
     }
 
@@ -64,6 +77,18 @@ class LeantimeApiService implements DataProviderServiceInterface
     public function getAllProjects(): mixed
     {
         return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
+    }
+
+    /**
+     * Retrieves the ticket status settings for a specific project.
+     *
+     * @param string $projectId the ID of the project
+     *
+     * @return \stdClass the ticket status settings of the project
+     */
+    private function getProjectTicketStatusSettings(string $projectId): \stdClass
+    {
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getStatusLabels', ['projectId' => $projectId]);
     }
 
     /**
@@ -144,13 +169,22 @@ class LeantimeApiService implements DataProviderServiceInterface
     {
         $result = [];
 
+        $projectTicketStatusSettings = $this->getProjectTicketStatusSettings($projectId);
+
         $issues = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
 
+        $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
+
+        $workers = array_reduce($workersData, function ($carry, $item) {
+            $carry[$item->id] = $item->username;
+
+            return $carry;
+        }, []);
         foreach ($issues as $issue) {
             $issueData = new IssueData();
 
             $issueData->name = $issue->headline;
-            $issueData->status = $issue->status;
+            $issueData->status = $this->convertStatusToEnum($issue->status, $projectTicketStatusSettings);
             $issueData->projectTrackerId = $issue->id;
             // Leantime does not have a key for each issue.
             $issueData->projectTrackerKey = $issue->id;
@@ -158,15 +192,32 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->accountKey = '';
             $issueData->epicKey = $issue->tags;
             $issueData->epicName = $issue->tags;
+            $issueData->planHours = $issue->planHours;
+            $issueData->hourRemaining = $issue->hourRemaining;
+            $issueData->dueDate = !empty($issue->dateToFinish) && '0000-00-00 00:00:00' !== $issue->dateToFinish ? new \DateTime($issue->dateToFinish, self::getLeantimeTimeZone()) : null;
             if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }
             $issueData->projectId = $issue->projectId;
             $issueData->resolutionDate = $this->getLeanDateTime($issue->editTo);
+            $issueData->worker = $workers[$issue->editorId] ?? $issue->editorId;
+            $issueData->linkToIssue = $this->leantimeUrl.'/tickets/showKanban?showTicketModal='.$issue->id.'#/tickets/showTicket/'.$issue->id;
             $result[] = $issueData;
         }
 
         return new PagedResult($result, $startAt, count($issues), count($issues));
+    }
+
+    private function convertStatusToEnum(string $statusKey, \stdClass $projectTicketStatusSettings): IssueStatusEnum
+    {
+        $statusType = $projectTicketStatusSettings->{$statusKey}->statusType;
+
+        if (array_key_exists($statusType, self::STATUS_MAPPING)) {
+            return self::STATUS_MAPPING[$statusType];
+        }
+
+        // Default fallback for unmatched statuses
+        return IssueStatusEnum::OTHER;
     }
 
     private function getLeanDateTime(string $s): ?\DateTime
@@ -280,9 +331,10 @@ class LeantimeApiService implements DataProviderServiceInterface
                 $worklogData->comment = $worklog->description ?? '';
                 $worklogData->worker = $workers[$worklog->userId] ?? $worklog->userId;
                 $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
-                $worklogData->started = new \DateTime($worklog->workDate);
+                $worklogData->started = new \DateTime($worklog->workDate, self::getLeantimeTimeZone());
                 $worklogData->projectTrackerIsBilled = false;
                 $worklogData->projectTrackerIssueId = $worklog->ticketId;
+                $worklogData->kind = $worklog->kind;
 
                 $worklogDataCollection->worklogData->add($worklogData);
             }
@@ -384,8 +436,6 @@ class LeantimeApiService implements DataProviderServiceInterface
         for ($weekNumber = 1; $weekNumber <= 52; ++$weekNumber) {
             $date = (new \DateTime())->setISODate($currentYear, $weekNumber);
             $week = (int) $date->format('W'); // Cast as int to remove leading zero.
-            $weekFirstDay = $date->setISODate($currentYear, $week, 1)->format('j/n');
-            $weekLastDay = $date->setISODate($currentYear, $week, 5)->format('j/n');
             $weekIsSupport = 1 === $week % 4;
 
             if ($weekIsSupport) {
@@ -395,7 +445,6 @@ class LeantimeApiService implements DataProviderServiceInterface
                 $supportWeek->weekGoalLow = $this->weekGoalLow;
                 $supportWeek->weekGoalHigh = $this->weekGoalHigh;
                 $supportWeek->displayName = (string) $week;
-                $supportWeek->dateSpan = $weekFirstDay.' - '.$weekLastDay;
                 if ($week == $currentWeek) {
                     $supportWeek->activeSprint = true;
                 }
@@ -410,7 +459,6 @@ class LeantimeApiService implements DataProviderServiceInterface
                     }
 
                     if (3 === count($regularWeek->weekCollection)) {
-                        $regularWeek->dateSpan .= ' - '.$weekLastDay;
                         $weeks->add($regularWeek);
                         unset($regularWeek);
                     }
@@ -421,7 +469,6 @@ class LeantimeApiService implements DataProviderServiceInterface
                     $regularWeek->weekGoalLow = $this->weekGoalLow * 3;
                     $regularWeek->weekGoalHigh = $this->weekGoalHigh * 3;
                     $regularWeek->displayName = (string) $week;
-                    $regularWeek->dateSpan = $weekFirstDay;
                     if ($week == $currentWeek) {
                         $regularWeek->activeSprint = true;
                     }
@@ -702,13 +749,12 @@ class LeantimeApiService implements DataProviderServiceInterface
 
                 $issue->epic->remainingSum += $remainingEstimateSeconds;
 
-                if (!empty($issue->assignedToSprint)) {
-                    $assignedToSprint = $issue->assignedToSprint;
-                    $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
-                    $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
-                    $issue->epic->plannedWorkSum += $remainingEstimateSeconds;
-                }
+                $assignedToSprint = $issue->assignedToSprint;
+                $newRemainingWork = (float) ($issue->epic->remainingWork->containsKey($assignedToSprint->id) ? $issue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
+                $issue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
+                $issue->epic->plannedWorkSum += $remainingEstimateSeconds;
             }
+
             // Accumulate originalEstimateSum.
             if (isset($issueEntry->planHours)) {
                 $issue->epic->originalEstimateSum += ($issueEntry->planHours * 60 * 60);
@@ -801,5 +847,14 @@ class LeantimeApiService implements DataProviderServiceInterface
         } else {
             return self::FUTURE;
         }
+    }
+
+    private function getLeantimeTimeZone(): \DateTimeZone
+    {
+        if (null === self::$leantimeTimeZone) {
+            self::$leantimeTimeZone = new \DateTimeZone(self::LEANTIME_TIMEZONE);
+        }
+
+        return self::$leantimeTimeZone;
     }
 }

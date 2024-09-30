@@ -49,9 +49,6 @@ class Project extends AbstractBaseEntity
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Issue::class)]
     private Collection $issues;
 
-    #[ORM\ManyToMany(targetEntity: View::class, mappedBy: 'projects')]
-    private Collection $views;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectLeadName = null;
 
@@ -61,6 +58,9 @@ class Project extends AbstractBaseEntity
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Product::class, orphanRemoval: true)]
     private Collection $products;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isBillable = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -69,7 +69,6 @@ class Project extends AbstractBaseEntity
         $this->worklogs = new ArrayCollection();
         $this->projectBillings = new ArrayCollection();
         $this->issues = new ArrayCollection();
-        $this->views = new ArrayCollection();
         $this->products = new ArrayCollection();
     }
 
@@ -303,33 +302,6 @@ class Project extends AbstractBaseEntity
         return $this;
     }
 
-    /**
-     * @return Collection<int, View>
-     */
-    public function getViews(): Collection
-    {
-        return $this->views;
-    }
-
-    public function addView(View $view): static
-    {
-        if (!$this->views->contains($view)) {
-            $this->views->add($view);
-            $view->addProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeView(View $view): static
-    {
-        if ($this->views->removeElement($view)) {
-            $view->removeProject($this);
-        }
-
-        return $this;
-    }
-
     public function getProjectLeadName(): ?string
     {
         return $this->projectLeadName;
@@ -380,6 +352,18 @@ class Project extends AbstractBaseEntity
                 $product->setProject(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isBillable(): ?bool
+    {
+        return $this->isBillable;
+    }
+
+    public function setIsBillable(?bool $isBillable): self
+    {
+        $this->isBillable = $isBillable;
 
         return $this;
     }

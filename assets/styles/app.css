@@ -144,6 +144,10 @@
         @apply grid gap-3 mb-6 md:grid-cols-4;
     }
 
+    #hour_report {
+        @apply grid gap-3 mb-6 md:grid-cols-6;
+    }
+
     .form-default {
         @apply grid gap-3 mb-6 md:grid-cols-6;
     }
@@ -152,12 +156,25 @@
         @apply flex flex-col justify-end;
     }
 
-    #sprint_report > div {
+    #sprint_report > div, #hour_report > div {
         @apply flex flex-col;
     }
 
     .worklogs-filter-form {
         @apply grid gap-3 mb-6 md:grid-cols-4;
+    }
+    .action-button > span:not(.hidden) > svg {
+        margin: auto;
+        animation: spin 2s linear infinite
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     .choices__list--dropdown .choices__item--selectable {
@@ -167,7 +184,13 @@
     .subheading {
         @apply font-medium leading-tight text-2xl mt-5 mb-5;
     }
-
+    .hour-report-submit {
+        @apply mt-6;
+    }
+    .label.required::after {
+        content: '*';
+        @apply text-red-500 ml-1;
+    }
     /*
     ** Alerts
     */
@@ -354,8 +377,7 @@
     }
 
     .sticky-row {
-        position: sticky;
-        bottom: 0;
+        @apply sticky bg-white text-black dark:bg-gray-900 dark:text-white border-0 bottom-0;
     }
 
     .comma-list span:after {
@@ -371,7 +393,7 @@
     */
 
     .navigation-item {
-        @apply flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 hover:dark:bg-gray-500;
+        @apply flex items-center p-2 text-base font-normal rounded-lg hover:bg-gray-100 hover:dark:bg-gray-500 cursor-pointer;
     }
 
     .navigation-item.current {
@@ -383,7 +405,7 @@
     }
 
     .navigation-item-submenu.shown {
-        @apply flex flex-col visible pt-1 gap-y-1 px-10;
+        @apply flex flex-col visible pt-1 gap-y-1 pl-5;
     }
 
     .collapsible:has(+ .navigation-item-submenu):after {
@@ -395,5 +417,18 @@
         content: '▼';
         @apply pr-4 text-xs;
     }
-
+    .loading {
+        position: relative;
+    }
+    .loading::before {
+        content: '';
+        z-index: 999;
+        @apply bg-white dark:bg-gray-900 absolute w-full h-full top-0 left-0;
+    }
+    .loading::after {
+        content: 'Loading...';
+        @apply text-white absolute top-0 left-0;
+        z-index: 9999;
+        left: 0;
+    }
 }

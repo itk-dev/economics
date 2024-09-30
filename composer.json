@@ -145,6 +145,9 @@
         ],
         "tests": [
             "./vendor/bin/phpunit --stop-on-failure"
+        ],
+        "tests-coverage": [
+            "XDEBUG_MODE=coverage vendor/bin/phpunit --stop-on-failure --coverage-html coverage/"
         ]
     }
 }

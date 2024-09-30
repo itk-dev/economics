@@ -2,7 +2,7 @@
 
 {% block title %}{{ 'issue.title_show'|trans }}{% endblock %}
 
-{% import "_partials.html.twig" as macros %}
+{% import '_partials.html.twig' as macros %}
 
 {% block content %}
     <h1 class="page-title">{{ 'issue.title_show'|trans }}</h1>
@@ -121,6 +121,6 @@
     {% endif %}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_issue_index', {project: issue.project.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'issue.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_issue_index', {project: issue.project.id}) }}">{{ 'issue.back_to_list'|trans }}</a>
     </div>
 {% endblock %}

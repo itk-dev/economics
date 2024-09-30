@@ -16,14 +16,14 @@
     {{ form_end(form) }}
 
     <div class="actions-right">
-        <a type="button" href="{{ path('app_project_billing_show_export', {'id': projectBilling.id}|merge(view is defined ? {view: view} : {})) }}" class="button button-green">{{ 'project_billing.action_show_export'|trans }}</a>
+        <a type="button" href="{{ path('app_project_billing_show_export', {id: projectBilling.id}) }}" class="button button-green">{{ 'project_billing.action_show_export'|trans }}</a>
         {% if not projectBilling.recorded %}
-            <a type="button" href="{{ path('app_project_billing_record', {'id': projectBilling.id}|merge(view is defined ? {view: view} : {})) }}" class="button button-warning">{{ 'project_billing.action_record'|trans }}</a>
+            <a type="button" href="{{ path('app_project_billing_record', {id: projectBilling.id}) }}" class="button button-warning">{{ 'project_billing.action_record'|trans }}</a>
         {% endif %}
         {% if projectBilling.recorded %}
-            <a type="button" href="{{ path('app_project_billing_export', {'id': projectBilling.id, 'type': 'internal'}|merge(view is defined ? {view: view} : {})) }}" class="button button-warning">{{ 'project_billing.action_record_internal'|trans }}</a>
-            <a type="button" href="{{ path('app_project_billing_export', {'id': projectBilling.id, 'type': 'external'}|merge(view is defined ? {view: view} : {})) }}" class="button button-warning">{{ 'project_billing.action_record_external'|trans }}</a>
-            <a type="button" href="{{ path('app_project_billing_export', {'id': projectBilling.id}|merge(view is defined ? {view: view} : {})) }}" class="button">{{ 'project_billing.action_export'|trans }}</a>
+            <a type="button" href="{{ path('app_project_billing_export', {id: projectBilling.id, type: 'internal'}) }}" class="button button-warning">{{ 'project_billing.action_record_internal'|trans }}</a>
+            <a type="button" href="{{ path('app_project_billing_export', {id: projectBilling.id, type: 'external'}) }}" class="button button-warning">{{ 'project_billing.action_record_external'|trans }}</a>
+            <a type="button" href="{{ path('app_project_billing_export', {id: projectBilling.id}) }}" class="button">{{ 'project_billing.action_export'|trans }}</a>
         {% endif %}
     </div>
 
@@ -54,7 +54,7 @@
                 </td>
                 <td class="table-td">{{ invoice.totalPrice }}</td>
                 <td class="table-td">
-                    <a class="link" href="{{ path('app_invoices_edit', {'id': invoice.id}|merge(view is defined ? {view: view} : {})) }}">{{ 'invoices.action_edit'|trans }}</a>
+                    <a class="link" href="{{ path('app_invoices_edit', {id: invoice.id}) }}">{{ 'invoices.action_edit'|trans }}</a>
                 </td>
             </tr>
         {% endfor %}
@@ -69,7 +69,7 @@
     {% if issuesWithoutAccounts is not empty %}
         <h2 class="subheading">{{ 'project_billing.issues_not_included'|trans }}</h2>
 
-        {% include 'components/alert.html.twig' with {level: 'info', text: 'project_billing.issues_not_included_helptext'|trans} %}
+        {{ include('components/alert.html.twig', {level: 'info', text: 'project_billing.issues_not_included_helptext'|trans}) }}
 
         <table class="table margin-bottom">
             <thead class="table-th">
@@ -96,7 +96,7 @@
     {% endif %}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_project_billing_index', {}|merge(view is defined ? {view: view} : {})) }}">{{ 'project_billing.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_project_billing_index') }}">{{ 'project_billing.back_to_list'|trans }}</a>
         {% if not projectBilling.recorded %}
             {{ include('project_billing/_delete_form.html.twig') }}
         {% endif %}

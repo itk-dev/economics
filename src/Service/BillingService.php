@@ -283,7 +283,6 @@ class BillingService
             }
 
             $today = new \DateTime();
-            $paymentDate = $this->getPaymentDate($today);
 
             // Generate header line (H).
             // 1. "Linietype"
@@ -319,10 +318,10 @@ class BillingService
 
             // External invoices.
             if (!$internal) {
-                // 38. Stiftelsesdato
-                $setCellValue(24, $row, $formatDate($invoice->getCreatedAt()));
-                // 39. Periode fra
                 $periodFrom = $invoice->getPeriodFrom();
+                // 38. Stiftelsesdato
+                $setCellValue(24, $row, $formatDate($periodFrom));
+                // 39. Periode fra
                 $setCellValue('Y', $row, $formatDate($periodFrom));
                 // 40. Periode til
                 $periodTo = $invoice->getPeriodTo();
@@ -330,8 +329,9 @@ class BillingService
                 // 46. Fordringstype oprettelse/valg : KOCIVIL
                 $setCellValue(32, $row, 'KOCIVIL');
                 // 49. Forfaldsdato: dagsdato - Same value as 38 (!)
-                $setCellValue(35, $row, $sheet->getCell([24, $row])->getValue());
+                $setCellValue(35, $row, $formatDate($periodFrom));
                 // 50. Henstand til: dagsdato + 30 dage. NB det må ikke være før faktura forfald. Skal være en bank dag.
+                $paymentDate = $this->getPaymentDate($today);
                 $setCellValue(36, $row, $formatDate($paymentDate));
             }
 

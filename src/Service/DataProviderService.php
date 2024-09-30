@@ -7,6 +7,9 @@ use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Interface\DataProviderServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
+use Symfony\Component\HttpClient\RetryableHttpClient;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DataProviderService
@@ -24,6 +27,9 @@ class DataProviderService
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
+        protected readonly int $httpClientRetryDelayMs = 1000,
+        protected readonly int $httpClientMaxRetries = 3,
+        private readonly DateTimeHelper $dateTimeHelper,
     ) {
     }
 
@@ -49,8 +55,10 @@ class DataProviderService
                     'auth_basic' => $dataProvider->getSecret(),
                 ]);
 
+                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([Response::HTTP_TOO_MANY_REQUESTS], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
+
                 $service = new JiraApiService(
-                    $client,
+                    $retryableHttpClient,
                     $this->customFieldMappings,
                     $this->defaultBoard,
                     $url,
@@ -67,12 +75,15 @@ class DataProviderService
                     ],
                 ]);
 
+                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([Response::HTTP_TOO_MANY_REQUESTS], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
+
                 $service = new LeantimeApiService(
-                    $client,
+                    $retryableHttpClient,
                     $url,
                     $this->weekGoalLow,
                     $this->weekGoalHigh,
                     $this->sprintNameRegex,
+                    $this->dateTimeHelper
                 );
                 break;
             default:

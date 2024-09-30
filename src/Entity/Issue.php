@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Trait\DataProviderTrait;
+use App\Enum\IssueStatusEnum;
 use App\Repository\IssueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,8 +22,8 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
+    #[ORM\Column(type: 'string', nullable: true, enumType: IssueStatusEnum::class)]
+    private ?IssueStatusEnum $status = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $accountKey = null;
@@ -58,6 +59,21 @@ class Issue extends AbstractBaseEntity
     #[ORM\OrderBy(['createdAt' => Criteria::ASC])]
     private Collection $products;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    public ?float $planHours;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    public ?float $hoursRemaining;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dueDate = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $worker = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $linkToIssue = null;
+
     public function __construct()
     {
         $this->versions = new ArrayCollection();
@@ -77,12 +93,12 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?IssueStatusEnum
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(IssueStatusEnum $status): self
     {
         $this->status = $status;
 
@@ -265,6 +281,66 @@ class Issue extends AbstractBaseEntity
                 $issueProduct->setIssue(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPlanHours(): ?float
+    {
+        return $this->planHours;
+    }
+
+    public function setPlanHours(?float $planHours): self
+    {
+        $this->planHours = $planHours;
+
+        return $this;
+    }
+
+    public function getHoursRemaining(): ?float
+    {
+        return $this->planHours;
+    }
+
+    public function setHoursRemaining(?float $hoursRemaining): self
+    {
+        $this->hoursRemaining = $hoursRemaining;
+
+        return $this;
+    }
+
+    public function getDueDate(): ?\DateTimeInterface
+    {
+        return $this->dueDate;
+    }
+
+    public function setDueDate(?\DateTimeInterface $dueDate): static
+    {
+        $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    public function getWorker(): ?string
+    {
+        return $this->worker;
+    }
+
+    public function setWorker(string $worker): self
+    {
+        $this->worker = $worker;
+
+        return $this;
+    }
+
+    public function getLinkToIssue(): ?string
+    {
+        return $this->linkToIssue;
+    }
+
+    public function setLinkToIssue(?string $linkToIssue): self
+    {
+        $this->linkToIssue = $linkToIssue;
 
         return $this;
     }

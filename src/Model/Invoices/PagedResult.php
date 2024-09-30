@@ -8,7 +8,7 @@ class PagedResult
         public readonly array $items,
         public readonly int $startAt,
         public readonly int $maxResults,
-        public readonly int $total
+        public readonly int $total,
     ) {
     }
 }

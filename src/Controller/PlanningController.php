@@ -2,109 +2,88 @@
 
 namespace App\Controller;
 
-use App\Entity\DataProvider;
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Form\PlanningType;
 use App\Model\Planning\PlanningFormData;
-use App\Repository\DataProviderRepository;
-use App\Service\DataProviderService;
-use App\Service\ViewService;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Service\PlanningService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/planning')]
+#[IsGranted('ROLE_PLANNING')]
 class PlanningController extends AbstractController
 {
     public function __construct(
-        private readonly DataProviderService $dataProviderService,
-        private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ViewService $viewService,
-        private readonly ?string $planningDefaultDataProvider,
+        private readonly PlanningService $planningService,
     ) {
     }
 
+    /**
+     * @throws \Exception
+     */
+    private function preparePlanningData(Request $request): array
+    {
+        $planningFormData = new PlanningFormData();
+        $planningFormData->year = (int) (new \DateTime())->format('Y');
+        $form = $this->createForm(PlanningType::class, $planningFormData, [
+            'action' => $this->generateUrl($request->attributes->get('_route')),
+            'attr' => [
+                'id' => 'sprint_report',
+            ],
+            'years' => [(new \DateTime())->format('Y'), (new \DateTime())->modify('+1 year')->format('Y')],
+            'method' => 'GET',
+            'csrf_protection' => false,
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $planningFormData = $form->getData();
+        }
+
+        $planningData = $this->planningService->getPlanningData($planningFormData->year);
+
+        return ['planningData' => $planningData, 'form' => $form, 'year' => $planningFormData->year];
+    }
+
     #[Route('/', name: 'app_planning')]
-    public function index(Request $request): Response
+    public function index(): Response
     {
         return $this->redirectToRoute('app_planning_users');
     }
 
     /**
-     * @throws UnsupportedDataProviderException
-     * @throws EconomicsException
+     * @throws \Exception
      */
     #[Route('/users', name: 'app_planning_users')]
     public function planningUsers(Request $request): Response
     {
-        return $this->createResponse($request, 'users');
+        $data = $this->preparePlanningData($request);
+
+        return $this->createResponse('users', $data);
     }
 
     /**
-     * @throws UnsupportedDataProviderException
-     * @throws EconomicsException
+     * @throws \Exception
      */
     #[Route('/projects', name: 'app_planning_projects')]
     public function planningProjects(Request $request): Response
     {
-        return $this->createResponse($request, 'projects');
+        $data = $this->preparePlanningData($request);
+
+        return $this->createResponse('projects', $data);
     }
 
-    /**
-     * @throws UnsupportedDataProviderException
-     * @throws EconomicsException
-     */
-    private function createResponse(Request $request, string $mode): Response
+    private function createResponse(string $mode, array $data): Response
     {
-        $planningFormData = new PlanningFormData();
-        $form = $this->createForm(PlanningType::class, $planningFormData);
-
-        $dataProviders = $this->dataProviderRepository->findAll();
-        $defaultProvider = $this->dataProviderRepository->find($this->planningDefaultDataProvider);
-
-        if (null === $defaultProvider && count($dataProviders) > 0) {
-            $defaultProvider = $dataProviders[0];
-        }
-
-        $form->add('dataProvider', EntityType::class, [
-            'class' => DataProvider::class,
-            'required' => true,
-            'label' => 'planning.data_provider',
-            'label_attr' => ['class' => 'label'],
-            'attr' => [
-                'class' => 'form-element',
-            ],
-            'help' => 'planning.data_provider_helptext',
-            'data' => $this->dataProviderRepository->find($this->planningDefaultDataProvider),
-            'choices' => $dataProviders,
-        ]);
-
-        $form->handleRequest($request);
-
-        $service = null;
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $service = $this->dataProviderService->getService($planningFormData->dataProvider);
-        } elseif (null !== $defaultProvider) {
-            $service = $this->dataProviderService->getService($defaultProvider);
-        }
-
-        try {
-            $planningData = $service?->getPlanningDataWeeks();
-        } catch (\Exception $e) {
-            $error = $e->getMessage();
-            $planningData = null;
-        }
-
-        return $this->render('planning/planning.html.twig', $this->viewService->addView([
+        return $this->render('planning/planning.html.twig', [
             'controller_name' => 'PlanningController',
-            'planningData' => $planningData,
-            'error' => $error ?? null,
-            'form' => $form,
+            'planningData' => $data['planningData'],
+            'form' => $data['form'],
+            'year' => $data['year'],
             'mode' => $mode,
-        ]));
+        ]);
     }
 }
