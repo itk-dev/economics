@@ -1,0 +1,11 @@
+{#
+# Variables
+#  - renderedReport: Report rendered as it would be in browser.
+#}
+
+<!DOCTYPE html>
+<html lang="da">
+{% include 'email/inline-email-head.html.twig' %}
+<body>
+<div> {{ renderedReport|raw }} </div>
+</body>
