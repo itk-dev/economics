@@ -1,4 +1,4 @@
 <h1>{{ 'subscription.subjects.hour_report'|trans }} for {{ projectName }} </h1>
 <p>{{ fromDate }} - {{ toDate }}</p>
 <hr>
-{% include 'reports/hour_report.html.twig' %}
+{{ include('reports/hour_report.html.twig') }}

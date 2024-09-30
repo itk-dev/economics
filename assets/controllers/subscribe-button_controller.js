@@ -30,7 +30,6 @@ export default class extends Controller {
         postRequestHandler(url, params).then((result) => {
             console.log(result.data);
             if (result.data.success) {
-
                 if (result.data.frequencies) {
                     triggerState(states.subscribed, targets);
 
@@ -39,7 +38,8 @@ export default class extends Controller {
                     triggerState(states.unsubscribed, targets);
                 }
             } else {
-                document.getElementById('subscribe-module').style.display = 'none';
+                document.getElementById("subscribe-module").style.display =
+                    "none";
             }
         });
     }
@@ -77,7 +77,8 @@ export default class extends Controller {
                     }
                 }
             } else {
-                document.getElementById('subscribe-module').style.display = 'none';
+                document.getElementById("subscribe-module").style.display =
+                    "none";
             }
         });
     };

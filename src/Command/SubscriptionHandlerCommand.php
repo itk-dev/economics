@@ -79,6 +79,8 @@ class SubscriptionHandlerCommand extends Command
                             $this->logger->error('Subscription id: '.$subscriptionId.' - A RuntimeError occurred: ', ['exception' => $e]);
                         } catch (SyntaxError $e) {
                             $this->logger->error('Subscription id: '.$subscriptionId.' - A SyntaxError occurred: ', ['exception' => $e]);
+                        } catch (\Exception $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - An Exception occurred: ', ['exception' => $e]);
                         }
                     }
                     break;
@@ -101,9 +103,9 @@ class SubscriptionHandlerCommand extends Command
                                 $this->logger->error('Subscription id: '.$subscriptionId.' - A RuntimeError occurred: ', ['exception' => $e]);
                             } catch (SyntaxError $e) {
                                 $this->logger->error('Subscription id: '.$subscriptionId.' - A SyntaxError occurred: ', ['exception' => $e]);
+                            } catch (\Exception $e) {
+                                $this->logger->error('Subscription id: '.$subscriptionId.' - An Exception occurred: ', ['exception' => $e]);
                             }
-                        } catch (MpdfException $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
                         }
                     }
                     break;
@@ -118,7 +120,7 @@ class SubscriptionHandlerCommand extends Command
     /**
      * Get the start and end dates of the last quarter based on the given date.
      *
-     * @param \Datetime $dateNow the current date
+     * @param \DateTime $dateNow the current date
      *
      * @return array an array containing the start and end dates of the last quarter
      */

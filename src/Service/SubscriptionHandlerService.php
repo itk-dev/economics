@@ -43,6 +43,7 @@ class SubscriptionHandlerService
      * @param array $notification the notification data
      *
      * @return void
+     *
      * @throws TransportExceptionInterface
      */
     private function sendNotification(array $notification): void
@@ -68,12 +69,14 @@ class SubscriptionHandlerService
      * @param \DateTime $toDate the ending date of the report
      *
      * @return void
+     *
      * @throws EconomicsException
      * @throws LoaderError
      * @throws MpdfException
      * @throws RuntimeError
      * @throws SyntaxError
      * @throws TransportExceptionInterface
+     * @throws \Exception
      */
     public function handleSubscription(Subscription $subscription, \DateTime $fromDate, \DateTime $toDate): void
     {
@@ -81,8 +84,9 @@ class SubscriptionHandlerService
             return;
         }
 
-        $email = $subscription->getEmail();
-        $params = json_decode($subscription->getUrlParams());
+        $email = $subscription->getEmail() ?? '';
+
+        $params = json_decode($subscription->getUrlParams() ?? '');
         $projectId = $params->hour_report->project ?? null;
 
         $project = $this->getProject($projectId);
@@ -124,7 +128,7 @@ class SubscriptionHandlerService
      */
     private function getVersion(?int $versionId): ?Version
     {
-        return $versionId ? $this->versionRepository->findOneBy((array) $versionId) : null;
+        return $versionId ? $this->versionRepository->findOneBy(['versionId' => $versionId]) : null;
     }
 
     /**
@@ -134,14 +138,16 @@ class SubscriptionHandlerService
      * @param \DateTime $fromDate the starting date of the report
      * @param \DateTime $toDate the ending date of the report
      * @param Project $project the project object
-     * @param array $reportData the report data
+     * @param HourReportData $reportData the report data
      * @param string $email the recipient email address
      *
      * @return array the prepared mail data
-     * @throws MpdfException
+     *
      * @throws LoaderError
+     * @throws MpdfException
      * @throws RuntimeError
      * @throws SyntaxError
+     * @throws \Exception
      */
     private function prepareMailData(Subscription $subscription, \DateTime $fromDate, \DateTime $toDate, Project $project, HourReportData $reportData, string $email): array
     {
@@ -197,12 +203,30 @@ class SubscriptionHandlerService
      * @param Project $project the project object
      *
      * @return string the subject string for the subscription email
+     * @throws \Exception
      */
     private function createSubject(Subscription $subscription, Project $project): string
     {
-        return $this->translator->trans('subscription.subjects.'.$subscription->getSubject()->value)
+        $subject = $subscription->getSubject();
+        $frequency = $subscription->getFrequency();
+
+        if (!$subject || !$frequency) {
+            throw new \Exception('Subject or frequency is missing from the subscription.');
+        }
+
+        $subjectValue = $subject->value;
+        $frequencyValue = $frequency->value;
+
+        $subjectTranslation = $this->translator->trans('subscription.subjects.'.$subjectValue);
+        $frequencyTranslation = $this->translator->trans('subscription.frequencies.'.$frequencyValue);
+
+        if (empty($subjectTranslation) || empty($frequencyTranslation)) {
+            throw new \Exception('Translation for subject or frequency is missing.');
+        }
+
+        return $subjectTranslation
             .' - '.$project->getName()
-            .' - '.$this->translator->trans('subscription.frequencies.'.$subscription->getFrequency()->value);
+            .' - '.$frequencyTranslation;
     }
 
     /**
@@ -214,9 +238,18 @@ class SubscriptionHandlerService
      * @param Project $project the project object
      *
      * @return string the name of the attachment file
+     * @throws \Exception
      */
     private function createAttachmentName(Subscription $subscription, \DateTime $fromDate, \DateTime $toDate, Project $project): string
     {
-        return $subscription->getSubject()->value.'_'.$project->getName().'_'.$fromDate->format('d-m-Y').'-'.$toDate->format('d-m-Y').'.pdf';
+        $subject = $subscription->getSubject();
+
+        if (!$subject) {
+            throw new \Exception('Subject is missing from the subscription.');
+        }
+
+        $subjectValue = $subject->value;
+
+        return $subjectValue.'_'.$project->getName().'_'.$fromDate->format('d-m-Y').'-'.$toDate->format('d-m-Y').'.pdf';
     }
 }

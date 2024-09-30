@@ -5,7 +5,7 @@
 
 <!DOCTYPE html>
 <html lang="da">
-{% include 'email/inline-email-head.html.twig' %}
+{{ include('email/inline-email-head.html.twig') }}
 <body>
 <div> {{ renderedReport|raw }} </div>
 </body>

@@ -110,6 +110,7 @@ class SubscriptionController extends AbstractController
 
                 if ($subscriptions) {
                     $frequencies = $this->getFrequencies($subscriptions);
+
                     return new JsonResponse(['success' => true, 'frequencies' => $frequencies], 200);
                 } else {
                     return new JsonResponse(['success' => true], 200);
