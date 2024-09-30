@@ -26,6 +26,7 @@ use Twig\Error\SyntaxError;
 class SubscriptionHandlerService
 {
     public function __construct(
+        private readonly string $emailFromAddress,
         private readonly ProjectRepository $projectRepository,
         private readonly VersionRepository $versionRepository,
         private readonly HourReportService $hourReportService,
@@ -157,7 +158,7 @@ class SubscriptionHandlerService
         $subject = $this->createSubject($subscription, $project);
 
         return [
-            'from' => $email,
+            'from' => $this->emailFromAddress,
             'to' => $email,
             'subject' => $subject,
             'template' => 'email/email-subscription-hour_report.html.twig',
