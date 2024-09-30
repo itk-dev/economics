@@ -89,23 +89,21 @@ class SubscriptionHandlerCommand extends Command
                         ['fromDate' => $fromDate, 'toDate' => $toDate] = $this->getLastQuarter($dateNow);
                         $io->writeln('Sending quarterly '.$subject.' to '.$subscription->getEmail());
                         try {
-                            try {
-                                $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
-                            } catch (MpdfException $e) {
-                                $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
-                            } catch (EconomicsException $e) {
-                                $this->logger->error('Subscription id: '.$subscriptionId.' - A EconomicsException occurred: ', ['exception' => $e]);
-                            } catch (TransportExceptionInterface $e) {
-                                $this->logger->error('Subscription id: '.$subscriptionId.' - A TransportExceptionInterface occurred: ', ['exception' => $e]);
-                            } catch (LoaderError $e) {
-                                $this->logger->error('Subscription id: '.$subscriptionId.' - A LoaderError occurred: ', ['exception' => $e]);
-                            } catch (RuntimeError $e) {
-                                $this->logger->error('Subscription id: '.$subscriptionId.' - A RuntimeError occurred: ', ['exception' => $e]);
-                            } catch (SyntaxError $e) {
-                                $this->logger->error('Subscription id: '.$subscriptionId.' - A SyntaxError occurred: ', ['exception' => $e]);
-                            } catch (\Exception $e) {
-                                $this->logger->error('Subscription id: '.$subscriptionId.' - An Exception occurred: ', ['exception' => $e]);
-                            }
+                            $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
+                        } catch (MpdfException $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
+                        } catch (EconomicsException $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A EconomicsException occurred: ', ['exception' => $e]);
+                        } catch (TransportExceptionInterface $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A TransportExceptionInterface occurred: ', ['exception' => $e]);
+                        } catch (LoaderError $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A LoaderError occurred: ', ['exception' => $e]);
+                        } catch (RuntimeError $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A RuntimeError occurred: ', ['exception' => $e]);
+                        } catch (SyntaxError $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A SyntaxError occurred: ', ['exception' => $e]);
+                        } catch (\Exception $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - An Exception occurred: ', ['exception' => $e]);
                         }
                     }
                     break;

@@ -203,6 +203,7 @@ class SubscriptionHandlerService
      * @param Project $project the project object
      *
      * @return string the subject string for the subscription email
+     *
      * @throws \Exception
      */
     private function createSubject(Subscription $subscription, Project $project): string
@@ -238,6 +239,7 @@ class SubscriptionHandlerService
      * @param Project $project the project object
      *
      * @return string the name of the attachment file
+     *
      * @throws \Exception
      */
     private function createAttachmentName(Subscription $subscription, \DateTime $fromDate, \DateTime $toDate, Project $project): string
