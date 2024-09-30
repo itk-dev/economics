@@ -14,6 +14,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 #[AsCommand(
     name: 'app:handle-subscriptions',
@@ -65,6 +69,16 @@ class SubscriptionHandlerCommand extends Command
                             $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
                         } catch (MpdfException $e) {
                             $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
+                        } catch (EconomicsException $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A EconomicsException occurred: ', ['exception' => $e]);
+                        } catch (TransportExceptionInterface $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A TransportExceptionInterface occurred: ', ['exception' => $e]);
+                        } catch (LoaderError $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A LoaderError occurred: ', ['exception' => $e]);
+                        } catch (RuntimeError $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A RuntimeError occurred: ', ['exception' => $e]);
+                        } catch (SyntaxError $e) {
+                            $this->logger->error('Subscription id: '.$subscriptionId.' - A SyntaxError occurred: ', ['exception' => $e]);
                         }
                     }
                     break;
@@ -73,7 +87,21 @@ class SubscriptionHandlerCommand extends Command
                         ['fromDate' => $fromDate, 'toDate' => $toDate] = $this->getLastQuarter($dateNow);
                         $io->writeln('Sending quarterly '.$subject.' to '.$subscription->getEmail());
                         try {
-                            $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
+                            try {
+                                $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
+                            } catch (MpdfException $e) {
+                                $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
+                            } catch (EconomicsException $e) {
+                                $this->logger->error('Subscription id: '.$subscriptionId.' - A EconomicsException occurred: ', ['exception' => $e]);
+                            } catch (TransportExceptionInterface $e) {
+                                $this->logger->error('Subscription id: '.$subscriptionId.' - A TransportExceptionInterface occurred: ', ['exception' => $e]);
+                            } catch (LoaderError $e) {
+                                $this->logger->error('Subscription id: '.$subscriptionId.' - A LoaderError occurred: ', ['exception' => $e]);
+                            } catch (RuntimeError $e) {
+                                $this->logger->error('Subscription id: '.$subscriptionId.' - A RuntimeError occurred: ', ['exception' => $e]);
+                            } catch (SyntaxError $e) {
+                                $this->logger->error('Subscription id: '.$subscriptionId.' - A SyntaxError occurred: ', ['exception' => $e]);
+                            }
                         } catch (MpdfException $e) {
                             $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
                         }
