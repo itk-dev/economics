@@ -15,7 +15,20 @@ export const postRequestHandler = async (updateUrl, data = null) => {
             headers: { "Content-Type": "application/json" },
             redirect: "follow",
             referrerPolicy: "no-referrer",
-            body: data && JSON.stringify(data),
+  const options = {
+            method: "POST",
+            mode: "same-origin",
+            cache: "no-cache",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            redirect: "follow",
+            referrerPolicy: "no-referrer"
+  }
+  if (body !== null) {
+    options['body'] = JSON.stringify(data);
+  }
+  
+  const response = await fetch(updateUrl, options);
         });
 
         result.status = response.status;
