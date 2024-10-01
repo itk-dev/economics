@@ -26,13 +26,12 @@ export const postRequestHandler = async (updateUrl, data = null) => {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message);
+            throw new Error(errorData.error);
         } else {
             result.success = true;
             result.data = await response.json();
         }
     } catch (error) {
-        console.error(error.message);
         result.error = error.message;
     }
 
