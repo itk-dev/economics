@@ -172,6 +172,7 @@ class SubscriptionHandlerService
         if (!$this->emailFromAddress) {
             throw new \Exception('Sender email address was not found in .env');
         }
+
         return [
             'from' => $this->emailFromAddress,
             'to' => $email,

@@ -100,6 +100,7 @@ class SubscriptionController extends AbstractController
 
                 if ($subscriptionType) {
                     unset($report['subscriptionType']);
+
                     return $this->subscriptionHandler($userEmail, $subscriptionType, $content);
                 }
 
