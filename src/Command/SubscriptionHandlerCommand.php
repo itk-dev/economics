@@ -118,7 +118,7 @@ class SubscriptionHandlerCommand extends Command
             $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
         } catch (\Throwable $e) {
             $errorClass = get_class($e);
-            $this->logger->error('Subscription id: '.$subscription->getId().' - An '.$errorClass.' occurred: ', ['exception' => $e]);
+            $this->logger->error('Subscription id: '.$subscription->getId().' - An '.$errorClass.' occurred: ', ['exception' => $e->getMessage()]);
         }
     }
 
