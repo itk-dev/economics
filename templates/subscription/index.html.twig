@@ -30,7 +30,7 @@
         <tbody>
         {% for index, subscription in subscriptions %}
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-                {% set urlParams = subscription.urlParams|json_decode %}
+                {% set urlParams = subscription.urlParams %}
                 <td class="table-td subscription-details">
                     <div>
                         <span>Project:</span>
