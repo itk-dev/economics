@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -110,13 +111,16 @@ class SubscriptionController extends AbstractController
                 if ($subscriptions) {
                     $frequencies = $this->getFrequencies($subscriptions);
 
-                    return new JsonResponse(['success' => true, 'frequencies' => $frequencies], 200);
+                    return new JsonResponse(['frequencies' => $frequencies], 200);
                 } else {
-                    return new JsonResponse(['success' => true], 200);
+                    return new JsonResponse([], 200);
                 }
                 break;
             default:
-                return new JsonResponse(['success' => false], 200);
+                return new JsonResponse(
+                    ['error' => 'Unsupported report type'],
+                    Response::HTTP_BAD_REQUEST
+                );
         }
     }
 
@@ -133,7 +137,7 @@ class SubscriptionController extends AbstractController
             $subscriptions = $this->subscriptionRepository->findByCustom($userEmail, $content);
             $frequencies = $this->getFrequencies($subscriptions);
 
-            return new JsonResponse(['success' => true, 'action' => 'unsubscribed', 'frequencies' => $frequencies], 200);
+            return new JsonResponse(['action' => 'unsubscribed', 'frequencies' => $frequencies], 200);
         } else {
             $subscription = new Subscription();
             $subscription->setEmail($userEmail);
@@ -147,7 +151,7 @@ class SubscriptionController extends AbstractController
             $subscriptions = $this->subscriptionRepository->findByCustom($userEmail, $content);
             $frequencies = $this->getFrequencies($subscriptions);
 
-            return new JsonResponse(['success' => true, 'action' => 'subscribed', 'frequencies' => $frequencies], 200);
+            return new JsonResponse(['action' => 'subscribed', 'frequencies' => $frequencies], 200);
         }
     }
 
