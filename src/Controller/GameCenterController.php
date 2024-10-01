@@ -62,6 +62,8 @@ class GameCenterController extends AbstractController
      */
     private function getGames(): array
     {
-        return [];
+        return [
+            'snake' => 'Snake',
+        ];
     }
 }
