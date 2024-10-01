@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Model\Reports\WorkloadReportData;
+use App\Model\Reports\WorkloadReportPeriodTypeEnum;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Model\Reports\WorkloadReportWorker;
@@ -46,8 +47,8 @@ class WorkloadReportService
             $workloadReportWorker->setWorkload($worker->getWorkload());
             $workloadReportWorker->setName($worker->getName());
             $currentPeriodReached = false;
-            $percentageTotal = 0;
-            $count = 0;
+            $expectedWorkloadSum = 0;
+            $loggedHoursSum = 0;
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
@@ -74,25 +75,26 @@ class WorkloadReportService
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
-                $workerWorkload = $worker->getWorkload();
+                $workerWorkload = $worker->getWorkload() ?? 37.0;
                 if (!$workerWorkload) {
                     $workerId = $worker->getUserIdentifier();
-                    throw new \Exception("Workload of worker: $workerId cannot be unset when generating workload report.");
+                    throw new \Exception("Workload of worker: $workerId cannot be null when generating workload report.");
                 }
 
-                $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
+                $expectedWorkload = $this->getExpectedWorkHours($workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
+                $roundedLoggedPercentage = round($loggedHours / $expectedWorkload * 100, 2);
 
-                // Count up total logged percentage to calculate average.
-                if (!$currentPeriodReached || 0 == $count) {
-                    $percentageTotal += $roundedLoggedPercentage;
-                    ++$count;
+                // Count up sums until current period have been reached.
+                if (!$currentPeriodReached) {
+                    $expectedWorkloadSum += $expectedWorkload;
+                    $loggedHoursSum += $loggedHours;
                 }
 
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
             }
 
-            $workloadReportWorker->average = round($percentageTotal / $count, 2);
+            $workloadReportWorker->average = round($loggedHoursSum / $expectedWorkloadSum * 100, 2);
 
             $workloadReportData->workers->add($workloadReportWorker);
         }
@@ -100,22 +102,11 @@ class WorkloadReportService
         return $workloadReportData;
     }
 
-    /**
-     * Calculates the rounded percentage of logged hours based on the workload and view mode.
-     *
-     * @param float $loggedHours the number of logged hours
-     * @param float $workloadWeekBase the base weekly workload (including lunch hours)
-     * @param PeriodTypeEnum $viewPeriodType the view mode ('week' or 'month')
-     *
-     * @return float the rounded percentage of logged hours
-     */
-    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, PeriodTypeEnum $viewPeriodType, \DateTime $dateFrom, \DateTime $dateTo): float
+    private function getExpectedWorkHours(float $workloadWeekBase, PeriodTypeEnum $viewPeriodType, \DateTime $dateFrom, \DateTime $dateTo): float
     {
-        // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewPeriodType) {
-            PeriodTypeEnum::WEEK => round(($loggedHours / $workloadWeekBase) * 100),
-            PeriodTypeEnum::MONTH => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->getWeekdaysBetween($dateFrom, $dateTo) / 5))) * 100),
-            PeriodTypeEnum::YEAR => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->getWeekdaysBetween($dateFrom, $dateTo) / 5))) * 100, 2),
+            PeriodTypeEnum::WEEK => $workloadWeekBase,
+            PeriodTypeEnum::MONTH, PeriodTypeEnum::YEAR => $workloadWeekBase / 5 * ($this->dateTimeHelper->getWeekdaysBetween($dateFrom, $dateTo)),
         };
     }
 
