@@ -11,12 +11,12 @@
     {% set number_of_columns = 11 %}
 
     {{ form_start(form) }}
-<div class="form-default">
-    {{ form_row(form.urlParams) }}
-    <div>
-        <button class="button form-element">{{ 'subscription.search'|trans }}</button>
+    <div class="form-default">
+        {{ form_row(form.urlParams) }}
+        <div>
+            <button class="button form-element">{{ 'subscription.search'|trans }}</button>
+        </div>
     </div>
-</div>
     {{ form_end(form) }}
 
     <table class="table margin-bottom">
