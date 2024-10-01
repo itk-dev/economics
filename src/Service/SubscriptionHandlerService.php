@@ -26,15 +26,16 @@ use Twig\Error\SyntaxError;
 class SubscriptionHandlerService
 {
     public function __construct(
-        private readonly string $emailFromAddress,
-        private readonly ProjectRepository $projectRepository,
-        private readonly VersionRepository $versionRepository,
-        private readonly HourReportService $hourReportService,
-        private readonly Environment $environment,
-        private readonly LoggerInterface $logger,
-        private readonly MailerInterface $mailer,
+        private readonly string              $emailFromAddress,
+        private readonly ProjectRepository   $projectRepository,
+        private readonly VersionRepository   $versionRepository,
+        private readonly HourReportService   $hourReportService,
+        private readonly Environment         $environment,
+        private readonly LoggerInterface     $logger,
+        private readonly MailerInterface     $mailer,
         private readonly TranslatorInterface $translator,
-    ) {
+    )
+    {
     }
 
     /**
@@ -80,25 +81,33 @@ class SubscriptionHandlerService
      */
     public function handleSubscription(Subscription $subscription, \DateTime $fromDate, \DateTime $toDate): void
     {
-        if (SubscriptionSubjectEnum::HOUR_REPORT !== $subscription->getSubject()) {
-            return;
+        switch ($subscription->getSubject()) {
+            case SubscriptionSubjectEnum::HOUR_REPORT:
+                $email = $subscription->getEmail() ?? '';
+
+                $params = $subscription->getUrlParams();
+                if (!$params) {
+                    throw new \Exception('Invalid subscription parameters.');
+                }
+                $projectId = $params['hour_report']['project'] ?? null;
+
+                $project = $this->getProject($projectId);
+                if (!$project) {
+                    throw new \Exception('Project not found.');
+                }
+
+                $version = $this->getVersion($params['hour_report']['version'] ?? null);
+                $reportData = $this->hourReportService->getHourReport($project, $fromDate, $toDate, $version);
+                $mailData = $this->prepareMailData($subscription, $fromDate, $toDate, $project, $reportData, $email);
+
+                $this->sendNotification($mailData);
+                break;
+            default:
+                throw new \Exception('Report type is not yet supported');
+                break;
         }
 
-        $email = $subscription->getEmail() ?? '';
 
-        $params = json_decode($subscription->getUrlParams() ?? '');
-        $projectId = $params->hour_report->project ?? null;
-
-        $project = $this->getProject($projectId);
-        if (!$project) {
-            return;
-        }
-
-        $version = $this->getVersion($params->hour_report->version ?? null);
-        $reportData = $this->hourReportService->getHourReport($project, $fromDate, $toDate, $version);
-        $mailData = $this->prepareMailData($subscription, $fromDate, $toDate, $project, $reportData, $email);
-
-        $this->sendNotification($mailData);
     }
 
     /**
@@ -113,7 +122,7 @@ class SubscriptionHandlerService
         $project = $this->projectRepository->find($projectId);
 
         if (!$project) {
-            $this->logger->error('Project was not found with ID='.$projectId);
+            $this->logger->error('Project was not found with ID=' . $projectId);
         }
 
         return $project;
@@ -218,16 +227,16 @@ class SubscriptionHandlerService
         $subjectValue = $subject->value;
         $frequencyValue = $frequency->value;
 
-        $subjectTranslation = $this->translator->trans('subscription.subjects.'.$subjectValue);
-        $frequencyTranslation = $this->translator->trans('subscription.frequencies.'.$frequencyValue);
+        $subjectTranslation = $this->translator->trans('subscription.subjects.' . $subjectValue);
+        $frequencyTranslation = $this->translator->trans('subscription.frequencies.' . $frequencyValue);
 
         if (empty($subjectTranslation) || empty($frequencyTranslation)) {
             throw new \Exception('Translation for subject or frequency is missing.');
         }
 
         return $subjectTranslation
-            .' - '.$project->getName()
-            .' - '.$frequencyTranslation;
+            . ' - ' . $project->getName()
+            . ' - ' . $frequencyTranslation;
     }
 
     /**
@@ -252,6 +261,6 @@ class SubscriptionHandlerService
 
         $subjectValue = $subject->value;
 
-        return $subjectValue.'_'.$project->getName().'_'.$fromDate->format('d-m-Y').'-'.$toDate->format('d-m-Y').'.pdf';
+        return $subjectValue . '_' . $project->getName() . '_' . $fromDate->format('d-m-Y') . '-' . $toDate->format('d-m-Y') . '.pdf';
     }
 }
