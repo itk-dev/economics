@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Subscription;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
 
@@ -38,6 +39,46 @@ class SubscriptionRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findByCustom($email, $urlParams): array
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $qb->where('s.email = :email')
+            ->setParameter('email', $email)
+            ->andWhere(
+                $qb->expr()->eq(
+                    $qb->expr()->lower('s.urlParams'),
+                    $qb->expr()->lower(':urlParams')
+                )
+            )
+            ->setParameter('urlParams', json_encode($urlParams));
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findOneByCustom($email, $subscriptionType, $urlParams): ?Subscription
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $qb->where('s.email = :email')
+            ->setParameter('email', $email)
+            ->andWhere('s.frequency = :subscriptionType')
+            ->setParameter('subscriptionType', $subscriptionType)
+            ->andWhere(
+                $qb->expr()->like(
+                    $qb->expr()->lower('s.urlParams'),
+                    $qb->expr()->lower(':urlParams')
+                )
+            )
+            ->setParameter('urlParams', json_encode($urlParams))
+            ->setMaxResults(1);
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     /*
