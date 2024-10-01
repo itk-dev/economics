@@ -2,9 +2,9 @@
 
 namespace App\Command;
 
+use App\Entity\Subscription;
 use App\Enum\SubscriptionFrequencyEnum;
 use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Repository\SubscriptionRepository;
 use App\Service\SubscriptionHandlerService;
 use Mpdf\MpdfException;
@@ -38,81 +38,88 @@ class SubscriptionHandlerCommand extends Command
     }
 
     /**
-     * @throws EconomicsException
-     * @throws UnsupportedDataProviderException
+     * Execute the command.
+     *
+     * @param InputInterface $input the input
+     * @param OutputInterface $output the output
+     *
+     * @return int Command status
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-
         $subscriptions = $this->subscriptionRepository->findAll();
         $dateNow = new \DateTime();
-
         foreach ($subscriptions as $subscription) {
             $subscriptionId = $subscription->getId();
             $lastSent = $subscription->getLastSent();
-            /* If $lastSent is undefined, we should assume that this is the first run since subscribing
-            and set interval to always be true when checking below */
             $interval = $lastSent ? $lastSent->diff($dateNow) : new \DateInterval('P12M');
             $subject = $subscription->getSubject()->value ?? null;
             if (!$subject) {
-                $this->logger->error('Subject was not found on subscription with ID='.$subscription->getId());
+                $this->logger->error('Subject was not found on subscription with ID='.$subscriptionId);
                 continue;
             }
-            switch ($subscription->getFrequency()) {
-                case SubscriptionFrequencyEnum::FREQUENCY_MONTHLY:
-                    if ($interval->m >= 1) {
-                        $fromDate = new \DateTime('first day of previous month');
-                        $toDate = new \DateTime('last day of previous month');
-                        $io->writeln('Sending monthly '.$subject.' to '.$subscription->getEmail());
-                        try {
-                            $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
-                        } catch (MpdfException $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
-                        } catch (EconomicsException $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A EconomicsException occurred: ', ['exception' => $e]);
-                        } catch (TransportExceptionInterface $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A TransportExceptionInterface occurred: ', ['exception' => $e]);
-                        } catch (LoaderError $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A LoaderError occurred: ', ['exception' => $e]);
-                        } catch (RuntimeError $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A RuntimeError occurred: ', ['exception' => $e]);
-                        } catch (SyntaxError $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A SyntaxError occurred: ', ['exception' => $e]);
-                        } catch (\Exception $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - An Exception occurred: ', ['exception' => $e]);
-                        }
-                    }
-                    break;
-                case SubscriptionFrequencyEnum::FREQUENCY_QUARTERLY:
-                    if ($interval->m >= 3) {
-                        ['fromDate' => $fromDate, 'toDate' => $toDate] = $this->getLastQuarter($dateNow);
-                        $io->writeln('Sending quarterly '.$subject.' to '.$subscription->getEmail());
-                        try {
-                            $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
-                        } catch (MpdfException $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - An MpdfException occurred: ', ['exception' => $e]);
-                        } catch (EconomicsException $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A EconomicsException occurred: ', ['exception' => $e]);
-                        } catch (TransportExceptionInterface $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A TransportExceptionInterface occurred: ', ['exception' => $e]);
-                        } catch (LoaderError $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A LoaderError occurred: ', ['exception' => $e]);
-                        } catch (RuntimeError $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A RuntimeError occurred: ', ['exception' => $e]);
-                        } catch (SyntaxError $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - A SyntaxError occurred: ', ['exception' => $e]);
-                        } catch (\Exception $e) {
-                            $this->logger->error('Subscription id: '.$subscriptionId.' - An Exception occurred: ', ['exception' => $e]);
-                        }
-                    }
-                    break;
+
+            if (SubscriptionFrequencyEnum::FREQUENCY_MONTHLY->name === $subscription->getFrequency()->name && $interval->m >= 1) {
+                $this->handleMonthlyFrequency($subscription, $io);
+            } elseif (SubscriptionFrequencyEnum::FREQUENCY_QUARTERLY->name === $subscription->getFrequency()->name && $interval->m >= 3) {
+                $this->handleQuarterlyFrequency($subscription, $io, $dateNow);
             }
         }
-
         $io->writeln('Done processing '.count($subscriptions).' subscriptions.');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Handle the monthly frequency for a subscription by sending the monthly email
+     * for the previous month.
+     *
+     * @param Subscription $subscription the subscription to handle
+     * @param SymfonyStyle $io the console output interface
+     *
+     * @return void
+     */
+    private function handleMonthlyFrequency(Subscription $subscription, SymfonyStyle $io): void
+    {
+        $fromDate = new \DateTime('first day of previous month');
+        $toDate = new \DateTime('last day of previous month');
+        $io->writeln('Sending monthly '.$subscription->getSubject()->name.' to '.$subscription->getEmail());
+        $this->handleSubscriptionWithExceptionHandling($subscription, $fromDate, $toDate);
+    }
+
+    /**
+     * Handles the quarterly frequency for the given subscription.
+     *
+     * @param Subscription $subscription the subscription to handle
+     * @param SymfonyStyle $io the SymfonyStyle instance for console output
+     * @param \DateTime $dateNow the current date
+     *
+     * @return void
+     */
+    private function handleQuarterlyFrequency(Subscription $subscription, SymfonyStyle $io, \DateTime $dateNow): void
+    {
+        ['fromDate' => $fromDate, 'toDate' => $toDate] = $this->getLastQuarter($dateNow);
+        $io->writeln('Sending quarterly '.$subscription->getSubject()->name.' to '.$subscription->getEmail());
+        $this->handleSubscriptionWithExceptionHandling($subscription, $fromDate, $toDate);
+    }
+
+    /**
+     * Handle a subscription with exception handling.
+     *
+     * @param Subscription $subscription the subscription object
+     * @param \DateTime $fromDate the start date of the subscription
+     * @param \DateTime $toDate the end date of the subscription
+     *
+     * @return void
+     */
+    private function handleSubscriptionWithExceptionHandling(Subscription $subscription, \DateTime $fromDate, \DateTime $toDate): void
+    {
+        try {
+            $this->subscriptionHandlerService->handleSubscription($subscription, $fromDate, $toDate);
+        } catch (MpdfException|EconomicsException|TransportExceptionInterface|LoaderError|RuntimeError|SyntaxError|\Exception $e) {
+            $this->logger->error('Subscription id: '.$subscription->getId().' - An exception occurred: ', ['exception' => $e]);
+        }
     }
 
     /**
