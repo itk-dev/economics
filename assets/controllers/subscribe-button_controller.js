@@ -19,7 +19,7 @@ export default class extends Controller {
         const { targets, url, params } = this.getData();
 
         postRequestHandler(url, params).then((result) => {
-            this.handleFetchedData(result.data, targets);
+            this.handleFetchedData(result, targets);
         });
     };
 
@@ -35,7 +35,7 @@ export default class extends Controller {
         triggerState(states.fetching, targets);
 
         postRequestHandler(url, params).then((result) => {
-            this.handleFetchedData(result.data, targets);
+            this.handleFetchedData(result, targets);
         });
     };
 
@@ -54,8 +54,9 @@ export default class extends Controller {
         return { targets, url, params };
     };
 
-    handleFetchedData = (data, targets) => {
-        if (data.success) {
+    handleFetchedData = (result, targets) => {
+        if (result.status === 200) {
+            const data = result.data;
             if (data.frequencies) {
                 triggerState(states.subscribed, targets);
                 targets.parent.dataset.frequencies = data.frequencies;
@@ -63,7 +64,8 @@ export default class extends Controller {
                 delete targets.parent.dataset.frequencies;
                 triggerState(states.unsubscribed, targets);
             }
-        } else {
+        } else if (result.status === 400) {
+            console.log(result.error);
             document.getElementById("subscribe-module").style.display = "none";
         }
     };
