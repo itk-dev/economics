@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   2499: Added worker name in workload report.
 * [PR-166](https://github.com/itk-dev/economics/pull/166)
   2545: Added total column for workload report.
+  2545: Fixed average calculation.
 
 ## [2.4.2] - 2024-09-12
 

@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Model\Reports\WorkloadReportData;
-use App\Model\Reports\WorkloadReportPeriodTypeEnum;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Model\Reports\WorkloadReportWorker;
@@ -75,7 +74,7 @@ class WorkloadReportService
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
-                $workerWorkload = $worker->getWorkload() ?? 37.0;
+                $workerWorkload = $worker->getWorkload();
                 if (!$workerWorkload) {
                     $workerId = $worker->getUserIdentifier();
                     throw new \Exception("Workload of worker: $workerId cannot be null when generating workload report.");
@@ -94,7 +93,7 @@ class WorkloadReportService
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
             }
 
-            $workloadReportWorker->average = round($loggedHoursSum / $expectedWorkloadSum * 100, 2);
+            $workloadReportWorker->average = $expectedWorkloadSum > 0 ? round($loggedHoursSum / $expectedWorkloadSum * 100, 2) : 0;
 
             $workloadReportData->workers->add($workloadReportWorker);
         }
@@ -106,7 +105,7 @@ class WorkloadReportService
     {
         return match ($viewPeriodType) {
             PeriodTypeEnum::WEEK => $workloadWeekBase,
-            PeriodTypeEnum::MONTH, PeriodTypeEnum::YEAR => $workloadWeekBase / 5 * ($this->dateTimeHelper->getWeekdaysBetween($dateFrom, $dateTo)),
+            PeriodTypeEnum::MONTH, PeriodTypeEnum::YEAR => $workloadWeekBase / 5 * $this->dateTimeHelper->getWeekdaysBetween($dateFrom, $dateTo),
         };
     }
 
