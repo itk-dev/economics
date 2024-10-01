@@ -15,72 +15,58 @@ export default class extends Controller {
         "menu",
     ];
 
-    connect() {
-        const targets = {
-            parent: this.actionButtonTarget,
-            fetching: this.actionFetchingSubscriptionTarget,
-            unsubscribed: this.actionUnsubscribedTarget,
-            subscribed: this.actionSubscribedTarget,
-        };
-        const data = targets.parent.dataset;
-        const { url } = data;
-        const encodedParams = data.params;
-        const params = JSON.parse(encodedParams);
+    connect = () => {
+        const { targets, url, params } = this.getData();
 
         postRequestHandler(url, params).then((result) => {
+            this.handleFetchedData(result.data, targets);
             console.log(result.data);
-            if (result.data.success) {
-                if (result.data.frequencies) {
-                    triggerState(states.subscribed, targets);
-
-                    data.frequencies = result.data.frequencies;
-                } else {
-                    triggerState(states.unsubscribed, targets);
-                }
-            } else {
-                document.getElementById("subscribe-module").style.display =
-                    "none";
-            }
         });
-    }
+    };
 
     action = (e) => {
-        const targets = {
-            menuTarget: this.menuTarget,
-            parent: this.actionButtonTarget,
-            fetching: this.actionFetchingSubscriptionTarget,
-            unsubscribed: this.actionUnsubscribedTarget,
-            subscribed: this.actionSubscribedTarget,
-        };
-        const data = targets.parent.dataset;
-        const { url } = data;
-        const encodedParams = data.params;
-        const params = JSON.parse(encodedParams);
-
-        const type = e.target.dataset.subscriptiontype;
+        const { targets, url, params } = this.getData();
+        targets.menuTarget = this.menuTarget;
 
         targets.menuTarget.classList.toggle("hidden");
 
         const reportType = Object.keys(params)[0];
-        params[reportType].subscriptionType = type;
+        params[reportType].subscriptionType = e.target.dataset.subscriptiontype;
 
         triggerState(states.fetching, targets);
+
         postRequestHandler(url, params).then((result) => {
-            if (result.success) {
-                if (result.data.action) {
-                    if (result.data.frequencies) {
-                        data.frequencies = result.data.frequencies;
-                        triggerState(states.subscribed, targets);
-                    } else {
-                        data.frequencies = "";
-                        triggerState(states.unsubscribed, targets);
-                    }
-                }
-            } else {
-                document.getElementById("subscribe-module").style.display =
-                    "none";
-            }
+            this.handleFetchedData(result.data, targets);
         });
+    };
+
+    getData = () => {
+        const targets = {
+            parent: this.actionButtonTarget,
+            fetching: this.actionFetchingSubscriptionTarget,
+            unsubscribed: this.actionUnsubscribedTarget,
+            subscribed: this.actionSubscribedTarget,
+        };
+
+        const data = targets.parent.dataset;
+        const { url } = data;
+        const params = JSON.parse(data.params);
+
+        return { targets, url, params };
+    };
+
+    handleFetchedData = (data, targets) => {
+        if (data.success) {
+            if (data.frequencies) {
+                triggerState(states.subscribed, targets);
+                targets.parent.dataset.frequencies = data.frequencies;
+            } else {
+                delete targets.parent.dataset.frequencies;
+                triggerState(states.unsubscribed, targets);
+            }
+        } else {
+            document.getElementById("subscribe-module").style.display = "none";
+        }
     };
 
     toggle() {
