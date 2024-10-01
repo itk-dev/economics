@@ -79,26 +79,27 @@ class SubscriptionController extends AbstractController
         $content = $request->toArray();
         $userEmail = $user->getEmail();
         $report_type = key($content);
+        $report = $content[$report_type];
         switch ($report_type) {
             case 'hour_report':
-                if (empty($content[$report_type]['dataProvider']) || empty($content[$report_type]['project'])) {
+                if (empty($report['dataProvider']) || empty($report['project'])) {
                     return new JsonResponse([], 404);
                 }
                 // If version is unset, remove it from data
-                if (empty($content[$report_type]['version'])) {
-                    unset($content[$report_type]['version']);
+                if (empty($report['version'])) {
+                    unset($report['version']);
                 }
                 // Unset data irrelevant for subscription
                 unset(
-                    $content[$report_type]['fromDate'],
-                    $content[$report_type]['toDate'],
+                    $report['fromDate'],
+                    $report['toDate'],
                 );
 
                 // If subscriptionType exists, either subscribe or unsubscribe
-                $subscriptionType = $content[$report_type]['subscriptionType'] ?? null;
+                $subscriptionType = $report['subscriptionType'] ?? null;
 
                 if ($subscriptionType) {
-                    unset($content[$report_type]['subscriptionType']);
+                    unset($report['subscriptionType']);
 
                     return $this->subscriptionHandler($userEmail, $subscriptionType, $content);
                 }
