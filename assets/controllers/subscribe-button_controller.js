@@ -20,7 +20,6 @@ export default class extends Controller {
 
         postRequestHandler(url, params).then((result) => {
             this.handleFetchedData(result.data, targets);
-            console.log(result.data);
         });
     };
 
