@@ -78,9 +78,9 @@ class SubscriptionController extends AbstractController
     {
         $content = $request->toArray();
         $userEmail = $user->getEmail();
-        $report_type = key($content);
-        $report = $content[$report_type];
-        switch ($report_type) {
+        $reportType = key($content);
+        $report = $content[$reportType];
+        switch ($reportType) {
             case 'hour_report':
                 if (empty($report['dataProvider']) || empty($report['project'])) {
                     return new JsonResponse([], 404);
@@ -125,7 +125,7 @@ class SubscriptionController extends AbstractController
      */
     private function subscriptionHandler($userEmail, $subscriptionType, $content): JsonResponse
     {
-        $report_type = key($content);
+        $reportType = key($content);
         $subscription = $this->subscriptionRepository->findOneByCustom($userEmail, $subscriptionType, $content);
 
         if ($subscription) {
@@ -137,8 +137,8 @@ class SubscriptionController extends AbstractController
         } else {
             $subscription = new Subscription();
             $subscription->setEmail($userEmail);
-            $subject = SubscriptionSubjectEnum::tryFrom($report_type);
-            $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: '.$report_type));
+            $subject = SubscriptionSubjectEnum::tryFrom($reportType);
+            $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: '.$reportType));
             $frequency = SubscriptionFrequencyEnum::tryFrom($subscriptionType);
             $subscription->setFrequency($frequency ?? throw new \InvalidArgumentException('Invalid frequency type: '.$subscriptionType));
             $subscription->setUrlParams($content);
