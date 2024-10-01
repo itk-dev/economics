@@ -56,7 +56,7 @@ export default class extends Controller {
 
     handleFetchedData = (result, targets) => {
         if (result.status === 200) {
-            const data = result.data;
+            const { data } = result;
             if (data.frequencies) {
                 triggerState(states.subscribed, targets);
                 targets.parent.dataset.frequencies = data.frequencies;
