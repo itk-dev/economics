@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'subscription.title'|trans }}{% endblock %}
+
+{% block content %}
+
+    {{ include('components/page-header.html.twig', {
+        title: 'subscription.title'|trans,
+    }) }}
+
+    {% set number_of_columns = 11 %}
+
+    {{ form_start(form) }}
+    <div class="form-default">
+        {{ form_row(form.urlParams) }}
+        <div>
+            <button class="button form-element">{{ 'subscription.search'|trans }}</button>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    <table class="table margin-bottom">
+        <thead class="table-th">
+            <th class="table-th">{{ 'subscription.urlParams'|trans }}</th>
+            <th></th>
+            <th class="table-th">{{ 'subscription.subject'|trans }}</th>
+            <th class="table-th">{{ 'subscription.frequency'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for index, subscription in subscriptions %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                {% set urlParams = subscription.urlParams %}
+                <td class="table-td subscription-details">
+                    <div>
+                        <span>Project:</span>
+                        <span>{{ urlParams.project }}</span>
+                    </div>
+                    {% if urlParams.version is defined and urlParams.version is not empty %}
+                        <div>
+                            <span>Version:</span>
+                            <span>{{ urlParams.version }}</span>
+                        </div>
+                    {% endif %}
+                </td>
+                <td class="w-40"></td>
+                <td class="table-td">{{ ('subscription.subjects.' ~ subscription.subject.value)|trans }}</td>
+                <td class="table-td">{{ ('subscription.frequencies.' ~ subscription.frequency.value)|trans }}</td>
+                <td class="table-td w-10">
+                    <a class="link" href="{{ path('app_subscription_delete', {id: subscription.id}) }}"
+                       onclick="return confirm('{{ 'subscription.confirm_delete'|trans }}')">{{ 'subscription.delete'|trans }}</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr class="table-tr">
+                <td class="table-td"
+                    colspan="{{ number_of_columns }}">{{ 'subscription.list_no_records_found'|trans }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="table-tr">
+            <td class="table-td" colspan="{{ number_of_columns - 2 }}">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{% endblock %}

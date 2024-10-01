@@ -1,33 +1,37 @@
-export const postRequestHandler = async (updateUrl) => {
-    let result = {
+export const postRequestHandler = async (updateUrl, data = null) => {
+    const result = {
         success: false,
         status: null,
         data: null,
-        error: null
+        error: null,
     };
 
     try {
-        const response = await fetch(updateUrl, {
+        const options = {
             method: "POST",
             mode: "same-origin",
             cache: "no-cache",
             credentials: "same-origin",
             headers: { "Content-Type": "application/json" },
             redirect: "follow",
-            referrerPolicy: "no-referrer"
-        });
+            referrerPolicy: "no-referrer",
+        };
+        if (data !== null) {
+            options.body = JSON.stringify(data);
+        }
+
+        const response = await fetch(updateUrl, options);
 
         result.status = response.status;
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message);
+            throw new Error(errorData.error);
         } else {
             result.success = true;
             result.data = await response.json();
         }
     } catch (error) {
-        console.error(error.message);
         result.error = error.message;
     }
 
