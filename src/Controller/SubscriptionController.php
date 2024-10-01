@@ -6,8 +6,6 @@ use App\Entity\Subscription;
 use App\Entity\User;
 use App\Enum\SubscriptionFrequencyEnum;
 use App\Enum\SubscriptionSubjectEnum;
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Form\SubscriptionFilterType;
 use App\Model\Invoices\SubscriptionFilterData;
 use App\Repository\DataProviderRepository;
@@ -15,6 +13,7 @@ use App\Repository\ProjectRepository;
 use App\Repository\SubscriptionRepository;
 use App\Repository\VersionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,13 +71,12 @@ class SubscriptionController extends AbstractController
     }
 
     /**
-     * @throws EconomicsException
-     * @throws UnsupportedDataProviderException
+     * @throws NonUniqueResultException
      */
     #[Route('/{id}/check', name: 'app_subscription_check', methods: ['POST'])]
     public function check(User $user, Request $request): Response
     {
-        $content = json_decode($request->getContent(), true);
+        $content = $request->toArray();
         $userEmail = $user->getEmail();
         $report_type = key($content);
         switch ($report_type) {
@@ -97,7 +95,7 @@ class SubscriptionController extends AbstractController
                 );
 
                 // If subscriptionType exists, either subscribe or unsubscribe
-                $subscriptionType = isset($content[$report_type]['subscriptionType']) ? $content[$report_type]['subscriptionType'] : null;
+                $subscriptionType = $content[$report_type]['subscriptionType'] ?? null;
 
                 if ($subscriptionType) {
                     unset($content[$report_type]['subscriptionType']);
@@ -106,7 +104,7 @@ class SubscriptionController extends AbstractController
                 }
 
                 // If no subscriptionType exists, find existing subscriptions and return
-                $subscriptions = $this->subscriptionRepository->findBy(['email' => $userEmail, 'urlParams' => json_encode($content)]);
+                $subscriptions = $this->subscriptionRepository->findByCustom($userEmail, $content);
 
                 if ($subscriptions) {
                     $frequencies = $this->getFrequencies($subscriptions);
@@ -121,14 +119,17 @@ class SubscriptionController extends AbstractController
         }
     }
 
+    /**
+     * @throws NonUniqueResultException
+     */
     private function subscriptionHandler($userEmail, $subscriptionType, $content): JsonResponse
     {
         $report_type = key($content);
-        $subscription = $this->subscriptionRepository->findOneBy(['email' => $userEmail, 'frequency' => $subscriptionType, 'urlParams' => json_encode($content)]);
+        $subscription = $this->subscriptionRepository->findOneByCustom($userEmail, $subscriptionType, $content);
 
         if ($subscription) {
             $this->subscriptionRepository->remove($subscription, true);
-            $subscriptions = $this->subscriptionRepository->findBy(['email' => $userEmail, 'urlParams' => json_encode($content)]);
+            $subscriptions = $this->subscriptionRepository->findByCustom($userEmail, $content);
             $frequencies = $this->getFrequencies($subscriptions);
 
             return new JsonResponse(['success' => true, 'action' => 'unsubscribed', 'frequencies' => $frequencies], 200);
@@ -139,10 +140,10 @@ class SubscriptionController extends AbstractController
             $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: '.$report_type));
             $frequency = SubscriptionFrequencyEnum::tryFrom($subscriptionType);
             $subscription->setFrequency($frequency ?? throw new \InvalidArgumentException('Invalid frequency type: '.$subscriptionType));
-            $subscription->setUrlParams(json_encode($content));
+            $subscription->setUrlParams($content);
             $this->subscriptionRepository->save($subscription, true);
 
-            $subscriptions = $this->subscriptionRepository->findBy(['email' => $userEmail, 'urlParams' => json_encode($content)]);
+            $subscriptions = $this->subscriptionRepository->findByCustom($userEmail, $content);
             $frequencies = $this->getFrequencies($subscriptions);
 
             return new JsonResponse(['success' => true, 'action' => 'subscribed', 'frequencies' => $frequencies], 200);
@@ -168,20 +169,9 @@ class SubscriptionController extends AbstractController
         return implode(', ', $frequencies);
     }
 
-    /**
-     * Handles the subscription filter logic.
-     *
-     * Is required because search has to be performed in the controller,
-     * as data is stored json_encoded and only contains ids.
-     *
-     * @param Subscription $subscription the Subscription object to apply the filter to
-     * @param SubscriptionFilterData $subscriptionFilterData the filter criteria
-     *
-     * @return bool true if the filter is satisfied, false otherwise
-     */
     private function subscriptionFilterHandler(Subscription $subscription, SubscriptionFilterData $subscriptionFilterData): bool
     {
-        $urlParamsArray = json_decode($subscription->getUrlParams() ?? '', true);
+        $urlParamsArray = $subscription->getUrlParams() ?? [];
         $dataProviderId = $urlParamsArray['hour_report']['dataProvider'];
         $projectId = $urlParamsArray['hour_report']['project'];
         $versionId = $urlParamsArray['hour_report']['version'] ?? null;
@@ -196,7 +186,7 @@ class SubscriptionController extends AbstractController
             'version' => $version?->getName() ?? '',
         ];
 
-        $subscription->setUrlParams(json_encode($urlParams));
+        $subscription->setUrlParams($urlParams);
 
         if (!isset($subscriptionFilterData->urlParams)) {
             return true;
@@ -206,8 +196,6 @@ class SubscriptionController extends AbstractController
 
         foreach ($urlParams as $paramValue) {
             if (str_contains(strtolower($paramValue), $lowercasedFilter)) {
-                $subscription->setUrlParams(json_encode($urlParams));
-
                 return true;
             }
         }
