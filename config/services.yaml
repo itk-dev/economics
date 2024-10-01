@@ -70,7 +70,3 @@ services:
     App\Service\SubscriptionHandlerService:
         arguments:
             $emailFromAddress: '%env(string:EMAIL_FROM_ADDRESS)%'
-
-    App\Twig\AppExtension:
-        tags:
-            - { name: twig.extension }
