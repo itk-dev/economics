@@ -79,7 +79,7 @@ class SubscriptionController extends AbstractController
         $content = $request->toArray();
         $userEmail = $user->getEmail();
         $reportType = key($content);
-        $report = $content[$reportType];
+        $report = &$content[$reportType];
         switch ($reportType) {
             case 'hour_report':
                 if (empty($report['dataProvider']) || empty($report['project'])) {
@@ -100,7 +100,6 @@ class SubscriptionController extends AbstractController
 
                 if ($subscriptionType) {
                     unset($report['subscriptionType']);
-
                     return $this->subscriptionHandler($userEmail, $subscriptionType, $content);
                 }
 
