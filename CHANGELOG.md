@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-168](https://github.com/itk-dev/economics/pull/168)
+  Added Game center
 * [PR-164](https://github.com/itk-dev/economics/pull/164)
   3298: Added report notification subscription
-  
+
 ## [2.4.2] - 2024-09-12
 
 * [PR-163](https://github.com/itk-dev/economics/pull/163)
