@@ -5,12 +5,16 @@ const states = {
     default: "default",
     loading: "loading",
     success: "success",
-    error: "error"
+    error: "error",
 };
 
 export default class extends Controller {
-
-    static targets = ["actionDefault", "actionLoading", "actionSuccess", "actionError"];
+    static targets = [
+        "actionDefault",
+        "actionLoading",
+        "actionSuccess",
+        "actionError",
+    ];
 
     action(e) {
         const targets = {
@@ -21,23 +25,22 @@ export default class extends Controller {
             parent: e.target,
         };
         const data = e.target.dataset;
-        const url = data.url;
-        const reload = data.reload;
+        const { url } = data;
+        const { reload } = data;
 
         triggerState(states.loading, targets);
-        postRequestHandler(url)
-            .then(result => {
-                if (result.success) {
-                    triggerState(states.success, targets);
-                    setTimeout(()=>{
-                        reload && window.location.reload();
-                        triggerState(states.default, targets);
-                        }, 2000)
-                } else {
-                    triggerState(states.error, targets);
-                    alert(result.error);
-                }
-            });
+        postRequestHandler(url).then((result) => {
+            if (result.success) {
+                triggerState(states.success, targets);
+                setTimeout(() => {
+                    reload && window.location.reload();
+                    triggerState(states.default, targets);
+                }, 2000);
+            } else {
+                triggerState(states.error, targets);
+                alert(result.error);
+            }
+        });
     }
 }
 
@@ -52,18 +55,18 @@ function triggerState(state, targets) {
 
     switch (state) {
         case states.default:
-            targets.default.classList.remove('hidden');
+            targets.default.classList.remove("hidden");
             break;
         case states.loading:
             targets.loading.classList.remove("hidden");
             break;
         case states.success:
             targets.success.classList.remove("hidden");
-            targets.parent.classList.add('btn-success');
+            targets.parent.classList.add("btn-success");
             break;
         case states.error:
             targets.error.classList.remove("hidden");
-            targets.parent.classList.add('btn-error');
+            targets.parent.classList.add("btn-error");
             break;
         default:
             console.log("State not recognized");
@@ -72,17 +75,15 @@ function triggerState(state, targets) {
 
 /**
  * Resets the state of the targets.
- *
  * @param {object} targets - The targets to reset.
- * @return {void}
+ * @returns {void}
  */
-function resetState(targets)
-{
+function resetState(targets) {
     Object.entries(targets).forEach(([type, target]) => {
-        target.classList.remove('btn-error', 'btn-success');
+        target.classList.remove("btn-error", "btn-success");
         if (type === "parent") {
             return;
         }
-       target.classList.add('hidden');
+        target.classList.add("hidden");
     });
 }

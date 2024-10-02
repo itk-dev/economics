@@ -3,20 +3,33 @@
 {% block title %}{{ 'hour_report.title'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ (mode ~ '.title')|trans() }}</h1>
+    {% if error is defined and error is not null %}
+        {{ include('components/alert.html.twig', {level: 'danger', text: error}) }}
+    {% endif %}
+
+    {% if data is not empty %}
+        {{ include('components/page-header.html.twig', {
+            title: 'hour_report.title'|trans,
+            type: 'subscribe',
+            default_text: 'subscribe_button.subscribe'|trans,
+            success_text: 'subscribe_button.unsubscribe'|trans,
+            url: path('app_subscription_check', {id: app.user.id}),
+            params: app.request.query.all|json_encode,
+            reload: false,
+        }) }}
+    {% else %}
+        <h1 class="page-title">{{ (mode ~ '.title')|trans() }}</h1>
+    {% endif %}
 
     {{ form_start(form) }}
     {{ form_row(form.dataProvider) }}
     {{ form_end(form) }}
 
-    {% if error is defined and error is not null %}
-        {{ include('components/alert.html.twig', {level: 'danger', text: error}) }}
-    {% endif %}
     {% if data is not empty %}
-            <div class="planning-wrapper">
-                {% if mode is defined %}
-                    {{ include('reports/' ~ mode ~ '.html.twig') }}
-                {% endif %}
-            </div>
+        <div class="planning-wrapper">
+            {% if mode is defined %}
+                {{ include('reports/' ~ mode ~ '.html.twig') }}
+            {% endif %}
+        </div>
     {% endif %}
 {% endblock %}
