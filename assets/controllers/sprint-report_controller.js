@@ -1,6 +1,4 @@
 import { Controller } from "@hotwired/stimulus";
-import Choices from "choices.js";
-import "choices.js/src/styles/choices.scss";
 
 /**
  * Sprint report controller.
@@ -30,29 +28,6 @@ export default class extends Controller {
 
         this.calculateForecasts = this.calculateForecasts.bind(this);
 
-        // Initialize choices.js
-        /* eslint-disable-next-line no-new */
-        new Choices(this.projectTarget, {
-            allowHTML: true,
-            itemSelectText: "",
-        });
-        /* eslint-disable-next-line no-new */
-        new Choices(this.versionTarget, {
-            allowHTML: true,
-            itemSelectText: "",
-        });
-
-        this.loadingTarget.classList.add("hidden");
-        this.contentTarget.classList.remove("hidden");
-        this.selectTarget.classList.remove("hidden");
-
-        this.projectTarget
-            .closest("div.choices")
-            .parentElement.classList.add("form-choices");
-        this.versionTarget
-            .closest("div.choices")
-            .parentElement.classList.add("form-choices");
-
         if (this.projectTarget.value && this.versionTarget.value) {
             this.budgetTarget.addEventListener(
                 "change",
@@ -63,19 +38,6 @@ export default class extends Controller {
                 this.calculateForecasts,
             );
         }
-    }
-
-    submitFormProjectId() {
-        this.versionTarget.value = null;
-        this.submitForm();
-    }
-
-    submitForm() {
-        this.contentTarget.classList.add("hidden");
-        this.selectTarget.classList.add("hidden");
-        this.loadingTarget.classList.remove("hidden");
-
-        this.formTarget.submit();
     }
 
     submitBudget() {
@@ -125,6 +87,7 @@ export default class extends Controller {
             forecast = (spentHours / finishedDegree) * 100;
             this.projectTotalForecastTarget.innerHTML = `${forecast.toFixed(2)}`;
         }
+
         if (salesBudget > 0 && forecast != null) {
             overUnder = forecast / salesBudget;
             this.overUnderIndexTarget.innerHTML = `${overUnder.toFixed(2)}`;

@@ -7,4 +7,5 @@ enum SprintStateEnum: string
     case ACTIVE = 'ACTIVE';
     case FUTURE = 'FUTURE';
     case OTHER = 'OTHER';
+    case PAST = 'PAST';
 }

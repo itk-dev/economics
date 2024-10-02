@@ -2,11 +2,11 @@
 
 namespace App\Model\SprintReport;
 
-use App\Entity\DataProvider;
+use App\Entity\Project;
+use App\Entity\Version;
 
 class SprintReportFormData
 {
-    public DataProvider $dataProvider;
-    public string $projectId;
-    public string $versionId;
+    public Project $project;
+    public Version $version;
 }

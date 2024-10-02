@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-160](https://github.com/itk-dev/economics/pull/160)
+  1768: Fixed sprint report to use local data.
 * [PR-164](https://github.com/itk-dev/economics/pull/164)
   3298: Added report notification subscription
-  
+
 ## [2.4.2] - 2024-09-12
 
 * [PR-163](https://github.com/itk-dev/economics/pull/163)

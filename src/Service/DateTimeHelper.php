@@ -80,8 +80,8 @@ class DateTimeHelper
     public function getWeeksOfYear(int $year): array
     {
         $weekArray = [];
-        $start = new \DateTime("{$year}-01-04"); // 4th of Jan always falls in the first week of the year.
-        $end = (new \DateTime("{$year}-12-28"))->modify('+1 week'); // 28th of Dec always falls in the last week of the year.
+        $start = new \DateTime("$year-01-04"); // 4th of Jan always falls in the first week of the year.
+        $end = (new \DateTime("$year-12-28"))->modify('+1 week'); // 28th of Dec always falls in the last week of the year.
         $interval = new \DateInterval('P1W');
 
         foreach (new \DatePeriod($start, $interval, $end) as $date) {
