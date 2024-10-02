@@ -1,0 +1,35 @@
+<div id="subscribe-module" class="relative inline-block text-left" {{ stimulus_controller('subscribe-button') }}>
+    <div>
+        <button type="button"
+                class="subscribe-button w-56 text-right"
+                id="menu-button" aria-expanded="true" aria-haspopup="true"
+                data-params="{{ params|default(false) }}"
+                data-url="{{ url|default(false) }}"
+            {{ stimulus_target('subscribe-button', 'actionButton') }}
+            {{ stimulus_action('subscribe-button', 'toggle') }} >
+            <span
+                class="action-fetching pointer-events-none"{{ stimulus_target('subscribe-button', 'actionFetchingSubscription') }}> {{ loader_text is defined ? loader_text : include('components/icons.html.twig', {icon: 'spinner', class: 'w-6 h-6'}) }}
+            </span>
+            <span
+                class="action-unsubscribed hidden pointer-events-none w-56 justify-center"{{ stimulus_target('subscribe-button', 'actionUnsubscribed') }}> {{ 'subscription.button.subscribe'|trans }}
+            </span>
+            <span
+                class="action-subscribed hidden pointer-events-none" {{ stimulus_target('subscribe-button', 'actionSubscribed') }}> {{ 'subscription.button.edit'|trans }}
+            </span>
+        </button>
+    </div>
+
+    <div
+        class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+        {{ stimulus_target('subscribe-button', 'menu') }}>
+        <div class="py-1">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
+                {{ stimulus_action('subscribe-button', 'action') }}
+               data-subscriptiontype="monthly">{{ 'subscription.button.monthly'|trans }}</a>
+
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
+                {{ stimulus_action('subscribe-button', 'action') }}
+               data-subscriptiontype="quarterly">{{ 'subscription.button.quarterly'|trans }}</a>
+        </div>
+    </div>
+</div>

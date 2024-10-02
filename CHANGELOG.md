@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-166](https://github.com/itk-dev/economics/pull/166)
   2545: Added total column for workload report.
   2545: Fixed average calculation.
-
+* [PR-164](https://github.com/itk-dev/economics/pull/164)
+  3298: Added report notification subscription
+  
 ## [2.4.2] - 2024-09-12
 
 * [PR-163](https://github.com/itk-dev/economics/pull/163)

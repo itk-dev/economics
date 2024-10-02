@@ -7,6 +7,9 @@
         {% if type == 'action' %}
             {{ include('components/action-button.html.twig') }}
         {% endif %}
+        {% if type == 'subscribe' %}
+            {{ include('components/subscribe-button.html.twig') }}
+        {% endif %}
     {% endif %}
 
 </header>
