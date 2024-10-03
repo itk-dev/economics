@@ -36,7 +36,6 @@ class WorkloadReportService
         $periods = $this->getPeriods($viewPeriodType, $year);
 
         foreach ($periods as $period) {
-            // Get period specific readable period representation for table headers.
             $readablePeriod = $this->getReadablePeriod($period, $viewPeriodType);
             $workloadReportData->period->set((string) $period, $readablePeriod);
         }
@@ -45,6 +44,10 @@ class WorkloadReportService
             $workloadReportWorker = new WorkloadReportWorker();
             $workloadReportWorker->setEmail($worker->getUserIdentifier());
             $workloadReportWorker->setWorkload($worker->getWorkload());
+            $workloadReportWorker->setName($worker->getName());
+            $currentPeriodReached = false;
+            $expectedWorkloadSum = 0;
+            $loggedHoursSum = 0;
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
@@ -52,11 +55,11 @@ class WorkloadReportService
 
                 if ($period === $currentPeriodNumeric) {
                     $workloadReportData->setCurrentPeriodNumeric($period);
+                    $currentPeriodReached = true;
                 }
+
                 // Get first and last date in period.
                 ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $this->getDatesOfPeriod($period, $year, $viewPeriodType);
-
-                // Get all worklogs between the two dates.
                 $workerIdentifier = $worker->getUserIdentifier();
 
                 if (empty($workerIdentifier)) {
@@ -65,46 +68,44 @@ class WorkloadReportService
 
                 $worklogs = $this->getWorklogs($viewMode, $workerIdentifier, $dateFrom, $dateTo);
 
-                // Tally up logged hours in gathered worklogs for current period.
+                // Tally up logged hours in gathered worklogs for current period
                 $loggedHours = 0;
                 foreach ($worklogs as $worklog) {
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
                 $workerWorkload = $worker->getWorkload();
-
                 if (!$workerWorkload) {
                     $workerId = $worker->getUserIdentifier();
-                    throw new \Exception("Workload of worker: $workerId cannot be unset when generating workload report.");
+                    throw new \Exception("Workload of worker: $workerId cannot be null when generating workload report.");
                 }
-                // Get total logged percentage based on weekly workload.
-                $roundedLoggedPercentage = $this->getRoundedLoggedPercentage($loggedHours, $workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
+
+                $expectedWorkload = $this->getExpectedWorkHours($workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
+                $roundedLoggedPercentage = round($loggedHours / $expectedWorkload * 100, 2);
+
+                // Count up sums until current period have been reached.
+                if (!$currentPeriodReached) {
+                    $expectedWorkloadSum += $expectedWorkload;
+                    $loggedHoursSum += $loggedHours;
+                }
 
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
             }
+
+            $workloadReportWorker->average = $expectedWorkloadSum > 0 ? round($loggedHoursSum / $expectedWorkloadSum * 100, 2) : 0;
+
             $workloadReportData->workers->add($workloadReportWorker);
         }
 
         return $workloadReportData;
     }
 
-    /**
-     * Calculates the rounded percentage of logged hours based on the workload and view mode.
-     *
-     * @param float $loggedHours the number of logged hours
-     * @param float $workloadWeekBase the base weekly workload (including lunch hours)
-     * @param PeriodTypeEnum $viewPeriodType the view mode ('week' or 'month')
-     *
-     * @return float the rounded percentage of logged hours
-     */
-    private function getRoundedLoggedPercentage(float $loggedHours, float $workloadWeekBase, PeriodTypeEnum $viewPeriodType, \DateTime $dateFrom, \DateTime $dateTo): float
+    private function getExpectedWorkHours(float $workloadWeekBase, PeriodTypeEnum $viewPeriodType, \DateTime $dateFrom, \DateTime $dateTo): float
     {
-        // Workload is weekly hours, so for expanded views, it has to be multiplied.
         return match ($viewPeriodType) {
-            PeriodTypeEnum::WEEK => round(($loggedHours / $workloadWeekBase) * 100),
-            PeriodTypeEnum::MONTH => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->getWeekdaysBetween($dateFrom, $dateTo) / 5))) * 100),
-            PeriodTypeEnum::YEAR => round(($loggedHours / ($workloadWeekBase * ($this->dateTimeHelper->getWeekdaysBetween($dateFrom, $dateTo) / 5))) * 100, 2),
+            PeriodTypeEnum::WEEK => $workloadWeekBase,
+            PeriodTypeEnum::MONTH, PeriodTypeEnum::YEAR => $workloadWeekBase / 5 * $this->dateTimeHelper->getWeekdaysBetween($dateFrom, $dateTo),
         };
     }
 

@@ -560,6 +560,8 @@ workload_report:
     worker: 'Medarbejder'
     hidden-entries: 'Skjulte medarbejdere'
     submit: 'Hent'
+    average: "Gennemsnit"
+    average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
 
 hour_report:
     title: 'Timerapport'

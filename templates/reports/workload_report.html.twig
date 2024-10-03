@@ -26,6 +26,9 @@
                     {% endif %}
                 </th>
             {% endfor %}
+            <th title="{{ 'workload_report.average_describe'|trans }}" class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap cursor-help">
+               <span class="flex justify-evenly"> {{ 'workload_report.average'|trans }}   {{ include('components/icons.html.twig', {icon: 'info', class: 'w-5 h-5'}) }}</span>
+            </th>
         </tr>
         </thead>
 
@@ -37,7 +40,7 @@
                 <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
                     <div class="flex flex-row">
                         <span class="flex-grow mr-3">
-                            {{ worker.email }}
+                            {{ worker.name ?? worker.email }}
                         </span>
                         <button class="hide-btn mr-3 w-4"
                                 type="button" {{ stimulus_action('show-hide', 'toggleEntry') }}
@@ -57,6 +60,9 @@
                         {{ week ~ '%' }}
                     </td>
                 {% endfor %}
+                <td class="text-center px-3 border border-slate-600">
+                    {{ worker.average ~ '%' }}
+                </td>
             </tr>
             </tbody>
         {% endfor %}
