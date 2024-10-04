@@ -22,9 +22,9 @@ class DateTimeHelperTest extends TestCase
     /**
      * @dataProvider weekYearProvider
      */
-    public function testGetFirstAndLastDateOfWeek(int $weekNumber, int $year, array $expected): void
+    public function testGetFirstAndLastDatesOfWeeks(array $weekNumbers, int $year, array $expected): void
     {
-        $result = $this->dateTimeHelper->getFirstAndLastDateOfWeek($weekNumber, $year);
+        $result = $this->dateTimeHelper->getFirstAndLastDatesOfWeeks($weekNumbers, $year);
         $this->assertEquals($expected, $result);
     }
 
@@ -32,35 +32,43 @@ class DateTimeHelperTest extends TestCase
     {
         return [
             [
-                'weekNumber' => 1,
+                'weekNumbers' => [1],
                 'year' => 2024,
                 'expected' => [
-                    'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
-                    'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+                    1 => [
+                        'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+                        'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+                    ],
                 ],
             ],
             [
-                'weekNumber' => 52,
+                'weekNumbers' => [52],
                 'year' => 2024,
                 'expected' => [
-                    'dateFrom' => new \DateTime('2024-12-23 00:00:00'),
-                    'dateTo' => new \DateTime('2024-12-29 23:59:59'),
+                    52 => [
+                        'dateFrom' => new \DateTime('2024-12-23 00:00:00'),
+                        'dateTo' => new \DateTime('2024-12-29 23:59:59'),
+                    ],
                 ],
             ],
             [
-                'weekNumber' => 30,
+                'weekNumbers' => [30],
                 'year' => 2023,
                 'expected' => [
-                    'dateFrom' => new \DateTime('2023-07-24 00:00:00'),
-                    'dateTo' => new \DateTime('2023-07-30 23:59:59'),
+                    30 => [
+                        'dateFrom' => new \DateTime('2023-07-24 00:00:00'),
+                        'dateTo' => new \DateTime('2023-07-30 23:59:59'),
+                    ],
                 ],
             ],
             [
-                'weekNumber' => 1,
+                'weekNumbers' => [1],
                 'year' => 2025,
                 'expected' => [
-                    'dateFrom' => new \DateTime('2024-12-30 00:00:00'),
-                    'dateTo' => new \DateTime('2025-01-05 23:59:59'),
+                    1 => [
+                        'dateFrom' => new \DateTime('2024-12-30 00:00:00'),
+                        'dateTo' => new \DateTime('2025-01-05 23:59:59'),
+                    ],
                 ],
             ],
         ];
@@ -69,9 +77,9 @@ class DateTimeHelperTest extends TestCase
     /**
      * @dataProvider monthYearProvider
      */
-    public function testGetFirstAndLastDateOfMonth(int $monthNumber, int $year, array $expected): void
+    public function testGetFirstAndLastDatesOfMonths(array $monthNumbers, int $year, array $expected): void
     {
-        $result = $this->dateTimeHelper->getFirstAndLastDateOfMonth($monthNumber, $year);
+        $result = $this->dateTimeHelper->getFirstAndLastDatesOfMonths($monthNumbers, $year);
         $this->assertEquals($expected, $result);
     }
 
@@ -79,35 +87,43 @@ class DateTimeHelperTest extends TestCase
     {
         return [
             [
-                'monthNumber' => 1,
+                'monthNumbers' => [1],
                 'year' => 2024,
                 'expected' => [
-                    'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
-                    'dateTo' => new \DateTime('2024-01-31 23:59:59'),
+                    1 => [
+                        'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+                        'dateTo' => new \DateTime('2024-01-31 23:59:59'),
+                    ],
                 ],
             ],
             [
-                'monthNumber' => 12,
+                'monthNumbers' => [12],
                 'year' => 2024,
                 'expected' => [
-                    'dateFrom' => new \DateTime('2024-12-01 00:00:00'),
-                    'dateTo' => new \DateTime('2024-12-31 23:59:59'),
+                    12 => [
+                        'dateFrom' => new \DateTime('2024-12-01 00:00:00'),
+                        'dateTo' => new \DateTime('2024-12-31 23:59:59'),
+                    ],
                 ],
             ],
             [
-                'monthNumber' => 2,
+                'monthNumbers' => [2],
                 'year' => 2023,
                 'expected' => [
-                    'dateFrom' => new \DateTime('2023-02-01 00:00:00'),
-                    'dateTo' => new \DateTime('2023-02-28 23:59:59'),
+                    2 => [
+                        'dateFrom' => new \DateTime('2023-02-01 00:00:00'),
+                        'dateTo' => new \DateTime('2023-02-28 23:59:59'),
+                    ],
                 ],
             ],
             [
-                'monthNumber' => 2,
+                'monthNumbers' => [2],
                 'year' => 2024,
                 'expected' => [
-                    'dateFrom' => new \DateTime('2024-02-01 00:00:00'),
-                    'dateTo' => new \DateTime('2024-02-29 23:59:59'),
+                    2 => [
+                        'dateFrom' => new \DateTime('2024-02-01 00:00:00'),
+                        'dateTo' => new \DateTime('2024-02-29 23:59:59'),
+                    ],
                 ],
             ],
         ];
