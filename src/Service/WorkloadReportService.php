@@ -30,6 +30,7 @@ class WorkloadReportService
      */
     public function getWorkloadReport(PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
     {
+        $startTime = microtime(true);
         $workloadReportData = new WorkloadReportData($viewPeriodType->value);
         $year = (int) (new \DateTime())->format('Y');
         $workers = $this->workerRepository->findAll();
@@ -39,6 +40,13 @@ class WorkloadReportService
             $readablePeriod = $this->getReadablePeriod($period, $viewPeriodType);
             $workloadReportData->period->set((string) $period, $readablePeriod);
         }
+        $periodsWithDatesArray = $this->getDatesOfPeriods($periods, $year, $viewPeriodType);
+
+        // To get all worklogs, we need the first and last datetime of the year
+        $firstDateFrom = current($periodsWithDatesArray)['dateFrom'];
+        $lastDateTo = end($periodsWithDatesArray)['dateTo'];
+
+        $allWorklogs = $this->getWorklogs($viewMode, $firstDateFrom, $lastDateTo);
 
         foreach ($workers as $worker) {
             $workloadReportWorker = new WorkloadReportWorker();
@@ -49,9 +57,14 @@ class WorkloadReportService
             $expectedWorkloadSum = 0;
             $loggedHoursSum = 0;
 
-            foreach ($periods as $period) {
-                // Add current period match-point (current week-number, month-number etc.)
-                $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
+            // Add current period match-point (current week-number, month-number etc.)
+            $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
+
+            $workerIdentifier = $worker->getUserIdentifier();
+
+            foreach ($periodsWithDatesArray as $period => $periodDates) {
+                $dateFrom = clone $periodDates['dateFrom'];
+                $dateTo = clone $periodDates['dateTo'];
 
                 if ($period === $currentPeriodNumeric) {
                     $workloadReportData->setCurrentPeriodNumeric($period);
@@ -59,19 +72,18 @@ class WorkloadReportService
                 }
 
                 // Get first and last date in period.
-                ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $this->getDatesOfPeriod($period, $year, $viewPeriodType);
-                $workerIdentifier = $worker->getUserIdentifier();
-
                 if (empty($workerIdentifier)) {
                     throw new \Exception('Worker identifier cannot be empty');
                 }
+                $worklogs = $allWorklogs[$workerIdentifier] ?? [];
 
-                $worklogs = $this->getWorklogs($viewMode, $workerIdentifier, $dateFrom, $dateTo);
 
                 // Tally up logged hours in gathered worklogs for current period
                 $loggedHours = 0;
                 foreach ($worklogs as $worklog) {
-                    $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
+                    if ($worklog->getStarted() >= $dateFrom && $worklog->getStarted() <= $dateTo) {
+                        $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
+                    }
                 }
 
                 $workerWorkload = $worker->getWorkload();
@@ -81,6 +93,7 @@ class WorkloadReportService
                 }
 
                 $expectedWorkload = $this->getExpectedWorkHours($workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
+
                 $roundedLoggedPercentage = round($loggedHours / $expectedWorkload * 100, 2);
 
                 // Count up sums until current period have been reached.
@@ -98,6 +111,9 @@ class WorkloadReportService
             $workloadReportData->workers->add($workloadReportWorker);
         }
 
+        /*    $endTime = microtime(true);
+            $executionTime = ($endTime - $startTime);
+            die( "This script took $executionTime seconds to run.");*/
         return $workloadReportData;
     }
 
@@ -128,17 +144,17 @@ class WorkloadReportService
     /**
      * Retrieves an array of dates for a given period based on the view mode.
      *
-     * @param int $period the period for which to retrieve dates
+     * @param array $periods
      * @param int $year the year for the period
      * @param PeriodTypeEnum $viewMode the view mode to determine the dates of the period
      *
      * @return array an array of dates for the given period
      */
-    private function getDatesOfPeriod(int $period, int $year, PeriodTypeEnum $viewMode): array
+    private function getDatesOfPeriods(array $periods, int $year, PeriodTypeEnum $viewMode): array
     {
         return match ($viewMode) {
-            PeriodTypeEnum::MONTH => $this->dateTimeHelper->getFirstAndLastDateOfMonth($period, $year),
-            PeriodTypeEnum::WEEK => $this->dateTimeHelper->getFirstAndLastDateOfWeek($period, $year),
+            PeriodTypeEnum::MONTH => $this->dateTimeHelper->getFirstAndLastDatesOfMonths($periods, $year),
+            PeriodTypeEnum::WEEK => $this->dateTimeHelper->getFirstAndLastDatesOfWeeks($periods, $year),
             PeriodTypeEnum::YEAR => $this->dateTimeHelper->getFirstAndLastDateOfYear($year),
         };
     }
@@ -186,11 +202,11 @@ class WorkloadReportService
      *
      * @return array the list of workloads matching the criteria defined by the parameters
      */
-    private function getWorklogs(ViewModeEnum $viewMode, string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo): array
+    private function getWorklogs(ViewModeEnum $viewMode, \DateTime $dateFrom, \DateTime $dateTo): array
     {
         return match ($viewMode) {
-            ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
-            ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
+            ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByDateRange($dateFrom, $dateTo),
+            ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByDateRange($dateFrom, $dateTo),
         };
     }
 }
