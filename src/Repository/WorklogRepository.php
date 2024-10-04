@@ -96,41 +96,65 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    public function findWorklogsByDateRange( \DateTime $dateFrom, \DateTime $dateTo): array
     {
         $qb = $this->createQueryBuilder('worklog');
 
-        return $qb
+        $results = $qb
             ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
-            ->andWhere('worklog.worker = :worker')
             ->setParameters([
-                'worker' => $workerIdentifier,
                 'dateFrom' => $dateFrom,
                 'dateTo' => $dateTo,
             ])
             ->getQuery()->getResult();
+
+        // Initialize an empty array to store the worker's worklogs
+        $worklogsByWorker = [];
+
+        // Iterating over result to create an array of worklogs for each worker
+        foreach ($results as $hest) {
+            $worker = $hest->getWorker();
+            if (!isset($worklogsByWorker[$worker])) {
+                $worklogsByWorker[$worker] = [];
+            }
+            $worklogsByWorker[$worker][] = $hest;
+        }
+
+        return $worklogsByWorker;
     }
 
-    public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    public function findBillableWorklogsByDateRange(\DateTime $dateFrom, \DateTime $dateTo): array
     {
         $qb = $this->createQueryBuilder('worklog');
 
         $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project');
 
-        return $qb
+        $results = $qb
             ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
-            ->andWhere('worklog.worker = :worker')
             ->andWhere($qb->expr()->in('worklog.kind', ':billableKinds'))
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->eq('worklog.isBilled', '1'),
                 $qb->expr()->eq('project.isBillable', '1'),
             ))
             ->setParameters([
-                'worker' => $workerIdentifier,
                 'dateFrom' => $dateFrom,
                 'dateTo' => $dateTo,
                 'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
             ])
             ->getQuery()->getResult();
+
+        // Initialize an empty array to store the worker's worklogs
+        $billableWorklogsByWorker = [];
+
+        // Iterating over result to create an array of worklogs for each worker
+        foreach ($results as $worklog) {
+            $worker = $worklog->getWorker();
+            if (!isset($billableWorklogsByWorker[$worker])) {
+                $billableWorklogsByWorker[$worker] = [];
+            }
+            $billableWorklogsByWorker[$worker][] = $worklog;
+        }
+
+        return $billableWorklogsByWorker;
     }
 }
