@@ -197,24 +197,24 @@ class DateTimeHelperTest extends TestCase
         return [
             [
                 'year' => 2024,
-                'expected' => [
+                'expected' => [2024 => [
                     'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
                     'dateTo' => new \DateTime('2024-12-31 23:59:59'),
-                ],
+                ]],
             ],
             [
                 'year' => 2025,
-                'expected' => [
+                'expected' => [2025 => [
                     'dateFrom' => new \DateTime('2025-01-01 00:00:00'),
                     'dateTo' => new \DateTime('2025-12-31 23:59:59'),
-                ],
+                ]],
             ],
             [
                 'year' => 2026,
-                'expected' => [
+                'expected' => [2026 => [
                     'dateFrom' => new \DateTime('2026-01-01 00:00:00'),
                     'dateTo' => new \DateTime('2026-12-31 23:59:59'),
-                ],
+                ]],
             ],
         ];
     }

@@ -137,6 +137,11 @@ class DateTimeHelper
         $dateTo = (new \DateTime())->setDate($year, 12, 31);
         $dateTo->setTime(23, 59, 59);
 
-        return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
+        return [
+            $year => [
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+            ],
+        ];
     }
 }
