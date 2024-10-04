@@ -8,15 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-170](https://github.com/itk-dev/economics/pull/170)
+  Reduced workload report load time.
 * [PR-167](https://github.com/itk-dev/economics/pull/167)
   2499: Added worker name in workload report.
 * [PR-166](https://github.com/itk-dev/economics/pull/166)
   2545: Added total column for workload report.
   2545: Fixed average calculation.
 * [PR-168](https://github.com/itk-dev/economics/pull/168)
-  Added Game center
+  Added Game center.
 * [PR-164](https://github.com/itk-dev/economics/pull/164)
-  3298: Added report notification subscription
+  3298: Added report notification subscription.
 
 ## [2.4.2] - 2024-09-12
 
