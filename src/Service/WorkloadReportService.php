@@ -30,7 +30,6 @@ class WorkloadReportService
      */
     public function getWorkloadReport(PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
     {
-        $startTime = microtime(true);
         $workloadReportData = new WorkloadReportData($viewPeriodType->value);
         $year = (int) (new \DateTime())->format('Y');
         $workers = $this->workerRepository->findAll();
@@ -110,9 +109,6 @@ class WorkloadReportService
             $workloadReportData->workers->add($workloadReportWorker);
         }
 
-        /*    $endTime = microtime(true);
-            $executionTime = ($endTime - $startTime);
-            die( "This script took $executionTime seconds to run.");*/
         return $workloadReportData;
     }
 
