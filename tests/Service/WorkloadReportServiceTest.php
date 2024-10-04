@@ -64,14 +64,20 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
             return date('F', mktime(0, 0, 0, $month, 10));
         });
-        $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
-            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
-            'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+        $dateTimeHelperMock->method('getFirstAndLastDatesOfWeeks')->willReturn([
+            1 => [
+                'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+                'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+            ],
         ]);
-        $dateTimeHelperMock->method('getFirstAndLastDateOfMonth')->willReturn([
-            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
-            'dateTo' => new \DateTime('2024-01-31 23:59:59'),
+
+        $dateTimeHelperMock->method('getFirstAndLastDatesOfMonths')->willReturn([
+            1 => [
+                'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+                'dateTo' => new \DateTime('2024-01-31 23:59:59'),
+            ],
         ]);
+
         $dateTimeHelperMock->method('getFirstAndLastDateOfYear')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
             'dateTo' => new \DateTime('2024-12-31 23:59:59'),
@@ -126,14 +132,20 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
             return date('F', mktime(0, 0, 0, $month, 10));
         });
-        $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
-            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
-            'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+        $dateTimeHelperMock->method('getFirstAndLastDatesOfWeeks')->willReturn([
+            1 => [
+                'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+                'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+            ],
         ]);
-        $dateTimeHelperMock->method('getFirstAndLastDateOfMonth')->willReturn([
-            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
-            'dateTo' => new \DateTime('2024-01-31 23:59:59'),
+
+        $dateTimeHelperMock->method('getFirstAndLastDatesOfMonths')->willReturn([
+            1 => [
+                'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+                'dateTo' => new \DateTime('2024-01-31 23:59:59'),
+            ],
         ]);
+
         $dateTimeHelperMock->method('getFirstAndLastDateOfYear')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
             'dateTo' => new \DateTime('2024-12-31 23:59:59'),
@@ -182,14 +194,20 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
             return date('F', mktime(0, 0, 0, $month, 10));
         });
-        $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
-            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
-            'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+        $dateTimeHelperMock->method('getFirstAndLastDatesOfWeeks')->willReturn([
+            1 => [
+                'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+                'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+            ],
         ]);
-        $dateTimeHelperMock->method('getFirstAndLastDateOfMonth')->willReturn([
-            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
-            'dateTo' => new \DateTime('2024-01-31 23:59:59'),
+
+        $dateTimeHelperMock->method('getFirstAndLastDatesOfMonths')->willReturn([
+            1 => [
+                'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+                'dateTo' => new \DateTime('2024-01-31 23:59:59'),
+            ],
         ]);
+
         $dateTimeHelperMock->method('getFirstAndLastDateOfYear')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
             'dateTo' => new \DateTime('2024-12-31 23:59:59'),
