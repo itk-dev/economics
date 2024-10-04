@@ -57,7 +57,7 @@ class WorkloadReportServiceTest extends TestCase
         $workerRepoMock->method('findAll')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
 
         $worklogRepoMock = $this->createMock(WorklogRepository::class);
-        $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock1]);
+        $worklogRepoMock->method('findWorklogsByDateRange')->willReturn([$worklogMock1]);
 
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
@@ -125,7 +125,7 @@ class WorkloadReportServiceTest extends TestCase
         $workerRepoMock->method('findAll')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
 
         $worklogRepoMock = $this->createMock(WorklogRepository::class);
-        $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock1]);
+        $worklogRepoMock->method('findWorklogsByDateRange')->willReturn([$worklogMock1]);
 
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
@@ -187,7 +187,7 @@ class WorkloadReportServiceTest extends TestCase
         $workerRepoMock->method('findAll')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
 
         $worklogRepoMock = $this->createMock(WorklogRepository::class);
-        $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock1]);
+        $worklogRepoMock->method('findWorklogsByDateRange')->willReturn([$worklogMock1]);
 
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
