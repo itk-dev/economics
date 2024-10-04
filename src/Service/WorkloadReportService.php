@@ -77,7 +77,6 @@ class WorkloadReportService
                 }
                 $worklogs = $allWorklogs[$workerIdentifier] ?? [];
 
-
                 // Tally up logged hours in gathered worklogs for current period
                 $loggedHours = 0;
                 foreach ($worklogs as $worklog) {

@@ -96,7 +96,7 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
-    public function findWorklogsByDateRange( \DateTime $dateFrom, \DateTime $dateTo): array
+    public function findWorklogsByDateRange(\DateTime $dateFrom, \DateTime $dateTo): array
     {
         $qb = $this->createQueryBuilder('worklog');
 
