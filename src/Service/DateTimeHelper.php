@@ -9,41 +9,51 @@ class DateTimeHelper
     }
 
     /**
-     * Retrieves the first and last date of a given week number in a year.
+     * Retrieves the first and last date of a given week numbers in a year.
      *
-     * @param int $weekNumber the week number for which to retrieve the dates
+     * @param array $weekNumbers the week numbers for which to retrieve the dates
      * @param int $year the year for which to retrieve the dates
      *
-     * @return array an array containing the first and last date of the week
+     * @return array an array containing the first and last date of each week, keyed by week number
      */
-    public function getFirstAndLastDateOfWeek(int $weekNumber, int $year): array
+    public function getFirstAndLastDatesOfWeeks(array $weekNumbers, int $year): array
     {
-        $dateFrom = (new \DateTime())->setISODate($year, $weekNumber, 1);
-        $dateFrom->setTime(0, 0, 0);
+        $dates = [];
+        foreach ($weekNumbers as $weekNumber) {
+            $dateFrom = (new \DateTime())->setISODate($year, $weekNumber, 1);
+            $dateFrom->setTime(0, 0, 0);
 
-        $dateTo = (new \DateTime())->setISODate($year, $weekNumber, 7);
-        $dateTo->setTime(23, 59, 59);
+            $dateTo = (new \DateTime())->setISODate($year, $weekNumber, 7);
+            $dateTo->setTime(23, 59, 59);
 
-        return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
+            $dates[$weekNumber] = ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
+        }
+
+        return $dates;
     }
 
     /**
-     * Returns the first and last date of the specified month and year.
+     * Returns an array with the first and last date of the specified months.
      *
-     * @param int $monthNumber the month number (1-12)
+     * @param array $monthNumbers
      * @param int $year the year
      *
      * @return array an array containing the first and last date of the specified month and year
      */
-    public function getFirstAndLastDateOfMonth(int $monthNumber, int $year): array
+    public function getFirstAndLastDatesOfMonths(array $monthNumbers, int $year): array
     {
-        $dateFrom = (new \DateTime())->setDate($year, $monthNumber, 1);
-        $dateFrom->setTime(0, 0, 0);
+        $dates = [];
+        foreach ($monthNumbers as $monthNumber) {
+            $dateFrom = (new \DateTime())->setDate($year, $monthNumber, 1);
+            $dateFrom->setTime(0, 0, 0);
 
-        $dateTo = (new \DateTime())->setDate($year, $monthNumber, 1)->modify('last day of this month');
-        $dateTo->setTime(23, 59, 59);
+            $dateTo = (new \DateTime())->setDate($year, $monthNumber, 1)->modify('last day of this month');
+            $dateTo->setTime(23, 59, 59);
 
-        return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
+            $dates[$monthNumber] = ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
+        }
+
+        return $dates;
     }
 
     /**
