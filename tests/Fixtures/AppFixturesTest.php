@@ -17,10 +17,10 @@ class AppFixturesTest extends KernelTestCase
 
         $container = self::getContainer();
 
-        $this->assertCount(2, $container->get(DataProviderRepository::class)->findAll());
-        $this->assertCount(2 * 10, $container->get(ProjectRepository::class)->findAll());
-        $this->assertCount(2 * 10 * 4, $container->get(VersionRepository::class)->findAll());
-        $this->assertCount(2 * 10 * 10, $container->get(IssueRepository::class)->findAll());
-        $this->assertCount(2 * 10 * 10 * 100, $container->get(WorklogRepository::class)->findAll());
+        $this->assertCount(3, $container->get(DataProviderRepository::class)->findAll());
+        $this->assertCount(2 * 10 + 1, $container->get(ProjectRepository::class)->findAll());
+        $this->assertCount(2 * 10 * 4 + 1, $container->get(VersionRepository::class)->findAll());
+        $this->assertCount(2 * 10 * 10 + 10, $container->get(IssueRepository::class)->findAll());
+        $this->assertCount(2 * 10 * 10 * 10 + 50, $container->get(WorklogRepository::class)->findAll());
     }
 }

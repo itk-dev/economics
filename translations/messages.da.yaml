@@ -25,7 +25,7 @@ sprint_report:
         over_under_index: "Over/underløb - index"
     table:
         epic: "Fase"
-        estimate: "Est."
+        estimate: "Første Est."
         remaining_hours: "Resterende arbejde est."
         remaining_hours_short: "Rest. arb."
         registered_hours: "Registreret"

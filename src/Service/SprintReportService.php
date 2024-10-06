@@ -45,6 +45,7 @@ class SprintReportService
         $sprintReportEpics->set(self::NO_EPIC, $noEpicEpic);
         $noSprintSprint = new SprintReportSprint(self::NO_SPRINT, $this->translator->trans('sprint_report.no_sprint'), SprintStateEnum::OTHER);
         $sprintReportSprints->set(self::NO_SPRINT, $noSprintSprint);
+        $nowSprintId = $this->mapDateToSprintId(new \DateTime());
 
         $issues = $this->issueRepository->getIssuesByProjectAndVersion($project, $version);
 
@@ -55,8 +56,12 @@ class SprintReportService
             $epicKey = $issue->getEpicKey();
 
             if (!empty($epicKey)) {
-                $epic = new SprintReportEpic($epicKey, $issue->getEpicName() ?? $epicKey);
-                $sprintReportEpics->set($epicKey, $epic);
+                if (!$sprintReportEpics->containsKey($epicKey)) {
+                    $epic = new SprintReportEpic($epicKey, $issue->getEpicName() ?? $epicKey);
+                    $sprintReportEpics->set($epicKey, $epic);
+                } else {
+                    $epic = $sprintReportEpics->get($epicKey);
+                }
             } else {
                 $epic = $noEpicEpic;
             }
@@ -68,7 +73,6 @@ class SprintReportService
             $sprintReportSprint = null;
 
             if (null !== $dueDate) {
-                $nowSprintId = $this->mapDateToSprintId(new \DateTime());
                 $sprintName = $this->mapDateToSprintName($dueDate);
                 $sprintId = $this->mapDateToSprintId($dueDate);
 
@@ -120,7 +124,9 @@ class SprintReportService
                     $worklogSprintId = $worklogSprints[array_key_first($worklogSprints)]->id;
                 }
 
-                $newLoggedWork = (float) ($sprintReportIssue->epic->loggedWork->containsKey($worklogSprintId) ? $sprintReportIssue->epic->loggedWork->get($worklogSprintId) : 0) + $worklogSpentSeconds;
+                $newLoggedWork = (float) ($sprintReportIssue->epic->loggedWork->containsKey($worklogSprintId)
+                        ? $sprintReportIssue->epic->loggedWork->get($worklogSprintId)
+                        : 0) + $worklogSpentSeconds;
                 $sprintReportIssue->epic->loggedWork->set($worklogSprintId, $newLoggedWork);
             }
 
@@ -132,10 +138,13 @@ class SprintReportService
                 $remainingEstimateSeconds = (($issue->getHoursRemaining() ?? 0) * self::SECONDS_IN_HOUR);
                 $sprintReportIssue->epic->remainingSum += $remainingEstimateSeconds;
 
-                $assignedToSprint = $sprintReportIssue->assignedToSprint;
-                $newRemainingWork = (float) ($sprintReportIssue->epic->remainingWork->containsKey($assignedToSprint->id) ? $sprintReportIssue->epic->remainingWork->get($assignedToSprint->id) : 0) + $remainingEstimateSeconds;
-                $sprintReportIssue->epic->remainingWork->set($assignedToSprint->id, $newRemainingWork);
-                $sprintReportIssue->epic->plannedWorkSum += $remainingEstimateSeconds;
+                $issue->getPlanHours();
+
+                $assignedToSprintId = $sprintReportIssue->assignedToSprint->id;
+                $newRemainingWork = (float) ($sprintReportIssue->epic->remainingWork->containsKey($assignedToSprintId)
+                        ? $sprintReportIssue->epic->remainingWork->get($assignedToSprintId)
+                        : 0) + $remainingEstimateSeconds;
+                $sprintReportIssue->epic->remainingWork->set($assignedToSprintId, $newRemainingWork);
             }
 
             // Accumulate originalEstimateSum.

@@ -119,7 +119,7 @@ class AppFixtures extends Fixture
                     $issue->setDataProvider($dataProvider);
                     $issue->addVersion($versions[$j % count($versions)]);
                     $issue->setResolutionDate(new \DateTime());
-                    $issue->setPlanHours($j);
+                    $issue->setPlanHours($j + 5);
                     $issue->setHoursRemaining($j);
                     $issue->setWorker($workerArray[rand(0, 9)]);
                     $issue->setDueDate(new \DateTime());
@@ -128,7 +128,7 @@ class AppFixtures extends Fixture
 
                     $manager->persist($issue);
 
-                    for ($k = 0; $k < 100; ++$k) {
+                    for ($k = 0; $k < 10; ++$k) {
                         $year = (new \DateTime())->format('Y');
 
                         // Use modulo to get months and dates to create started-dates spanning the entire year
@@ -159,5 +159,91 @@ class AppFixtures extends Fixture
             $manager->flush();
             $manager->clear();
         }
+
+        $dataProvider = new DataProvider();
+        $dataProvider->setName('Data Provider - Sprint report');
+        $dataProvider->setEnabled(true);
+        $dataProvider->setClass(LeantimeApiService::class);
+        $dataProvider->setUrl('http://localhost/');
+        $dataProvider->setSecret('Not so secret');
+        $manager->persist($dataProvider);
+
+        $project = new Project();
+        $project->setName('project-sprint-report');
+        $project->setProjectTrackerId('project-sprint-report');
+        $project->setProjectTrackerKey('project-sprint-report');
+        $project->setProjectTrackerProjectUrl('http://localhost/');
+        $project->setInclude(true);
+        $project->setProjectLeadMail('test@economics.local.itkdev.dk');
+        $project->setProjectLeadName('Test Testesen');
+        $project->setDataProvider($dataProvider);
+        $project->setIsBillable(true);
+
+        $manager->persist($project);
+
+        $version = new Version();
+        $version->setName('sprint-report-version');
+        $version->setProject($project);
+        $version->setDataProvider($dataProvider);
+        $version->setProjectTrackerId('sprint-report-version');
+
+        $manager->persist($version);
+
+        $nowEC = (new \DateTime('now', new \DateTimeZone('Europe/Copenhagen')));
+
+        for ($j = 0; $j < 10; ++$j) {
+            $modStatus = 0 == $j % 3 ? IssueStatusEnum::DONE : IssueStatusEnum::NEW;
+            $issue = new Issue();
+            $issue->setName("issue-sprint-report-$j");
+            $issue->setProject($project);
+            $issue->setProjectTrackerKey("issue-sprint-report-$j");
+            $issue->setProjectTrackerId("issue-sprint-report-$j");
+            $issue->setAccountId('Account 1');
+            $issue->setAccountKey('Account 1');
+            $issue->setEpicName('Epic '.($j % 3));
+            $issue->setEpicKey('Epic '.($j % 3));
+            $issue->setStatus($modStatus);
+            $issue->setDataProvider($dataProvider);
+            $issue->addVersion($version);
+            $issue->setResolutionDate($j < 5 ? new \DateTime() : null);
+            $issue->setPlanHours($j * 2);
+            $issue->setHoursRemaining($j);
+            $issue->setWorker($workerArray[$i % count($workerArray)]);
+            $issue->setLinkToIssue('www.example.com');
+
+            if ($j < 5) {
+                $dueDate = (clone $nowEC)->sub(\DateInterval::createFromDateString(($j * 5).' days'));
+            } else {
+                $dueDate = (clone $nowEC)->add(\DateInterval::createFromDateString(($j * 5).' days'));
+            }
+
+            $issue->setDueDate($dueDate);
+            $worklogDate = (clone $nowEC)->sub(\DateInterval::createFromDateString(($j * 5).' days'));
+
+            $manager->persist($issue);
+
+            for ($k = 0; $k < 5; ++$k) {
+                $started = (clone $worklogDate)->sub(\DateInterval::createFromDateString(($k + 1).' hours'));
+
+                $worklog = new Worklog();
+                $worklog->setProjectTrackerIssueId("worklog-sprint-report-$key-$j-$k");
+                $worklog->setWorklogId($j * 1000 + $k);
+                $worklog->setDescription("Beskrivelse af worklog-sprint-report-$key-$j-$k");
+                $worklog->setIsBilled(false);
+                $worklog->setProject($project);
+                $worklog->setWorker($workerArray[0]);
+                $worklog->setTimeSpentSeconds(60 * 60 * ($j * $k + 1));
+                $worklog->setStarted($started);
+                $worklog->setIssue($issue);
+                $worklog->setDataProvider($dataProvider);
+                $worklog->setKind(BillableKindsEnum::GENERAL_BILLABLE);
+                $manager->persist($worklog);
+            }
+
+            $manager->flush();
+        }
+
+        $manager->flush();
+        $manager->clear();
     }
 }
