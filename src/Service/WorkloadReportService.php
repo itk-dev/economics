@@ -42,8 +42,7 @@ class WorkloadReportService
         $periodsWithDatesArray = $this->getDatesOfPeriods($periods, $year, $viewPeriodType);
 
         // To get all worklogs, we need the first and last datetime of the year
-        $firstDateFrom = current($periodsWithDatesArray)['dateFrom'];
-        $lastDateTo = end($periodsWithDatesArray)['dateTo'];
+        [$firstDateFrom, $lastDateTo] = $this->getFirstAndLastYearDates($periodsWithDatesArray);
 
         $allWorklogs = $this->getWorklogs($viewMode, $firstDateFrom, $lastDateTo);
 
@@ -203,5 +202,29 @@ class WorkloadReportService
             ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByDateRange($dateFrom, $dateTo),
             ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByDateRange($dateFrom, $dateTo),
         };
+    }
+
+    /**
+     * Gets the first and last date times across the array.
+     *
+     * @param array $datesArray
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    private function getFirstAndLastYearDates(array $datesArray): array
+    {
+        if (empty($datesArray)) {
+            throw new \Exception('Dates array cannot be empty');
+        }
+
+        $firstDatesArray = array_values($datesArray);
+        $firstDateFrom = $firstDatesArray[0]['dateFrom'];
+
+        $lastDatesArray = array_values(array_reverse($datesArray));
+        $lastDateTo = $lastDatesArray[0]['dateTo'];
+
+        return [$firstDateFrom, $lastDateTo];
     }
 }
