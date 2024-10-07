@@ -80,8 +80,10 @@ class WorkloadReportServiceTest extends TestCase
         ]);
 
         $dateTimeHelperMock->method('getFirstAndLastDateOfYear')->willReturn([
+            2024 => [
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
             'dateTo' => new \DateTime('2024-12-31 23:59:59'),
+                ]
         ]);
         $dateTimeHelperMock->method('getWeekdaysBetween')->willReturn(5);
         $dateTimeHelperMock->method('getWeekdaysBetween')->willReturn(23);
