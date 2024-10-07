@@ -437,15 +437,9 @@
         display: none;
     }
     .subscribe-button:before {
+        @apply absolute left-0 w-full text-sm text-right pointer-events-none dark:text-white;
         content: 'Subscribed ' attr(data-frequencies);
-        color: rgb(255 255 255 / var(--tw-text-opacity));
-        position: absolute;
         top: -20px;
-        left: 0;
-        width: 100%;
-        font-size: 14px;
-        text-align: right;
-        pointer-events: none;
     }
     .subscribe-button svg {
         display: inline-block;
