@@ -29,6 +29,7 @@ class WorkloadReportServiceTest extends TestCase
 
     /**
      * @throws Exception
+     * @throws \Exception
      */
     public function testGetWorkloadReport()
     {
