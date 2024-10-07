@@ -9,7 +9,7 @@
 
     {% if data is not empty %}
         {{ include('components/page-header.html.twig', {
-            title: 'hour_report.title'|trans,
+            title: (mode ~ '.title')|trans(),
             type: 'subscribe',
             default_text: 'subscribe_button.subscribe'|trans,
             success_text: 'subscribe_button.unsubscribe'|trans,
