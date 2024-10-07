@@ -20,14 +20,14 @@ final class Version20241007092744 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE INDEX idx_worker ON worklog (worker)');
-        $this->addSql('CREATE INDEX idx_started ON worklog (started)');
+        $this->addSql('DROP INDEX idx_worker ON worklog');
+        $this->addSql('DROP INDEX idx_started ON worklog');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP INDEX idx_worker ON worklog');
-        $this->addSql('DROP INDEX idx_started ON worklog');
+        $this->addSql('CREATE INDEX idx_worker ON worklog (worker)');
+        $this->addSql('CREATE INDEX idx_started ON worklog (started)');
     }
 }
