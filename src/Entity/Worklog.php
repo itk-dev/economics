@@ -12,6 +12,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: WorklogRepository::class)]
 #[ORM\UniqueConstraint(name: 'data_provider_project_tracker', columns: ['data_provider_id', 'worklog_id'])]
 #[UniqueEntity(fields: ['dataProvider', 'worklogId'])]
+#[ORM\Index(fields: ['worker'], name: 'worker_idx')]
+#[ORM\Index(fields: ['started'], name: 'started_idx')]
 class Worklog extends AbstractBaseEntity
 {
     use DataProviderTrait;
