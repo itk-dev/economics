@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-174](https://github.com/itk-dev/economics/pull/174)
+  Fixed status enum twig rendering.
+
 ## [2.4.2] - 2024-09-12
 
 * [PR-163](https://github.com/itk-dev/economics/pull/163)
