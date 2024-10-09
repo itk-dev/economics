@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-175](https://github.com/itk-dev/economics/pull/175)
   2617: Added forecast report.
+* [PR-173](https://github.com/itk-dev/economics/pull/173)
+  2663: Workload report loading speed improvement.
 * [PR-167](https://github.com/itk-dev/economics/pull/167)
   2499: Added worker name in workload report.
 * [PR-166](https://github.com/itk-dev/economics/pull/166)
@@ -19,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Added Game center
 * [PR-164](https://github.com/itk-dev/economics/pull/164)
   3298: Added report notification subscription
+
+## [2.4.3] - 2024-10-09
+
+* [PR-174](https://github.com/itk-dev/economics/pull/174)
+  Fixed status enum twig rendering.
 
 ## [2.4.2] - 2024-09-12
 

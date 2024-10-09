@@ -88,7 +88,7 @@
                     <td class="table-td">{{ issue.name }}</td>
                     <td class="table-td">{{ issue.versions|map(p => p.name)|join(', ') }}</td>
                     <td class="table-td">{{ issue.worklogs|reduce((carry, v, k) => carry + v.timeSpentSeconds / 3600) }}</td>
-                    <td class="table-td">{{ issue.status }}</td>
+                    <td class="table-td">{{ issue.status.value }}</td>
                 </tr>
             {% endfor %}
             </tbody>
