@@ -2,7 +2,6 @@
 
 namespace App\Model\Reports;
 
-
 class ForecastReportIssueVersionData
 {
     public string $issueVersion;
