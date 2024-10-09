@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\DataProvider;
 use App\Model\Reports\ForecastReportFormData;
 use App\Repository\DataProviderRepository;
+use App\Service\ForecastReportService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -17,6 +18,7 @@ class ForecastReportType extends AbstractType
     public function __construct(
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly ?string $defaultDataProvider,
+        private readonly ForecastReportService $forecastReportService,
     ) {
     }
 
@@ -47,10 +49,9 @@ class ForecastReportType extends AbstractType
                 'label' => 'hour_report.from_date',
                 'label_attr' => ['class' => 'label'],
                 'by_reference' => true,
-                'data' => new \DateTime(),
+                'data' => $options['fromDate'] ?? $this->forecastReportService->getDefaultFromDate(),
                 'attr' => [
                     'class' => 'form-element',
-                    'onchange' => 'this.form.submit()',
                 ],
             ])
             ->add('dateTo', DateType::class, [
@@ -59,11 +60,10 @@ class ForecastReportType extends AbstractType
                 'required' => false,
                 'label' => 'hour_report.to_date',
                 'label_attr' => ['class' => 'label'],
-                'data' => new \DateTime(),
+                'data' => $options['fromDate'] ?? $this->forecastReportService->getDefaultToDate(),
                 'by_reference' => true,
                 'attr' => [
                     'class' => 'form-element',
-                    'onchange' => 'this.form.submit()',
                 ],
             ])
             ->add('submit', SubmitType::class, [
