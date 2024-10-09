@@ -1,0 +1,129 @@
+<div id="scrollContainer" class="overflow-x-auto w-full"
+     data-storage-key="hidePlanningAssignees">
+    <table
+        class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
+        <thead>
+        <tr>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'forecast_report.projects'|trans }}</th>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                {{ 'forecast_report.invoiced_hours'|trans }}
+            </th>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                {{ 'forecast_report.invoiced_recorded_hours'|trans }}
+            </th>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                {{ 'forecast_report.missing_hours'|trans }}
+            </th>
+        </tr>
+        </thead>
+
+        {% for projectId, project in data.projects %}
+        <tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ projectId }}">
+        <tr>
+            <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                <div class="flex flex-row">
+                        <span class="flex-grow mr-3">
+                            {{ project.projectName }}
+                        </span>
+                    <button class="expand-btn mr-3 w-4"
+                            type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
+                            data-toggle-target="button">
+                        <i class="fa-solid fa-maximize"></i>
+                        <i class="fa-solid fa-minimize hidden"></i>
+                    </button>
+                </div>
+            </td>
+            <td class="text-center px-3 border border-slate-600">
+                {{ project.invoiced }}
+            </td>
+            <td class="text-center px-3 border border-slate-600">
+                {{ project.invoicedAndRecorded }}
+            </td>
+            <td class="text-center px-3 border border-slate-600">
+                {{ project.invoiced - project.invoicedAndRecorded }}
+            </td>
+        </tr>
+        {% for issueId, issue in project.issues %}
+            <tr {{ stimulus_target('toggle-parent-child', 'parent') }} >
+                <td class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                    <div class="flex flex-row">
+                            <span class="flex-grow mx-3 py-1">
+                                &nbsp;&nbsp;{{ issueId }}
+                            </span>
+                        <button class="expand-btn mr-3 w-4"
+                                type="button" {{ stimulus_action('toggle-parent-child', 'toggleChild') }}
+                                data-parent-id="{{ issueId }}"
+                                data-toggle-target="button">
+                            <i class="fa-solid fa-maximize"></i>
+                            <i class="fa-solid fa-minimize hidden"></i>
+                        </button>
+                    </div>
+                </td>
+                <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                    {{ issue.invoiced }}
+                </td>
+                <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                    {{ issue.invoicedAndRecorded }}
+                </td>
+                <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                    {{ issue.invoiced - issue.invoicedAndRecorded }}
+                </td>
+            </tr>
+            {% for versionName, version in issue.versions %}
+                <tr {{ stimulus_target('toggle-parent-child', 'child') }} data-parent-id="{{ issueId }}">
+                    <td class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                        <div class="flex flex-row">
+                            <span class="flex-grow mx-6 py-1">
+                                &nbsp;&nbsp;{{ versionName }}
+                            </span>
+                            <button class="expand-btn mr-3 w-4"
+                                    type="button" {{ stimulus_action('toggle-parent-child', 'toggleChild') }}
+                                    data-parent-id="{{ version.issueVersionIdentifier }}"
+                                    data-toggle-target="button">
+                                <i class="fa-solid fa-maximize"></i>
+                                <i class="fa-solid fa-minimize hidden"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                        {{ version.invoiced }}
+                    </td>
+                    <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                        {{ version.invoicedAndRecorded }}
+                    </td>
+                    <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                        {{ version.invoiced - version.invoicedAndRecorded }}
+                    </td>
+                </tr>
+                {% for worklogId, worklog in version.worklogs %}
+                    <tr {{ stimulus_target('toggle-parent-child', 'child') }} data-parent-id="{{ version.issueVersionIdentifier }}">
+                        <td class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                            <div class="flex flex-row">
+                            <span class="flex-grow mx-9 py-1">
+                                <small>{{ worklog.worker }} <a class="link" target="_blank" href="{{ issue.issueLink }}">[{{ issue.issueId }}]</a></small> <br />{{ worklog.description }}
+                            </span>
+                            </div>
+                        </td>
+                        <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                            {{ worklog.invoiced }}
+                        </td>
+                        <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                            {{ worklog.invoicedAndRecorded }}
+                        </td>
+                        <td class="text-center sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                            {{ worklog.invoiced - worklog.invoicedAndRecorded }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+        {% endfor %}
+        <tr>
+            <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-500 bg-slate-100 dark:bg-slate-600">{{ 'forecast_report.total'|trans }}</td>
+            <td class="text-center text-bold px-3 border border-slate-500 dark:bg-slate-600">{{ data.totalInvoiced }}</td>
+            <td class="text-center text-bold px-3 border border-slate-500 dark:bg-slate-600">{{ data.totalInvoicedAndRecorded }}</td>
+            <td class="text-center text-bold px-3 border border-slate-500 dark:bg-slate-600">{{ data.totalInvoiced - data.totalInvoicedAndRecorded }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
