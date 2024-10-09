@@ -56,6 +56,7 @@ navigation:
     management_report: "Ledelsesrapport"
     planning_users: 'Brugere'
     planning_projects: 'Projekter'
+    forecast_report: "Forecast"
     hour_report: "Timerapport"
     workload_report: "Normtidsrapport"
     worker: "Medarbejdere"
@@ -776,3 +777,10 @@ subscription:
         edit: 'Rediger'
         monthly: 'Månedligt'
         quarterly: 'Kvartalsvist'
+
+forecast_report:
+    projects: 'Projekter'
+    invoiced_hours: 'Fakturerede timer'
+    invoiced_recorded_hours: 'Bogførte timer'
+    missing_hours: 'Rest timer'
+    total: 'Total'
