@@ -26,7 +26,7 @@
     {{ form_end(form) }}
 
     {% if data is not empty %}
-        <div class="planning-wrapper">
+        <div class="planning-wrapper loading" {{ stimulus_controller('loader') }}>
             {% if mode is defined %}
                 {{ include('reports/' ~ mode ~ '.html.twig') }}
             {% endif %}
