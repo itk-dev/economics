@@ -118,5 +118,4 @@ class IssueRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
 }
