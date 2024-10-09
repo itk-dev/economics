@@ -779,6 +779,7 @@ subscription:
         quarterly: 'Kvartalsvist'
 
 forecast_report:
+    title: 'Forecast rapport'
     projects: 'Projekter'
     invoiced_hours: 'Fakturerede timer'
     invoiced_recorded_hours: 'Bogførte timer'
