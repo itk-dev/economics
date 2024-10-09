@@ -12,7 +12,7 @@
             {% for label, item in {
             ('issue.project'|trans): {value: issue.project.name},
             ('issue.name'|trans): {value: issue.name},
-            ('issue.status'|trans): {value: issue.status},
+            ('issue.status'|trans): {value: issue.status.value},
             } %}
             <tr>
                 <th class="table-th">{{ label }}</th>

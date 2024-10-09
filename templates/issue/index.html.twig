@@ -33,7 +33,7 @@
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                 <td class="table-td">{{ issue.id }}</td>
                 <td class="table-td">{{ issue.name }}</td>
-                <td class="table-td">{{ issue.status }}</td>
+                <td class="table-td">{{ issue.status.value }}</td>
                 <td class="table-td">
                     <a class="link" href="{{ path('app_issue_show', {project: issue.project.id, id: issue.id, _fragment: 'products'}) }}">
                         {{ issue.products|length }}
