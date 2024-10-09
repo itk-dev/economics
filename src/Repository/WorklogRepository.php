@@ -133,4 +133,24 @@ class WorklogRepository extends ServiceEntityRepository
             ])
             ->getQuery()->getResult();
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function getWorklogsAttachedToInvoiceInDateRange(\DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
+    {
+        $from = new \DateTimeImmutable($periodStart->format('Y-m-d') . ' 00:00:00');
+        $to = new \DateTimeImmutable($periodEnd->format('Y-m-d') . ' 23:59:59');
+
+        return $this->createQueryBuilder('worklog')
+            ->leftJoin('App\Entity\Issue', 'issue', 'WITH', 'worklog.issue = issue.id')
+            ->leftJoin('App\Entity\Project', 'project', 'WITH', 'issue.project = project.id')
+            ->where('worklog.invoiceEntry IS NOT NULL')
+            ->andWhere('worklog.started BETWEEN :from AND :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->getResult();
+
+    }
 }
