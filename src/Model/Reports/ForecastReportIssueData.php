@@ -2,8 +2,6 @@
 
 namespace App\Model\Reports;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 class ForecastReportIssueData
 {
     public string $issueId;
