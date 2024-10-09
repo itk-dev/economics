@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-175](https://github.com/itk-dev/economics/pull/175)
+  2617: Added forecast report.
 * [PR-167](https://github.com/itk-dev/economics/pull/167)
   2499: Added worker name in workload report.
 * [PR-166](https://github.com/itk-dev/economics/pull/166)
