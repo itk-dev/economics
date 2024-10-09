@@ -2,7 +2,6 @@
 
 namespace App\Model\Reports;
 
-
 class ForecastReportProjectData
 {
     public string $projectId;
