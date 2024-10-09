@@ -22,6 +22,9 @@ class ForecastReportController extends AbstractController
     ) {
     }
 
+    /**
+     * @throws \Exception
+     */
     #[Route('/', name: 'app_forecast_report')]
     public function index(Request $request): Response
     {
@@ -42,8 +45,8 @@ class ForecastReportController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $fromDate = $form->get('dateFrom')->getData() ?? null;
-            $toDate = $form->get('dateTo')->getData() ?? null;
+            $fromDate = $form->get('dateFrom')->getData();
+            $toDate = $form->get('dateTo')->getData();
 
             $reportData = $this->forecastReportService->getForecastReport($fromDate, $toDate);
         }
