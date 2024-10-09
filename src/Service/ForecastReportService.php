@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Exception\EconomicsException;
 use App\Model\Reports\ForecastReportData;
 use App\Model\Reports\ForecastReportIssueData;
 use App\Model\Reports\ForecastReportIssueVersionData;
@@ -20,10 +19,16 @@ class ForecastReportService
     }
 
     /**
-     * @throws EconomicsException
+     * Get forecast report data based on given date range.
+     *
+     * @param \DateTimeInterface $fromDate The start date of the period
+     * @param \DateTimeInterface $toDate The end date of the period
+     *
+     * @return ForecastReportData The forecast report data
+     *
      * @throws \Exception
      */
-    public function getForecastReport(?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate): ForecastReportData
+    public function getForecastReport(\DateTimeInterface $fromDate, \DateTimeInterface $toDate): ForecastReportData
     {
         // Get all worklogs attached to an invoice for the period
         $invoiceAttachedWorklogs = $this->worklogRepository->getWorklogsAttachedToInvoiceInDateRange($fromDate, $toDate);
@@ -35,14 +40,26 @@ class ForecastReportService
         foreach ($invoiceAttachedWorklogs as $worklog) {
             $projectId = $worklog->getProject()->getId();
 
-            // If the project isn't t already in the forecast, add it
+            if (!$projectId) {
+                throw new \Exception('Project id is null');
+            }
+            $projectName = $worklog->getProject()?->getName() ?? '[no project name]';
+
+            // If the project isn't already in the forecast, add it
             if (!isset($forecastReportData->projects[$projectId])) {
                 $forecastReportData->projects[$projectId] = new ForecastReportProjectData($projectId);
-                $forecastReportData->projects[$projectId]->projectName = $worklog->getProject()->getName();
+            }
+
+            if (is_object($forecastReportData->projects[$projectId])) {
+                $forecastReportData->projects[$projectId]->projectName = $projectName;
             }
 
             // Get current project from forecast
             $currentProject = $forecastReportData->projects[$projectId];
+
+            if (!$currentProject) {
+                throw new \Exception('Project instance was not found');
+            }
 
             // Calculate worklog time in hours
             $worklogTime = ($worklog->getTimeSpentSeconds() / 3600);
@@ -104,7 +121,10 @@ class ForecastReportService
             $worklogId = $worklog->getId();
             $workerEmail = $worklog->getWorker();
             $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
-            $workerName = $worker->getName() ?? '[no worker]';
+            $workerName = $worker ? $worker->getName() : '[no worker]';
+            if ($workerName === null) {
+                $workerName = '[no worker]';
+            }
             $description = $worklog->getDescription();
 
             // Add worklog entry in the version if it does not exist
@@ -134,5 +154,31 @@ class ForecastReportService
 
         // Return populated forecast report data
         return $forecastReportData;
+    }
+
+    /**
+     * Gets the first day of the last month.
+     *
+     * @return \DateTime The default from date
+     */
+    public function getDefaultFromDate(): \DateTime
+    {
+        $fromDate = new \DateTime();
+        $fromDate->modify('first day of last month');
+
+        return $fromDate;
+    }
+
+    /**
+     * Gets the last day of the last month.
+     *
+     * @return \DateTime The default "to" date
+     */
+    public function getDefaultToDate(): \DateTime
+    {
+        $fromDate = new \DateTime();
+        $fromDate->modify('last day of last month');
+
+        return $fromDate;
     }
 }
