@@ -122,7 +122,7 @@ class ForecastReportService
             $workerEmail = $worklog->getWorker();
             $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
             $workerName = $worker ? $worker->getName() : '[no worker]';
-            if ($workerName === null) {
+            if (null === $workerName) {
                 $workerName = '[no worker]';
             }
             $description = $worklog->getDescription();
