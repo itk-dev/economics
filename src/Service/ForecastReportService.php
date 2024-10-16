@@ -50,7 +50,7 @@ class ForecastReportService
                 $forecastReportData->projects[$projectId] = new ForecastReportProjectData($projectId);
             }
 
-            if (is_object($forecastReportData->projects[$projectId])) {
+            if ($forecastReportData->projects[$projectId] instanceof ForecastReportProjectData) {
                 $forecastReportData->projects[$projectId]->projectName = $projectName;
             }
 
@@ -96,7 +96,7 @@ class ForecastReportService
 
             // Get version details from issue
             $issueVersions = $worklog->getIssue()->getVersions();
-            $issueVersion = count($issueVersions) > 0 ? implode('', array_map(function ($version) { return $version->getName(); }, $issueVersions->toArray())) : '[no version]';
+            $issueVersion = count($issueVersions) > 0 ? implode(', ', array_map(function ($version) { return $version->getName(); }, $issueVersions->toArray())) : '[no version]';
 
             $issueVersionIdentifier = $issueTag.$issueVersion;
 
