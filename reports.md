@@ -1,25 +1,33 @@
 # Reports in Economics
 
-Simple overview of the various reports found in Economics.
+Overview of the various reports found in Economics.
 
 ## Reports
 
-## Sprint rapport
+### Sprint rapport
 
-This report gives an overview of a project, detailing its name, version, and its work hours, both spent and remaining. It includes project budget details, if applicable. Tables illustrate the breakdown of work hours for each task within current and future sprints, giving a comprehensive view of project progress.
+This report offers an overview of a project with its name, version, and work hours. It details hours
+spent and remaining. If applicable, project budget details are included. The report shows tables with
+work hours breakdown for each task in current and future sprints. Thus, giving a view of project progress.
 
-## Ledelsesrapport
+### Ledelsesrapport
 
-This is a financial report providing an itemized overview of an organization's invoices by year and quarter. It offers yearly totals and individual quarter breakdowns. There's functionality to export data to excel. The report can be adjusted for specific timeframes, supporting comprehensive financial analysis.
+This financial report provides an itemized overview of an organization's invoices by year and
+quarter. It offers yearly totals and individual quarter breakdowns. There's functionality to export
+data. The report timeframe can be adjusted, aiding comprehensive financial analysis.
 
-## Forecast rapport
+### Forecast rapport
 
-This report shows invoiced and recorded work hours for each project and issues within it. Hierarchical view allows expanding/collapsing for clarity. It indicates unbilled hours (difference between invoiced and recorded hours) and provides the total for all projects.
+This report presents invoiced and recorded work hours for each project and its issues. A
+hierarchical view for clarity is available. It indicates unbilled hours and provides an overall total.
 
-## Timerapport
+### Timerapport
 
-This report provides an overview of estimated and logged work hours, grouped by project tags. Each tag corresponds to a project, with detailed hours per ticket. The report concludes with totals for each category over all project tags.
+This report offers an overview of estimated and logged work hours grouped by project tags. Each tag
+represents a project and the detailed hours per ticket. The report concludes with totals.
 
-## Normtidsrapport
+### Normtidsrapport
 
-This is a workforce report providing a detailed breakdown of individual workloads over different periods. For each worker, their total workload and specific contribution percentages for each period are shown. The report also includes an average workload percentage.
+This workforce report provides a detailed breakdown of individual workloads over different
+periods. It presents each worker's total workload and specific contribution percentages each period.
+The report also includes an average workload percentage.
