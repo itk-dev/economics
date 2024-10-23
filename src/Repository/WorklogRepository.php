@@ -10,6 +10,8 @@ use App\Enum\BillableKindsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+
 
 /**
  * @extends ServiceEntityRepository<Worklog>
@@ -134,15 +136,16 @@ class WorklogRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
+
     /**
      * @throws \Exception
      */
-    public function getWorklogsAttachedToInvoiceInDateRange(\DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
+    public function getWorklogsAttachedToInvoiceInDateRange(\DateTimeInterface $periodStart, \DateTimeInterface $periodEnd, int $page = 1, int $pageSize = 50): array
     {
         $from = new \DateTimeImmutable($periodStart->format('Y-m-d').' 00:00:00');
         $to = new \DateTimeImmutable($periodEnd->format('Y-m-d').' 23:59:59');
 
-        return $this->createQueryBuilder('worklog')
+        $query = $this->createQueryBuilder('worklog')
             ->leftJoin(Issue::class, 'issue', 'WITH', 'worklog.issue = issue.id')
             ->leftJoin(Project::class, 'project', 'WITH', 'issue.project = project.id')
             ->where('worklog.invoiceEntry IS NOT NULL')
@@ -150,6 +153,25 @@ class WorklogRepository extends ServiceEntityRepository
             ->setParameter('from', $from)
             ->setParameter('to', $to)
             ->getQuery()
-            ->getResult();
+            ->setFirstResult(($page - 1) * $pageSize)
+            ->setMaxResults($pageSize);
+
+        $paginator = new Paginator($query, true);
+
+        $totalItemCount = count($paginator);
+        $pagesCount = ceil($totalItemCount / $pageSize);
+
+        $items = [];
+        foreach ($paginator as $post) {
+            $items[] = $post;
+        }
+
+        return [
+            'total_count' => $totalItemCount,
+            'pages_count' => $pagesCount,
+            'current_page' => $page,
+            'page_size' => $pageSize,
+            'items' => $items,
+        ];
     }
 }
