@@ -31,13 +31,21 @@ class ForecastReportService
     public function getForecastReport(\DateTimeInterface $fromDate, \DateTimeInterface $toDate): ForecastReportData
     {
         // Get all worklogs attached to an invoice for the period
-        $invoiceAttachedWorklogs = $this->worklogRepository->getWorklogsAttachedToInvoiceInDateRange($fromDate, $toDate);
+        $page = 1;
+        $pageSize = 50;
+        $allInvoiceAttachedWorklogs = [];
+
+        do {
+            $invoiceAttachedWorklogs = $this->worklogRepository->getWorklogsAttachedToInvoiceInDateRange($fromDate, $toDate, $page, $pageSize);
+            $allInvoiceAttachedWorklogs = array_merge($allInvoiceAttachedWorklogs, $invoiceAttachedWorklogs['items']);
+            ++$page;
+        } while ($page <= $invoiceAttachedWorklogs['pages_count']);
 
         // Create an new instance of ForecastReportData
         $forecastReportData = new ForecastReportData();
 
         // Loop through each worklog
-        foreach ($invoiceAttachedWorklogs as $worklog) {
+        foreach ($allInvoiceAttachedWorklogs as $worklog) {
             $projectId = $worklog->getProject()->getId();
 
             if (!$projectId) {
