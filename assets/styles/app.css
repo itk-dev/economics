@@ -163,7 +163,8 @@
     .worklogs-filter-form {
         @apply grid gap-3 mb-6 md:grid-cols-4;
     }
-    .action-button > span:not(.hidden) > svg {
+    .action-button > span:not(.hidden) > svg,
+    .subscribe-button > span:not(.hidden) > svg {
         margin: auto;
         animation: spin 2s linear infinite
     }
@@ -431,4 +432,27 @@
         z-index: 9999;
         left: 0;
     }
+    .subscribe-button:not([data-frequencies]):before,
+    .subscribe-button[data-frequencies='']:before {
+        display: none;
+    }
+    .subscribe-button:before {
+        @apply absolute left-0 w-full text-sm text-right pointer-events-none dark:text-white;
+        content: 'Subscribed ' attr(data-frequencies);
+        top: -20px;
+    }
+    .subscribe-button svg {
+        display: inline-block;
+    }
+    .subscription-details {
+        @apply w-80;
+    }
+    .subscription-details div {
+        @apply flex justify-between mb-1;
+    }
+    .subscription-details div span:last-child {
+        @apply text-right;
+        max-width: 200px;
+    }
+
 }

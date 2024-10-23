@@ -199,7 +199,7 @@ class WorkloadReportServiceTest extends TestCase
 
         // Expect this specific exception
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Workload of worker: test2@test cannot be unset when generating workload report.');
+        $this->expectExceptionMessage('Workload of worker: test2@test cannot be null when generating workload report.');
 
         // Run method that triggers exception
         $workloadReportService->getWorkloadReport(PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);

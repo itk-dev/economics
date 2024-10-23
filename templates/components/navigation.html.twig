@@ -49,6 +49,7 @@
                         {{ include('components/navigation-item.html.twig', {title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index')}) }}
                           {{ include('components/navigation-item.html.twig', {title: 'navigation.worker'|trans, role: 'ROLE_ADMIN', route: path('app_worker_index')}) }}
                         {{ include('components/navigation-item.html.twig', {title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index')}) }}
+                          {{ include('components/navigation-item.html.twig', {title: 'navigation.subscription'|trans, role: 'ROLE_ADMIN', route: path('app_subscription_index')}) }}
                     </ul>
                 </li>
             {% elseif is_granted('ROLE_PRODUCT_MANAGER') %}

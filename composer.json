@@ -24,7 +24,9 @@
         "symfony/form": "~6.4.0",
         "symfony/framework-bundle": "~6.4.0",
         "symfony/http-client": "~6.4.0",
+        "symfony/mailer": "~6.4.0",
         "symfony/messenger": "~6.4.0",
+        "symfony/mime": "~6.4.0",
         "symfony/monolog-bundle": "^3.8",
         "symfony/proxy-manager-bridge": "~6.4.0",
         "symfony/runtime": "~6.4.0",
@@ -122,7 +124,7 @@
             "php-cs-fixer fix"
         ],
         "coding-standards-apply/twig-cs-fixer": [
-            "twig-cs-fixer lint templates --fix"
+            "twig-cs-fixer fix"
         ],
         "coding-standards-check": [
             "@coding-standards-check/php-cs-fixer",
@@ -132,7 +134,7 @@
             "php-cs-fixer fix --dry-run --format=checkstyle"
         ],
         "coding-standards-check/twig-cs-fixer": [
-            "twig-cs-fixer lint templates"
+            "twig-cs-fixer check"
         ],
         "fixtures:load": [
             "php bin/console hautelook:fixtures:load --no-interaction"
