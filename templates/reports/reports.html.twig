@@ -22,7 +22,9 @@
     {% endif %}
 
     {{ form_start(form) }}
-    {{ form_row(form.dataProvider) }}
+    {% if form.dataProvider is defined %}
+        {{ form_row(form.dataProvider) }}
+    {% endif %}
     {{ form_end(form) }}
 
     {% if data is not empty %}
