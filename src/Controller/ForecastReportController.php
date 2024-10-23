@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Form\ForecastReportType;
 use App\Model\Reports\ForecastReportFormData;
-use App\Repository\DataProviderRepository;
 use App\Service\ForecastReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +16,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ForecastReportController extends AbstractController
 {
     public function __construct(
-        private readonly DataProviderRepository $dataProviderRepository,
         private readonly ForecastReportService $forecastReportService,
     ) {
     }
