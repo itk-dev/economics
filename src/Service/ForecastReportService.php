@@ -39,6 +39,7 @@ class ForecastReportService
 
         $workerNameMapping = array_reduce($this->workerRepository->findAll(), function ($carry, $worker) {
             $carry[$worker->getEmail()] = $worker->getName() ?? '[no worker]';
+
             return $carry;
         }, []);
         do {
@@ -51,22 +52,12 @@ class ForecastReportService
                 if (!$projectId) {
                     throw new \Exception('Project id is null');
                 }
-                $projectName = $worklog->getProject()?->getName() ?? '[no project name]';
-
                 // If the project isn't already in the forecast, add it
                 if (!isset($forecastReportData->projects[$projectId])) {
-                  $newForecastReportProjectData = new ForecastReportProjectData($projectId);
-                  $newForecastReportProjectData->projectName = $projectName;
-                  $forecastReportData->projects[$projectId] = $newForecastReportProjectData;
+                    $newForecastReportProjectData = new ForecastReportProjectData($projectId);
+                    $newForecastReportProjectData->projectName = $worklog->getProject()?->getName() ?? '[no project name]';
+                    $forecastReportData->projects[$projectId] = $newForecastReportProjectData;
                 }
-                if (!isset($forecastReportData->projects[$projectId])) {
-                    $forecastReportData->projects[$projectId] = new ForecastReportProjectData($projectId);
-                }
-
-                if ($forecastReportData->projects[$projectId] instanceof ForecastReportProjectData) {
-                    $forecastReportData->projects[$projectId]->projectName = $projectName;
-                }
-
                 // Get current project from forecast
                 $currentProject = $forecastReportData->projects[$projectId];
 
