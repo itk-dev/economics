@@ -32,12 +32,15 @@ class ForecastReportService
      */
     public function getForecastReport(\DateTimeInterface $fromDate, \DateTimeInterface $toDate): ForecastReportData
     {
-        // Get all worklogs attached to an invoice for the period
         $page = 1;
         $pageSize = 200;
-        // Create an new instance of ForecastReportData
         $forecastReportData = new ForecastReportData();
+        $allWorkers = $this->workerRepository->findAll();
 
+        $workerNameMapping = array_reduce($this->workerRepository->findAll(), function ($carry, $worker) {
+            $carry[$worker->getEmail()] = $worker->getName() ?? '[no worker]';
+            return $carry;
+        }, []);
         do {
             $invoiceAttachedWorklogs = $this->worklogRepository->getWorklogsAttachedToInvoiceInDateRange($fromDate, $toDate, $page, $pageSize);
 
@@ -125,11 +128,7 @@ class ForecastReportService
                 // Get worklog details
                 $worklogId = $worklog->getId();
                 $workerEmail = $worklog->getWorker();
-                $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
-                $workerName = $worker ? $worker->getName() : '[no worker]';
-                if (null === $workerName) {
-                    $workerName = '[no worker]';
-                }
+                $workerName = $workerNameMapping[$workerEmail] ?? '[no worker]';
                 $description = $worklog->getDescription();
 
                 // Add worklog entry in the version if it does not exist
