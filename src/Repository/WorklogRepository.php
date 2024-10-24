@@ -9,9 +9,8 @@ use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Worklog>
@@ -135,7 +134,6 @@ class WorklogRepository extends ServiceEntityRepository
             ])
             ->getQuery()->getResult();
     }
-
 
     /**
      * @throws \Exception
