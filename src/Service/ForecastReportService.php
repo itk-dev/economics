@@ -55,6 +55,11 @@ class ForecastReportService
 
                 // If the project isn't already in the forecast, add it
                 if (!isset($forecastReportData->projects[$projectId])) {
+                  $newForecastReportProjectData = new ForecastReportProjectData($projectId);
+                  $newForecastReportProjectData.projectName = $worklog->getProject()?->getName() ?? '[no project name]';
+                  $forecastReportData->projects[$projectId] = $newForecastReportProjectData;
+                }
+                if (!isset($forecastReportData->projects[$projectId])) {
                     $forecastReportData->projects[$projectId] = new ForecastReportProjectData($projectId);
                 }
 
