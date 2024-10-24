@@ -35,8 +35,7 @@ class ForecastReportService
         $page = 1;
         $pageSize = 200;
         $forecastReportData = new ForecastReportData();
-        $allWorkers = $this->workerRepository->findAll();
-
+        
         $workerNameMapping = array_reduce($this->workerRepository->findAll(), function ($carry, $worker) {
             $carry[$worker->getEmail()] = $worker->getName() ?? '[no worker]';
 
