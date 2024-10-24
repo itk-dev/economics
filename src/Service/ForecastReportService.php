@@ -34,7 +34,7 @@ class ForecastReportService
     {
         // Get all worklogs attached to an invoice for the period
         $page = 1;
-        $pageSize = 50;
+        $pageSize = 200;
         // Create an new instance of ForecastReportData
         $forecastReportData = new ForecastReportData();
 
