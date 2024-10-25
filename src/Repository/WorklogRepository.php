@@ -159,17 +159,12 @@ class WorklogRepository extends ServiceEntityRepository
         $totalItemCount = count($paginator);
         $pagesCount = ceil($totalItemCount / $pageSize);
 
-        $items = [];
-        foreach ($paginator as $post) {
-            $items[] = $post;
-        }
-
         return [
             'total_count' => $totalItemCount,
             'pages_count' => $pagesCount,
             'current_page' => $page,
             'page_size' => $pageSize,
-            'items' => $items,
+            'paginator' => $paginator,
         ];
     }
 }
