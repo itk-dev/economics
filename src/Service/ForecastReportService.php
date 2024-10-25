@@ -13,6 +13,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ForecastReportService
 {
+    private const PAGE_SIZE = 200;
+
     public function __construct(
         private readonly WorklogRepository $worklogRepository,
         private readonly WorkerRepository $workerRepository,
@@ -33,18 +35,18 @@ class ForecastReportService
     public function getForecastReport(\DateTimeInterface $fromDate, \DateTimeInterface $toDate): ForecastReportData
     {
         $page = 1;
-        $pageSize = 200;
         $forecastReportData = new ForecastReportData();
-        
+
         $workerNameMapping = array_reduce($this->workerRepository->findAll(), function ($carry, $worker) {
             $carry[$worker->getEmail()] = $worker->getName() ?? '[no worker]';
 
             return $carry;
         }, []);
-        do {
-            $invoiceAttachedWorklogs = $this->worklogRepository->getWorklogsAttachedToInvoiceInDateRange($fromDate, $toDate, $page, $pageSize);
 
-            foreach ($invoiceAttachedWorklogs['items'] as $worklog) {
+        do {
+            $invoiceAttachedWorklogs = $this->worklogRepository->getWorklogsAttachedToInvoiceInDateRange($fromDate, $toDate, $page, self::PAGE_SIZE);
+
+            foreach ($invoiceAttachedWorklogs['paginator'] as $worklog) {
                 // Loop through each worklog
                 $projectId = $worklog->getProject()->getId();
 
