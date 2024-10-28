@@ -9,6 +9,7 @@ use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -132,5 +133,38 @@ class WorklogRepository extends ServiceEntityRepository
                 'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
             ])
             ->getQuery()->getResult();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getWorklogsAttachedToInvoiceInDateRange(\DateTimeInterface $periodStart, \DateTimeInterface $periodEnd, int $page = 1, int $pageSize = 50): array
+    {
+        $from = new \DateTimeImmutable($periodStart->format('Y-m-d').' 00:00:00');
+        $to = new \DateTimeImmutable($periodEnd->format('Y-m-d').' 23:59:59');
+
+        $query = $this->createQueryBuilder('worklog')
+            ->leftJoin(Issue::class, 'issue', 'WITH', 'worklog.issue = issue.id')
+            ->leftJoin(Project::class, 'project', 'WITH', 'issue.project = project.id')
+            ->where('worklog.invoiceEntry IS NOT NULL')
+            ->andWhere('worklog.started BETWEEN :from AND :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->setFirstResult(($page - 1) * $pageSize)
+            ->setMaxResults($pageSize);
+
+        $paginator = new Paginator($query, true);
+
+        $totalItemCount = count($paginator);
+        $pagesCount = ceil($totalItemCount / $pageSize);
+
+        return [
+            'total_count' => $totalItemCount,
+            'pages_count' => $pagesCount,
+            'current_page' => $page,
+            'page_size' => $pageSize,
+            'paginator' => $paginator,
+        ];
     }
 }
