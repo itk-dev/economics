@@ -15,6 +15,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class WorkloadReportType extends AbstractType
 {
     public function __construct(
+        private readonly DataProviderRepository $dataProviderRepository,
+        private readonly ?string $defaultDataProvider,
     ) {
     }
 
