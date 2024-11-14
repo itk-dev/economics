@@ -310,7 +310,7 @@ class LeantimeApiService implements DataProviderServiceInterface
         return $sprintReportVersions;
     }
 
-    public function getWorklogDataCollection(string $projectId): WorklogDataCollection
+    /*public function getWorklogDataForProjectPaged(string $projectId): WorklogDataCollection
     {
         $worklogDataCollection = new WorklogDataCollection();
         $worklogs = $this->getProjectWorklogs($projectId);
@@ -344,6 +344,44 @@ class LeantimeApiService implements DataProviderServiceInterface
         }
 
         return $worklogDataCollection;
+    }*/
+
+    public function getWorklogDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
+    {
+        $worklogDataCollection = new WorklogDataCollection();
+
+        $worklogs = $this->getProjectWorklogs($projectId);
+
+        $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
+
+        $workers = array_reduce($workersData, function ($carry, $item) {
+            $carry[$item->id] = $item->username;
+
+            return $carry;
+        }, []);
+
+        $worklogs = array_filter($worklogs, fn ($worklog) => $worklog->projectId == $projectId);
+
+        $total = count($worklogs);
+
+        foreach ($worklogs as $worklog) {
+            $worklogData = new WorklogData();
+            if (isset($worklog->ticketId)) {
+                $worklogData->projectTrackerId = $worklog->id;
+                $worklogData->comment = $worklog->description ?? '';
+                $worklogData->worker = $workers[$worklog->userId] ?? $worklog->userId;
+                $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
+                $worklogData->started = new \DateTime($worklog->workDate, self::getLeantimeTimeZone());
+                $worklogData->projectTrackerIsBilled = false;
+                $worklogData->projectTrackerIssueId = $worklog->ticketId;
+                $worklogData->kind = $worklog->kind;
+
+                $worklogDataCollection->worklogData->add($worklogData);
+            }
+        }
+
+        // Return a new PagedResult instance
+        return new PagedResult($worklogDataCollection->worklogData->toArray(), $startAt, $maxResults, $total);
     }
 
     /**
