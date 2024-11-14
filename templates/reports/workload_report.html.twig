@@ -60,12 +60,27 @@
                         {{ week ~ '%' }}
                     </td>
                 {% endfor %}
-                <td class="text-center px-3 border border-slate-600">
+                <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800">
                     {{ worker.average ~ '%' }}
                 </td>
             </tr>
             </tbody>
         {% endfor %}
+        <tbody>
+        <tr>
+            <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-300 dark:bg-slate-800">
+                {{ 'workload_report.average'|trans }}
+            </td>
+            <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"></td>
+            {% for periodNumeric in data.period %}
+                <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800
+                ">
+                    {{ data.periodAverages[periodNumeric] ~ '%' }}
+                </td>
+            {% endfor %}
+            <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"> {{ data.totalAverage ~ '%'  }}</td>
+        </tr>
+        </tbody>
     </table>
     <div class="my-5 sticky left-0">
         {{ 'workload_report.hidden-entries'|trans }}:
