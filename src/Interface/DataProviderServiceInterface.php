@@ -36,5 +36,5 @@ interface DataProviderServiceInterface
 
     public function getProjectDataCollection(): ProjectDataCollection;
 
-    public function getWorklogDataCollection(string $projectId): WorklogDataCollection;
+    public function getWorklogDataForProjectPaged(string $projectId, int $startAt = 0, $maxResults = 50): PagedResult;
 }
