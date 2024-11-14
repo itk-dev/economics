@@ -8,6 +8,7 @@ use App\Entity\DataProvider;
 use App\Entity\Invoice;
 use App\Entity\Issue;
 use App\Entity\Project;
+use App\Entity\Tag;
 use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\Worklog;
@@ -271,6 +272,10 @@ class DataSynchronizationService
                     }
                 }
 
+                if (null !== $issueDatum->epicName) {
+                    $this->syncTags($issueDatum);
+                }
+
                 if (null !== $progressCallback) {
                     $progressCallback($issuesProcessed, $total);
                     ++$issuesProcessed;
@@ -285,6 +290,22 @@ class DataSynchronizationService
 
         $this->entityManager->flush();
         $this->entityManager->clear();
+    }
+
+    private function syncTags(mixed $issueDatum): void
+    {
+        $tagTitles = explode(',', $issueDatum->epicName);
+
+        foreach ($tagTitles as $title) {
+            $trimmedTitle = trim($title);
+            if (!empty($trimmedTitle)) {
+                $tag = new Tag();
+                $tag->setTitle($trimmedTitle);
+                $tag->setProjectId($issueDatum->projectTrackerId);
+
+                $this->entityManager->persist($tag);
+            }
+        }
     }
 
     /**
@@ -311,17 +332,6 @@ class DataSynchronizationService
             throw new EconomicsException($this->translator->trans('exception.project_tracker_id_not_set'));
         }
 
-        // Some worklogs may have been deleted in the source.
-        // Mark all project worklogs that are NOT
-        //
-        // * billed
-        // * invoiced
-        //
-        // as candidates for deletion.
-        //
-        // Due to flushing below, we store only this worklogs IDs
-        // (if we load worklog entities, they will become detached when flushing).
-        /** @var array<int> $worklogsToDeleteIds */
         $worklogsToDeleteIds = array_map(
             static fn (Worklog $worklog) => $worklog->getId(),
             array_filter(
@@ -329,101 +339,103 @@ class DataSynchronizationService
                 static fn (Worklog $worklog): bool => !$worklog->isBilled() || null === $worklog->getInvoiceEntry()
             )
         );
-        // Index by ID
         $worklogsToDeleteIds = array_combine($worklogsToDeleteIds, $worklogsToDeleteIds);
 
-        $worklogData = $service->getWorklogDataCollection($projectTrackerId);
         $worklogsAdded = 0;
-        foreach ($worklogData->worklogData as $worklogDatum) {
+        $startAt = 0;
+        do {
+            $dataProvider = $this->dataProviderRepository->find($dataProviderId);
             $project = $this->projectRepository->find($projectId);
-
             if (!$project) {
                 throw new EconomicsException($this->translator->trans('exception.project_not_found'));
             }
 
-            $issue = !empty($worklogDatum->projectTrackerIssueId) ? $this->issueRepository->findOneBy([
-                'projectTrackerId' => $worklogDatum->projectTrackerIssueId,
-                'dataProvider' => $dataProvider,
-            ]) : null;
+            $pagedWorklogData = $service->getWorklogDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
+            $total = $pagedWorklogData->total;
 
-            if (null === $issue) {
-                // A worklog should always have an issue, so ignore the worklog.
-                continue;
-            }
-
-            $worklog = $this->worklogRepository->findOneBy([
-                'worklogId' => $worklogDatum->projectTrackerId,
-                'dataProvider' => $dataProvider,
-            ]);
-
-            if (!$worklog) {
-                $worklog = new Worklog();
-
-                $dataProvider = $this->dataProviderRepository->find($dataProviderId);
-
-                $worklog->setDataProvider($dataProvider);
-
-                $this->entityManager->persist($worklog);
-            }
-
-            $worklog
-                ->setWorklogId($worklogDatum->projectTrackerId)
-                ->setDescription($worklogDatum->comment)
-                ->setWorker($worklogDatum->worker)
-                ->setStarted($worklogDatum->started)
-                ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
-                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
-                ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
-                ->setIssue($issue)
-                ->setKind(BillableKindsEnum::tryFrom($worklogDatum->kind));
-
-            if (null != $worklog->getProjectTrackerIssueId()) {
-                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
-                $worklog->setIssue($issue);
-            }
-
-            if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
-                $worklog->setIsBilled(true);
-                $worklog->setBilledSeconds($worklogDatum->timeSpentSeconds);
-            }
-
-            $project->addWorklog($worklog);
-            // Keep the worklog.
-            $worklogId = $worklog->getId();
-
-            if (null !== $worklogId) {
-                unset($worklogsToDeleteIds[$worklogId]);
-            }
-
-            if (null !== $progressCallback) {
-                $progressCallback($worklogsAdded, count($worklogData->worklogData));
-
-                ++$worklogsAdded;
-            }
-
-            $workerEmail = $worklog->getWorker();
-
-            if ($workerEmail && filter_var($workerEmail, FILTER_VALIDATE_EMAIL)) {
-                $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
-
-                if (!$worker) {
-                    $worker = new Worker();
-                    $worker->setEmail($workerEmail);
-
-                    $this->entityManager->persist($worker);
-                    $this->entityManager->flush();
+            foreach ($pagedWorklogData->items as $worklogDatum) {
+                $project = $this->projectRepository->find($projectId);
+                if (!$project) {
+                    throw new EconomicsException($this->translator->trans('exception.project_not_found'));
                 }
-            }
 
-            // Flush and clear for each batch.
-            if (0 === $worklogsAdded % self::BATCH_SIZE) {
+                $issue = !empty($worklogDatum->projectTrackerIssueId) ? $this->issueRepository->findOneBy([
+                    'projectTrackerId' => $worklogDatum->projectTrackerIssueId,
+                    'dataProvider' => $dataProvider,
+                ]) : null;
+
+                if (null === $issue) {
+                    continue;
+                }
+
+                $worklog = $this->worklogRepository->findOneBy([
+                    'worklogId' => $worklogDatum->projectTrackerId,
+                    'dataProvider' => $dataProvider,
+                ]);
+
+                if (!$worklog) {
+                    $worklog = new Worklog();
+                    $worklog->setDataProvider($dataProvider);
+                    $this->entityManager->persist($worklog);
+                }
+
+                $worklog
+                    ->setWorklogId($worklogDatum->projectTrackerId)
+                    ->setDescription($worklogDatum->comment)
+                    ->setWorker($worklogDatum->worker)
+                    ->setStarted($worklogDatum->started)
+                    ->setProjectTrackerIssueId($worklogDatum->projectTrackerIssueId)
+                    ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
+                    ->setIssue($issue)
+                    ->setKind(BillableKindsEnum::tryFrom($worklogDatum->kind));
+
+                if (null != $worklog->getProjectTrackerIssueId()) {
+                    $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
+                    $worklog->setIssue($issue);
+                }
+
+                if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
+                    $worklog->setIsBilled(true);
+                    $worklog->setBilledSeconds($worklogDatum->timeSpentSeconds);
+                }
+
+                $project->addWorklog($worklog);
+                $worklogId = $worklog->getId();
+
+                if (null !== $worklogId) {
+                    unset($worklogsToDeleteIds[$worklogId]);
+                }
+
+                if (null !== $progressCallback) {
+                    $progressCallback($worklogsAdded, $total);
+                    ++$worklogsAdded;
+                }
+
+                $workerEmail = $worklog->getWorker();
+
+                if ($workerEmail && filter_var($workerEmail, FILTER_VALIDATE_EMAIL)) {
+                    $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
+
+                    if (!$worker) {
+                        $worker = new Worker();
+                        $worker->setEmail($workerEmail);
+
+                        $this->entityManager->persist($worker);
+                        $this->entityManager->flush();
+                    }
+                }
+
                 $this->entityManager->flush();
                 $this->entityManager->clear();
             }
-        }
 
-        // Remove leftover worklogs from project and remove the worklogs.
+            $startAt += $pagedWorklogData->maxResults;
+            $this->entityManager->flush();
+            $this->entityManager->clear();
+        } while ($startAt < $total);
+
         $worklogsToDelete = $this->worklogRepository->findBy(['id' => $worklogsToDeleteIds]);
+
         foreach ($worklogsToDelete as $worklog) {
             $project->removeWorklog($worklog);
             $this->entityManager->remove($worklog);
