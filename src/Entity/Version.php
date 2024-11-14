@@ -29,6 +29,11 @@ class Version extends AbstractBaseEntity
     #[ORM\ManyToMany(targetEntity: Issue::class, mappedBy: 'versions')]
     private Collection $issues;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isBillable = false;
+
+
+
     public function __construct()
     {
         $this->issues = new ArrayCollection();
@@ -98,6 +103,18 @@ class Version extends AbstractBaseEntity
         if ($this->issues->removeElement($issue)) {
             $issue->removeVersion($this);
         }
+
+        return $this;
+    }
+
+    public function isBillable(): ?bool
+    {
+        return $this->isBillable;
+    }
+
+    public function setIsBillable(?bool $isBillable): self
+    {
+        $this->isBillable = $isBillable;
 
         return $this;
     }
