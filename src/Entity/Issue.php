@@ -43,6 +43,8 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $epicName = null;
 
+    #[ORM\ManyToMany(targetEntity: Epic::class, inversedBy: 'issues')]
+    private Collection $epics;
     #[ORM\ManyToMany(targetEntity: Version::class, inversedBy: 'issues')]
     private Collection $versions;
 
@@ -197,6 +199,31 @@ class Issue extends AbstractBaseEntity
     public function removeVersion(Version $version): self
     {
         $this->versions->removeElement($version);
+
+        return $this;
+    }
+
+
+    /**
+     * @return Collection<int, Epic>
+     */
+    public function getEpics(): Collection
+    {
+        return $this->epics;
+    }
+
+    public function addEpic(Epic $epic): self
+    {
+        if (!$this->epics->contains($epic)) {
+            $this->epics->add($epic);
+        }
+
+        return $this;
+    }
+
+    public function removeEpic(Epic $epic): self
+    {
+        $this->epics->removeElement($epic);
 
         return $this;
     }
