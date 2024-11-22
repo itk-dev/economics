@@ -120,12 +120,16 @@ class WorklogRepository extends ServiceEntityRepository
 
         $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project')
             ->leftJoin('worklog.issue', 'issue')
-            ->leftJoin('issue.epics', 'epic');
+            ->leftJoin('issue.epics', 'epic')
+            ->leftJoin('issue.versions', 'version');
 
         return $qb
             ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
             ->andWhere('worklog.worker = :worker')
-            ->andWhere($qb->expr()->eq('project.isBillable', '1'))
+            ->andWhere($qb->expr()->andX(
+                $qb->expr()->eq('project.isBillable', '1'),
+                $qb->expr()->eq('version.isBillable', '1')
+            ))
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->isNull('epic.title'),
                 $qb->expr()->notIn('epic.title', ':nonBillableEpics')
