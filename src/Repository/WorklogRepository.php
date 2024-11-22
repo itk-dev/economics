@@ -6,6 +6,7 @@ use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
+use App\Enum\NonBillableEpicsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -113,20 +114,27 @@ class WorklogRepository extends ServiceEntityRepository
 
     public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
     {
+        $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
+
         $qb = $this->createQueryBuilder('worklog');
 
-        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project');
+        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project')
+            ->leftJoin('worklog.issue', 'issue')
+            ->leftJoin('issue.epics', 'epic');
 
         return $qb
             ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
             ->andWhere('worklog.worker = :worker')
+            ->andWhere($qb->expr()->eq('project.isBillable', '1'))
             ->andWhere($qb->expr()->orX(
-                $qb->expr()->eq('project.isBillable', '1'),
+                $qb->expr()->isNull('epic.title'),
+                $qb->expr()->notIn('epic.title', ':nonBillableEpics')
             ))
             ->setParameters([
                 'worker' => $workerIdentifier,
                 'dateFrom' => $dateFrom,
                 'dateTo' => $dateTo,
+                'nonBillableEpics' => array_values($nonBillableEpics),
             ])
             ->getQuery()->getResult();
     }
