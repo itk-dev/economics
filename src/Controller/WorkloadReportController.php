@@ -6,7 +6,6 @@ use App\Form\WorkloadReportType;
 use App\Model\Reports\WorkloadReportFormData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
-use App\Repository\DataProviderRepository;
 use App\Service\WorkloadReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +18,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class WorkloadReportController extends AbstractController
 {
     public function __construct(
-        private readonly DataProviderRepository $dataProviderRepository,
         private readonly WorkloadReportService $workloadReportService,
     ) {
     }
@@ -43,23 +41,14 @@ class WorkloadReportController extends AbstractController
 
         $form->handleRequest($request);
 
-        $requestData = $request->query->all('workload_report');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $viewPeriodType = $form->get('viewPeriodType')->getData() ?? PeriodTypeEnum::WEEK;
+            $viewMode = $form->get('viewMode')->getData() ?? ViewModeEnum::WORKLOAD;
 
-        if (!empty($requestData['dataProvider'])) {
-            $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $selectedDataProvider = $form->get('dataProvider')->getData() ?? $dataProvider;
-                $viewPeriodType = $form->get('viewPeriodType')->getData() ?? PeriodTypeEnum::WEEK;
-                $viewMode = $form->get('viewMode')->getData() ?? ViewModeEnum::WORKLOAD;
-
-                if ($selectedDataProvider) {
-                    try {
-                        $reportData = $this->workloadReportService->getWorkloadReport($viewPeriodType, $viewMode);
-                    } catch (\Exception $e) {
-                        $error = $e->getMessage();
-                    }
-                }
+            try {
+                $reportData = $this->workloadReportService->getWorkloadReport($viewPeriodType, $viewMode);
+            } catch (\Exception $e) {
+                $error = $e->getMessage();
             }
         }
 

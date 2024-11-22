@@ -756,6 +756,8 @@ workload_report_view_mode_enum:
         label: 'Loggede timer'
     billable:
         label: 'Fakturerbare timer'
+    billed:
+        label: 'Fakturerede timer'
 
 subscription:
     title: 'Dine abonnementer'
