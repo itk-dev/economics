@@ -9,7 +9,6 @@ use App\Entity\Epic;
 use App\Entity\Invoice;
 use App\Entity\Issue;
 use App\Entity\Project;
-use App\Entity\Tag;
 use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\Worklog;
@@ -320,10 +319,9 @@ class DataSynchronizationService
     public function syncWorklogsForProject(int $projectId, ?callable $progressCallback = null, DataProvider $dataProvider): void
     {
         $dataProviderId = $dataProvider->getId();
-
         $service = $this->dataProviderService->getService($dataProvider);
-
         $project = $this->projectRepository->find($projectId);
+        $batchSize = 100; // you can adjust the batch size as per your requirement
 
         if (!$project) {
             throw new EconomicsException($this->translator->trans('exception.project_not_found'));
@@ -346,6 +344,7 @@ class DataSynchronizationService
 
         $worklogsAdded = 0;
         $startAt = 0;
+
         do {
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
             $project = $this->projectRepository->find($projectId);
@@ -355,6 +354,7 @@ class DataSynchronizationService
 
             $pagedWorklogData = $service->getWorklogDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
             $total = $pagedWorklogData->total;
+            $counter = 0;
 
             foreach ($pagedWorklogData->items as $worklogDatum) {
                 $project = $this->projectRepository->find($projectId);
@@ -422,20 +422,23 @@ class DataSynchronizationService
                     if (!$worker) {
                         $worker = new Worker();
                         $worker->setEmail($workerEmail);
-
                         $this->entityManager->persist($worker);
-                        $this->entityManager->flush();
                     }
                 }
 
-                $this->entityManager->flush();
-                $this->entityManager->clear();
+                if (($counter % $batchSize) === 0) {
+                    $this->entityManager->flush();
+                    $this->entityManager->clear();
+                    gc_collect_cycles();
+                }
+                ++$counter;
             }
 
             $startAt += $pagedWorklogData->maxResults;
-            $this->entityManager->flush();
-            $this->entityManager->clear();
         } while ($startAt < $total);
+
+        $this->entityManager->flush();
+        $this->entityManager->clear();
 
         $worklogsToDelete = $this->worklogRepository->findBy(['id' => $worklogsToDeleteIds]);
 
