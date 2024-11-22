@@ -49,15 +49,21 @@ class SyncWorklogsCommand extends Command
             $io->info("Processing worklogs for $numberOfProjects projects that are included (project.include)");
 
             foreach ($projects as $project) {
+                var_dump('Max memory limit: ' . ini_get('memory_limit'));
+                var_dump('Memory usage: ' . (memory_get_usage() / 1024 / 1024) . ' MB');
                 $io->writeln("Processing worklogs for {$project->getName()}");
 
                 $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
                     if (0 == $i) {
                         $io->progressStart($length);
-                    } elseif ($i >= $length - 1) {
-                        $io->progressFinish();
-                    } else {
+                    }
+
+                    if ($i < $length) {
                         $io->progressAdvance();
+                    }
+
+                    if ($i == $length - 1) {
+                        $io->progressFinish();
                     }
                 }, $dataProvider);
 
