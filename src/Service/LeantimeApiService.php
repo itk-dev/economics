@@ -310,42 +310,6 @@ class LeantimeApiService implements DataProviderServiceInterface
         return $sprintReportVersions;
     }
 
-    /*public function getWorklogDataForProjectPaged(string $projectId): WorklogDataCollection
-    {
-        $worklogDataCollection = new WorklogDataCollection();
-        $worklogs = $this->getProjectWorklogs($projectId);
-
-        $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
-
-        $workers = array_reduce($workersData, function ($carry, $item) {
-            $carry[$item->id] = $item->username;
-
-            return $carry;
-        }, []);
-
-        // Filter out all worklogs that do not belong to the project.
-        // TODO: Remove filter when worklogs are filtered correctly by projectId in the API.
-        $worklogs = array_filter($worklogs, fn ($worklog) => $worklog->projectId == $projectId);
-
-        foreach ($worklogs as $worklog) {
-            $worklogData = new WorklogData();
-            if (isset($worklog->ticketId)) {
-                $worklogData->projectTrackerId = $worklog->id;
-                $worklogData->comment = $worklog->description ?? '';
-                $worklogData->worker = $workers[$worklog->userId] ?? $worklog->userId;
-                $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
-                $worklogData->started = new \DateTime($worklog->workDate, self::getLeantimeTimeZone());
-                $worklogData->projectTrackerIsBilled = false;
-                $worklogData->projectTrackerIssueId = $worklog->ticketId;
-                $worklogData->kind = $worklog->kind;
-
-                $worklogDataCollection->worklogData->add($worklogData);
-            }
-        }
-
-        return $worklogDataCollection;
-    }*/
-
     public function getWorklogDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
     {
         $worklogDataCollection = new WorklogDataCollection();
