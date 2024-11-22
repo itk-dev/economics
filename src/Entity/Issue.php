@@ -81,6 +81,7 @@ class Issue extends AbstractBaseEntity
         $this->versions = new ArrayCollection();
         $this->worklogs = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->epics = new ArrayCollection();
     }
 
     public function getName(): ?string
