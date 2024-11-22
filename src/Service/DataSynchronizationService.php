@@ -429,23 +429,25 @@ class DataSynchronizationService
             if ($workerEmail && filter_var($workerEmail, FILTER_VALIDATE_EMAIL)) {
                 $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
 
-                if (!$worker) {
-                    $worker = new Worker();
-                    $worker->setEmail($workerEmail);
+                    if (!$worker) {
+                        $worker = new Worker();
+                        $worker->setEmail($workerEmail);
 
-                    $this->entityManager->persist($worker);
-                    $this->entityManager->flush();
+                        $this->entityManager->persist($worker);
+                        $this->entityManager->flush();
+                    }
                 }
-            }
 
-            // Flush and clear for each batch.
-            if (0 === $worklogsAdded % self::BATCH_SIZE) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
             }
         }
 
-        // Remove leftover worklogs from project and remove the worklogs.
+            $startAt += $pagedWorklogData->maxResults;
+            $this->entityManager->flush();
+            $this->entityManager->clear();
+        } while ($startAt < $total);
+
         $worklogsToDelete = $this->worklogRepository->findBy(['id' => $worklogsToDeleteIds]);
         foreach ($worklogsToDelete as $worklog) {
             $project->removeWorklog($worklog);
