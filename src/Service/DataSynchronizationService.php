@@ -438,15 +438,19 @@ class DataSynchronizationService
                     }
                 }
 
-                $this->entityManager->flush();
-                $this->entityManager->clear();
+                if (($counter % $batchSize) === 0) {
+                    $this->entityManager->flush();
+                    $this->entityManager->clear();
+                    gc_collect_cycles();
+                }
+                ++$counter;
             }
-        }
 
             $startAt += $pagedWorklogData->maxResults;
-            $this->entityManager->flush();
-            $this->entityManager->clear();
         } while ($startAt < $total);
+
+        $this->entityManager->flush();
+        $this->entityManager->clear();
 
         $worklogsToDelete = $this->worklogRepository->findBy(['id' => $worklogsToDeleteIds]);
         foreach ($worklogsToDelete as $worklog) {
