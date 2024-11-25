@@ -321,7 +321,6 @@ class DataSynchronizationService
         $dataProviderId = $dataProvider->getId();
         $service = $this->dataProviderService->getService($dataProvider);
         $project = $this->projectRepository->find($projectId);
-        $batchSize = 100; // you can adjust the batch size as per your requirement
 
         if (!$project) {
             throw new EconomicsException($this->translator->trans('exception.project_not_found'));
@@ -426,19 +425,14 @@ class DataSynchronizationService
                     }
                 }
 
-                if (($counter % $batchSize) === 0) {
-                    $this->entityManager->flush();
-                    $this->entityManager->clear();
-                    gc_collect_cycles();
-                }
                 ++$counter;
+                $this->entityManager->flush();
             }
 
             $startAt += $pagedWorklogData->maxResults;
         } while ($startAt < $total);
 
-        $this->entityManager->flush();
-        $this->entityManager->clear();
+
 
         $worklogsToDelete = $this->worklogRepository->findBy(['id' => $worklogsToDeleteIds]);
 
