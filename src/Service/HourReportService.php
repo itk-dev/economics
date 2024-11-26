@@ -93,13 +93,13 @@ class HourReportService
             $timesheetDate = $worklog->getStarted();
 
             if (null !== $fromDate) {
-                if ($timesheetDate <= $fromDate) {
+                if ($timesheetDate < $fromDate) {
                     continue;
                 }
             }
 
             if (null !== $toDate) {
-                if ($timesheetDate >= $toDate) {
+                if ($timesheetDate > $toDate) {
                     continue;
                 }
             }
