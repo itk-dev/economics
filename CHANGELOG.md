@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.1] - 2024-11-26
+
 * [PR-180](https://github.com/itk-dev/economics/pull/180)
   hotfix: Corrected from/to date check in hour report.
 
