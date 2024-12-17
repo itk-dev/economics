@@ -14,5 +14,4 @@ class IssueEpic extends AbstractBaseEntity
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;
-
 }
