@@ -10,7 +10,7 @@ class InvoicingRateReportData
     public readonly string $viewmode;
     /** @var ArrayCollection<string, string> */
     public ArrayCollection $period;
-    /** @var ArrayCollection<string, WorkloadReportWorker> */
+    /** @var ArrayCollection<string, InvoicingRateReportWorker> */
     public ArrayCollection $workers;
     public int $currentPeriodNumeric;
     public ArrayCollection $periodAverages;
