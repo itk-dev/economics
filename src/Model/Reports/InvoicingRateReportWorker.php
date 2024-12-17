@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class InvoicingRateReportWorker extends Worker
 {
-
     /** @var float */
     public float $average;
 

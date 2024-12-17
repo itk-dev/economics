@@ -3,9 +3,9 @@
 namespace App\Service;
 
 use App\Model\Reports\InvoicingRateReportData;
+use App\Model\Reports\InvoicingRateReportViewModeEnum;
 use App\Model\Reports\InvoicingRateReportWorker;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
-use App\Model\Reports\InvoicingRateReportViewModeEnum;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 
@@ -92,7 +92,6 @@ class InvoicingRateReportService
                     $loggedHoursSum += $loggedHours;
                 }
 
-
                 $loggedBilledPercentage = $loggedHours > 0 ? round($loggedBilledHours / $loggedHours * 100, 1) : 0;
 
                 // Add percentage result to worker for current period.
@@ -109,7 +108,6 @@ class InvoicingRateReportService
                 $average = round($periodSums[$period] / $periodCounts[$period], 2);
                 $invoicingRateReportData->periodAverages->set($period, $average);
             }
-
 
             $invoicingRateReportWorker->average = $loggedHoursSum > 0 ? round($loggedBilledHoursSum / $loggedHoursSum * 100, 1) : 0;
 
@@ -216,7 +214,7 @@ class InvoicingRateReportService
                 $this->worklogRepository->findWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
                 $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
                 $this->worklogRepository->findBilledWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
-                ]
+            ],
         };
     }
 }

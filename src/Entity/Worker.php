@@ -23,7 +23,7 @@ class Worker
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
-    #[ORM\Column( nullable: false, options: ["default" => true])]
+    #[ORM\Column(nullable: false, options: ['default' => true])]
     private bool $includeInReports = true;
 
     public function __construct()
