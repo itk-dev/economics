@@ -6,7 +6,6 @@ use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\PagedResult;
 use App\Model\Invoices\ProjectDataCollection;
-use App\Model\Invoices\WorklogDataCollection;
 use App\Model\Planning\PlanningData;
 use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportProjects;

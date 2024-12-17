@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Version;
-use App\Model\Invoices\VersionFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\PaginatorInterface;
