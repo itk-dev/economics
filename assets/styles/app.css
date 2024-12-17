@@ -454,5 +454,12 @@
         @apply text-right;
         max-width: 200px;
     }
-
+    .double-number-container {
+        span {
+            max-width: 47px;
+        }
+    }
+    .highlight-column, .highlight-row {
+        border: 1px solid #fff !important;
+    }
 }
