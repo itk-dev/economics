@@ -61,6 +61,7 @@ navigation:
     workload_report: "Normtidsrapport"
     worker: "Medarbejdere"
     subscription: "Abonnementer"
+    invoicing_rate_report: "Udfaktureringsrapport"
 
 planning:
     title: 'Planlægning'
@@ -564,6 +565,18 @@ workload_report:
     average: "Gennemsnit"
     average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
 
+invoicing_rate_report:
+    title: 'Udfaktureringsrapport'
+    reading-guide-header: 'Læsevejledning'
+    reading-guide: '
+        Aflæsning af todelt celle:
+        [ Fakturerbare timer for perioden ---- Procent af totalt loggede timer faktureret for perioden ].
+
+        Gennemsnit for periode: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
+
+        Gennemsnit for medarbejder: Procentvist gennemsnit af fakturerede timer af totalt tid logget.'
+
+
 hour_report:
     title: 'Timerapport'
     data_provider: 'Datakilde'
@@ -758,6 +771,10 @@ workload_report_view_mode_enum:
         label: 'Fakturerbare timer'
     billed:
         label: 'Fakturerede timer'
+
+invoicing_rate_report_view_mode_enum:
+    summary:
+        label: 'Opsummering'
 
 subscription:
     title: 'Dine abonnementer'
