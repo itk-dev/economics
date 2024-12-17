@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\DataProviderTrait;
-use App\Repository\AccountRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 class IssueEpic extends AbstractBaseEntity
@@ -16,5 +14,4 @@ class IssueEpic extends AbstractBaseEntity
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;
-
 }

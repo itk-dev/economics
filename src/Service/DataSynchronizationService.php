@@ -432,8 +432,6 @@ class DataSynchronizationService
             $startAt += $pagedWorklogData->maxResults;
         } while ($startAt < $total);
 
-
-
         $worklogsToDelete = $this->worklogRepository->findBy(['id' => $worklogsToDeleteIds]);
 
         foreach ($worklogsToDelete as $worklog) {

@@ -6,7 +6,6 @@ use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Model\Reports\WorkloadReportWorker;
-use App\Repository\IssueRepository;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 

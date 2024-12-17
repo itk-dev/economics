@@ -204,7 +204,6 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
-
     /**
      * @return Collection<int, Epic>
      */

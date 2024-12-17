@@ -65,5 +65,4 @@ class Epic
 
         return $this;
     }
-
 }

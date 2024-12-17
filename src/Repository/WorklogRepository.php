@@ -125,21 +125,21 @@ class WorklogRepository extends ServiceEntityRepository
             ->leftJoin('issue.epics', 'epic')
             ->leftJoin('issue.versions', 'version');
 
-       return $qb
+        return $qb
             ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
             ->andWhere('worklog.worker = :worker')
             ->andWhere($qb->expr()->andX(
                 $qb->expr()->eq('project.isBillable', '1'),
             ))
-           // notIn will only work if the string it is checked against is not null
-           ->andWhere($qb->expr()->orX(
-               $qb->expr()->isNull('epic.title'),
-               $qb->expr()->notIn('epic.title', ':nonBillableEpics'),
-           ))
-           ->andWhere($qb->expr()->orX(
-               $qb->expr()->isNull('version.name'),
-               $qb->expr()->notIn('version.name', ':nonBillableVersions')
-           ))
+            // notIn will only work if the string it is checked against is not null
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('epic.title'),
+                $qb->expr()->notIn('epic.title', ':nonBillableEpics'),
+            ))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('version.name'),
+                $qb->expr()->notIn('version.name', ':nonBillableVersions')
+            ))
             ->setParameters([
                 'worker' => $workerIdentifier,
                 'dateFrom' => $dateFrom,

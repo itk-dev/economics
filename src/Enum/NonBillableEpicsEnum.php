@@ -9,6 +9,7 @@ namespace App\Enum;
 enum NonBillableEpicsEnum: string
 {
     case UB = 'UB';
+
     /**
      * @return array<string,string>
      */
