@@ -335,6 +335,10 @@ class DataSynchronizationService
                 static fn (Worklog $worklog): bool => !$worklog->isBilled() || null === $worklog->getInvoiceEntry()
             )
         );
+
+        // Ensure no null values before array_combine
+        $worklogsToDeleteIds = array_filter($worklogsToDeleteIds, static fn ($id) => null !== $id);
+
         $worklogsToDeleteIds = array_combine($worklogsToDeleteIds, $worklogsToDeleteIds);
 
         $worklogsAdded = 0;

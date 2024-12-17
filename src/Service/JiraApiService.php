@@ -785,6 +785,14 @@ class JiraApiService implements DataProviderServiceInterface
     /**
      * @throws ApiServiceException
      */
+    public function getworklogdataforprojectpaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
+    {
+        throw new ApiServiceException('Method not implemented', 501);
+    }
+
+    /**
+     * @throws ApiServiceException
+     */
     private function getIssue(string $issueId): mixed
     {
         return $this->get("/rest/api/2/issue/$issueId");

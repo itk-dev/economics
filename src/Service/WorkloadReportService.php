@@ -58,6 +58,8 @@ class WorkloadReportService
             $currentPeriodReached = false;
             $expectedWorkloadSum = 0;
             $loggedHoursSum = 0;
+            $periodSums = [];
+            $periodCounts = [];
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
