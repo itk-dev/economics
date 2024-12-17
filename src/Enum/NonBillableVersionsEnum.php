@@ -5,7 +5,6 @@ namespace App\Enum;
 enum NonBillableVersionsEnum: string
 {
     case UB = 'UB';
-
     /**
      * @return array<string,string>
      */
