@@ -19,8 +19,6 @@ class InvoicingRateReportType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-
-
         $builder
        /*     ->add('viewMode', EnumType::class, [
                 'required' => false,

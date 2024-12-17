@@ -6,7 +6,6 @@ use App\Form\InvoicingRateReportType;
 use App\Model\Reports\InvoicingRateReportFormData;
 use App\Model\Reports\InvoicingRateReportViewModeEnum;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
-use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Service\InvoicingRateReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
