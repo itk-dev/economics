@@ -72,7 +72,7 @@
                 {{ 'workload_report.average'|trans }}
             </td>
             <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"></td>
-            {% for periodNumeric in data.period %}
+            {% for periodNumeric, period in data.period %}
                 <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800
                 ">
                     {{ data.periodAverages[periodNumeric] ~ '%' }}
