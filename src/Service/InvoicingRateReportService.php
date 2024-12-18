@@ -112,7 +112,6 @@ class InvoicingRateReportService
                 $invoicingRateReportData->periodAverages->set($period, $average);
             }
 
-
             $invoicingRateReportWorker->average = $loggedHoursSum > 0 ? round($loggedBilledHoursSum / $loggedHoursSum * 100, 4) : 0;
 
             $invoicingRateReportData->workers->add($invoicingRateReportWorker);
