@@ -34,6 +34,8 @@ class InvoicingRateReportService
         $year = (int) (new \DateTime())->format('Y');
         $workers = $this->workerRepository->findAllIncludedInReports();
         $periods = $this->getPeriods($viewPeriodType, $year);
+        $periodSums = [];
+        $periodCounts = [];
 
         foreach ($periods as $period) {
             $readablePeriod = $this->getReadablePeriod($period, $viewPeriodType);
@@ -48,8 +50,6 @@ class InvoicingRateReportService
             $currentPeriodReached = false;
             $loggedBilledHoursSum = 0;
             $loggedHoursSum = 0;
-            $periodSums = [];
-            $periodCounts = [];
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
@@ -94,7 +94,7 @@ class InvoicingRateReportService
                     $loggedHoursSum += $loggedHours;
                 }
 
-                $loggedBilledPercentage = $loggedHours > 0 ? round($loggedBilledHours / $loggedHours * 100, 1) : 0;
+                $loggedBilledPercentage = $loggedHours > 0 ? round($loggedBilledHours / $loggedHours * 100, 4) : 0;
 
                 // Add percentage result to worker for current period.
                 $invoicingRateReportWorker->dataByPeriod->set($period, [
@@ -107,11 +107,13 @@ class InvoicingRateReportService
                 $periodCounts[$period] = ($periodCounts[$period] ?? 0) + 1;
 
                 // Calculate and set the average for this period
-                $average = round($periodSums[$period] / $periodCounts[$period], 2);
+                $average = round($periodSums[$period] / $periodCounts[$period], 4);
+
                 $invoicingRateReportData->periodAverages->set($period, $average);
             }
 
-            $invoicingRateReportWorker->average = $loggedHoursSum > 0 ? round($loggedBilledHoursSum / $loggedHoursSum * 100, 1) : 0;
+
+            $invoicingRateReportWorker->average = $loggedHoursSum > 0 ? round($loggedBilledHoursSum / $loggedHoursSum * 100, 4) : 0;
 
             $invoicingRateReportData->workers->add($invoicingRateReportWorker);
         }
@@ -126,7 +128,7 @@ class InvoicingRateReportService
 
         // Calculate the total average of averages
         if ($numberOfPeriods > 0) {
-            $invoicingRateReportData->totalAverage = round($averageSum / $numberOfPeriods, 1);
+            $invoicingRateReportData->totalAverage = round($averageSum / $numberOfPeriods, 4);
         }
 
         return $invoicingRateReportData;
