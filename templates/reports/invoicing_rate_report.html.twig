@@ -60,13 +60,13 @@
     ">
                         <div class="flex justify-between w-32 double-number-container">
                             <span class="flex-1 text-right">{{ periodData.loggedBillableHours }}</span>
-                            <span class="flex-auto text-right">{{ periodData.loggedBilledPercentage ~ '%' }}</span>
+                            <span class="flex-auto text-right">{{ periodData.loggedBilledPercentage|round(1) ~ '%' }}</span>
                         </div>
 
                     </td>
                 {% endfor %}
                 <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800">
-                    {{ worker.average ~ '%' }}
+                    {{ worker.average|round(1) ~ '%' }}
                 </td>
             </tr>
             </tbody>
@@ -80,10 +80,10 @@
             {% for periodNumeric, period in data.period %}
                 <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800
                 ">
-                    {{ data.periodAverages[periodNumeric] ~ '%' }}
+                    ~ {{ data.periodAverages[periodNumeric]|round(1) ~ '%' }}
                 </td>
             {% endfor %}
-            <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"> {{ data.totalAverage ~ '%' }}</td>
+            <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"> {{ data.totalAverage|round(1) ~ '%' }}</td>
         </tr>
         </tbody>
     </table>
