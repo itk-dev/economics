@@ -3,8 +3,8 @@ import { Controller } from "@hotwired/stimulus";
 /**
  * Table highlight controller.
  *
- * Highlights the `<thead>` and first `<td>` of the row when hovering over a
- * cell.
+ * Highlights the `<thead>` and first cell (`<th>` or `<td>`) of the row when
+ * hovering over a cell.
  */
 export default class extends Controller {
     connect() {
@@ -27,7 +27,7 @@ export default class extends Controller {
      * @param {MouseEvent} event
      */
     highlight(event) {
-        // Only run if hovering a `<td>` (and not any child elements)
+        // Only run if hovering a `<td>` (and not child elements like <span> or <a>)
         if (event.target.tagName !== "TD") return;
 
         const cell = event.target; // The actual hovered cell
@@ -35,14 +35,16 @@ export default class extends Controller {
         // Find the index of the hovered cell (column index)
         const cellIndex = Array.from(cell.parentNode.children).indexOf(cell);
 
-        // Highlight the corresponding column header (<th>)
+        // Highlight the corresponding column header (<th>) in the `<thead>`
         const columnHeader = this.element.querySelector(
             `thead th:nth-child(${cellIndex + 1})`,
         );
         if (columnHeader) columnHeader.classList.add("highlight-column");
 
-        // Highlight the first cell (`row header`) of the current row
-        const rowStartCell = cell.parentNode.querySelector("td:first-child");
+        // Highlight the first cell in the row (supports both <td> and <th>)
+        const rowStartCell = cell.parentNode.querySelector(
+            "th:first-child, td:first-child",
+        );
         if (rowStartCell) rowStartCell.classList.add("highlight-row");
     }
 
@@ -52,10 +54,10 @@ export default class extends Controller {
      * @param {MouseEvent} event
      */
     clearHighlights(event) {
-        // Only run if leaving a `<td>` (and not any child elements)
+        // Only run if leaving a `<td>` (and not child elements)
         if (event.target.tagName !== "TD") return;
 
-        // Remove the highlight class from all relevant elements
+        // Remove the highlight class from all highlighted elements
         this.element.querySelectorAll(".highlight-column").forEach((header) => {
             header.classList.remove("highlight-column");
         });
