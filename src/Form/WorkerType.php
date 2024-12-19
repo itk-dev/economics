@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Worker;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,6 +37,20 @@ class WorkerType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'required' => false,
                 'row_attr' => ['class' => 'form-row'],
+            ])
+            ->add('includeInReports', ChoiceType::class, [
+                'label' => 'worker.includeInReports',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element'],
+                'help_attr' => ['class' => 'form-help'],
+                'required' => false,
+                'row_attr' => ['class' => 'form-row'],
+                'choices' => [
+                    'Ja' => true,
+                    'Nej' => false,
+                ],
+                'multiple' => false,
+                'placeholder' => false,
             ])
         ;
     }
