@@ -1,8 +1,7 @@
-
 <div id="scrollContainer" class="overflow-x-auto w-full" {{ stimulus_controller('show-hide') }}
      data-storage-key="hidePlanningAssignees">
     <table {{ stimulus_controller('table-highlight') }}
-        class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
+            class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
         <thead>
         <tr>
             <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'workload_report.worker'|trans }}</th>
@@ -13,11 +12,11 @@
                 <th class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap
 {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'bg-slate-300 dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-700' }}
 "
-                    {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'id="activeSprint"' : '' }}
-                    {{ loop.index == 1 ? 'id="firstSprint"' : '' }}
+                        {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'id="activeSprint"' : '' }}
+                        {{ loop.index == 1 ? 'id="firstSprint"' : '' }}
                     data-index="{{ loop.index }}"
-                    {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'data-active="true"' : '' }}
-                    {{ stimulus_target('planning-scroll', 'column') }}
+                        {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'data-active="true"' : '' }}
+                        {{ stimulus_target('planning-scroll', 'column') }}
                 >
 
                     {% if data.viewmode == 'week' %}
@@ -27,7 +26,8 @@
                     {% endif %}
                 </th>
             {% endfor %}
-            <th title="{{ 'workload_report.average_describe'|trans }}" class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap cursor-help">
+            <th title="{{ 'workload_report.average_describe'|trans }}"
+                class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap cursor-help">
                 <span class="flex justify-evenly"> {{ 'workload_report.average'|trans }}   {{ include('components/icons.html.twig', {icon: 'info', class: 'w-5 h-5'}) }}</span>
             </th>
         </tr>
@@ -35,7 +35,8 @@
 
         {% for worker in data.workers %}
 
-            <tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ worker.email }}" {{ stimulus_target('show-hide', 'entry') }}>
+            <tbody {{ stimulus_controller('toggle-parent-child') }}
+                    data-toggle-id="{{ worker.email }}" {{ stimulus_target('show-hide', 'entry') }}>
 
             <tr>
                 <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
@@ -48,6 +49,12 @@
                                 data-toggle-id="{{ worker.email }}" data-toggle-name="{{ worker.email }}"
                                 data-toggle-target="button">
                             <i class="fa-solid fa-eye-slash"></i>
+                        </button>
+                        <button class="expand-btn mr-3 w-4"
+                                type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
+                                data-toggle-target="button">
+                            <i class="fa-solid fa-maximize"></i>
+                            <i class="fa-solid fa-minimize hidden"></i>
                         </button>
                     </div>
                 </td>
@@ -69,6 +76,81 @@
                     {{ worker.average|round(1) ~ '%' }}
                 </td>
             </tr>
+
+            {% for key, projectArray in worker.projectData %}
+                {% for key, projects in projectArray %}
+                    {% for projectName, issues in projects %}
+                    <tr {{ stimulus_target('toggle-parent-child', 'parent') }}>
+                        <th class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900 pr-2">
+                            <div class="flex flex-row">
+                                <div class="flex flex-row items-center">
+                                    <span class="flex-grow px-2 py-2 text-sm">
+                                        {{ projectName }}
+                                    </span>
+                                </div>
+                                <button
+                                        class="expand-btn mr-3 w-4 ml-auto"
+                                        type="button"
+                                        data-parent-id="{{ projectName }}"
+                                        {{ stimulus_action('toggle-parent-child', 'toggleChild') }}
+                                        {{ stimulus_target('toggle-parent-child', 'button') }}
+                                >
+                                    <i class="fa-solid fa-maximize"></i>
+                                    <i class="fa-solid fa-minimize hidden"></i>
+                                </button>
+                            </div>
+                        </th>
+                        <td class="text-center border border-slate-600">-</td>
+                        {% for periodNumeric, periodData in worker.dataByPeriod %}
+                            <td class="text-right border border-slate-600">
+                                {% if issues[periodNumeric] is defined %}
+                                    <div class="flex justify-between w-32 double-number-container">
+                                        <span class="flex-1 text-right">{{ issues[periodNumeric].loggedBillableHours ?? 0 }}</span>
+                                        <span class="flex-auto text-right">{{ issues[periodNumeric].loggedBilledHours ?? 0 }}</span>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+
+
+
+                        {% for issueName, issueDetails in issues %}
+
+                            {% if not (issueName matches '/^\\d+$/') %}
+                                <tr {{ stimulus_target('toggle-parent-child', 'child') }}
+                                        data-parent-id="{{ projectName }}">
+                                    <th class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900 pr-2">
+                                        <div class="flex flex-row items-center">
+                                    <span class="flex-grow px-3 py-2 text-sm">
+                                            {{ issueName }}
+                                        {% for key, link in issueDetails.linkToissue %}
+                                            <a href="{{ link }}" target="_blank" class="link">#{{ key }}</a>
+                                        {% endfor %}
+                        </span>
+                                        </div>
+
+                                    </th>
+                                    <td class="text-center border border-slate-600">-</td>
+                                    {% for periodNumeric, periodData in worker.dataByPeriod %}
+                                        <td class="text-right pr-3 border border-slate-600">
+                                            {% if issueDetails[periodNumeric] is defined %}
+                                                <div class="flex justify-between w-32 double-number-container">
+                                                    <span class="flex-1 text-right">{{ issueDetails[periodNumeric].loggedBillableHours ?? 0 }}</span>
+                                                    <span class="flex-auto text-right">{{ issueDetails[periodNumeric].loggedBilledHours ?? 0 }}</span>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+
+
             </tbody>
         {% endfor %}
         <tbody>
