@@ -50,6 +50,7 @@ class InvoicingRateReportService
             $currentPeriodReached = false;
             $loggedBilledHoursSum = 0;
             $loggedHoursSum = 0;
+            $workerProjects = [];
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
@@ -73,18 +74,33 @@ class InvoicingRateReportService
                 // Tally up logged hours in gathered worklogs for current period
                 $loggedHours = 0;
                 foreach ($worklogs as $worklog) {
+                    $projectName = $worklog->getProject()->getName();
+                    $issueName = $worklog->getIssue()->getName();
+                    $workerProjects[$projectName][$period]['loggedHours'] = ($workerProjects[$projectName][$period]['loggedHours'] ?? 0) + ($worklog->getTimeSpentSeconds() / 60 / 60);
+                    $workerProjects[$projectName][$issueName][$period]['loggedHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedHours'] ?? 0) + ($worklog->getTimeSpentSeconds() / 60 / 60);
+                    $workerProjects[$projectName][$issueName]['linkToissue'][$worklog->getIssue()->getProjectTrackerId()] = $worklog->getIssue()->getLinkToIssue();
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
                 // Tally up billable logged hours in gathered worklogs for current period
                 $loggedBillableHours = 0;
                 foreach ($billableWorklogs as $billableWorklog) {
+                    $projectName = $billableWorklog->getProject()->getName();
+                    $issueName = $billableWorklog->getIssue()->getName();
+                    $workerProjects[$projectName][$period]['loggedBillableHours'] = ($workerProjects[$projectName][$period]['loggedBillableHours'] ?? 0) + ($billableWorklog->getTimeSpentSeconds() / 60 / 60);
+                    $workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] ?? 0) + ($billableWorklog->getTimeSpentSeconds() / 60 / 60);
+                    $workerProjects[$projectName][$issueName]['linkToissue'][$billableWorklog->getIssue()->getProjectTrackerId()] = $billableWorklog->getIssue()->getLinkToIssue();
                     $loggedBillableHours += ($billableWorklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
                 // Tally up billed logged hours in gathered worklogs for current period
                 $loggedBilledHours = 0;
                 foreach ($billedWorklogs as $billedWorklog) {
+                    $projectName = $billedWorklog->getProject()->getName();
+                    $issueName = $billedWorklog->getIssue()->getName();
+                    $workerProjects[$projectName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
+                    $workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
+                    $workerProjects[$projectName][$issueName]['linkToissue'][$billedWorklog->getIssue()->getProjectTrackerId()] = $billedWorklog->getIssue()->getLinkToIssue();
                     $loggedBilledHours += ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
@@ -115,7 +131,14 @@ class InvoicingRateReportService
             $invoicingRateReportWorker->average = $loggedHoursSum > 0 ? round($loggedBilledHoursSum / $loggedHoursSum * 100, 4) : 0;
 
             $invoicingRateReportData->workers->add($invoicingRateReportWorker);
+
+            $invoicingRateReportWorker->projectData->set('projects', [
+                $workerProjects ?? []
+            ]);
+
         }
+
+
 
         // Calculate and set the total average
         $numberOfPeriods = count($invoicingRateReportData->periodAverages);
