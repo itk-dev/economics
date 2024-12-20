@@ -19,19 +19,29 @@ class InvoicingRateReportService
     }
 
     /**
-     * Retrieves the workload report data for the given view mode.
+     * Generates an invoicing rate report for a specific year based on various parameters.
      *
-     * @param PeriodTypeEnum $viewPeriodType The view period type (default: 'week')
-     * @param InvoicingRateReportViewModeEnum $viewMode the view mode to generate the report for
+     * @param int $year The year for which the report is generated.
+     * @param PeriodTypeEnum $viewPeriodType The period type.
+     * @param InvoicingRateReportViewModeEnum $viewMode The view mode.
+     * @param bool $includeIssues Whether to include detailed issue-level data in the report.
      *
-     * @return InvoicingRateReportData the workload report data
+     * @return InvoicingRateReportData The calculated invoicing rate report data.
      *
-     * @throws \Exception when the workload of a worker cannot be unset
+     * @throws \Exception If a required worker identifier is empty.
      */
-    public function getInvoicingRateReport(PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, InvoicingRateReportViewModeEnum $viewMode = InvoicingRateReportViewModeEnum::SUMMARY): InvoicingRateReportData
+    public function getInvoicingRateReport(
+        int $year,
+        PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK,
+        InvoicingRateReportViewModeEnum $viewMode = InvoicingRateReportViewModeEnum::SUMMARY,
+        bool $includeIssues = false
+    ): InvoicingRateReportData
     {
         $invoicingRateReportData = new InvoicingRateReportData($viewPeriodType->value);
-        $year = (int) (new \DateTime())->format('Y');
+        $invoicingRateReportData->includeIssues = $includeIssues;
+        if (!$year) {
+            $year = (int) (new \DateTime())->format('Y');
+        }
         $workers = $this->workerRepository->findAllIncludedInReports();
         $periods = $this->getPeriods($viewPeriodType, $year);
         $periodSums = [];
@@ -77,8 +87,10 @@ class InvoicingRateReportService
                     $projectName = $worklog->getProject()->getName();
                     $issueName = $worklog->getIssue()->getName();
                     $workerProjects[$projectName][$period]['loggedHours'] = ($workerProjects[$projectName][$period]['loggedHours'] ?? 0) + ($worklog->getTimeSpentSeconds() / 60 / 60);
-                    $workerProjects[$projectName][$issueName][$period]['loggedHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedHours'] ?? 0) + ($worklog->getTimeSpentSeconds() / 60 / 60);
-                    $workerProjects[$projectName][$issueName]['linkToissue'][$worklog->getIssue()->getProjectTrackerId()] = $worklog->getIssue()->getLinkToIssue();
+                    if ($includeIssues) {
+                        $workerProjects[$projectName][$issueName][$period]['loggedHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedHours'] ?? 0) + ($worklog->getTimeSpentSeconds() / 60 / 60);
+                        $workerProjects[$projectName][$issueName]['linkToissue'][$worklog->getIssue()->getProjectTrackerId()] = $worklog->getIssue()->getLinkToIssue();
+                    }
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
@@ -88,8 +100,10 @@ class InvoicingRateReportService
                     $projectName = $billableWorklog->getProject()->getName();
                     $issueName = $billableWorklog->getIssue()->getName();
                     $workerProjects[$projectName][$period]['loggedBillableHours'] = ($workerProjects[$projectName][$period]['loggedBillableHours'] ?? 0) + ($billableWorklog->getTimeSpentSeconds() / 60 / 60);
-                    $workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] ?? 0) + ($billableWorklog->getTimeSpentSeconds() / 60 / 60);
-                    $workerProjects[$projectName][$issueName]['linkToissue'][$billableWorklog->getIssue()->getProjectTrackerId()] = $billableWorklog->getIssue()->getLinkToIssue();
+                    if ($includeIssues) {
+                        $workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] ?? 0) + ($billableWorklog->getTimeSpentSeconds() / 60 / 60);
+                        $workerProjects[$projectName][$issueName]['linkToissue'][$billableWorklog->getIssue()->getProjectTrackerId()] = $billableWorklog->getIssue()->getLinkToIssue();
+                    }
                     $loggedBillableHours += ($billableWorklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
@@ -99,8 +113,10 @@ class InvoicingRateReportService
                     $projectName = $billedWorklog->getProject()->getName();
                     $issueName = $billedWorklog->getIssue()->getName();
                     $workerProjects[$projectName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
-                    $workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
-                    $workerProjects[$projectName][$issueName]['linkToissue'][$billedWorklog->getIssue()->getProjectTrackerId()] = $billedWorklog->getIssue()->getLinkToIssue();
+                    if ($includeIssues) {
+                        $workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
+                        $workerProjects[$projectName][$issueName]['linkToissue'][$billedWorklog->getIssue()->getProjectTrackerId()] = $billedWorklog->getIssue()->getLinkToIssue();
+                    }
                     $loggedBilledHours += ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
