@@ -15,6 +15,10 @@ class InvoicingRateReportData
     public int $currentPeriodNumeric;
     public ArrayCollection $periodAverages;
     public float $totalAverage;
+    /**
+     * @var false
+     */
+    public bool $includeIssues;
 
     public function __construct(string $viewmode)
     {
@@ -22,6 +26,7 @@ class InvoicingRateReportData
         $this->period = new ArrayCollection();
         $this->workers = new ArrayCollection();
         $this->periodAverages = new ArrayCollection();
+        $this->includeIssues = false;
         $this->totalAverage = 0;
     }
 
