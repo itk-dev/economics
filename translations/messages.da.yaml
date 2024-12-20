@@ -569,7 +569,7 @@ invoicing_rate_report:
     title: 'Udfaktureringsrapport'
     year: 'Vælg år'
     select_view_period_type: 'Vælg periode'
-    include_issues: 'Inkludér to-dos (+20s load)'
+    include_issues: 'Inkludér to-dos (+10s load)'
     reading-guide-header: 'Læsevejledning'
     submit: 'Hent udfaktureringsrapport'
     reading-guide: '
