@@ -21,22 +21,21 @@ class InvoicingRateReportService
     /**
      * Generates an invoicing rate report for a specific year based on various parameters.
      *
-     * @param int $year The year for which the report is generated.
-     * @param PeriodTypeEnum $viewPeriodType The period type.
-     * @param InvoicingRateReportViewModeEnum $viewMode The view mode.
-     * @param bool $includeIssues Whether to include detailed issue-level data in the report.
+     * @param int $year the year for which the report is generated
+     * @param PeriodTypeEnum $viewPeriodType the period type
+     * @param InvoicingRateReportViewModeEnum $viewMode the view mode
+     * @param bool $includeIssues whether to include detailed issue-level data in the report
      *
-     * @return InvoicingRateReportData The calculated invoicing rate report data.
+     * @return InvoicingRateReportData the calculated invoicing rate report data
      *
-     * @throws \Exception If a required worker identifier is empty.
+     * @throws \Exception if a required worker identifier is empty
      */
     public function getInvoicingRateReport(
         int $year,
         PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK,
         InvoicingRateReportViewModeEnum $viewMode = InvoicingRateReportViewModeEnum::SUMMARY,
-        bool $includeIssues = false
-    ): InvoicingRateReportData
-    {
+        bool $includeIssues = false,
+    ): InvoicingRateReportData {
         $invoicingRateReportData = new InvoicingRateReportData($viewPeriodType->value);
         $invoicingRateReportData->includeIssues = $includeIssues;
         if (!$year) {
@@ -142,12 +141,9 @@ class InvoicingRateReportService
             $invoicingRateReportData->workers->add($invoicingRateReportWorker);
 
             $invoicingRateReportWorker->projectData->set('projects', [
-                $workerProjects ?? []
+                $workerProjects,
             ]);
-
         }
-
-
 
         // Calculate and set the total average
         $numberOfPeriods = count($invoicingRateReportData->periodAverages);
