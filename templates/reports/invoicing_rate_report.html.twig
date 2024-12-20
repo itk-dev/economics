@@ -108,8 +108,8 @@
                             <td class="text-right border border-slate-600 px-2">
                                 {% if issues[periodNumeric] is defined %}
                                     <div class="flex justify-between w-32 double-number-container">
-                                        <span class="flex-1 text-right">{{ issues[periodNumeric].loggedBillableHours ?? '' }}</span>
-                                        <span class="flex-auto text-right">{{ issues[periodNumeric].loggedBilledHours ?? '' }}</span>
+                                        <span class="flex-1 text-right">{{ issues[periodNumeric].loggedBillableHours ?? '0' }}</span>
+                                        <span class="flex-auto text-right">{{ issues[periodNumeric].loggedBilledHours ?? '0' }}</span>
                                     </div>
                                 {% endif %}
                             </td>
@@ -138,8 +138,8 @@
                                         <td class="text-right pr-3 border border-slate-600 px-2">
                                             {% if issueDetails[periodNumeric] is defined %}
                                                 <div class="flex justify-between w-32 double-number-container">
-                                                    <span class="flex-1 text-right">{{ issueDetails[periodNumeric].loggedBillableHours ?? '' }}</span>
-                                                    <span class="flex-auto text-right">{{ issueDetails[periodNumeric].loggedBilledHours ?? '' }}</span>
+                                                    <span class="flex-1 text-right">{{ issueDetails[periodNumeric].loggedBillableHours ?? '0' }}</span>
+                                                    <span class="flex-auto text-right">{{ issueDetails[periodNumeric].loggedBilledHours ?? '0' }}</span>
                                                 </div>
                                             {% endif %}
                                         </td>
