@@ -22,6 +22,9 @@ class InvoicingRateReportController extends AbstractController
     ) {
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     #[Route('/', name: 'app_invoicing_rate_report')]
     public function index(Request $request): Response
     {
@@ -36,6 +39,11 @@ class InvoicingRateReportController extends AbstractController
             'attr' => [
                 'id' => 'sprint_report',
             ],
+            'years' => [
+                (new \DateTime())->modify('-1 year')->format('Y'),
+                (new \DateTime())->format('Y'),
+                (new \DateTime())->modify('+1 year')->format('Y'),
+            ],
             'csrf_protection' => false,
         ]);
 
@@ -44,9 +52,11 @@ class InvoicingRateReportController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $viewPeriodType = $form->get('viewPeriodType')->getData() ?? PeriodTypeEnum::WEEK;
             $viewMode = InvoicingRateReportViewModeEnum::SUMMARY;
+            $year = $form->get('year')->getData();
+            $includeIssues = $form->get('includeIssues')->getData();
 
             try {
-                $reportData = $this->invoicingRateReportService->getInvoicingRateReport($viewPeriodType, $viewMode);
+                $reportData = $this->invoicingRateReportService->getInvoicingRateReport($year, $viewPeriodType, $viewMode, $includeIssues);
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }
