@@ -32,7 +32,11 @@ class PlanningController extends AbstractController
             'attr' => [
                 'id' => 'sprint_report',
             ],
-            'years' => [(new \DateTime())->format('Y'), (new \DateTime())->modify('+1 year')->format('Y')],
+            'years' => [
+                (new \DateTime())->modify('-1 year')->format('Y'),
+                (new \DateTime())->format('Y'),
+                (new \DateTime())->modify('+1 year')->format('Y'),
+            ],
             'method' => 'GET',
             'csrf_protection' => false,
         ]);
