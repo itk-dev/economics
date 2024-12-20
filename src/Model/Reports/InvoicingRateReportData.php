@@ -16,7 +16,7 @@ class InvoicingRateReportData
     public ArrayCollection $periodAverages;
     public float $totalAverage;
     /**
-     * @var false
+     * @var bool
      */
     public bool $includeIssues;
 

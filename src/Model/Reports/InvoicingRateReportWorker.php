@@ -13,7 +13,7 @@ class InvoicingRateReportWorker extends Worker
     /** @var ArrayCollection<int, array> */
     public ArrayCollection $dataByPeriod;
 
-    /** @var ArrayCollection<int, array> */
+    /** @var ArrayCollection<string, array> */
     public ArrayCollection $projectData;
 
     public function __construct()

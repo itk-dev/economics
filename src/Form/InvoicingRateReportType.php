@@ -24,17 +24,7 @@ class InvoicingRateReportType extends AbstractType
             $yearChoices[$year] = $year;
         }
 
-$builder
-            /*->add('viewMode', EnumType::class, [
-                'required' => false,
-                'label' => 'invoicing_rate_report.select_viewmode',
-                'label_attr' => ['class' => 'label'],
-                'placeholder' => false,
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'class' => InvoicingRateReportViewModeEnum::class,
-            ])*/
+        $builder
             ->add('year', ChoiceType::class, [
                 'label' => 'invoicing_rate_report.year',
                 'label_attr' => ['class' => 'label'],
