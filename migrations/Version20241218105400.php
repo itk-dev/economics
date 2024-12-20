@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241217124134 extends AbstractMigration
+final class Version20241218105400 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -25,6 +25,7 @@ final class Version20241217124134 extends AbstractMigration
         $this->addSql('ALTER TABLE issue_epic ADD CONSTRAINT FK_412E98BD5E7AA58C FOREIGN KEY (issue_id) REFERENCES issue (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE issue_epic ADD CONSTRAINT FK_412E98BD6B71E00E FOREIGN KEY (epic_id) REFERENCES epic (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE version ADD is_billable TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE worker ADD include_in_reports TINYINT(1) DEFAULT 1 NOT NULL');
     }
 
     public function down(Schema $schema): void
@@ -34,6 +35,7 @@ final class Version20241217124134 extends AbstractMigration
         $this->addSql('ALTER TABLE issue_epic DROP FOREIGN KEY FK_412E98BD6B71E00E');
         $this->addSql('DROP TABLE epic');
         $this->addSql('DROP TABLE issue_epic');
+        $this->addSql('ALTER TABLE worker DROP include_in_reports');
         $this->addSql('ALTER TABLE version DROP is_billable');
     }
 }
