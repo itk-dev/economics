@@ -84,13 +84,6 @@ class InvoicingRateReportService
                 // Tally up logged hours in gathered worklogs for current period
                 $loggedHours = 0;
                 foreach ($worklogs as $worklog) {
-                    $projectName = $worklog->getProject()->getName();
-                    $issueName = $worklog->getIssue()->getName();
-                    $workerProjects[$projectName][$period]['loggedHours'] = ($workerProjects[$projectName][$period]['loggedHours'] ?? 0) + ($worklog->getTimeSpentSeconds() / 60 / 60);
-                    if ($includeIssues) {
-                        $workerProjects[$projectName][$issueName][$period]['loggedHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedHours'] ?? 0) + ($worklog->getTimeSpentSeconds() / 60 / 60);
-                        $workerProjects[$projectName][$issueName]['linkToissue'][$worklog->getIssue()->getProjectTrackerId()] = $worklog->getIssue()->getLinkToIssue();
-                    }
                     $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
                 }
 
