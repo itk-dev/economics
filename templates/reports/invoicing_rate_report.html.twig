@@ -53,8 +53,8 @@
                         <button class="expand-btn mr-3 w-4"
                                 type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
                                 data-toggle-target="button">
-                            <i class="fa-solid fa-maximize"></i>
-                            <i class="fa-solid fa-minimize hidden"></i>
+                            <i class="fa-solid fa-caret-right"></i>
+                            <i class="fa-solid fa-caret-down hidden"></i>
                         </button>
                     </div>
                 </td>
@@ -88,25 +88,28 @@
                                         {{ projectName }}
                                     </span>
                                 </div>
-                                <button
+
+                                {% if data.includeIssues %}
+                                    <button
                                         class="expand-btn mr-3 w-4 ml-auto"
                                         type="button"
                                         data-parent-id="{{ projectName }}"
                                         {{ stimulus_action('toggle-parent-child', 'toggleChild') }}
                                         {{ stimulus_target('toggle-parent-child', 'button') }}
-                                >
-                                    <i class="fa-solid fa-maximize"></i>
-                                    <i class="fa-solid fa-minimize hidden"></i>
-                                </button>
+                                    >
+                                        <i class="fa-solid fa-caret-right"></i>
+                                        <i class="fa-solid fa-caret-down hidden"></i>
+                                    </button>
+                                {% endif %}
                             </div>
                         </th>
                         <td class="text-center border border-slate-600">-</td>
                         {% for periodNumeric, periodData in worker.dataByPeriod %}
-                            <td class="text-right border border-slate-600">
+                            <td class="text-right border border-slate-600 px-2">
                                 {% if issues[periodNumeric] is defined %}
                                     <div class="flex justify-between w-32 double-number-container">
-                                        <span class="flex-1 text-right">{{ issues[periodNumeric].loggedBillableHours ?? 0 }}</span>
-                                        <span class="flex-auto text-right">{{ issues[periodNumeric].loggedBilledHours ?? 0 }}</span>
+                                        <span class="flex-1 text-right">{{ issues[periodNumeric].loggedBillableHours ?? '' }}</span>
+                                        <span class="flex-auto text-right">{{ issues[periodNumeric].loggedBilledHours ?? '' }}</span>
                                     </div>
                                 {% endif %}
                             </td>
@@ -132,11 +135,11 @@
                                     </th>
                                     <td class="text-center border border-slate-600">-</td>
                                     {% for periodNumeric, periodData in worker.dataByPeriod %}
-                                        <td class="text-right pr-3 border border-slate-600">
+                                        <td class="text-right pr-3 border border-slate-600 px-2">
                                             {% if issueDetails[periodNumeric] is defined %}
                                                 <div class="flex justify-between w-32 double-number-container">
-                                                    <span class="flex-1 text-right">{{ issueDetails[periodNumeric].loggedBillableHours ?? 0 }}</span>
-                                                    <span class="flex-auto text-right">{{ issueDetails[periodNumeric].loggedBilledHours ?? 0 }}</span>
+                                                    <span class="flex-1 text-right">{{ issueDetails[periodNumeric].loggedBillableHours ?? '' }}</span>
+                                                    <span class="flex-auto text-right">{{ issueDetails[periodNumeric].loggedBilledHours ?? '' }}</span>
                                                 </div>
                                             {% endif %}
                                         </td>
