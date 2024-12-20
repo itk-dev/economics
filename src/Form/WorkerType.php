@@ -39,7 +39,7 @@ class WorkerType extends AbstractType
                 'row_attr' => ['class' => 'form-row'],
             ])
             ->add('includeInReports', ChoiceType::class, [
-                'label' => 'worker.includeInReports',
+                'label' => 'worker.include_in_reports',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
