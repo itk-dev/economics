@@ -54,14 +54,10 @@ class SyncWorklogsCommand extends Command
                 $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
                     if (0 == $i) {
                         $io->progressStart($length);
-                    }
-
-                    if ($i < $length) {
-                        $io->progressAdvance();
-                    }
-
-                    if ($i == $length - 1) {
+                    } elseif ($i >= $length - 1) {
                         $io->progressFinish();
+                    } else {
+                        $io->progressAdvance();
                     }
                 }, $dataProvider);
 
