@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-182](https://github.com/itk-dev/economics/pull/182)
+  2597: Added invoicing rate report
 * [PR-183](https://github.com/itk-dev/economics/pull/183)
   2597: Added epic relations.
 * [PR-175](https://github.com/itk-dev/economics/pull/175)
@@ -366,7 +368,10 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.4.2...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.5.1...HEAD
+[2.5.1]: https://github.com/itk-dev/economics/compare/2.5.0...2.5.1
+[2.5.0]: https://github.com/itk-dev/economics/compare/2.4.2...2.5.0
+[2.4.3]: https://github.com/itk-dev/economics/compare/2.4.2...2.4.3
 [2.4.2]: https://github.com/itk-dev/economics/compare/2.4.1...2.4.2
 [2.4.1]: https://github.com/itk-dev/economics/compare/2.4.0...2.4.1
 [2.4.0]: https://github.com/itk-dev/economics/compare/2.3.3...2.4.0
