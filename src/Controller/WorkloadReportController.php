@@ -42,7 +42,6 @@ class WorkloadReportController extends AbstractController
             'years' => [
                 (new \DateTime())->modify('-1 year')->format('Y'),
                 (new \DateTime())->format('Y'),
-                (new \DateTime())->modify('+1 year')->format('Y'),
             ],
             'csrf_protection' => false,
         ]);
