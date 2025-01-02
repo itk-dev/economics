@@ -48,6 +48,8 @@ class WorkloadReportService
             $currentPeriodReached = false;
             $expectedWorkloadSum = 0;
             $loggedHoursSum = 0;
+            $periodSums = [];
+            $periodCounts = [];
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
@@ -91,11 +93,32 @@ class WorkloadReportService
 
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
+
+                // Increment the sum and count for this period
+                $periodSums[$period] = ($periodSums[$period] ?? 0) + $roundedLoggedPercentage;
+                $periodCounts[$period] = ($periodCounts[$period] ?? 0) + 1;
+
+                // Calculate and set the average for this period
+                $average = round($periodSums[$period] / $periodCounts[$period], 2);
+                $workloadReportData->periodAverages->set($period, $average);
             }
 
             $workloadReportWorker->average = $expectedWorkloadSum > 0 ? round($loggedHoursSum / $expectedWorkloadSum * 100, 2) : 0;
 
             $workloadReportData->workers->add($workloadReportWorker);
+        }
+
+        // Calculate and set the total average
+        $numberOfPeriods = count($workloadReportData->periodAverages);
+
+        // Calculate the sum of period averages
+        $averageSum = array_reduce($workloadReportData->periodAverages->toArray(), function ($carry, $item) {
+            return $carry + $item;
+        }, 0);
+
+        // Calculate the total average of averages
+        if ($numberOfPeriods > 0) {
+            $workloadReportData->totalAverage = round($averageSum / $numberOfPeriods, 2);
         }
 
         return $workloadReportData;
@@ -191,6 +214,7 @@ class WorkloadReportService
         return match ($viewMode) {
             ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
             ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
+            ViewModeEnum::BILLED => $this->worklogRepository->findBilledWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
         };
     }
 }
