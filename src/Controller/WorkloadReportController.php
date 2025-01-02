@@ -22,6 +22,9 @@ class WorkloadReportController extends AbstractController
     ) {
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     #[Route('/', name: 'app_workload_report')]
     public function index(Request $request): Response
     {
@@ -36,6 +39,11 @@ class WorkloadReportController extends AbstractController
             'attr' => [
                 'id' => 'sprint_report',
             ],
+            'years' => [
+                (new \DateTime())->modify('-1 year')->format('Y'),
+                (new \DateTime())->format('Y'),
+                (new \DateTime())->modify('+1 year')->format('Y'),
+            ],
             'csrf_protection' => false,
         ]);
 
@@ -44,9 +52,10 @@ class WorkloadReportController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $viewPeriodType = $form->get('viewPeriodType')->getData() ?? PeriodTypeEnum::WEEK;
             $viewMode = $form->get('viewMode')->getData() ?? ViewModeEnum::WORKLOAD;
+            $year = $form->get('year')->getData();
 
             try {
-                $reportData = $this->workloadReportService->getWorkloadReport($viewPeriodType, $viewMode);
+                $reportData = $this->workloadReportService->getWorkloadReport($year, $viewPeriodType, $viewMode);
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }
