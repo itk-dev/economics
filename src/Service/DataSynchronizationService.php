@@ -18,6 +18,7 @@ use App\Model\SprintReport\SprintReportVersion;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\DataProviderRepository;
+use App\Repository\EpicRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
@@ -45,6 +46,7 @@ class DataSynchronizationService
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly WorkerRepository $workerRepository,
+        private readonly EpicRepository $epicRepository,
     ) {
     }
 
@@ -269,6 +271,26 @@ class DataSynchronizationService
                     if (null !== $version) {
                         $issue->addVersion($version);
                     }
+                }
+
+                $epicArray = explode(',', $issueDatum->epicName);
+
+                foreach ($epicArray as $epicTitle) {
+                    if (empty($epicTitle)) {
+                        continue;
+                    }
+                    $epic = $this->epicRepository->findOneBy([
+                        'title' => $epicTitle,
+                    ]);
+
+                    if (!$epic) {
+                        $epic = new Epic();
+                        $epic->setTitle($epicTitle);
+                        $this->entityManager->persist($epic);
+                        $this->entityManager->flush();
+                    }
+
+                    $issue->addEpic($epic);
                 }
 
                 if (null !== $progressCallback) {
