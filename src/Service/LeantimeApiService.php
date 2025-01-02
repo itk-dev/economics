@@ -310,11 +310,6 @@ class LeantimeApiService implements DataProviderServiceInterface
         return $sprintReportVersions;
     }
 
-    /**
-     * @throws \DateMalformedStringException
-     * @throws EconomicsException
-     * @throws ApiServiceException
-     */
     public function getWorklogDataCollection(string $projectId): WorklogDataCollection
     {
         $worklogDataCollection = new WorklogDataCollection();
