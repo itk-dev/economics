@@ -71,6 +71,7 @@ class WorkloadReportType extends AbstractType
             'attr' => [
                 'data-sprint-report-target' => 'form',
             ],
+            'years' => null,
         ]);
     }
 }
