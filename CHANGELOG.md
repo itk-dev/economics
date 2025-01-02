@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-184](https://github.com/itk-dev/economics/pull/184)
+  3489: Workload report period averages.
 * [PR-183](https://github.com/itk-dev/economics/pull/183)
   2597: Added epic relations.
 * [PR-175](https://github.com/itk-dev/economics/pull/175)
