@@ -307,10 +307,14 @@ class LeantimeApiService implements DataProviderServiceInterface
         return $sprintReportVersions;
     }
 
-    public function getWorklogDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
+    /**
+     * @throws \DateMalformedStringException
+     * @throws EconomicsException
+     * @throws ApiServiceException
+     */
+    public function getWorklogDataCollection(string $projectId): WorklogDataCollection
     {
         $worklogDataCollection = new WorklogDataCollection();
-
         $worklogs = $this->getProjectWorklogs($projectId);
 
         $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
@@ -321,9 +325,9 @@ class LeantimeApiService implements DataProviderServiceInterface
             return $carry;
         }, []);
 
+        // Filter out all worklogs that do not belong to the project.
+        // TODO: Remove filter when worklogs are filtered correctly by projectId in the API.
         $worklogs = array_filter($worklogs, fn ($worklog) => $worklog->projectId == $projectId);
-
-        $total = count($worklogs);
 
         foreach ($worklogs as $worklog) {
             $worklogData = new WorklogData();
@@ -341,8 +345,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             }
         }
 
-        // Return a new PagedResult instance
-        return new PagedResult($worklogDataCollection->worklogData->toArray(), $startAt, $maxResults, $total);
+        return $worklogDataCollection;
     }
 
     /**
