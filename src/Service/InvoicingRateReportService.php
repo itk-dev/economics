@@ -63,7 +63,12 @@ class InvoicingRateReportService
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
-                $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
+                if ($year !== (int)date('Y')) {
+                    // Set to 53 if $year does not match the current year.
+                    $currentPeriodNumeric = 53;
+                } else {
+                    $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
+                }
 
                 if ($period === $currentPeriodNumeric) {
                     $invoicingRateReportData->setCurrentPeriodNumeric($period);
