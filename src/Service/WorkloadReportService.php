@@ -19,21 +19,31 @@ class WorkloadReportService
     }
 
     /**
-     * Retrieves the workload report data for the given view mode.
+     * Generates a workload report for a specified year and period type.
      *
-     * @param PeriodTypeEnum $viewPeriodType The view period type (default: 'week')
-     * @param ViewModeEnum $viewMode the view mode to generate the report for
+     * This method computes the workload report for all workers based on the
+     * specified year, period type, and view mode. It calculates various metrics
+     * such as logged hours, expected workload, work percentage for each period,
+     * average workloads, and overall summary statistics.
      *
-     * @return WorkloadReportData the workload report data
+     * @param int $year the year for which the workload report is generated
+     * @param PeriodTypeEnum $viewPeriodType the period type (e.g., week, month, year) for the report
+     * @param ViewModeEnum $viewMode the mode of viewing the workload (e.g., workload vs other modes)
      *
-     * @throws \Exception when the workload of a worker cannot be unset
+     * @return WorkloadReportData an object containing the workload report data
+     *
+     * @throws \Exception if a worker identifier is empty or the workload of a worker is null
      */
-    public function getWorkloadReport(PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
+    public function getWorkloadReport(int $year, PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
     {
         $workloadReportData = new WorkloadReportData($viewPeriodType->value);
-        $year = (int) (new \DateTime())->format('Y');
+        if (!$year) {
+            $year = (int) (new \DateTime())->format('Y');
+        }
         $workers = $this->workerRepository->findAll();
         $periods = $this->getPeriods($viewPeriodType, $year);
+        $periodSums = [];
+        $periodCounts = [];
 
         foreach ($periods as $period) {
             $readablePeriod = $this->getReadablePeriod($period, $viewPeriodType);
@@ -48,8 +58,7 @@ class WorkloadReportService
             $currentPeriodReached = false;
             $expectedWorkloadSum = 0;
             $loggedHoursSum = 0;
-            $periodSums = [];
-            $periodCounts = [];
+
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
