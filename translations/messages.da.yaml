@@ -757,7 +757,10 @@ worker:
     name: 'Navn'
     email: 'Email'
     workload: 'Normtid (inkl. middagspause)'
-    include_in_reports: 'Inkludér i rapporter'
+    include_in_reports:
+        title: 'Inkludér i rapporter'
+        yes: 'Ja'
+        no: 'Nej'
     actions: 'Handlinger'
     action_edit: 'Rediger'
     edit: 'Rediger medarbejder'
