@@ -82,13 +82,13 @@ class WorkloadReportServiceTest extends TestCase
 
         $workloadReportService = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $dateTimeHelperMock);
 
-        $result = $workloadReportService->getWorkloadReport(PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
+        $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
         $this->assertInstanceOf(WorkloadReportData::class, $result);
 
-        $result = $workloadReportService->getWorkloadReport(PeriodTypeEnum::MONTH, ViewModeEnum::WORKLOAD);
+        $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::MONTH, ViewModeEnum::WORKLOAD);
         $this->assertInstanceOf(WorkloadReportData::class, $result);
 
-        $result = $workloadReportService->getWorkloadReport(PeriodTypeEnum::YEAR, ViewModeEnum::WORKLOAD);
+        $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::YEAR, ViewModeEnum::WORKLOAD);
         $this->assertInstanceOf(WorkloadReportData::class, $result);
     }
 
@@ -145,7 +145,7 @@ class WorkloadReportServiceTest extends TestCase
         $this->expectExceptionMessage('Worker identifier cannot be empty');
 
         // Run method that triggers exception
-        $workloadReportService->getWorkloadReport(PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
+        $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
     }
 
     public function testExceptionIsThrownWhenWorkerWorkloadIsUnset()
@@ -202,6 +202,6 @@ class WorkloadReportServiceTest extends TestCase
         $this->expectExceptionMessage('Workload of worker: test2@test cannot be null when generating workload report.');
 
         // Run method that triggers exception
-        $workloadReportService->getWorkloadReport(PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
+        $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
     }
 }
