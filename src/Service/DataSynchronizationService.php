@@ -18,7 +18,6 @@ use App\Model\SprintReport\SprintReportVersion;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\DataProviderRepository;
-use App\Repository\EpicRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
@@ -46,7 +45,6 @@ class DataSynchronizationService
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly WorkerRepository $workerRepository,
-        private readonly EpicRepository $epicRepository,
     ) {
     }
 
