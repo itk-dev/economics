@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Epic;
 use App\Enum\IssueStatusEnum;
 use App\Exception\ApiServiceException;
 use App\Exception\EconomicsException;
@@ -29,7 +30,9 @@ use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintReportVersion;
 use App\Model\SprintReport\SprintReportVersions;
 use App\Model\SprintReport\SprintStateEnum;
+use App\Repository\EpicRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Uid\Ulid;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -59,6 +62,8 @@ class LeantimeApiService implements DataProviderServiceInterface
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
         private readonly DateTimeHelper $dateTimeHelper,
+        private readonly EpicRepository $epicRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -192,6 +197,28 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->accountKey = '';
             $issueData->epicKey = $issue->tags;
             $issueData->epicName = $issue->tags;
+
+            $epicArray = explode(',', $issue->tags);
+
+            foreach ($epicArray as $epicTitle) {
+                if (empty($epicTitle)) {
+                    continue;
+                }
+                $epic = $this->epicRepository->findOneBy([
+                    'title' => $epicTitle,
+                ]);
+
+                if (!$epic) {
+                    $epic = new Epic();
+                    $epic->setTitle($epicTitle);
+                    $this->epicRepository->save($epic);
+                    $this->entityManager->flush();
+                }
+
+
+                $issueData->epics->add($epic);
+            }
+
             $issueData->planHours = $issue->planHours;
             $issueData->hourRemaining = $issue->hourRemaining;
             $issueData->dueDate = !empty($issue->dateToFinish) && '0000-00-00 00:00:00' !== $issue->dateToFinish ? new \DateTime($issue->dateToFinish, self::getLeantimeTimeZone()) : null;
