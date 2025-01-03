@@ -2,11 +2,9 @@
 
 namespace App\Model\Reports;
 
-use App\Entity\DataProvider;
-
 class WorkloadReportFormData
 {
-    public DataProvider $dataProvider;
+    public int $year;
     public WorkloadReportPeriodTypeEnum $viewPeriodType;
     public WorkloadReportViewModeEnum $viewMode;
 }
