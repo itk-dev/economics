@@ -2,6 +2,7 @@
 
 namespace App\Model\Invoices;
 
+use App\Entity\Epic;
 use App\Enum\IssueStatusEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,6 +18,8 @@ class IssueData
     public ?string $accountKey = null;
     public ?string $epicName = null;
     public ?string $epicKey = null;
+    /** @var Collection<int, Epic> */
+    public ?Collection $epics;
     /** @var Collection<string, VersionData> */
     public ?Collection $versions;
     public ?\DateTime $resolutionDate = null;
@@ -29,6 +32,7 @@ class IssueData
 
     public function __construct()
     {
+        $this->epics = new ArrayCollection();
         $this->versions = new ArrayCollection();
     }
 }
