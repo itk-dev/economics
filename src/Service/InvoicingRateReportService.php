@@ -52,7 +52,7 @@ class InvoicingRateReportService
         }
 
         foreach ($workers as $worker) {
-            $invoicingRateReportWorker = new InvoicingRateReportWorker();
+            $invoicingRateReportWorker = new InvoicingRateReportWorker($worker);
             $invoicingRateReportWorker->setEmail($worker->getUserIdentifier());
             $invoicingRateReportWorker->setWorkload($worker->getWorkload());
             $invoicingRateReportWorker->setName($worker->getName());
