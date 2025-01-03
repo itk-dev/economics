@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\Account;
 use App\Entity\Client;
 use App\Entity\DataProvider;
-use App\Entity\Epic;
 use App\Entity\Invoice;
 use App\Entity\Issue;
 use App\Entity\Project;
