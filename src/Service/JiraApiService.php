@@ -751,7 +751,9 @@ class JiraApiService implements DataProviderServiceInterface
                     $this->epicRepository->save($epic);
                 }
 
-                $issueData->epics->add($epic);
+                if ($epic) {
+                    $issueData->epics->add($epic);
+                }
             }
 
             foreach ($fields->fixVersions ?? [] as $fixVersion) {
