@@ -38,4 +38,12 @@ class WorkerRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function findAllIncludedInReports(): array
+    {
+        return $this->createQueryBuilder('w')
+            ->where('w.includeInReports = true')
+            ->getQuery()
+            ->getResult();
+    }
 }
