@@ -271,6 +271,10 @@ class DataSynchronizationService
                     }
                 }
 
+                foreach ($issueDatum->epics as $epicData) {
+                    $issue->addEpic($epicData);
+                }
+
                 if (null !== $progressCallback) {
                     $progressCallback($issuesProcessed, $total);
                     ++$issuesProcessed;

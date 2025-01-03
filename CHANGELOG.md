@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-183](https://github.com/itk-dev/economics/pull/183)
+  2597: Added epic relations.
 * [PR-175](https://github.com/itk-dev/economics/pull/175)
   2617: Added forecast report.
 
