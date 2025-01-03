@@ -11,6 +11,8 @@ use App\Repository\WorklogRepository;
 
 class InvoicingRateReportService
 {
+    private const SECONDS_TO_HOURS = 1 / 3600;
+
     public function __construct(
         private readonly WorkerRepository $workerRepository,
         private readonly WorklogRepository $worklogRepository,
@@ -88,7 +90,7 @@ class InvoicingRateReportService
                 // Tally up logged hours in gathered worklogs for current period
                 $loggedHours = 0;
                 foreach ($worklogs as $worklog) {
-                    $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
+                    $loggedHours += ($worklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                 }
 
                 // Tally up billable logged hours in gathered worklogs for current period
