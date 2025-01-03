@@ -215,7 +215,6 @@ class LeantimeApiService implements DataProviderServiceInterface
                     $this->entityManager->flush();
                 }
 
-
                 $issueData->epics->add($epic);
             }
 
