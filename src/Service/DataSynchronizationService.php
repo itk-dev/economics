@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Account;
 use App\Entity\Client;
 use App\Entity\DataProvider;
+use App\Entity\Epic;
 use App\Entity\Invoice;
 use App\Entity\Issue;
 use App\Entity\Project;
@@ -18,6 +19,7 @@ use App\Model\SprintReport\SprintReportVersion;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\DataProviderRepository;
+use App\Repository\EpicRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
@@ -44,7 +46,7 @@ class DataSynchronizationService
         private readonly InvoiceRepository $invoiceRepository,
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly WorkerRepository $workerRepository,
+        private readonly WorkerRepository $workerRepository, private readonly EpicRepository $epicRepository,
     ) {
     }
 
@@ -271,8 +273,20 @@ class DataSynchronizationService
                     }
                 }
 
-                foreach ($issueDatum->epics as $epicData) {
-                    $issue->addEpic($epicData);
+                foreach ($issueDatum->epics as $epicTitle) {
+                    if (empty($epicTitle)) {
+                        continue;
+                    }
+                    $epic = $this->epicRepository->findOneBy(['title' => $epicTitle]);
+
+                    if (null === $epic) {
+                        $epic = new Epic();
+                        $epic->setTitle($epicTitle);
+                        $this->entityManager->persist($epic);
+                        $this->entityManager->flush();
+                    }
+
+                    $issue->addEpic($epic);
                 }
 
                 if (null !== $progressCallback) {

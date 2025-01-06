@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Epic;
 use App\Enum\ClientTypeEnum;
 use App\Enum\IssueStatusEnum;
 use App\Exception\ApiServiceException;
@@ -17,10 +16,7 @@ use App\Model\Invoices\ProjectDataCollection;
 use App\Model\Invoices\VersionData;
 use App\Model\Invoices\WorklogData;
 use App\Model\Invoices\WorklogDataCollection;
-use App\Model\Planning\Issue;
 use App\Model\Planning\PlanningData;
-use App\Model\Planning\Project;
-use App\Model\Planning\Sprint;
 use App\Model\SprintReport\SprintReportData;
 use App\Model\SprintReport\SprintReportEpic;
 use App\Model\SprintReport\SprintReportIssue;
@@ -30,7 +26,6 @@ use App\Model\SprintReport\SprintReportSprint;
 use App\Model\SprintReport\SprintReportVersion;
 use App\Model\SprintReport\SprintReportVersions;
 use App\Model\SprintReport\SprintStateEnum;
-use App\Repository\EpicRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -55,7 +50,6 @@ class JiraApiService implements DataProviderServiceInterface
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
-        private readonly EpicRepository $epicRepository,
     ) {
     }
 
@@ -741,19 +735,7 @@ class JiraApiService implements DataProviderServiceInterface
                 $issueData->epicKey = $epicKey;
                 $issueData->epicName = $epicData->fields->summary ?? null;
 
-                $epic = $this->epicRepository->findOneBy([
-                    'title' => $epicData->fields->summary,
-                ]);
-
-                if (!$epic && !empty($epicData->fields->summary)) {
-                    $epic = new Epic();
-                    $epic->setTitle($epicData->fields->summary);
-                    $this->epicRepository->save($epic);
-                }
-
-                if ($epic) {
-                    $issueData->epics->add($epic);
-                }
+                $issueData->epics = [$epicData->fields->summary];
             }
 
             foreach ($fields->fixVersions ?? [] as $fixVersion) {
