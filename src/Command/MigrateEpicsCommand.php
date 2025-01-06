@@ -36,13 +36,14 @@ class MigrateEpicsCommand extends Command
         $issues = $issueRepository->findAll();
         if (!$issues) {
             $output->writeln('<info>No issues found.</info>');
+
             return Command::SUCCESS;
         }
 
         foreach ($issues as $issue) {
             // Apply formatting when getting existing epics to avoid duplicates due to letter case.
-            $existingEpics = $issue->getEpics()->map(fn($epic) => trim($epic->getTitle()))->toArray();
-            $epicNameArray = explode(',', $issue->getEpicName());
+            $existingEpics = $issue->getEpics()->map(fn ($epic) => trim($epic->getTitle() ?? ''))->toArray();
+            $epicNameArray = explode(',', $issue->getEpicName() ?? '');
             foreach ($epicNameArray as $epicName) {
                 if (empty($epicName)) {
                     continue;
@@ -64,14 +65,14 @@ class MigrateEpicsCommand extends Command
 
                     $this->entityManager->persist($epic);
                     $this->entityManager->flush();
-                    $output->writeln('<info>Created new Epic: ' . $epicName . '</info>');
+                    $output->writeln('<info>Created new Epic: '.$epicName.'</info>');
                 }
 
                 // Assign the Epic to the Issue
                 $issue->addEpic($epic);
 
                 $this->entityManager->persist($issue);
-                $output->writeln('<comment>Assigned Epic "' . $epicName . '" to Issue #' . $issue->getId() . '</comment>');
+                $output->writeln('<comment>Assigned Epic "'.$epicName.'" to Issue #'.$issue->getId().'</comment>');
             }
         }
 
@@ -79,6 +80,7 @@ class MigrateEpicsCommand extends Command
         $this->entityManager->flush();
 
         $output->writeln('<info>All issues have been processed successfully.</info>');
+
         return Command::SUCCESS;
     }
 }
