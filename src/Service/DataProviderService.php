@@ -6,7 +6,6 @@ use App\Entity\DataProvider;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Interface\DataProviderServiceInterface;
-use App\Repository\EpicRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
 use Symfony\Component\HttpClient\RetryableHttpClient;
@@ -31,7 +30,6 @@ class DataProviderService
         protected readonly int $httpClientRetryDelayMs = 1000,
         protected readonly int $httpClientMaxRetries = 3,
         private readonly DateTimeHelper $dateTimeHelper,
-        private readonly EpicRepository $epicRepository,
     ) {
     }
 
@@ -67,7 +65,6 @@ class DataProviderService
                     $this->weekGoalLow,
                     $this->weekGoalHigh,
                     $this->sprintNameRegex,
-                    $this->epicRepository
                 );
                 break;
             case LeantimeApiService::class:
@@ -87,8 +84,6 @@ class DataProviderService
                     $this->weekGoalHigh,
                     $this->sprintNameRegex,
                     $this->dateTimeHelper,
-                    $this->epicRepository,
-                    $this->entityManager
                 );
                 break;
             default:
