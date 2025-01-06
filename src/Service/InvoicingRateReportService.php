@@ -66,8 +66,11 @@ class InvoicingRateReportService
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
                 if ($year !== (int) date('Y')) {
-                    // Set to 53 if $year does not match the current year.
-                    $currentPeriodNumeric = 53;
+                    /*
+                        Since the sums used to calculate averages are summed up until the current period,
+                        when showing a year not current, we want to make sure that we include all the periods, hence ([the number of periods] + 1).
+                    */
+                    $currentPeriodNumeric = count($periods) + 1;
                 } else {
                     $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
                 }
