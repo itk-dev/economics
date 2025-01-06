@@ -274,12 +274,16 @@ class DataSynchronizationService
                 }
 
                 foreach ($issueDatum->epics as $epicTitle) {
+                    if (empty($epicTitle)) {
+                        continue;
+                    }
                     $epic = $this->epicRepository->findOneBy(['title' => $epicTitle]);
 
                     if (null === $epic) {
                         $epic = new Epic();
                         $epic->setTitle($epicTitle);
                         $this->entityManager->persist($epic);
+                        $this->entityManager->flush();
                     }
 
                     $issue->addEpic($epic);
