@@ -106,7 +106,7 @@ class InvoicingRateReportService
                         $workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] ?? 0) + ($billableWorklog->getTimeSpentSeconds() / 60 / 60);
                         $workerProjects[$projectName][$issueName]['linkToissue'][$billableWorklog->getIssue()->getProjectTrackerId()] = $billableWorklog->getIssue()->getLinkToIssue();
                     }
-                    $loggedBillableHours += ($billableWorklog->getTimeSpentSeconds() / 60 / 60);
+                    $loggedBillableHours += ($billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                 }
 
                 // Tally up billed logged hours in gathered worklogs for current period
