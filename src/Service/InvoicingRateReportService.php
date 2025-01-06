@@ -119,7 +119,7 @@ class InvoicingRateReportService
                         $workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                         $workerProjects[$projectName][$issueName]['linkToissue'][$billedWorklog->getIssue()->getProjectTrackerId()] = $billedWorklog->getIssue()->getLinkToIssue();
                     }
-                    $loggedBilledHours += ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
+                    $loggedBilledHours += ($billedWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                 }
 
                 // Count up sums until current period have been reached.
