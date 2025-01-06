@@ -116,7 +116,7 @@ class InvoicingRateReportService
                     $issueName = $billedWorklog->getIssue()->getName();
                     $workerProjects[$projectName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                     if ($includeIssues) {
-                        $workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
+                        $workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                         $workerProjects[$projectName][$issueName]['linkToissue'][$billedWorklog->getIssue()->getProjectTrackerId()] = $billedWorklog->getIssue()->getLinkToIssue();
                     }
                     $loggedBilledHours += ($billedWorklog->getTimeSpentSeconds() / 60 / 60);
