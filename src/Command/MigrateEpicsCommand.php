@@ -41,14 +41,12 @@ class MigrateEpicsCommand extends Command
         }
 
         foreach ($issues as $issue) {
-            // Apply formatting when getting existing epics to avoid duplicates due to letter case.
             $existingEpics = $issue->getEpics()->map(fn ($epic) => trim($epic->getTitle() ?? ''))->toArray();
             $epicNameArray = explode(',', $issue->getEpicName() ?? '');
             foreach ($epicNameArray as $epicName) {
                 if (empty($epicName)) {
                     continue;
                 }
-                // Apply formatting to epic names to avoid duplicates due to letter case.
                 $epicName = trim($epicName);
 
                 if (in_array($epicName, $existingEpics, true)) {
