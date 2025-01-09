@@ -582,7 +582,12 @@ invoicing_rate_report:
 
         Gennemsnit for periode: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
 
-        Gennemsnit for medarbejder: Procentvist gennemsnit af fakturerede timer af totalt tid logget.'
+        Gennemsnit for medarbejder: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
+
+
+        Ved hover på faktureringsprocent vises [ Fakturerede timer for perioden ---- Loggede timer for perioden ]'
+
+
 
 
 hour_report:
