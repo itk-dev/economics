@@ -67,7 +67,7 @@
     ">
                         <div class="flex justify-between w-32 double-number-container">
                             <span class="flex-1 text-right">{{ periodData.loggedBillableHours }}</span>
-                            <span class="flex-auto text-right">{{ periodData.loggedBilledPercentage|round(1) ~ '%' }}</span>
+                            <span class="flex-auto text-right" title="{{ periodData.totalLoggedHours }}">{{ periodData.loggedBilledPercentage|round(1) ~ '%' }}</span>
                         </div>
 
                     </td>
