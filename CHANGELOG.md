@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-188](https://github.com/itk-dev/economics/pull/188)
+  2299: Removed sprint report.
 * [PR-175](https://github.com/itk-dev/economics/pull/175)
   2617: Added forecast report.
 
