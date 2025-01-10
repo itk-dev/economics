@@ -34,7 +34,7 @@ class MigrateEpicsCommand extends Command
 
         // Get all issues
         $issues = $issueRepository->findAll();
-        if (!$issues) {
+        if (empty($issues)) {
             $output->writeln('<info>No issues found.</info>');
 
             return Command::SUCCESS;
