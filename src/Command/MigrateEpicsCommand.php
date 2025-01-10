@@ -9,6 +9,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:migrate-epics',
@@ -61,6 +62,8 @@ class MigrateEpicsCommand extends Command
                     // Create a new Epic if it doesn't exist
                     $epic = new Epic();
                     $epic->setTitle($epicName);
+                    $this->entityManager->persist($epic);
+                    $this->entityManager->flush();
                     $io->success('Created new Epic: ' . $epicName);
                 }
 
