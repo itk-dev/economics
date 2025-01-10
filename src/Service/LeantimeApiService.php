@@ -183,7 +183,7 @@ class LeantimeApiService implements DataProviderServiceInterface
             $projectData->projectTrackerKey = $project->id;
             $projectData->projectTrackerProjectUrl = $this->leantimeUrl.'#/tickets/showTicket/'.$project->id;
 
-            $projectVersions = $this->getSprintReportVersions($project->id);
+            $projectVersions = $this->getProjectVersions($project->id);
             foreach ($projectVersions as $projectVersion) {
                 $projectData->versions?->add($projectVersion);
             }
@@ -217,21 +217,21 @@ class LeantimeApiService implements DataProviderServiceInterface
         return [];
     }
 
-    public function getSprintReportVersions(string $projectId): Versions
+    public function getProjectVersions(string $projectId): Versions
     {
-        $sprintReportVersions = new Versions();
+        $versions = new Versions();
         $projectVersions = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAllMilestones', ['searchCriteria' => ['currentProject' => $projectId, 'type' => 'milestone']]);
 
         foreach ($projectVersions as $projectVersion) {
-            $sprintReportVersion = new VersionModel();
-            $sprintReportVersion->id = $projectVersion->id;
-            $sprintReportVersion->name = $projectVersion->headline;
-            $sprintReportVersion->projectTrackerId = $projectVersion->projectId;
+            $version = new VersionModel();
+            $version->id = $projectVersion->id;
+            $version->name = $projectVersion->headline;
+            $version->projectTrackerId = $projectVersion->projectId;
 
-            $sprintReportVersions->versions->add($sprintReportVersion);
+            $versions->versions->add($version);
         }
 
-        return $sprintReportVersions;
+        return $versions;
     }
 
     public function getWorklogDataCollection(string $projectId): WorklogDataCollection
