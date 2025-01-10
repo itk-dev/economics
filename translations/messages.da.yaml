@@ -1,38 +1,3 @@
-sprint_report:
-    data_provider_helptext: ""
-    data_provider: "Vælg datakilde"
-    select_project: "Vælg projekt"
-    select_version: "Vælg version"
-    select_an_option: "Vælg en mulighed"
-    save_budget: "Gem"
-    title: "Sprintrapport"
-    heading: "Sprintrapport"
-    heading_overview: "Overblik"
-    heading_phases: "Projektets faser"
-    heading_spent_hours: "Forbrugt pr. uge"
-    heading_planned_hours: "Planlagt pr. uge"
-    pdf_title: "Sprint rapport eksport"
-    render_as_pdf: "Hent som PDF"
-    sub:
-        project: "Projekt"
-        version: "Bestilling"
-        budget: "Salgsbudget"
-        spent_hours: "Timer reg. total"
-        remaining_hours: "Resterende timer planlagt total"
-        project_hours: "Projektets timer"
-        finished_degree: "Færdiggørelsesgrad (%)"
-        project_forecast: "Projekt total forecast"
-        over_under_index: "Over/underløb - index"
-    table:
-        epic: "Tag / Epic"
-        estimate: "Est."
-        remaining_hours: "Resterende arbejde est."
-        remaining_hours_short: "Rest. arb."
-        registered_hours: "Registreret"
-        reg: "Reg."
-        no_sprint: "Ingen sprint"
-        planned_work_sum: "Sum af est. planlagt arb."
-
 navigation:
     reporting: 'Rapportering'
     setup: 'Opsætning'
@@ -41,7 +6,6 @@ navigation:
     create_project: "Projektopretter"
     invoices: "Faktura"
     planning: "Planlægning"
-    sprint_report: "Sprintrapport"
     title: "Economics"
     accounts: "Konto"
     project_billing: "Projektfakturering"
@@ -379,8 +343,6 @@ home:
     invoice_desctiption: "Opret og rediger fakturaer baseret på opgaver og worklogs i Project Tracker."
     planning: "Planlægning"
     planning_description: "Planlægningsoversigt baseret på opgaver i Project Tracker."
-    sprint_report: "Sprintrapport"
-    sprint_report_description: "Opret sprintrapporter baseret på opgaver og worklogs i Project Tracker."
     create_project: "Projektopretter"
     create_project_description: "Hjælper med at oprette projekter i Project Tracker."
     accounts: "Konti"
@@ -534,7 +496,6 @@ project:
 reports:
     title: 'Rapporter'
     description: 'Generer rapporter baseret på data fra eConomics.'
-    fetch_sprint_report: 'Hent sprintrapport'
     management-title: 'Ny ledelsesrapport'
     fetch_management_report: 'Hent ledelsesrapport'
     from: 'Fra'

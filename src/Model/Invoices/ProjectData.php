@@ -2,7 +2,6 @@
 
 namespace App\Model\Invoices;
 
-use App\Model\SprintReport\SprintReportVersions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -12,7 +11,7 @@ class ProjectData
     public string $projectTrackerId;
     public string $projectTrackerKey;
     public string $projectTrackerProjectUrl;
-    /** @var Collection<string, SprintReportVersions> */
+    /** @var Collection<string, Versions> */
     public Collection $versions;
 
     public function __construct()
