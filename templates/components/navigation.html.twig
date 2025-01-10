@@ -29,7 +29,6 @@
                   <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.reporting'|trans }}</span>
                 </a>
                 <ul class="navigation-item-submenu">
-                  {{ include('components/navigation-item.html.twig', {title: 'navigation.sprint_report'|trans, role: 'ROLE_REPORT', route: path('app_sprint_report')}) }}
                   {{ include('components/navigation-item.html.twig', {title: 'navigation.management_report'|trans, role: 'ROLE_REPORT', route: path('app_management_reports_create')}) }}
                     {{ include('components/navigation-item.html.twig', {title: 'navigation.forecast_report'|trans, role: 'ROLE_REPORT', route: path('app_forecast_report')}) }}
                   {{ include('components/navigation-item.html.twig', {title: 'navigation.hour_report'|trans, role: 'ROLE_REPORT', route: path('app_hour_report')}) }}
