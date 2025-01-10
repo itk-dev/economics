@@ -31,11 +31,12 @@ class MigrateEpicsCommand extends Command
     {
         $issueRepository = $this->entityManager->getRepository(Issue::class);
         $epicRepository = $this->entityManager->getRepository(Epic::class);
+        $io = new SymfonyStyle($input, $output);
 
         // Get all issues
         $issues = $issueRepository->findAll();
-        if (empty($issues)) {
-            $output->writeln('<info>No issues found.</info>');
+        if (!$issues) {
+            $io->info('No issues found.');
 
             return Command::SUCCESS;
         }
@@ -60,24 +61,21 @@ class MigrateEpicsCommand extends Command
                     // Create a new Epic if it doesn't exist
                     $epic = new Epic();
                     $epic->setTitle($epicName);
-
-                    $this->entityManager->persist($epic);
-                    $this->entityManager->flush();
-                    $output->writeln('<info>Created new Epic: '.$epicName.'</info>');
+                    $io->success('Created new Epic: ' . $epicName);
                 }
 
                 // Assign the Epic to the Issue
                 $issue->addEpic($epic);
 
                 $this->entityManager->persist($issue);
-                $output->writeln('<comment>Assigned Epic "'.$epicName.'" to Issue #'.$issue->getId().'</comment>');
+                $io->comment('Assigned Epic "' . $epicName . '" to Issue #' . $issue->getId());
             }
         }
 
         // Save changes to the database
         $this->entityManager->flush();
 
-        $output->writeln('<info>All issues have been processed successfully.</info>');
+        $io->success('All issues have been processed successfully.');
 
         return Command::SUCCESS;
     }
