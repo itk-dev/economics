@@ -4,17 +4,21 @@ namespace App\Model\Reports;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-class WorkloadReportData
+class InvoicingRateReportData
 {
     public readonly string $id;
     public readonly string $viewmode;
     /** @var ArrayCollection<string, string> */
     public ArrayCollection $period;
-    /** @var ArrayCollection<string, WorkloadReportWorker> */
+    /** @var ArrayCollection<string, InvoicingRateReportWorker> */
     public ArrayCollection $workers;
     public int $currentPeriodNumeric;
     public ArrayCollection $periodAverages;
     public float $totalAverage;
+    /**
+     * @var bool
+     */
+    public bool $includeIssues;
 
     public function __construct(string $viewmode)
     {
@@ -22,6 +26,7 @@ class WorkloadReportData
         $this->period = new ArrayCollection();
         $this->workers = new ArrayCollection();
         $this->periodAverages = new ArrayCollection();
+        $this->includeIssues = false;
         $this->totalAverage = 0;
     }
 

@@ -6,7 +6,8 @@ use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
-use App\Enum\BillableKindsEnum;
+use App\Enum\NonBillableEpicsEnum;
+use App\Enum\NonBillableVersionsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -114,23 +115,74 @@ class WorklogRepository extends ServiceEntityRepository
 
     public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
     {
+        $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
+        $nonBillableVersions = NonBillableVersionsEnum::getAsArray();
+
         $qb = $this->createQueryBuilder('worklog');
 
-        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project');
+        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project')
+            ->leftJoin('worklog.issue', 'issue')
+            ->leftJoin('issue.epics', 'epic')
+            ->leftJoin('issue.versions', 'version');
 
         return $qb
             ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
             ->andWhere('worklog.worker = :worker')
-            ->andWhere($qb->expr()->in('worklog.kind', ':billableKinds'))
-            ->andWhere($qb->expr()->orX(
-                $qb->expr()->eq('worklog.isBilled', '1'),
+            ->andWhere($qb->expr()->andX(
                 $qb->expr()->eq('project.isBillable', '1'),
+            ))
+            // notIn will only work if the string it is checked against is not null
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('epic.title'),
+                $qb->expr()->notIn('epic.title', ':nonBillableEpics'),
+            ))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('version.name'),
+                $qb->expr()->notIn('version.name', ':nonBillableVersions')
             ))
             ->setParameters([
                 'worker' => $workerIdentifier,
                 'dateFrom' => $dateFrom,
                 'dateTo' => $dateTo,
-                'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
+                'nonBillableEpics' => array_values($nonBillableEpics),
+                'nonBillableVersions' => array_values($nonBillableVersions),
+            ])
+            ->getQuery()->getResult();
+    }
+
+    public function findBilledWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    {
+        $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
+        $nonBillableVersions = NonBillableVersionsEnum::getAsArray();
+
+        $qb = $this->createQueryBuilder('worklog');
+
+        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project')
+            ->leftJoin('worklog.issue', 'issue')
+            ->leftJoin('issue.epics', 'epic')
+            ->leftJoin('issue.versions', 'version');
+
+        return $qb
+            ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
+            ->andWhere('worklog.worker = :worker')
+            ->andWhere($qb->expr()->andX(
+                $qb->expr()->eq('worklog.isBilled', '1'),
+            ))
+            // notIn will only work if the string it is checked against is not null
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('epic.title'),
+                $qb->expr()->notIn('epic.title', ':nonBillableEpics'),
+            ))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('version.name'),
+                $qb->expr()->notIn('version.name', ':nonBillableVersions')
+            ))
+            ->setParameters([
+                'worker' => $workerIdentifier,
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+                'nonBillableEpics' => array_values($nonBillableEpics),
+                'nonBillableVersions' => array_values($nonBillableVersions),
             ])
             ->getQuery()->getResult();
     }

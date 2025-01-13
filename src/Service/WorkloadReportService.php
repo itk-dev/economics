@@ -19,21 +19,31 @@ class WorkloadReportService
     }
 
     /**
-     * Retrieves the workload report data for the given view mode.
+     * Generates a workload report for a specified year and period type.
      *
-     * @param PeriodTypeEnum $viewPeriodType The view period type (default: 'week')
-     * @param ViewModeEnum $viewMode the view mode to generate the report for
+     * This method computes the workload report for all workers based on the
+     * specified year, period type, and view mode. It calculates various metrics
+     * such as logged hours, expected workload, work percentage for each period,
+     * average workloads, and overall summary statistics.
      *
-     * @return WorkloadReportData the workload report data
+     * @param int $year the year for which the workload report is generated
+     * @param PeriodTypeEnum $viewPeriodType the period type (e.g., week, month, year) for the report
+     * @param ViewModeEnum $viewMode the mode of viewing the workload (e.g., workload vs other modes)
      *
-     * @throws \Exception when the workload of a worker cannot be unset
+     * @return WorkloadReportData an object containing the workload report data
+     *
+     * @throws \Exception if a worker identifier is empty or the workload of a worker is null
      */
-    public function getWorkloadReport(PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
+    public function getWorkloadReport(int $year, PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
     {
         $workloadReportData = new WorkloadReportData($viewPeriodType->value);
-        $year = (int) (new \DateTime())->format('Y');
+        if (!$year) {
+            $year = (int) (new \DateTime())->format('Y');
+        }
         $workers = $this->workerRepository->findAll();
         $periods = $this->getPeriods($viewPeriodType, $year);
+        $periodSums = [];
+        $periodCounts = [];
 
         foreach ($periods as $period) {
             $readablePeriod = $this->getReadablePeriod($period, $viewPeriodType);
@@ -91,11 +101,32 @@ class WorkloadReportService
 
                 // Add percentage result to worker for current period.
                 $workloadReportWorker->loggedPercentage->set($period, $roundedLoggedPercentage);
+
+                // Increment the sum and count for this period
+                $periodSums[$period] = ($periodSums[$period] ?? 0) + $roundedLoggedPercentage;
+                $periodCounts[$period] = ($periodCounts[$period] ?? 0) + 1;
+
+                // Calculate and set the average for this period
+                $average = round($periodSums[$period] / $periodCounts[$period], 2);
+                $workloadReportData->periodAverages->set($period, $average);
             }
 
             $workloadReportWorker->average = $expectedWorkloadSum > 0 ? round($loggedHoursSum / $expectedWorkloadSum * 100, 2) : 0;
 
             $workloadReportData->workers->add($workloadReportWorker);
+        }
+
+        // Calculate and set the total average
+        $numberOfPeriods = count($workloadReportData->periodAverages);
+
+        // Calculate the sum of period averages
+        $averageSum = array_reduce($workloadReportData->periodAverages->toArray(), function ($carry, $item) {
+            return $carry + $item;
+        }, 0);
+
+        // Calculate the total average of averages
+        if ($numberOfPeriods > 0) {
+            $workloadReportData->totalAverage = round($averageSum / $numberOfPeriods, 2);
         }
 
         return $workloadReportData;
@@ -191,6 +222,7 @@ class WorkloadReportService
         return match ($viewMode) {
             ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
             ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
+            ViewModeEnum::BILLED => $this->worklogRepository->findBilledWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
         };
     }
 }
