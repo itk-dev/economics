@@ -134,7 +134,7 @@ class InvoicingRateReportService
                 $invoicingRateReportWorker->dataByPeriod->set($period, [
                     'loggedBillableHours' => $loggedBillableHours,
                     'loggedBilledPercentage' => $loggedBilledPercentage,
-                    'totalLoggedHours' => $loggedBilledHours . " / " . $loggedHours,
+                    'totalLoggedHours' => $loggedBilledHours.' / '.$loggedHours,
                 ]);
 
                 // Increment the sum and count for this period
