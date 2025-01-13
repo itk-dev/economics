@@ -182,30 +182,6 @@ class Issue extends AbstractBaseEntity
     }
 
     /**
-     * @return Collection<int, Epic>
-     */
-    public function getEpics(): Collection
-    {
-        return $this->epics;
-    }
-
-    public function addEpic(Epic $epic): self
-    {
-        if (!$this->epics->contains($epic)) {
-            $this->epics->add($epic);
-        }
-
-        return $this;
-    }
-
-    public function removeEpic(Epic $epic): self
-    {
-        $this->epics->removeElement($epic);
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Version>
      */
     public function getVersions(): Collection
@@ -225,6 +201,30 @@ class Issue extends AbstractBaseEntity
     public function removeVersion(Version $version): self
     {
         $this->versions->removeElement($version);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Epic>
+     */
+    public function getEpics(): Collection
+    {
+        return $this->epics;
+    }
+
+    public function addEpic(Epic $epic): self
+    {
+        if (!$this->epics->contains($epic)) {
+            $this->epics->add($epic);
+        }
+
+        return $this;
+    }
+
+    public function removeEpic(Epic $epic): self
+    {
+        $this->epics->removeElement($epic);
 
         return $this;
     }
