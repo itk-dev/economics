@@ -483,6 +483,7 @@ class DataSynchronizationService
      * Migrate from issue.epicName to issue.epics.
      *
      * @param callable|null $progressCallback
+     *
      * @return void
      */
     public function migrateEpics(?callable $progressCallback = null): void
@@ -499,11 +500,12 @@ class DataSynchronizationService
         $issuesProcessed = 0;
 
         foreach ($issues as $issue) {
-            $existingEpicNames = $issue->getEpics()->reduce(function(array $carry, Epic $epic) {
+            $existingEpicNames = $issue->getEpics()->reduce(function (array $carry, Epic $epic) {
                 $epicName = $epic->getTitle();
-                if ($epicName !== null && !in_array($epicName, $carry)) {
+                if (null !== $epicName && !in_array($epicName, $carry)) {
                     $carry[] = $epic->getTitle();
                 }
+
                 return $carry;
             }, []);
 
@@ -522,7 +524,7 @@ class DataSynchronizationService
 
                 $epic = $this->epicRepository->findOneBy(['title' => $epicName]);
 
-                if ($epic == null) {
+                if (null == $epic) {
                     // Create a new Epic if it doesn't exist
                     $epic = new Epic();
                     $epic->setTitle($epicName);
@@ -535,7 +537,7 @@ class DataSynchronizationService
 
             if (null !== $progressCallback) {
                 $progressCallback($issuesProcessed, count($issues));
-                $issuesProcessed++;
+                ++$issuesProcessed;
             }
         }
 

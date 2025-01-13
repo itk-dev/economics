@@ -2,10 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Epic;
-use App\Entity\Issue;
 use App\Service\DataSynchronizationService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,8 +17,7 @@ class MigrateEpicsCommand extends Command
 {
     public function __construct(
         private DataSynchronizationService $dataSynchronizationService,
-    )
-    {
+    ) {
         parent::__construct();
     }
 
