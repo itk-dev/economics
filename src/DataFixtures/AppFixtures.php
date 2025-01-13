@@ -53,7 +53,7 @@ class AppFixtures extends Fixture
         }
 
         $epic = new Epic();
-        $epic->setTitle("Epic 1");
+        $epic->setTitle('Epic 1');
         $manager->persist($epic);
 
         foreach ($dataProviders as $key => $dataProvider) {
@@ -118,8 +118,8 @@ class AppFixtures extends Fixture
                     $issue->setProjectTrackerId("issue-$i-$j");
                     $issue->setAccountId('Account 1');
                     $issue->setAccountKey('Account 1');
-                    $issue->setEpicName('Epic ' . $j % 2 . ($j % 5 == 0 ? ",More than one Epic" : ''));
-                    $issue->setEpicKey('Epic ' . $j % 2);
+                    $issue->setEpicName('Epic '.$j % 2 .(0 == $j % 5 ? ',More than one Epic' : ''));
+                    $issue->setEpicKey('Epic '.$j % 2);
                     $issue->setStatus($modStatus);
                     $issue->setDataProvider($dataProvider);
                     $issue->addVersion($versions[$j % count($versions)]);
@@ -132,7 +132,7 @@ class AppFixtures extends Fixture
                     $issue->setLinkToIssue('www.example.com');
                     $manager->persist($issue);
 
-                    if ($key == 0 && $i == 0 && $j == 0) {
+                    if (0 == $key && 0 == $i && 0 == $j) {
                         $issue->addEpic($epic);
                     }
 
