@@ -509,14 +509,20 @@ class DataSynchronizationService
                 return $carry;
             }, []);
 
-            $epicNameArray = explode(',', $issue->getEpicName() ?? '');
+            $epicNameArray = [];
+
+            if (LeantimeApiService::class === $issue->getDataProvider()?->getClass()) {
+                $epicNameArray = explode(',', $issue->getEpicName() ?? '');
+            } elseif (!empty($issue->getEpicName())) {
+                $epicNameArray[] = $issue->getEpicName();
+            }
 
             foreach ($epicNameArray as $epicName) {
-                $epicName = trim($epicName);
-
                 if (empty($epicName)) {
                     continue;
                 }
+
+                $epicName = trim($epicName);
 
                 if (in_array($epicName, $existingEpicNames, true)) {
                     continue;
