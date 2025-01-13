@@ -118,8 +118,8 @@ class AppFixtures extends Fixture
                     $issue->setProjectTrackerId("issue-$i-$j");
                     $issue->setAccountId('Account 1');
                     $issue->setAccountKey('Account 1');
-                    $issue->setEpicName('Epic '.$j % 2 .(0 == $j % 5 ? ',More than one Epic' : ''));
-                    $issue->setEpicKey('Epic '.$j % 2);
+                    $issue->setEpicName('Epic '.$j % 2 .(1 == $key && 0 == $j % 5 ? ',More than one Epic' : ''));
+                    $issue->setEpicKey('Epic '.$j % 2 .(1 == $key && 0 == $j % 5 ? ',More than one Epic' : ''));
                     $issue->setStatus($modStatus);
                     $issue->setDataProvider($dataProvider);
                     $issue->addVersion($versions[$j % count($versions)]);
