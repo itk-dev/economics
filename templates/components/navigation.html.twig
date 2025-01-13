@@ -1,5 +1,5 @@
-<aside {{ stimulus_controller('navigation') }} class="h-full">
-    <div id="main-menu" class="sticky top-0 p-4 md:w-64">
+<aside {{ stimulus_controller('navigation') }} class="flex flex-col h-screen justify-between">
+    <main id="main-menu" class="sticky top-0 p-4 md:w-64">
         <a href="{{ path('index') }}" class="flex items-center mb-5">
             <img src="{{ asset('img/itk-economics.png') }}" class="mx-1" alt="{{ 'navigation.title'|trans }}" />
         </a>
@@ -58,9 +58,9 @@
                 {{ include('components/navigation-item.html.twig', {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_PRODUCT_MANAGER', route: path('app_project_index')}) }}
             {% endif %}
         </ul>
+    </main>
 
-        <div class="mt-5">
-            {{ include('components/sync-button.html.twig') }}
-        </div>
+    <div class="footer">
+        {{ include('components/sync-button.html.twig') }}
     </div>
 </aside>

@@ -1,4 +1,4 @@
-<div class="mt-5 selections border-2 p-5 rounded-xl" {{ stimulus_controller('sync-button') }}>
+<div class="mt-5 selections p-5" {{ stimulus_controller('sync-button') }}>
     <select class="form-element" {{ stimulus_target('sync-button', 'select') }}></select>
     <button class="button" {{ stimulus_action('sync-button', 'submit') }}>Opdatér projekt</button>
 </div>
