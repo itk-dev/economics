@@ -735,7 +735,7 @@ class JiraApiService implements DataProviderServiceInterface
                 $issueData->epicKey = $epicKey;
                 $issueData->epicName = $epicData->fields->summary ?? null;
 
-                $issueData->epics = [$epicData->fields->summary];
+                $issueData->epics = null !== $issueData->epicName ? [$issueData->epicName] : [];
             }
 
             foreach ($fields->fixVersions ?? [] as $fixVersion) {
