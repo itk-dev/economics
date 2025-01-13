@@ -83,7 +83,7 @@ class DataProviderService
                     $this->weekGoalLow,
                     $this->weekGoalHigh,
                     $this->sprintNameRegex,
-                    $this->dateTimeHelper
+                    $this->dateTimeHelper,
                 );
                 break;
             default:

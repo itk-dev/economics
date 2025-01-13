@@ -1,0 +1,180 @@
+<div id="scrollContainer" class="overflow-x-auto w-full" {{ stimulus_controller('show-hide') }}
+     data-storage-key="hidePlanningAssignees">
+    <table {{ stimulus_controller('table-highlight') }}
+            class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
+        <thead>
+        <tr>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">{{ 'workload_report.worker'|trans }}</th>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                {{ 'workload_report.workload'|trans }}
+            </th>
+            {% for periodNumeric, period in data.period %}
+                <th class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap
+{{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'bg-slate-300 dark:bg-slate-800' : 'bg-slate-100 dark:bg-slate-700' }}
+"
+                        {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'id="activeSprint"' : '' }}
+                        {{ loop.index == 1 ? 'id="firstSprint"' : '' }}
+                    data-index="{{ loop.index }}"
+                        {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'data-active="true"' : '' }}
+                        {{ stimulus_target('planning-scroll', 'column') }}
+                >
+
+                    {% if data.viewmode == 'week' %}
+                        {{ 'workload_report.week'|trans }} {{ period }}
+                    {% else %}
+                        {{ period }}
+                    {% endif %}
+                </th>
+            {% endfor %}
+            <th title="{{ 'workload_report.average_describe'|trans }}"
+                class="text-center px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3 whitespace-nowrap cursor-help">
+                <span class="flex justify-evenly"> {{ 'workload_report.average'|trans }}   {{ include('components/icons.html.twig', {icon: 'info', class: 'w-5 h-5'}) }}</span>
+            </th>
+        </tr>
+        </thead>
+
+        {% for worker in data.workers %}
+
+            <tbody {{ stimulus_controller('toggle-parent-child') }}
+                    data-toggle-id="{{ worker.email }}" {{ stimulus_target('show-hide', 'entry') }}>
+
+            <tr>
+                <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                    <div class="flex flex-row">
+                        <span class="flex-grow mr-3">
+                            {{ worker.name ?? worker.email }}
+                        </span>
+                        <button class="hide-btn mr-3 w-4"
+                                type="button" {{ stimulus_action('show-hide', 'toggleEntry') }}
+                                data-toggle-id="{{ worker.email }}" data-toggle-name="{{ worker.email }}"
+                                data-toggle-target="button">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </button>
+                        <button class="expand-btn mr-3 w-4"
+                                type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
+                                data-toggle-target="button">
+                            <i class="fa-solid fa-caret-right"></i>
+                            <i class="fa-solid fa-caret-down hidden"></i>
+                        </button>
+                    </div>
+                </td>
+                <td class="text-center px-3 border border-slate-600">
+                    {{ worker.workload }}
+                </td>
+                {% for periodNumeric, periodData in worker.dataByPeriod %}
+                    <td class="text-center px-2 border border-slate-600
+    {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'bg-slate-300 dark:bg-slate-800' : '' }}
+    ">
+                        <div class="flex justify-between w-32 double-number-container">
+                            <span class="flex-1 text-right">{{ periodData.loggedBillableHours }}</span>
+                            <span class="flex-auto text-right" title="{{ periodData.totalLoggedHours }}">{{ periodData.loggedBilledPercentage|round(1) ~ '%' }}</span>
+                        </div>
+
+                    </td>
+                {% endfor %}
+                <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800">
+                    {{ worker.average|round(1) ~ '%' }}
+                </td>
+            </tr>
+
+            {% for key, projectArray in worker.projectData %}
+                {% for key, projects in projectArray %}
+                    {% for projectName, issues in projects %}
+                    <tr {{ stimulus_target('toggle-parent-child', 'parent') }}>
+                        <th class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900 pr-2">
+                            <div class="flex flex-row">
+                                <div class="flex flex-row items-center">
+                                    <span class="flex-grow px-2 py-2 text-sm">
+                                        {{ projectName }}
+                                    </span>
+                                </div>
+
+                                {% if data.includeIssues %}
+                                    <button
+                                        class="expand-btn mr-3 w-4 ml-auto"
+                                        type="button"
+                                        data-parent-id="{{ projectName }}"
+                                        {{ stimulus_action('toggle-parent-child', 'toggleChild') }}
+                                        {{ stimulus_target('toggle-parent-child', 'button') }}
+                                    >
+                                        <i class="fa-solid fa-caret-right"></i>
+                                        <i class="fa-solid fa-caret-down hidden"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </th>
+                        <td class="text-center border border-slate-600">-</td>
+                        {% for periodNumeric, periodData in worker.dataByPeriod %}
+                            <td class="text-right border border-slate-600 px-2">
+                                {% if issues[periodNumeric] is defined %}
+                                    <div class="flex justify-between w-32 double-number-container">
+                                        <span class="flex-1 text-right">{{ issues[periodNumeric].loggedBillableHours ?? '0' }}</span>
+                                        <span class="flex-auto text-right">{{ issues[periodNumeric].loggedBilledHours ?? '0' }}</span>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+
+                        {% for issueName, issueDetails in issues %}
+
+                            {% if not (issueName matches '/^\\d+$/') %}
+                                <tr {{ stimulus_target('toggle-parent-child', 'child') }}
+                                        data-parent-id="{{ projectName }}">
+                                    <th class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900 pr-2">
+                                        <div class="flex flex-row items-center">
+                                    <span class="flex-grow px-3 py-2 text-sm">
+                                            {{ issueName }}
+                                        {% for key, link in issueDetails.linkToissue %}
+                                            <a href="{{ link }}" target="_blank" class="link">#{{ key }}</a>
+                                        {% endfor %}
+                        </span>
+                                        </div>
+
+                                    </th>
+                                    <td class="text-center border border-slate-600">-</td>
+                                    {% for periodNumeric, periodData in worker.dataByPeriod %}
+                                        <td class="text-right pr-3 border border-slate-600 px-2">
+                                            {% if issueDetails[periodNumeric] is defined %}
+                                                <div class="flex justify-between w-32 double-number-container">
+                                                    <span class="flex-1 text-right">{{ issueDetails[periodNumeric].loggedBillableHours ?? '0' }}</span>
+                                                    <span class="flex-auto text-right">{{ issueDetails[periodNumeric].loggedBilledHours ?? '0' }}</span>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+
+                        {% endfor %}
+
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+
+            </tbody>
+        {% endfor %}
+        <tbody>
+        <tr>
+            <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-300 dark:bg-slate-800">
+                {{ 'workload_report.average'|trans }}
+            </td>
+            <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"></td>
+            {% for periodNumeric, period in data.period %}
+                <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800
+                ">
+                    ~ {{ data.periodAverages[periodNumeric]|round(1) ~ '%' }}
+                </td>
+            {% endfor %}
+            <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"> {{ data.totalAverage|round(1) ~ '%' }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="my-5 sticky left-0">
+        {{ 'workload_report.hidden-entries'|trans }}:
+        <span {{ stimulus_target('show-hide', 'hiddenEntries') }}></span>
+    </div>
+</div>
+<div class="my-5 sticky left-0">
+    {{ 'invoicing_rate_report.reading-guide-header'|trans }}:
+    <p>{{ 'invoicing_rate_report.reading-guide'|trans|nl2br|raw }}</p>
+</div>

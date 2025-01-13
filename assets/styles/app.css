@@ -454,5 +454,20 @@
         @apply text-right;
         max-width: 200px;
     }
+    .double-number-container {
+        span {
+            max-width: 47px;
+        }
+        span:last-child {
+            cursor: help;
+        }
+    }
+    .highlight-column, .highlight-row {
+        border: 1px solid #fff !important;
+    }
 
+    tr[data-toggle-parent-child-target="child"]:not(.hidden) + tr[data-toggle-parent-child-target="parent"] > td,
+    tr[data-toggle-parent-child-target="child"]:not(.hidden) + tr[data-toggle-parent-child-target="parent"] > th {
+        border-top: 1px solid #fff;
+    }
 }
