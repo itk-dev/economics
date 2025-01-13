@@ -61,6 +61,7 @@ navigation:
     workload_report: "Normtidsrapport"
     worker: "Medarbejdere"
     subscription: "Abonnementer"
+    invoicing_rate_report: "Udfaktureringsrapport"
 
 planning:
     title: 'Planlægning'
@@ -555,7 +556,7 @@ workload_report:
     workload: 'Normtid'
     logged_hours: 'Loggede timer'
     select_viewmode: 'Vælg visningstype'
-    select_view_period_type: 'Vælg periodetype'
+    select_view_period_type: 'Vælg periode'
     week: 'Uge'
     workers: 'Medarbejdere'
     worker: 'Medarbejder'
@@ -563,6 +564,31 @@ workload_report:
     submit: 'Hent'
     average: "Gennemsnit"
     average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
+
+invoicing_rate_report:
+    title: 'Udfaktureringsrapport'
+    year: 'Vælg år'
+    select_view_period_type: 'Vælg periode'
+    include_issues: 'Inkludér to-dos (+10s load)'
+    reading-guide-header: 'Læsevejledning'
+    submit: 'Hent udfaktureringsrapport'
+    reading-guide: '
+        Aflæsning af todelt celle (medarbejder):
+        [ Fakturerbare timer for perioden ---- Procent af totalt loggede timer faktureret for perioden ].
+
+        Aflæsning af todelt celle (projekt og to-do):
+        [ Fakturerbare timer for perioden ---- Fakturerede timer for perioden ].
+
+
+        Gennemsnit for periode: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
+
+        Gennemsnit for medarbejder: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
+
+
+        Ved hover på faktureringsprocent vises [ Fakturerede timer for perioden ---- Loggede timer for perioden ]'
+
+
+
 
 hour_report:
     title: 'Timerapport'
@@ -736,6 +762,10 @@ worker:
     name: 'Navn'
     email: 'Email'
     workload: 'Normtid (inkl. middagspause)'
+    include_in_reports:
+        title: 'Inkludér i rapporter'
+        yes: 'Ja'
+        no: 'Nej'
     actions: 'Handlinger'
     action_edit: 'Rediger'
     edit: 'Rediger medarbejder'
@@ -756,6 +786,12 @@ workload_report_view_mode_enum:
         label: 'Loggede timer'
     billable:
         label: 'Fakturerbare timer'
+    billed:
+        label: 'Fakturerede timer'
+
+invoicing_rate_report_view_mode_enum:
+    summary:
+        label: 'Opsummering'
 
 subscription:
     title: 'Dine abonnementer'

@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Account;
 use App\Entity\Client;
 use App\Entity\DataProvider;
+use App\Entity\Epic;
 use App\Entity\Invoice;
 use App\Entity\Issue;
 use App\Entity\Project;
@@ -18,6 +19,7 @@ use App\Model\SprintReport\SprintReportVersion;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\DataProviderRepository;
+use App\Repository\EpicRepository;
 use App\Repository\InvoiceRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
@@ -45,6 +47,7 @@ class DataSynchronizationService
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly WorkerRepository $workerRepository,
+        private readonly EpicRepository $epicRepository,
     ) {
     }
 
@@ -271,6 +274,22 @@ class DataSynchronizationService
                     }
                 }
 
+                foreach ($issueDatum->epics as $epicTitle) {
+                    if (empty($epicTitle)) {
+                        continue;
+                    }
+                    $epic = $this->epicRepository->findOneBy(['title' => $epicTitle]);
+
+                    if (null === $epic) {
+                        $epic = new Epic();
+                        $epic->setTitle($epicTitle);
+                        $this->entityManager->persist($epic);
+                        $this->entityManager->flush();
+                    }
+
+                    $issue->addEpic($epic);
+                }
+
                 if (null !== $progressCallback) {
                     $progressCallback($issuesProcessed, $total);
                     ++$issuesProcessed;
@@ -457,6 +476,78 @@ class DataSynchronizationService
             }
         }
 
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Migrate from issue.epicName to issue.epics.
+     *
+     * @param callable|null $progressCallback
+     *
+     * @return void
+     */
+    public function migrateEpics(?callable $progressCallback = null): void
+    {
+        // Get all issues
+        $issues = $this->issueRepository->findAll();
+
+        if (!$issues) {
+            if (null !== $progressCallback) {
+                $progressCallback(0, 0);
+            }
+        }
+
+        $issuesProcessed = 0;
+
+        foreach ($issues as $issue) {
+            $existingEpicNames = $issue->getEpics()->reduce(function (array $carry, Epic $epic) {
+                $epicName = $epic->getTitle();
+                if (null !== $epicName && !in_array($epicName, $carry)) {
+                    $carry[] = $epic->getTitle();
+                }
+
+                return $carry;
+            }, []);
+
+            $epicNameArray = [];
+
+            if (LeantimeApiService::class === $issue->getDataProvider()?->getClass()) {
+                $epicNameArray = explode(',', $issue->getEpicName() ?? '');
+            } elseif (!empty($issue->getEpicName())) {
+                $epicNameArray[] = $issue->getEpicName();
+            }
+
+            foreach ($epicNameArray as $epicName) {
+                if (empty($epicName)) {
+                    continue;
+                }
+
+                $epicName = trim($epicName);
+
+                if (in_array($epicName, $existingEpicNames, true)) {
+                    continue;
+                }
+
+                $epic = $this->epicRepository->findOneBy(['title' => $epicName]);
+
+                if (null == $epic) {
+                    // Create a new Epic if it doesn't exist
+                    $epic = new Epic();
+                    $epic->setTitle($epicName);
+                    $this->epicRepository->save($epic, true);
+                }
+
+                // Assign the Epic to the Issue
+                $issue->addEpic($epic);
+            }
+
+            if (null !== $progressCallback) {
+                $progressCallback($issuesProcessed, count($issues));
+                ++$issuesProcessed;
+            }
+        }
+
+        // Save changes to the database
         $this->entityManager->flush();
     }
 }

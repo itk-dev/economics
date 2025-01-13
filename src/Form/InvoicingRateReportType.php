@@ -2,9 +2,8 @@
 
 namespace App\Form;
 
-use App\Model\Reports\WorkloadReportFormData;
+use App\Model\Reports\InvoicingRateReportFormData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
-use App\Model\Reports\WorkloadReportViewModeEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -12,7 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class WorkloadReportType extends AbstractType
+class InvoicingRateReportType extends AbstractType
 {
     public function __construct(
     ) {
@@ -24,6 +23,7 @@ class WorkloadReportType extends AbstractType
         foreach ($options['years'] as $year) {
             $yearChoices[$year] = $year;
         }
+
         $builder
             ->add('year', ChoiceType::class, [
                 'label' => 'invoicing_rate_report.year',
@@ -36,19 +36,9 @@ class WorkloadReportType extends AbstractType
                 'choices' => $yearChoices,
                 'placeholder' => null,
             ])
-            ->add('viewMode', EnumType::class, [
-                'required' => false,
-                'label' => 'workload_report.select_viewmode',
-                'label_attr' => ['class' => 'label'],
-                'placeholder' => false,
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'class' => WorkloadReportViewModeEnum::class,
-            ])
             ->add('viewPeriodType', EnumType::class, [
                 'required' => false,
-                'label' => 'workload_report.select_view_period_type',
+                'label' => 'invoicing_rate_report.select_view_period_type',
                 'label_attr' => ['class' => 'label'],
                 'placeholder' => false,
                 'attr' => [
@@ -56,8 +46,22 @@ class WorkloadReportType extends AbstractType
                 ],
                 'class' => PeriodTypeEnum::class,
             ])
+            ->add('includeIssues', ChoiceType::class, [
+                'choices' => [
+                    'Ja' => true,
+                    'Nej' => false,
+                ],
+                'required' => false,
+                'placeholder' => false,
+                'label' => 'invoicing_rate_report.include_issues',
+                'label_attr' => ['class' => 'checkbox-label'],
+                'attr' => [
+                    'class' => 'form-element',
+                ],
+                'data' => false,
+            ])
             ->add('submit', SubmitType::class, [
-                'label' => 'workload_report.submit',
+                'label' => 'invoicing_rate_report.submit',
                 'attr' => [
                     'class' => 'hour-report-submit button',
                 ],
@@ -67,7 +71,7 @@ class WorkloadReportType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => WorkloadReportFormData::class,
+            'data_class' => InvoicingRateReportFormData::class,
             'attr' => [
                 'data-sprint-report-target' => 'form',
             ],

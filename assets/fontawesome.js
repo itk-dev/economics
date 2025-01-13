@@ -6,7 +6,9 @@ import {
     faMaximize,
     faEyeSlash,
     faMinimize,
+    faCaretRight,
+    faCaretDown,
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faMaximize, faEyeSlash, faMinimize);
+library.add(faMaximize, faEyeSlash, faMinimize, faCaretRight, faCaretDown);
 dom.i2svg();

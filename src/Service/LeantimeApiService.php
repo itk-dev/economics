@@ -192,6 +192,9 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->accountKey = '';
             $issueData->epicKey = $issue->tags;
             $issueData->epicName = $issue->tags;
+
+            $issueData->epics = explode(',', $issue->tags);
+
             $issueData->planHours = $issue->planHours;
             $issueData->hourRemaining = $issue->hourRemaining;
             $issueData->dueDate = !empty($issue->dateToFinish) && '0000-00-00 00:00:00' !== $issue->dateToFinish ? new \DateTime($issue->dateToFinish, self::getLeantimeTimeZone()) : null;
