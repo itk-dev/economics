@@ -46,7 +46,8 @@ class DataSynchronizationService
         private readonly InvoiceRepository $invoiceRepository,
         private readonly DataProviderService $dataProviderService,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly WorkerRepository $workerRepository, private readonly EpicRepository $epicRepository,
+        private readonly WorkerRepository $workerRepository,
+        private readonly EpicRepository $epicRepository,
     ) {
     }
 
@@ -475,6 +476,70 @@ class DataSynchronizationService
             }
         }
 
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Migrate from issue.epicName to issue.epics.
+     *
+     * @param callable|null $progressCallback
+     * @return void
+     */
+    public function migrateEpics(?callable $progressCallback = null): void
+    {
+        // Get all issues
+        $issues = $this->issueRepository->findAll();
+
+        if (!$issues) {
+            if (null !== $progressCallback) {
+                $progressCallback(0, 0);
+            }
+        }
+
+        $issuesProcessed = 0;
+
+        foreach ($issues as $issue) {
+            $existingEpicNames = $issue->getEpics()->reduce(function(array $carry, Epic $epic) {
+                $epicName = $epic->getTitle();
+                if ($epicName !== null && !in_array($epicName, $carry)) {
+                    $carry[] = $epic->getTitle();
+                }
+                return $carry;
+            }, []);
+
+            $epicNameArray = explode(',', $issue->getEpicName() ?? '');
+
+            foreach ($epicNameArray as $epicName) {
+                $epicName = trim($epicName);
+
+                if (empty($epicName)) {
+                    continue;
+                }
+
+                if (in_array($epicName, $existingEpicNames, true)) {
+                    continue;
+                }
+
+                $epic = $this->epicRepository->findOneBy(['title' => $epicName]);
+
+                if ($epic == null) {
+                    // Create a new Epic if it doesn't exist
+                    $epic = new Epic();
+                    $epic->setTitle($epicName);
+                    $this->epicRepository->save($epic, true);
+                }
+
+                // Assign the Epic to the Issue
+                $issue->addEpic($epic);
+            }
+
+            if (null !== $progressCallback) {
+                $progressCallback($issuesProcessed, count($issues));
+                $issuesProcessed++;
+            }
+        }
+
+        // Save changes to the database
         $this->entityManager->flush();
     }
 }

@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Client;
 use App\Entity\DataProvider;
+use App\Entity\Epic;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
@@ -50,6 +51,10 @@ class AppFixtures extends Fixture
             $manager->persist($worker);
             $workerArray[] = 'test'.$i.'@test';
         }
+
+        $epic = new Epic();
+        $epic->setTitle("Epic 1");
+        $manager->persist($epic);
 
         foreach ($dataProviders as $key => $dataProvider) {
             $manager->persist($dataProvider);
@@ -113,8 +118,8 @@ class AppFixtures extends Fixture
                     $issue->setProjectTrackerId("issue-$i-$j");
                     $issue->setAccountId('Account 1');
                     $issue->setAccountKey('Account 1');
-                    $issue->setEpicName('Epic 1');
-                    $issue->setEpicKey('Epic 1');
+                    $issue->setEpicName('Epic ' . $j % 2 . ($j % 5 == 0 ? ",More than one Epic" : ''));
+                    $issue->setEpicKey('Epic ' . $j % 2);
                     $issue->setStatus($modStatus);
                     $issue->setDataProvider($dataProvider);
                     $issue->addVersion($versions[$j % count($versions)]);
@@ -125,8 +130,11 @@ class AppFixtures extends Fixture
                     $issue->setDueDate(new \DateTime());
                     $issue->setWorker($workerArray[rand(0, 9)]);
                     $issue->setLinkToIssue('www.example.com');
-
                     $manager->persist($issue);
+
+                    if ($key == 0 && $i == 0 && $j == 0) {
+                        $issue->addEpic($epic);
+                    }
 
                     for ($k = 0; $k < 100; ++$k) {
                         $year = (new \DateTime())->format('Y');
