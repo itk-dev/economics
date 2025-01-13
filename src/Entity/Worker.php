@@ -23,6 +23,9 @@ class Worker
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
+    #[ORM\Column(nullable: false, options: ['default' => true])]
+    private bool $includeInReports = true;
+
     public function __construct()
     {
     }
@@ -74,6 +77,18 @@ class Worker
     public function setName(?string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getIncludeInReports(): bool
+    {
+        return $this->includeInReports;
+    }
+
+    public function setIncludeInReports(bool $includeInReports): self
+    {
+        $this->includeInReports = $includeInReports;
 
         return $this;
     }
