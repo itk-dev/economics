@@ -88,10 +88,6 @@ class ProjectController extends AbstractController
         }
     }
 
-    /**
-     * @throws EconomicsException
-     * @throws UnsupportedDataProviderException
-     */
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]
     public function sync(Project $project, DataSynchronizationService $dataSynchronizationService): Response
     {
@@ -116,5 +112,16 @@ class ProjectController extends AbstractController
                 (int) ($exception->getCode() > 0 ? $exception->getCode() : 500)
             );
         }
+    }
+
+    #[Route('/options', name: 'app_project_options', methods: ['GET'])]
+    public function options(ProjectRepository $projectRepository): JsonResponse
+    {
+        $projects = $projectRepository->getIncluded()->getQuery()->getResult();
+
+        return new JsonResponse(array_map(fn ($project) => [
+            'id' => $project->getId(),
+            'title' => $project->getName(),
+        ], $projects));
     }
 }

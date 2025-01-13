@@ -114,7 +114,6 @@ class SubscriptionController extends AbstractController
                 } else {
                     return new JsonResponse([], 200);
                 }
-                break;
             default:
                 return new JsonResponse(
                     ['error' => 'Unsupported report type'],

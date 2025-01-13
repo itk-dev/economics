@@ -57,5 +57,9 @@
                 {{ include('components/navigation-item.html.twig', {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_PRODUCT_MANAGER', route: path('app_project_index')}) }}
             {% endif %}
         </ul>
+
+        <div class="mt-5">
+            {{ include('components/sync-button.html.twig') }}
+        </div>
     </div>
 </aside>
