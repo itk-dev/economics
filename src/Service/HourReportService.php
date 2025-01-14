@@ -48,7 +48,6 @@ class HourReportService
                 continue;
             }
 
-
             $projectTicket = new HourReportProjectTicket(
                 $issue->getId(),
                 $issue->getProjectTrackerId(),
