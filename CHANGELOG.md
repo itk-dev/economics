@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-194](https://github.com/itk-dev/economics/pull/194)
+  2299: Added amount to invoices list. Removed data provider.
 * [PR-188](https://github.com/itk-dev/economics/pull/188)
   2299: Removed sprint report.
 * [PR-182](https://github.com/itk-dev/economics/pull/182)
