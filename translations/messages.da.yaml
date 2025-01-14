@@ -263,6 +263,7 @@ invoices:
     type: "Kundekonto type"
     query_label: Søg
     query_placeholder: Søg på fakturanavn
+    list_amount: 'Antal'
 
 material_number_enum:
     internal: "Interne: 103361"
