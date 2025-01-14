@@ -77,7 +77,7 @@
                         <td class="table-td">{{ invoice.project }}</td>
                         <td class="table-td">{{ invoice.createdBy }}</td>
                         <td class="table-td">{{ invoice.updatedAt ? invoice.updatedAt|date : '' }}</td>
-                        <td class="table-td">{{ invoice.invoiceEntries|reduce((carry, invoiceEntry) => carry + invoiceEntry.amount, 0)  }}</td>
+                        <td class="table-td">{{ invoice.invoiceEntries|reduce((carry, invoiceEntry) => carry + invoiceEntry.amount, 0) }}</td>
                         <td class="table-td">{{ invoice.totalPrice }}</td>
                         <td class="table-td">{{ invoice.noCost ? 'invoices.list_no_cost_true'|trans : 'invoices.list_no_cost_false'|trans }}</td>
                         {% if recorded_invoices %}
