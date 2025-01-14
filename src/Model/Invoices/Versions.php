@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Model\SprintReport;
+namespace App\Model\Invoices;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-class SprintReportVersions
+class Versions
 {
-    /** @var ArrayCollection<string, SprintReportVersion> */
+    /** @var ArrayCollection<string, VersionModel> */
     public ArrayCollection $versions;
 
     public function __construct()

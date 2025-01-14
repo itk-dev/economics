@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model\SprintReport;
+namespace App\Model\Invoices;
 
-class SprintReportVersion
+class VersionModel
 {
     public string $id;
     public string $name;

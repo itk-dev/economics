@@ -15,7 +15,7 @@ use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
-use App\Model\SprintReport\SprintReportVersion;
+use App\Model\Invoices\VersionModel;
 use App\Repository\AccountRepository;
 use App\Repository\ClientRepository;
 use App\Repository\DataProviderRepository;
@@ -82,9 +82,9 @@ class DataSynchronizationService
             $project->setProjectTrackerKey($projectDatum->projectTrackerKey);
             $project->setProjectTrackerProjectUrl($projectDatum->projectTrackerProjectUrl);
 
-            foreach ($projectDatum->versions as $versionData) {
-                /** @var SprintReportVersion $versionDatum */
-                foreach ($versionData as $versionDatum) {
+            foreach ($projectDatum->versions as $versions) {
+                /** @var VersionModel $versionDatum */
+                foreach ($versions as $versionDatum) {
                     $version = $this->versionRepository->findOneBy([
                         'projectTrackerId' => $versionDatum->id,
                         'dataProvider' => $dataProvider,
