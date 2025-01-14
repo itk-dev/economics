@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Project;
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Form\ProjectFilterType;
 use App\Form\ProjectType;
 use App\Model\Invoices\ProjectFilterData;
