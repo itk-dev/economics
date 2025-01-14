@@ -1,8 +1,8 @@
 <div class="mt-5 selections p-5" {{ stimulus_controller('sync-project') }}>
     <select class="form-element" {{ stimulus_target('sync-project', 'select') }}></select>
-    <button class="button" {{ stimulus_action('sync-project', 'submit') }} {{ stimulus_target('sync-project', 'button') }}>Opdatér projekt</button>
-    <span class="hidden text-green-500" {{ stimulus_target('sync-project', 'ok') }}>✓ Ok</span>
-    <span class="hidden text-red-600" {{ stimulus_target('sync-project', 'error') }}>⚠ Fejl</span>
+    <button class="button" {{ stimulus_action('sync-project', 'submit') }} {{ stimulus_target('sync-project', 'button') }}>{{ 'sync_project.button'|trans }}</button>
+    <span class="hidden text-green-500" {{ stimulus_target('sync-project', 'ok') }}>{{ 'sync_project.ok'|trans }}</span>
+    <span class="hidden text-red-600" {{ stimulus_target('sync-project', 'error') }}>{{ 'sync_project.error'|trans }}</span>
     <span {{ stimulus_target('sync-project', 'spinner') }} class="hidden">
         {{ include('components/icons.html.twig', {icon: 'spinner', class: 'w-6 h-6 animate-spin inline-block'}) }}
     </span>

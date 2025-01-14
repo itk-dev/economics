@@ -821,3 +821,8 @@ forecast_report:
     invoiced_recorded_hours: 'Bogførte timer'
     missing_hours: 'Rest timer'
     total: 'Total'
+
+sync_project:
+    error: '⚠ Fejl'
+    ok: '✓ Ok'
+    button: 'Opdatér projekt'
