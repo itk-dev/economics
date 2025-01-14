@@ -8,10 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-193](https://github.com/itk-dev/economics/pull/193)
+  2575: Added link to issue on hour report.
 * [PR-188](https://github.com/itk-dev/economics/pull/188)
   2299: Removed sprint report.
 * [PR-182](https://github.com/itk-dev/economics/pull/182)
-  2597: Added invoicing rate report
+  2597: Added invoicing rate report.
 * [PR-185](https://github.com/itk-dev/economics/pull/186)
   2597: Added epic migration command.
 * [PR-184](https://github.com/itk-dev/economics/pull/184)
