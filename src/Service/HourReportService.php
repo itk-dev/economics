@@ -48,11 +48,14 @@ class HourReportService
                 continue;
             }
 
+
             $projectTicket = new HourReportProjectTicket(
                 $issue->getId(),
+                $issue->getProjectTrackerId(),
                 $issue->getName(),
                 $totalTicketEstimated,
-                $totalTicketSpent
+                $totalTicketSpent,
+                $issue->getLinkToIssue()
             );
 
             $projectTicket->timesheets->add($timesheets);
