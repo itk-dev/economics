@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-191](https://github.com/itk-dev/economics/pull/191)
   2299: Added project sync component to navigation.
+* [PR-188](https://github.com/itk-dev/economics/pull/188)
+  2299: Removed sprint report.
 * [PR-182](https://github.com/itk-dev/economics/pull/182)
   2597: Added invoicing rate report
 * [PR-185](https://github.com/itk-dev/economics/pull/186)
