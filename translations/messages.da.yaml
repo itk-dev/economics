@@ -784,7 +784,11 @@ forecast_report:
     missing_hours: 'Rest timer'
     total: 'Total'
 
-sync_project:
-    error: '⚠ Fejl'
-    ok: '✓ Ok'
-    button: 'Opdatér projekt'
+sync_status:
+    header: 'Synkronisering'
+    error: '⚠'
+    ok: '✓'
+    button: 'Kør!'
+    not_started: 'Job sat i kø'
+    running: 'I gang...'
+    fetching_status: 'Henter status...'
