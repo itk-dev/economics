@@ -254,7 +254,7 @@ class InvoicingRateReportService
         return match ($viewMode) {
             InvoicingRateReportViewModeEnum::SUMMARY => [
                 $this->worklogRepository->findWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
-                $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
+                $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($dateFrom, $dateTo, $workerIdentifier),
                 $this->worklogRepository->findBilledWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
             ],
         };
