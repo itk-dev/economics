@@ -113,7 +113,7 @@ class WorklogRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
-    public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    public function findBillableWorklogsByWorkerAndDateRange(\DateTime $dateFrom, \DateTime $dateTo, ?string $workerIdentifier = null)
     {
         $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
         $nonBillableVersions = NonBillableVersionsEnum::getAsArray();
@@ -125,29 +125,31 @@ class WorklogRepository extends ServiceEntityRepository
             ->leftJoin('issue.epics', 'epic')
             ->leftJoin('issue.versions', 'version');
 
-        return $qb
-            ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
-            ->andWhere('worklog.worker = :worker')
+        $qb->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
             ->andWhere($qb->expr()->andX(
-                $qb->expr()->eq('project.isBillable', '1'),
+                $qb->expr()->eq('project.isBillable', '1')
             ))
-            // notIn will only work if the string it is checked against is not null
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->isNull('epic.title'),
-                $qb->expr()->notIn('epic.title', ':nonBillableEpics'),
+                $qb->expr()->notIn('epic.title', ':nonBillableEpics')
             ))
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->isNull('version.name'),
                 $qb->expr()->notIn('version.name', ':nonBillableVersions')
-            ))
-            ->setParameters([
-                'worker' => $workerIdentifier,
-                'dateFrom' => $dateFrom,
-                'dateTo' => $dateTo,
-                'nonBillableEpics' => array_values($nonBillableEpics),
-                'nonBillableVersions' => array_values($nonBillableVersions),
-            ])
-            ->getQuery()->getResult();
+            ));
+
+        // Add the worker condition only when provided
+        if ($workerIdentifier !== null) {
+            $qb->andWhere('worklog.worker = :worker')
+                ->setParameter('worker', $workerIdentifier);
+        }
+
+        return $qb->setParameters([
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+            'nonBillableEpics' => array_values($nonBillableEpics),
+            'nonBillableVersions' => array_values($nonBillableVersions),
+        ])->getQuery()->getResult();
     }
 
     public function findBilledWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
