@@ -1,0 +1,86 @@
+<div id="scrollContainer" class="overflow-x-auto w-full">
+    <table
+        class="table-auto border-separate border-spacing-0 border border-slate-600 relative">
+        <thead>
+        <tr>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                {{ 'hour_report.project_name'|trans }}
+            </th>
+            <th class="text-center px-2 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                {{ 'hour_report.total_hours'|trans }}
+            </th>
+        </tr>
+        </thead>
+
+        {% for projectName, issues in data.projectData[0] %}
+            <tbody {{ stimulus_controller('toggle-parent-child') }} data-toggle-id="{{ projectName }}">
+            <!-- Project Row -->
+            <tr>
+                <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                    <div class="flex flex-row">
+                        <span class="flex-grow mr-3">
+                            {{ projectName }}
+                        </span>
+                        <button class="expand-btn mr-3 w-4"
+                                type="button" {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
+                                data-toggle-target="button">
+                            <i class="fa-solid fa-maximize"></i>
+                            <i class="fa-solid fa-minimize hidden"></i>
+                        </button>
+                    </div>
+                </td>
+                <td class="text-center px-3 border border-slate-600 font-semibold">
+                    {{ data.projectTotals[projectName]|default(0) }}
+                </td>
+            </tr>
+
+            {% for issueName, issueData in issues %}
+                <!-- Issue Row -->
+                <tr {{ stimulus_target('toggle-parent-child', 'parent') }}>
+                    <td class="text-left py-2 px-3 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                        <div class="flex flex-row">
+                            <span class="flex-grow mr-3">
+                                &nbsp;&nbsp;{{ issueName }}
+                            </span>
+                            <button class="expand-btn mr-3 w-4"
+                                    type="button" {{ stimulus_action('toggle-parent-child', 'toggleChild') }}
+                                    data-toggle-target="button"
+                                    data-parent-id="{{ issueName }}">
+                                <i class="fa-solid fa-maximize"></i>
+                                <i class="fa-solid fa-minimize hidden"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="text-center px-3 border border-slate-600">
+                        {{ issueData.totalHours|default(0) }}
+                    </td>
+                </tr>
+
+                <!-- Worklog Rows -->
+                {% for worklog in issueData.worklogs %}
+                    <tr {{ stimulus_target('toggle-parent-child', 'child') }}  data-parent-id="{{ issueName }}">
+                        <td class="text-left py-2 px-3 border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                            &nbsp;&nbsp;&nbsp;&nbsp;{{ worklog.worker }} - {{ worklog.description }}
+                        </td>
+                        <td class="text-center px-3 border border-slate-600">
+                            {{ worklog.hours }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            </tbody>
+        {% endfor %}
+
+        <tfoot>
+        <!-- Overall Total Row (Global Total) -->
+        <tr>
+            <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900 font-bold">
+                {{ 'hour_report.total'|trans }}
+            </td>
+            <td class="text-center px-3 border border-slate-600 font-bold">
+                {{ data.totalHoursForAllProjects|default(0) }}
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+</div>
