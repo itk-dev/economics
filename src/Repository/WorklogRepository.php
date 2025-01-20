@@ -136,7 +136,8 @@ class WorklogRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->isNull('version.name'),
                 $qb->expr()->notIn('version.name', ':nonBillableVersions')
-            ));
+            ))
+            ->andWhere($qb->expr()->isNotNull('worklog.isBilled'));
 
         // Add the worker condition only when provided
         if (null !== $workerIdentifier) {
