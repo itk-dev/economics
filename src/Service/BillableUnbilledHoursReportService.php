@@ -28,8 +28,8 @@ class BillableUnbilledHoursReportService
         $billableWorklogs = $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($dateFrom, $dateTo);
 
         $projectData = [];
-        $projectTotals = []; // To store total hours per project
-        $totalHoursForAllProjects = 0; // To store the global total hours across all projects
+        $projectTotals = [];
+        $totalHoursForAllProjects = 0;
 
         foreach ($billableWorklogs as $billableWorklog) {
             if (false === $billableWorklog->isBilled()) {
@@ -45,7 +45,7 @@ class BillableUnbilledHoursReportService
                 }
 
                 $workerIdentifier = $billableWorklog->getWorker();
-                $workerName = ($this->workerRepository->findOneBy(['email' => $workerIdentifier]))?->getName() ?? '';
+                $workerName = $this->workerRepository->findOneBy(['email' => $workerIdentifier])?->getName() ?? '';
 
                 // Add the worklog to the issue
                 $projectData[$projectName][$issueName]['worklogs'][] = [

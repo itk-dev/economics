@@ -8,8 +8,10 @@ class BillableUnbilledHoursReportData
 {
     public string $id;
 
-    /** @var ArrayCollection<string, string> */
+    /** @var ArrayCollection<string, mixed> */
     public ArrayCollection $projectData;
+    public array $projectTotals;
+    public int|float $totalHoursForAllProjects;
 
     public function __construct()
     {
