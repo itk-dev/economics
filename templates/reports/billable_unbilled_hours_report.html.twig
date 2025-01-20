@@ -40,7 +40,7 @@
                     <td class="text-left py-2 px-3 border border-slate-600 bg-slate-100 dark:bg-slate-900">
                         <div class="flex flex-row">
                             <span class="flex-grow mr-3">
-                               {{ issueName }}
+                               {{ issueName }} <a class="link" target="_blank" href="{{ issueData.linkToIssue }}">#{{ issueData.id }}</a>
                             </span>
                             <button class="expand-btn mr-3 w-4"
                                     type="button" {{ stimulus_action('toggle-parent-child', 'toggleChild') }}

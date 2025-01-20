@@ -41,6 +41,8 @@ class BillableUnbilledHoursReportService
                     $projectData[$projectName][$issueName] = [
                         'worklogs' => [],
                         'totalHours' => 0,
+                        'id' => $billableWorklog->getIssue()->getProjectTrackerId(),
+                        'linkToIssue' => $billableWorklog->getIssue()->getLinkToIssue(),
                     ];
                 }
 
