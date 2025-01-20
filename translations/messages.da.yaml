@@ -783,3 +783,13 @@ forecast_report:
     invoiced_recorded_hours: 'Bogførte timer'
     missing_hours: 'Rest timer'
     total: 'Total'
+
+billable_unbilled_hours_report:
+    no_description: 'Ingen beskrivelse'
+    no_worker: 'Ingen medarbejder'
+    submit: 'Hent'
+    total: 'Total'
+    unbilled_hours: 'Ufakturerede timer'
+    projects: 'Projekter'
+    year: 'År'
+    title: 'Ufakturerede fakturerbare timer'
