@@ -61,7 +61,7 @@ class WorkloadReportService
 
             foreach ($periods as $period) {
                 // Add current period match-point (current week-number, month-number etc.)
-                $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType);
+                $currentPeriodNumeric = $this->getCurrentPeriodNumeric($viewPeriodType, $year);
 
                 if ($period === $currentPeriodNumeric) {
                     $workloadReportData->setCurrentPeriodNumeric($period);
@@ -142,13 +142,27 @@ class WorkloadReportService
 
     /**
      * Retrieves the current period as a numeric value based on the given view mode.
+     * If the provided year does not match the current year, it returns the maximum period value + 1
+     * to ensure correct data summation and no highlighting of current period.
      *
      * @param PeriodTypeEnum $viewMode the view mode to determine the current period
+     * @param int $year the provided year
      *
      * @return int the current period as a numeric value
      */
-    private function getCurrentPeriodNumeric(PeriodTypeEnum $viewMode): int
+    private function getCurrentPeriodNumeric(PeriodTypeEnum $viewMode, int $year): int
     {
+        $currentYear = (int) (new \DateTime())->format('Y');
+
+        if ($year !== $currentYear) {
+            return match ($viewMode) {
+                PeriodTypeEnum::MONTH => 13,
+                PeriodTypeEnum::WEEK => 53,
+                PeriodTypeEnum::YEAR => $year + 1,
+            };
+        }
+
+        // Default behavior for retrieving the current period numeric value
         return match ($viewMode) {
             PeriodTypeEnum::MONTH => (int) (new \DateTime())->format('n'),
             PeriodTypeEnum::WEEK => (int) (new \DateTime())->format('W'),
@@ -203,7 +217,7 @@ class WorkloadReportService
         return match ($viewMode) {
             PeriodTypeEnum::MONTH => range(1, 12),
             PeriodTypeEnum::WEEK => $this->dateTimeHelper->getWeeksOfYear($year),
-            PeriodTypeEnum::YEAR => [(int) (new \DateTime())->format('Y')],
+            PeriodTypeEnum::YEAR => [$year],
         };
     }
 
