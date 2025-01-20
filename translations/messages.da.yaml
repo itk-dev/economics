@@ -26,6 +26,7 @@ navigation:
     worker: "Medarbejdere"
     subscription: "Abonnementer"
     invoicing_rate_report: "Udfaktureringsrapport"
+    billable_unbilled_hours_report: 'Ufakturerede timer'
 
 planning:
     title: 'Planlægning'
