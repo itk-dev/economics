@@ -17,8 +17,7 @@ class BillableUnbilledHoursReportController extends AbstractController
 {
     public function __construct(
         private readonly BillableUnbilledHoursReportService $billableUnbilledHoursReportService,
-    )
-    {
+    ) {
     }
 
     #[Route('/', name: 'app_billable_unbilled_hours_report')]
