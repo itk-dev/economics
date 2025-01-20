@@ -139,7 +139,7 @@ class WorklogRepository extends ServiceEntityRepository
             ));
 
         // Add the worker condition only when provided
-        if ($workerIdentifier !== null) {
+        if (null !== $workerIdentifier) {
             $qb->andWhere('worklog.worker = :worker')
                 ->setParameter('worker', $workerIdentifier);
         }
