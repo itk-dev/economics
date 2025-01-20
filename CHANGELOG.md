@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-196](https://github.com/itk-dev/economics/pull/196)
+  3624: Correctly handling periods when viewing past workload reports.
 * [PR-194](https://github.com/itk-dev/economics/pull/194)
   2299: Added amount to invoices list. Removed data provider.
 * [PR-193](https://github.com/itk-dev/economics/pull/193)
