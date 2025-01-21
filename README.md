@@ -43,6 +43,40 @@ Only issues from the project tracker that have a connected account will be inclu
 is used to create invoices for the Support project, where issues are billed to different
 accounts.
 
+## Synchronization
+
+Economics depends on data fra external systems. The integrations with external systems are called Data Providers.
+
+Each Data Provider integration should implement `App\Interface\DataProviderServiceInterface`.
+
+The data synchronization is handled by symfony messenger. This is handled differently in development and production.
+
+### Production
+
+Supervisor is added to `docker-compose.server.override.yaml` to make sure the job queue is running.
+
+Symfony scheduler is used for creating a new job each hour at minute 5. See `App\Command\QueueSyncCommand`.
+
+### Develop
+
+In development the job queue should be run manually.
+
+```sh
+docker compose exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
+```
+
+### Queuing jobs
+
+Jobs can be queued manually with App\Command\QueueSyncCommand
+
+```sh
+docker compose exec phpfpm bin/console app:queue-sync
+```
+
+Jobs can also be queued in the admin interface in the bottom left corner.
+
+In production jobs are queued automatically each hour.
+
 ## Development
 
 Getting started:
