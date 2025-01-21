@@ -99,8 +99,8 @@ class ProjectController extends AbstractController
             $dataProvider = $project->getDataProvider();
 
             if (null != $dataProvider) {
-                $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
-                $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
+                $dataSynchronizationService->syncIssuesForProject($projectId, $dataProvider);
+                $dataSynchronizationService->syncWorklogsForProject($projectId, $dataProvider);
             }
 
             return new JsonResponse([], 200);

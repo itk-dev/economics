@@ -45,7 +45,7 @@ class HourReportType extends AbstractType
                     'onchange' => 'this.form.submit()',
                     'class' => 'form-element',
                 ],
-                'help' => 'sprint_report.data_provider_helptext',
+                'help' => 'hour_report.data_provider_helptext',
                 'data' => $defaultProvider,
                 'choices' => $dataProviders,
             ])
@@ -128,9 +128,6 @@ class HourReportType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => HourReportFormData::class,
-            'attr' => [
-                'data-sprint-report-target' => 'form',
-            ],
         ])
             ->setRequired('data_provider')
             ->setRequired('project')

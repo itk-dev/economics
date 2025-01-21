@@ -51,7 +51,7 @@ class SyncIssuesCommand extends Command
             foreach ($projects as $project) {
                 $io->writeln("Processing issues for {$project->getName()}");
 
-                $this->dataSynchronizationService->syncIssuesForProject($project->getId(), function ($i, $length) use ($io) {
+                $this->dataSynchronizationService->syncIssuesForProject($project->getId(), $dataProvider, function ($i, $length) use ($io) {
                     if (0 == $i) {
                         $io->progressStart($length);
                     } elseif ($i >= $length - 1) {
@@ -59,7 +59,7 @@ class SyncIssuesCommand extends Command
                     } else {
                         $io->progressAdvance();
                     }
-                }, $dataProvider);
+                });
 
                 $io->writeln('');
             }

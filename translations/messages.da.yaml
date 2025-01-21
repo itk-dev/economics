@@ -549,10 +549,8 @@ invoicing_rate_report:
 
         Ved hover på faktureringsprocent vises [ Fakturerede timer for perioden ---- Loggede timer for perioden ]'
 
-
-
-
 hour_report:
+    data_provider_helptext: ''
     title: 'Timerapport'
     data_provider: 'Datakilde'
     project: 'Projekt'
@@ -566,6 +564,7 @@ hour_report:
     select_project: 'Vælg project'
     all_versions: 'Alle versioner'
     tags: 'Tags'
+    sync_project_action: 'Synkronisér projekt'
 
 view:
     list_title: 'Views'
@@ -792,3 +791,6 @@ sync_status:
     not_started: 'Job sat i kø'
     running: 'I gang...'
     fetching_status: 'Henter status...'
+subscribe_button:
+    subscribe: 'messages'
+    unsubscribe: 'messages'

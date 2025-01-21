@@ -9,13 +9,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SynchronizationJobRepository::class)]
-class SynchronizationJob
+class SynchronizationJob extends AbstractBaseEntity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $started = null;
 
@@ -34,10 +29,8 @@ class SynchronizationJob
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $messages = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\Column(nullable: true)]
+    private ?int $messageId = null;
 
     public function getStarted(): ?\DateTimeInterface
     {
@@ -107,6 +100,18 @@ class SynchronizationJob
     public function setMessages(?string $messages): static
     {
         $this->messages = $messages;
+
+        return $this;
+    }
+
+    public function getMessageId(): ?int
+    {
+        return $this->messageId;
+    }
+
+    public function setMessageId(?int $messageId): static
+    {
+        $this->messageId = $messageId;
 
         return $this;
     }

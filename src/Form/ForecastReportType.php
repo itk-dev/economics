@@ -57,9 +57,6 @@ class ForecastReportType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => ForecastReportFormData::class,
-            'attr' => [
-                'data-sprint-report-target' => 'form',
-            ],
         ]);
     }
 }

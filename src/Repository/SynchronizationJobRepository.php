@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\SynchronizationJob;
-use App\Enum\SynchronizationStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,27 +16,24 @@ class SynchronizationJobRepository extends ServiceEntityRepository
         parent::__construct($registry, SynchronizationJob::class);
     }
 
+    public function getMessengerMessage(int $id): array|bool
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = 'SELECT * FROM messenger_messages m WHERE m.id = :id';
+
+        $resultSet = $conn->executeQuery($sql, ['id' => $id]);
+
+        return $resultSet->fetchAssociative();
+    }
+
     public function getLatestJob(): ?SynchronizationJob
     {
         $qb = $this->createQueryBuilder('j');
         $qb->orderBy('j.id', 'DESC');
         $qb->setMaxResults(1);
+
         return $qb->getQuery()->getOneOrNullResult();
-    }
-
-    public function getIsRunning(): bool
-    {
-        $qb = $this->createQueryBuilder('j');
-        $qb->where(
-            $qb->expr()->orX(
-                $qb->expr()->eq('j.status', ':running'),
-                $qb->expr()->eq('j.status', ':not_started')
-            )
-        );
-        $qb->setParameter('running', SynchronizationStatusEnum::RUNNING->value);
-        $qb->setParameter('not_started', SynchronizationStatusEnum::NOT_STARTED->value);
-
-        return count($qb->getQuery()->getArrayResult()) > 0;
     }
 
     public function save(SynchronizationJob $entity, bool $flush = false): void

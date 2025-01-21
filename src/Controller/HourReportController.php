@@ -88,6 +88,7 @@ class HourReportController extends AbstractController
             'controller_name' => 'HourReportController',
             'form' => $form,
             'data' => $reportData,
+            'project' => $project,
             'mode' => 'hour_report',
         ]);
     }
