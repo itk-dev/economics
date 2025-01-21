@@ -29,9 +29,6 @@ class SynchronizationJob extends AbstractBaseEntity
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $messages = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $messageId = null;
-
     public function getStarted(): ?\DateTimeInterface
     {
         return $this->started;
@@ -100,18 +97,6 @@ class SynchronizationJob extends AbstractBaseEntity
     public function setMessages(?string $messages): static
     {
         $this->messages = $messages;
-
-        return $this;
-    }
-
-    public function getMessageId(): ?int
-    {
-        return $this->messageId;
-    }
-
-    public function setMessageId(?int $messageId): static
-    {
-        $this->messageId = $messageId;
 
         return $this;
     }
