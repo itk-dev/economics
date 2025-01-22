@@ -32,42 +32,42 @@ class BillableUnbilledHoursReportService
         $totalHoursForAllProjects = 0;
 
         foreach ($billableWorklogs as $billableWorklog) {
-                $projectName = $billableWorklog->getProject()->getName();
-                $issueName = $billableWorklog->getIssue()->getName();
+            $projectName = $billableWorklog->getProject()->getName();
+            $issueName = $billableWorklog->getIssue()->getName();
 
-                // Initialize issue data if not already set
-                if (!isset($projectData[$projectName][$issueName])) {
-                    $projectData[$projectName][$issueName] = [
-                        'worklogs' => [],
-                        'totalHours' => 0,
-                        'id' => $billableWorklog->getIssue()->getProjectTrackerId(),
-                        'linkToIssue' => $billableWorklog->getIssue()->getLinkToIssue(),
-                    ];
-                }
-
-                $workerIdentifier = $billableWorklog->getWorker();
-                $workerName = $this->workerRepository->findOneBy(['email' => $workerIdentifier])?->getName() ?? '';
-
-                // Add the worklog to the issue
-                $projectData[$projectName][$issueName]['worklogs'][] = [
-                    'worker' => !empty($workerName) ? $workerName : $this->translator->trans('billable_unbilled_hours_report.no_worker'),
-                    'description' => !empty($billableWorklog->getDescription()) ? $billableWorklog->getDescription() : $this->translator->trans('billable_unbilled_hours_report.no_description'),
-                    'hours' => $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS,
+            // Initialize issue data if not already set
+            if (!isset($projectData[$projectName][$issueName])) {
+                $projectData[$projectName][$issueName] = [
+                    'worklogs' => [],
+                    'totalHours' => 0,
+                    'id' => $billableWorklog->getIssue()->getProjectTrackerId(),
+                    'linkToIssue' => $billableWorklog->getIssue()->getLinkToIssue(),
                 ];
+            }
 
-                // Increment the issue total hours
-                $projectData[$projectName][$issueName]['totalHours'] += $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS;
+            $workerIdentifier = $billableWorklog->getWorker();
+            $workerName = $this->workerRepository->findOneBy(['email' => $workerIdentifier])?->getName() ?? '';
 
-                // Initialize project total if not already set
-                if (!isset($projectTotals[$projectName])) {
-                    $projectTotals[$projectName] = 0;
-                }
+            // Add the worklog to the issue
+            $projectData[$projectName][$issueName]['worklogs'][] = [
+                'worker' => !empty($workerName) ? $workerName : $this->translator->trans('billable_unbilled_hours_report.no_worker'),
+                'description' => !empty($billableWorklog->getDescription()) ? $billableWorklog->getDescription() : $this->translator->trans('billable_unbilled_hours_report.no_description'),
+                'hours' => $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS,
+            ];
 
-                // Add to the project total hours
-                $projectTotals[$projectName] += $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS;
+            // Increment the issue total hours
+            $projectData[$projectName][$issueName]['totalHours'] += $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS;
 
-                // Add to the global total hours
-                $totalHoursForAllProjects += $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS;
+            // Initialize project total if not already set
+            if (!isset($projectTotals[$projectName])) {
+                $projectTotals[$projectName] = 0;
+            }
+
+            // Add to the project total hours
+            $projectTotals[$projectName] += $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS;
+
+            // Add to the global total hours
+            $totalHoursForAllProjects += $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS;
         }
 
         // Add project data, project totals, and global total to the report data
