@@ -12,7 +12,7 @@ enum SynchronizationStepEnum: string implements TranslatableInterface
     case ISSUES = 'ISSUES';
     case WORKLOGS = 'WORKLOGS';
 
-    public function trans(TranslatorInterface $translator, string $locale = null): string
+    public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
         return match ($this) {
             self::PROJECTS => $translator->trans('synchronization_step_enum.projects', locale: $locale),

@@ -35,7 +35,7 @@ class SynchronizationJobController extends AbstractController
             'started' => $latestJob->getStarted()?->format('c'),
             'ended' => $latestJob->getEnded()?->format('c'),
             'status' => $latestJob->getStatus()?->value,
-            'step' => $latestJob->getStep()->trans($translator),
+            'step' => $latestJob->getStep()?->trans($translator) ?? $latestJob->getStep()?->value,
             'progress' => $latestJob->getProgress(),
         ], 200);
     }

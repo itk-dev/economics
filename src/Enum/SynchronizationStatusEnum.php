@@ -12,7 +12,7 @@ enum SynchronizationStatusEnum: string implements TranslatableInterface
     case DONE = 'DONE';
     case ERROR = 'ERROR';
 
-    public function trans(TranslatorInterface $translator, string $locale = null): string
+    public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
         return match ($this) {
             self::NOT_STARTED => $translator->trans('synchronization_status_enum.not_started', locale: $locale),
