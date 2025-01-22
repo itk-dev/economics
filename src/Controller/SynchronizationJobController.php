@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/synchronization')]
 #[IsGranted('ROLE_ADMIN')]
@@ -22,7 +23,7 @@ class SynchronizationJobController extends AbstractController
     }
 
     #[Route('/status', name: 'app_synchronization_status', methods: ['GET'])]
-    public function status(SynchronizationJobRepository $synchronizationJobRepository): Response
+    public function status(SynchronizationJobRepository $synchronizationJobRepository, TranslatorInterface $translator): Response
     {
         $latestJob = $synchronizationJobRepository->getLatestJob();
 
@@ -33,8 +34,8 @@ class SynchronizationJobController extends AbstractController
         return new JsonResponse([
             'started' => $latestJob->getStarted()?->format('c'),
             'ended' => $latestJob->getEnded()?->format('c'),
-            'status' => $latestJob->getStatus()?->name,
-            'step' => $latestJob->getStep()?->name,
+            'status' => $latestJob->getStatus()?->value,
+            'step' => $latestJob->getStep()->trans($translator),
             'progress' => $latestJob->getProgress(),
         ], 200);
     }

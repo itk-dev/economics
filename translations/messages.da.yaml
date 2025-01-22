@@ -791,6 +791,15 @@ sync_status:
     not_started: 'Job sat i kø'
     running: 'I gang...'
     fetching_status: 'Henter status...'
-subscribe_button:
-    subscribe: 'messages'
-    unsubscribe: 'messages'
+
+synchronization_step_enum:
+    projects: 'Projekter'
+    accounts: 'Kontoer'
+    worklogs: 'Tid'
+    issues: 'Opgaver'
+
+synchronization_status_enum:
+    not_started: 'Afventer'
+    running: 'Kører'
+    done: 'Færdig'
+    error: 'Fejlede'
