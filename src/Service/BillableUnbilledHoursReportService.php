@@ -25,14 +25,13 @@ class BillableUnbilledHoursReportService
         $billableUnbilledHoursReportData = new BillableUnbilledHoursReportData();
         ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $this->dateTimeHelper->getFirstAndLastDateOfYear($year);
 
-        $billableWorklogs = $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($dateFrom, $dateTo);
+        $billableWorklogs = $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($dateFrom, $dateTo, null, false);
 
         $projectData = [];
         $projectTotals = [];
         $totalHoursForAllProjects = 0;
 
         foreach ($billableWorklogs as $billableWorklog) {
-            if (false === $billableWorklog->isBilled()) {
                 $projectName = $billableWorklog->getProject()->getName();
                 $issueName = $billableWorklog->getIssue()->getName();
 
@@ -69,7 +68,6 @@ class BillableUnbilledHoursReportService
 
                 // Add to the global total hours
                 $totalHoursForAllProjects += $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS;
-            }
         }
 
         // Add project data, project totals, and global total to the report data

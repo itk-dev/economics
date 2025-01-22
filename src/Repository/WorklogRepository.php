@@ -61,7 +61,7 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         if (!empty($filterData->worker)) {
-            $qb->andWhere('worklog.worker LIKE :worker')->setParameter('worker', '%'.$filterData->worker.'%');
+            $qb->andWhere('worklog.worker LIKE :worker')->setParameter('worker', '%' . $filterData->worker . '%');
         }
 
         if (!empty($filterData->periodFrom)) {
@@ -113,7 +113,17 @@ class WorklogRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
-    public function findBillableWorklogsByWorkerAndDateRange(\DateTime $dateFrom, \DateTime $dateTo, ?string $workerIdentifier = null)
+    /**
+     * Finds billable worklogs within a specific date range for a given worker.
+     *
+     * @param \DateTime $dateFrom The start date for the date range filter.
+     * @param \DateTime $dateTo The end date for the date range filter.
+     * @param string|null $workerIdentifier Optional worker identifier to filter worklogs by worker.
+     * @param mixed|null $isBilled Optional indicator for whether the worklog has been billed or not.
+     *
+     * @return array An array of worklogs matching the specified criteria.
+     */
+    public function findBillableWorklogsByWorkerAndDateRange(\DateTime $dateFrom, \DateTime $dateTo, ?string $workerIdentifier = null, mixed $isBilled = null): array
     {
         $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
         $nonBillableVersions = NonBillableVersionsEnum::getAsArray();
@@ -136,21 +146,26 @@ class WorklogRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->isNull('version.name'),
                 $qb->expr()->notIn('version.name', ':nonBillableVersions')
-            ))
-            ->andWhere($qb->expr()->isNotNull('worklog.isBilled'));
+            ));
 
-        // Add the worker condition only when provided
-        if (null !== $workerIdentifier) {
-            $qb->andWhere('worklog.worker = :worker')
-                ->setParameter('worker', $workerIdentifier);
+        if ($isBilled !== null) {
+            $qb->andWhere($qb->expr()->eq('worklog.isBilled', ':isBilled'));
         }
 
-        return $qb->setParameters([
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo,
-            'nonBillableEpics' => array_values($nonBillableEpics),
-            'nonBillableVersions' => array_values($nonBillableVersions),
-        ])->getQuery()->getResult();
+        if ($workerIdentifier !== null) {
+            $qb->andWhere('worklog.worker = :worker');
+        }
+
+        return $qb->setParameters(array_merge(
+            [
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+                'nonBillableEpics' => array_values($nonBillableEpics),
+                'nonBillableVersions' => array_values($nonBillableVersions),
+            ],
+            $isBilled !== null ? ['isBilled' => $isBilled] : [],
+            $workerIdentifier !== null ? ['worker' => $workerIdentifier] : []
+        ))->getQuery()->getResult();
     }
 
     public function findBilledWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
@@ -195,8 +210,8 @@ class WorklogRepository extends ServiceEntityRepository
      */
     public function getWorklogsAttachedToInvoiceInDateRange(\DateTimeInterface $periodStart, \DateTimeInterface $periodEnd, int $page = 1, int $pageSize = 50): array
     {
-        $from = new \DateTimeImmutable($periodStart->format('Y-m-d').' 00:00:00');
-        $to = new \DateTimeImmutable($periodEnd->format('Y-m-d').' 23:59:59');
+        $from = new \DateTimeImmutable($periodStart->format('Y-m-d') . ' 00:00:00');
+        $to = new \DateTimeImmutable($periodEnd->format('Y-m-d') . ' 23:59:59');
 
         $query = $this->createQueryBuilder('worklog')
             ->leftJoin(Issue::class, 'issue', 'WITH', 'worklog.issue = issue.id')
