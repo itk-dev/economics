@@ -770,7 +770,7 @@ subscription:
         monthly: 'Månedligt'
         quarterly: 'Kvartalsvist'
     button:
-        subscribe: 'Abonér'
+        subscribe: 'Abonnér'
         edit: 'Rediger'
         monthly: 'Månedligt'
         quarterly: 'Kvartalsvist'
