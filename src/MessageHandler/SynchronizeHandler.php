@@ -10,6 +10,7 @@ use App\Repository\ProjectRepository;
 use App\Repository\SynchronizationJobRepository;
 use App\Service\DataSynchronizationService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 
 #[AsMessageHandler]
 class SynchronizeHandler
@@ -24,15 +25,16 @@ class SynchronizeHandler
 
     public function __invoke(SynchronizeMessage $message): void
     {
-        $job = $this->synchronizationJobRepository->find($message->getSynchronizationJobId());
-
-        if (null === $job) {
-            throw new \Exception('Job not found', 404);
-        }
-
         try {
+            $job = $this->synchronizationJobRepository->find($message->getSynchronizationJobId());
+
+            if (null === $job) {
+                throw new \Exception('Job not found', 404);
+            }
+
             $job->setStarted(new \DateTime());
             $job->setMessages('Synchronization started');
+            $job->setProgress(0);
             $job->setStatus(SynchronizationStatusEnum::RUNNING);
             $this->synchronizationJobRepository->save($job, true);
 
@@ -102,9 +104,16 @@ class SynchronizeHandler
             $job->setEnded(new \DateTime());
             $this->synchronizationJobRepository->save($job, true);
         } catch (\Throwable $throwable) {
-            $job->setStatus(SynchronizationStatusEnum::ERROR);
-            $job->setEnded(new \DateTime());
-            $this->synchronizationJobRepository->save($job, true);
+            $job = $this->synchronizationJobRepository->find($message->getSynchronizationJobId());
+
+            if (null !== $job) {
+                $job->setStatus(SynchronizationStatusEnum::ERROR);
+                $job->setEnded(new \DateTime());
+                $this->synchronizationJobRepository->save($job, true);
+            }
+
+            // Avoid retrying job.
+            throw new UnrecoverableMessageHandlingException($throwable->getMessage(), (int) $throwable->getCode() ?? 0);
         }
     }
 }
