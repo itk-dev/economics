@@ -72,9 +72,6 @@ class InvoicingRateReportType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => InvoicingRateReportFormData::class,
-            'attr' => [
-                'data-sprint-report-target' => 'form',
-            ],
             'years' => null,
         ]);
     }

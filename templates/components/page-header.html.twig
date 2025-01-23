@@ -1,15 +1,18 @@
 <header class="w-full flex justify-between items-center">
     <h1 class="page-title">{{ title }}</h1>
-    {% if type is defined %}
-        {% if type == 'link' %}
-            <a class="link border border-blue-600 rounded px-3 py-2 no-underline hover:bg-blue-50" href="{{ path(link_url) }}">{{ link_text }}</a>
-        {% endif %}
-        {% if type == 'action' %}
-            {{ include('components/action-button.html.twig') }}
-        {% endif %}
-        {% if type == 'subscribe' %}
-            {{ include('components/subscribe-button.html.twig') }}
-        {% endif %}
-    {% endif %}
 
+    <div>
+        {% if type is defined %}
+            {% if type == 'link' %}
+                <a class="link border border-blue-600 rounded px-3 py-2 no-underline hover:bg-blue-50" href="{{ path(link_url) }}">{{ link_text }}</a>
+            {% endif %}
+            {% if type == 'action' %}
+                {{ include('components/action-button.html.twig') }}
+            {% endif %}
+            {% if type == 'subscribe' %}
+                {{ include('components/subscribe-button.html.twig') }}
+            {% endif %}
+        {% endif %}
+        {% block actions %}{% endblock %}
+    </div>
 </header>

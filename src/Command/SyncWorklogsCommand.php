@@ -51,7 +51,7 @@ class SyncWorklogsCommand extends Command
             foreach ($projects as $project) {
                 $io->writeln("Processing worklogs for {$project->getName()}");
 
-                $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), function ($i, $length) use ($io) {
+                $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), $dataProvider, function ($i, $length) use ($io) {
                     if (0 == $i) {
                         $io->progressStart($length);
                     } elseif ($i >= $length - 1) {
@@ -59,7 +59,7 @@ class SyncWorklogsCommand extends Command
                     } else {
                         $io->progressAdvance();
                     }
-                }, $dataProvider);
+                });
 
                 $io->writeln('');
             }

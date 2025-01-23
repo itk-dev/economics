@@ -68,9 +68,6 @@ class WorkloadReportType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => WorkloadReportFormData::class,
-            'attr' => [
-                'data-sprint-report-target' => 'form',
-            ],
             'years' => null,
         ]);
     }

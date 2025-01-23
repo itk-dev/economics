@@ -1,0 +1,25 @@
+<div class="mt-5 selections p-5" {{ stimulus_controller('sync-status') }} data-interval="60">
+    <div style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: .25em">
+        <span>{{ 'sync_status.header'|trans }}</span>
+        <button class="button hidden" style="padding: .25em .5em; margin-left: .5em"
+            {{ stimulus_action('sync-status', 'run') }} {{ stimulus_target('sync-status', 'button') }}>
+            {{ 'sync_status.button'|trans }}
+        </button>
+    </div>
+    <div>
+        <div class="hidden" {{ stimulus_target('sync-status', 'done') }}>
+            <span class="hidden text-green-500 text-xl" {{ stimulus_target('sync-status', 'ok') }}>{{ 'sync_status.ok'|trans }}</span>
+            <span class="hidden text-red-600 text-xl" {{ stimulus_target('sync-status', 'error') }}>{{ 'sync_status.error'|trans }}</span>
+            <span {{ stimulus_target('sync-status', 'ended') }}></span>
+        </div>
+        <div class="hidden" {{ stimulus_target('sync-status', 'active') }}>
+            <span class="hidden" {{ stimulus_target('sync-status', 'running') }}>{{ 'sync_status.running'|trans }}</span>
+            <span class="hidden" {{ stimulus_target('sync-status', 'progress') }}></span>
+            <span class="hidden" {{ stimulus_target('sync-status', 'notStarted') }}>{{ 'sync_status.not_started'|trans }}</span>
+        </div>
+        <div class="hidden" {{ stimulus_target('sync-status', 'spinner') }}>
+            {{ include('components/icons.html.twig', {icon: 'spinner', class: 'w-5 h-5 animate-spin inline-block'}) }}
+            {{ 'sync_status.fetching_status'|trans }}
+        </div>
+    </div>
+</div>

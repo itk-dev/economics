@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-191](https://github.com/itk-dev/economics/pull/191)
+  2299: Added project sync component to navigation.
 * [PR-195](https://github.com/itk-dev/economics/pull/195)
   3602: Added billable unbilled hours report.
 * [PR-196](https://github.com/itk-dev/economics/pull/196)
