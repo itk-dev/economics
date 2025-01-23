@@ -8,6 +8,8 @@ export default class extends Controller {
     static targets = ['ended', 'ok', 'error', 'running', 'notStarted', 'spinner', 'active', 'done', 'progress', 'button'];
 
     updateIntervalSeconds = 60;
+    updateIntervalRunningSeconds = 5;
+    nextRefresh = 60;
 
     timeout;
 
@@ -42,6 +44,8 @@ export default class extends Controller {
         this.activeTarget.classList.add("hidden");
         this.progressTarget.classList.add("hidden");
 
+        this.nextRefresh = this.updateIntervalSeconds;
+
         fetch("/admin/synchronization/status")
             .then(response => {
                 if (response.status === 404) {
@@ -50,7 +54,12 @@ export default class extends Controller {
                     this.doneTarget.classList.remove("hidden");
                     this.errorTarget.classList.remove("hidden");
                 } else {
-                    response.json().then((data) => {
+                    return response.json();
+                }
+            })
+            .then(
+                (data) => {
+                    if (data) {
                         this.endedTarget.innerHTML = dayjs(data.ended).format("DD/MM-YYYY HH:mm:ss");
 
                         switch (data.status) {
@@ -69,20 +78,22 @@ export default class extends Controller {
                                 this.progressTarget.innerText = "(" + (data.step ?? '-') + ": " + data.progress + " %)"
                                 this.activeTarget.classList.remove("hidden");
                                 this.runningTarget.classList.remove("hidden");
+
+                                this.nextRefresh = this.updateIntervalRunningSeconds;
                                 break;
                             case "NOT_STARTED":
                                 this.activeTarget.classList.remove("hidden");
                                 this.notStartedTarget.classList.remove("hidden");
                                 break;
                         }
-                    })
+                    }
                 }
-            })
+            )
             .finally(() => {
                 this.spinnerTarget.classList.add("hidden");
 
                 this.timeout = setTimeout(
-                    this.refresh, this.updateIntervalSeconds * 1000
+                    this.refresh, this.nextRefresh * 1000
                 )
             });
     }
