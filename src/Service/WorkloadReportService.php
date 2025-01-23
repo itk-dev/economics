@@ -235,7 +235,7 @@ class WorkloadReportService
     {
         return match ($viewMode) {
             ViewModeEnum::WORKLOAD => $this->worklogRepository->findWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
-            ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
+            ViewModeEnum::BILLABLE => $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($dateFrom, $dateTo, $workerIdentifier),
             ViewModeEnum::BILLED => $this->worklogRepository->findBilledWorklogsByWorkerAndDateRange($workerIdentifier, $dateFrom, $dateTo),
         };
     }
