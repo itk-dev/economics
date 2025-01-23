@@ -1,4 +1,8 @@
 services:
+    phpfpm:
+        environment:
+            - PHP_MEMORY_LIMIT=256M
+
     supervisor:
         image: itkdev/supervisor-php8.3:alpine
         restart: unless-stopped
@@ -7,7 +11,7 @@ services:
             - APP_SUPERVISOR_COMMAND=/app/bin/console messenger:consume --env=prod --no-debug --time-limit=900 --failure-limit=1 async scheduler_default
             - APP_SUPERVISOR_WORKERS=4
             - APP_SUPERVISOR_USER=deploy
-            - PHP_MAX_EXECUTION_TIME=30
+            - PHP_MAX_EXECUTION_TIME=60
             - PHP_MEMORY_LIMIT=256M
             - PHP_TIMEZONE=UTC
         networks:
