@@ -1,10 +1,10 @@
 {
     "name": "itk-dev/economics",
-    "description": "ITKDev economics with jira integration",
+    "description": "ITKDev economics",
     "license": "proprietary",
     "type": "project",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "doctrine/doctrine-bundle": "^2.7",

@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-197](https://github.com/itk-dev/economics/pull/197)
+  2299: Upgraded to php 8.3 and node 20.
 * [PR-191](https://github.com/itk-dev/economics/pull/191)
   2299: Added project sync component to navigation.
 * [PR-195](https://github.com/itk-dev/economics/pull/195)
