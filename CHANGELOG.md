@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.0] - 2025-01-24
+
 * [PR-197](https://github.com/itk-dev/economics/pull/197)
   2299: Upgraded to php 8.3 and node 20.
 * [PR-191](https://github.com/itk-dev/economics/pull/191)
@@ -16,12 +18,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   3602: Added billable unbilled hours report.
 * [PR-196](https://github.com/itk-dev/economics/pull/196)
   3624: Correctly handling periods when viewing past workload reports.
+
+## [2.7.0] - 2025-01-14
+
 * [PR-194](https://github.com/itk-dev/economics/pull/194)
   2299: Added amount to invoices list. Removed data provider.
 * [PR-193](https://github.com/itk-dev/economics/pull/193)
   2575: Added link to issue on hour report.
 * [PR-188](https://github.com/itk-dev/economics/pull/188)
   2299: Removed sprint report.
+
+## [2.6.1] - 2025-01-02
+## [2.6.0] - 2025-01-02
+
 * [PR-182](https://github.com/itk-dev/economics/pull/182)
   2597: Added invoicing rate report.
 * [PR-185](https://github.com/itk-dev/economics/pull/186)
