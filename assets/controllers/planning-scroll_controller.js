@@ -13,11 +13,12 @@ export default class extends Controller {
 
         const activeIndex = activeColumn.dataset.index;
         const scrollToIndex = Math.max(0, activeIndex - 1);
+
         const scrollToColumn = this.columnTargets.find(
-            (el) => el.dataset.index == scrollToIndex,
+            (el) => parseInt(el.dataset.index, 10) === scrollToIndex,
         );
         const firstColumn = this.columnTargets.find(
-            (el) => el.dataset.index == 1,
+            (el) => parseInt(el.dataset.index, 10) === 1,
         );
 
         if (!scrollToColumn || !firstColumn) {
@@ -27,6 +28,7 @@ export default class extends Controller {
         const targetColumnX = scrollToColumn.getBoundingClientRect().x;
         const firstColumnX = firstColumn.getBoundingClientRect().x;
 
+        const scrollContainer = document.getElementById("scrollContainer");
         scrollContainer.scrollTo(targetColumnX - firstColumnX, 0);
     }
 }

@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.8.0] - 2025-01-24
 
+* [PR-199](https://github.com/itk-dev/economics/pull/199)
+  2299: Fixed linting of javascript.
 * [PR-197](https://github.com/itk-dev/economics/pull/197)
   2299: Upgraded to php 8.3 and node 20.
 * [PR-191](https://github.com/itk-dev/economics/pull/191)
@@ -29,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   2299: Removed sprint report.
 
 ## [2.6.1] - 2025-01-02
+
 ## [2.6.0] - 2025-01-02
 
 * [PR-182](https://github.com/itk-dev/economics/pull/182)

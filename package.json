@@ -11,7 +11,8 @@
         "coding-standards-check": "npm run coding-standards-check/eslint && npm run coding-standards-check/markdownlint",
         "coding-standards-apply/eslint": "eslint --ext .js --fix ./assets",
         "coding-standards-apply/markdownlint": "markdownlint --ignore LICENSE.md '*.md' docs/ --fix",
-        "coding-standards-apply": "npm run coding-standards-apply/eslint && npm run coding-standards-apply/markdownlint"
+        "coding-standards-apply": "npm run coding-standards-apply/eslint && npm run coding-standards-apply/markdownlint",
+        "actions/check-coding-standards-assets": "eslint --ext .js ./assets --max-warnings=0"
     },
     "dependencies": {
         "@babel/core": "^7.23.9",

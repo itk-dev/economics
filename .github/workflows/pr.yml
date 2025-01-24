@@ -201,7 +201,7 @@ jobs:
                 run: |
                     docker network create frontend
                     docker compose run --rm node npm install
-                    docker compose run --rm node npm run coding-standards-check/eslint
+                    docker compose run --rm node npm run actions/check-coding-standards-assets
 
     markdown-coding-standards:
         name: Markdown coding standards

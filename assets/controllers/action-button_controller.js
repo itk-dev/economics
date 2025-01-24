@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
-import { postRequestHandler } from "../helpers/postRequestHandler";
+import postRequestHandler from "../helpers/postRequestHandler";
 
 const states = {
     default: "default",
@@ -8,40 +8,20 @@ const states = {
     error: "error",
 };
 
-export default class extends Controller {
-    static targets = [
-        "actionDefault",
-        "actionLoading",
-        "actionSuccess",
-        "actionError",
-    ];
-
-    action(e) {
-        const targets = {
-            default: this.actionDefaultTarget,
-            loading: this.actionLoadingTarget,
-            success: this.actionSuccessTarget,
-            error: this.actionErrorTarget,
-            parent: e.target,
-        };
-        const data = e.target.dataset;
-        const { url } = data;
-        const { reload } = data;
-
-        triggerState(states.loading, targets);
-        postRequestHandler(url).then((result) => {
-            if (result.success) {
-                triggerState(states.success, targets);
-                setTimeout(() => {
-                    reload && window.location.reload();
-                    triggerState(states.default, targets);
-                }, 2000);
-            } else {
-                triggerState(states.error, targets);
-                alert(result.error);
-            }
-        });
-    }
+/**
+ * Resets the state of the targets.
+ *
+ * @param {object} targets - The targets to reset.
+ * @returns {void}
+ */
+function resetState(targets) {
+    Object.entries(targets).forEach(([type, target]) => {
+        target.classList.remove("btn-error", "btn-success");
+        if (type === "parent") {
+            return;
+        }
+        target.classList.add("hidden");
+    });
 }
 
 /**
@@ -69,21 +49,46 @@ function triggerState(state, targets) {
             targets.parent.classList.add("btn-error");
             break;
         default:
-            console.log("State not recognized");
+            // eslint-disable-next-line no-console
+            console.error("State not recognized");
     }
 }
 
-/**
- * Resets the state of the targets.
- * @param {object} targets - The targets to reset.
- * @returns {void}
- */
-function resetState(targets) {
-    Object.entries(targets).forEach(([type, target]) => {
-        target.classList.remove("btn-error", "btn-success");
-        if (type === "parent") {
-            return;
-        }
-        target.classList.add("hidden");
-    });
+export default class extends Controller {
+    static targets = [
+        "actionDefault",
+        "actionLoading",
+        "actionSuccess",
+        "actionError",
+    ];
+
+    action(e) {
+        const targets = {
+            default: this.actionDefaultTarget,
+            loading: this.actionLoadingTarget,
+            success: this.actionSuccessTarget,
+            error: this.actionErrorTarget,
+            parent: e.target,
+        };
+        const data = e.target.dataset;
+        const { url } = data;
+        const { reload } = data;
+
+        triggerState(states.loading, targets);
+        postRequestHandler(url).then((result) => {
+            if (result.success) {
+                triggerState(states.success, targets);
+                setTimeout(() => {
+                    if (reload) {
+                        window.location.reload();
+                    }
+                    triggerState(states.default, targets);
+                }, 2000);
+            } else {
+                triggerState(states.error, targets);
+                // eslint-disable-next-line no-alert
+                alert(result.error);
+            }
+        });
+    }
 }
