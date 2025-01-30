@@ -1,14 +1,25 @@
-import {Controller} from "@hotwired/stimulus";
+import { Controller } from "@hotwired/stimulus";
 import dayjs from "dayjs";
 
-/**
- * Synchronization status.
- */
+/** Synchronization status. */
 export default class extends Controller {
-    static targets = ['ended', 'ok', 'error', 'running', 'notStarted', 'spinner', 'active', 'done', 'progress', 'button'];
+    static targets = [
+        "ended",
+        "ok",
+        "error",
+        "running",
+        "notStarted",
+        "spinner",
+        "active",
+        "done",
+        "progress",
+        "button",
+    ];
 
     updateIntervalSeconds = 60;
+
     updateIntervalRunningSeconds = 5;
+
     nextRefresh = 60;
 
     timeout;
@@ -28,9 +39,8 @@ export default class extends Controller {
             },
             redirect: "follow",
             referrerPolicy: "no-referrer",
-        })
-            .finally(() => setTimeout(this.refresh, 3000));
-    }
+        }).finally(() => setTimeout(this.refresh, 3000));
+    };
 
     refresh = () => {
         this.spinnerTarget.classList.remove("hidden");
@@ -47,56 +57,61 @@ export default class extends Controller {
         this.nextRefresh = this.updateIntervalSeconds;
 
         fetch("/admin/synchronization/status")
-            .then(response => {
+            .then((response) => {
                 if (response.status === 404) {
-                    this.endedTarget.innerHTML = 'Not found';
+                    this.endedTarget.innerHTML = "Not found";
                     this.buttonTarget.classList.remove("hidden");
                     this.doneTarget.classList.remove("hidden");
                     this.errorTarget.classList.remove("hidden");
-                } else {
-                    return response.json();
                 }
+                return response.json();
             })
-            .then(
-                (data) => {
-                    if (data) {
-                        this.endedTarget.innerHTML = dayjs(data.ended).format("DD/MM-YYYY HH:mm:ss");
+            .then((data) => {
+                if (data) {
+                    this.endedTarget.innerHTML = dayjs(data.ended).format(
+                        "DD/MM-YYYY HH:mm:ss",
+                    );
 
-                        switch (data.status) {
-                            case "DONE":
-                                this.buttonTarget.classList.remove("hidden");
-                                this.doneTarget.classList.remove("hidden");
-                                this.okTarget.classList.remove("hidden");
-                                break;
-                            case "ERROR":
-                                this.buttonTarget.classList.remove("hidden");
-                                this.doneTarget.classList.remove("hidden");
-                                this.errorTarget.classList.remove("hidden");
-                                break;
-                            case "RUNNING":
-                                this.progressTarget.classList.remove("hidden");
-                                this.progressTarget.innerText = "(" + (data.step ?? '-') + ": " + data.progress + " %)"
-                                this.activeTarget.classList.remove("hidden");
-                                this.runningTarget.classList.remove("hidden");
+                    switch (data.status) {
+                        case "DONE":
+                            this.buttonTarget.classList.remove("hidden");
+                            this.doneTarget.classList.remove("hidden");
+                            this.okTarget.classList.remove("hidden");
+                            break;
+                        case "ERROR":
+                            this.buttonTarget.classList.remove("hidden");
+                            this.doneTarget.classList.remove("hidden");
+                            this.errorTarget.classList.remove("hidden");
+                            break;
+                        case "RUNNING":
+                            this.progressTarget.classList.remove("hidden");
+                            this.progressTarget.innerText = `(${
+                                data.step ?? "-"
+                            }: ${data.progress} %)`;
+                            this.activeTarget.classList.remove("hidden");
+                            this.runningTarget.classList.remove("hidden");
 
-                                this.nextRefresh = this.updateIntervalRunningSeconds;
-                                break;
-                            case "NOT_STARTED":
-                                this.activeTarget.classList.remove("hidden");
-                                this.notStartedTarget.classList.remove("hidden");
-                                break;
-                        }
+                            this.nextRefresh =
+                                this.updateIntervalRunningSeconds;
+                            break;
+                        case "NOT_STARTED":
+                            this.activeTarget.classList.remove("hidden");
+                            this.notStartedTarget.classList.remove("hidden");
+                            break;
+                        default:
+                            break;
                     }
                 }
-            )
+            })
             .finally(() => {
                 this.spinnerTarget.classList.add("hidden");
 
                 this.timeout = setTimeout(
-                    this.refresh, this.nextRefresh * 1000
-                )
+                    this.refresh,
+                    this.nextRefresh * 1000,
+                );
             });
-    }
+    };
 
     connect() {
         if (this.element.dataset.interval) {
