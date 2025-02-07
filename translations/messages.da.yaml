@@ -514,7 +514,7 @@ reports:
     management-export-xls: 'Eksportér til excel'
 
 workload_report:
-    title: 'Workloadrapport'
+    title: 'Normtidsrapport'
     select_data_provider: 'Vælg datakilde'
     workload: 'Normtid'
     logged_hours: 'Loggede timer'
