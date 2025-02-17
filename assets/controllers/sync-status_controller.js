@@ -9,7 +9,6 @@ export default class extends Controller {
         "error",
         "running",
         "notStarted",
-        "spinner",
         "active",
         "done",
         "progress",
@@ -25,7 +24,6 @@ export default class extends Controller {
     timeout;
 
     run = () => {
-        this.spinnerTarget.classList.remove("hidden");
         this.doneTarget.classList.add("hidden");
         this.activeTarget.classList.add("hidden");
 
@@ -43,8 +41,6 @@ export default class extends Controller {
     };
 
     refresh = () => {
-        this.spinnerTarget.classList.remove("hidden");
-
         this.buttonTarget.classList.add("hidden");
         this.okTarget.classList.add("hidden");
         this.errorTarget.classList.add("hidden");
@@ -104,8 +100,6 @@ export default class extends Controller {
                 }
             })
             .finally(() => {
-                this.spinnerTarget.classList.add("hidden");
-
                 this.timeout = setTimeout(
                     this.refresh,
                     this.nextRefresh * 1000,
