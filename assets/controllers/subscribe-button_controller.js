@@ -96,7 +96,7 @@ export default class extends Controller {
 
     // eslint-disable-next-line class-methods-use-this
     handleFetchedData = (result, targets) => {
-        const newTargets = [...targets];
+        const newTargets = { ...targets };
 
         if (result.status === 200) {
             const { data } = result;
@@ -109,7 +109,7 @@ export default class extends Controller {
             }
         } else if (result.status === 400) {
             // eslint-disable-next-line no-console
-            console.log(result.error);
+            console.error(result.error);
             document.getElementById("subscribe-module").style.display = "none";
         }
     };
