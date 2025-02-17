@@ -512,6 +512,7 @@ reports:
     management-3rd-quarter: '3. Kvartal'
     management-4th-quarter: '4. Kvartal'
     management-export-xls: 'Eksportér til excel'
+    management-no-recorded-invoices: 'Ingen bogførte faktura.'
 
 workload_report:
     title: 'Normtidsrapport'
