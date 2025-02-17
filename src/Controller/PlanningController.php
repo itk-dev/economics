@@ -30,7 +30,7 @@ class PlanningController extends AbstractController
         $form = $this->createForm(PlanningType::class, $planningFormData, [
             'action' => $this->generateUrl($request->attributes->get('_route')),
             'attr' => [
-                'id' => 'sprint_report',
+                'id' => 'report',
             ],
             'years' => [
                 (new \DateTime())->modify('-1 year')->format('Y'),

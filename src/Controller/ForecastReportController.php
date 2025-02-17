@@ -35,7 +35,7 @@ class ForecastReportController extends AbstractController
             'action' => $this->generateUrl('app_forecast_report'),
             'method' => 'GET',
             'attr' => [
-                'id' => 'sprint_report',
+                'id' => 'report',
             ],
             'csrf_protection' => false,
         ]);

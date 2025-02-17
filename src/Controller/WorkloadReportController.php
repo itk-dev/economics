@@ -37,7 +37,7 @@ class WorkloadReportController extends AbstractController
             'action' => $this->generateUrl('app_workload_report'),
             'method' => 'GET',
             'attr' => [
-                'id' => 'sprint_report',
+                'id' => 'report',
             ],
             'years' => [
                 (new \DateTime())->modify('-1 year')->format('Y'),
