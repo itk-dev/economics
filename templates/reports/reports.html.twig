@@ -9,21 +9,27 @@
 
     {% embed 'components/page-header.html.twig' with {
         title: (mode ~ '.title')|trans(),
-        type: 'subscribe',
-        default_text: 'subscribe_button.subscribe'|trans,
-        success_text: 'subscribe_button.unsubscribe'|trans,
-        url: path('app_subscription_check', {id: app.user.id}),
-        params: app.request.query.all|json_encode,
-        reload: false,
     } %}
         {% block actions %}
             {% if project is defined and project is not null %}
-                <span style="margin-left: 1em" {{ stimulus_controller('sync') }} data-update-url="{{ path('app_project_sync', {id: project.id}) }}">
+                <span
+                    style="margin-left: 1em" {{ stimulus_controller('sync') }} data-update-url="{{ path('app_project_sync', {id: project.id}) }}">
                     <button class="button" {{ stimulus_action('sync', 'sync') }} {{ stimulus_target('sync', 'button') }}>
                         {{ 'hour_report.sync_project_action'|trans }}
                     </button>
                     <span class="sync-text" {{ stimulus_target('sync', 'text') }}></span>
                 </span>
+            {% endif %}
+            {% if mode == 'hour_report' %}
+                {% include 'components/subscribe-button.html.twig' with
+                    {
+                        type: 'subscribe',
+                        default_text: 'subscribe_button.subscribe'|trans,
+                        success_text: 'subscribe_button.unsubscribe'|trans,
+                        url: path('app_subscription_check', {id: app.user.id}),
+                        params: app.request.query.all|json_encode,
+                        reload: false
+                    } %}
             {% endif %}
         {% endblock %}
     {% endembed %}

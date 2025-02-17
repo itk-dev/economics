@@ -107,9 +107,7 @@ export default class extends Controller {
                 delete newTargets.parent.dataset.frequencies;
                 triggerState(states.unsubscribed, targets);
             }
-        } else if (result.status === 400) {
-            // eslint-disable-next-line no-console
-            console.error(result.error);
+        } else {
             document.getElementById("subscribe-module").style.display = "none";
         }
     };

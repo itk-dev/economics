@@ -814,3 +814,6 @@ billable_unbilled_hours_report:
     projects: 'Projekter'
     year: 'År'
     title: 'Ufakturerede fakturerbare timer'
+subscribe_button:
+    subscribe: 'messages'
+    unsubscribe: 'messages'
