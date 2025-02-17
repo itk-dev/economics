@@ -92,11 +92,14 @@ class SynchronizeHandler
 
                 $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
+                $projectsSynced = 0;
+                $numberOfProjects = count($projects);
                 foreach ($projects as $project) {
-                    $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), $dataProvider, function ($i, $length) use ($job) {
-                        $job->setProgress($i * 100 / ($length ?? 1));
-                        $this->synchronizationJobRepository->save($job, true);
-                    });
+                    $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), $dataProvider);
+
+                    $projectsSynced++;
+                    $job->setProgress($projectsSynced * 100 / $numberOfProjects);
+                    $this->synchronizationJobRepository->save($job, true);
                 }
             }
 
