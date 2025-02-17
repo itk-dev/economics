@@ -97,8 +97,8 @@ class SynchronizeHandler
                 foreach ($projects as $project) {
                     $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), $dataProvider);
 
-                    $projectsSynced++;
-                    $job->setProgress($projectsSynced * 100 / $numberOfProjects);
+                    ++$projectsSynced;
+                    $job->setProgress((int) ($projectsSynced * 100 / $numberOfProjects));
                     $this->synchronizationJobRepository->save($job, true);
                 }
             }
