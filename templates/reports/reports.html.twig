@@ -21,7 +21,7 @@
                 </span>
             {% endif %}
             {% if mode == 'hour_report' %}
-                {% include 'components/subscribe-button.html.twig' with
+                {{ include('components/subscribe-button.html.twig',
                     {
                         type: 'subscribe',
                         default_text: 'subscribe_button.subscribe'|trans,
@@ -29,7 +29,7 @@
                         url: path('app_subscription_check', {id: app.user.id}),
                         params: app.request.query.all|json_encode,
                         reload: false
-                    } %}
+                    }) }}
             {% endif %}
         {% endblock %}
     {% endembed %}

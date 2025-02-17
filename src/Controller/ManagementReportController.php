@@ -29,7 +29,7 @@ class ManagementReportController extends AbstractController
 
         $firstRecordedInvoice = reset($recordedInvoicesSorted);
 
-        if ($firstRecordedInvoice !== false) {
+        if (false !== $firstRecordedInvoice) {
             $form = $this->createForm(
                 ManagementReportDateIntervalType::class,
                 [

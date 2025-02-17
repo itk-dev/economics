@@ -14,6 +14,6 @@
         <button class="button mt-3 mb-3">{{ 'view.action_next'|trans }}</button>
         {{ form_end(form) }}
     {% else %}
-        {% include 'components/alert.html.twig' with { text: 'reports.management-no-recorded-invoices'|trans, level: 'warning' } %}
+        {{ include('components/alert.html.twig', {text: 'reports.management-no-recorded-invoices'|trans, level: 'warning'}) }}
     {% endif %}
 {% endblock %}
