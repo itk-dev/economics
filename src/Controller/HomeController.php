@@ -21,7 +21,7 @@ class HomeController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        $dashboardData = $dashboardService->getUserDashboard($user, 2024);
+        $dashboardData = $dashboardService->getUserDashboard($user);
 
         return $this->render('home/index.html.twig', [
             'userName' => $user->getName(),
