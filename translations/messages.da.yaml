@@ -818,3 +818,14 @@ billable_unbilled_hours_report:
 subscribe_button:
     subscribe: 'messages'
     unsubscribe: 'messages'
+
+dashboard:
+    work_hours: 'Timestatus for %year%'
+    work_hours_value: '%value% t.'
+    no_user_data: 'Ingen brugerdata tilgængelig'
+    logged_in_as: 'Bruger:  %name%'
+    title: 'Dashboard'
+    norm: 'Timenorm pr. uge'
+    norm_value: '%value% t.'
+    work_hours_months: 'Timestatus måned'
+    work_hours_weeks: 'Timestatus uge'
