@@ -60,7 +60,9 @@
         </ul>
     </main>
 
-    <div class="footer" style="position: fixed; bottom: 0; width: 256px">
-        {{ include('components/sync-status.html.twig') }}
-    </div>
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="footer" style="position: fixed; bottom: 0; width: 256px">
+            {{ include('components/sync-status.html.twig') }}
+        </div>
+    {% endif %}
 </aside>

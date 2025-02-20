@@ -22,7 +22,7 @@ class PlanningType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row'],
                 'required' => false,
-                'data' => $currentYear,
+                'empty_data' => $currentYear,
                 'choices' => [$currentYear => $currentYear, $nextYear => $nextYear],
                 'placeholder' => null,
             ])
