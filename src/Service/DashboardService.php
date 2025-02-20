@@ -13,6 +13,7 @@ class DashboardService
     public function __construct(
         private readonly WorkerRepository $workerRepository,
         private readonly WorklogRepository $worklogRepository,
+        private readonly DateTimeHelper $dateTimeHelper,
     ) {
     }
 
@@ -36,13 +37,7 @@ class DashboardService
             $year = (int) date('Y');
         }
 
-        $yearStart = new \DateTime();
-        $yearStart->setDate($year, 1, 1);
-        $yearStart->setTime(0, 0);
-
-        $yearEnd = new \DateTime();
-        $yearEnd->setDate($year + 1, 1, 1);
-        $yearEnd->setTime(0, 0);
+        ['dateFrom' => $yearStart, 'dateTo' => $yearEnd] = $this->dateTimeHelper->getFirstAndLastDateOfYear($year);
 
         $monthSums = [];
         $weekSums = [];
