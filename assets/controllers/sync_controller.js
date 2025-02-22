@@ -1,8 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 
-/**
- * Sync controller.
- */
+/** Sync controller. */
 export default class extends Controller {
     static targets = ["text", "button"];
 
