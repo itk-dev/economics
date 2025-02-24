@@ -44,6 +44,8 @@ planning:
     sprint_view: "Sprintvisning"
     description: 'Vælg visning'
     year: 'Vælg år'
+    sync_all_issues_action: 'Synkronisér opgaver'
+    sync-project-select: 'Vælg projekt at synkronisere'
 
 client:
     title: "Kunder"
@@ -757,6 +759,7 @@ invoicing_rate_report_view_mode_enum:
         label: 'Opsummering'
 
 subscription:
+    list_no_records_found: 'Ingen abonnementer'
     title: 'Dine abonnementer'
     subject: 'Rapporttype'
     frequency: 'Frekvens'

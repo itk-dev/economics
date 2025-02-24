@@ -1,13 +1,14 @@
 <aside {{ stimulus_controller('navigation') }} class="flex flex-col h-screen justify-between">
     <main id="main-menu" class="sticky top-0 p-4 md:w-64">
         <a href="{{ path('index') }}" class="flex items-center mb-5">
-            <img src="{{ asset('img/itk-economics.png') }}" class="mx-1" alt="{{ 'navigation.title'|trans }}" />
+            <img src="{{ asset('img/itk-economics.png') }}" class="mx-1" alt="{{ 'navigation.title'|trans }}"/>
         </a>
 
         <ul class="flex flex-col overflow-hidden gap-y-1 mt-4">
             {{ include('components/navigation-item.html.twig', {icon: 'home', title: 'navigation.home'|trans, role: 'ROLE_USER', route: path('index')}) }}
             {{ include('components/navigation-item.html.twig', {icon: 'invoice', title: 'navigation.invoices'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index')}) }}
             {{ include('components/navigation-item.html.twig', {icon: 'project-billing', title: 'navigation.project_billing'|trans, role: 'ROLE_PROJECT_BILLING', route: path('app_project_billing_index')}) }}
+
             {% if is_granted('ROLE_PLANNING') %}
                 <li>
                     <a class="navigation-item collapsible" href="{{ path('app_planning') }}">
@@ -20,43 +21,40 @@
                     </ul>
                 </li>
             {% endif %}
+
             {{ include('components/navigation-item.html.twig', {icon: 'product', title: 'navigation.products'|trans, role: 'ROLE_PRODUCT_MANAGER', route: path('app_product_index')}) }}
 
             {% if is_granted('ROLE_REPORT') %}
-            <li>
-                <a class="navigation-item collapsible" {{ stimulus_action('navigation', 'toggle') }}>
-                  {{ include('components/icons.html.twig', {icon: 'report', class: 'w-6 h-6'}) }}
-                  <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.reporting'|trans }}</span>
-                </a>
-                <ul class="navigation-item-submenu">
-                  {{ include('components/navigation-item.html.twig', {title: 'navigation.management_report'|trans, role: 'ROLE_REPORT', route: path('app_management_reports_create')}) }}
-                    {{ include('components/navigation-item.html.twig', {title: 'navigation.forecast_report'|trans, role: 'ROLE_REPORT', route: path('app_forecast_report')}) }}
-                    {{ include('components/navigation-item.html.twig', {title: 'navigation.billable_unbilled_hours_report'|trans, role: 'ROLE_REPORT', route: path('app_billable_unbilled_hours_report')}) }}
-                  {{ include('components/navigation-item.html.twig', {title: 'navigation.hour_report'|trans, role: 'ROLE_REPORT', route: path('app_hour_report')}) }}
-                    {{ include('components/navigation-item.html.twig', {title: 'navigation.workload_report'|trans, role: 'ROLE_REPORT', route: path('app_workload_report')}) }}
-                    {{ include('components/navigation-item.html.twig', {title: 'navigation.invoicing_rate_report'|trans, role: 'ROLE_REPORT', route: path('app_invoicing_rate_report')}) }}
-                </ul>
-            </li>
-            {% endif %}
-
-            {% if is_granted('ROLE_ADMIN') %}
                 <li>
                     <a class="navigation-item collapsible" {{ stimulus_action('navigation', 'toggle') }}>
-                        {{ include('components/icons.html.twig', {icon: 'collapse', class: 'w-6 h-6'}) }}
-                        <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.admin'|trans }}</span>
+                        {{ include('components/icons.html.twig', {icon: 'report', class: 'w-6 h-6'}) }}
+                        <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.reporting'|trans }}</span>
                     </a>
-                      <ul class="navigation-item-submenu">
-                        {{ include('components/navigation-item.html.twig', {title: 'navigation.projects'|trans, role: 'ROLE_ADMIN', route: path('app_project_index')}) }}
-                        {{ include('components/navigation-item.html.twig', {title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index')}) }}
-                        {{ include('components/navigation-item.html.twig', {title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index')}) }}
-                          {{ include('components/navigation-item.html.twig', {title: 'navigation.worker'|trans, role: 'ROLE_ADMIN', route: path('app_worker_index')}) }}
-                        {{ include('components/navigation-item.html.twig', {title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index')}) }}
-                          {{ include('components/navigation-item.html.twig', {title: 'navigation.subscription'|trans, role: 'ROLE_ADMIN', route: path('app_subscription_index')}) }}
+                    <ul class="navigation-item-submenu">
+                        {{ include('components/navigation-item.html.twig', {title: 'navigation.hour_report'|trans, role: 'ROLE_REPORT', route: path('app_hour_report')}) }}
+                        {{ include('components/navigation-item.html.twig', {title: 'navigation.workload_report'|trans, role: 'ROLE_REPORT', route: path('app_workload_report')}) }}
+                        {{ include('components/navigation-item.html.twig', {title: 'navigation.forecast_report'|trans, role: 'ROLE_REPORT', route: path('app_forecast_report')}) }}
+                        {{ include('components/navigation-item.html.twig', {title: 'navigation.billable_unbilled_hours_report'|trans, role: 'ROLE_REPORT', route: path('app_billable_unbilled_hours_report')}) }}
+                        {{ include('components/navigation-item.html.twig', {title: 'navigation.invoicing_rate_report'|trans, role: 'ROLE_REPORT', route: path('app_invoicing_rate_report')}) }}
+                        {{ include('components/navigation-item.html.twig', {title: 'navigation.management_report'|trans, role: 'ROLE_REPORT', route: path('app_management_reports_create')}) }}
                     </ul>
                 </li>
-            {% elseif is_granted('ROLE_PRODUCT_MANAGER') %}
-                {{ include('components/navigation-item.html.twig', {icon: 'project', title: 'navigation.projects'|trans, role: 'ROLE_PRODUCT_MANAGER', route: path('app_project_index')}) }}
             {% endif %}
+
+            <li>
+                <a class="navigation-item collapsible" {{ stimulus_action('navigation', 'toggle') }}>
+                    {{ include('components/icons.html.twig', {icon: 'collapse', class: 'w-6 h-6'}) }}
+                    <span class="flex-1 ml-3 whitespace-nowrap">{{ 'navigation.admin'|trans }}</span>
+                </a>
+                <ul class="navigation-item-submenu">
+                    {{ include('components/navigation-item.html.twig', {title: 'navigation.projects'|trans, role: 'ROLE_ADMIN', route: path('app_project_index')}) }}
+                    {{ include('components/navigation-item.html.twig', {title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index')}) }}
+                    {{ include('components/navigation-item.html.twig', {title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index')}) }}
+                    {{ include('components/navigation-item.html.twig', {title: 'navigation.worker'|trans, role: 'ROLE_ADMIN', route: path('app_worker_index')}) }}
+                    {{ include('components/navigation-item.html.twig', {title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index')}) }}
+                    {{ include('components/navigation-item.html.twig', {title: 'navigation.subscription'|trans, role: 'ROLE_REPORT', route: path('app_subscription_index')}) }}
+                </ul>
+            </li>
         </ul>
     </main>
 

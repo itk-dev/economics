@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Form\PlanningType;
 use App\Model\Planning\PlanningFormData;
+use App\Repository\ProjectRepository;
 use App\Service\PlanningService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -56,6 +58,23 @@ class PlanningController extends AbstractController
     public function index(): Response
     {
         return $this->redirectToRoute('app_planning_users');
+    }
+
+    #[Route('/list/projects', name: 'app_planning_projects_list')]
+    public function projectsList(ProjectRepository $projectRepository): Response
+    {
+        $projects = $projectRepository->getIncluded()->getQuery()->toIterable();
+
+        $res = [];
+
+        foreach ($projects as $project) {
+            $res[] = (object) [
+                'label' => $project->getName(),
+                'value' => $project->getId(),
+            ];
+        }
+
+        return new JsonResponse($res);
     }
 
     /**
