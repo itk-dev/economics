@@ -8,13 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.0] - 2025-02-24
+
 * [PR-201](https://github.com/itk-dev/economics/pull/201)
   2299: Added project issue sync button to planning.
 * [PR-200](https://github.com/itk-dev/economics/pull/200)
   3660: Adds user dashboard.
-
-## [2.8.0] - 2025-01-24
-
 * [PR-199](https://github.com/itk-dev/economics/pull/199)
   2299: Fixed linting of javascript.
 * [PR-197](https://github.com/itk-dev/economics/pull/197)
