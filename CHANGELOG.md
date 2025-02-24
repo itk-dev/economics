@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-201](https://github.com/itk-dev/economics/pull/201)
-  2299: Added project issue sync button to planning.y
+  2299: Added project issue sync button to planning.
 * [PR-200](https://github.com/itk-dev/economics/pull/200)
   3660: Adds user dashboard.
 
