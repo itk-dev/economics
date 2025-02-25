@@ -245,7 +245,7 @@ jobs:
 
             -   name: Composer audit
                 run: |
-                    docker compose exec --user root phpfpm composer
+                    docker compose exec --user root phpfpm composer audit
 
 
     phpunit:
