@@ -237,10 +237,16 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v4
-            -   run: |
+            -   name: Install Dependencies
+                run: |
                     docker network create frontend
-                    docker compose run --rm phpfpm composer install
-                    docker compose run --rm phpfpm composer audit
+                    docker compose exec --user root phpfpm composer up --detach
+                    docker compose exec --user root phpfpm composer install
+                
+            -   name: Composer audit
+                run: |
+                    docker compose exec --user root phpfpm composer
+
 
     phpunit:
         runs-on: ubuntu-latest
