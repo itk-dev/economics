@@ -240,9 +240,9 @@ jobs:
             -   name: Install Dependencies
                 run: |
                     docker network create frontend
-                    docker compose exec --user root phpfpm composer up --detach
+                    docker compose up --detach
                     docker compose exec --user root phpfpm composer install
-                
+
             -   name: Composer audit
                 run: |
                     docker compose exec --user root phpfpm composer
