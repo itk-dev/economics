@@ -31,7 +31,7 @@ class ProjectType extends AbstractType
             ])
             ->add('holidayPlanning', null, [
                 'required' => false,
-                'attr' => ['class' => 'form-element', 'style' => "width: 50px"],
+                'attr' => ['class' => 'form-element', 'style' => 'width: 50px'],
                 'label' => 'project.holiday_planning',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],

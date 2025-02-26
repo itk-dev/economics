@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Group;
+use App\Entity\Issue as IssueEntity;
 use App\Enum\IssueStatusEnum;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
@@ -15,7 +16,6 @@ use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use App\Entity\Issue as IssueEntity;
 
 class PlanningService
 {

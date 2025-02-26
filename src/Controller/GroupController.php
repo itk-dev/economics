@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Group;
-use App\Form\NameFilterType;
 use App\Form\GroupType;
+use App\Form\NameFilterType;
 use App\Model\Invoices\NameFilterData;
 use App\Repository\GroupRepository;
 use Doctrine\ORM\EntityManagerInterface;

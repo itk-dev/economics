@@ -76,6 +76,6 @@ class Group
 
     public function __toString(): string
     {
-        return $this->name;
+        return (string) ($this->name ?? $this->id);
     }
 }

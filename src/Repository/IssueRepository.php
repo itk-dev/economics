@@ -118,12 +118,12 @@ class IssueRepository extends ServiceEntityRepository
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate);
 
-        if ($group !== null) {
-            $qb->andWhere('i.worker IN (:workers)')->setParameter('workers', array_map(fn(Worker $worker) => $worker->getEmail(), $group->getWorkers()->toArray()));
+        if (null !== $group) {
+            $qb->andWhere('i.worker IN (:workers)')->setParameter('workers', array_map(fn (Worker $worker) => $worker->getEmail(), $group->getWorkers()->toArray()));
         }
 
-        if ($projects !== null) {
-            $qb->andWhere('i.project IN (:projects)')->setParameter('projects', array_map(fn(Project $project) => $project->getId(), $projects));
+        if (null !== $projects) {
+            $qb->andWhere('i.project IN (:projects)')->setParameter('projects', array_map(fn (Project $project) => $project->getId(), $projects));
         }
 
         $query = $qb->getQuery();
