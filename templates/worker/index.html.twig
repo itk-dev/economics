@@ -8,8 +8,6 @@
         title: 'worker.title'|trans,
     }) }}
 
-    <p class="mb-5 text-sm">{{ 'worker.index_description'|trans }}</p>
-
     <table class="table margin-bottom">
         <thead class="table-th">
             <tr>
@@ -17,6 +15,7 @@
                 <th class="table-th">{{ 'worker.email'|trans }}</th>
                 <th class="table-th">{{ 'worker.name'|trans }}</th>
                 <th class="table-th">{{ 'worker.workload'|trans }}</th>
+                <th class="table-th">{{ 'worker.in_groups'|trans }}</th>
                 <th class="table-th">{{ 'worker.include_in_reports.title'|trans }}</th>
                 <th class="table-th">{{ 'worker.actions'|trans }}</th>
             </tr>
@@ -28,9 +27,9 @@
                 <td class="table-td">{{ worker.email }}</td>
                 <td class="table-td">{{ worker.name }}</td>
                 <td class="table-td">{{ worker.workload }}</td>
-                <td class="table-td">{{ worker.includeInReports ? 'worker.include_in_reports.yes'|trans : 'worker.include_in_reports.no'|trans }}</td>                <td class="table-td">
-                    <a href="{{ path('app_worker_edit', {id: worker.id}) }}">{{ 'worker.action_edit'|trans }}</a>
-                </td>
+                <td class="table-td">{{ worker.groups|length }}</td>
+                <td class="table-td">{{ worker.includeInReports ? 'worker.include_in_reports.yes'|trans : 'worker.include_in_reports.no'|trans }}</td>
+                <td class="table-td"><a href="{{ path('app_worker_edit', {id: worker.id}) }}">{{ 'worker.action_edit'|trans }}</a></td>
             </tr>
         {% else %}
             <tr>

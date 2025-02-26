@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'groups.new'|trans }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'groups.new'|trans }}</h1>
+
+    {{ form_start(form) }}
+    <div>
+        {{ form_rest(form) }}
+        <button class="button mt-3">{{ 'groups.action_create'|trans }}</button>
+    </div>
+    {{ form_end(form) }}
+
+    <div class="bottom-actions">
+        <a class="link" href="{{ path('app_group_index') }}">{{ 'groups.back_to_list'|trans }}</a>
+    </div>
+{% endblock %}

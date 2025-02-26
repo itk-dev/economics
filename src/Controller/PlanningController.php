@@ -22,38 +22,6 @@ class PlanningController extends AbstractController
     ) {
     }
 
-    /**
-     * @throws \Exception
-     */
-    private function preparePlanningData(Request $request): array
-    {
-        $planningFormData = new PlanningFormData();
-        $planningFormData->year = (int) (new \DateTime())->format('Y');
-        $form = $this->createForm(PlanningType::class, $planningFormData, [
-            'action' => $this->generateUrl($request->attributes->get('_route')),
-            'attr' => [
-                'id' => 'report',
-            ],
-            'years' => [
-                (new \DateTime())->modify('-1 year')->format('Y'),
-                (new \DateTime())->format('Y'),
-                (new \DateTime())->modify('+1 year')->format('Y'),
-            ],
-            'method' => 'GET',
-            'csrf_protection' => false,
-        ]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $planningFormData = $form->getData();
-        }
-
-        $planningData = $this->planningService->getPlanningData($planningFormData->year);
-
-        return ['planningData' => $planningData, 'form' => $form, 'year' => $planningFormData->year];
-    }
-
     #[Route('/', name: 'app_planning')]
     public function index(): Response
     {
@@ -99,6 +67,14 @@ class PlanningController extends AbstractController
         return $this->createResponse('projects', $data);
     }
 
+    #[Route('/holiday', name: 'app_planning_holiday')]
+    public function holidayPlanning(Request $request): Response
+    {
+        $data = $this->preparePlanningData($request);
+
+        return $this->createResponse('holiday', $data);
+    }
+
     private function createResponse(string $mode, array $data): Response
     {
         return $this->render('planning/planning.html.twig', [
@@ -108,5 +84,37 @@ class PlanningController extends AbstractController
             'year' => $data['year'],
             'mode' => $mode,
         ]);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function preparePlanningData(Request $request): array
+    {
+        $planningFormData = new PlanningFormData();
+        $planningFormData->year = (int) (new \DateTime())->format('Y');
+        $form = $this->createForm(PlanningType::class, $planningFormData, [
+            'action' => $this->generateUrl($request->attributes->get('_route')),
+            'attr' => [
+                'id' => 'report',
+            ],
+            'years' => [
+                (new \DateTime())->modify('-1 year')->format('Y'),
+                (new \DateTime())->format('Y'),
+                (new \DateTime())->modify('+1 year')->format('Y'),
+            ],
+            'method' => 'GET',
+            'csrf_protection' => false,
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $planningFormData = $form->getData();
+        }
+
+        $planningData = $this->planningService->getPlanningData($planningFormData->year, $planningFormData->group ?? null);
+
+        return ['planningData' => $planningData, 'form' => $form, 'year' => $planningFormData->year];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Group;
 use App\Enum\IssueStatusEnum;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;
@@ -35,7 +36,7 @@ class PlanningService
      *
      * @throws \Exception
      */
-    public function getPlanningData(int $selectedYear): PlanningData
+    public function getPlanningData(int $selectedYear, ?Group $group): PlanningData
     {
         $planning = new PlanningData();
         $planning->weeks = $this->buildPlanningWeeks($planning, $selectedYear);
@@ -43,7 +44,7 @@ class PlanningService
         $thisYear = (new \DateTime('first day of January '.$selectedYear))->setTime(0, 0)->format('Y-m-d H:i:s');
         $nextYear = (new \DateTime('first day of January '.($selectedYear + 1)))->setTime(0, 0)->format('Y-m-d H:i:s');
 
-        $allIssues = $this->issueRepository->findIssuesInDateRange($thisYear, $nextYear);
+        $allIssues = $this->issueRepository->findIssuesInDateRange($thisYear, $nextYear, $group);
         $sortedIssues = $this->sortIssuesByWeek($allIssues);
 
         foreach ($sortedIssues as $week => $issues) {

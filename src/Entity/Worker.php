@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\WorkerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -26,8 +28,15 @@ class Worker
     #[ORM\Column(nullable: false, options: ['default' => true])]
     private bool $includeInReports = true;
 
+    /**
+     * @var Collection<int, Group>
+     */
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'workers')]
+    private Collection $groups;
+
     public function __construct()
     {
+        $this->groups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -89,6 +98,30 @@ class Worker
     public function setIncludeInReports(bool $includeInReports): self
     {
         $this->includeInReports = $includeInReports;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Group>
+     */
+    public function getGroups(): Collection
+    {
+        return $this->groups;
+    }
+
+    public function addGroup(Group $group): static
+    {
+        if (!$this->groups->contains($group)) {
+            $this->groups->add($group);
+        }
+
+        return $this;
+    }
+
+    public function removeGroup(Group $group): static
+    {
+        $this->groups->removeElement($group);
 
         return $this;
     }

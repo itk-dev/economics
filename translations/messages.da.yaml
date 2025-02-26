@@ -27,12 +27,17 @@ navigation:
     subscription: "Abonnementer"
     invoicing_rate_report: "Udfaktureringsrapport"
     billable_unbilled_hours_report: 'Ufakturerede timer'
+    planning_holidays: 'Ferieplan'
+    group: 'Grupper'
 
 planning:
+    group: 'Vælg gruppe'
+    select_group: 'Alle medarbejdere'
     title: 'Planlægning'
     titles:
         projects: "Planlægning: Projekter"
         users: "Planlægning: Brugere"
+        holidays: 'Ferieplan'
     assignees: "Brugere"
     projects: "Projekter"
     hidden-entries: "Skjulte brugere"
@@ -720,7 +725,12 @@ issue:
         total: "I alt"
         list_no_records_found: "Ingen produkter"
 
+name_filter_type:
+    name: 'Navn'
+
 worker:
+    groups: 'Grupper'
+    in_groups: 'I grupper'
     title: 'Medarbejdere'
     index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
     id: 'Id'
@@ -832,3 +842,21 @@ dashboard:
     norm_value: '%value% t.'
     work_hours_months: 'Timestatus måned'
     work_hours_weeks: 'Timestatus uge'
+
+groups:
+    action_delete_group: 'Slet gruppe'
+    action_create_new: 'Opret gruppe'
+    action_create: 'Opret gruppe'
+    action_save: 'Gem gruppe'
+    back_to_list: 'Tilbage til listen'
+    edit: 'Redigér gruppe'
+    name_label: 'Navn'
+    new: 'Opret ny gruppe'
+    name_help: 'Vælg et navn for gruppen'
+    users_in_group: 'Medarbejdere i gruppen'
+    actions: 'Handlinger'
+    id: '#'
+    name: 'Navn'
+    action_edit: 'Redigér'
+    list_no_records_found: 'Ingen grupper fundet'
+    title: 'Grupper'

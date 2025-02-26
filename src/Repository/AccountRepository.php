@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Account;
-use App\Model\Invoices\AccountFilterData;
+use App\Model\Invoices\NameFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -58,7 +58,7 @@ class AccountRepository extends ServiceEntityRepository
         return $accountChoices;
     }
 
-    public function getFilteredPagination(AccountFilterData $accountFilterData, int $page = 1): PaginationInterface
+    public function getFilteredPagination(NameFilterData $accountFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('account');
 
