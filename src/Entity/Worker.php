@@ -110,7 +110,7 @@ class Worker
         return $this->workerGroups;
     }
 
-    public function addGroup(WorkerGroup $workerGroup): static
+    public function addWorkerGroup(WorkerGroup $workerGroup): static
     {
         if (!$this->workerGroups->contains($workerGroup)) {
             $this->workerGroups->add($workerGroup);
@@ -119,7 +119,7 @@ class Worker
         return $this;
     }
 
-    public function removeGroup(WorkerGroup $workerGroup): static
+    public function removeWorkerGroup(WorkerGroup $workerGroup): static
     {
         $this->workerGroups->removeElement($workerGroup);
 
