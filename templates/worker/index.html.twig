@@ -27,7 +27,7 @@
                 <td class="table-td">{{ worker.email }}</td>
                 <td class="table-td">{{ worker.name }}</td>
                 <td class="table-td">{{ worker.workload }}</td>
-                <td class="table-td">{{ worker.groups|length }}</td>
+                <td class="table-td">{{ worker.workerGroups|length }}</td>
                 <td class="table-td">{{ worker.includeInReports ? 'worker.include_in_reports.yes'|trans : 'worker.include_in_reports.no'|trans }}</td>
                 <td class="table-td"><a href="{{ path('app_worker_edit', {id: worker.id}) }}">{{ 'worker.action_edit'|trans }}</a></td>
             </tr>

@@ -54,7 +54,7 @@ class WorkerType extends AbstractType
                 'multiple' => false,
                 'placeholder' => false,
             ])
-            ->add('groups', EntityType::class, [
+            ->add('workerGroups', EntityType::class, [
                 'class' => WorkerGroup::class,
                 'multiple' => true,
                 'label' => 'worker.groups',
