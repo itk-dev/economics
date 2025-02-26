@@ -42,13 +42,15 @@
                             {% set res = res + assignee.sprintSums.get(week_number).sumHours %}
                         {% endif %}
                     {% endfor %}
+
+                    {% set weekPercentage = res > 0 ? (res / assignee.weekNorm * 100)|round(0) : null %}
                     <td class="text-right px-3 border border-slate-600
                         {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : '' }}
-                        {{ res < week.weekGoalLow ? 'bg-transperent' : '' }}
-                        {{ res >= week.weekGoalLow and res <= week.weekGoalHigh ? 'bg-green-600' : '' }}
-                        {{ res > week.weekGoalHigh ? 'bg-orange-500' : '' }}
+                        {{ weekPercentage is not null and weekPercentage >= 25 and weekPercentage < 50 ? 'bg-blue-400' : '' }}
+                        {{ weekPercentage is not null and weekPercentage >= 50 and weekPercentage < 75 ? 'bg-blue-600' : '' }}
+                        {{ weekPercentage is not null and weekPercentage >= 75 ? 'bg-blue-800' : '' }}
                     ">
-                        {{ res }}
+                        {{ weekPercentage is not null ? weekPercentage ~ "%" : '' }}
                     </td>
                 {% endfor %}
             </tr>

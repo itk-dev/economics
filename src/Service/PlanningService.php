@@ -12,8 +12,10 @@ use App\Model\Planning\Project;
 use App\Model\Planning\SprintSum;
 use App\Model\Planning\Weeks;
 use App\Repository\IssueRepository;
+use App\Repository\ProjectRepository;
 use App\Repository\WorkerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Entity\Issue as IssueEntity;
 
 class PlanningService
 {
@@ -21,7 +23,7 @@ class PlanningService
         private readonly DateTimeHelper $dateTimeHelper,
         private readonly IssueRepository $issueRepository,
         protected readonly float $weekGoalLow,
-        protected readonly float $weekGoalHigh, private readonly WorkerRepository $workerRepository,
+        protected readonly float $weekGoalHigh, private readonly WorkerRepository $workerRepository, private readonly ProjectRepository $projectRepository,
     ) {
     }
 
@@ -36,15 +38,21 @@ class PlanningService
      *
      * @throws \Exception
      */
-    public function getPlanningData(int $selectedYear, ?Group $group): PlanningData
+    public function getPlanningData(int $selectedYear, ?Group $group, bool $holidayPlanning = false): PlanningData
     {
         $planning = new PlanningData();
-        $planning->weeks = $this->buildPlanningWeeks($planning, $selectedYear);
+        $planning->weeks = $this->buildPlanningWeeks($planning, $selectedYear, $holidayPlanning);
 
         $thisYear = (new \DateTime('first day of January '.$selectedYear))->setTime(0, 0)->format('Y-m-d H:i:s');
         $nextYear = (new \DateTime('first day of January '.($selectedYear + 1)))->setTime(0, 0)->format('Y-m-d H:i:s');
 
-        $allIssues = $this->issueRepository->findIssuesInDateRange($thisYear, $nextYear, $group);
+        $projects = null;
+
+        if ($holidayPlanning) {
+            $projects = $this->projectRepository->findBy(['holidayPlanning' => true]);
+        }
+
+        $allIssues = $this->issueRepository->findIssuesInDateRange($thisYear, $nextYear, $group, $projects);
         $sortedIssues = $this->sortIssuesByWeek($allIssues);
 
         foreach ($sortedIssues as $week => $issues) {
@@ -64,7 +72,7 @@ class PlanningService
      *
      * @return ArrayCollection<string, Weeks> The ArrayCollection of Weeks objects representing the weeks in the planning
      */
-    private function buildPlanningWeeks(PlanningData $planning, int $year): ArrayCollection
+    private function buildPlanningWeeks(PlanningData $planning, int $year, bool $planInSprints = true): ArrayCollection
     {
         $weeks = $planning->weeks;
 
@@ -73,7 +81,7 @@ class PlanningService
 
         $weeksOfYear = $this->dateTimeHelper->getWeeksOfYear($year);
         foreach ($weeksOfYear as $week) {
-            $weekIsSupport = 1 === $week % (self::WEEKS_IN_SUPPORT_PERIOD + self::WEEKS_IN_SPRINT_PERIOD);
+            $weekIsSupport = $planInSprints || (1 === $week % (self::WEEKS_IN_SUPPORT_PERIOD + self::WEEKS_IN_SPRINT_PERIOD));
 
             if ($weekIsSupport) {
                 $supportPeriod = new Weeks();
@@ -202,16 +210,17 @@ class PlanningService
     /**
      * Get the assignee key and display name.
      *
-     * @param  mixed  $issue
+     * @param  IssueEntity $issue
      *
      * @return array
      */
-    private function getAssigneeData(mixed $issue): array
+    private function getAssigneeData(IssueEntity $issue): array
     {
         if (empty($issue->getWorker())) {
             return [
                 'key' => 'unassigned',
                 'displayName' => 'Unassigned',
+                'weekNorm' => 37,
             ];
         } else {
             $assigneeKey = (string) $issue->getWorker();
@@ -226,6 +235,7 @@ class PlanningService
             return [
                 'key' => $assigneeKey,
                 'displayName' => $assigneeName,
+                'weekNorm' => $worker?->getWorkload() ?? 37,
             ];
         }
     }
@@ -241,7 +251,7 @@ class PlanningService
     private function getOrCreateAssignee(ArrayCollection $assignees, array $assigneeData): Assignee
     {
         if (!$assignees->containsKey($assigneeData['key'])) {
-            $assignees->set($assigneeData['key'], new Assignee($assigneeData['key'], $assigneeData['displayName']));
+            $assignees->set($assigneeData['key'], new Assignee($assigneeData['key'], $assigneeData['displayName'], $assigneeData['weekNorm']));
         }
 
         return $assignees->get($assigneeData['key']) ?? throw new \RuntimeException("Assignee key {$assigneeData['key']} does not exist");

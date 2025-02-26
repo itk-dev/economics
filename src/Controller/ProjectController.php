@@ -72,12 +72,27 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/isBillable', name: 'app_project_is_billable', methods: ['POST'])]
-    public function isBillable(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    public function setIsBillable(Request $request, Project $project, ProjectRepository $projectRepository): Response
     {
         $body = $request->toArray();
 
         if (isset($body['value'])) {
             $project->setIsBillable($body['value']);
+            $projectRepository->save($project, true);
+
+            return new JsonResponse([$body], 200);
+        } else {
+            throw new BadRequestHttpException('Value not set.');
+        }
+    }
+
+    #[Route('/{id}/holidayPlanning', name: 'app_project_holiday_planning', methods: ['POST'])]
+    public function setHolidayPlanning(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    {
+        $body = $request->toArray();
+
+        if (isset($body['value'])) {
+            $project->setHolidayPlanning($body['value']);
             $projectRepository->save($project, true);
 
             return new JsonResponse([$body], 200);

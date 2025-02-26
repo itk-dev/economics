@@ -37,7 +37,7 @@ planning:
     titles:
         projects: "Planlægning: Projekter"
         users: "Planlægning: Brugere"
-        holidays: 'Ferieplan'
+        holiday: 'Ferieplan'
     assignees: "Brugere"
     projects: "Projekter"
     hidden-entries: "Skjulte brugere"
@@ -472,6 +472,8 @@ project:
     title: "Projekter"
     include: "Inkludér"
     id: "#"
+    holiday_planning: "Ferieplanlægning"
+    holiday_planning_helptext: "Hvis valgt bliver projektet inkluderet i ferieplanlægningsoverblikket."
     name: "Navn"
     project_tracker_key: "Nøgle"
     updated_at: "Opdateret"

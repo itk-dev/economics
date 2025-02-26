@@ -110,7 +110,7 @@ class IssueRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findIssuesInDateRange(string $startDate, string $endDate, ?Group $group = null)
+    public function findIssuesInDateRange(string $startDate, string $endDate, ?Group $group = null, ?array $projects = null): array
     {
         $qb = $this->createQueryBuilder('i')
             ->where('i.dueDate >= :start')
@@ -122,7 +122,12 @@ class IssueRepository extends ServiceEntityRepository
             $qb->andWhere('i.worker IN (:workers)')->setParameter('workers', array_map(fn(Worker $worker) => $worker->getEmail(), $group->getWorkers()->toArray()));
         }
 
-        return $qb->getQuery()
-            ->getResult();
+        if ($projects !== null) {
+            $qb->andWhere('i.project IN (:projects)')->setParameter('projects', array_map(fn(Project $project) => $project->getId(), $projects));
+        }
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
     }
 }

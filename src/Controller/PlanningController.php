@@ -45,9 +45,6 @@ class PlanningController extends AbstractController
         return new JsonResponse($res);
     }
 
-    /**
-     * @throws \Exception
-     */
     #[Route('/users', name: 'app_planning_users')]
     public function planningUsers(Request $request): Response
     {
@@ -56,9 +53,6 @@ class PlanningController extends AbstractController
         return $this->createResponse('users', $data);
     }
 
-    /**
-     * @throws \Exception
-     */
     #[Route('/projects', name: 'app_planning_projects')]
     public function planningProjects(Request $request): Response
     {
@@ -70,7 +64,7 @@ class PlanningController extends AbstractController
     #[Route('/holiday', name: 'app_planning_holiday')]
     public function holidayPlanning(Request $request): Response
     {
-        $data = $this->preparePlanningData($request);
+        $data = $this->preparePlanningData($request, true);
 
         return $this->createResponse('holiday', $data);
     }
@@ -89,7 +83,7 @@ class PlanningController extends AbstractController
     /**
      * @throws \Exception
      */
-    private function preparePlanningData(Request $request): array
+    private function preparePlanningData(Request $request, bool $holidayPLanning = false): array
     {
         $planningFormData = new PlanningFormData();
         $planningFormData->year = (int) (new \DateTime())->format('Y');
@@ -113,7 +107,7 @@ class PlanningController extends AbstractController
             $planningFormData = $form->getData();
         }
 
-        $planningData = $this->planningService->getPlanningData($planningFormData->year, $planningFormData->group ?? null);
+        $planningData = $this->planningService->getPlanningData($planningFormData->year, $planningFormData->group ?? null, $holidayPLanning);
 
         return ['planningData' => $planningData, 'form' => $form, 'year' => $planningFormData->year];
     }
