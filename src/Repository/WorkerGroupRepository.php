@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Group;
+use App\Entity\WorkerGroup;
 use App\Model\Invoices\NameFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -10,13 +10,13 @@ use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
 /**
- * @extends ServiceEntityRepository<Group>
+ * @extends ServiceEntityRepository<WorkerGroup>
  */
-class GroupRepository extends ServiceEntityRepository
+class WorkerGroupRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {
-        parent::__construct($registry, Group::class);
+        parent::__construct($registry, WorkerGroup::class);
     }
 
     public function getFilteredPagination(NameFilterData $nameFilterData, int $page = 1): PaginationInterface

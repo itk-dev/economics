@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Group;
+use App\Entity\WorkerGroup;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
@@ -110,7 +110,7 @@ class IssueRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findIssuesInDateRange(string $startDate, string $endDate, ?Group $group = null, ?array $projects = null): array
+    public function findIssuesInDateRange(string $startDate, string $endDate, ?WorkerGroup $group = null, ?array $projects = null): array
     {
         $qb = $this->createQueryBuilder('i')
             ->where('i.dueDate >= :start')

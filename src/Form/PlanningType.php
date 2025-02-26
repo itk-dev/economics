@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Group;
+use App\Entity\WorkerGroup;
 use App\Model\Planning\PlanningFormData;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -29,7 +29,7 @@ class PlanningType extends AbstractType
                 'placeholder' => null,
             ])
             ->add('group', EntityType::class, [
-                'class' => Group::class,
+                'class' => WorkerGroup::class,
                 'label' => 'planning.group',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element ', 'onchange' => 'this.form.submit()'],

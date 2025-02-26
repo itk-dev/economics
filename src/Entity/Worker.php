@@ -29,9 +29,9 @@ class Worker
     private bool $includeInReports = true;
 
     /**
-     * @var Collection<int, Group>
+     * @var Collection<int, WorkerGroup>
      */
-    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'workers')]
+    #[ORM\ManyToMany(targetEntity: WorkerGroup::class, inversedBy: 'workers')]
     private Collection $groups;
 
     public function __construct()
@@ -103,14 +103,14 @@ class Worker
     }
 
     /**
-     * @return Collection<int, Group>
+     * @return Collection<int, WorkerGroup>
      */
     public function getGroups(): Collection
     {
         return $this->groups;
     }
 
-    public function addGroup(Group $group): static
+    public function addGroup(WorkerGroup $group): static
     {
         if (!$this->groups->contains($group)) {
             $this->groups->add($group);
@@ -119,7 +119,7 @@ class Worker
         return $this;
     }
 
-    public function removeGroup(Group $group): static
+    public function removeGroup(WorkerGroup $group): static
     {
         $this->groups->removeElement($group);
 

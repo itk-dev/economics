@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\Group;
+use App\Entity\WorkerGroup;
 use App\Form\GroupType;
 use App\Form\NameFilterType;
 use App\Model\Invoices\NameFilterData;
-use App\Repository\GroupRepository;
+use App\Repository\WorkerGroupRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,14 +16,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/group')]
 #[IsGranted('ROLE_ADMIN')]
-class GroupController extends AbstractController
+class WorkerGroupController extends AbstractController
 {
     public function __construct(
     ) {
     }
 
     #[Route('/', name: 'app_group_index', methods: ['GET'])]
-    public function index(Request $request, GroupRepository $groupRepository): Response
+    public function index(Request $request, WorkerGroupRepository $groupRepository): Response
     {
         $groupFilterData = new NameFilterData();
         $form = $this->createForm(NameFilterType::class, $groupFilterData);
@@ -40,7 +40,7 @@ class GroupController extends AbstractController
     #[Route('/new', name: 'app_group_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $group = new Group();
+        $group = new WorkerGroup();
         $form = $this->createForm(GroupType::class, $group);
         $form->handleRequest($request);
 
@@ -58,7 +58,7 @@ class GroupController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_group_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Group $group, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, WorkerGroup $group, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(GroupType::class, $group);
         $form->handleRequest($request);
@@ -76,7 +76,7 @@ class GroupController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_group_delete', methods: ['POST'])]
-    public function delete(Request $request, Group $group, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, WorkerGroup $group, EntityManagerInterface $entityManager): Response
     {
         $token = $request->request->get('_token');
         if (is_string($token) && $this->isCsrfTokenValid('delete'.$group->getId(), $token)) {

@@ -2,10 +2,10 @@
 
 namespace App\Model\Planning;
 
-use App\Entity\Group;
+use App\Entity\WorkerGroup;
 
 class PlanningFormData
 {
     public int $year;
-    public ?Group $group;
+    public ?WorkerGroup $group;
 }

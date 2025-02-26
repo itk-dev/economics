@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Entity\Group;
+use App\Entity\WorkerGroup;
 use App\Entity\Issue as IssueEntity;
 use App\Enum\IssueStatusEnum;
 use App\Model\Planning\Assignee;
@@ -38,7 +38,7 @@ class PlanningService
      *
      * @throws \Exception
      */
-    public function getPlanningData(int $selectedYear, ?Group $group, bool $holidayPlanning = false): PlanningData
+    public function getPlanningData(int $selectedYear, ?WorkerGroup $group, bool $holidayPlanning = false): PlanningData
     {
         $planning = new PlanningData();
         $planning->weeks = $this->buildPlanningWeeks($planning, $selectedYear, $holidayPlanning);

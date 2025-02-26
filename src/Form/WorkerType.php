@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Group;
+use App\Entity\WorkerGroup;
 use App\Entity\Worker;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -55,7 +55,7 @@ class WorkerType extends AbstractType
                 'placeholder' => false,
             ])
             ->add('groups', EntityType::class, [
-                'class' => Group::class,
+                'class' => WorkerGroup::class,
                 'multiple' => true,
                 'label' => 'worker.groups',
                 'label_attr' => ['class' => 'label'],
