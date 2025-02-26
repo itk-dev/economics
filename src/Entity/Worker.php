@@ -32,11 +32,11 @@ class Worker
      * @var Collection<int, WorkerGroup>
      */
     #[ORM\ManyToMany(targetEntity: WorkerGroup::class, inversedBy: 'workers')]
-    private Collection $groups;
+    private Collection $workerGroups;
 
     public function __construct()
     {
-        $this->groups = new ArrayCollection();
+        $this->workerGroups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,23 +105,23 @@ class Worker
     /**
      * @return Collection<int, WorkerGroup>
      */
-    public function getGroups(): Collection
+    public function getWorkerGroups(): Collection
     {
-        return $this->groups;
+        return $this->workerGroups;
     }
 
-    public function addGroup(WorkerGroup $group): static
+    public function addGroup(WorkerGroup $workerGroup): static
     {
-        if (!$this->groups->contains($group)) {
-            $this->groups->add($group);
+        if (!$this->workerGroups->contains($workerGroup)) {
+            $this->workerGroups->add($workerGroup);
         }
 
         return $this;
     }
 
-    public function removeGroup(WorkerGroup $group): static
+    public function removeGroup(WorkerGroup $workerGroup): static
     {
-        $this->groups->removeElement($group);
+        $this->workerGroups->removeElement($workerGroup);
 
         return $this;
     }
