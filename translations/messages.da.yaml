@@ -51,6 +51,7 @@ planning:
     year: 'Vælg år'
     sync_all_issues_action: 'Synkronisér opgaver'
     sync-project-select: 'Vælg projekt at synkronisere'
+    holiday_unit: 'Tabellen viser antal feriedage for en medarbejder for en given uge.'
 
 client:
     title: "Kunder"

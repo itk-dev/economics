@@ -43,14 +43,14 @@
                         {% endif %}
                     {% endfor %}
 
-                    {% set weekPercentage = res > 0 ? (res / assignee.weekNorm * 100)|round(0) : null %}
-                    <td class="text-right px-3 border border-slate-600
+                    {% set weekPercentage = res > 0 ? (res / assignee.weekNorm * 5)|round(0, 'ceil') : null %}
+                    <td class="text-center px-3 border border-slate-600
                         {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : '' }}
-                        {{ weekPercentage is not null and weekPercentage >= 25 and weekPercentage < 50 ? 'bg-blue-400' : '' }}
-                        {{ weekPercentage is not null and weekPercentage >= 50 and weekPercentage < 75 ? 'bg-blue-600' : '' }}
-                        {{ weekPercentage is not null and weekPercentage >= 75 ? 'bg-blue-800' : '' }}
+                        {{ weekPercentage is not null and weekPercentage >= 1 and weekPercentage < 3 ? 'bg-blue-400' : '' }}
+                        {{ weekPercentage is not null and weekPercentage >= 3 and weekPercentage < 5 ? 'bg-blue-600' : '' }}
+                        {{ weekPercentage is not null and weekPercentage >= 5 ? 'bg-blue-800' : '' }}
                     ">
-                        {{ weekPercentage is not null ? weekPercentage ~ '%' : '' }}
+                        {{ weekPercentage is not null ? weekPercentage : '' }}
                     </td>
                 {% endfor %}
             </tr>
@@ -115,4 +115,8 @@
         {{ 'planning.hidden-entries'|trans }}:
         <span {{ stimulus_target('show-hide', 'hiddenEntries') }}></span>
     </div>
+</div>
+
+<div class="mt-3">
+    <small>{{ 'planning.holiday_unit'|trans }}</small>
 </div>
