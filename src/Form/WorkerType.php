@@ -57,6 +57,7 @@ class WorkerType extends AbstractType
             ->add('workerGroups', EntityType::class, [
                 'class' => WorkerGroup::class,
                 'multiple' => true,
+                'by_reference' => false,
                 'label' => 'worker.groups',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],

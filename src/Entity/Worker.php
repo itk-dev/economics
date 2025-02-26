@@ -31,12 +31,17 @@ class Worker
     /**
      * @var Collection<int, WorkerGroup>
      */
-    #[ORM\ManyToMany(targetEntity: WorkerGroup::class, inversedBy: 'workers')]
+    #[ORM\ManyToMany(targetEntity: WorkerGroup::class, mappedBy: 'workers')]
     private Collection $workerGroups;
 
     public function __construct()
     {
         $this->workerGroups = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->name ?? $this->email ?? $this->id);
     }
 
     public function getId(): ?int
@@ -114,6 +119,7 @@ class Worker
     {
         if (!$this->workerGroups->contains($workerGroup)) {
             $this->workerGroups->add($workerGroup);
+            $workerGroup->addWorker($this);
         }
 
         return $this;
@@ -121,7 +127,9 @@ class Worker
 
     public function removeWorkerGroup(WorkerGroup $workerGroup): static
     {
-        $this->workerGroups->removeElement($workerGroup);
+        if ($this->workerGroups->removeElement($workerGroup)) {
+            $workerGroup->removeWorker($this);
+        }
 
         return $this;
     }

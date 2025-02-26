@@ -862,3 +862,4 @@ groups:
     action_edit: 'Redigér'
     list_no_records_found: 'Ingen grupper fundet'
     title: 'Grupper'
+    workers: 'Medarbejdere'

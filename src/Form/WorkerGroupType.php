@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Worker;
 use App\Entity\WorkerGroup;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,6 +22,16 @@ class WorkerGroupType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'help' => 'groups.name_help',
                 'required' => true,
+                'row_attr' => ['class' => 'form-row'],
+            ])
+            ->add('workers', EntityType::class, [
+                'class' => Worker::class,
+                'multiple' => true,
+                'label' => 'groups.workers',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],
+                'help_attr' => ['class' => 'form-help'],
+                'required' => false,
                 'row_attr' => ['class' => 'form-row'],
             ]);
     }

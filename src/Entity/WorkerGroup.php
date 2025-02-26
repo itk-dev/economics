@@ -22,7 +22,7 @@ class WorkerGroup
     /**
      * @var Collection<int, Worker>
      */
-    #[ORM\ManyToMany(targetEntity: Worker::class, mappedBy: 'workerGroups')]
+    #[ORM\ManyToMany(targetEntity: Worker::class, inversedBy: 'workerGroups')]
     private Collection $workers;
 
     public function __construct()
@@ -47,6 +47,11 @@ class WorkerGroup
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return (string) ($this->name ?? $this->id);
+    }
+
     /**
      * @return Collection<int, Worker>
      */
@@ -59,7 +64,6 @@ class WorkerGroup
     {
         if (!$this->workers->contains($worker)) {
             $this->workers->add($worker);
-            $worker->addWorkerGroup($this);
         }
 
         return $this;
@@ -67,15 +71,8 @@ class WorkerGroup
 
     public function removeWorker(Worker $worker): static
     {
-        if ($this->workers->removeElement($worker)) {
-            $worker->removeWorkerGroup($this);
-        }
+        $this->workers->removeElement($worker);
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return (string) ($this->name ?? $this->id);
     }
 }

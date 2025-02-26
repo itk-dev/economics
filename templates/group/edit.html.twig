@@ -6,7 +6,7 @@
     <h1 class="page-title">{{ 'groups.edit'|trans }}</h1>
 
     {{ form_start(form) }}
-    <div>
+    <div class="selections" {{ stimulus_controller('choices') }}>
         {{ form_rest(form) }}
         <button class="button mt-3">{{ 'groups.action_save'|trans }}</button>
     </div>
