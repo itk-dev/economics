@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\WorkerGroup;
-use App\Form\GroupType;
 use App\Form\NameFilterType;
+use App\Form\WorkerGroupType;
 use App\Model\Invoices\NameFilterData;
 use App\Repository\WorkerGroupRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,7 +41,7 @@ class WorkerGroupController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $group = new WorkerGroup();
-        $form = $this->createForm(GroupType::class, $group);
+        $form = $this->createForm(WorkerGroupType::class, $group);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -60,7 +60,7 @@ class WorkerGroupController extends AbstractController
     #[Route('/{id}/edit', name: 'app_group_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, WorkerGroup $group, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(GroupType::class, $group);
+        $form = $this->createForm(WorkerGroupType::class, $group);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use App\Entity\WorkerGroup;
 use App\Entity\Issue as IssueEntity;
+use App\Entity\WorkerGroup;
 use App\Enum\IssueStatusEnum;
 use App\Model\Planning\Assignee;
 use App\Model\Planning\AssigneeProject;

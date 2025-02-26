@@ -25,7 +25,7 @@ class WorkerGroupRepository extends ServiceEntityRepository
 
         if (!is_null($nameFilterData->name)) {
             $name = $nameFilterData->name;
-            $qb->andWhere('group.name LIKE :name')->setParameter('name', "%$name%");
+            $qb->andWhere('g.name LIKE :name')->setParameter('name', "%$name%");
         }
 
         return $this->paginator->paginate(

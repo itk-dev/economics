@@ -2,8 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\WorkerGroup;
 use App\Entity\Worker;
+use App\Entity\WorkerGroup;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
