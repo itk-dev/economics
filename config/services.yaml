@@ -71,6 +71,6 @@ services:
         arguments:
             $emailFromAddress: '%env(string:EMAIL_FROM_ADDRESS)%'
 
-    App\Command\QueueSyncCommand:
+    App\MessageHandler\SynchronizeHandler:
         arguments:
             $monitoringUrl: '%env(string:SYNC_MONITORING_URL)%'

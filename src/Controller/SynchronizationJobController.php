@@ -48,12 +48,6 @@ class SynchronizationJobController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function sync(SynchronizationJobRepository $synchronizationJobRepository, MessageBusInterface $bus): Response
     {
-        $latestJob = $synchronizationJobRepository->getLatestJob();
-
-        if (null !== $latestJob && in_array($latestJob->getStatus(), [SynchronizationStatusEnum::NOT_STARTED, SynchronizationStatusEnum::RUNNING])) {
-            return new JsonResponse(['message' => 'existing job'], Response::HTTP_CONFLICT);
-        }
-
         $job = new SynchronizationJob();
         $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
         $synchronizationJobRepository->save($job, true);
@@ -69,34 +63,5 @@ class SynchronizationJobController extends AbstractController
         $bus->dispatch($message);
 
         return new JsonResponse([], 200);
-    }
-
-    #[Route('/issues', name: 'app_synchronization_app_issues_sync', methods: ['POST'])]
-    #[IsGranted('ROLE_PLANNING')]
-    public function syncAllIssues(Request $request, DataSynchronizationService $dataSynchronizationService, ProjectRepository $projectRepository): Response
-    {
-        $projectId = $request->query->get('id');
-
-        if (null === $projectId) {
-            throw new BadRequestHttpException('Project query parameter "id" not set');
-        }
-
-        $project = $projectRepository->find($projectId);
-
-        if (null === $project) {
-            throw new BadRequestHttpException('Project not found');
-        }
-
-        $dataProvider = $project->getDataProvider();
-        if (null === $dataProvider) {
-            throw new BadRequestHttpException('Project data provider not set');
-        }
-
-        $issuesSynced = 0;
-        $dataSynchronizationService->syncIssuesForProject((int) $projectId, $dataProvider, function () use (&$issuesSynced) {
-            ++$issuesSynced;
-        });
-
-        return new JsonResponse(['issuesSynced' => $issuesSynced], 200);
     }
 }

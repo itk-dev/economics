@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Form\PlanningType;
 use App\Model\Planning\PlanningFormData;
 use App\Repository\ProjectRepository;
+use App\Service\DataSynchronizationService;
 use App\Service\PlanningService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -108,5 +110,33 @@ class PlanningController extends AbstractController
             'year' => $data['year'],
             'mode' => $mode,
         ]);
+    }
+
+    #[Route('/sync-issues', name: 'app_planning_issues_sync', methods: ['POST'])]
+    public function syncAllIssues(Request $request, DataSynchronizationService $dataSynchronizationService, ProjectRepository $projectRepository): Response
+    {
+        $projectId = $request->query->get('id');
+
+        if (null === $projectId) {
+            throw new BadRequestHttpException('Project query parameter "id" not set');
+        }
+
+        $project = $projectRepository->find($projectId);
+
+        if (null === $project) {
+            throw new BadRequestHttpException('Project not found');
+        }
+
+        $dataProvider = $project->getDataProvider();
+        if (null === $dataProvider) {
+            throw new BadRequestHttpException('Project data provider not set');
+        }
+
+        $issuesSynced = 0;
+        $dataSynchronizationService->syncIssuesForProject((int) $projectId, $dataProvider, function () use (&$issuesSynced) {
+            ++$issuesSynced;
+        });
+
+        return new JsonResponse(['issuesSynced' => $issuesSynced], 200);
     }
 }

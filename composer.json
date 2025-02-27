@@ -25,6 +25,7 @@
         "symfony/form": "~6.4.0",
         "symfony/framework-bundle": "~6.4.0",
         "symfony/http-client": "~6.4.0",
+        "symfony/lock": "6.4.*",
         "symfony/mailer": "~6.4.0",
         "symfony/messenger": "~6.4.0",
         "symfony/mime": "~6.4.0",

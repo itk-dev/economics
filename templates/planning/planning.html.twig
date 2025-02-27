@@ -11,7 +11,7 @@
     } %}
         {% block actions %}
             <div {{ stimulus_controller('sync-id') }} class="flex flex-row"
-                data-update-endpoint="{{ path('app_synchronization_app_issues_sync') }}"
+                data-update-endpoint="{{ path('app_planning_issues_sync') }}"
                 data-options-endpoint="{{ path('app_planning_projects_list') }}">
                 <label aria-label="{{ 'planning.sync-project-select'|trans }}" class="form-choices" style="width: 200px">
                     <select class="form-element" {{ stimulus_target('sync-id', 'select') }} ></select>
