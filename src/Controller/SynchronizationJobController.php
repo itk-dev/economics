@@ -5,14 +5,10 @@ namespace App\Controller;
 use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
 use App\Message\SynchronizeMessage;
-use App\Repository\ProjectRepository;
 use App\Repository\SynchronizationJobRepository;
-use App\Service\DataSynchronizationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -69,34 +65,5 @@ class SynchronizationJobController extends AbstractController
         $bus->dispatch($message);
 
         return new JsonResponse([], 200);
-    }
-
-    #[Route('/issues', name: 'app_synchronization_app_issues_sync', methods: ['POST'])]
-    #[IsGranted('ROLE_PLANNING')]
-    public function syncAllIssues(Request $request, DataSynchronizationService $dataSynchronizationService, ProjectRepository $projectRepository): Response
-    {
-        $projectId = $request->query->get('id');
-
-        if (null === $projectId) {
-            throw new BadRequestHttpException('Project query parameter "id" not set');
-        }
-
-        $project = $projectRepository->find($projectId);
-
-        if (null === $project) {
-            throw new BadRequestHttpException('Project not found');
-        }
-
-        $dataProvider = $project->getDataProvider();
-        if (null === $dataProvider) {
-            throw new BadRequestHttpException('Project data provider not set');
-        }
-
-        $issuesSynced = 0;
-        $dataSynchronizationService->syncIssuesForProject((int) $projectId, $dataProvider, function () use (&$issuesSynced) {
-            ++$issuesSynced;
-        });
-
-        return new JsonResponse(['issuesSynced' => $issuesSynced], 200);
     }
 }
