@@ -27,12 +27,17 @@ navigation:
     subscription: "Abonnementer"
     invoicing_rate_report: "Udfaktureringsrapport"
     billable_unbilled_hours_report: 'Ufakturerede timer'
+    planning_holidays: 'Ferieplan'
+    group: 'Grupper'
 
 planning:
+    group: 'Vælg gruppe'
+    select_group: 'Alle medarbejdere'
     title: 'Planlægning'
     titles:
         projects: "Planlægning: Projekter"
         users: "Planlægning: Brugere"
+        holiday: 'Ferieplan'
     assignees: "Brugere"
     projects: "Projekter"
     hidden-entries: "Skjulte brugere"
@@ -46,6 +51,7 @@ planning:
     year: 'Vælg år'
     sync_all_issues_action: 'Synkronisér opgaver'
     sync-project-select: 'Vælg projekt at synkronisere'
+    holiday_unit: 'Tabellen viser antal feriedage for en medarbejder for en given uge.'
 
 client:
     title: "Kunder"
@@ -467,6 +473,8 @@ project:
     title: "Projekter"
     include: "Inkludér"
     id: "#"
+    holiday_planning: "Ferieplanlægning"
+    holiday_planning_helptext: "Hvis valgt bliver projektet inkluderet i ferieplanlægningsoverblikket."
     name: "Navn"
     project_tracker_key: "Nøgle"
     updated_at: "Opdateret"
@@ -720,7 +728,12 @@ issue:
         total: "I alt"
         list_no_records_found: "Ingen produkter"
 
+name_filter_type:
+    name: 'Navn'
+
 worker:
+    groups: 'Grupper'
+    in_groups: 'I grupper'
     title: 'Medarbejdere'
     index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
     id: 'Id'
@@ -832,3 +845,22 @@ dashboard:
     norm_value: '%value% t.'
     work_hours_months: 'Timestatus måned'
     work_hours_weeks: 'Timestatus uge'
+
+groups:
+    action_delete_group: 'Slet gruppe'
+    action_create_new: 'Opret gruppe'
+    action_create: 'Opret gruppe'
+    action_save: 'Gem gruppe'
+    back_to_list: 'Tilbage til listen'
+    edit: 'Redigér gruppe'
+    name_label: 'Navn'
+    new: 'Opret ny gruppe'
+    name_help: 'Vælg et navn for gruppen'
+    users_in_group: 'Medarbejdere i gruppen'
+    actions: 'Handlinger'
+    id: '#'
+    name: 'Navn'
+    action_edit: 'Redigér'
+    list_no_records_found: 'Ingen grupper fundet'
+    title: 'Grupper'
+    workers: 'Medarbejdere'

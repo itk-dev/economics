@@ -2,7 +2,7 @@
 
 namespace App\Model\Invoices;
 
-class AccountFilterData
+class NameFilterData
 {
     public ?string $name = null;
 }
