@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.8.0] - 2025-02-24
 
+* [PR-205](https://github.com/itk-dev/economics/pull/205)
+  3863: Added lock to synchronization job to avoid executing more than one sync at a time.
+  3863: Moved queue monitoring to handler instead of command.
 * [PR-202](https://github.com/itk-dev/economics/pull/202)
   3863: Added holiday planning.
 * [PR-201](https://github.com/itk-dev/economics/pull/201)
