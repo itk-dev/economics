@@ -18,6 +18,7 @@
                     <ul class="navigation-item-submenu">
                         {{ include('components/navigation-item.html.twig', {title: 'navigation.planning_users'|trans, role: 'ROLE_PLANNING', route: path('app_planning_users')}) }}
                         {{ include('components/navigation-item.html.twig', {title: 'navigation.planning_projects'|trans, role: 'ROLE_PLANNING', route: path('app_planning_projects')}) }}
+                        {{ include('components/navigation-item.html.twig', {title: 'navigation.planning_holidays'|trans, role: 'ROLE_PLANNING', route: path('app_planning_holiday')}) }}
                     </ul>
                 </li>
             {% endif %}
@@ -37,6 +38,7 @@
                         {{ include('components/navigation-item.html.twig', {title: 'navigation.billable_unbilled_hours_report'|trans, role: 'ROLE_REPORT', route: path('app_billable_unbilled_hours_report')}) }}
                         {{ include('components/navigation-item.html.twig', {title: 'navigation.invoicing_rate_report'|trans, role: 'ROLE_REPORT', route: path('app_invoicing_rate_report')}) }}
                         {{ include('components/navigation-item.html.twig', {title: 'navigation.management_report'|trans, role: 'ROLE_REPORT', route: path('app_management_reports_create')}) }}
+                        {{ include('components/navigation-item.html.twig', {title: 'navigation.subscription'|trans, role: 'ROLE_REPORT', route: path('app_subscription_index')}) }}
                     </ul>
                 </li>
             {% endif %}
@@ -51,8 +53,8 @@
                     {{ include('components/navigation-item.html.twig', {title: 'navigation.client'|trans, role: 'ROLE_ADMIN', route: path('app_client_index')}) }}
                     {{ include('components/navigation-item.html.twig', {title: 'navigation.account'|trans, role: 'ROLE_ADMIN', route: path('app_account_index')}) }}
                     {{ include('components/navigation-item.html.twig', {title: 'navigation.worker'|trans, role: 'ROLE_ADMIN', route: path('app_worker_index')}) }}
+                    {{ include('components/navigation-item.html.twig', {title: 'navigation.group'|trans, role: 'ROLE_ADMIN', route: path('app_group_index')}) }}
                     {{ include('components/navigation-item.html.twig', {title: 'navigation.user'|trans, role: 'ROLE_ADMIN', route: path('app_user_index')}) }}
-                    {{ include('components/navigation-item.html.twig', {title: 'navigation.subscription'|trans, role: 'ROLE_REPORT', route: path('app_subscription_index')}) }}
                 </ul>
             </li>
         </ul>

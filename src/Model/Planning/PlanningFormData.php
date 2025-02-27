@@ -2,10 +2,10 @@
 
 namespace App\Model\Planning;
 
-use App\Entity\DataProvider;
+use App\Entity\WorkerGroup;
 
 class PlanningFormData
 {
-    public DataProvider $dataProvider;
     public int $year;
+    public ?WorkerGroup $group;
 }

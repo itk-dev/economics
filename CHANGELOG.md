@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.8.0] - 2025-02-24
 
+* [PR-202](https://github.com/itk-dev/economics/pull/202)
+  3863: Added holiday planning.
 * [PR-201](https://github.com/itk-dev/economics/pull/201)
   2299: Added project issue sync button to planning.
 * [PR-200](https://github.com/itk-dev/economics/pull/200)

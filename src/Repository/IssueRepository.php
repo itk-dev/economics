@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
+use App\Entity\WorkerGroup;
 use App\Enum\IssueStatusEnum;
 use App\Model\Invoices\IssueFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -108,14 +110,24 @@ class IssueRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findIssuesInDateRange(string $startDate, string $endDate)
+    public function findIssuesInDateRange(string $startDate, string $endDate, ?WorkerGroup $group = null, ?array $projects = null): array
     {
-        return $this->createQueryBuilder('i')
+        $qb = $this->createQueryBuilder('i')
             ->where('i.dueDate >= :start')
             ->andWhere('i.dueDate < :end')
             ->setParameter('start', $startDate)
-            ->setParameter('end', $endDate)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('end', $endDate);
+
+        if (null !== $group) {
+            $qb->andWhere('i.worker IN (:workers)')->setParameter('workers', array_map(fn (Worker $worker) => $worker->getEmail(), $group->getWorkers()->toArray()));
+        }
+
+        if (null !== $projects) {
+            $qb->andWhere('i.project IN (:projects)')->setParameter('projects', array_map(fn (Project $project) => $project->getId(), $projects));
+        }
+
+        $query = $qb->getQuery();
+
+        return $query->getResult();
     }
 }

@@ -29,6 +29,14 @@ class ProjectType extends AbstractType
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'project.project_lead_mail_helptext',
             ])
+            ->add('holidayPlanning', null, [
+                'required' => false,
+                'attr' => ['class' => 'form-element', 'style' => 'width: 50px'],
+                'label' => 'project.holiday_planning',
+                'label_attr' => ['class' => 'label'],
+                'row_attr' => ['class' => 'form-row'],
+                'help' => 'project.holiday_planning_helptext',
+            ])
         ;
     }
 

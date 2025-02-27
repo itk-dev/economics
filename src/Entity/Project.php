@@ -61,6 +61,9 @@ class Project extends AbstractBaseEntity
     #[ORM\Column(nullable: true)]
     private ?bool $isBillable = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $holidayPlanning = null;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -364,6 +367,18 @@ class Project extends AbstractBaseEntity
     public function setIsBillable(?bool $isBillable): self
     {
         $this->isBillable = $isBillable;
+
+        return $this;
+    }
+
+    public function isHolidayPlanning(): ?bool
+    {
+        return $this->holidayPlanning;
+    }
+
+    public function setHolidayPlanning(?bool $holidayPlanning): static
+    {
+        $this->holidayPlanning = $holidayPlanning;
 
         return $this;
     }
