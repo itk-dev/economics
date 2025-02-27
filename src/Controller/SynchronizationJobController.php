@@ -44,6 +44,12 @@ class SynchronizationJobController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function sync(SynchronizationJobRepository $synchronizationJobRepository, MessageBusInterface $bus): Response
     {
+        $latestJob = $synchronizationJobRepository->getLatestJob();
+
+        if (null !== $latestJob && in_array($latestJob->getStatus(), [SynchronizationStatusEnum::NOT_STARTED, SynchronizationStatusEnum::RUNNING])) {
+            return new JsonResponse(['message' => 'existing job'], Response::HTTP_CONFLICT);
+        }
+
         $job = new SynchronizationJob();
         $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
         $synchronizationJobRepository->save($job, true);
