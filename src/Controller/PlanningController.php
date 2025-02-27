@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -88,7 +89,7 @@ class PlanningController extends AbstractController
 
         $dataProvider = $project->getDataProvider();
         if (null === $dataProvider) {
-            throw new BadRequestHttpException('Project data provider not set');
+            throw new NotFoundHttpException('Project data provider not set');
         }
 
         $issuesSynced = 0;
