@@ -92,7 +92,7 @@ class PlanningController extends AbstractController
         }
 
         $issuesSynced = 0;
-        $dataSynchronizationService->syncIssuesForProject((int)$projectId, $dataProvider, function () use (&$issuesSynced) {
+        $dataSynchronizationService->syncIssuesForProject((int) $projectId, $dataProvider, function () use (&$issuesSynced) {
             ++$issuesSynced;
         });
 

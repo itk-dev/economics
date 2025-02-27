@@ -37,7 +37,8 @@ class SynchronizeHandler
 
         try {
             if (!$lock->acquire()) {
-                $this->logger->warning("Lock could not be acquired.");
+                $this->logger->warning('Lock could not be acquired.');
+
                 return;
             }
 
