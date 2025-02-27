@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-204](https://github.com/itk-dev/economics/pull/204)
+  3907: Updating lastSent when running subscriptions.
 * [PR-197](https://github.com/itk-dev/economics/pull/197)
   2299: Upgraded to php 8.3 and node 20.
 * [PR-191](https://github.com/itk-dev/economics/pull/191)
