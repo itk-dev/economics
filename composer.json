@@ -16,7 +16,7 @@
         "knplabs/knp-paginator-bundle": "^6.1",
         "mpdf/mpdf": "^8.1.2",
         "openspout/openspout": "^4.23",
-        "phpoffice/phpspreadsheet": "^1.25",
+        "phpoffice/phpspreadsheet": "^1.29",
         "stof/doctrine-extensions-bundle": "^1.7",
         "symfony/console": "~6.4.0",
         "symfony/doctrine-messenger": "~6.4.0",
@@ -39,8 +39,8 @@
         "symfony/validator": "~6.4.0",
         "symfony/webpack-encore-bundle": "^2.0",
         "symfony/yaml": "~6.4.0",
-        "twig/extra-bundle": "^3.8",
-        "twig/intl-extra": "^3.8"
+        "twig/extra-bundle": "^3.19",
+        "twig/intl-extra": "^3.19"
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.0",

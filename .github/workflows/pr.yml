@@ -24,7 +24,7 @@ jobs:
                 run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
             -   name: Cache composer dependencies
-                uses: actions/cache@v2
+                uses: actions/cache@v4
                 with:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: ${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -72,7 +72,7 @@ jobs:
                 run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
             -   name: Cache composer dependencies
-                uses: actions/cache@v2
+                uses: actions/cache@v4
                 with:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: ${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -106,7 +106,7 @@ jobs:
                 run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
             -   name: Cache dependencies
-                uses: actions/cache@v2
+                uses: actions/cache@v4
                 with:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}-${{ matrix.dependency-version }}-
@@ -173,7 +173,7 @@ jobs:
                 run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
             -   name: Cache composer dependencies
-                uses: actions/cache@v2
+                uses: actions/cache@v4
                 with:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: ${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -231,6 +231,22 @@ jobs:
             -   name: Coding standards
                 run: |
                     docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
+
+    composer-audit:
+        name: Run composer audit
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+            -   name: Install Dependencies
+                run: |
+                    docker network create frontend
+                    docker compose up --detach
+                    docker compose exec --user root phpfpm composer install
+
+            -   name: Composer audit
+                run: |
+                    docker compose exec --user root phpfpm composer audit
+
 
     phpunit:
         runs-on: ubuntu-latest

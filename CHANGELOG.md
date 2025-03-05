@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-202](https://github.com/itk-dev/economics/pull/202)
+  Security updates.
 * [PR-204](https://github.com/itk-dev/economics/pull/204)
   3907: Updating lastSent when running subscriptions.
 * [PR-197](https://github.com/itk-dev/economics/pull/197)
