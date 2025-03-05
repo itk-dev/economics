@@ -10,6 +10,7 @@ use App\Exception\EconomicsException;
 use App\Model\Reports\HourReportData;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Mpdf\Mpdf;
 use Mpdf\MpdfException;
 use Psr\Log\LoggerInterface;
@@ -34,6 +35,7 @@ class SubscriptionHandlerService
         private readonly LoggerInterface $logger,
         private readonly MailerInterface $mailer,
         private readonly TranslatorInterface $translator,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -100,6 +102,10 @@ class SubscriptionHandlerService
                 $mailData = $this->prepareMailData($subscription, $fromDate, $toDate, $project, $reportData, $email);
 
                 $this->sendNotification($mailData);
+
+                $subscription->setLastSent(new \DateTime());
+                $this->entityManager->persist($subscription);
+                $this->entityManager->flush();
                 break;
             default:
                 throw new \Exception('Report type is not yet supported');
