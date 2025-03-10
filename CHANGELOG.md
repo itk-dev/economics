@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.8.0] - 2025-02-24
 
+* [PR-206](https://github.com/itk-dev/economics/pull/206)
+  3947: Added create release GitHub Actions workflow.
 * [PR-205](https://github.com/itk-dev/economics/pull/205)
   3863: Added lock to synchronization job to avoid executing more than one sync at a time.
   3863: Moved queue monitoring to handler instead of command.
