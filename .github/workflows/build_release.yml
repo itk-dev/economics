@@ -27,7 +27,7 @@ jobs:
           docker compose run --rm --user=root --env APP_ENV=prod phpfpm composer install --no-dev -o --classmap-authoritative
           docker compose run --rm --user=root --env APP_ENV=prod phpfpm composer clear-cache
           docker compose run --rm node npm install
-          docker compose run --rm node npm build
+          docker compose run --rm node npm run build
 
       - name: Make assets dir
         run: |
