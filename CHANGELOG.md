@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.2] - 2025-03-17
+
+* [PR-207](https://github.com/itk-dev/economics/pull/207)
+  hotfix: Setup woodpecker workflows.
+
 ## [2.5.1] - 2024-11-26
 
 * [PR-180](https://github.com/itk-dev/economics/pull/180)
@@ -361,7 +366,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.5.1...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.5.2...HEAD
+[2.5.2]: https://github.com/itk-dev/economics/compare/2.5.1...2.5.2
 [2.5.1]: https://github.com/itk-dev/economics/compare/2.5.0...2.5.1
 [2.5.0]: https://github.com/itk-dev/economics/compare/2.4.2...2.5.0
 [2.4.2]: https://github.com/itk-dev/economics/compare/2.4.1...2.4.2
