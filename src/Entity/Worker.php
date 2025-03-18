@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\WorkerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -23,8 +25,23 @@ class Worker
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
+    #[ORM\Column(nullable: false, options: ['default' => true])]
+    private bool $includeInReports = true;
+
+    /**
+     * @var Collection<int, WorkerGroup>
+     */
+    #[ORM\ManyToMany(targetEntity: WorkerGroup::class, mappedBy: 'workers')]
+    private Collection $workerGroups;
+
     public function __construct()
     {
+        $this->workerGroups = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->name ?? $this->email ?? $this->id);
     }
 
     public function getId(): ?int
@@ -74,6 +91,45 @@ class Worker
     public function setName(?string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getIncludeInReports(): bool
+    {
+        return $this->includeInReports;
+    }
+
+    public function setIncludeInReports(bool $includeInReports): self
+    {
+        $this->includeInReports = $includeInReports;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, WorkerGroup>
+     */
+    public function getWorkerGroups(): Collection
+    {
+        return $this->workerGroups;
+    }
+
+    public function addWorkerGroup(WorkerGroup $workerGroup): static
+    {
+        if (!$this->workerGroups->contains($workerGroup)) {
+            $this->workerGroups->add($workerGroup);
+            $workerGroup->addWorker($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWorkerGroup(WorkerGroup $workerGroup): static
+    {
+        if ($this->workerGroups->removeElement($workerGroup)) {
+            $workerGroup->removeWorker($this);
+        }
 
         return $this;
     }

@@ -2,13 +2,11 @@
 
 namespace App\Form;
 
-use App\Entity\DataProvider;
 use App\Model\Reports\WorkloadReportFormData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum;
-use App\Repository\DataProviderRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,31 +15,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class WorkloadReportType extends AbstractType
 {
     public function __construct(
-        private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ?string $defaultDataProvider,
     ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $dataProviders = $this->dataProviderRepository->findAll();
-        $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
-
-        if (null === $defaultProvider && count($dataProviders) > 0) {
-            $defaultProvider = $dataProviders[0];
+        $yearChoices = [];
+        foreach ($options['years'] as $year) {
+            $yearChoices[$year] = $year;
         }
-
         $builder
-            ->add('dataProvider', EntityType::class, [
-                'class' => DataProvider::class,
-                'required' => false,
-                'label' => 'workload_report.select_data_provider',
+            ->add('year', ChoiceType::class, [
+                'label' => 'invoicing_rate_report.year',
                 'label_attr' => ['class' => 'label'],
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'data' => $defaultProvider,
-                'choices' => $dataProviders,
+                'attr' => ['class' => 'form-element '],
+                'help_attr' => ['class' => 'form-help'],
+                'row_attr' => ['class' => 'form-row'],
+                'required' => false,
+                'data' => $yearChoices[date('Y')],
+                'choices' => $yearChoices,
+                'placeholder' => null,
             ])
             ->add('viewMode', EnumType::class, [
                 'required' => false,
@@ -75,9 +68,7 @@ class WorkloadReportType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => WorkloadReportFormData::class,
-            'attr' => [
-                'data-sprint-report-target' => 'form',
-            ],
+            'years' => null,
         ]);
     }
 }

@@ -1,4 +1,4 @@
-export const postRequestHandler = async (updateUrl, data = null) => {
+const postRequestHandler = async (updateUrl, data = null) => {
     const result = {
         success: false,
         status: null,
@@ -37,3 +37,5 @@ export const postRequestHandler = async (updateUrl, data = null) => {
 
     return result;
 };
+
+export default postRequestHandler;

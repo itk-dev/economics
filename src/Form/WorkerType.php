@@ -3,7 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Worker;
+use App\Entity\WorkerGroup;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -33,6 +36,31 @@ class WorkerType extends AbstractType
                 'label' => 'worker.workload',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
+                'help_attr' => ['class' => 'form-help'],
+                'required' => false,
+                'row_attr' => ['class' => 'form-row'],
+            ])
+            ->add('includeInReports', ChoiceType::class, [
+                'label' => 'worker.include_in_reports.title',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element'],
+                'help_attr' => ['class' => 'form-help'],
+                'required' => false,
+                'row_attr' => ['class' => 'form-row'],
+                'choices' => [
+                    'worker.include_in_reports.yes' => true,
+                    'worker.include_in_reports.no' => false,
+                ],
+                'multiple' => false,
+                'placeholder' => false,
+            ])
+            ->add('workerGroups', EntityType::class, [
+                'class' => WorkerGroup::class,
+                'multiple' => true,
+                'by_reference' => false,
+                'label' => 'worker.groups',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],
                 'help_attr' => ['class' => 'form-help'],
                 'required' => false,
                 'row_attr' => ['class' => 'form-row'],

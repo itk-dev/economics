@@ -7,26 +7,41 @@
         {{ include('components/alert.html.twig', {level: 'danger', text: error}) }}
     {% endif %}
 
-    {% if data is not empty %}
-        {{ include('components/page-header.html.twig', {
-            title: (mode ~ '.title')|trans(),
-            type: 'subscribe',
-            default_text: 'subscribe_button.subscribe'|trans,
-            success_text: 'subscribe_button.unsubscribe'|trans,
-            url: path('app_subscription_check', {id: app.user.id}),
-            params: app.request.query.all|json_encode,
-            reload: false,
-        }) }}
-    {% else %}
-        <h1 class="page-title">{{ (mode ~ '.title')|trans() }}</h1>
-    {% endif %}
+    {% embed 'components/page-header.html.twig' with {
+        title: (mode ~ '.title')|trans(),
+    } %}
+        {% block actions %}
+            {% if project is defined and project is not null %}
+                <span
+                    style="margin-left: 1em" {{ stimulus_controller('sync') }} data-update-url="{{ path('app_project_sync', {id: project.id}) }}">
+                    <button class="button" {{ stimulus_action('sync', 'sync') }} {{ stimulus_target('sync', 'button') }}>
+                        {{ 'hour_report.sync_project_action'|trans }}
+                    </button>
+                    <span class="sync-text" {{ stimulus_target('sync', 'text') }}></span>
+                </span>
+            {% endif %}
+            {% if mode == 'hour_report' %}
+                {{ include('components/subscribe-button.html.twig',
+                    {
+                        type: 'subscribe',
+                        default_text: 'subscribe_button.subscribe'|trans,
+                        success_text: 'subscribe_button.unsubscribe'|trans,
+                        url: path('app_subscription_check', {id: app.user.id}),
+                        params: app.request.query.all|json_encode,
+                        reload: false
+                    }) }}
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
 
     {{ form_start(form) }}
-    {{ form_row(form.dataProvider) }}
+    {% if form.dataProvider is defined %}
+        {{ form_row(form.dataProvider) }}
+    {% endif %}
     {{ form_end(form) }}
 
     {% if data is not empty %}
-        <div class="planning-wrapper">
+        <div class="planning-wrapper loading" {{ stimulus_controller('loader') }}>
             {% if mode is defined %}
                 {{ include('reports/' ~ mode ~ '.html.twig') }}
             {% endif %}

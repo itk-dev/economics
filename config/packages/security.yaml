@@ -38,7 +38,6 @@ security:
         - { path: ^/admin/reports/, roles: ROLE_ADMIN }
         - { path: ^/admin/management-report/, roles: ROLE_REPORT }
         - { path: ^/admin/team-report/, roles: ROLE_REPORT }
-        - { path: ^/admin/sprint-report/, roles: ROLE_REPORT }
         - { path: ^/admin/products/, roles: ROLE_PRODUCT_MANAGER }
         - { path: ^/admin/project/, roles: [ROLE_ADMIN, ROLE_PRODUCT_MANAGER] }
         - { path: ^/admin/client/, roles: ROLE_ADMIN }

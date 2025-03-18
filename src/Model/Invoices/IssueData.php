@@ -17,8 +17,9 @@ class IssueData
     public ?string $accountKey = null;
     public ?string $epicName = null;
     public ?string $epicKey = null;
+    public array $epics;
     /** @var Collection<string, VersionData> */
-    public ?Collection $versions;
+    public Collection $versions;
     public ?\DateTime $resolutionDate = null;
     public string $projectId;
     public ?int $planHours;

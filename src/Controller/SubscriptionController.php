@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/subscription')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_REPORT')]
 class SubscriptionController extends AbstractController
 {
     public function __construct(
@@ -114,7 +114,7 @@ class SubscriptionController extends AbstractController
                 } else {
                     return new JsonResponse([], 200);
                 }
-                break;
+                // no break
             default:
                 return new JsonResponse(
                     ['error' => 'Unsupported report type'],

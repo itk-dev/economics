@@ -6,9 +6,11 @@ use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
-use App\Enum\BillableKindsEnum;
+use App\Enum\NonBillableEpicsEnum;
+use App\Enum\NonBillableVersionsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -111,26 +113,128 @@ class WorklogRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
-    public function findBillableWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    /**
+     * Finds billable worklogs within a specific date range for a given worker.
+     *
+     * @param \DateTime $dateFrom the start date for the date range filter
+     * @param \DateTime $dateTo the end date for the date range filter
+     * @param string|null $workerIdentifier optional worker identifier to filter worklogs by worker
+     * @param mixed|null $isBilled optional indicator for whether the worklog has been billed or not
+     *
+     * @return array an array of worklogs matching the specified criteria
+     */
+    public function findBillableWorklogsByWorkerAndDateRange(\DateTime $dateFrom, \DateTime $dateTo, ?string $workerIdentifier = null, mixed $isBilled = null): array
     {
+        $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
+        $nonBillableVersions = NonBillableVersionsEnum::getAsArray();
+
         $qb = $this->createQueryBuilder('worklog');
 
-        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project');
+        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project')
+            ->leftJoin('worklog.issue', 'issue')
+            ->leftJoin('issue.epics', 'epic')
+            ->leftJoin('issue.versions', 'version');
+
+        $qb->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
+            ->andWhere($qb->expr()->andX(
+                $qb->expr()->eq('project.isBillable', '1')
+            ))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('epic.title'),
+                $qb->expr()->notIn('epic.title', ':nonBillableEpics')
+            ))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('version.name'),
+                $qb->expr()->notIn('version.name', ':nonBillableVersions')
+            ));
+
+        if (null !== $isBilled) {
+            $qb->andWhere($qb->expr()->eq('worklog.isBilled', ':isBilled'));
+        }
+
+        if (null !== $workerIdentifier) {
+            $qb->andWhere('worklog.worker = :worker');
+        }
+
+        return $qb->setParameters(array_merge(
+            [
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+                'nonBillableEpics' => array_values($nonBillableEpics),
+                'nonBillableVersions' => array_values($nonBillableVersions),
+            ],
+            null !== $isBilled ? ['isBilled' => $isBilled] : [],
+            null !== $workerIdentifier ? ['worker' => $workerIdentifier] : []
+        ))->getQuery()->getResult();
+    }
+
+    public function findBilledWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    {
+        $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
+        $nonBillableVersions = NonBillableVersionsEnum::getAsArray();
+
+        $qb = $this->createQueryBuilder('worklog');
+
+        $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project')
+            ->leftJoin('worklog.issue', 'issue')
+            ->leftJoin('issue.epics', 'epic')
+            ->leftJoin('issue.versions', 'version');
 
         return $qb
             ->where($qb->expr()->between('worklog.started', ':dateFrom', ':dateTo'))
             ->andWhere('worklog.worker = :worker')
-            ->andWhere($qb->expr()->in('worklog.kind', ':billableKinds'))
-            ->andWhere($qb->expr()->orX(
+            ->andWhere($qb->expr()->andX(
                 $qb->expr()->eq('worklog.isBilled', '1'),
-                $qb->expr()->eq('project.isBillable', '1'),
+            ))
+            // notIn will only work if the string it is checked against is not null
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('epic.title'),
+                $qb->expr()->notIn('epic.title', ':nonBillableEpics'),
+            ))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('version.name'),
+                $qb->expr()->notIn('version.name', ':nonBillableVersions')
             ))
             ->setParameters([
                 'worker' => $workerIdentifier,
                 'dateFrom' => $dateFrom,
                 'dateTo' => $dateTo,
-                'billableKinds' => array_values(BillableKindsEnum::getAsArray()),
+                'nonBillableEpics' => array_values($nonBillableEpics),
+                'nonBillableVersions' => array_values($nonBillableVersions),
             ])
             ->getQuery()->getResult();
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getWorklogsAttachedToInvoiceInDateRange(\DateTimeInterface $periodStart, \DateTimeInterface $periodEnd, int $page = 1, int $pageSize = 50): array
+    {
+        $from = new \DateTimeImmutable($periodStart->format('Y-m-d').' 00:00:00');
+        $to = new \DateTimeImmutable($periodEnd->format('Y-m-d').' 23:59:59');
+
+        $query = $this->createQueryBuilder('worklog')
+            ->leftJoin(Issue::class, 'issue', 'WITH', 'worklog.issue = issue.id')
+            ->leftJoin(Project::class, 'project', 'WITH', 'issue.project = project.id')
+            ->where('worklog.invoiceEntry IS NOT NULL')
+            ->andWhere('worklog.started BETWEEN :from AND :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->getQuery()
+            ->setFirstResult(($page - 1) * $pageSize)
+            ->setMaxResults($pageSize);
+
+        $paginator = new Paginator($query, true);
+
+        $totalItemCount = count($paginator);
+        $pagesCount = ceil($totalItemCount / $pageSize);
+
+        return [
+            'total_count' => $totalItemCount,
+            'pages_count' => $pagesCount,
+            'current_page' => $page,
+            'page_size' => $pageSize,
+            'paginator' => $paginator,
+        ];
     }
 }

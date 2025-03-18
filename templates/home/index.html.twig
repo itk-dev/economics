@@ -1,20 +1,68 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-  {{ 'home.title'|trans }}
+    {{ 'home.title'|trans }}
 {% endblock %}
 
 {% block content %}
-  <h1 class="page-title">{{ 'home.title'|trans }}</h1>
+    <h1 class="page-title">{{ 'dashboard.title'|trans }}</h1>
 
-  <div class="grid-split-three">
-    {{ include('home/card.html.twig', {title: 'home.invoice'|trans, description: 'home.invoice_desctiption'|trans, role: 'ROLE_INVOICE', route: path('app_invoices_index')}) }}
-    {{ include('home/card.html.twig', {title: 'home.project_billing'|trans, description: 'home.project_billing_description'|trans, role: 'ROLE_PROJECT_BILLING', route: path('app_project_billing_index')}) }}
-    {{ include('home/card.html.twig', {title: 'home.planning'|trans, description: 'home.planning_description'|trans, role: 'ROLE_PLANNING', route: path('app_planning')}) }}
-    {{ include('home/card.html.twig', {title: 'home.sprint_report'|trans, description: 'home.sprint_report_description'|trans, role: 'ROLE_REPORT', route: path('app_sprint_report')}) }}
-    {{ include('home/card.html.twig', {title: 'home.projects'|trans, description: 'home.projects_description'|trans, role: 'ROLE_ADMIN', route: path('app_project_index')}) }}
-    {{ include('home/card.html.twig', {title: 'home.clients'|trans, description: 'home.clients_description'|trans, role: 'ROLE_ADMIN', route: path('app_client_index')}) }}
-    {{ include('home/card.html.twig', {title: 'home.accounts'|trans, description: 'home.accounts_description'|trans, role: 'ROLE_ADMIN', route: path('app_account_index')}) }}
-    {{ include('home/card.html.twig', {title: 'home.users'|trans, description: 'home.users_description'|trans, role: 'ROLE_ADMIN', route: path('app_user_index')}) }}
-  </div>
+    <div class="mb-3 mt-3 text-bold">{{ 'dashboard.logged_in_as'|trans({'%name%': userName}) }}</div>
+
+    {% if dashboardData is defined and dashboardData is not null %}
+        <div class="grid-split-three mb-5">
+            {{ include('home/card.html.twig', {
+                title: 'dashboard.work_hours'|trans({'%year%': dashboardData.year}),
+                description: 'dashboard.work_hours_value'|trans({'%value%': (dashboardData.workHours >= 0 ? '+' : '') ~ dashboardData.workHours|round(2, 'floor')}),
+                descriptionClasses: dashboardData.workHours >= 0 ? 'text-green-500' : 'text-red-500'
+            }) }}
+            {{ include('home/card.html.twig', {
+                title: 'dashboard.norm'|trans,
+                description: 'dashboard.norm_value'|trans({'%value%': dashboardData.norm|round(2, 'floor')}),
+            }) }}
+        </div>
+        <div class="card max-w-full mb-5">
+            <h5 class="card-header">{{ 'dashboard.work_hours_months'|trans }}</h5>
+            <table class="table">
+                <thead>
+                {% for key, value in dashboardData.monthStatuses %}
+                    <th>{{ date('2025-' ~ key ~ '-01')|date('M') }}</th>
+                {% endfor %}
+                </thead>
+                <tbody>
+                {% for key, value in dashboardData.monthStatuses %}
+                    <td class="{{ value >= 0 ? 'text-green-500' : 'text-red-500' }}">
+                        {{ (value >= 0 ? '+' : '') ~ value|round(2, 'floor') }}
+                    </td>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card max-w-full mb-5">
+            <h5 class="card-header">{{ 'dashboard.work_hours_weeks'|trans }}</h5>
+            {# Split weeks into 5 tables #}
+            {% for i in 0..4 %}
+            <table class="table text-right mb-3">
+                <thead>
+                {% for key, value in dashboardData.weekStatuses %}
+                    {% if key > i * 13 and key <= (i + 1) * 13 %}
+                        <th style="width: 80px !important;">{{ key }}</th>
+                    {% endif %}
+                {% endfor %}
+                </thead>
+                <tbody>
+                {% for key, value in dashboardData.weekStatuses %}
+                    {% if key > i * 13 and key <= (i + 1) * 13 %}
+                        <td class="{{ value >= 0 ? 'text-green-500' : 'text-red-500' }}">
+                            {{ (value >= 0 ? '+' : '') ~ value|round(2, 'floor') }}
+                        </td>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    {% else %}
+        {{ 'dashboard.no_user_data'|trans }}
+    {% endif %}
 {% endblock %}

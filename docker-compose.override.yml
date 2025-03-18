@@ -1,6 +1,6 @@
 services:
   node:
-    image: node:18
+    image: node:20
     command: npm run watch
     networks:
       - app

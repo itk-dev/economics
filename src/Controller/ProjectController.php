@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Project;
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Form\ProjectFilterType;
 use App\Form\ProjectType;
 use App\Model\Invoices\ProjectFilterData;
@@ -74,7 +72,7 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/isBillable', name: 'app_project_is_billable', methods: ['POST'])]
-    public function isBillable(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    public function setIsBillable(Request $request, Project $project, ProjectRepository $projectRepository): Response
     {
         $body = $request->toArray();
 
@@ -88,10 +86,21 @@ class ProjectController extends AbstractController
         }
     }
 
-    /**
-     * @throws EconomicsException
-     * @throws UnsupportedDataProviderException
-     */
+    #[Route('/{id}/holidayPlanning', name: 'app_project_holiday_planning', methods: ['POST'])]
+    public function setHolidayPlanning(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    {
+        $body = $request->toArray();
+
+        if (isset($body['value'])) {
+            $project->setHolidayPlanning($body['value']);
+            $projectRepository->save($project, true);
+
+            return new JsonResponse([$body], 200);
+        } else {
+            throw new BadRequestHttpException('Value not set.');
+        }
+    }
+
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]
     public function sync(Project $project, DataSynchronizationService $dataSynchronizationService): Response
     {
@@ -105,8 +114,8 @@ class ProjectController extends AbstractController
             $dataProvider = $project->getDataProvider();
 
             if (null != $dataProvider) {
-                $dataSynchronizationService->syncIssuesForProject($projectId, null, $dataProvider);
-                $dataSynchronizationService->syncWorklogsForProject($projectId, null, $dataProvider);
+                $dataSynchronizationService->syncIssuesForProject($projectId, $dataProvider);
+                $dataSynchronizationService->syncWorklogsForProject($projectId, $dataProvider);
             }
 
             return new JsonResponse([], 200);
@@ -116,5 +125,16 @@ class ProjectController extends AbstractController
                 (int) ($exception->getCode() > 0 ? $exception->getCode() : 500)
             );
         }
+    }
+
+    #[Route('/options', name: 'app_project_options', methods: ['GET'])]
+    public function options(ProjectRepository $projectRepository): JsonResponse
+    {
+        $projects = $projectRepository->getIncluded()->getQuery()->getResult();
+
+        return new JsonResponse(array_map(fn ($project) => [
+            'id' => $project->getId(),
+            'title' => $project->getName(),
+        ], $projects));
     }
 }

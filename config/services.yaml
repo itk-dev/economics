@@ -70,3 +70,7 @@ services:
     App\Service\SubscriptionHandlerService:
         arguments:
             $emailFromAddress: '%env(string:EMAIL_FROM_ADDRESS)%'
+
+    App\MessageHandler\SynchronizeHandler:
+        arguments:
+            $monitoringUrl: '%env(string:SYNC_MONITORING_URL)%'

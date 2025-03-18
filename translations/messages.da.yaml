@@ -1,38 +1,3 @@
-sprint_report:
-    data_provider_helptext: ""
-    data_provider: "Vælg datakilde"
-    select_project: "Vælg projekt"
-    select_version: "Vælg version"
-    select_an_option: "Vælg en mulighed"
-    save_budget: "Gem"
-    title: "Sprintrapport"
-    heading: "Sprintrapport"
-    heading_overview: "Overblik"
-    heading_phases: "Projektets faser"
-    heading_spent_hours: "Forbrugt pr. uge"
-    heading_planned_hours: "Planlagt pr. uge"
-    pdf_title: "Sprint rapport eksport"
-    render_as_pdf: "Hent som PDF"
-    sub:
-        project: "Projekt"
-        version: "Bestilling"
-        budget: "Salgsbudget"
-        spent_hours: "Timer reg. total"
-        remaining_hours: "Resterende timer planlagt total"
-        project_hours: "Projektets timer"
-        finished_degree: "Færdiggørelsesgrad (%)"
-        project_forecast: "Projekt total forecast"
-        over_under_index: "Over/underløb - index"
-    table:
-        epic: "Tag / Epic"
-        estimate: "Est."
-        remaining_hours: "Resterende arbejde est."
-        remaining_hours_short: "Rest. arb."
-        registered_hours: "Registreret"
-        reg: "Reg."
-        no_sprint: "Ingen sprint"
-        planned_work_sum: "Sum af est. planlagt arb."
-
 navigation:
     reporting: 'Rapportering'
     setup: 'Opsætning'
@@ -41,7 +6,6 @@ navigation:
     create_project: "Projektopretter"
     invoices: "Faktura"
     planning: "Planlægning"
-    sprint_report: "Sprintrapport"
     title: "Economics"
     accounts: "Konto"
     project_billing: "Projektfakturering"
@@ -56,16 +20,24 @@ navigation:
     management_report: "Ledelsesrapport"
     planning_users: 'Brugere'
     planning_projects: 'Projekter'
+    forecast_report: "Forecast"
     hour_report: "Timerapport"
     workload_report: "Normtidsrapport"
     worker: "Medarbejdere"
     subscription: "Abonnementer"
+    invoicing_rate_report: "Udfaktureringsrapport"
+    billable_unbilled_hours_report: 'Ufakturerede timer'
+    planning_holidays: 'Ferieplan'
+    group: 'Grupper'
 
 planning:
+    group: 'Vælg gruppe'
+    select_group: 'Alle medarbejdere'
     title: 'Planlægning'
     titles:
         projects: "Planlægning: Projekter"
         users: "Planlægning: Brugere"
+        holiday: 'Ferieplan'
     assignees: "Brugere"
     projects: "Projekter"
     hidden-entries: "Skjulte brugere"
@@ -77,6 +49,9 @@ planning:
     sprint_view: "Sprintvisning"
     description: 'Vælg visning'
     year: 'Vælg år'
+    sync_all_issues_action: 'Synkronisér opgaver'
+    sync-project-select: 'Vælg projekt at synkronisere'
+    holiday_unit: 'Tabellen viser antal feriedage for en medarbejder for en given uge.'
 
 client:
     title: "Kunder"
@@ -297,6 +272,7 @@ invoices:
     type: "Kundekonto type"
     query_label: Søg
     query_placeholder: Søg på fakturanavn
+    list_amount: 'Antal'
 
 material_number_enum:
     internal: "Interne: 103361"
@@ -378,8 +354,6 @@ home:
     invoice_desctiption: "Opret og rediger fakturaer baseret på opgaver og worklogs i Project Tracker."
     planning: "Planlægning"
     planning_description: "Planlægningsoversigt baseret på opgaver i Project Tracker."
-    sprint_report: "Sprintrapport"
-    sprint_report_description: "Opret sprintrapporter baseret på opgaver og worklogs i Project Tracker."
     create_project: "Projektopretter"
     create_project_description: "Hjælper med at oprette projekter i Project Tracker."
     accounts: "Konti"
@@ -499,6 +473,8 @@ project:
     title: "Projekter"
     include: "Inkludér"
     id: "#"
+    holiday_planning: "Ferieplanlægning"
+    holiday_planning_helptext: "Hvis valgt bliver projektet inkluderet i ferieplanlægningsoverblikket."
     name: "Navn"
     project_tracker_key: "Nøgle"
     updated_at: "Opdateret"
@@ -533,7 +509,6 @@ project:
 reports:
     title: 'Rapporter'
     description: 'Generer rapporter baseret på data fra eConomics.'
-    fetch_sprint_report: 'Hent sprintrapport'
     management-title: 'Ny ledelsesrapport'
     fetch_management_report: 'Hent ledelsesrapport'
     from: 'Fra'
@@ -547,14 +522,15 @@ reports:
     management-3rd-quarter: '3. Kvartal'
     management-4th-quarter: '4. Kvartal'
     management-export-xls: 'Eksportér til excel'
+    management-no-recorded-invoices: 'Ingen bogførte faktura.'
 
 workload_report:
-    title: 'Workloadrapport'
+    title: 'Normtidsrapport'
     select_data_provider: 'Vælg datakilde'
     workload: 'Normtid'
     logged_hours: 'Loggede timer'
     select_viewmode: 'Vælg visningstype'
-    select_view_period_type: 'Vælg periodetype'
+    select_view_period_type: 'Vælg periode'
     week: 'Uge'
     workers: 'Medarbejdere'
     worker: 'Medarbejder'
@@ -563,7 +539,30 @@ workload_report:
     average: "Gennemsnit"
     average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
 
+invoicing_rate_report:
+    title: 'Udfaktureringsrapport'
+    year: 'Vælg år'
+    select_view_period_type: 'Vælg periode'
+    include_issues: 'Inkludér to-dos (+10s load)'
+    reading-guide-header: 'Læsevejledning'
+    submit: 'Hent udfaktureringsrapport'
+    reading-guide: '
+        Aflæsning af todelt celle (medarbejder):
+        [ Fakturerbare timer for perioden ---- Procent af totalt loggede timer faktureret for perioden ].
+
+        Aflæsning af todelt celle (projekt og to-do):
+        [ Fakturerbare timer for perioden ---- Fakturerede timer for perioden ].
+
+
+        Gennemsnit for periode: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
+
+        Gennemsnit for medarbejder: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
+
+
+        Ved hover på faktureringsprocent vises [ Fakturerede timer for perioden ---- Loggede timer for perioden ]'
+
 hour_report:
+    data_provider_helptext: ''
     title: 'Timerapport'
     data_provider: 'Datakilde'
     project: 'Projekt'
@@ -577,6 +576,7 @@ hour_report:
     select_project: 'Vælg project'
     all_versions: 'Alle versioner'
     tags: 'Tags'
+    sync_project_action: 'Synkronisér projekt'
 
 view:
     list_title: 'Views'
@@ -728,13 +728,22 @@ issue:
         total: "I alt"
         list_no_records_found: "Ingen produkter"
 
+name_filter_type:
+    name: 'Navn'
+
 worker:
+    groups: 'Grupper'
+    in_groups: 'I grupper'
     title: 'Medarbejdere'
     index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
     id: 'Id'
     name: 'Navn'
     email: 'Email'
     workload: 'Normtid (inkl. middagspause)'
+    include_in_reports:
+        title: 'Inkludér i rapporter'
+        yes: 'Ja'
+        no: 'Nej'
     actions: 'Handlinger'
     action_edit: 'Rediger'
     edit: 'Rediger medarbejder'
@@ -755,8 +764,15 @@ workload_report_view_mode_enum:
         label: 'Loggede timer'
     billable:
         label: 'Fakturerbare timer'
+    billed:
+        label: 'Fakturerede timer'
+
+invoicing_rate_report_view_mode_enum:
+    summary:
+        label: 'Opsummering'
 
 subscription:
+    list_no_records_found: 'Ingen abonnementer'
     title: 'Dine abonnementer'
     subject: 'Rapporttype'
     frequency: 'Frekvens'
@@ -772,7 +788,79 @@ subscription:
         monthly: 'Månedligt'
         quarterly: 'Kvartalsvist'
     button:
-        subscribe: 'Abonér'
+        subscribe: 'Abonnér'
         edit: 'Rediger'
         monthly: 'Månedligt'
         quarterly: 'Kvartalsvist'
+
+forecast_report:
+    title: 'Forecast rapport'
+    projects: 'Projekter'
+    invoiced_hours: 'Fakturerede timer'
+    invoiced_recorded_hours: 'Bogførte timer'
+    missing_hours: 'Rest timer'
+    total: 'Total'
+
+sync_status:
+    header: 'Synkronisering'
+    error: '⚠'
+    ok: '✓'
+    button: 'Kør!'
+    not_started: 'Job sat i kø'
+    running: 'I gang...'
+    fetching_status: 'Henter status...'
+
+synchronization_step_enum:
+    projects: 'Projekter'
+    accounts: 'Kontoer'
+    worklogs: 'Tid'
+    issues: 'Opgaver'
+
+synchronization_status_enum:
+    not_started: 'Afventer'
+    running: 'Kører'
+    done: 'Færdig'
+    error: 'Fejlede'
+
+billable_unbilled_hours_report:
+    no_description: 'Ingen beskrivelse'
+    no_worker: 'Ingen medarbejder'
+    submit: 'Hent'
+    total: 'Total'
+    unbilled_hours: 'Ufakturerede timer'
+    projects: 'Projekter'
+    year: 'År'
+    title: 'Ufakturerede fakturerbare timer'
+subscribe_button:
+    subscribe: 'messages'
+    unsubscribe: 'messages'
+
+dashboard:
+    work_hours: 'Timestatus for %year%'
+    work_hours_value: '%value% t.'
+    no_user_data: 'Ingen brugerdata tilgængelig'
+    logged_in_as: 'Bruger:  %name%'
+    title: 'Dashboard'
+    norm: 'Timenorm pr. uge'
+    norm_value: '%value% t.'
+    work_hours_months: 'Timestatus måned'
+    work_hours_weeks: 'Timestatus uge'
+
+groups:
+    action_delete_group: 'Slet gruppe'
+    action_create_new: 'Opret gruppe'
+    action_create: 'Opret gruppe'
+    action_save: 'Gem gruppe'
+    back_to_list: 'Tilbage til listen'
+    edit: 'Redigér gruppe'
+    name_label: 'Navn'
+    new: 'Opret ny gruppe'
+    name_help: 'Vælg et navn for gruppen'
+    users_in_group: 'Medarbejdere i gruppen'
+    actions: 'Handlinger'
+    id: '#'
+    name: 'Navn'
+    action_edit: 'Redigér'
+    list_no_records_found: 'Ingen grupper fundet'
+    title: 'Grupper'
+    workers: 'Medarbejdere'

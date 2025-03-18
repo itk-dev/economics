@@ -8,6 +8,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.0] - 2025-02-24
+
+* [PR-206](https://github.com/itk-dev/economics/pull/206)
+  3947: Added create release GitHub Actions workflow.
+* [PR-205](https://github.com/itk-dev/economics/pull/205)
+  3863: Added lock to synchronization job to avoid executing more than one sync at a time.
+  3863: Moved queue monitoring to handler instead of command.
+* [PR-202](https://github.com/itk-dev/economics/pull/202)
+  3863: Added holiday planning.
+* [PR-201](https://github.com/itk-dev/economics/pull/201)
+  2299: Added project issue sync button to planning.
+* [PR-200](https://github.com/itk-dev/economics/pull/200)
+  3660: Adds user dashboard.
+* [PR-199](https://github.com/itk-dev/economics/pull/199)
+  2299: Fixed linting of javascript.
+* [PR-202](https://github.com/itk-dev/economics/pull/202)
+  Security updates.
+* [PR-204](https://github.com/itk-dev/economics/pull/204)
+  3907: Updating lastSent when running subscriptions.
+* [PR-197](https://github.com/itk-dev/economics/pull/197)
+  2299: Upgraded to php 8.3 and node 20.
+* [PR-191](https://github.com/itk-dev/economics/pull/191)
+  2299: Added project sync component to navigation.
+* [PR-195](https://github.com/itk-dev/economics/pull/195)
+  3602: Added billable unbilled hours report.
+* [PR-196](https://github.com/itk-dev/economics/pull/196)
+  3624: Correctly handling periods when viewing past workload reports.
+
+## [2.7.0] - 2025-01-14
+
+* [PR-194](https://github.com/itk-dev/economics/pull/194)
+  2299: Added amount to invoices list. Removed data provider.
+* [PR-193](https://github.com/itk-dev/economics/pull/193)
+  2575: Added link to issue on hour report.
+* [PR-188](https://github.com/itk-dev/economics/pull/188)
+  2299: Removed sprint report.
+
+## [2.6.1] - 2025-01-02
+
+## [2.6.0] - 2025-01-02
+
+* [PR-182](https://github.com/itk-dev/economics/pull/182)
+  2597: Added invoicing rate report.
+* [PR-185](https://github.com/itk-dev/economics/pull/186)
+  2597: Added epic migration command.
+* [PR-184](https://github.com/itk-dev/economics/pull/184)
+  3489: Workload report period averages.
+* [PR-183](https://github.com/itk-dev/economics/pull/183)
+  2597: Added epic relations.
+* [PR-187](https://github.com/itk-dev/economics/pull/187)
+  Updated symfony bundles.
+* [PR-189](https://github.com/itk-dev/economics/pull/189)
+  Npm audit.
+* [PR-187](https://github.com/itk-dev/economics/pull/187)
+  Updated symfony bundles.
+* [PR-175](https://github.com/itk-dev/economics/pull/175)
+  2617: Added forecast report.
+
 ## [2.5.2] - 2025-03-17
 
 * [PR-207](https://github.com/itk-dev/economics/pull/207)
@@ -370,6 +428,7 @@ complete process.
 [2.5.2]: https://github.com/itk-dev/economics/compare/2.5.1...2.5.2
 [2.5.1]: https://github.com/itk-dev/economics/compare/2.5.0...2.5.1
 [2.5.0]: https://github.com/itk-dev/economics/compare/2.4.2...2.5.0
+[2.4.3]: https://github.com/itk-dev/economics/compare/2.4.2...2.4.3
 [2.4.2]: https://github.com/itk-dev/economics/compare/2.4.1...2.4.2
 [2.4.1]: https://github.com/itk-dev/economics/compare/2.4.0...2.4.1
 [2.4.0]: https://github.com/itk-dev/economics/compare/2.3.3...2.4.0
