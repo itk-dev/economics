@@ -1,11 +1,4 @@
-{% if is_granted(role) %}
-<div class="card">
-    <a href="{{ route }}">
-        <h5 class="card-header break-words">{{ title }}</h5>
-    </a>
-    <p class="card-text break-words">{{ description }}</p>
-    <a href="{{ route }}" class="card-link">
-        {{ title }}
-    </a>
+<div class="card {{ cardClasses ?? '' }}">
+    <h5 class="card-header break-words">{{ title }}</h5>
+    <p class="card-text break-words {{ descriptionClasses ?? '' }}">{{ description }}</p>
 </div>
-{% endif %}

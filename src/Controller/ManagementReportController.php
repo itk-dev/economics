@@ -29,19 +29,18 @@ class ManagementReportController extends AbstractController
 
         $firstRecordedInvoice = reset($recordedInvoicesSorted);
 
-        if (!$firstRecordedInvoice) {
-            throw $this->createNotFoundException('No recorded invoices found.');
+        if (false !== $firstRecordedInvoice) {
+            $form = $this->createForm(
+                ManagementReportDateIntervalType::class,
+                [
+                    'firstLog' => $firstRecordedInvoice->getRecordedDate(),
+                ],
+                ['action' => $this->generateUrl('app_management_reports_output', []), 'method' => 'GET']
+            );
         }
-        $form = $this->createForm(
-            ManagementReportDateIntervalType::class,
-            [
-                'firstLog' => $firstRecordedInvoice->getRecordedDate(),
-            ],
-            ['action' => $this->generateUrl('app_management_reports_output', []), 'method' => 'GET']
-        );
 
         return $this->render('management-report/create.html.twig', [
-            'form' => $form,
+            'form' => $form ?? null,
         ]);
     }
 

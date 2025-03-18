@@ -6,7 +6,7 @@
             {{ 'sync_status.button'|trans }}
         </button>
     </div>
-    <div>
+    <div style="height: 1em">
         <div class="hidden" {{ stimulus_target('sync-status', 'done') }}>
             <span class="hidden text-green-500 text-xl" {{ stimulus_target('sync-status', 'ok') }}>{{ 'sync_status.ok'|trans }}</span>
             <span class="hidden text-red-600 text-xl" {{ stimulus_target('sync-status', 'error') }}>{{ 'sync_status.error'|trans }}</span>
@@ -16,10 +16,6 @@
             <span class="hidden" {{ stimulus_target('sync-status', 'running') }}>{{ 'sync_status.running'|trans }}</span>
             <span class="hidden" {{ stimulus_target('sync-status', 'progress') }}></span>
             <span class="hidden" {{ stimulus_target('sync-status', 'notStarted') }}>{{ 'sync_status.not_started'|trans }}</span>
-        </div>
-        <div class="hidden" {{ stimulus_target('sync-status', 'spinner') }}>
-            {{ include('components/icons.html.twig', {icon: 'spinner', class: 'w-5 h-5 animate-spin inline-block'}) }}
-            {{ 'sync_status.fetching_status'|trans }}
         </div>
     </div>
 </div>

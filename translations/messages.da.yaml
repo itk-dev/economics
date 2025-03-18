@@ -27,12 +27,17 @@ navigation:
     subscription: "Abonnementer"
     invoicing_rate_report: "Udfaktureringsrapport"
     billable_unbilled_hours_report: 'Ufakturerede timer'
+    planning_holidays: 'Ferieplan'
+    group: 'Grupper'
 
 planning:
+    group: 'Vælg gruppe'
+    select_group: 'Alle medarbejdere'
     title: 'Planlægning'
     titles:
         projects: "Planlægning: Projekter"
         users: "Planlægning: Brugere"
+        holiday: 'Ferieplan'
     assignees: "Brugere"
     projects: "Projekter"
     hidden-entries: "Skjulte brugere"
@@ -44,6 +49,9 @@ planning:
     sprint_view: "Sprintvisning"
     description: 'Vælg visning'
     year: 'Vælg år'
+    sync_all_issues_action: 'Synkronisér opgaver'
+    sync-project-select: 'Vælg projekt at synkronisere'
+    holiday_unit: 'Tabellen viser antal feriedage for en medarbejder for en given uge.'
 
 client:
     title: "Kunder"
@@ -465,6 +473,8 @@ project:
     title: "Projekter"
     include: "Inkludér"
     id: "#"
+    holiday_planning: "Ferieplanlægning"
+    holiday_planning_helptext: "Hvis valgt bliver projektet inkluderet i ferieplanlægningsoverblikket."
     name: "Navn"
     project_tracker_key: "Nøgle"
     updated_at: "Opdateret"
@@ -512,9 +522,10 @@ reports:
     management-3rd-quarter: '3. Kvartal'
     management-4th-quarter: '4. Kvartal'
     management-export-xls: 'Eksportér til excel'
+    management-no-recorded-invoices: 'Ingen bogførte faktura.'
 
 workload_report:
-    title: 'Workloadrapport'
+    title: 'Normtidsrapport'
     select_data_provider: 'Vælg datakilde'
     workload: 'Normtid'
     logged_hours: 'Loggede timer'
@@ -717,7 +728,12 @@ issue:
         total: "I alt"
         list_no_records_found: "Ingen produkter"
 
+name_filter_type:
+    name: 'Navn'
+
 worker:
+    groups: 'Grupper'
+    in_groups: 'I grupper'
     title: 'Medarbejdere'
     index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
     id: 'Id'
@@ -756,6 +772,7 @@ invoicing_rate_report_view_mode_enum:
         label: 'Opsummering'
 
 subscription:
+    list_no_records_found: 'Ingen abonnementer'
     title: 'Dine abonnementer'
     subject: 'Rapporttype'
     frequency: 'Frekvens'
@@ -814,3 +831,36 @@ billable_unbilled_hours_report:
     projects: 'Projekter'
     year: 'År'
     title: 'Ufakturerede fakturerbare timer'
+subscribe_button:
+    subscribe: 'messages'
+    unsubscribe: 'messages'
+
+dashboard:
+    work_hours: 'Timestatus for %year%'
+    work_hours_value: '%value% t.'
+    no_user_data: 'Ingen brugerdata tilgængelig'
+    logged_in_as: 'Bruger:  %name%'
+    title: 'Dashboard'
+    norm: 'Timenorm pr. uge'
+    norm_value: '%value% t.'
+    work_hours_months: 'Timestatus måned'
+    work_hours_weeks: 'Timestatus uge'
+
+groups:
+    action_delete_group: 'Slet gruppe'
+    action_create_new: 'Opret gruppe'
+    action_create: 'Opret gruppe'
+    action_save: 'Gem gruppe'
+    back_to_list: 'Tilbage til listen'
+    edit: 'Redigér gruppe'
+    name_label: 'Navn'
+    new: 'Opret ny gruppe'
+    name_help: 'Vælg et navn for gruppen'
+    users_in_group: 'Medarbejdere i gruppen'
+    actions: 'Handlinger'
+    id: '#'
+    name: 'Navn'
+    action_edit: 'Redigér'
+    list_no_records_found: 'Ingen grupper fundet'
+    title: 'Grupper'
+    workers: 'Medarbejdere'

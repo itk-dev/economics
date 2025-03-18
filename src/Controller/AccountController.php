@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Account;
-use App\Form\AccountFilterType;
 use App\Form\AccountType;
-use App\Model\Invoices\AccountFilterData;
+use App\Form\NameFilterType;
+use App\Model\Invoices\NameFilterData;
 use App\Repository\AccountRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,8 +25,8 @@ class AccountController extends AbstractController
     #[Route('/', name: 'app_account_index', methods: ['GET'])]
     public function index(Request $request, AccountRepository $accountRepository): Response
     {
-        $accountFilterData = new AccountFilterData();
-        $form = $this->createForm(AccountFilterType::class, $accountFilterData);
+        $accountFilterData = new NameFilterData();
+        $form = $this->createForm(NameFilterType::class, $accountFilterData);
         $form->handleRequest($request);
 
         $pagination = $accountRepository->getFilteredPagination($accountFilterData, $request->query->getInt('page', 1));

@@ -15,7 +15,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin/synchronization')]
-#[IsGranted('ROLE_ADMIN')]
 class SynchronizationJobController extends AbstractController
 {
     public function __construct(
@@ -23,6 +22,7 @@ class SynchronizationJobController extends AbstractController
     }
 
     #[Route('/status', name: 'app_synchronization_status', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function status(SynchronizationJobRepository $synchronizationJobRepository, TranslatorInterface $translator): Response
     {
         $latestJob = $synchronizationJobRepository->getLatestJob();
@@ -41,6 +41,7 @@ class SynchronizationJobController extends AbstractController
     }
 
     #[Route('/start', name: 'app_synchronization_sync', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function sync(SynchronizationJobRepository $synchronizationJobRepository, MessageBusInterface $bus): Response
     {
         $latestJob = $synchronizationJobRepository->getLatestJob();

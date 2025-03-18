@@ -32,7 +32,7 @@ class BillableUnbilledHoursReportController extends AbstractController
             'action' => $this->generateUrl('app_billable_unbilled_hours_report'),
             'method' => 'GET',
             'attr' => [
-                'id' => 'sprint_report',
+                'id' => 'report',
             ],
             'years' => [
                 (new \DateTime())->modify('-1 year')->format('Y'),
