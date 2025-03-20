@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-209](https://github.com/itk-dev/economics/pull/209)
+  Refactor dashboard calculations to do SUM in database and limit to days in current year.
+
 ## [2.8.1] - 2025-03-18
 
 * [PR-208](https://github.com/itk-dev/economics/pull/208)
