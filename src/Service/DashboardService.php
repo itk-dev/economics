@@ -74,9 +74,9 @@ class DashboardService
         $today = new \DateTime();
         $today->setTime(23, 59, 59);
 
-        $weekSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($user->getEmail(), $yearStart, $today, 'week');
-        $monthSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($user->getEmail(), $yearStart, $today, 'month');
-        $yearSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($user->getEmail(), $yearStart, $today, 'year');
+        $weekSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $today, 'week');
+        $monthSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $today, 'month');
+        $yearSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $today, 'year');
 
         $yearStatus = ($yearSums[0]['totalTimeSpent'] - $yearNormToDate) / 3600;
 
