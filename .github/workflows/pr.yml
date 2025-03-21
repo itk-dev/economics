@@ -50,7 +50,7 @@ jobs:
             - name: Download artifact
               uses: actions/download-artifact@v4
               with:
-                  name: php8.3-fpm-latest.tar
+                  name: php8.3-fpm-latest
                   path: ${{ runner.temp }}
             - name: Load image
               run: |
