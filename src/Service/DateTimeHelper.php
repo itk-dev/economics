@@ -129,4 +129,17 @@ class DateTimeHelper
 
         return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
     }
+
+    /**
+     * Retrieves the current date with the time set to 23:59:59.
+     *
+     * @return \DateTime the current date with the time set
+     */
+    public function getToday(): \DateTime
+    {
+        $today = new \DateTime();
+        $today->setTime(23, 59, 59);
+
+        return $today;
+    }
 }

@@ -12,6 +12,7 @@ class DashboardService
     public function __construct(
         private readonly WorkerRepository $workerRepository,
         private readonly WorklogRepository $worklogRepository,
+        private readonly DateTimeHelper $dateTimeHelper,
     ) {
     }
 
@@ -67,16 +68,15 @@ class DashboardService
             }
         }
 
-        $yearStart = new \DateTime();
-        $yearStart->setDate($year, 1, 1);
-        $yearStart->setTime(0, 0, 0);
+        ['dateFrom' => $yearStart, 'dateTo' => $yearEnd] = $this->dateTimeHelper->getFirstAndLastDateOfYear($year);
+        $today = $this->dateTimeHelper->getToday();
 
-        $today = new \DateTime();
-        $today->setTime(23, 59, 59);
+        // Including future dates will skew the norm time calculations. So for the current year "end" is set to "today"
+        $end = $yearEnd < $today ? $yearEnd : $today;
 
-        $weekSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $today, 'week');
-        $monthSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $today, 'month');
-        $yearSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $today, 'year');
+        $weekSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $end, 'week');
+        $monthSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $end, 'month');
+        $yearSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $end, 'year');
 
         $yearStatus = ($yearSums[0]['totalTimeSpent'] - $yearNormToDate) / 3600;
 
