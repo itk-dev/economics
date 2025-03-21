@@ -41,7 +41,9 @@ jobs:
 
     php-test-composer-install:
         runs-on: ubuntu-latest
-        needs: php-composer-install
+        needs:
+            - php-composer-install
+            - docker-image-pull
         name: Validate composer
         steps:
             - uses: actions/checkout@v4
