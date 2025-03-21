@@ -12,7 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-209](https://github.com/itk-dev/economics/pull/209)
   Refactor dashboard calculations to do SUM in database and limit to days in current year.
-* Increase php max execution time for supervisor container to allow for LeanTime API rate limit.
+* [PR-210](https://github.com/itk-dev/economics/pull/210) 
+  Increase php max execution time for supervisor container to allow for LeanTime API rate limit.
+  Update github actions to use docker setup
+  Update to latest ITK docker setup
 
 ## [2.8.1] - 2025-03-18
 
@@ -435,7 +438,13 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.5.2...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.8.2...HEAD
+[2.8.1]: https://github.com/itk-dev/economics/releases/tag/2.8.1
+[2.8.0]: https://github.com/itk-dev/economics/releases/tag/2.8.0
+[2.7.0]: https://github.com/itk-dev/economics/releases/tag/2.7.0
+[2.6.1]: https://github.com/itk-dev/economics/releases/tag/2.6.1
+[2.6.0]: https://github.com/itk-dev/economics/releases/tag/2.6.0
+[2.5.3]: https://github.com/itk-dev/economics/releases/tag/2.5.3
 [2.5.2]: https://github.com/itk-dev/economics/compare/2.5.1...2.5.2
 [2.5.1]: https://github.com/itk-dev/economics/compare/2.5.0...2.5.1
 [2.5.0]: https://github.com/itk-dev/economics/compare/2.4.2...2.5.0
