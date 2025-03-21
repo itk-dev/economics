@@ -8,7 +8,7 @@ env:
 jobs:
     install-and-test:
         runs-on: ubuntu-latest
-        name: Docker pull & save
+        name: Run all PHP steps
         steps:
             - uses: actions/checkout@v4
             - run: |
@@ -17,7 +17,7 @@ jobs:
 
                 docker network create frontend
                 docker compose run --rm phpfpm composer install
-                docker network create frontend
+                  
                 docker compose run --rm phpfpm composer validate composer.json --strict
                 docker compose run --rm phpfpm composer normalize --dry-run
                 docker compose run --rm phpfpm composer audit
