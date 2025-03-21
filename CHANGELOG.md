@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-209](https://github.com/itk-dev/economics/pull/209)
   Refactor dashboard calculations to do SUM in database and limit to days in current year.
-* [PR-210](https://github.com/itk-dev/economics/pull/210) 
+* [PR-210](https://github.com/itk-dev/economics/pull/210)
   Increase php max execution time for supervisor container to allow for LeanTime API rate limit.
   Update github actions to use docker setup
   Update to latest ITK docker setup
@@ -80,10 +80,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-175](https://github.com/itk-dev/economics/pull/175)
   2617: Added forecast report.
 
-## [2.5.2] - 2025-03-17
+## [2.5.3] - 2025-03-17
 
 * [PR-207](https://github.com/itk-dev/economics/pull/207)
   hotfix: Setup woodpecker workflows.
+
+## [2.5.2] - 2025-03-17
+
+* [PR-207](https://github.com/itk-dev/economics/pull/207)
+  hotfix: Change from yarn to npm for build release
 
 ## [2.5.1] - 2024-11-26
 
