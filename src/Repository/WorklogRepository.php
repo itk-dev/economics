@@ -157,36 +157,6 @@ class WorklogRepository extends ServiceEntityRepository
     }
 
     /**
-     * Gets the sum of time spent grouped by week of year for a specific worker within a range of weeks.
-     *
-     * @param string $workerEmail The email of the worker
-     * @param int $fromWeek The starting week number
-     * @param int $toWeek The ending week number
-     * @param string $groupBy The function to group by, accepts 'week', 'month' and 'year'
-     *
-     * @return array An array of results containing total time spent, week number, and worker
-     */
-    public function testDateTime(
-        string $workerEmail,
-        \DateTimeInterface $from,
-        \DateTimeInterface $to,
-    ): array {
-        $qb = $this->createQueryBuilder('w');
-
-        $qb
-            ->select('w.started')
-            ->where('w.worker = :worker')
-            ->andWhere('w.started >= :from')
-            ->andWhere('w.started <= :to')
-            ->setParameter('worker', $workerEmail)
-            ->setParameter('from', $from)
-            ->setParameter('to', $to)
-            ->orderBy('w.started', 'ASC');
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
      * Finds billable worklogs within a specific date range for a given worker.
      *
      * @param \DateTime $dateFrom the start date for the date range filter
