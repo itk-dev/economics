@@ -63,6 +63,7 @@ jobs:
               with:
                   name: composer-install
             - run: |
+                  chmod +x vendor/bin/*
                   docker network create frontend
                   docker compose run --rm phpfpm composer code-analysis
 
