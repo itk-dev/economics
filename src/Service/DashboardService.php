@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Entity\User;
-use App\Entity\Worklog;
 use App\Model\DashboardData;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
@@ -31,65 +30,70 @@ class DashboardService
             return null;
         }
 
-        $norm = $worker->getWorkload() ?? 0.0;
+        $weekNorm = $worker->getWorkload() ?? 0.0;
+        $dayNorm = $weekNorm / 5;
+
+        $dayNormSeconds = (int) ($dayNorm * 3600);
+        $yearNormToDate = 0;
 
         if (null == $year) {
             $year = (int) date('Y');
         }
 
-        ['dateFrom' => $yearStart, 'dateTo' => $yearEnd] = $this->dateTimeHelper->getFirstAndLastDateOfYear($year);
+        $monthNormsToDate = [];
+        $weekNormsToDate = [];
 
-        $monthSums = [];
-        $weekSums = [];
-
-        $monthNorms = [];
+        $today = new \DateTime();
+        $today->setTime(23, 59, 59);
 
         for ($month = 1; $month <= 12; ++$month) {
             $daysInMonth = date('t', mktime(0, 0, 0, $month, 1, $year));
 
             for ($day = 1; $day <= $daysInMonth; ++$day) {
-                $dayDate = \DateTime::createFromFormat('U', (string) mktime(0, 0, 0, $month, $day, $year));
+                $dayDate = new \DateTime();
+                $dayDate->setDate($year, $month, $day);
+
+                if ($dayDate > $today) {
+                    // Exit both for-loops. Including days from the future will skew the norm time calculation.
+                    break 2;
+                }
+
+                $weekNumber = (int) $dayDate->format('W');
 
                 if ((int) $dayDate->format('N') < 6) {
-                    $monthNorms[$month] = ($monthNorms[$month] ?? 0) + 1;
+                    $weekNormsToDate[$weekNumber] = ($weekNormsToDate[$weekNumber] ?? 0) + $dayNormSeconds;
+                    $monthNormsToDate[$month] = ($monthNormsToDate[$month] ?? 0) + $dayNormSeconds;
+                    $yearNormToDate += $dayNormSeconds;
                 }
             }
-
-            $monthNorms[$month] = ($monthNorms[$month] ?? 0) / 5 * $norm;
         }
 
-        // Get all worklogs for $year.
-        $worklogs = $this->worklogRepository->findWorklogsByWorkerAndDateRange($userEmail, $yearStart, $yearEnd);
+        ['dateFrom' => $yearStart, 'dateTo' => $yearEnd] = $this->dateTimeHelper->getFirstAndLastDateOfYear($year);
+        $today = $this->dateTimeHelper->getToday();
 
-        /** @var Worklog $worklog */
-        foreach ($worklogs as $worklog) {
-            $month = (int) $worklog->getStarted()?->format('n');
-            $week = (int) $worklog->getStarted()?->format('W');
+        // Including future dates will skew the norm time calculations. So for the current year "end" is set to "today"
+        $end = $yearEnd < $today ? $yearEnd : $today;
 
-            $monthSums[$month] = ($monthSums[$month] ?? 0.0) + $worklog->getTimeSpentSeconds() / 3600;
-            $weekSums[$week] = ($weekSums[$week] ?? 0.0) + $worklog->getTimeSpentSeconds() / 3600;
-        }
+        $weekSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $end, 'week');
+        $monthSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $end, 'month');
+        $yearSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $end, 'year');
 
-        $yearIsCurrent = $year == (int) date('Y');
-        $maxMonth = $yearIsCurrent ? (date('n')) : 12;
+        $yearStatus = ($yearSums[0]['totalTimeSpent'] - $yearNormToDate) / 3600;
 
         $monthStatuses = [];
-        $yearStatus = 0;
-
-        for ($month = 1; $month <= $maxMonth; ++$month) {
-            $monthStatuses[$month] = ($monthSums[$month] ?? 0.0) - ($monthNorms[$month] ?? 0.0);
-
-            $yearStatus += $monthStatuses[$month];
+        foreach ($monthSums as $monthSum) {
+            $month = $monthSum['month'];
+            $totalTimeSpent = $monthSum['totalTimeSpent'];
+            $monthStatuses[$month] = ($totalTimeSpent - $monthNormsToDate[$month]) / 3600;
         }
-
-        // December 28th is always in the last week of its year.
-        $maxWeek = $yearIsCurrent ? (int) (new \DateTime())->format('W') : (int) (new \DateTime('December 28th, '.$year))->format('W');
 
         $weekStatuses = [];
-        for ($week = 1; $week <= $maxWeek; ++$week) {
-            $weekStatuses[$week] = ($weekSums[$week] ?? 0.0) - $norm;
+        foreach ($weekSums as $weekSum) {
+            $week = $weekSum['week'];
+            $totalTimeSpent = $weekSum['totalTimeSpent'];
+            $weekStatuses[$week] = ($totalTimeSpent - $weekNormsToDate[$week]) / 3600;
         }
 
-        return new DashboardData($yearStatus, $year, $norm, $monthStatuses, $weekStatuses);
+        return new DashboardData($yearStatus, $year, $weekNorm, $monthStatuses, $weekStatuses);
     }
 }
