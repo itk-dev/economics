@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-209](https://github.com/itk-dev/economics/pull/209)
   Refactor dashboard calculations to do SUM in database and limit to days in current year.
-* Increase php max execution time for supervisor container to allow for LeanTime API rate limit. 
+* Increase php max execution time for supervisor container to allow for LeanTime API rate limit.
 
 ## [2.8.1] - 2025-03-18
 
