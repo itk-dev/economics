@@ -11,7 +11,7 @@ jobs:
         name: Docker pull & save
         steps:
             - uses: actions/checkout@v4
-            - run |
+            - run: |
                 docker pull itkdev/php8.3-fpm:latest
                 docker image save itkdev/php8.3-fpm:latest --output ${{ runner.temp }}/php8.3-fpm-latest.tar
 
