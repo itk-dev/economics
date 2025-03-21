@@ -117,8 +117,8 @@ class WorklogRepository extends ServiceEntityRepository
      * Gets the sum of time spent grouped by week of year for a specific worker within a range of weeks.
      *
      * @param string $workerEmail The email of the worker
-     * @param int $fromWeek The starting week number
-     * @param int $toWeek The ending week number
+     * @param \DateTimeInterface $from The starting date time
+     * @param \DateTimeInterface $to The ending date time
      * @param string $groupBy The function to group by, accepts 'week', 'month' and 'year'
      *
      * @return array An array of results containing total time spent, week number, and worker
@@ -132,7 +132,7 @@ class WorklogRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('w');
 
         if ('month' !== $groupBy && 'week' !== $groupBy && 'year' !== $groupBy) {
-            throw new \InvalidArgumentException('Invalid group by parameter, function accepts only "week" or "month"');
+            throw new \InvalidArgumentException('Invalid group by parameter, function accepts only "week", "month" or "year"');
         }
 
         $groupByFunction = 'week' === $groupBy ? 'WEEKOFYEAR' : \strtoupper($groupBy);
