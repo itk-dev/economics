@@ -6,19 +6,40 @@ env:
     COMPOSE_USER: runner
 
 jobs:
-    test-composer-install:
+    php-composer-install:
         runs-on: ubuntu-latest
-        name: Validate composer
+        name: Composer Install
         steps:
             - uses: actions/checkout@v4
             - run: |
                   docker network create frontend
-                  docker compose run --rm phpfpm composer validate composer.json --strict
                   docker compose run --rm phpfpm composer install
+            - name: Archive vendor, var folders
+              uses: actions/upload-artifact@v4
+              retention-days: 1
+              include-hidden-files: true
+              with:
+                  name: composer-install
+                  path: |
+                      vendor
+                      var
+
+    php-test-composer-install:
+        runs-on: ubuntu-latest
+        needs: php-composer-install
+        name: Validate composer
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/download-artifact@v4
+              with:
+                  name: composer-install
+            - run: |
+                  docker network create frontend
+                  docker compose run --rm phpfpm composer validate composer.json --strict
                   docker compose run --rm phpfpm composer normalize --dry-run
                   docker compose run --rm phpfpm composer audit
 
-    validate-doctrine-schema:
+    php-validate-doctrine-schema:
         runs-on: ubuntu-latest
         name: Validate Doctrine Schema
         steps:
@@ -29,7 +50,7 @@ jobs:
                   docker compose run --rm phpfpm bin/console doctrine:migrations:migrate --no-interaction
                   docker compose run --rm phpfpm bin/console doctrine:schema:validate
 
-    code-analysis:
+    php-code-analysis:
         name: PHP - Code analysis (phpstan)
         runs-on: ubuntu-latest
         steps:
@@ -39,7 +60,7 @@ jobs:
                   docker compose run --rm phpfpm composer install
                   docker compose run --rm phpfpm composer code-analysis
 
-    coding-standards-phpcs:
+    php-coding-standards-phpcs:
         name: coding-standards-check/phpcs
         runs-on: ubuntu-latest
         steps:
@@ -48,6 +69,40 @@ jobs:
                   docker network create frontend
                   docker compose run --rm phpfpm composer install
                   docker compose run --rm phpfpm composer coding-standards-check
+
+    php-twig-coding-standards:
+        name: Twig coding standards
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Install
+                run: |
+                    docker network create frontend
+                    docker compose up --detach
+                    docker compose exec --user root phpfpm composer install
+            -   name: Coding standards
+                run: |
+                    docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
+
+    php-phpunit:
+        name: Test suite
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Test suite
+              run: |
+                  docker network create frontend
+                  docker compose run --rm phpfpm composer install
+                  docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
+
+            - name: Upload coverage to Codecov test
+              uses: codecov/codecov-action@v2
+              with:
+                  files: ./coverage/unit.xml
+                  flags: unittests, ${{ matrix.php }}
 
     changelog:
         runs-on: ubuntu-latest
@@ -91,37 +146,3 @@ jobs:
                     docker network create frontend
                     docker compose run --rm node npm install
                     docker compose run --rm node npm run coding-standards-check/markdownlint
-
-    twig-coding-standards:
-        name: Twig coding standards
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
-
-            -   name: Install
-                run: |
-                    docker network create frontend
-                    docker compose up --detach
-                    docker compose exec --user root phpfpm composer install
-            -   name: Coding standards
-                run: |
-                    docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
-
-    phpunit:
-        name: Test suite
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-
-            - name: Test suite
-              run: |
-                  docker network create frontend
-                  docker compose run --rm phpfpm composer install
-                  docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
-
-            - name: Upload coverage to Codecov test
-              uses: codecov/codecov-action@v2
-              with:
-                  files: ./coverage/unit.xml
-                  flags: unittests, ${{ matrix.php }}
