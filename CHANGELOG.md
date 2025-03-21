@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-211](https://github.com/itk-dev/economics/pull/211)
+  Refactor Github actions to re-use composer install
+
 ## [2.8.2] - 2025-03-21
 
 * [PR-209](https://github.com/itk-dev/economics/pull/209)

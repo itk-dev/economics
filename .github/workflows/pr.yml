@@ -42,60 +42,73 @@ jobs:
     php-validate-doctrine-schema:
         runs-on: ubuntu-latest
         name: Validate Doctrine Schema
+        needs: php-composer-install
         steps:
             - uses: actions/checkout@v4
+            - uses: actions/download-artifact@v4
+              with:
+                  name: composer-install
             - run: |
                   docker network create frontend
-                  docker compose run --rm phpfpm composer install
                   docker compose run --rm phpfpm bin/console doctrine:migrations:migrate --no-interaction
                   docker compose run --rm phpfpm bin/console doctrine:schema:validate
 
     php-code-analysis:
         name: PHP - Code analysis (phpstan)
+        needs: php-composer-install
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+            - uses: actions/download-artifact@v4
+              with:
+                  name: composer-install
             - run: |
                   docker network create frontend
-                  docker compose run --rm phpfpm composer install
                   docker compose run --rm phpfpm composer code-analysis
 
     php-coding-standards-phpcs:
         name: coding-standards-check/phpcs
+        needs: php-composer-install
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+            - uses: actions/download-artifact@v4
+              with:
+                  name: composer-install
             - run: |
                   docker network create frontend
-                  docker compose run --rm phpfpm composer install
                   docker compose run --rm phpfpm composer coding-standards-check
 
     php-twig-coding-standards:
         name: Twig coding standards
+        needs: php-composer-install
         runs-on: ubuntu-latest
         steps:
             -   name: Checkout
                 uses: actions/checkout@v3
-
+            - uses: actions/download-artifact@v4
+              with:
+                  name: composer-install
             -   name: Install
                 run: |
                     docker network create frontend
                     docker compose up --detach
-                    docker compose exec --user root phpfpm composer install
             -   name: Coding standards
                 run: |
                     docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
 
     php-phpunit:
         name: Test suite
+        needs: php-composer-install
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-
+            - uses: actions/download-artifact@v4
+              with:
+                  name: composer-install
             - name: Test suite
               run: |
                   docker network create frontend
-                  docker compose run --rm phpfpm composer install
                   docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
 
             - name: Upload coverage to Codecov test
