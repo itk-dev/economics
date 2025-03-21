@@ -77,6 +77,7 @@ jobs:
               with:
                   name: composer-install
             - run: |
+                  chmod +x vendor/bin/*
                   docker network create frontend
                   docker compose run --rm phpfpm composer coding-standards-check
 
@@ -92,6 +93,7 @@ jobs:
                   name: composer-install
             -   name: Install
                 run: |
+                    chmod +x vendor/bin/*
                     docker network create frontend
                     docker compose up --detach
             -   name: Coding standards
@@ -109,6 +111,7 @@ jobs:
                   name: composer-install
             - name: Test suite
               run: |
+                  chmod +x vendor/bin/*
                   docker network create frontend
                   docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
 
