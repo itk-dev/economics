@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.2] - 2025-03-21
+
+* [PR-209](https://github.com/itk-dev/economics/pull/209)
+  Refactor dashboard calculations to do SUM in database and limit to days in current year.
+* [PR-210](https://github.com/itk-dev/economics/pull/210)
+  Increase php max execution time for supervisor container to allow for LeanTime API rate limit.
+  Update github actions to use docker setup
+  Update to latest ITK docker setup
+
 ## [2.8.1] - 2025-03-18
 
 * [PR-208](https://github.com/itk-dev/economics/pull/208)
@@ -71,10 +80,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-175](https://github.com/itk-dev/economics/pull/175)
   2617: Added forecast report.
 
-## [2.5.2] - 2025-03-17
+## [2.5.3] - 2025-03-17
 
 * [PR-207](https://github.com/itk-dev/economics/pull/207)
   hotfix: Setup woodpecker workflows.
+
+## [2.5.2] - 2025-03-17
+
+* [PR-207](https://github.com/itk-dev/economics/pull/207)
+  hotfix: Change from yarn to npm for build release
 
 ## [2.5.1] - 2024-11-26
 
@@ -429,7 +443,13 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.5.2...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.8.2...HEAD
+[2.8.1]: https://github.com/itk-dev/economics/releases/tag/2.8.1
+[2.8.0]: https://github.com/itk-dev/economics/releases/tag/2.8.0
+[2.7.0]: https://github.com/itk-dev/economics/releases/tag/2.7.0
+[2.6.1]: https://github.com/itk-dev/economics/releases/tag/2.6.1
+[2.6.0]: https://github.com/itk-dev/economics/releases/tag/2.6.0
+[2.5.3]: https://github.com/itk-dev/economics/releases/tag/2.5.3
 [2.5.2]: https://github.com/itk-dev/economics/compare/2.5.1...2.5.2
 [2.5.1]: https://github.com/itk-dev/economics/compare/2.5.0...2.5.1
 [2.5.0]: https://github.com/itk-dev/economics/compare/2.4.2...2.5.0
