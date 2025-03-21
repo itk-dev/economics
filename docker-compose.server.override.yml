@@ -11,7 +11,8 @@ services:
             - APP_SUPERVISOR_COMMAND=/app/bin/console messenger:consume --env=prod --no-debug --time-limit=900 --failure-limit=1 async scheduler_default
             - APP_SUPERVISOR_WORKERS=1
             - APP_SUPERVISOR_USER=deploy
-            - PHP_MAX_EXECUTION_TIME=60
+            # Sync job is rate limited by LeanTime API so it will take some time to complete.
+            - PHP_MAX_EXECUTION_TIME=1800
             - PHP_MEMORY_LIMIT=256M
             - PHP_TIMEZONE=UTC
         networks:
