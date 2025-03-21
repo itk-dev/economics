@@ -1,5 +1,10 @@
 on: pull_request
+
 name: Review
+
+env:
+    COMPOSE_USER: runner
+
 jobs:
     test-composer-install:
         runs-on: ubuntu-latest
