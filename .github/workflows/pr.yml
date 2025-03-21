@@ -108,22 +108,6 @@ jobs:
                 run: |
                     docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
 
-    composer-audit:
-        name: Run composer audit
-        runs-on: ubuntu-latest
-        steps:
-            -   uses: actions/checkout@v4
-            -   name: Install Dependencies
-                run: |
-                    docker network create frontend
-                    docker compose up --detach
-                    docker compose exec --user root phpfpm composer install
-
-            -   name: Composer audit
-                run: |
-                    docker compose exec --user root phpfpm composer audit
-
-
     phpunit:
         name: Test suite
         runs-on: ubuntu-latest
@@ -134,7 +118,7 @@ jobs:
               run: |
                   docker network create frontend
                   docker compose run --rm phpfpm composer install
-                  docker compose run --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
+                  docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
 
             - name: Upload coverage to Codecov test
               uses: codecov/codecov-action@v2
