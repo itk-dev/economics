@@ -16,13 +16,13 @@ jobs:
                   docker compose run --rm phpfpm composer install
             - name: Archive vendor, var folders
               uses: actions/upload-artifact@v4
-              retention-days: 1
-              include-hidden-files: true
               with:
                   name: composer-install
                   path: |
                       vendor
                       var
+                  retention-days: 1
+                  include-hidden-files: true
 
     php-test-composer-install:
         runs-on: ubuntu-latest
