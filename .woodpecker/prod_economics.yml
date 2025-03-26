@@ -16,9 +16,9 @@ steps:
       secret:
         from_secret: secret
       host:
-        from_secret: prod_host
+        from_secret: prod_economics_host
       path:
-        from_secret: prod_path
+        from_secret: prod_economics_path
       user:
         from_secret: user
       playbook: 'release'

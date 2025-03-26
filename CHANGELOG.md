@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.3] - 2025-03-26
+
+* [PR-212](https://github.com/itk-dev/economics/pull/212)
+  Setup auto deploy (woodpecker) for both prod sites
+
 ## [2.8.2] - 2025-03-21
 
 * [PR-209](https://github.com/itk-dev/economics/pull/209)
