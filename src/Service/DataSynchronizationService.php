@@ -400,10 +400,11 @@ class DataSynchronizationService
                 $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
                 $worklog->setIssue($issue);
             }
-
             if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
                 $worklog->setIsBilled(true);
                 $worklog->setBilledSeconds($worklogDatum->timeSpentSeconds);
+            } else {
+                $worklog->setIsBilled(false);
             }
 
             $project->addWorklog($worklog);
