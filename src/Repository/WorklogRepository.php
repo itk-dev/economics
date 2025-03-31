@@ -170,7 +170,6 @@ class WorklogRepository extends ServiceEntityRepository
     {
         $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
         $nonBillableVersions = NonBillableVersionsEnum::getAsArray();
-
         $qb = $this->createQueryBuilder('worklog');
 
         $qb->leftJoin(Project::class, 'project', 'WITH', 'project.id = worklog.project')
@@ -192,7 +191,10 @@ class WorklogRepository extends ServiceEntityRepository
             ));
 
         if (null !== $isBilled) {
-            $qb->andWhere($qb->expr()->eq('worklog.isBilled', ':isBilled'));
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->eq('worklog.isBilled', ':isBilled'),
+                $qb->expr()->isNull('worklog.isBilled')
+            ));
         }
 
         if (null !== $workerIdentifier) {
