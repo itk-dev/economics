@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-213](https://github.com/itk-dev/economics/pull/213)
+  Include isBilled = NULL in billable unbilled hours report.
+
 ## [2.8.3] - 2025-03-26
 
 * [PR-212](https://github.com/itk-dev/economics/pull/212)
