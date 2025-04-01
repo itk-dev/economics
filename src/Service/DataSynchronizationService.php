@@ -401,7 +401,7 @@ class DataSynchronizationService
                 $worklog->setIssue($issue);
             }
 
-            if ($worklog->isBilled() === null) {
+            if (null === $worklog->isBilled()) {
                 $worklog->setIsBilled(false);
             }
 
