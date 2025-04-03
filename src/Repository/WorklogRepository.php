@@ -192,7 +192,15 @@ class WorklogRepository extends ServiceEntityRepository
             ));
 
         if (null !== $isBilled) {
-            $qb->andWhere($qb->expr()->eq('worklog.isBilled', ':isBilled'));
+            if ($isBilled) {
+                $qb->andWhere($qb->expr()->eq('worklog.isBilled', true));
+            } else {
+                // We treat null as false.
+                $qb->andWhere($qb->expr()->orX(
+                    $qb->expr()->eq('worklog.isBilled', false),
+                    $qb->expr()->isNull('worklog.isBilled')
+                ));
+            }
         }
 
         if (null !== $workerIdentifier) {
