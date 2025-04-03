@@ -401,9 +401,8 @@ class DataSynchronizationService
                 $worklog->setIssue($issue);
             }
 
-            if (!$worklog->isBilled() && $worklogDatum->projectTrackerIsBilled) {
-                $worklog->setIsBilled(true);
-                $worklog->setBilledSeconds($worklogDatum->timeSpentSeconds);
+            if (null === $worklog->isBilled()) {
+                $worklog->setIsBilled(false);
             }
 
             $project->addWorklog($worklog);

@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-214](https://github.com/itk-dev/economics/pull/214)
+  Explicitly set isBilled when synchronizing worklogs.
+  Select isBilled=NULL when getting unbilled billable worklogs.
+
 ## [2.8.3] - 2025-03-26
 
 * [PR-212](https://github.com/itk-dev/economics/pull/212)
