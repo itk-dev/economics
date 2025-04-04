@@ -207,6 +207,7 @@ class WorklogRepository extends ServiceEntityRepository
         if (null !== $workerIdentifier) {
             $qb->andWhere('worklog.worker = :worker');
         }
+
         return $qb->setParameters(array_merge(
             [
                 'dateFrom' => $dateFrom,
