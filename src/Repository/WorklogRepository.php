@@ -193,20 +193,20 @@ class WorklogRepository extends ServiceEntityRepository
 
         if (null !== $isBilled) {
             if ($isBilled) {
-                $qb->andWhere($qb->expr()->eq('worklog.isBilled', true));
+                $qb->andWhere($qb->expr()->eq('worklog.isBilled', ':isBilledTrue'))
+                    ->setParameter('isBilledTrue', true);
             } else {
-                // We treat null as false.
-                $qb->andWhere($qb->expr()->orX(
-                    $qb->expr()->eq('worklog.isBilled', false),
-                    $qb->expr()->isNull('worklog.isBilled')
-                ));
+                $qb->andWhere(
+                    $qb->expr()->orX(
+                        $qb->expr()->eq('worklog.isBilled', ':isBilledFalse'),
+                        $qb->expr()->isNull('worklog.isBilled')
+                    )
+                )->setParameter('isBilledFalse', false);
             }
         }
-
         if (null !== $workerIdentifier) {
             $qb->andWhere('worklog.worker = :worker');
         }
-
         return $qb->setParameters(array_merge(
             [
                 'dateFrom' => $dateFrom,
@@ -214,7 +214,7 @@ class WorklogRepository extends ServiceEntityRepository
                 'nonBillableEpics' => array_values($nonBillableEpics),
                 'nonBillableVersions' => array_values($nonBillableVersions),
             ],
-            null !== $isBilled ? ['isBilled' => $isBilled] : [],
+            null !== $isBilled ? ($isBilled ? ['isBilledTrue' => true] : ['isBilledFalse' => false]) : [],
             null !== $workerIdentifier ? ['worker' => $workerIdentifier] : []
         ))->getQuery()->getResult();
     }
