@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-216](https://github.com/itk-dev/economics/pull/216)
+  Replaced literals with query parameters in worklog repo
+
 ## [2.8.4] - 2025-04-03
 
 * [PR-214](https://github.com/itk-dev/economics/pull/214)
