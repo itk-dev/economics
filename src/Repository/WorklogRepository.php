@@ -189,35 +189,32 @@ class WorklogRepository extends ServiceEntityRepository
             ->andWhere($qb->expr()->orX(
                 $qb->expr()->isNull('version.name'),
                 $qb->expr()->notIn('version.name', ':nonBillableVersions')
-            ));
+            ))
+            ->setParameter('dateFrom', $dateFrom)
+            ->setParameter('dateTo', $dateTo)
+            ->setParameter('nonBillableEpics', array_values($nonBillableEpics))
+            ->setParameter('nonBillableVersions', array_values($nonBillableVersions));
 
         if (null !== $isBilled) {
             if ($isBilled) {
-                $qb->andWhere($qb->expr()->eq('worklog.isBilled', ':isBilledTrue'))
-                    ->setParameter('isBilledTrue', true);
+                $qb->andWhere('worklog.isBilled = :isBilled');
             } else {
                 $qb->andWhere(
                     $qb->expr()->orX(
-                        $qb->expr()->eq('worklog.isBilled', ':isBilledFalse'),
+                        $qb->expr()->eq('worklog.isBilled', ':isBilled'),
                         $qb->expr()->isNull('worklog.isBilled')
                     )
-                )->setParameter('isBilledFalse', false);
+                );
             }
-        }
-        if (null !== $workerIdentifier) {
-            $qb->andWhere('worklog.worker = :worker');
+            $qb->setParameter('isBilled', $isBilled);
         }
 
-        return $qb->setParameters(array_merge(
-            [
-                'dateFrom' => $dateFrom,
-                'dateTo' => $dateTo,
-                'nonBillableEpics' => array_values($nonBillableEpics),
-                'nonBillableVersions' => array_values($nonBillableVersions),
-            ],
-            null !== $isBilled ? ($isBilled ? ['isBilledTrue' => true] : ['isBilledFalse' => false]) : [],
-            null !== $workerIdentifier ? ['worker' => $workerIdentifier] : []
-        ))->getQuery()->getResult();
+        if (null !== $workerIdentifier) {
+            $qb->andWhere('worklog.worker = :worker')
+                ->setParameter('worker', $workerIdentifier);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     public function findBilledWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
