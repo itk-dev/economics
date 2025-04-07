@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.6] - 2025-04-07
+
 * [PR-218](https://github.com/itk-dev/economics/pull/218)
   Included Done tasks in holiday planning overview.
 
@@ -462,7 +464,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.8.5...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.8.6...HEAD
+[2.8.6]: https://github.com/itk-dev/economics/compare/2.8.5...2.8.6
 [2.8.5]: https://github.com/itk-dev/economics/compare/2.8.4...2.8.5
 [2.8.4]: https://github.com/itk-dev/economics/releases/tag/2.8.4
 [2.8.3]: https://github.com/itk-dev/economics/releases/tag/2.8.3
