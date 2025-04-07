@@ -8,10 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-218](https://github.com/itk-dev/economics/pull/218)
+  Included Done tasks in holiday planning overview.
+
 ## [2.8.5] - 2025-04-04
 
 * [PR-216](https://github.com/itk-dev/economics/pull/216)
-  Replaced literals with query parameters in worklog repo
+  Replaced literals with query parameters in worklog repo.
 
 ## [2.8.4] - 2025-04-03
 
@@ -22,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.8.3] - 2025-03-26
 
 * [PR-212](https://github.com/itk-dev/economics/pull/212)
-  Setup auto deploy (woodpecker) for both prod sites
+  Setup auto deploy (woodpecker) for both prod sites.
 
 ## [2.8.2] - 2025-03-21
 
@@ -30,8 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Refactor dashboard calculations to do SUM in database and limit to days in current year.
 * [PR-210](https://github.com/itk-dev/economics/pull/210)
   Increase php max execution time for supervisor container to allow for LeanTime API rate limit.
-  Update github actions to use docker setup
-  Update to latest ITK docker setup
+  Update github actions to use docker setup.
+  Update to latest ITK docker setup.
 
 ## [2.8.1] - 2025-03-18
 
