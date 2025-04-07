@@ -56,7 +56,7 @@ class PlanningService
         $sortedIssues = $this->sortIssuesByWeek($allIssues);
 
         foreach ($sortedIssues as $week => $issues) {
-            $this->processIssuesForWeek($planning, $week, $issues);
+            $this->processIssuesForWeek($planning, $week, $issues, $holidayPlanning);
         }
 
         $planning->assignees = $this->sortAssigneeCollectionByDisplayName($planning->assignees);
@@ -155,58 +155,58 @@ class PlanningService
         return $weekIssues;
     }
 
-    private function processIssuesForWeek(PlanningData $planning, int $week, array $issues): void
+    private function processIssuesForWeek(PlanningData $planning, int $week, array $issues, bool $holidayPlanning = null): void
     {
         foreach ($issues as $issueData) {
-            if (IssueStatusEnum::DONE !== $issueData->getStatus()) {
-                $week = (string) $week;
-                $issueProject = $issueData->getProject();
-                if (!$issueProject) {
-                    continue;
-                }
-                $projectKey = (string) $issueProject->getProjectTrackerId();
-                $projectDisplayName = $issueProject->getName() ?? self::UNNAMED_STR;
-                $hoursRemaining = $issueData->getHoursRemaining($issueData);
-                $assigneeData = $this->getAssigneeData($issueData);
+            if (!$holidayPlanning && IssueStatusEnum::DONE === $issueData->getStatus()) {
+                continue;
+            }
+            $week = (string)$week;
+            $issueProject = $issueData->getProject();
+            if (!$issueProject) {
+                continue;
+            }
+            $projectKey = (string)$issueProject->getProjectTrackerId();
+            $projectDisplayName = $issueProject->getName() ?? self::UNNAMED_STR;
+            $hoursRemaining = $issueData->getHoursRemaining($issueData);
+            $assigneeData = $this->getAssigneeData($issueData);
 
-                $assignee = $this->getOrCreateAssignee($planning->assignees, $assigneeData);
-                $sprintSum = $this->getOrCreateSprintSum($assignee->sprintSums, $week);
-                $sprintSum->sumHours += $hoursRemaining;
+            $assignee = $this->getOrCreateAssignee($planning->assignees, $assigneeData);
+            $sprintSum = $this->getOrCreateSprintSum($assignee->sprintSums, $week);
+            $sprintSum->sumHours += $hoursRemaining;
 
-                $assigneeProject = $this->getOrCreateAssigneeProject($assignee->projects, $projectKey, $projectDisplayName);
-                $projectSprintSum = $this->getOrCreateSprintSum($assigneeProject->sprintSums, $week);
-                $projectSprintSum->sumHours += $hoursRemaining;
+            $assigneeProject = $this->getOrCreateAssigneeProject($assignee->projects, $projectKey, $projectDisplayName);
+            $projectSprintSum = $this->getOrCreateSprintSum($assigneeProject->sprintSums, $week);
+            $projectSprintSum->sumHours += $hoursRemaining;
 
-                $assigneeProject->issues->add(
-                    new Issue(
-                        (string) $issueData->getId(),
-                        $issueData->getName() ?? self::UNNAMED_STR,
-                        $hoursRemaining ?? null,
-                        $issueData->getLinkToIssue(),
-                        $week
-                    )
-                );
-
-                $project = $this->getOrCreateProject($planning->projects, $projectKey, $projectDisplayName);
-                // Add sprint sum if not already added.
-                $projectSum = $this->getOrCreateSprintSum($project->sprintSums, $week);
-                $projectSum->sumHours += $hoursRemaining;
-
-                $projectAssignee = $this->getOrCreateAssigneeProject($project->assignees, $projectKey, $projectDisplayName);
-                $projectAssigneeSprintSum = $this->getOrCreateSprintSum($projectAssignee->sprintSums, $week);
-                $projectAssigneeSprintSum->sumHours += $hoursRemaining;
-
-                $projectAssignee->issues->add(new Issue(
-                    (string) $issueData->getId(),
-                    $issueData->getName() ?? 'unnamed',
-                    isset($issueData->hourRemaining) ? $hoursRemaining : null,
+            $assigneeProject->issues->add(
+                new Issue(
+                    (string)$issueData->getId(),
+                    $issueData->getName() ?? self::UNNAMED_STR,
+                    $hoursRemaining ?? null,
                     $issueData->getLinkToIssue(),
                     $week
-                ));
-            }
-        }
-    }
+                )
+            );
 
+            $project = $this->getOrCreateProject($planning->projects, $projectKey, $projectDisplayName);
+// Add sprint sum if not already added.
+            $projectSum = $this->getOrCreateSprintSum($project->sprintSums, $week);
+            $projectSum->sumHours += $hoursRemaining;
+
+            $projectAssignee = $this->getOrCreateAssigneeProject($project->assignees, $projectKey, $projectDisplayName);
+            $projectAssigneeSprintSum = $this->getOrCreateSprintSum($projectAssignee->sprintSums, $week);
+            $projectAssigneeSprintSum->sumHours += $hoursRemaining;
+
+            $projectAssignee->issues->add(new Issue(
+                (string)$issueData->getId(),
+                $issueData->getName() ?? 'unnamed',
+                isset($issueData->hourRemaining) ? $hoursRemaining : null,
+                $issueData->getLinkToIssue(),
+                $week
+            ));
+    }
+}
     /**
      * Get the assignee key and display name.
      *
