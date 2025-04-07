@@ -155,7 +155,7 @@ class PlanningService
         return $weekIssues;
     }
 
-    private function processIssuesForWeek(PlanningData $planning, int $week, array $issues, ?bool $holidayPlanning = null): void
+    private function processIssuesForWeek(PlanningData $planning, int $week, array $issues, ?bool $holidayPlanning = false): void
     {
         foreach ($issues as $issueData) {
             if (!$holidayPlanning && IssueStatusEnum::DONE === $issueData->getStatus()) {
