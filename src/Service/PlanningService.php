@@ -155,18 +155,18 @@ class PlanningService
         return $weekIssues;
     }
 
-    private function processIssuesForWeek(PlanningData $planning, int $week, array $issues, bool $holidayPlanning = null): void
+    private function processIssuesForWeek(PlanningData $planning, int $week, array $issues, ?bool $holidayPlanning = null): void
     {
         foreach ($issues as $issueData) {
             if (!$holidayPlanning && IssueStatusEnum::DONE === $issueData->getStatus()) {
                 continue;
             }
-            $week = (string)$week;
+            $week = (string) $week;
             $issueProject = $issueData->getProject();
             if (!$issueProject) {
                 continue;
             }
-            $projectKey = (string)$issueProject->getProjectTrackerId();
+            $projectKey = (string) $issueProject->getProjectTrackerId();
             $projectDisplayName = $issueProject->getName() ?? self::UNNAMED_STR;
             $hoursRemaining = $issueData->getHoursRemaining($issueData);
             $assigneeData = $this->getAssigneeData($issueData);
@@ -181,7 +181,7 @@ class PlanningService
 
             $assigneeProject->issues->add(
                 new Issue(
-                    (string)$issueData->getId(),
+                    (string) $issueData->getId(),
                     $issueData->getName() ?? self::UNNAMED_STR,
                     $hoursRemaining ?? null,
                     $issueData->getLinkToIssue(),
@@ -190,7 +190,7 @@ class PlanningService
             );
 
             $project = $this->getOrCreateProject($planning->projects, $projectKey, $projectDisplayName);
-// Add sprint sum if not already added.
+            // Add sprint sum if not already added.
             $projectSum = $this->getOrCreateSprintSum($project->sprintSums, $week);
             $projectSum->sumHours += $hoursRemaining;
 
@@ -199,14 +199,15 @@ class PlanningService
             $projectAssigneeSprintSum->sumHours += $hoursRemaining;
 
             $projectAssignee->issues->add(new Issue(
-                (string)$issueData->getId(),
+                (string) $issueData->getId(),
                 $issueData->getName() ?? 'unnamed',
                 isset($issueData->hourRemaining) ? $hoursRemaining : null,
                 $issueData->getLinkToIssue(),
                 $week
             ));
+        }
     }
-}
+
     /**
      * Get the assignee key and display name.
      *
