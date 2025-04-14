@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-221](https://github.com/itk-dev/economics/pull/221)
+  Remove showKanban stuff from link to leantime to make it faster
+
 ## [2.8.6] - 2025-04-07
 
 * [PR-218](https://github.com/itk-dev/economics/pull/218)
