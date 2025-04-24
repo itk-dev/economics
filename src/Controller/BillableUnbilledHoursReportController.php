@@ -38,6 +38,12 @@ class BillableUnbilledHoursReportController extends AbstractController
                 (new \DateTime())->modify('-1 year')->format('Y'),
                 (new \DateTime())->format('Y'),
             ],
+            'quarters' => [
+                    1 => 'Q1',
+                    2 => 'Q2',
+                    3 => 'Q3',
+                    4 => 'Q4',
+                ] ?? [],
             'csrf_protection' => false,
         ]);
 
@@ -45,9 +51,10 @@ class BillableUnbilledHoursReportController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $year = $form->get('year')->getData();
+            $quarter = $form->get('quarter')->getData();
 
             try {
-                $reportData = $this->billableUnbilledHoursReportService->getBillableUnbilledHoursReport($year);
+                $reportData = $this->billableUnbilledHoursReportService->getBillableUnbilledHoursReport($year, $quarter);
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }
