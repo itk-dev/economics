@@ -45,6 +45,7 @@ class BillableUnbilledHoursReportType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row'],
                 'required' => false,
+                // Preselect the current quarter
                 'data' => ceil(date('n') / 3),
                 'choices' => $quarterChoices,
                 'placeholder' => null,
