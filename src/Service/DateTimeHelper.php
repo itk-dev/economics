@@ -163,7 +163,6 @@ class DateTimeHelper
         return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
     }
 
-
     /**
      * Retrieves the current date with the time set to 23:59:59.
      *

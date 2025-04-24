@@ -24,7 +24,7 @@ class BillableUnbilledHoursReportService
         int $quarter,
     ): BillableUnbilledHoursReportData {
         $billableUnbilledHoursReportData = new BillableUnbilledHoursReportData();
-    
+
         // If quarter is false, get the full year.
         ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $quarter
             ? $this->dateTimeHelper->getFirstAndLastDateOfQuarter($year, $quarter)
