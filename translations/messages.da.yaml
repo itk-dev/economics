@@ -831,6 +831,13 @@ billable_unbilled_hours_report:
     projects: 'Projekter'
     year: 'År'
     title: 'Ufakturerede fakturerbare timer'
+    quarter: 'Kvartal'
+    quarters:
+        all: 'Alle'
+        q1: '1. kvartal'
+        q2: '2. kvartal'
+        q3: '3. kvartal'
+        q4: '4. kvartal'
 subscribe_button:
     subscribe: 'messages'
     unsubscribe: 'messages'
