@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-222](https://github.com/itk-dev/economics/pull/222)
+  Add quarter picker for unbilled billable worklogs report.
 * [PR-221](https://github.com/itk-dev/economics/pull/221)
-  Remove showKanban stuff from link to leantime to make it faster
+  Remove showKanban stuff from link to leantime to make it faster.
 
 ## [2.8.6] - 2025-04-07
 
