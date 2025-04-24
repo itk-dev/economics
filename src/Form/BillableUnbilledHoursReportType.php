@@ -49,7 +49,6 @@ class BillableUnbilledHoursReportType extends AbstractType
                 'data' => ceil(date('n') / 3),
                 'choices' => $quarterChoices,
                 'placeholder' => null,
-
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'billable_unbilled_hours_report.submit',
