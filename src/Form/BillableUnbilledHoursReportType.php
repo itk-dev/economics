@@ -21,6 +21,10 @@ class BillableUnbilledHoursReportType extends AbstractType
         foreach ($options['years'] as $year) {
             $yearChoices[$year] = $year;
         }
+        $quarterChoices = [];
+        foreach ($options['quarters'] as $quarterKey => $quarter) {
+            $quarterChoices[$quarter] = $quarterKey;
+        }
 
         $builder
             ->add('year', ChoiceType::class, [
@@ -32,6 +36,17 @@ class BillableUnbilledHoursReportType extends AbstractType
                 'required' => false,
                 'data' => $yearChoices[date('Y')],
                 'choices' => $yearChoices,
+                'placeholder' => null,
+            ])
+            ->add('quarter', ChoiceType::class, [
+                'label' => 'billable_unbilled_hours_report.quarter',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element '],
+                'help_attr' => ['class' => 'form-help'],
+                'row_attr' => ['class' => 'form-row'],
+                'required' => false,
+                'data' => ceil(date('n') / 3),
+                'choices' => $quarterChoices,
                 'placeholder' => null,
             ])
             ->add('submit', SubmitType::class, [
@@ -47,6 +62,7 @@ class BillableUnbilledHoursReportType extends AbstractType
         $resolver->setDefaults([
             'data_class' => BillableUnbilledHoursReportFormData::class,
             'years' => null,
+            'quarters' => null,
         ]);
     }
 }
