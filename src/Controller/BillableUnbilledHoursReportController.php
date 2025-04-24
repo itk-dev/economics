@@ -39,15 +39,14 @@ class BillableUnbilledHoursReportController extends AbstractController
                 (new \DateTime())->format('Y'),
             ],
             'quarters' => [
-                false => 'billable_unbilled_hours_report.quarters.all',
-                1 => 'billable_unbilled_hours_report.quarters.q1',
-                2 => 'billable_unbilled_hours_report.quarters.q2',
-                3 => 'billable_unbilled_hours_report.quarters.q3',
-                4 => 'billable_unbilled_hours_report.quarters.q4',
+                'billable_unbilled_hours_report.quarters.all' => null,
+                'billable_unbilled_hours_report.quarters.q1' => 1,
+                'billable_unbilled_hours_report.quarters.q2' => 2,
+                'billable_unbilled_hours_report.quarters.q3' => 3,
+                'billable_unbilled_hours_report.quarters.q4' => 4,
             ],
             'csrf_protection' => false,
         ]);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
