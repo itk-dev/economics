@@ -138,11 +138,11 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->planHours = $issue->planHours;
             $issueData->hourRemaining = $issue->hourRemaining;
             $issueData->dueDate = !empty($issue->dateToFinish) && '0000-00-00 00:00:00' !== $issue->dateToFinish ? new \DateTime($issue->dateToFinish, self::getLeantimeTimeZone()) : null;
-            
+
             if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }
-            
+
             $issueData->projectId = $issue->projectId;
             $issueData->resolutionDate = $this->getLeanDateTime($issue->editTo);
             $issueData->worker = $workers[$issue->editorId] ?? $issue->editorId;
@@ -239,9 +239,10 @@ class LeantimeApiService implements DataProviderServiceInterface
         return $versions;
     }
 
-    private function getLeantimeTicketUrl($id){
-        # Error page is fastestest
-        return $this->leantimeUrl.'/errorpage#/tickets/showTicket/' . $id;
+    private function getLeantimeTicketUrl($id)
+    {
+        // Error page is fastestest
+        return $this->leantimeUrl.'/errorpage#/tickets/showTicket/'.$id;
     }
 
     public function getWorklogDataCollection(string $projectId): WorklogDataCollection

@@ -131,6 +131,39 @@ class DateTimeHelper
     }
 
     /**
+     * Returns the first and last date of the specified quarter in a year.
+     *
+     * @param int $year the year
+     * @param int $quarter the quarter (1-4)
+     *
+     * @return array an array containing the first and last date of the specified quarter
+     */
+    public function getFirstAndLastDateOfQuarter(int $year, int $quarter): array
+    {
+        // Get the first and last month of the quarter.
+        $firstMonth = match ($quarter) {
+            1 => 1,
+            2 => 4,
+            3 => 7,
+            4 => 10,
+        };
+        $lastMonth = $firstMonth + 2;
+
+        $dateFrom = (new \DateTime())->setDate($year, $firstMonth, 1);
+        $dateFrom->setTime(0, 0);
+
+        try {
+            $dateTo = (new \DateTime())->setDate($year, $lastMonth, 1)->modify('last day of this month');
+        } catch (\DateMalformedStringException $e) {
+            throw new \RuntimeException('Failed to parse date string', 0, $e);
+        }
+
+        $dateTo->setTime(23, 59, 59);
+
+        return ['dateFrom' => $dateFrom, 'dateTo' => $dateTo];
+    }
+
+    /**
      * Retrieves the current date with the time set to 23:59:59.
      *
      * @return \DateTime the current date with the time set

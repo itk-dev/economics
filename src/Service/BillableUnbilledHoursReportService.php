@@ -21,9 +21,14 @@ class BillableUnbilledHoursReportService
 
     public function getBillableUnbilledHoursReport(
         int $year,
+        ?int $quarter = null,
     ): BillableUnbilledHoursReportData {
         $billableUnbilledHoursReportData = new BillableUnbilledHoursReportData();
-        ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $this->dateTimeHelper->getFirstAndLastDateOfYear($year);
+
+        // If quarter is null, get the full year.
+        ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = null !== $quarter
+            ? $this->dateTimeHelper->getFirstAndLastDateOfQuarter($year, $quarter)
+            : $this->dateTimeHelper->getFirstAndLastDateOfYear($year);
 
         $billableWorklogs = $this->worklogRepository->findBillableWorklogsByWorkerAndDateRange($dateFrom, $dateTo, null, false);
 
