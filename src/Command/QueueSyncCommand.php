@@ -17,7 +17,7 @@ use Symfony\Component\Scheduler\Attribute\AsCronTask;
     name: 'app:queue-sync',
     description: 'Add a synchronization job to the queue.',
 )]
-#[AsCronTask(expression: '5 * * * *', schedule: 'default')]
+#[AsCronTask(expression: '0 0 * * *', schedule: 'default')]
 class QueueSyncCommand extends Command
 {
     public function __construct(
