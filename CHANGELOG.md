@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-223](https://github.com/itk-dev/economics/pull/223)
-  Adjust cron sync interval from every 5th minute to daily.
+  Adjust cron sync interval from hourly to daily at midnight.
 * [PR-222](https://github.com/itk-dev/economics/pull/222)
   Add quarter picker for unbilled billable worklogs report.
 * [PR-221](https://github.com/itk-dev/economics/pull/221)
