@@ -138,13 +138,15 @@ class LeantimeApiService implements DataProviderServiceInterface
             $issueData->planHours = $issue->planHours;
             $issueData->hourRemaining = $issue->hourRemaining;
             $issueData->dueDate = !empty($issue->dateToFinish) && '0000-00-00 00:00:00' !== $issue->dateToFinish ? new \DateTime($issue->dateToFinish, self::getLeantimeTimeZone()) : null;
+
             if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
                 $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
             }
+
             $issueData->projectId = $issue->projectId;
             $issueData->resolutionDate = $this->getLeanDateTime($issue->editTo);
             $issueData->worker = $workers[$issue->editorId] ?? $issue->editorId;
-            $issueData->linkToIssue = $this->leantimeUrl.'/tickets/showKanban?showTicketModal='.$issue->id.'#/tickets/showTicket/'.$issue->id;
+            $issueData->linkToIssue = $this->getLeantimeTicketUrl($issue->id);
             $result[] = $issueData;
         }
 
@@ -235,6 +237,12 @@ class LeantimeApiService implements DataProviderServiceInterface
         }
 
         return $versions;
+    }
+
+    private function getLeantimeTicketUrl($id)
+    {
+        // Error page is fastestest
+        return $this->leantimeUrl.'/errorpage#/tickets/showTicket/'.$id;
     }
 
     public function getWorklogDataCollection(string $projectId): WorklogDataCollection
@@ -420,7 +428,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                             $issueData->id,
                             $issueData->headline,
                             isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                            $this->leantimeUrl.'/tickets/showKanban?showTicketModal='.$issueData->id.'#/tickets/showTicket/'.$issueData->id,
+                            $this->getLeantimeTicketUrl($issueData->id),
                             $week
                         )
                     );
@@ -468,7 +476,7 @@ class LeantimeApiService implements DataProviderServiceInterface
                         $issueData->id,
                         $issueData->headline,
                         isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                        $this->leantimeUrl.'/tickets/showKanban?showTicketModal='.$issueData->id.'#/tickets/showTicket/'.$issueData->id,
+                        $this->getLeantimeTicketUrl($issueData->id),
                         $week
                     ));
                 }

@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.0] - 2025-05-07
+
+* [PR-223](https://github.com/itk-dev/economics/pull/223)
+  Adjust cron sync interval from hourly to daily at midnight.
+* [PR-222](https://github.com/itk-dev/economics/pull/222)
+  Add quarter picker for unbilled billable worklogs report.
+* [PR-221](https://github.com/itk-dev/economics/pull/221)
+  Remove showKanban stuff from link to leantime to make it faster.
+
 ## [2.8.6] - 2025-04-07
 
 * [PR-218](https://github.com/itk-dev/economics/pull/218)
@@ -464,7 +473,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.8.6...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.9.0...HEAD
+[2.9.0]: https://github.com/itk-dev/economics/compare/2.8.6...2.9.0
 [2.8.6]: https://github.com/itk-dev/economics/compare/2.8.5...2.8.6
 [2.8.5]: https://github.com/itk-dev/economics/compare/2.8.4...2.8.5
 [2.8.4]: https://github.com/itk-dev/economics/releases/tag/2.8.4
