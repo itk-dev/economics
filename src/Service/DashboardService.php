@@ -78,22 +78,44 @@ class DashboardService
         $monthSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $end, 'month');
         $yearSums = $this->worklogRepository->getTimeSpentByWorkerInWeekRange($userEmail, $yearStart, $end, 'year');
 
-        $yearStatus = ($yearSums[0]['totalTimeSpent'] - $yearNormToDate) / 3600;
+        // Since yearSums is now indexed by year, we need to get the current year's data
+        $currentYearData = $yearSums[$year] ?? ['totalTimeSpent' => 0];
+        $yearStatus = ($currentYearData['totalTimeSpent'] - $yearNormToDate) / 3600;
 
-        $monthStatuses = [];
-        foreach ($monthSums as $monthSum) {
-            $month = $monthSum['month'];
-            $totalTimeSpent = $monthSum['totalTimeSpent'];
+        $monthStatuses = $this->getMonthsToDate();
+        foreach (array_keys($monthNormsToDate) as $month) {
+            $totalTimeSpent = isset($monthSums[$month]) ? $monthSums[$month]['totalTimeSpent'] : 0;
             $monthStatuses[$month] = ($totalTimeSpent - $monthNormsToDate[$month]) / 3600;
         }
 
-        $weekStatuses = [];
-        foreach ($weekSums as $weekSum) {
-            $week = $weekSum['week'];
-            $totalTimeSpent = $weekSum['totalTimeSpent'];
+        $weekStatuses = $this->getWeeksToDate();
+        foreach (array_keys($weekStatuses) as $week) {
+            $totalTimeSpent = isset($weekSums[$week]) ? $weekSums[$week]['totalTimeSpent'] : 0;
             $weekStatuses[$week] = ($totalTimeSpent - $weekNormsToDate[$week]) / 3600;
         }
 
         return new DashboardData($yearStatus, $year, $weekNorm, $monthStatuses, $weekStatuses);
+    }
+
+    private function getWeeksToDate(): array
+    {
+        $currentWeek = (int) date('W');
+        $weeksToDate = [];
+        for ($week = 1; $week <= $currentWeek; ++$week) {
+            $weeksToDate[$week] = 0;
+        }
+
+        return $weeksToDate;
+    }
+
+    private function getMonthsToDate(): array
+    {
+        $currentMonth = (int) date('m');
+        $weeksToDate = [];
+        for ($week = 1; $week <= $currentMonth; ++$week) {
+            $weeksToDate[$week] = 0;
+        }
+
+        return $weeksToDate;
     }
 }
