@@ -121,7 +121,7 @@ class WorklogRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $to The ending date time
      * @param string $groupBy The function to group by, accepts 'week', 'month' and 'year'
      *
-     * @return array An array of results containing total time spent, week number, and worker
+     * @return array An array of results containing total time spent, week number, and worker, indexed by week/month/year number
      */
     public function getTimeSpentByWorkerInWeekRange(
         string $workerEmail,
@@ -153,7 +153,15 @@ class WorklogRepository extends ServiceEntityRepository
             ->groupBy($groupBy)
             ->orderBy('w.started', 'ASC');
 
-        return $qb->getQuery()->getResult();
+        $results = $qb->getQuery()->getResult();
+
+        // Index results by week/month/year number
+        $indexedResults = [];
+        foreach ($results as $result) {
+            $indexedResults[$result[$groupBy]] = $result;
+        }
+
+        return $indexedResults;
     }
 
     /**
