@@ -23,44 +23,58 @@
         </div>
         <div class="card max-w-full mb-5">
             <h5 class="card-header">{{ 'dashboard.work_hours_months'|trans }}</h5>
-            <table class="table">
+            <table class="table table-fixed text-right">
                 <thead>
-                {% for key, value in dashboardData.monthStatuses %}
-                    <th>{{ date('2025-' ~ key ~ '-01')|date('M') }}</th>
+                {% for m in 1..12 %}
+                    <th class="py-1">{{ date('2025-' ~ m ~ '-01')|date('M') }}</th>
                 {% endfor %}
                 </thead>
                 <tbody>
-                {% for key, value in dashboardData.monthStatuses %}
-                    <td class="{{ value >= 0 ? 'text-green-500' : 'text-red-500' }}">
-                        {{ (value >= 0 ? '+' : '') ~ value|round(2, 'floor') }}
-                    </td>
+                {% for m in 1..12 %}
+                    {% if dashboardData.monthStatuses[m] is defined %}
+                        {% set value = dashboardData.monthStatuses[m] %}
+                        <td class="{{ value >= 0 ? 'text-green-500' : 'text-red-500' }}">
+                            {{ (value >= 0 ? '+' : '') ~ value|round(2, 'floor') }}
+                        </td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
                 {% endfor %}
                 </tbody>
             </table>
         </div>
         <div class="card max-w-full mb-5">
             <h5 class="card-header">{{ 'dashboard.work_hours_weeks'|trans }}</h5>
-            {# Split weeks into 5 tables #}
-            {% for i in 0..4 %}
-            <table class="table text-right mb-3">
-                <thead>
-                {% for key, value in dashboardData.weekStatuses %}
-                    {% if key > i * 13 and key <= (i + 1) * 13 %}
-                        <th style="width: 80px !important;">{{ key }}</th>
-                    {% endif %}
-                {% endfor %}
-                </thead>
+            <table class="table table-fixed text-right mb-3">
                 <tbody>
-                {% for key, value in dashboardData.weekStatuses %}
-                    {% if key > i * 13 and key <= (i + 1) * 13 %}
-                        <td class="{{ value >= 0 ? 'text-green-500' : 'text-red-500' }}">
-                            {{ (value >= 0 ? '+' : '') ~ value|round(2, 'floor') }}
-                        </td>
-                    {% endif %}
+                {% for i in 0..4 %}
+                    {% set start = (i * 13) + 1 %}
+                    {% set end = start + 12 %}
+                    <tr>
+                        {% for w in start..end %}
+                            <td class="py-1">
+                                {% if dashboardData.weekStatuses[w] is defined %}
+                                    <strong>{{ w }}</strong>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for w in start..end %}
+                            {% if dashboardData.weekStatuses[w] is defined %}
+                                {% set value = dashboardData.weekStatuses[w] %}
+                                <td class="pb-5 {{ value >= 0 ? 'text-green-500' : 'text-red-500' }}">
+                                    {{ (value >= 0 ? '+' : '') ~ value|round(2, 'floor') }}
+                                </td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
                 </tbody>
-                {% endfor %}
             </table>
+
         </div>
     {% else %}
         {{ 'dashboard.no_user_data'|trans }}
