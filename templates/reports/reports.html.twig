@@ -28,7 +28,7 @@
                         success_text: 'subscribe_button.unsubscribe'|trans,
                         url: path('app_subscription_check', {id: app.user.id}),
                         params: app.request.query.all|json_encode,
-                        reload: false
+                        reload: false,
                     }) }}
             {% endif %}
         {% endblock %}

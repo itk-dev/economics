@@ -14,7 +14,7 @@
             {{ include('home/card.html.twig', {
                 title: 'dashboard.work_hours'|trans({'%year%': dashboardData.year}),
                 description: 'dashboard.work_hours_value'|trans({'%value%': (dashboardData.workHours >= 0 ? '+' : '') ~ dashboardData.workHours|round(2, 'floor')}),
-                descriptionClasses: dashboardData.workHours >= 0 ? 'text-green-500' : 'text-red-500'
+                descriptionClasses: dashboardData.workHours >= 0 ? 'text-green-500' : 'text-red-500',
             }) }}
             {{ include('home/card.html.twig', {
                 title: 'dashboard.norm'|trans,

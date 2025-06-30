@@ -13,7 +13,7 @@ services:
             - APP_SUPERVISOR_USER=deploy
             # Sync job is rate limited by LeanTime API so it will take some time to complete.
             - PHP_MAX_EXECUTION_TIME=1800
-            - PHP_MEMORY_LIMIT=256M
+            - PHP_MEMORY_LIMIT=512M
             - PHP_TIMEZONE=UTC
         networks:
             - app
