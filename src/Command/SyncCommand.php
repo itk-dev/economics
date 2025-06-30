@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
+use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Service\DataSynchronizationService;
@@ -12,7 +13,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use App\Message\SyncProjectWorklogsMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(
@@ -72,27 +72,27 @@ class SyncCommand extends Command
             }, $dataProvider);
         }
 
-    /*    $io->info('Processing issues');
+        /*    $io->info('Processing issues');
 
-        foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
+            foreach ($dataProviders as $dataProvider) {
+                $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
-            foreach ($projects as $project) {
-                $io->writeln("Processing issues for {$project->getName()}");
+                foreach ($projects as $project) {
+                    $io->writeln("Processing issues for {$project->getName()}");
 
-                $this->dataSynchronizationService->syncIssuesForProject($project->getId(), $dataProvider, function ($i, $length) use ($io) {
-                    if (0 == $i) {
-                        $io->progressStart($length);
-                    } elseif ($i >= $length - 1) {
-                        $io->progressFinish();
-                    } else {
-                        $io->progressAdvance();
-                    }
-                });
+                    $this->dataSynchronizationService->syncIssuesForProject($project->getId(), $dataProvider, function ($i, $length) use ($io) {
+                        if (0 == $i) {
+                            $io->progressStart($length);
+                        } elseif ($i >= $length - 1) {
+                            $io->progressFinish();
+                        } else {
+                            $io->progressAdvance();
+                        }
+                    });
 
-                $io->writeln('');
-            }
-        }*/
+                    $io->writeln('');
+                }
+            }*/
 
         // Replace the worklogs processing section with:
         $io->info('Dispatching worklog sync jobs');
@@ -103,15 +103,19 @@ class SyncCommand extends Command
             foreach ($projects as $project) {
                 $io->writeln("Dispatching worklog sync job for {$project->getName()}");
 
+                $dataProviderId = $dataProvider->getId();
+                if (null === $dataProviderId) {
+                    continue;
+                }
+
                 $message = new SyncProjectWorklogsMessage(
                     $project->getId(),
-                    $dataProvider->getId()
+                    $dataProviderId
                 );
 
-                $this->messageBus->dispatch($message);;
+                $this->messageBus->dispatch($message);
             }
         }
-
 
         return Command::SUCCESS;
     }
