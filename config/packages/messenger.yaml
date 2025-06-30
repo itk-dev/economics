@@ -1,3 +1,4 @@
+
 framework:
     messenger:
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
@@ -20,6 +21,7 @@ framework:
         routing:
             # Route your messages to the transports
             'App\Message\SynchronizeMessage': async
+            'App\Message\SyncProjectWorklogsMessage': async
 
 # when@test:
 #    framework:
