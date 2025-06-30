@@ -12,6 +12,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use App\Message\SyncProjectWorklogsMessage;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(
     name: 'app:sync',
@@ -23,6 +25,7 @@ class SyncCommand extends Command
         private readonly ProjectRepository $projectRepository,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly DataSynchronizationService $dataSynchronizationService,
+        private readonly MessageBusInterface $messageBus,
     ) {
         parent::__construct($this->getName());
     }
@@ -69,7 +72,7 @@ class SyncCommand extends Command
             }, $dataProvider);
         }
 
-        $io->info('Processing issues');
+    /*    $io->info('Processing issues');
 
         foreach ($dataProviders as $dataProvider) {
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
@@ -89,29 +92,26 @@ class SyncCommand extends Command
 
                 $io->writeln('');
             }
-        }
+        }*/
 
-        $io->info('Processing worklogs');
+        // Replace the worklogs processing section with:
+        $io->info('Dispatching worklog sync jobs');
 
         foreach ($dataProviders as $dataProvider) {
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
             foreach ($projects as $project) {
-                $io->writeln("Processing worklogs for {$project->getName()}");
+                $io->writeln("Dispatching worklog sync job for {$project->getName()}");
 
-                $this->dataSynchronizationService->syncWorklogsForProject($project->getId(), $dataProvider, function ($i, $length) use ($io) {
-                    if (0 == $i) {
-                        $io->progressStart($length);
-                    } elseif ($i >= $length - 1) {
-                        $io->progressFinish();
-                    } else {
-                        $io->progressAdvance();
-                    }
-                });
+                $message = new SyncProjectWorklogsMessage(
+                    $project->getId(),
+                    $dataProvider->getId()
+                );
 
-                $io->writeln('');
+                $this->messageBus->dispatch($message);;
             }
         }
+
 
         return Command::SUCCESS;
     }
