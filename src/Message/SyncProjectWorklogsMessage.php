@@ -7,7 +7,6 @@ class SyncProjectWorklogsMessage
     public function __construct(
         private readonly int $projectId,
         private readonly int $dataProviderId,
-        private readonly ?int $synchronizationJobId = null
     ) {
     }
 
@@ -21,8 +20,4 @@ class SyncProjectWorklogsMessage
         return $this->dataProviderId;
     }
 
-    public function getSynchronizationJobId(): ?int
-    {
-        return $this->synchronizationJobId;
-    }
 }
