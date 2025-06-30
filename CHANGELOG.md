@@ -8,10 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-226](https://github.com/itk-dev/economics/pull/226)
+  Upped memory limit for LT-sync.
+  Fixed some composer-related issues.
+
 ## [2.9.1] - 2025-05-19
 
 * [PR-225](https://github.com/itk-dev/economics/pull/225)
-  Ensure current week and month shown on dashboard when no time is logged.  
+  Ensure current week and month shown on dashboard when no time is logged.
   Update composer dependencies, patch only.
 
 ## [2.9.0] - 2025-05-07
