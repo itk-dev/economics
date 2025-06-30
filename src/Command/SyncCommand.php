@@ -72,27 +72,27 @@ class SyncCommand extends Command
             }, $dataProvider);
         }
 
-        /*    $io->info('Processing issues');
+        $io->info('Processing issues');
 
-            foreach ($dataProviders as $dataProvider) {
-                $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
+        foreach ($dataProviders as $dataProvider) {
+            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
-                foreach ($projects as $project) {
-                    $io->writeln("Processing issues for {$project->getName()}");
+            foreach ($projects as $project) {
+                $io->writeln("Processing issues for {$project->getName()}");
 
-                    $this->dataSynchronizationService->syncIssuesForProject($project->getId(), $dataProvider, function ($i, $length) use ($io) {
-                        if (0 == $i) {
-                            $io->progressStart($length);
-                        } elseif ($i >= $length - 1) {
-                            $io->progressFinish();
-                        } else {
-                            $io->progressAdvance();
-                        }
-                    });
+                $this->dataSynchronizationService->syncIssuesForProject($project->getId(), $dataProvider, function ($i, $length) use ($io) {
+                    if (0 == $i) {
+                        $io->progressStart($length);
+                    } elseif ($i >= $length - 1) {
+                        $io->progressFinish();
+                    } else {
+                        $io->progressAdvance();
+                    }
+                });
 
-                    $io->writeln('');
-                }
-            }*/
+                $io->writeln('');
+            }
+        }
 
         // Replace the worklogs processing section with:
         $io->info('Dispatching worklog sync jobs');
