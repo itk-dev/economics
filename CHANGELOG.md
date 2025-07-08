@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-229](https://github.com/itk-dev/economics/pull/229)
+  Explicitly specifying milestones not to be included in issue sync.
+
 ## [2.9.2] - 2025-06-30
 
 * [PR-226](https://github.com/itk-dev/economics/pull/226)
