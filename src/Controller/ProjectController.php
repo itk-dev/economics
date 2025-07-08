@@ -115,6 +115,7 @@ class ProjectController extends AbstractController
 
             if (null != $dataProvider) {
                 $dataSynchronizationService->syncIssuesForProject($projectId, $dataProvider);
+
                 $dataSynchronizationService->syncWorklogsForProject($projectId, $dataProvider);
             }
 

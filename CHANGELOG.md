@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-230](https://github.com/itk-dev/economics/pull/230)
+  Switch to amqp message broker
+
 ## [2.9.2] - 2025-06-30
 
 * [PR-226](https://github.com/itk-dev/economics/pull/226)
