@@ -99,7 +99,7 @@ class LeantimeApiService implements DataProviderServiceInterface
     private function getProjectIssuesPaged($projectId, $startAt, $maxResults = 50): array
     {
         // TODO: Implement pagination.
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId]]);
+        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'excludeType' => 'milestone']]);
     }
 
     /**
