@@ -8,10 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-232](https://github.com/itk-dev/economics/pull/232)
+  Leantime synchronization adjustments.
+
 ## [2.9.3] - 2025-07-08
 
 * [PR-230](https://github.com/itk-dev/economics/pull/230)
-  Switch to amqp message broker
+  Switch to amqp message broker.
 
 ## [2.9.2] - 2025-06-30
 
