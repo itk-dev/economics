@@ -10,6 +10,7 @@ use App\Service\DataSynchronizationService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -20,15 +21,18 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class SyncWorklogsCommand extends Command
 {
     public function __construct(
-        private readonly DataProviderRepository $dataProviderRepository,
+        private readonly DataProviderRepository     $dataProviderRepository,
         private readonly DataSynchronizationService $dataSynchronizationService,
-        private readonly ProjectRepository $projectRepository,
-    ) {
+        private readonly ProjectRepository          $projectRepository,
+    )
+    {
         parent::__construct($this->getName());
     }
 
     protected function configure(): void
     {
+        $this
+            ->addOption('project-id', null, InputOption::VALUE_OPTIONAL, 'Sync only specific project ID');
     }
 
     /**
@@ -38,13 +42,18 @@ class SyncWorklogsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $projectId = $input->getOption('project-id');
 
         $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
         foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
+            $criteria = ['include' => true, 'dataProvider' => $dataProvider];
+            if ($projectId) {
+                $criteria['projectTrackerId'] = $projectId;
+            }
+            $projects = $this->projectRepository->findBy($criteria);
 
-            $numberOfProjects = count($projects);
+           $numberOfProjects = count($projects);
 
             $io->info("Processing worklogs for $numberOfProjects projects that are included (project.include)");
 
