@@ -8,10 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.4] - 2025-07-10
+
+* [PR-232](https://github.com/itk-dev/economics/pull/232)
+  Leantime synchronization adjustments.
+
 ## [2.9.3] - 2025-07-08
 
 * [PR-230](https://github.com/itk-dev/economics/pull/230)
-  Switch to amqp message broker
+  Switch to amqp message broker.
 
 ## [2.9.2] - 2025-06-30
 
@@ -490,7 +495,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.9.3...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.9.4...HEAD
+[2.9.4]: https://github.com/itk-dev/economics/compare/2.9.3...2.9.4
 [2.9.3]: https://github.com/itk-dev/economics/compare/2.9.2...2.9.3
 [2.9.2]: https://github.com/itk-dev/economics/compare/2.9.0...2.9.2
 [2.9.0]: https://github.com/itk-dev/economics/compare/2.8.6...2.9.0

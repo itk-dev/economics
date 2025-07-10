@@ -27,6 +27,7 @@ use App\Repository\VersionRepository;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DataSynchronizationService
@@ -48,6 +49,7 @@ class DataSynchronizationService
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly WorkerRepository $workerRepository,
         private readonly EpicRepository $epicRepository,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -241,6 +243,10 @@ class DataSynchronizationService
                     $issue->setDataProvider($dataProvider);
 
                     $this->entityManager->persist($issue);
+                }
+                if (!$issueDatum->worker) {
+                    $this->logger->error(sprintf('Issue %s worker is null', $issueDatum->projectTrackerId));
+                    continue;
                 }
                 $issue->setName($issueDatum->name);
                 $issue->setAccountId($issueDatum->accountId);
