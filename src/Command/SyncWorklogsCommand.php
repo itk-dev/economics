@@ -21,11 +21,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class SyncWorklogsCommand extends Command
 {
     public function __construct(
-        private readonly DataProviderRepository     $dataProviderRepository,
+        private readonly DataProviderRepository $dataProviderRepository,
         private readonly DataSynchronizationService $dataSynchronizationService,
-        private readonly ProjectRepository          $projectRepository,
-    )
-    {
+        private readonly ProjectRepository $projectRepository,
+    ) {
         parent::__construct($this->getName());
     }
 
@@ -53,7 +52,7 @@ class SyncWorklogsCommand extends Command
             }
             $projects = $this->projectRepository->findBy($criteria);
 
-           $numberOfProjects = count($projects);
+            $numberOfProjects = count($projects);
 
             $io->info("Processing worklogs for $numberOfProjects projects that are included (project.include)");
 
