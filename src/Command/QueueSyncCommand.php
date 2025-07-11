@@ -11,13 +11,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
 #[AsCommand(
     name: 'app:queue-sync',
     description: 'Add a synchronization job to the queue.',
 )]
-#[AsCronTask(expression: '0 0 * * *', schedule: 'default')]
 class QueueSyncCommand extends Command
 {
     public function __construct(
