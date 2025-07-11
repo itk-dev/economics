@@ -390,7 +390,10 @@ class DataSynchronizationService
 
                 $this->entityManager->persist($worklog);
             }
-
+            if (!$worklogDatum->worker) {
+                $this->logger->error(sprintf('Worklog %s worker is null', $worklogDatum->projectTrackerId));
+                continue;
+            }
             $worklog
                 ->setWorklogId($worklogDatum->projectTrackerId)
                 ->setDescription($worklogDatum->comment)
