@@ -1,4 +1,4 @@
-import { Controller } from "@hotwired/stimulus";
+import {Controller} from "@hotwired/stimulus";
 import dayjs from "dayjs";
 
 /** Synchronization status. */
@@ -41,20 +41,12 @@ export default class extends Controller {
     };
 
     refresh = () => {
-        this.buttonTarget.classList.add("hidden");
-        this.okTarget.classList.add("hidden");
-        this.errorTarget.classList.add("hidden");
-        this.runningTarget.classList.add("hidden");
-        this.notStartedTarget.classList.add("hidden");
-        this.doneTarget.classList.add("hidden");
-        this.activeTarget.classList.add("hidden");
-        this.progressTarget.classList.add("hidden");
-
         this.nextRefresh = this.updateIntervalSeconds;
 
         fetch("/admin/synchronization/status")
             .then((response) => {
                 if (response.status === 404) {
+                    this.hideAllElements();
                     this.endedTarget.innerHTML = "Not found";
                     this.buttonTarget.classList.remove("hidden");
                     this.doneTarget.classList.remove("hidden");
@@ -63,6 +55,9 @@ export default class extends Controller {
                 return response.json();
             })
             .then((data) => {
+                // Hide elements after fetch, to stop content from dissapearing before reappearing when running.
+                this.hideAllElements();
+
                 switch (data.status) {
                     case "DONE":
                         this.doneTarget.classList.remove("hidden");
@@ -76,59 +71,26 @@ export default class extends Controller {
                         this.notStartedTarget.classList.remove("hidden");
                         this.notStartedTarget.innerText = `Afventer.. ${data.queueLength} jobs i kø`;
                         break;
+                    case "ERROR":
+                        this.errorTarget.classList.remove("hidden");
+                        break;
                     case "RUNNING":
                         if (data.queueLength === 0) {
                             this.progressTarget.classList.remove("hidden");
                             this.progressTarget.innerText = `Sidste job afvikles.`;
-                            this.activeTarget.classList.remove("hidden");
                             this.runningTarget.classList.remove("hidden");
                         } else {
                             this.progressTarget.classList.remove("hidden");
-                            this.progressTarget.innerText = `${data.queueLength} jobs i kø`;
+                            this.progressTarget.innerText = data.elapsed ? `${data.queueLength} jobs i kø \n Job tid: ${data.elapsed}` : `${data.queueLength} jobs i kø`;
                             this.activeTarget.classList.remove("hidden");
                             this.runningTarget.classList.remove("hidden");
                         }
-
+                        this.nextRefresh =
+                            this.updateIntervalRunningSeconds;
                         break;
                     default:
                         break;
                 }
-
-                /*  if (data) {
-                     this.endedTarget.innerHTML = dayjs(data.ended).format(
-                         "DD/MM-YYYY HH:mm:ss",
-                     );
-
-                     switch (data.status) {
-                         case "DONE":
-                             this.buttonTarget.classList.remove("hidden");
-                             this.doneTarget.classList.remove("hidden");
-                             this.okTarget.classList.remove("hidden");
-                             break;
-                         case "ERROR":
-                             this.buttonTarget.classList.remove("hidden");
-                             this.doneTarget.classList.remove("hidden");
-                             this.errorTarget.classList.remove("hidden");
-                             break;
-                         case "RUNNING":
-                             this.progressTarget.classList.remove("hidden");
-                             this.progressTarget.innerText = `(${
-                                 data.step ?? "-"
-                             }: ${data.progress} %)`;
-                             this.activeTarget.classList.remove("hidden");
-                             this.runningTarget.classList.remove("hidden");
-
-                             this.nextRefresh =
-                                 this.updateIntervalRunningSeconds;
-                             break;
-                         case "NOT_STARTED":
-                             this.activeTarget.classList.remove("hidden");
-                             this.notStartedTarget.classList.remove("hidden");
-                             break;
-                         default:
-                             break;
-                     }
-                 } */
             })
             .finally(() => {
                 this.timeout = setTimeout(
@@ -137,6 +99,17 @@ export default class extends Controller {
                 );
             });
     };
+
+    hideAllElements() {
+        this.buttonTarget.classList.add("hidden");
+        this.okTarget.classList.add("hidden");
+        this.errorTarget.classList.add("hidden");
+        this.runningTarget.classList.add("hidden");
+        this.notStartedTarget.classList.add("hidden");
+        this.doneTarget.classList.add("hidden");
+        this.activeTarget.classList.add("hidden");
+        this.progressTarget.classList.add("hidden");
+    }
 
     connect() {
         if (this.element.dataset.interval) {

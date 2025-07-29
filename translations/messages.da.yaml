@@ -807,7 +807,7 @@ sync_status:
     ok: '✓'
     button: 'Kør!'
     not_started: 'Job sat i kø'
-    running: 'I gang...'
+    running: 'Igang..'
     fetching_status: 'Henter status...'
 
 synchronization_step_enum:

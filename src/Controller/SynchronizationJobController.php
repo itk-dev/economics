@@ -29,22 +29,25 @@ class SynchronizationJobController extends AbstractController
 
         $nextJob = $synchronizationJobRepository->getNextJob();
 
+        $currentJob = $synchronizationJobRepository->getCurrentJob();
+        $elapsedSeconds = null;
+        $elapsed = null;
+        if (null !== $currentJob) {
+            $started = $currentJob->getStarted();
+            $elapsedSeconds = ((new \DateTime('now'))->getTimestamp() - $started->getTimestamp());
+            $elapsed = (new \DateTime('now'))->diff($started)->format('%H:%I:%S');
+        }
         if (null === $nextJob) {
-            return new JsonResponse([], Response::HTTP_NOT_FOUND);
+            return new JsonResponse([], Response::HTTP_NO_CONTENT);
         }
 
         return new JsonResponse([
             'queueLength' => $jobQueueLength,
             'status' => $nextJob->getStatus()?->value,
-            'ended' => $nextJob->getEnded()?->format('c'), ]);
+            'ended' => $nextJob->getEnded()?->format('c'),
+            'elapsed' => $elapsedSeconds > 20 ? $elapsed : null,
+        ]);
 
-        /*        return new JsonResponse([
-                    'started' => $latestJob->getStarted()?->format('c'),
-                    'ended' => $latestJob->getEnded()?->format('c'),
-                    'status' => $latestJob->getStatus()?->value,
-                    'step' => $latestJob->getStep()?->trans($translator) ?? $latestJob->getStep()?->value,
-                    'progress' => $latestJob->getProgress(),
-                ], 200);*/
     }
 
     #[Route('/start', name: 'app_synchronization_sync', methods: ['POST'])]

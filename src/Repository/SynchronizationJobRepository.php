@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -49,6 +50,16 @@ class SynchronizationJobRepository extends ServiceEntityRepository
             ->orderBy('priority', 'ASC')
             ->addOrderBy('j.ended', 'DESC')
             ->addOrderBy('j.createdAt', 'ASC')
+            ->setMaxResults(1);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function getCurrentJob(): ?SynchronizationJob
+    {
+        $qb = $this->createQueryBuilder('j');
+        $qb->where('j.started IS NOT NULL')
+            ->andWhere('j.ended IS NULL')
             ->setMaxResults(1);
 
         return $qb->getQuery()->getOneOrNullResult();
