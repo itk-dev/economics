@@ -15,11 +15,11 @@ export default class extends Controller {
         "button",
     ];
 
-    updateIntervalSeconds = 60;
+    updateIntervalSeconds = 20;
 
     updateIntervalRunningSeconds = 5;
 
-    nextRefresh = 60;
+    nextRefresh = 20;
 
     timeout;
 
@@ -63,41 +63,72 @@ export default class extends Controller {
                 return response.json();
             })
             .then((data) => {
-                if (data) {
-                    this.endedTarget.innerHTML = dayjs(data.ended).format(
-                        "DD/MM-YYYY HH:mm:ss",
-                    );
-
-                    switch (data.status) {
-                        case "DONE":
-                            this.buttonTarget.classList.remove("hidden");
-                            this.doneTarget.classList.remove("hidden");
-                            this.okTarget.classList.remove("hidden");
-                            break;
-                        case "ERROR":
-                            this.buttonTarget.classList.remove("hidden");
-                            this.doneTarget.classList.remove("hidden");
-                            this.errorTarget.classList.remove("hidden");
-                            break;
-                        case "RUNNING":
+                switch (data.status) {
+                    case "DONE":
+                        this.doneTarget.classList.remove("hidden");
+                        this.okTarget.classList.remove("hidden");
+                        this.endedTarget.innerHTML = dayjs(data.ended).format(
+                            "DD/MM-YYYY HH:mm:ss",
+                        );
+                        break;
+                    case "NOT_STARTED":
+                        this.activeTarget.classList.remove("hidden");
+                        this.notStartedTarget.classList.remove("hidden");
+                        this.notStartedTarget.innerText = `Afventer.. ${data.queueLength} jobs i kø`;
+                        break;
+                    case "RUNNING":
+                        if (data.queueLength === 0) {
                             this.progressTarget.classList.remove("hidden");
-                            this.progressTarget.innerText = `(${
-                                data.step ?? "-"
-                            }: ${data.progress} %)`;
+                            this.progressTarget.innerText = `Sidste job afvikles.`;
                             this.activeTarget.classList.remove("hidden");
                             this.runningTarget.classList.remove("hidden");
-
-                            this.nextRefresh =
-                                this.updateIntervalRunningSeconds;
-                            break;
-                        case "NOT_STARTED":
+                        } else {
+                            this.progressTarget.classList.remove("hidden");
+                            this.progressTarget.innerText = `${data.queueLength} jobs i kø`;
                             this.activeTarget.classList.remove("hidden");
-                            this.notStartedTarget.classList.remove("hidden");
-                            break;
-                        default:
-                            break;
-                    }
+                            this.runningTarget.classList.remove("hidden");
+                        }
+
+                        break;
+                    default:
+                        break;
                 }
+
+                /*  if (data) {
+                     this.endedTarget.innerHTML = dayjs(data.ended).format(
+                         "DD/MM-YYYY HH:mm:ss",
+                     );
+
+                     switch (data.status) {
+                         case "DONE":
+                             this.buttonTarget.classList.remove("hidden");
+                             this.doneTarget.classList.remove("hidden");
+                             this.okTarget.classList.remove("hidden");
+                             break;
+                         case "ERROR":
+                             this.buttonTarget.classList.remove("hidden");
+                             this.doneTarget.classList.remove("hidden");
+                             this.errorTarget.classList.remove("hidden");
+                             break;
+                         case "RUNNING":
+                             this.progressTarget.classList.remove("hidden");
+                             this.progressTarget.innerText = `(${
+                                 data.step ?? "-"
+                             }: ${data.progress} %)`;
+                             this.activeTarget.classList.remove("hidden");
+                             this.runningTarget.classList.remove("hidden");
+
+                             this.nextRefresh =
+                                 this.updateIntervalRunningSeconds;
+                             break;
+                         case "NOT_STARTED":
+                             this.activeTarget.classList.remove("hidden");
+                             this.notStartedTarget.classList.remove("hidden");
+                             break;
+                         default:
+                             break;
+                     }
+                 } */
             })
             .finally(() => {
                 this.timeout = setTimeout(
