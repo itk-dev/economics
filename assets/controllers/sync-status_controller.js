@@ -1,4 +1,4 @@
-import {Controller} from "@hotwired/stimulus";
+import { Controller } from "@hotwired/stimulus";
 import dayjs from "dayjs";
 
 /** Synchronization status. */
@@ -81,12 +81,13 @@ export default class extends Controller {
                             this.runningTarget.classList.remove("hidden");
                         } else {
                             this.progressTarget.classList.remove("hidden");
-                            this.progressTarget.innerText = data.elapsed ? `${data.queueLength} jobs i kø \n Job tid: ${data.elapsed}` : `${data.queueLength} jobs i kø`;
+                            this.progressTarget.innerText = data.elapsed
+                                ? `${data.queueLength} jobs i kø \n Job tid: ${data.elapsed}`
+                                : `${data.queueLength} jobs i kø`;
                             this.activeTarget.classList.remove("hidden");
                             this.runningTarget.classList.remove("hidden");
                         }
-                        this.nextRefresh =
-                            this.updateIntervalRunningSeconds;
+                        this.nextRefresh = this.updateIntervalRunningSeconds;
                         break;
                     default:
                         break;

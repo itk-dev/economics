@@ -5,8 +5,6 @@ namespace App\Command;
 use App\Entity\DataProvider;
 use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Message\SyncAccountsMessage;
 use App\Message\SyncProjectIssuesMessage;
 use App\Message\SyncProjectsMessage;
@@ -36,19 +34,19 @@ class SyncCommand extends Command
         parent::__construct($this->getName());
     }
 
-    protected function configure(): void
-    {
-    }
-
-    /**
-     * @throws UnsupportedDataProviderException
-     * @throws EconomicsException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
+        $this->syncDataProviderBasedItems($io, $dataProviders);
+        $this->syncProjectBasedItems($io, $dataProviders);
+
+        return Command::SUCCESS;
+    }
+
+    private function syncDataProviderBasedItems(SymfonyStyle $io, array $dataProviders): void
+    {
         // Sync projects
         $this->dispatchJobs(
             $io,
@@ -59,21 +57,24 @@ class SyncCommand extends Command
             fn ($item) => $item->getName()
         );
 
-        // Sync accounts
+        // Sync accounts for enabled providers
+        $accountEnabledProviders = array_filter($dataProviders, fn ($dp) => $dp->isEnableAccountSync());
         $this->dispatchJobs(
             $io,
-            array_filter($dataProviders, fn ($dp) => $dp->isEnableAccountSync()),
+            $accountEnabledProviders,
             'Accounts',
             fn ($item, $dataProviderId, $jobId) => new SyncAccountsMessage($dataProviderId, $jobId),
             fn ($type, $item, $dataProviderId) => sprintf('%s - dataProviderId: %d', $type, $dataProviderId),
             fn ($item) => $item->getName()
         );
+    }
 
-        // Sync issues and worklogs (project-based)
+    private function syncProjectBasedItems(SymfonyStyle $io, array $dataProviders): void
+    {
         foreach ($dataProviders as $dataProvider) {
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
-            // Sync issues
+            // Sync project issues
             $this->dispatchJobs(
                 $io,
                 $projects,
@@ -83,7 +84,8 @@ class SyncCommand extends Command
                     $dataProviderId,
                     $jobId
                 ),
-                fn ($type, $item, $dataProviderId) => sprintf('%s - projectId: %d dataProviderId: %d',
+                fn ($type, $item, $dataProviderId) => sprintf(
+                    '%s - projectId: %d dataProviderId: %d',
                     $type,
                     $item->getProjectTrackerId(),
                     $dataProviderId
@@ -91,7 +93,7 @@ class SyncCommand extends Command
                 fn ($item) => $item->getName()
             );
 
-            // Sync worklogs
+            // Sync project worklogs
             $this->dispatchJobs(
                 $io,
                 $projects,
@@ -101,7 +103,8 @@ class SyncCommand extends Command
                     $dataProviderId,
                     $jobId
                 ),
-                fn ($type, $item, $dataProviderId) => sprintf('%s - projectId: %d dataProviderId: %d',
+                fn ($type, $item, $dataProviderId) => sprintf(
+                    '%s - projectId: %d dataProviderId: %d',
                     $type,
                     $item->getProjectTrackerId(),
                     $dataProviderId
@@ -109,8 +112,6 @@ class SyncCommand extends Command
                 fn ($item) => $item->getName()
             );
         }
-
-        return Command::SUCCESS;
     }
 
     private function dispatchJobs(
@@ -121,36 +122,78 @@ class SyncCommand extends Command
         callable $messageFormatter,
         callable $getName,
     ): void {
-        $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
+        $this->announceJobDispatch($io, $type);
 
         foreach ($items as $item) {
-            $dataProviderId = $item instanceof DataProvider ? $item->getId() : $item->getDataProvider()->getId();
+            $dataProviderId = $this->getDataProviderId($item);
             if (null === $dataProviderId) {
                 continue;
             }
 
-            $message = $messageFormatter($type, $item, $dataProviderId);
-
-            // Delete completed jobs
-            $this->deleteCompletedJobs($message);
-
-            $job = $this->createSyncJob($message);
-            if (null === $job) {
-                $io->writeln(sprintf('Duplicate %s sync job already exists for %s',
-                    strtolower($type),
-                    $getName($item)
-                ));
-                continue;
-            }
-
-            $io->writeln(sprintf('Dispatching %s sync job for %s',
-                strtolower($type),
-                $getName($item)
-            ));
-
-            $message = $messageFactory($item, $dataProviderId, $job->getId());
-            $this->messageBus->dispatch($message);
+            $jobMessage = $messageFormatter($type, $item, $dataProviderId);
+            $this->processJob($io, $type, $item, $dataProviderId, $jobMessage, $messageFactory, $getName);
         }
+    }
+
+    private function processJob(
+        SymfonyStyle $io,
+        string $type,
+        object $item,
+        int $dataProviderId,
+        string $jobMessage,
+        callable $messageFactory,
+        callable $getName,
+    ): void {
+        $this->deleteCompletedJobs($jobMessage);
+
+        $job = $this->createSyncJob($jobMessage);
+        if (null === $job) {
+            $this->logDuplicateJob($io, $type, $getName($item));
+
+            return;
+        }
+
+        $this->dispatchSingleJob($io, $type, $item, $dataProviderId, $job, $messageFactory, $getName);
+    }
+
+    private function announceJobDispatch(SymfonyStyle $io, string $type): void
+    {
+        $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
+    }
+
+    private function getDataProviderId(object $item): ?int
+    {
+        return $item instanceof DataProvider
+            ? $item->getId()
+            : $item->getDataProvider()->getId();
+    }
+
+    private function logDuplicateJob(SymfonyStyle $io, string $type, string $itemName): void
+    {
+        $io->writeln(sprintf(
+            'Duplicate %s sync job already exists for %s',
+            strtolower($type),
+            $itemName
+        ));
+    }
+
+    private function dispatchSingleJob(
+        SymfonyStyle $io,
+        string $type,
+        object $item,
+        int $dataProviderId,
+        SynchronizationJob $job,
+        callable $messageFactory,
+        callable $getName,
+    ): void {
+        $io->writeln(sprintf(
+            'Dispatching %s sync job for %s',
+            strtolower($type),
+            $getName($item)
+        ));
+
+        $message = $messageFactory($item, $dataProviderId, $job->getId());
+        $this->messageBus->dispatch($message);
     }
 
     private function deleteCompletedJobs(string $message): void

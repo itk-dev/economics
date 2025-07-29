@@ -34,8 +34,10 @@ class SynchronizationJobController extends AbstractController
         $elapsed = null;
         if (null !== $currentJob) {
             $started = $currentJob->getStarted();
-            $elapsedSeconds = ((new \DateTime('now'))->getTimestamp() - $started->getTimestamp());
-            $elapsed = (new \DateTime('now'))->diff($started)->format('%H:%I:%S');
+            if (null !== $started) {
+                $elapsedSeconds = ((new \DateTime('now'))->getTimestamp() - $started->getTimestamp());
+                $elapsed = (new \DateTime('now'))->diff($started)->format('%H:%I:%S');
+            }
         }
         if (null === $nextJob) {
             return new JsonResponse([], Response::HTTP_NO_CONTENT);
@@ -47,7 +49,6 @@ class SynchronizationJobController extends AbstractController
             'ended' => $nextJob->getEnded()?->format('c'),
             'elapsed' => $elapsedSeconds > 20 ? $elapsed : null,
         ]);
-
     }
 
     #[Route('/start', name: 'app_synchronization_sync', methods: ['POST'])]

@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
