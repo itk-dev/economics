@@ -17,27 +17,37 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Route('/admin/synchronization')]
 class SynchronizationJobController extends AbstractController
 {
-    public function __construct(
-    ) {
+    public function __construct()
+    {
     }
 
     #[Route('/status', name: 'app_synchronization_status', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
     public function status(SynchronizationJobRepository $synchronizationJobRepository, TranslatorInterface $translator): Response
     {
-        $latestJob = $synchronizationJobRepository->getLatestJob();
+        $jobQueueLength = $synchronizationJobRepository->countQueuedJobs();
 
-        if (null === $latestJob) {
+
+        $nextJob = $synchronizationJobRepository->getNextJob();
+
+        if (null === $nextJob) {
             return new JsonResponse([], Response::HTTP_NOT_FOUND);
         }
 
         return new JsonResponse([
-            'started' => $latestJob->getStarted()?->format('c'),
-            'ended' => $latestJob->getEnded()?->format('c'),
-            'status' => $latestJob->getStatus()?->value,
-            'step' => $latestJob->getStep()?->trans($translator) ?? $latestJob->getStep()?->value,
-            'progress' => $latestJob->getProgress(),
-        ], 200);
+            'queueLength' => $jobQueueLength,
+            'status' => $nextJob->getStatus()?->value,
+            'ended' => $nextJob->getEnded()?->format('c'),]);
+
+
+
+        /*        return new JsonResponse([
+                    'started' => $latestJob->getStarted()?->format('c'),
+                    'ended' => $latestJob->getEnded()?->format('c'),
+                    'status' => $latestJob->getStatus()?->value,
+                    'step' => $latestJob->getStep()?->trans($translator) ?? $latestJob->getStep()?->value,
+                    'progress' => $latestJob->getProgress(),
+                ], 200);*/
     }
 
     #[Route('/start', name: 'app_synchronization_sync', methods: ['POST'])]
