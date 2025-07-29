@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\SynchronizationJob;
+use App\Enum\SynchronizationStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -34,6 +35,33 @@ class SynchronizationJobRepository extends ServiceEntityRepository
         $qb->setMaxResults(1);
 
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function getNextJob(): ?SynchronizationJob
+    {
+        $qb = $this->createQueryBuilder('j');
+        $qb->addSelect('CASE
+            WHEN j.started IS NOT NULL AND j.ended IS NULL THEN 1
+            WHEN j.started IS NULL AND j.ended IS NULL THEN 2
+            WHEN j.started IS NOT NULL AND j.ended IS NOT NULL THEN 3
+            ELSE 4
+        END AS HIDDEN priority')
+            ->orderBy('priority', 'ASC')
+            ->addOrderBy('j.ended', 'DESC')
+            ->addOrderBy('j.createdAt', 'ASC')
+            ->setMaxResults(1);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    public function countQueuedJobs(): int
+    {
+        $qb = $this->createQueryBuilder('j');
+        $qb->select('COUNT(j)')
+            ->where('j.status = :status')
+            ->setParameter('status', SynchronizationStatusEnum::NOT_STARTED);
+
+        return (int)$qb->getQuery()->getSingleScalarResult();
     }
 
     public function save(SynchronizationJob $entity, bool $flush = false): void

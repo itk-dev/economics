@@ -207,7 +207,9 @@ class DataSynchronizationService
 
         $service = $this->dataProviderService->getService($dataProvider);
 
-        $project = $this->projectRepository->find($projectId);
+        $project = $this->projectRepository->findOneBy([
+            'projectTrackerId' => $projectId,
+        ]);
 
         if (!$project) {
             throw new EconomicsException($this->translator->trans('exception.project_not_found'));
@@ -224,7 +226,10 @@ class DataSynchronizationService
         $startAt = 0;
         do {
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
-            $project = $this->projectRepository->find($projectId);
+            $project = $this->projectRepository->findOneBy([
+                'projectTrackerId' => $projectId,
+            ]);
+
             if (!$project) {
                 throw new EconomicsException($this->translator->trans('exception.project_not_found'));
             }
@@ -244,10 +249,7 @@ class DataSynchronizationService
 
                     $this->entityManager->persist($issue);
                 }
-                if (!$issueDatum->worker) {
-                    $this->logger->error(sprintf('Issue %s worker is null', $issueDatum->projectTrackerId));
-                    continue;
-                }
+
                 $issue->setName($issueDatum->name);
                 $issue->setAccountId($issueDatum->accountId);
                 $issue->setAccountKey($issueDatum->accountKey);
@@ -261,7 +263,7 @@ class DataSynchronizationService
                 $issue->setPlanHours($issueDatum->planHours);
                 $issue->setHoursRemaining($issueDatum->hourRemaining);
                 $issue->setDueDate($issueDatum->dueDate);
-                $issue->setWorker($issueDatum->worker);
+                $issue->setWorker($issueDatum->worker ?? '');
                 $issue->setLinkToIssue($issueDatum->linkToIssue);
 
                 // Leantime (as of now) supports only a single version (milestone) per issue.
@@ -324,7 +326,9 @@ class DataSynchronizationService
 
         $service = $this->dataProviderService->getService($dataProvider);
 
-        $project = $this->projectRepository->find($projectId);
+        $project = $this->projectRepository->findOneBy([
+            'projectTrackerId' => $projectId
+        ]);
 
         if (!$project) {
             throw new EconomicsException($this->translator->trans('exception.project_not_found'));
@@ -360,7 +364,9 @@ class DataSynchronizationService
         $worklogData = $service->getWorklogDataCollection($projectTrackerId);
         $worklogsAdded = 0;
         foreach ($worklogData->worklogData as $worklogDatum) {
-            $project = $this->projectRepository->find($projectId);
+            $project = $this->projectRepository->findOneBy([
+                'projectTrackerId' => $projectId
+            ]);
 
             if (!$project) {
                 throw new EconomicsException($this->translator->trans('exception.project_not_found'));
