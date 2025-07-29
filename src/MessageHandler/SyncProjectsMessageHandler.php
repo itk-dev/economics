@@ -2,9 +2,7 @@
 
 namespace App\MessageHandler;
 
-use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
-use App\Message\SyncAccountsMessage;
 use App\Message\SyncProjectsMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\SynchronizationJobRepository;
@@ -16,12 +14,11 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 readonly class SyncProjectsMessageHandler
 {
     public function __construct(
-        private DataSynchronizationService   $dataSynchronizationService,
-        private DataProviderRepository       $dataProviderRepository,
+        private DataSynchronizationService $dataSynchronizationService,
+        private DataProviderRepository $dataProviderRepository,
         private SynchronizationJobRepository $synchronizationJobRepository,
-        private LoggerInterface              $logger,
-    )
-    {
+        private LoggerInterface $logger,
+    ) {
     }
 
     public function __invoke(SyncProjectsMessage $message): void
@@ -32,6 +29,7 @@ readonly class SyncProjectsMessageHandler
             $this->logger->error('Data provider not found', [
                 'dataProviderId' => $message->getDataProviderId(),
             ]);
+
             return;
         }
 
@@ -55,18 +53,23 @@ readonly class SyncProjectsMessageHandler
                 );
             } catch (\Exception $e) {
                 $job = $this->synchronizationJobRepository->find($message->getJobId());
+                if (!$job) {
+                    throw new \Exception('Job not found');
+                }
                 $job->setStatus(SynchronizationStatusEnum::ERROR);
                 $job->setEnded(new \DateTime());
-                $job->setMessages($job->getMessages() . ' ' . $e->getMessage());
+                $job->setMessages($job->getMessages().' '.$e->getMessage());
                 $this->synchronizationJobRepository->save($job, true);
                 throw $e;
             }
 
             $job = $this->synchronizationJobRepository->find($message->getJobId());
+            if (!$job) {
+                throw new \Exception('Job not found');
+            }
             $job->setStatus(SynchronizationStatusEnum::DONE);
             $job->setEnded(new \DateTime());
             $this->synchronizationJobRepository->save($job, true);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to sync accounts', [
                 'dataProviderId' => $message->getDataProviderId(),

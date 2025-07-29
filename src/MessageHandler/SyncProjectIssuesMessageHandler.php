@@ -2,7 +2,6 @@
 
 namespace App\MessageHandler;
 
-use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
 use App\Message\SyncProjectIssuesMessage;
 use App\Repository\DataProviderRepository;
@@ -15,12 +14,11 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 readonly class SyncProjectIssuesMessageHandler
 {
     public function __construct(
-        private DataSynchronizationService   $dataSynchronizationService,
-        private DataProviderRepository       $dataProviderRepository,
+        private DataSynchronizationService $dataSynchronizationService,
+        private DataProviderRepository $dataProviderRepository,
         private SynchronizationJobRepository $synchronizationJobRepository,
-        private LoggerInterface              $logger,
-    )
-    {
+        private LoggerInterface $logger,
+    ) {
     }
 
     public function __invoke(SyncProjectIssuesMessage $message): void
@@ -56,18 +54,23 @@ readonly class SyncProjectIssuesMessageHandler
                 );
             } catch (\Exception $e) {
                 $job = $this->synchronizationJobRepository->find($message->getJobId());
+                if (!$job) {
+                    throw new \Exception('Job not found');
+                }
                 $job->setStatus(SynchronizationStatusEnum::ERROR);
                 $job->setEnded(new \DateTime());
-                $job->setMessages($job->getMessages() . ' ' . $e->getMessage());
+                $job->setMessages($job->getMessages().' '.$e->getMessage());
                 $this->synchronizationJobRepository->save($job, true);
                 throw $e;
             }
 
             $job = $this->synchronizationJobRepository->find($message->getJobId());
+            if (!$job) {
+                throw new \Exception('Job not found');
+            }
             $job->setStatus(SynchronizationStatusEnum::DONE);
             $job->setEnded(new \DateTime());
             $this->synchronizationJobRepository->save($job, true);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to sync issues for project', [
                 'projectId' => $message->getProjectId(),

@@ -61,7 +61,7 @@ class SynchronizationJobRepository extends ServiceEntityRepository
             ->where('j.status = :status')
             ->setParameter('status', SynchronizationStatusEnum::NOT_STARTED);
 
-        return (int)$qb->getQuery()->getSingleScalarResult();
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     public function save(SynchronizationJob $entity, bool $flush = false): void

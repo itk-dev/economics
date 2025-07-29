@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\DataProvider;
 use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
 use App\Exception\EconomicsException;
@@ -49,19 +50,23 @@ class SyncCommand extends Command
         $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
         // Sync projects
-        $this->dispatchDataProviderJobs(
+        $this->dispatchJobs(
             $io,
             $dataProviders,
             'Projects',
-            fn ($dataProvider, $dataProviderId, $jobId) => new SyncProjectsMessage($dataProviderId, $jobId)
+            fn ($item, $dataProviderId, $jobId) => new SyncProjectsMessage($dataProviderId, $jobId),
+            fn ($type, $item, $dataProviderId) => sprintf('%s - dataProviderId: %d', $type, $dataProviderId),
+            fn ($item) => $item->getName()
         );
 
         // Sync accounts
-        $this->dispatchDataProviderJobs(
+        $this->dispatchJobs(
             $io,
-            array_filter($dataProviders, fn($dp) => $dp->isEnableAccountSync()),
+            array_filter($dataProviders, fn ($dp) => $dp->isEnableAccountSync()),
             'Accounts',
-            fn ($dataProvider, $dataProviderId, $jobId) => new SyncAccountsMessage($dataProviderId, $jobId)
+            fn ($item, $dataProviderId, $jobId) => new SyncAccountsMessage($dataProviderId, $jobId),
+            fn ($type, $item, $dataProviderId) => sprintf('%s - dataProviderId: %d', $type, $dataProviderId),
+            fn ($item) => $item->getName()
         );
 
         // Sync issues and worklogs (project-based)
@@ -69,121 +74,90 @@ class SyncCommand extends Command
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
             // Sync issues
-            $this->dispatchProjectJobs(
+            $this->dispatchJobs(
                 $io,
-                $dataProvider,
                 $projects,
                 'Issues',
-                fn ($project, $dataProviderId, $jobId) => new SyncProjectIssuesMessage(
-                    $project->getProjectTrackerId(),
+                fn ($item, $dataProviderId, $jobId) => new SyncProjectIssuesMessage(
+                    $item->getProjectTrackerId(),
                     $dataProviderId,
                     $jobId
-                )
+                ),
+                fn ($type, $item, $dataProviderId) => sprintf('%s - projectId: %d dataProviderId: %d',
+                    $type,
+                    $item->getProjectTrackerId(),
+                    $dataProviderId
+                ),
+                fn ($item) => $item->getName()
             );
 
             // Sync worklogs
-            $this->dispatchProjectJobs(
+            $this->dispatchJobs(
                 $io,
-                $dataProvider,
                 $projects,
                 'Worklogs',
-                fn ($project, $dataProviderId, $jobId) => new SyncProjectWorklogsMessage(
-                    $project->getProjectTrackerId(),
+                fn ($item, $dataProviderId, $jobId) => new SyncProjectWorklogsMessage(
+                    $item->getProjectTrackerId(),
                     $dataProviderId,
                     $jobId
-                )
+                ),
+                fn ($type, $item, $dataProviderId) => sprintf('%s - projectId: %d dataProviderId: %d',
+                    $type,
+                    $item->getProjectTrackerId(),
+                    $dataProviderId
+                ),
+                fn ($item) => $item->getName()
             );
         }
 
         return Command::SUCCESS;
     }
 
-    private function dispatchDataProviderJobs(
+    private function dispatchJobs(
         SymfonyStyle $io,
-        array $dataProviders,
+        array $items,
         string $type,
-        callable $messageFactory
+        callable $messageFactory,
+        callable $messageFormatter,
+        callable $getName,
     ): void {
         $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
 
-        foreach ($dataProviders as $dataProvider) {
-            $dataProviderId = $dataProvider->getId();
+        foreach ($items as $item) {
+            $dataProviderId = $item instanceof DataProvider ? $item->getId() : $item->getDataProvider()->getId();
             if (null === $dataProviderId) {
                 continue;
             }
 
-            $messages = sprintf('%s - dataProviderId: %d', $type, $dataProviderId);
+            $message = $messageFormatter($type, $item, $dataProviderId);
 
             // Delete completed jobs
-            $this->deleteCompletedJobs($messages);
+            $this->deleteCompletedJobs($message);
 
-            $job = $this->createSyncJob($messages);
+            $job = $this->createSyncJob($message);
             if (null === $job) {
                 $io->writeln(sprintf('Duplicate %s sync job already exists for %s',
                     strtolower($type),
-                    $dataProvider->getName()
+                    $getName($item)
                 ));
                 continue;
             }
 
             $io->writeln(sprintf('Dispatching %s sync job for %s',
                 strtolower($type),
-                $dataProvider->getName()
+                $getName($item)
             ));
 
-            $message = $messageFactory($dataProvider, $dataProviderId, $job->getId());
+            $message = $messageFactory($item, $dataProviderId, $job->getId());
             $this->messageBus->dispatch($message);
         }
     }
 
-    private function dispatchProjectJobs(
-        SymfonyStyle $io,
-                     $dataProvider,
-        array $projects,
-        string $type,
-        callable $messageFactory
-    ): void {
-        $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
-
-        foreach ($projects as $project) {
-            $dataProviderId = $dataProvider->getId();
-            if (null === $dataProviderId) {
-                continue;
-            }
-
-            $messages = sprintf('%s - projectId: %d dataProviderId: %d',
-                $type,
-                $project->getProjectTrackerId(),
-                $dataProviderId
-            );
-
-            // Delete completed jobs
-            $this->deleteCompletedJobs($messages);
-
-            $job = $this->createSyncJob($messages);
-            if (null === $job) {
-                $io->writeln(sprintf('Duplicate %s sync job already exists for %s',
-                    strtolower($type),
-                    $project->getName()
-                ));
-                continue;
-            }
-
-            $io->writeln(sprintf('Dispatching %s sync job for %s',
-                strtolower($type),
-                $project->getName()
-            ));
-
-            $message = $messageFactory($project, $dataProviderId, $job->getId());
-            $this->messageBus->dispatch($message);
-        }
-    }
-
-    private function deleteCompletedJobs(string $messages): void
+    private function deleteCompletedJobs(string $message): void
     {
         $doneJobs = $this->synchronizationJobRepository->findBy([
             'status' => SynchronizationStatusEnum::DONE,
-            'messages' => $messages
+            'messages' => $message,
         ]);
 
         foreach ($doneJobs as $doneJob) {
@@ -191,11 +165,11 @@ class SyncCommand extends Command
         }
     }
 
-    private function createSyncJob(string $messages): ?SynchronizationJob
+    private function createSyncJob(string $message): ?SynchronizationJob
     {
         $existingJob = $this->synchronizationJobRepository->findOneBy([
             'status' => SynchronizationStatusEnum::NOT_STARTED,
-            'messages' => $messages
+            'messages' => $message,
         ]);
 
         if ($existingJob) {
@@ -204,10 +178,9 @@ class SyncCommand extends Command
 
         $job = new SynchronizationJob();
         $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
-        $job->setMessages($messages);
+        $job->setMessages($message);
         $this->synchronizationJobRepository->save($job, true);
 
         return $job;
     }
-
 }

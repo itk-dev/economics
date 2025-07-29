@@ -27,7 +27,6 @@ class SynchronizationJobController extends AbstractController
     {
         $jobQueueLength = $synchronizationJobRepository->countQueuedJobs();
 
-
         $nextJob = $synchronizationJobRepository->getNextJob();
 
         if (null === $nextJob) {
@@ -37,9 +36,7 @@ class SynchronizationJobController extends AbstractController
         return new JsonResponse([
             'queueLength' => $jobQueueLength,
             'status' => $nextJob->getStatus()?->value,
-            'ended' => $nextJob->getEnded()?->format('c'),]);
-
-
+            'ended' => $nextJob->getEnded()?->format('c'), ]);
 
         /*        return new JsonResponse([
                     'started' => $latestJob->getStarted()?->format('c'),

@@ -14,6 +14,7 @@ class SyncAccountsMessage
     {
         return $this->dataProviderId;
     }
+
     public function getJobId(): int
     {
         return $this->jobId;

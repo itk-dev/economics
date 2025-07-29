@@ -2,7 +2,6 @@
 
 namespace App\MessageHandler;
 
-use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
 use App\Exception\EconomicsException;
 use App\Message\SyncProjectWorklogsMessage;
@@ -16,16 +15,18 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 class SyncProjectWorklogsMessageHandler
 {
     public function __construct(
-        private readonly DataSynchronizationService   $dataSynchronizationService,
-        private readonly DataProviderRepository       $dataProviderRepository,
+        private readonly DataSynchronizationService $dataSynchronizationService,
+        private readonly DataProviderRepository $dataProviderRepository,
         private readonly SynchronizationJobRepository $synchronizationJobRepository,
-        private readonly LoggerInterface              $logger,
-    )
-    {
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
     public function __invoke(SyncProjectWorklogsMessage $message): void
     {
+        $ramBefore = memory_get_usage(true) / 1024 / 1024;
+        $this->logger->info('RAM usage before execution: '.round($ramBefore, 2).' MB');
+
         $dataProvider = $this->dataProviderRepository->find($message->getDataProviderId());
 
         if (!$dataProvider) {
@@ -54,17 +55,22 @@ class SyncProjectWorklogsMessageHandler
                 );
             } catch (EconomicsException $e) {
                 $job = $this->synchronizationJobRepository->find($message->getJobId());
+                if (!$job) {
+                    throw new \Exception('Job not found');
+                }
                 $job->setStatus(SynchronizationStatusEnum::ERROR);
                 $job->setEnded(new \DateTime());
-                $job->setMessages($job->getMessages() . ' ' . $e->getMessage());
+                $job->setMessages($job->getMessages().' '.$e->getMessage());
                 $this->synchronizationJobRepository->save($job, true);
                 throw $e;
             }
             $job = $this->synchronizationJobRepository->find($message->getJobId());
+            if (!$job) {
+                throw new \Exception('Job not found');
+            }
             $job->setStatus(SynchronizationStatusEnum::DONE);
             $job->setEnded(new \DateTime());
             $this->synchronizationJobRepository->save($job, true);
-
         } catch (\Exception $e) {
             $this->logger->error('Failed to sync worklogs for project', [
                 'projectId' => $message->getProjectId(),
@@ -73,5 +79,8 @@ class SyncProjectWorklogsMessageHandler
             ]);
             throw $e;
         }
+
+        $ramAfter = memory_get_usage(true) / 1024 / 1024;
+        $this->logger->info('RAM usage after execution: '.round($ramAfter, 2).' MB');
     }
 }
