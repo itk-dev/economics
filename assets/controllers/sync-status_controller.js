@@ -24,6 +24,8 @@ export default class extends Controller {
     timeout;
 
     run = () => {
+        this.buttonTarget.innerHTML = 'Kører...';
+        this.buttonTarget.disabled = true;
         this.doneTarget.classList.add("hidden");
         this.activeTarget.classList.add("hidden");
 
@@ -37,7 +39,7 @@ export default class extends Controller {
             },
             redirect: "follow",
             referrerPolicy: "no-referrer",
-        }).finally(() => setTimeout(this.refresh, 3000));
+        }).finally(() => setTimeout(this.refresh, 1500));
     };
 
     refresh = () => {
@@ -65,6 +67,7 @@ export default class extends Controller {
                         this.endedTarget.innerHTML = dayjs(data.ended).format(
                             "DD/MM-YYYY HH:mm:ss",
                         );
+                        this.buttonTarget.classList.remove("hidden");
                         break;
                     case "NOT_STARTED":
                         this.activeTarget.classList.remove("hidden");
@@ -73,6 +76,7 @@ export default class extends Controller {
                         break;
                     case "ERROR":
                         this.errorTarget.classList.remove("hidden");
+                        this.buttonTarget.classList.remove("hidden");
                         break;
                     case "RUNNING":
                         if (data.queueLength === 0) {
@@ -90,6 +94,7 @@ export default class extends Controller {
                         this.nextRefresh = this.updateIntervalRunningSeconds;
                         break;
                     default:
+                        this.buttonTarget.classList.remove("hidden");
                         break;
                 }
             })
