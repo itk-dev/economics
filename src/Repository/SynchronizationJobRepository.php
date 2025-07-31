@@ -54,6 +54,16 @@ class SynchronizationJobRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
+    public function countFailedJobs(): int
+    {
+        $qb = $this->createQueryBuilder('j');
+        $qb->select('COUNT(j.id)')
+            ->where('j.status = :status')
+            ->setParameter('status', SynchronizationStatusEnum::ERROR);
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
     public function getCurrentJob(): ?SynchronizationJob
     {
         $qb = $this->createQueryBuilder('j');

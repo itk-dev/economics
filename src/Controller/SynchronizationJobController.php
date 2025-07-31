@@ -26,6 +26,7 @@ class SynchronizationJobController extends AbstractController
 
         $nextJob = $synchronizationJobRepository->getNextJob();
 
+        $failedJobs = $synchronizationJobRepository->countFailedJobs();
         $currentJob = $synchronizationJobRepository->getCurrentJob();
         $elapsedSeconds = null;
         $elapsed = null;
@@ -45,6 +46,7 @@ class SynchronizationJobController extends AbstractController
             'status' => $nextJob->getStatus()?->value,
             'ended' => $nextJob->getEnded()?->format('c'),
             'elapsed' => $elapsedSeconds > 20 ? $elapsed : null,
+            'errors' => $failedJobs,
         ]);
     }
 
@@ -56,7 +58,7 @@ class SynchronizationJobController extends AbstractController
             return new JsonResponse(['message' => 'existing job'], Response::HTTP_CONFLICT);
         }
 
-        $job = $syncService->createInitialJob();
+        $job = $syncService->createJob();
         if (null === $job) {
             throw new \Exception('Job id not found');
         }

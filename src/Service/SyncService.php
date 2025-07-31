@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\DataProvider;
 use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
 use App\Message\SyncAccountsMessage;
@@ -25,13 +24,84 @@ class SyncService
     ) {
     }
 
+    /**
+     * Synchronizes projects, accounts, issues, and worklogs for all enabled data providers.
+     *
+     * @param SymfonyStyle|null $io optional SymfonyStyle instance for console output
+     *
+     * @return void
+     */
     public function sync(?SymfonyStyle $io = null): void
     {
         $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
-        $this->syncDataProviderBasedItems($dataProviders, $io);
-        $this->syncProjectBasedItems($dataProviders, $io);
+
+        // Sync projects for all data providers
+        foreach ($dataProviders as $dataProvider) {
+            $job = $this->createJob();
+            $providerId = $dataProvider->getId();
+            $providerName = $dataProvider->getName();
+            $jobId = $job?->getId();
+
+            if (null !== $job && null !== $jobId && null !== $providerName && null !== $providerId) {
+                $io?->info(sprintf('Syncing projects for provider %s', $providerName));
+                $this->messageBus->dispatch(new SyncProjectsMessage($providerId, $jobId));
+            }
+        }
+
+        // Sync accounts for enabled providers
+        foreach ($dataProviders as $dataProvider) {
+            if ($dataProvider->isEnableAccountSync()) {
+                $job = $this->createJob();
+                $providerId = $dataProvider->getId();
+                $providerName = $dataProvider->getName();
+                $jobId = $job?->getId();
+
+                if (null !== $job && null !== $jobId && null !== $providerName && null !== $providerId) {
+                    $io?->info(sprintf('Syncing accounts for provider %s', $providerName));
+                    $this->messageBus->dispatch(new SyncAccountsMessage($providerId, $jobId));
+                }
+            }
+        }
+
+        // Sync issues and worklogs for each project
+        foreach ($dataProviders as $dataProvider) {
+            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
+
+            foreach ($projects as $project) {
+                $projectId = $project->getProjectTrackerId();
+                $dataProviderId = $dataProvider->getId();
+
+                if (null !== $projectId && null !== $dataProviderId) {
+                    // Sync issues
+                    $job = $this->createJob();
+                    $jobId = $job?->getId();
+                    $projectName = $project->getName();
+
+                    if (null !== $job && null !== $jobId && null !== $projectName) {
+                        $io?->info(sprintf('Syncing issues for project %s', $projectName));
+                        $this->messageBus->dispatch(new SyncProjectIssuesMessage($projectId, $dataProviderId, $jobId));
+                    }
+
+                    // Sync worklogs
+                    $job = $this->createJob();
+                    $jobId = $job?->getId();
+                    $projectName = $project->getName();
+
+                    if (null !== $job && null !== $jobId && null !== $projectName) {
+                        $io?->info(sprintf('Syncing worklogs for project %s', $projectName));
+                        $this->messageBus->dispatch(new SyncProjectWorklogsMessage($projectId, $dataProviderId, $jobId));
+                    }
+                }
+            }
+        }
     }
 
+    /**
+     * Determines if a new synchronization process can be started
+     * by checking the status of the latest job in the database.
+     *
+     * @return bool true if a new synchronization can be started, false otherwise
+     */
     public function canStartNewSync(): bool
     {
         $latestJob = $this->synchronizationJobRepository->getLatestJob();
@@ -42,196 +112,15 @@ class SyncService
         ]);
     }
 
-    public function createInitialJob(): ?SynchronizationJob
+    /**
+     * Creates and initializes a new synchronization job.
+     *
+     * @return SynchronizationJob|null the created synchronization job, or null if the creation fails
+     */
+    public function createJob(): ?SynchronizationJob
     {
         $job = new SynchronizationJob();
         $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
-        $this->synchronizationJobRepository->save($job, true);
-
-        return $job;
-    }
-
-    private function syncDataProviderBasedItems(array $dataProviders, ?SymfonyStyle $io): void
-    {
-        // Sync projects
-        $this->dispatchJobs(
-            $dataProviders,
-            'Projects',
-            fn ($item, $dataProviderId, $jobId) => new SyncProjectsMessage($dataProviderId, $jobId),
-            fn ($type, $item, $dataProviderId) => sprintf('%s - dataProviderId: %d', $type, $dataProviderId),
-            fn ($item) => $item->getName(),
-            $io
-        );
-
-        // Sync accounts for enabled providers
-        $accountEnabledProviders = array_filter($dataProviders, fn ($dp) => $dp->isEnableAccountSync());
-        $this->dispatchJobs(
-            $accountEnabledProviders,
-            'Accounts',
-            fn ($item, $dataProviderId, $jobId) => new SyncAccountsMessage($dataProviderId, $jobId),
-            fn ($type, $item, $dataProviderId) => sprintf('%s - dataProviderId: %d', $type, $dataProviderId),
-            fn ($item) => $item->getName(),
-            $io
-        );
-    }
-
-    private function syncProjectBasedItems(array $dataProviders, ?SymfonyStyle $io): void
-    {
-        foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
-
-            $this->dispatchJobs(
-                $projects,
-                'Issues',
-                fn ($item, $dataProviderId, $jobId) => new SyncProjectIssuesMessage(
-                    $item->getProjectTrackerId(),
-                    $dataProviderId,
-                    $jobId
-                ),
-                fn ($type, $item, $dataProviderId) => sprintf(
-                    '%s - projectId: %d dataProviderId: %d',
-                    $type,
-                    $item->getProjectTrackerId(),
-                    $dataProviderId
-                ),
-                fn ($item) => $item->getName(),
-                $io
-            );
-
-            $this->dispatchJobs(
-                $projects,
-                'Worklogs',
-                fn ($item, $dataProviderId, $jobId) => new SyncProjectWorklogsMessage(
-                    $item->getProjectTrackerId(),
-                    $dataProviderId,
-                    $jobId
-                ),
-                fn ($type, $item, $dataProviderId) => sprintf(
-                    '%s - projectId: %d dataProviderId: %d',
-                    $type,
-                    $item->getProjectTrackerId(),
-                    $dataProviderId
-                ),
-                fn ($item) => $item->getName(),
-                $io
-            );
-        }
-    }
-
-    private function dispatchJobs(
-        array $items,
-        string $type,
-        callable $messageFactory,
-        callable $messageFormatter,
-        callable $getName,
-        ?SymfonyStyle $io = null,
-    ): void {
-        $this->announceJobDispatch($type, $io);
-
-        foreach ($items as $item) {
-            $dataProviderId = $this->getDataProviderId($item);
-            if (null === $dataProviderId) {
-                continue;
-            }
-
-            $jobMessage = $messageFormatter($type, $item, $dataProviderId);
-            $this->processJob($type, $item, $dataProviderId, $jobMessage, $messageFactory, $getName, $io);
-        }
-    }
-
-    private function processJob(
-        string $type,
-        object $item,
-        int $dataProviderId,
-        string $jobMessage,
-        callable $messageFactory,
-        callable $getName,
-        ?SymfonyStyle $io = null,
-    ): void {
-        $this->deleteCompletedJobs($jobMessage);
-
-        $job = $this->createSyncJob($jobMessage);
-        if (null === $job) {
-            $this->logDuplicateJob($type, $getName($item), $io);
-
-            return;
-        }
-
-        $this->dispatchSingleJob($type, $item, $dataProviderId, $job, $messageFactory, $getName, $io);
-    }
-
-    private function announceJobDispatch(string $type, ?SymfonyStyle $io): void
-    {
-        if ($io) {
-            $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
-        }
-    }
-
-    private function getDataProviderId(object $item): ?int
-    {
-        return $item instanceof DataProvider
-            ? $item->getId()
-            : $item->getDataProvider()->getId();
-    }
-
-    private function logDuplicateJob(string $type, string $itemName, ?SymfonyStyle $io): void
-    {
-        if ($io) {
-            $io->writeln(sprintf(
-                'Duplicate %s sync job already exists for %s',
-                strtolower($type),
-                $itemName
-            ));
-        }
-    }
-
-    private function dispatchSingleJob(
-        string $type,
-        object $item,
-        int $dataProviderId,
-        SynchronizationJob $job,
-        callable $messageFactory,
-        callable $getName,
-        ?SymfonyStyle $io = null,
-    ): void {
-        if ($io) {
-            $io->writeln(sprintf(
-                'Dispatching %s sync job for %s',
-                strtolower($type),
-                $getName($item)
-            ));
-        }
-
-        $message = $messageFactory($item, $dataProviderId, $job->getId());
-        $this->messageBus->dispatch($message);
-    }
-
-    private function deleteCompletedJobs(string $message): void
-    {
-        $doneJobs = $this->synchronizationJobRepository->findBy([
-            'status' => SynchronizationStatusEnum::DONE,
-            'messages' => $message,
-        ]);
-
-        foreach ($doneJobs as $doneJob) {
-            $this->synchronizationJobRepository->remove($doneJob, true);
-        }
-    }
-
-    private function createSyncJob(string $message): ?SynchronizationJob
-    {
-        $existingJob = $this->synchronizationJobRepository->findOneBy([
-            'status' => SynchronizationStatusEnum::NOT_STARTED,
-            'messages' => $message,
-        ]);
-
-        if ($existingJob) {
-            return null;
-        }
-
-        $job = new SynchronizationJob();
-        $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
-        $job->setMessages($message);
         $this->synchronizationJobRepository->save($job, true);
 
         return $job;
