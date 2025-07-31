@@ -2,14 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\SynchronizationJob;
-use App\Enum\SynchronizationStatusEnum;
-use App\Message\SynchronizeMessage;
 use App\Repository\SynchronizationJobRepository;
+use App\Service\SyncService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -40,7 +37,7 @@ class SynchronizationJobController extends AbstractController
             }
         }
         if (null === $nextJob) {
-            return new JsonResponse([], Response::HTTP_NO_CONTENT);
+            return new JsonResponse([], 200);
         }
 
         return new JsonResponse([
@@ -53,28 +50,19 @@ class SynchronizationJobController extends AbstractController
 
     #[Route('/start', name: 'app_synchronization_sync', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function sync(SynchronizationJobRepository $synchronizationJobRepository, MessageBusInterface $bus): Response
+    public function sync(SyncService $syncService): Response
     {
-        $latestJob = $synchronizationJobRepository->getLatestJob();
-
-        if (null !== $latestJob && in_array($latestJob->getStatus(), [SynchronizationStatusEnum::NOT_STARTED, SynchronizationStatusEnum::RUNNING])) {
+        if (!$syncService->canStartNewSync()) {
             return new JsonResponse(['message' => 'existing job'], Response::HTTP_CONFLICT);
         }
 
-        $job = new SynchronizationJob();
-        $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
-        $synchronizationJobRepository->save($job, true);
-
-        $jobId = $job->getId();
-
-        if (null === $jobId) {
+        $job = $syncService->createInitialJob();
+        if (null === $job) {
             throw new \Exception('Job id not found');
         }
 
-        $message = new SynchronizeMessage($jobId);
+        $syncService->sync();
+        return new JsonResponse([], Response::HTTP_OK);
 
-        $bus->dispatch($message);
-
-        return new JsonResponse([], 200);
     }
 }
