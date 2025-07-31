@@ -62,7 +62,7 @@ class SynchronizationJobController extends AbstractController
         }
 
         $syncService->sync();
-        return new JsonResponse([], Response::HTTP_OK);
 
+        return new JsonResponse([], Response::HTTP_OK);
     }
 }

@@ -24,7 +24,7 @@ export default class extends Controller {
     timeout;
 
     run = () => {
-        this.buttonTarget.innerHTML = 'Kører...';
+        this.buttonTarget.innerHTML = "Kører...";
         this.buttonTarget.disabled = true;
         this.doneTarget.classList.add("hidden");
         this.activeTarget.classList.add("hidden");

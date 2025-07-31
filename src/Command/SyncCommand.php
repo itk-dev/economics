@@ -25,7 +25,7 @@ class SyncCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $this->syncService->sync($io);
+
         return Command::SUCCESS;
     }
-
 }

@@ -35,10 +35,11 @@ class SyncService
     public function canStartNewSync(): bool
     {
         $latestJob = $this->synchronizationJobRepository->getLatestJob();
+
         return null === $latestJob || !in_array($latestJob->getStatus(), [
-                SynchronizationStatusEnum::NOT_STARTED,
-                SynchronizationStatusEnum::RUNNING
-            ]);
+            SynchronizationStatusEnum::NOT_STARTED,
+            SynchronizationStatusEnum::RUNNING,
+        ]);
     }
 
     public function createInitialJob(): ?SynchronizationJob
@@ -63,7 +64,7 @@ class SyncService
         );
 
         // Sync accounts for enabled providers
-        $accountEnabledProviders = array_filter($dataProviders, fn($dp) => $dp->isEnableAccountSync());
+        $accountEnabledProviders = array_filter($dataProviders, fn ($dp) => $dp->isEnableAccountSync());
         $this->dispatchJobs(
             $accountEnabledProviders,
             'Accounts',
@@ -123,7 +124,7 @@ class SyncService
         callable $messageFactory,
         callable $messageFormatter,
         callable $getName,
-        ?SymfonyStyle $io = null
+        ?SymfonyStyle $io = null,
     ): void {
         $this->announceJobDispatch($type, $io);
 
@@ -145,13 +146,14 @@ class SyncService
         string $jobMessage,
         callable $messageFactory,
         callable $getName,
-        ?SymfonyStyle $io = null
+        ?SymfonyStyle $io = null,
     ): void {
         $this->deleteCompletedJobs($jobMessage);
 
         $job = $this->createSyncJob($jobMessage);
         if (null === $job) {
             $this->logDuplicateJob($type, $getName($item), $io);
+
             return;
         }
 
@@ -190,7 +192,7 @@ class SyncService
         SynchronizationJob $job,
         callable $messageFactory,
         callable $getName,
-        ?SymfonyStyle $io = null
+        ?SymfonyStyle $io = null,
     ): void {
         if ($io) {
             $io->writeln(sprintf(
