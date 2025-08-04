@@ -58,11 +58,6 @@ class SynchronizationJobController extends AbstractController
             return new JsonResponse(['message' => 'existing job'], Response::HTTP_CONFLICT);
         }
 
-        $job = $syncService->createJob();
-        if (null === $job) {
-            throw new \Exception('Job id not found');
-        }
-
         $syncService->sync();
 
         return new JsonResponse([], Response::HTTP_OK);

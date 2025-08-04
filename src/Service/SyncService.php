@@ -33,32 +33,38 @@ class SyncService
      */
     public function sync(?SymfonyStyle $io = null): void
     {
+        if (null === $io) {
+            return;
+        }
+
         $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
         // Sync projects for all data providers
         foreach ($dataProviders as $dataProvider) {
-            $job = $this->createJob();
-            $providerId = $dataProvider->getId();
+            $dataProviderId = $dataProvider->getId();
+            if (!$dataProviderId) {
+                continue;
+            }
+            $message = sprintf('Projects - dataProviderId: %d', $dataProviderId);
+            $job = $this->createJob($message, $io);
             $providerName = $dataProvider->getName();
             $jobId = $job?->getId();
 
-            if (null !== $job && null !== $jobId && null !== $providerName && null !== $providerId) {
-                $io?->info(sprintf('Syncing projects for provider %s', $providerName));
-                $this->messageBus->dispatch(new SyncProjectsMessage($providerId, $jobId));
+            if (null !== $job && null !== $jobId && null !== $providerName) {
+                $io->info(sprintf('Syncing projects for provider %s', $providerName));
+                $this->messageBus->dispatch(new SyncProjectsMessage($dataProviderId, $jobId));
             }
-        }
 
-        // Sync accounts for enabled providers
-        foreach ($dataProviders as $dataProvider) {
+            // Sync accounts for enabled providers
             if ($dataProvider->isEnableAccountSync()) {
-                $job = $this->createJob();
-                $providerId = $dataProvider->getId();
+                $message = sprintf('Accounts - dataProviderId: %d', $dataProviderId);
+                $job = $this->createJob($message, $io);
                 $providerName = $dataProvider->getName();
                 $jobId = $job?->getId();
 
-                if (null !== $job && null !== $jobId && null !== $providerName && null !== $providerId) {
-                    $io?->info(sprintf('Syncing accounts for provider %s', $providerName));
-                    $this->messageBus->dispatch(new SyncAccountsMessage($providerId, $jobId));
+                if (null !== $job && null !== $jobId && null !== $providerName) {
+                    $io->info(sprintf('Syncing accounts for provider %s', $providerName));
+                    $this->messageBus->dispatch(new SyncAccountsMessage($dataProviderId, $jobId));
                 }
             }
         }
@@ -73,22 +79,24 @@ class SyncService
 
                 if (null !== $projectId && null !== $dataProviderId) {
                     // Sync issues
-                    $job = $this->createJob();
+                    $message = sprintf('Issues - projectId: %d dataProviderId: %d', $projectId, $dataProviderId);
+                    $job = $this->createJob($message, $io);
                     $jobId = $job?->getId();
                     $projectName = $project->getName();
 
                     if (null !== $job && null !== $jobId && null !== $projectName) {
-                        $io?->info(sprintf('Syncing issues for project %s', $projectName));
+                        $io->info(sprintf('Dispatched job for syncing issues for project: %s', $projectName));
                         $this->messageBus->dispatch(new SyncProjectIssuesMessage($projectId, $dataProviderId, $jobId));
                     }
 
                     // Sync worklogs
-                    $job = $this->createJob();
+                    $message = sprintf('Worklogs - projectId: %d dataProviderId: %d', $projectId, $dataProviderId);
+                    $job = $this->createJob($message, $io);
                     $jobId = $job?->getId();
                     $projectName = $project->getName();
 
                     if (null !== $job && null !== $jobId && null !== $projectName) {
-                        $io?->info(sprintf('Syncing worklogs for project %s', $projectName));
+                        $io->info(sprintf('Dispatched job for syncing worklogs for project: %s', $projectName));
                         $this->messageBus->dispatch(new SyncProjectWorklogsMessage($projectId, $dataProviderId, $jobId));
                     }
                 }
@@ -117,10 +125,33 @@ class SyncService
      *
      * @return SynchronizationJob|null the created synchronization job, or null if the creation fails
      */
-    public function createJob(): ?SynchronizationJob
+    public function createJob(string $message, SymfonyStyle $io): ?SynchronizationJob
     {
+        // Clean up completed jobs with the same message
+        $doneJobs = $this->synchronizationJobRepository->findBy([
+            'status' => SynchronizationStatusEnum::DONE,
+            'messages' => $message,
+        ]);
+
+        foreach ($doneJobs as $doneJob) {
+            $this->synchronizationJobRepository->remove($doneJob, true);
+        }
+
+        // Check for existing not started job
+        $existingJob = $this->synchronizationJobRepository->findOneBy([
+            'status' => SynchronizationStatusEnum::NOT_STARTED,
+            'messages' => $message,
+        ]);
+        if ($existingJob) {
+            $io->info(sprintf('Duplicate job exists for syncing %s', $message));
+
+            return null;
+        }
+
+        // Create new job
         $job = new SynchronizationJob();
         $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
+        $job->setMessages($message);
         $this->synchronizationJobRepository->save($job, true);
 
         return $job;
