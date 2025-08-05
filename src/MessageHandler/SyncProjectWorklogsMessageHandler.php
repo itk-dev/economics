@@ -24,9 +24,6 @@ class SyncProjectWorklogsMessageHandler
 
     public function __invoke(SyncProjectWorklogsMessage $message): void
     {
-        $ramBefore = memory_get_usage(true) / 1024 / 1024;
-        $this->logger->info('RAM usage before execution: '.round($ramBefore, 2).' MB');
-
         $dataProvider = $this->dataProviderRepository->find($message->getDataProviderId());
 
         if (!$dataProvider) {
@@ -79,8 +76,5 @@ class SyncProjectWorklogsMessageHandler
             ]);
             throw $e;
         }
-
-        $ramAfter = memory_get_usage(true) / 1024 / 1024;
-        $this->logger->info('RAM usage after execution: '.round($ramAfter, 2).' MB');
     }
 }
