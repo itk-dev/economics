@@ -105,7 +105,7 @@ class ProjectController extends AbstractController
     public function sync(Project $project, DataSynchronizationService $dataSynchronizationService): Response
     {
         try {
-            $projectId = $project->getId();
+            $projectId = $project->getProjectTrackerId();
 
             if (null == $projectId) {
                 return new Response('Not found', 404);
