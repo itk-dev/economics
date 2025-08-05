@@ -19,7 +19,9 @@ services:
             interval: 1s
             timeout: 3s
             retries: 30
-
+    phpfpm:
+        environment:
+            - PHP_MEMORY_LIMIT=512M
     node:
         image: node:20
         command: npm run watch
