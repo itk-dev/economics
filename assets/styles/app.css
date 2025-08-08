@@ -395,12 +395,16 @@
 
     .collapsible:has(+ .navigation-item-submenu):after {
         content: '▲';
-        @apply pr-4 text-xs;
+        padding-right: 5px;
+        font-size: 0.6rem;
+        transform: scaleX(1.7) scaleY(0.9) !important;
     }
 
     .collapsible:has(+ .navigation-item-submenu.shown):after {
         content: '▼';
-        @apply pr-4 text-xs;
+        padding-right: 5px;
+        font-size: 0.6rem;
+        transform: scaleX(1.7) scaleY(0.9) !important;
     }
     .loading {
         position: relative;
