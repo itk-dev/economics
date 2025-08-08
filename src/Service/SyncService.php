@@ -27,8 +27,6 @@ readonly class SyncService
      * Synchronizes projects, accounts, issues, and worklogs for all enabled data providers.
      *
      * @param SymfonyStyle|null $io optional SymfonyStyle instance for console output
-     *
-     * @return void
      */
     public function sync(?SymfonyStyle $io = null): void
     {

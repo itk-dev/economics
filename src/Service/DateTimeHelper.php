@@ -12,7 +12,7 @@ class DateTimeHelper
      * Retrieves the first and last date of a given week number in a year.
      *
      * @param int $weekNumber the week number for which to retrieve the dates
-     * @param int $year the year for which to retrieve the dates
+     * @param int $year       the year for which to retrieve the dates
      *
      * @return array an array containing the first and last date of the week
      */
@@ -31,7 +31,7 @@ class DateTimeHelper
      * Returns the first and last date of the specified month and year.
      *
      * @param int $monthNumber the month number (1-12)
-     * @param int $year the year
+     * @param int $year        the year
      *
      * @return array an array containing the first and last date of the specified month and year
      */
@@ -48,11 +48,6 @@ class DateTimeHelper
 
     /**
      * Calculate the number of weekdays (Mon-Fri) between two dates in an associative array.
-     *
-     * @param \DateTime $dateFrom
-     * @param \DateTime $dateTo
-     *
-     * @return int
      *
      * @throws \Exception
      */
@@ -133,7 +128,7 @@ class DateTimeHelper
     /**
      * Returns the first and last date of the specified quarter in a year.
      *
-     * @param int $year the year
+     * @param int $year    the year
      * @param int $quarter the quarter (1-4)
      *
      * @return array an array containing the first and last date of the specified quarter

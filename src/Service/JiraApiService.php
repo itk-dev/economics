@@ -276,12 +276,6 @@ class JiraApiService implements DataProviderServiceInterface
     /**
      * Get all worklogs for project.
      *
-     * @param $projectId
-     * @param string $from
-     * @param string $to
-     *
-     * @return mixed
-     *
      * @throws ApiServiceException
      */
     public function getProjectWorklogs($projectId, string $from = '2000-01-01', string $to = '3000-01-01'): mixed

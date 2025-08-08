@@ -15,9 +15,6 @@ class InvoicingRateReportData
     public int $currentPeriodNumeric;
     public ArrayCollection $periodAverages;
     public float $totalAverage;
-    /**
-     * @var bool
-     */
     public bool $includeIssues;
 
     public function __construct(string $viewmode)
@@ -32,10 +29,6 @@ class InvoicingRateReportData
 
     /**
      * Set current week.
-     *
-     * @param int $currentPeriodNumeric
-     *
-     * @return self
      */
     public function setCurrentPeriodNumeric(int $currentPeriodNumeric): self
     {
