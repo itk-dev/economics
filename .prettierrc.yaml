@@ -11,4 +11,4 @@ overrides:
       singleQuote: true
 
 plugins:
-  - prettier-plugin-tailwindcss
+  - prettier-plugin-jsdoc
