@@ -38,4 +38,6 @@ jobs:
           docker network create frontend
 
       - run: |
+          docker network create frontend
+          docker compose run --rm node npm install
           docker compose run --rm prettier '**/*.{yml,yaml}' --check
