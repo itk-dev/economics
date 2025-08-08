@@ -1,7 +1,7 @@
 navigation:
-    reporting: 'Rapportering'
-    setup: 'Opsætning'
-    views: 'Views'
+    reporting: "Rapportering"
+    setup: "Opsætning"
+    views: "Views"
     home: "Forside"
     create_project: "Projektopretter"
     invoices: "Faktura"
@@ -18,26 +18,26 @@ navigation:
     data: "Data"
     admin: "Admin"
     management_report: "Ledelsesrapport"
-    planning_users: 'Brugere'
-    planning_projects: 'Projekter'
+    planning_users: "Brugere"
+    planning_projects: "Projekter"
     forecast_report: "Forecast"
     hour_report: "Timerapport"
     workload_report: "Normtidsrapport"
     worker: "Medarbejdere"
     subscription: "Abonnementer"
     invoicing_rate_report: "Udfaktureringsrapport"
-    billable_unbilled_hours_report: 'Ufakturerede timer'
-    planning_holidays: 'Ferieplan'
-    group: 'Grupper'
+    billable_unbilled_hours_report: "Ufakturerede timer"
+    planning_holidays: "Ferieplan"
+    group: "Grupper"
 
 planning:
-    group: 'Vælg gruppe'
-    select_group: 'Alle medarbejdere'
-    title: 'Planlægning'
+    group: "Vælg gruppe"
+    select_group: "Alle medarbejdere"
+    title: "Planlægning"
     titles:
         projects: "Planlægning: Projekter"
         users: "Planlægning: Brugere"
-        holiday: 'Ferieplan'
+        holiday: "Ferieplan"
     assignees: "Brugere"
     projects: "Projekter"
     hidden-entries: "Skjulte brugere"
@@ -47,11 +47,11 @@ planning:
     view_type: "Vælg visningstype"
     week_view: "Ugevisning"
     sprint_view: "Sprintvisning"
-    description: 'Vælg visning'
-    year: 'Vælg år'
-    sync_all_issues_action: 'Synkronisér opgaver'
-    sync-project-select: 'Vælg projekt at synkronisere'
-    holiday_unit: 'Tabellen viser antal feriedage for en medarbejder for en given uge.'
+    description: "Vælg visning"
+    year: "Vælg år"
+    sync_all_issues_action: "Synkronisér opgaver"
+    sync-project-select: "Vælg projekt at synkronisere"
+    holiday_unit: "Tabellen viser antal feriedage for en medarbejder for en given uge."
 
 client:
     title: "Kunder"
@@ -205,7 +205,7 @@ invoices:
     description_helptext: "Indsættes i tekstfeltet i fakturaen. Autoudfyld er tilgængelig, hvis der er valgt et projekt med en project lead."
     project_helptext: "Vælg projekt."
     client_helptext: "Vælg hvilken kunde fakturaen skal udstedes til."
-    payer_account_helptext: "Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: \"Betales af [KONTO]\"."
+    payer_account_helptext: 'Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: "Betales af [KONTO]".'
     default_material_number_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
     default_receiver_account_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
     client_type_internal: "Intern"
@@ -226,7 +226,7 @@ invoices:
     invoice_entry_type_heading: "Type: %type%"
     add_worklogs: "Vælg worklogs"
     confirm_record_title: "Bogfør faktura"
-    confirm_record_are_you_sure: "Er du sikker på at du vil bogføre fakturaen \"%invoiceName%\"?"
+    confirm_record_are_you_sure: 'Er du sikker på at du vil bogføre fakturaen "%invoiceName%"?'
     confirm_record_cannot_be_undone: "Når fakturaen er bogført kan den ikke ændres mere."
     record_save: "Gennemfør valg"
     record_invoice_no: "Nej. Gå tilbage."
@@ -263,16 +263,16 @@ invoices:
     list_exported_date: "Eksportdato"
     list_recorded_date: "Bogført"
     list_no_cost: UB
-    list_no_cost_true: 'Ja'
-    list_no_cost_false: 'Nej'
+    list_no_cost_true: "Ja"
+    list_no_cost_false: "Nej"
     client_type_is_null: ""
     generate_description: "Autoudfyld"
     client_project_lead: "Project Lead"
-    required_fields_not_set_for_creating_entries: "\"Til konto\" og \"Materialenummer\" skal være valgt før der kan oprettes fakturalinjer."
+    required_fields_not_set_for_creating_entries: '"Til konto" og "Materialenummer" skal være valgt før der kan oprettes fakturalinjer.'
     type: "Kundekonto type"
     query_label: Søg
     query_placeholder: Søg på fakturanavn
-    list_amount: 'Antal'
+    list_amount: "Antal"
 
 material_number_enum:
     internal: "Interne: 103361"
@@ -329,7 +329,7 @@ worklog:
     error_added_to_other_invoice_entry: "Fejl: Indeholder worklog der er bundet til anden fakturaindgang. Prøv at genindlæse siden..."
     only_available_false: "Nej. Vis alle."
     only_available_true: "Ja"
-    only_available: "Kun \"frie\" worklogs"
+    only_available: 'Kun "frie" worklogs'
     only_available_helptext: "Worklogs der ikke er i en anden fakturalinje."
     title_show: "Worklogs"
     sync_worklogs: "Synkroniser worklogs"
@@ -365,8 +365,8 @@ home:
     projects_description: "Liste over projekter. Vælg hvilke skal vises i resten af systemet."
     clients_description: "Liste over kunder, som kan kobles på projekter."
     clients: "Kunder"
-    users: 'Brugere'
-    users_description: 'Administrér brugeres adgang til systemet'
+    users: "Brugere"
+    users_description: "Administrér brugeres adgang til systemet"
     views: "Visning"
     views_description: "Visninger kan bruges til begrænse, hvilke data en bruger kan se."
 
@@ -404,12 +404,12 @@ project_billing:
     field_period_end: "Til"
     field_period_end_helptext: "Vælg hvor perioden skal strække sig til"
     field_description: "Beskrivelse"
-    field_description_help: "Teksten sættes efter \"Projektnavn: Accountnavn (faktureringsperiode).\" i H på faktura."
+    field_description_help: 'Teksten sættes efter "Projektnavn: Accountnavn (faktureringsperiode)." i H på faktura.'
     action_export: "Eksportér"
     action_record: "Bogfør projektfakturering"
     action_show_export: "Vis eksport"
     back_to_invoice: "Tilbage til projektfakturering"
-    confirm_record_are_you_sure: "Er du sikker på at du vil bogføre projektfaktureringen \"%projectBillingName%\"?"
+    confirm_record_are_you_sure: 'Er du sikker på at du vil bogføre projektfaktureringen "%projectBillingName%"?'
     all_worklogs_will_be_marked_as_billed: "Alle worklogs og fakturaer i projektfaktureringen vil blive markeret som faktureret."
     confirm_record_cannot_be_undone: "Når fakturaen er bogført kan den ikke ændres mere."
     confirm_record_title: "Bogfør projektfaktureringen"
@@ -424,13 +424,13 @@ project_billing:
     recorded: "Ja"
     list_recorded: "Bogført"
     issues_not_included: "Opgaver der ikke er inkluderet"
-    issues_not_included_helptext: "En opgave er ikke inkluderet, hvis der ikke er timer registreret på den, eller hvis den ikke har en version sat, som er koblet på en kunde. Sæt version/milestone (skal starte med PB-) på opgaven for at få den med i projektfaktureringen. Synkronisér derefter projektet i \"Projekter\", og tryk derefter \"Gem\" på denne projektfaktureringen for at få opgaverne med."
+    issues_not_included_helptext: 'En opgave er ikke inkluderet, hvis der ikke er timer registreret på den, eller hvis den ikke har en version sat, som er koblet på en kunde. Sæt version/milestone (skal starte med PB-) på opgaven for at få den med i projektfaktureringen. Synkronisér derefter projektet i "Projekter", og tryk derefter "Gem" på denne projektfaktureringen for at få opgaverne med.'
     issue:
         name: "navn"
         status: "status"
         key: "nøgle"
-        versions: 'Version'
-        worklog_time_spent: 'Timer'
+        versions: "Version"
+        worklog_time_spent: "Timer"
     search: "Søg"
     form_recorded: "Bogført"
     form_created_by: "Opretter"
@@ -456,13 +456,13 @@ product:
     new: "Opret nyt produkt"
     form_name: "Navn"
     form_project: "Projekt"
-    edit: 'Redigér produkt'
-    back_to_list: 'Tilbage til listen'
-    action_save: 'Gem produkt'
-    action_delete: 'Slet produkt'
-    actions: 'Handlinger'
-    action_create_new: 'Opret nyt produkt'
-    action_edit: 'Redigér'
+    edit: "Redigér produkt"
+    back_to_list: "Tilbage til listen"
+    action_save: "Gem produkt"
+    action_delete: "Slet produkt"
+    actions: "Handlinger"
+    action_create_new: "Opret nyt produkt"
+    action_edit: "Redigér"
     select_project: "Vælg projekt"
     # @TODO Provide some useful help if needed.
     project_helptext: ""
@@ -490,16 +490,16 @@ project:
     form_include: "Inkluderet"
     information: "Kun inkluderede projekter bliver vist og synkroniseret i resten af system."
     data_provider_id: "Datakilde"
-    edit: 'Redigér projekt'
-    back_to_list: 'Tilbage til listen'
-    action_save: 'Gem projekt'
-    project_lead_name: 'Project Lead navn'
-    project_lead_name_helptext: ''
-    project_lead_mail: 'Project Lead email'
-    project_lead_mail_helptext: ''
-    project_lead: 'Project Lead'
-    actions: 'Handlinger'
-    action_edit: 'Redigér'
+    edit: "Redigér projekt"
+    back_to_list: "Tilbage til listen"
+    action_save: "Gem projekt"
+    project_lead_name: "Project Lead navn"
+    project_lead_name_helptext: ""
+    project_lead_mail: "Project Lead email"
+    project_lead_mail_helptext: ""
+    project_lead: "Project Lead"
+    actions: "Handlinger"
+    action_edit: "Redigér"
     action_view_issues: "Vis opgaver"
     is_billable: "Fakturerbart"
     is_billable_null: ""
@@ -507,46 +507,46 @@ project:
     is_billable_false: "Ikke fakturerbart"
 
 reports:
-    title: 'Rapporter'
-    description: 'Generer rapporter baseret på data fra eConomics.'
-    management-title: 'Ny ledelsesrapport'
-    fetch_management_report: 'Hent ledelsesrapport'
-    from: 'Fra'
-    to: 'Til'
-    management-title-output: 'Ledelsesrapport %from% - %to%'
-    management-description: 'Rapport med nøgletal til ledelsesrapportering'
-    management-year: 'År'
-    management-total: 'Total'
-    management-1st-quarter: '1. Kvartal'
-    management-2nd-quarter: '2. Kvartal'
-    management-3rd-quarter: '3. Kvartal'
-    management-4th-quarter: '4. Kvartal'
-    management-export-xls: 'Eksportér til excel'
-    management-no-recorded-invoices: 'Ingen bogførte faktura.'
+    title: "Rapporter"
+    description: "Generer rapporter baseret på data fra eConomics."
+    management-title: "Ny ledelsesrapport"
+    fetch_management_report: "Hent ledelsesrapport"
+    from: "Fra"
+    to: "Til"
+    management-title-output: "Ledelsesrapport %from% - %to%"
+    management-description: "Rapport med nøgletal til ledelsesrapportering"
+    management-year: "År"
+    management-total: "Total"
+    management-1st-quarter: "1. Kvartal"
+    management-2nd-quarter: "2. Kvartal"
+    management-3rd-quarter: "3. Kvartal"
+    management-4th-quarter: "4. Kvartal"
+    management-export-xls: "Eksportér til excel"
+    management-no-recorded-invoices: "Ingen bogførte faktura."
 
 workload_report:
-    title: 'Normtidsrapport'
-    select_data_provider: 'Vælg datakilde'
-    workload: 'Normtid'
-    logged_hours: 'Loggede timer'
-    select_viewmode: 'Vælg visningstype'
-    select_view_period_type: 'Vælg periode'
-    week: 'Uge'
-    workers: 'Medarbejdere'
-    worker: 'Medarbejder'
-    hidden-entries: 'Skjulte medarbejdere'
-    submit: 'Hent'
+    title: "Normtidsrapport"
+    select_data_provider: "Vælg datakilde"
+    workload: "Normtid"
+    logged_hours: "Loggede timer"
+    select_viewmode: "Vælg visningstype"
+    select_view_period_type: "Vælg periode"
+    week: "Uge"
+    workers: "Medarbejdere"
+    worker: "Medarbejder"
+    hidden-entries: "Skjulte medarbejdere"
+    submit: "Hent"
     average: "Gennemsnit"
     average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
 
 invoicing_rate_report:
-    title: 'Udfaktureringsrapport'
-    year: 'Vælg år'
-    select_view_period_type: 'Vælg periode'
-    include_issues: 'Inkludér to-dos (+10s load)'
-    reading-guide-header: 'Læsevejledning'
-    submit: 'Hent udfaktureringsrapport'
-    reading-guide: '
+    title: "Udfaktureringsrapport"
+    year: "Vælg år"
+    select_view_period_type: "Vælg periode"
+    include_issues: "Inkludér to-dos (+10s load)"
+    reading-guide-header: "Læsevejledning"
+    submit: "Hent udfaktureringsrapport"
+    reading-guide: "
         Aflæsning af todelt celle (medarbejder):
         [ Fakturerbare timer for perioden ---- Procent af totalt loggede timer faktureret for perioden ].
 
@@ -559,57 +559,57 @@ invoicing_rate_report:
         Gennemsnit for medarbejder: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
 
 
-        Ved hover på faktureringsprocent vises [ Fakturerede timer for perioden ---- Loggede timer for perioden ]'
+        Ved hover på faktureringsprocent vises [ Fakturerede timer for perioden ---- Loggede timer for perioden ]"
 
 hour_report:
-    data_provider_helptext: ''
-    title: 'Timerapport'
-    data_provider: 'Datakilde'
-    project: 'Projekt'
-    version: 'Version'
-    estimated_hours: 'Estimeret'
-    logged_hours: 'Registeret'
-    total: 'Total'
-    from_date: 'Fra dato'
-    to_date: 'Til dato'
-    select_data_provider: 'Vælg datakilde'
-    select_project: 'Vælg project'
-    all_versions: 'Alle versioner'
-    tags: 'Tags'
-    sync_project_action: 'Synkronisér projekt'
+    data_provider_helptext: ""
+    title: "Timerapport"
+    data_provider: "Datakilde"
+    project: "Projekt"
+    version: "Version"
+    estimated_hours: "Estimeret"
+    logged_hours: "Registeret"
+    total: "Total"
+    from_date: "Fra dato"
+    to_date: "Til dato"
+    select_data_provider: "Vælg datakilde"
+    select_project: "Vælg project"
+    all_versions: "Alle versioner"
+    tags: "Tags"
+    sync_project_action: "Synkronisér projekt"
 
 view:
-    list_title: 'Views'
-    list_description: 'Oversigt over de views der er mulige i EConomics'
-    list_name: 'Navn'
-    list_date: 'Dato'
-    list_actions: 'Funktioner'
-    list_edit: 'Redigér'
-    list_delete: 'Slet'
-    list_required_view: 'Påkrævet'
-    list_no_records_found: 'Ingen views'
-    action_create_new: 'Opret View'
-    create_new_step_one: 'Opret nyt view'
-    name: 'Navn'
-    description: 'Beskrivelse'
-    data_providers: 'Installationer'
-    projects: 'Projekter'
-    workers: 'Brugere'
-    edit: 'Angiv filtre'
-    edit_description: 'Brug filtrene herunder til at tilpasse hvilke data der skal være tilgængelige'
-    create_step3_description: 'Dit view'
-    back_to_list: 'Tilbage til listen'
-    save: 'Gem view'
-    action_next: 'Næste'
-    action_create: 'Opret view'
-    action_delete: 'Slet view'
-    delete_page: 'Slet'
-    display_name: 'Navn'
-    display_description: 'Beskrivelse'
-    display_installations: 'Installationer'
-    display_projects: 'Projekter'
-    display_workers: 'Brugere'
-    title: 'Views'
+    list_title: "Views"
+    list_description: "Oversigt over de views der er mulige i EConomics"
+    list_name: "Navn"
+    list_date: "Dato"
+    list_actions: "Funktioner"
+    list_edit: "Redigér"
+    list_delete: "Slet"
+    list_required_view: "Påkrævet"
+    list_no_records_found: "Ingen views"
+    action_create_new: "Opret View"
+    create_new_step_one: "Opret nyt view"
+    name: "Navn"
+    description: "Beskrivelse"
+    data_providers: "Installationer"
+    projects: "Projekter"
+    workers: "Brugere"
+    edit: "Angiv filtre"
+    edit_description: "Brug filtrene herunder til at tilpasse hvilke data der skal være tilgængelige"
+    create_step3_description: "Dit view"
+    back_to_list: "Tilbage til listen"
+    save: "Gem view"
+    action_next: "Næste"
+    action_create: "Opret view"
+    action_delete: "Slet view"
+    delete_page: "Slet"
+    display_name: "Navn"
+    display_description: "Beskrivelse"
+    display_installations: "Installationer"
+    display_projects: "Projekter"
+    display_workers: "Brugere"
+    title: "Views"
 
 exception:
     invoices_record_entry_amount_not_set: "Faktura can ikke bogføres, da den indeholder fakturalinjer hvor antal ikke er sat. Se: %invoiceEntryUrl%."
@@ -665,7 +665,7 @@ clients:
     action_edit: "Redigér"
     list_no_records_found: "Ingen kunder"
     data_provider: "Datakilde"
-    version_name: 'Version'
+    version_name: "Version"
 
 delete:
     confirm: "Er du sikker på at du vil slette dette?"
@@ -682,16 +682,16 @@ users:
     roles: "Roller"
     actions: "Handlinger"
     list_no_records_found: "Ingen brugere fundet."
-    views: 'Views'
+    views: "Views"
 
 roles:
-    ROLE_ADMIN: 'Administrator'
-    ROLE_USER: 'Bruger'
-    ROLE_INVOICE: 'Faktura'
-    ROLE_PROJECT_BILLING: 'Projektfakturering'
-    ROLE_PLANNING: 'Planlægning'
-    ROLE_REPORT: 'Rapporter'
-    ROLE_PRODUCT_MANAGER: 'Produktadministrator'
+    ROLE_ADMIN: "Administrator"
+    ROLE_USER: "Bruger"
+    ROLE_INVOICE: "Faktura"
+    ROLE_PROJECT_BILLING: "Projektfakturering"
+    ROLE_PLANNING: "Planlægning"
+    ROLE_REPORT: "Rapporter"
+    ROLE_PRODUCT_MANAGER: "Produktadministrator"
 
 issue:
     title: "Opgaver (%project%)"
@@ -729,145 +729,145 @@ issue:
         list_no_records_found: "Ingen produkter"
 
 name_filter_type:
-    name: 'Navn'
+    name: "Navn"
 
 worker:
-    groups: 'Grupper'
-    in_groups: 'I grupper'
-    title: 'Medarbejdere'
-    index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
-    id: 'Id'
-    name: 'Navn'
-    email: 'Email'
-    workload: 'Normtid (inkl. middagspause)'
+    groups: "Grupper"
+    in_groups: "I grupper"
+    title: "Medarbejdere"
+    index_description: "På denne side kan synkroniserede medarbejderes norm tid defineres"
+    id: "Id"
+    name: "Navn"
+    email: "Email"
+    workload: "Normtid (inkl. middagspause)"
     include_in_reports:
-        title: 'Inkludér i rapporter'
-        yes: 'Ja'
-        no: 'Nej'
-    actions: 'Handlinger'
-    action_edit: 'Rediger'
-    edit: 'Rediger medarbejder'
-    action_save: 'Gem'
+        title: "Inkludér i rapporter"
+        yes: "Ja"
+        no: "Nej"
+    actions: "Handlinger"
+    action_edit: "Rediger"
+    edit: "Rediger medarbejder"
+    action_save: "Gem"
     back_to_list: "Tilbage til listen"
-    no_records_found: 'Ingen arbejdere'
+    no_records_found: "Ingen arbejdere"
 
 workload_report_period_type_enum:
     week:
-        label: 'Uge'
+        label: "Uge"
     month:
-        label: 'Måned'
+        label: "Måned"
     year:
-        label: 'År'
+        label: "År"
 
 workload_report_view_mode_enum:
     workload:
-        label: 'Loggede timer'
+        label: "Loggede timer"
     billable:
-        label: 'Fakturerbare timer'
+        label: "Fakturerbare timer"
     billed:
-        label: 'Fakturerede timer'
+        label: "Fakturerede timer"
 
 invoicing_rate_report_view_mode_enum:
     summary:
-        label: 'Opsummering'
+        label: "Opsummering"
 
 subscription:
-    list_no_records_found: 'Ingen abonnementer'
-    title: 'Dine abonnementer'
-    subject: 'Rapporttype'
-    frequency: 'Frekvens'
-    urlParams: 'Abonnement'
-    urlParams_search: 'Søg i Abonnementer'
-    delete: 'Slet'
+    list_no_records_found: "Ingen abonnementer"
+    title: "Dine abonnementer"
+    subject: "Rapporttype"
+    frequency: "Frekvens"
+    urlParams: "Abonnement"
+    urlParams_search: "Søg i Abonnementer"
+    delete: "Slet"
     confirm_delete: "Er du sikker på at du vil slette dette abonnement?"
-    search: 'Søg'
-    from: 'Fra'
+    search: "Søg"
+    from: "Fra"
     subjects:
-        hour_report: 'Timerapport'
+        hour_report: "Timerapport"
     frequencies:
-        monthly: 'Månedligt'
-        quarterly: 'Kvartalsvist'
+        monthly: "Månedligt"
+        quarterly: "Kvartalsvist"
     button:
-        subscribe: 'Abonnér'
-        edit: 'Rediger'
-        monthly: 'Månedligt'
-        quarterly: 'Kvartalsvist'
+        subscribe: "Abonnér"
+        edit: "Rediger"
+        monthly: "Månedligt"
+        quarterly: "Kvartalsvist"
 
 forecast_report:
-    title: 'Forecast rapport'
-    projects: 'Projekter'
-    invoiced_hours: 'Fakturerede timer'
-    invoiced_recorded_hours: 'Bogførte timer'
-    missing_hours: 'Rest timer'
-    total: 'Total'
+    title: "Forecast rapport"
+    projects: "Projekter"
+    invoiced_hours: "Fakturerede timer"
+    invoiced_recorded_hours: "Bogførte timer"
+    missing_hours: "Rest timer"
+    total: "Total"
 
 sync_status:
-    header: 'Synkronisering'
-    error: '⚠'
-    ok: '✓'
-    button: 'Kør!'
-    not_started: 'Job sat i kø'
-    running: 'I gang...'
-    fetching_status: 'Henter status...'
+    header: "Synkronisering"
+    error: "⚠"
+    ok: "✓"
+    button: "Kør!"
+    not_started: "Job sat i kø"
+    running: "I gang..."
+    fetching_status: "Henter status..."
 
 synchronization_step_enum:
-    projects: 'Projekter'
-    accounts: 'Kontoer'
-    worklogs: 'Tid'
-    issues: 'Opgaver'
+    projects: "Projekter"
+    accounts: "Kontoer"
+    worklogs: "Tid"
+    issues: "Opgaver"
 
 synchronization_status_enum:
-    not_started: 'Afventer'
-    running: 'Kører'
-    done: 'Færdig'
-    error: 'Fejlede'
+    not_started: "Afventer"
+    running: "Kører"
+    done: "Færdig"
+    error: "Fejlede"
 
 billable_unbilled_hours_report:
-    no_description: 'Ingen beskrivelse'
-    no_worker: 'Ingen medarbejder'
-    submit: 'Hent'
-    total: 'Total'
-    unbilled_hours: 'Ufakturerede timer'
-    projects: 'Projekter'
-    year: 'År'
-    title: 'Ufakturerede fakturerbare timer'
-    quarter: 'Kvartal'
+    no_description: "Ingen beskrivelse"
+    no_worker: "Ingen medarbejder"
+    submit: "Hent"
+    total: "Total"
+    unbilled_hours: "Ufakturerede timer"
+    projects: "Projekter"
+    year: "År"
+    title: "Ufakturerede fakturerbare timer"
+    quarter: "Kvartal"
     quarters:
-        all: 'Alle'
-        q1: '1. kvartal'
-        q2: '2. kvartal'
-        q3: '3. kvartal'
-        q4: '4. kvartal'
+        all: "Alle"
+        q1: "1. kvartal"
+        q2: "2. kvartal"
+        q3: "3. kvartal"
+        q4: "4. kvartal"
 subscribe_button:
-    subscribe: 'messages'
-    unsubscribe: 'messages'
+    subscribe: "messages"
+    unsubscribe: "messages"
 
 dashboard:
-    work_hours: 'Timestatus for %year%'
-    work_hours_value: '%value% t.'
-    no_user_data: 'Ingen brugerdata tilgængelig'
-    logged_in_as: 'Bruger:  %name%'
-    title: 'Dashboard'
-    norm: 'Timenorm pr. uge'
-    norm_value: '%value% t.'
-    work_hours_months: 'Timestatus måned'
-    work_hours_weeks: 'Timestatus uge'
+    work_hours: "Timestatus for %year%"
+    work_hours_value: "%value% t."
+    no_user_data: "Ingen brugerdata tilgængelig"
+    logged_in_as: "Bruger:  %name%"
+    title: "Dashboard"
+    norm: "Timenorm pr. uge"
+    norm_value: "%value% t."
+    work_hours_months: "Timestatus måned"
+    work_hours_weeks: "Timestatus uge"
 
 groups:
-    action_delete_group: 'Slet gruppe'
-    action_create_new: 'Opret gruppe'
-    action_create: 'Opret gruppe'
-    action_save: 'Gem gruppe'
-    back_to_list: 'Tilbage til listen'
-    edit: 'Redigér gruppe'
-    name_label: 'Navn'
-    new: 'Opret ny gruppe'
-    name_help: 'Vælg et navn for gruppen'
-    users_in_group: 'Medarbejdere i gruppen'
-    actions: 'Handlinger'
-    id: '#'
-    name: 'Navn'
-    action_edit: 'Redigér'
-    list_no_records_found: 'Ingen grupper fundet'
-    title: 'Grupper'
-    workers: 'Medarbejdere'
+    action_delete_group: "Slet gruppe"
+    action_create_new: "Opret gruppe"
+    action_create: "Opret gruppe"
+    action_save: "Gem gruppe"
+    back_to_list: "Tilbage til listen"
+    edit: "Redigér gruppe"
+    name_label: "Navn"
+    new: "Opret ny gruppe"
+    name_help: "Vælg et navn for gruppen"
+    users_in_group: "Medarbejdere i gruppen"
+    actions: "Handlinger"
+    id: "#"
+    name: "Navn"
+    action_edit: "Redigér"
+    list_no_records_found: "Ingen grupper fundet"
+    title: "Grupper"
+    workers: "Medarbejdere"

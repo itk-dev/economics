@@ -1,37 +1,37 @@
 when:
-  - branch: release/*
-    event: push
+    - branch: release/*
+      event: push
 
 skip_clone: true
 
 labels:
-  zone: DMZ
+    zone: DMZ
 
 steps:
-  - name: Run stg site update
-    image: itkdev/ansible-plugin:1
-    pull: true
-    settings:
-      id:
-        from_secret: id
-      secret:
-        from_secret: secret
-      host:
-        from_secret: stg_host
-      path:
-        from_secret: stg_path
-      user:
-        from_secret: user
-      actions:
-        - git reset --hard
-        - git fetch origin ${CI_COMMIT_BRANCH}
-        - git checkout ${CI_COMMIT_BRANCH}
-        - git pull
-        - itkdev-docker-compose-server up -d --force-recreate
-        - itkdev-docker-compose-server exec phpfpm composer install --no-dev -o --classmap-authoritative
-        - itkdev-docker-compose-server exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
-        - itkdev-docker-compose-server exec phpfpm bin/console messenger:setup-transports
-        - itkdev-docker-compose-server exec phpfpm bin/console cache:clear
-        - docker compose run --rm node npm clean-install
-        - docker compose run --rm node npm run build
-        - docker compose run --rm node rm -rf node_modules
+    - name: Run stg site update
+      image: itkdev/ansible-plugin:1
+      pull: true
+      settings:
+          id:
+              from_secret: id
+          secret:
+              from_secret: secret
+          host:
+              from_secret: stg_host
+          path:
+              from_secret: stg_path
+          user:
+              from_secret: user
+          actions:
+              - git reset --hard
+              - git fetch origin ${CI_COMMIT_BRANCH}
+              - git checkout ${CI_COMMIT_BRANCH}
+              - git pull
+              - itkdev-docker-compose-server up -d --force-recreate
+              - itkdev-docker-compose-server exec phpfpm composer install --no-dev -o --classmap-authoritative
+              - itkdev-docker-compose-server exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
+              - itkdev-docker-compose-server exec phpfpm bin/console messenger:setup-transports
+              - itkdev-docker-compose-server exec phpfpm bin/console cache:clear
+              - docker compose run --rm node npm clean-install
+              - docker compose run --rm node npm run build
+              - docker compose run --rm node rm -rf node_modules

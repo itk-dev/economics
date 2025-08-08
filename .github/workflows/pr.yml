@@ -55,58 +55,58 @@ jobs:
         strategy:
             fail-fast: false
         steps:
-            -   name: Checkout
-                uses: actions/checkout@v2
-                with:
-                    fetch-depth: 2
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                  fetch-depth: 2
 
-            -   name: Git fetch
-                run: git fetch
+            - name: Git fetch
+              run: git fetch
 
-            -   name: Check that changelog has been updated.
-                run: git diff --exit-code origin/${{ github.base_ref }} -- CHANGELOG.md && exit 1 || exit 0
+            - name: Check that changelog has been updated.
+              run: git diff --exit-code origin/${{ github.base_ref }} -- CHANGELOG.md && exit 1 || exit 0
 
     assets-coding-standards:
         name: Assets coding standards
         runs-on: ubuntu-latest
         steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
+            - name: Checkout
+              uses: actions/checkout@v3
 
-            -   name: Coding standards
-                run: |
-                    docker network create frontend
-                    docker compose run --rm node npm install
-                    docker compose run --rm node npm run actions/check-coding-standards-assets
+            - name: Coding standards
+              run: |
+                  docker network create frontend
+                  docker compose run --rm node npm install
+                  docker compose run --rm node npm run actions/check-coding-standards-assets
 
     markdown-coding-standards:
         name: Markdown coding standards
         runs-on: ubuntu-latest
         steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
+            - name: Checkout
+              uses: actions/checkout@v3
 
-            -   name: Coding standards
-                run: |
-                    docker network create frontend
-                    docker compose run --rm node npm install
-                    docker compose run --rm node npm run coding-standards-check/markdownlint
+            - name: Coding standards
+              run: |
+                  docker network create frontend
+                  docker compose run --rm node npm install
+                  docker compose run --rm node npm run coding-standards-check/markdownlint
 
     twig-coding-standards:
         name: Twig coding standards
         runs-on: ubuntu-latest
         steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
+            - name: Checkout
+              uses: actions/checkout@v3
 
-            -   name: Install
-                run: |
-                    docker network create frontend
-                    docker compose up --detach
-                    docker compose exec --user root phpfpm composer install
-            -   name: Coding standards
-                run: |
-                    docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
+            - name: Install
+              run: |
+                  docker network create frontend
+                  docker compose up --detach
+                  docker compose exec --user root phpfpm composer install
+            - name: Coding standards
+              run: |
+                  docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
 
     phpunit:
         name: Test suite
