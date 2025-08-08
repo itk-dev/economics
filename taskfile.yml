@@ -81,14 +81,14 @@ tasks:
             - task compose -- exec phpfpm bin/console app:queue-sync
 
     queue:consume-one:
-      desc: "Run messenger worker (dev)"
-      cmds:
-        - task compose -- exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
+        desc: "Run messenger worker (dev)"
+        cmds:
+            - task compose -- exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
 
     queue:consume-all:
-      desc: "Run messenger worker"
-      cmds:
-        - task compose -- exec phpfpm bin/console messenger:consume async -vv
+        desc: "Run messenger worker"
+        cmds:
+            - task compose -- exec phpfpm bin/console messenger:consume async -vv
 
     # ---------------------------
     # Coding standards
