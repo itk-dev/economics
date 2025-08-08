@@ -85,9 +85,9 @@ tasks:
         cmds:
             - task compose -- exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
 
-  # ---------------------------
-  # Coding standards
-  # ---------------------------
+    # ---------------------------
+    # Coding standards
+    # ---------------------------
 
     coding-standards:apply:
         desc: "Apply coding standards (all)"
