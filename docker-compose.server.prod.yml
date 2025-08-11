@@ -1,8 +1,8 @@
 services:
-    phpfpm:
-        volumes:
-            - ../../shared/.env.local:/app/.env.local
+  phpfpm:
+    volumes:
+      - ../../shared/.env.local:/app/.env.local
 
-    supervisor:
-        volumes:
-            - ../../shared/.env.local:/app/.env.local
+  supervisor:
+    volumes:
+      - ../../shared/.env.local:/app/.env.local

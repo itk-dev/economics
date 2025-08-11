@@ -3,115 +3,115 @@ version: "3"
 dotenv: [".env.local", ".env"]
 
 vars:
-    DOCKER_COMPOSE: '{{.TASK_DOCKER_COMPOSE | default "docker compose"}}'
-    COMPOSER_INSTALL_ARGUMENTS: '{{.TASK_COMPOSER_INSTALL_ARGUMENTS | default ""}}'
+  DOCKER_COMPOSE: '{{.TASK_DOCKER_COMPOSE | default "docker compose"}}'
+  COMPOSER_INSTALL_ARGUMENTS: '{{.TASK_COMPOSER_INSTALL_ARGUMENTS | default ""}}'
 
 tasks:
-    default:
-        cmds:
-            - task --list
-        silent: true
+  default:
+    cmds:
+      - task --list
+    silent: true
 
-    # ---------------------------
-    # Docker compose helpers
-    # ---------------------------
-    compose:
-        cmds:
-            - '{{.DOCKER_COMPOSE}} {{if .DOCKER_COMPOSE_PROFILES}}--profile {{.DOCKER_COMPOSE_PROFILES | splitList "," | join " --profile " }}{{end}} {{.CLI_ARGS}}'
-        vars:
-            DOCKER_COMPOSE_PROFILES: "{{.PROFILES | default .DOCKER_COMPOSE_PROFILES}}"
+  # ---------------------------
+  # Docker compose helpers
+  # ---------------------------
+  compose:
+    cmds:
+      - '{{.DOCKER_COMPOSE}} {{if .DOCKER_COMPOSE_PROFILES}}--profile {{.DOCKER_COMPOSE_PROFILES | splitList "," | join " --profile " }}{{end}} {{.CLI_ARGS}}'
+    vars:
+      DOCKER_COMPOSE_PROFILES: "{{.PROFILES | default .DOCKER_COMPOSE_PROFILES}}"
 
-    compose-up:
-        cmds:
-            - task compose -- up --detach --remove-orphans {{if .COMPOSE_UP_WAIT}}--wait{{end}}
-        silent: true
+  compose-up:
+    cmds:
+      - task compose -- up --detach --remove-orphans {{if .COMPOSE_UP_WAIT}}--wait{{end}}
+    silent: true
 
-    # ---------------------------
-    # Composer helpers
-    # ---------------------------
-    composer:
-        cmds:
-            - task compose -- exec phpfpm composer {{.CLI_ARGS}}
-        silent: true
+  # ---------------------------
+  # Composer helpers
+  # ---------------------------
+  composer:
+    cmds:
+      - task compose -- exec phpfpm composer {{.CLI_ARGS}}
+    silent: true
 
-    composer-install:
-        cmds:
-            - task composer -- install {{.COMPOSER_INSTALL_ARGUMENTS}} {{.CLI_ARGS}}
-        silent: true
+  composer-install:
+    cmds:
+      - task composer -- install {{.COMPOSER_INSTALL_ARGUMENTS}} {{.CLI_ARGS}}
+    silent: true
 
-    # ---------------------------
-    # Project setup
-    # ---------------------------
-    project:init:
-        desc: "Initial local setup"
-        cmds:
-            - task compose -- pull
-            - task compose-up
-            - task compose -- run --rm node npm install
-            - task composer-install
-            - task compose -- exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
-        silent: true
+  # ---------------------------
+  # Project setup
+  # ---------------------------
+  project:init:
+    desc: "Initial local setup"
+    cmds:
+      - task compose -- pull
+      - task compose-up
+      - task compose -- run --rm node npm install
+      - task composer-install
+      - task compose -- exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
+    silent: true
 
-    # ---------------------------
-    # Data synchronization
-    # ---------------------------
-    sync:projects:
-        desc: "Sync projects"
-        cmds:
-            - task compose -- exec phpfpm bin/console app:sync-projects
+  # ---------------------------
+  # Data synchronization
+  # ---------------------------
+  sync:projects:
+    desc: "Sync projects"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:sync-projects
 
-    sync:accounts:
-        desc: "Sync accounts"
-        cmds:
-            - task compose -- exec phpfpm bin/console app:sync-accounts
+  sync:accounts:
+    desc: "Sync accounts"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:sync-accounts
 
-    sync:issues:
-        desc: "Sync issues"
-        cmds:
-            - task compose -- exec phpfpm bin/console app:sync-issues
+  sync:issues:
+    desc: "Sync issues"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:sync-issues
 
-    sync:worklogs:
-        desc: "Sync worklogs"
-        cmds:
-            - task compose -- exec phpfpm bin/console app:sync-worklogs
+  sync:worklogs:
+    desc: "Sync worklogs"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:sync-worklogs
 
-    queue:enqueue:
-        desc: "Queue sync jobs"
-        cmds:
-            - task compose -- exec phpfpm bin/console app:queue-sync
+  queue:enqueue:
+    desc: "Queue sync jobs"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:queue-sync
 
-    queue:consume-one:
-        desc: "Run messenger worker (dev)"
-        cmds:
-            - task compose -- exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
+  queue:consume-one:
+    desc: "Run messenger worker (dev)"
+    cmds:
+      - task compose -- exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
 
-    queue:consume-all:
-        desc: "Run messenger worker"
-        cmds:
-            - task compose -- exec phpfpm bin/console messenger:consume async -vv
+  queue:consume-all:
+    desc: "Run messenger worker"
+    cmds:
+      - task compose -- exec phpfpm bin/console messenger:consume async -vv
 
-    # ---------------------------
-    # Coding standards
-    # ---------------------------
+  # ---------------------------
+  # Coding standards
+  # ---------------------------
 
-    coding-standards:apply:
-        desc: "Apply coding standards (all)"
-        ignore_error: true
-        cmds:
-            - task compose -- exec phpfpm composer coding-standards-apply/php-cs-fixer
-            - task compose -- exec phpfpm composer coding-standards-apply/twig-cs-fixer
-            - task compose -- run --rm prettier 'assets/**/*.js' --write
-            - task compose -- run --rm prettier 'assets/**/*.{css,scss}' --write
-            - task compose -- run --rm prettier '**/*.{yml,yaml}' --write
-            - task compose -- run --rm markdownlint --ignore LICENSE.md '*.md' docs/ --fix
+  coding-standards:apply:
+    desc: "Apply coding standards (all)"
+    ignore_error: true
+    cmds:
+      - task compose -- exec phpfpm composer coding-standards-apply/php-cs-fixer
+      - task compose -- exec phpfpm composer coding-standards-apply/twig-cs-fixer
+      - task compose -- run --rm prettier 'assets/**/*.js' --write
+      - task compose -- run --rm prettier 'assets/**/*.{css,scss}' --write
+      - task compose -- run --rm prettier '**/*.{yml,yaml}' --write
+      - task compose -- run --rm markdownlint --ignore LICENSE.md '*.md' docs/ --fix
 
-    coding-standards:check:
-        desc: "Check coding standards (all)"
-        ignore_error: true
-        cmds:
-            - task composer -- coding-standards-check/php-cs-fixer
-            - task composer -- coding-standards-check/twig-cs-fixer
-            - task compose -- run --rm node npm run coding-standards-check/eslint
-            - task compose -- run --rm prettier 'assets/**/*.{css,scss}' --check
-            - task compose -- run --rm prettier '**/*.{yml,yaml}' --check
-            - task compose -- run --rm node npm run coding-standards-check/markdownlint
+  coding-standards:check:
+    desc: "Check coding standards (all)"
+    ignore_error: true
+    cmds:
+      - task composer -- coding-standards-check/php-cs-fixer
+      - task composer -- coding-standards-check/twig-cs-fixer
+      - task compose -- run --rm node npm run coding-standards-check/eslint
+      - task compose -- run --rm prettier 'assets/**/*.{css,scss}' --check
+      - task compose -- run --rm prettier '**/*.{yml,yaml}' --check
+      - task compose -- run --rm node npm run coding-standards-check/markdownlint
