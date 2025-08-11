@@ -8,9 +8,9 @@ services:
     ports:
       - "15672"
     environment:
-      - "RABBITMQ_DEFAULT_USER=user"
-      - "RABBITMQ_DEFAULT_PASS=password"
-      - "RABBITMQ_ERLANG_COOKIE=d53f319cd7376f8f840aaf9889f315ab"
+      - "RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}"
+      - "RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}"
+      - "RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}"
 
   phpfpm:
     environment:
