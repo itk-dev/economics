@@ -498,7 +498,9 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.9.2...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.9.4...HEAD
+[2.9.4]: https://github.com/itk-dev/economics/compare/2.9.3...2.9.4
+[2.9.3]: https://github.com/itk-dev/economics/compare/2.9.2...2.9.3
 [2.9.2]: https://github.com/itk-dev/economics/compare/2.9.0...2.9.2
 [2.9.0]: https://github.com/itk-dev/economics/compare/2.8.6...2.9.0
 [2.8.6]: https://github.com/itk-dev/economics/compare/2.8.5...2.8.6
