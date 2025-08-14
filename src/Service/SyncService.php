@@ -13,15 +13,17 @@ use App\Repository\ProjectRepository;
 use App\Repository\SynchronizationJobRepository;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\MessageBusInterface;
+use TwigCsFixer\Standard\Symfony;
 
 class SyncService
 {
     public function __construct(
-        private readonly ProjectRepository $projectRepository,
-        private readonly DataProviderRepository $dataProviderRepository,
+        private readonly ProjectRepository            $projectRepository,
+        private readonly DataProviderRepository       $dataProviderRepository,
         private readonly SynchronizationJobRepository $synchronizationJobRepository,
-        private readonly MessageBusInterface $messageBus,
-    ) {
+        private readonly MessageBusInterface          $messageBus,
+    )
+    {
     }
 
     /**
@@ -111,9 +113,9 @@ class SyncService
         $latestJob = $this->synchronizationJobRepository->getLatestJob();
 
         return null === $latestJob || !in_array($latestJob->getStatus(), [
-            SynchronizationStatusEnum::NOT_STARTED,
-            SynchronizationStatusEnum::RUNNING,
-        ]);
+                SynchronizationStatusEnum::NOT_STARTED,
+                SynchronizationStatusEnum::RUNNING,
+            ]);
     }
 
     /**
@@ -123,33 +125,40 @@ class SyncService
      */
     public function createJob(string $message, ?SymfonyStyle $io): ?SynchronizationJob
     {
-        // Clean up completed jobs with the same message
-        $doneJobs = $this->synchronizationJobRepository->findBy([
-            'status' => SynchronizationStatusEnum::DONE,
-            'messages' => $message,
-        ]);
+        // Cleanup completed jobs with the same message
+        $this->deleteDoneJobsByMessage($message);
 
-        foreach ($doneJobs as $doneJob) {
-            $this->synchronizationJobRepository->remove($doneJob, true);
-        }
-
-        // Check for existing not started job
-        $existingJob = $this->synchronizationJobRepository->findOneBy([
-            'status' => SynchronizationStatusEnum::NOT_STARTED,
-            'messages' => $message,
-        ]);
-        if ($existingJob) {
+        // Check for an existing not started job
+        $jobExists = $this->checkForExistingJobsByMessage($message);
+        if ($jobExists) {
             $io?->info(sprintf('Duplicate job exists for syncing %s', $message));
 
-            return null;
         }
-
-        // Create new job
+        // Create a new job
         $job = new SynchronizationJob();
         $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
         $job->setMessages($message);
         $this->synchronizationJobRepository->save($job, true);
 
         return $job;
+    }
+
+    private function deleteDoneJobsByMessage(string $message): void
+    {
+        $doneJobs = $this->synchronizationJobRepository->findBy([
+            'status' => SynchronizationStatusEnum::DONE,
+            'messages' => $message,
+        ]);
+        foreach ($doneJobs as $doneJob) {
+            $this->synchronizationJobRepository->remove($doneJob, true);
+        }
+    }
+
+    private function checkForExistingJobsByMessage(string $message): SynchronizationJob|null
+    {
+        return $this->synchronizationJobRepository->findOneBy([
+            'status' => SynchronizationStatusEnum::NOT_STARTED,
+            'messages' => $message,
+        ]);
     }
 }
