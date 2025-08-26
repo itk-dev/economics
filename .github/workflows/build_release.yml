@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - '*.*.*'
+      - "*.*.*"
 
 name: Create Github Release
 
@@ -14,9 +14,6 @@ env:
 jobs:
   create-release:
     runs-on: ubuntu-latest
-    env:
-      COMPOSER_ALLOW_SUPERUSER: 1
-      APP_ENV: prod
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,8 +21,8 @@ jobs:
       - name: Composer install
         run: |
           docker network create frontend
-          docker compose run --rm --user=root --env APP_ENV=prod phpfpm composer install --no-dev -o --classmap-authoritative
-          docker compose run --rm --user=root --env APP_ENV=prod phpfpm composer clear-cache
+          docker compose run --rm -e APP_ENV=prod phpfpm composer install --no-dev --optimize-autoloader
+          docker compose run --rm -e APP_ENV=prod phpfpm composer clear-cache
           docker compose run --rm node npm install
           docker compose run --rm node npm run build
 

@@ -26,3 +26,12 @@ steps:
         - itkdev-docker-compose-server run --rm phpfpm bin/console doctrine:migrations:migrate --no-interaction
         - itkdev-docker-compose-server run --rm phpfpm bin/console messenger:setup-transports
         - itkdev-docker-compose-server run --rm phpfpm bin/console cache:clear
+      cron:
+        # @TODO This should run with Symfony scheduler, see App\Command\QueueSyncCommand
+        leantime-sync:
+          minute: '22'
+          hour: '2'
+          day: '*'
+          month: '*'
+          weekday: '*'
+          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:sync'
