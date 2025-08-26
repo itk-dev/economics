@@ -524,7 +524,7 @@ class LeantimeApiService implements DataProviderServiceInterface
     private function request(string $path, string $type, string $method, array $params = []): mixed
     {
         try {
-            $response = $this->leantimeProjectTrackerApi->withOptions(['timeout' => 600.0])->request($type, $path,
+            $response = $this->leantimeProjectTrackerApi->request($type, $path,
                 ['json' => [
                     'jsonrpc' => '2.0',
                     'method' => $method,
