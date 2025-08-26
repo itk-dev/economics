@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-235](https://github.com/itk-dev/economics/pull/235)
+  Increased timeout of nginx.
+  Included archived issues in sync.
+  Template files updated.
+
 ## [2.9.4] - 2025-07-10
 
 * [PR-232](https://github.com/itk-dev/economics/pull/232)
