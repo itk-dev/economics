@@ -17,7 +17,8 @@ use Symfony\Component\Scheduler\Attribute\AsCronTask;
     name: 'app:queue-sync',
     description: 'Add a synchronization job to the queue.',
 )]
-#[AsCronTask(expression: '0 0 * * *', schedule: 'default')]
+// @TODO re-enable cron job when queue is fully asynchronous
+//#[AsCronTask(expression: '0 0 * * *', schedule: 'default')]
 class QueueSyncCommand extends Command
 {
     public function __construct(
