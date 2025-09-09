@@ -2,12 +2,11 @@
 
 namespace App\Message;
 
-class SyncProjectWorklogsMessage
+readonly class SyncProjectWorklogsMessage
 {
     public function __construct(
-        private readonly int $projectId,
-        private readonly int $dataProviderId,
-        private readonly int $jobId,
+        private int $projectId,
+        private int $dataProviderId,
     ) {
     }
 
@@ -21,8 +20,4 @@ class SyncProjectWorklogsMessage
         return $this->dataProviderId;
     }
 
-    public function getJobId(): int
-    {
-        return $this->jobId;
-    }
 }
