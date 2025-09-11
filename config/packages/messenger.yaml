@@ -20,7 +20,6 @@ framework:
 
         routing:
             # Route your messages to the transports
-            'App\Message\SynchronizeMessage': async
             'App\Message\SyncProjectsMessage': async
             'App\Message\SyncProjectWorklogsMessage': async
             'App\Message\SyncAccountsMessage': async
