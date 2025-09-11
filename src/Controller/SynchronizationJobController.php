@@ -14,39 +14,23 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Route('/admin/synchronization')]
 class SynchronizationJobController extends AbstractController
 {
-    public function __construct()
+    public function __construct(
+        private readonly SyncService $syncService
+    )
     {
     }
 
     #[Route('/status', name: 'app_synchronization_status', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function status(SynchronizationJobRepository $synchronizationJobRepository, TranslatorInterface $translator): Response
+    public function status(TranslatorInterface $translator): Response
     {
-        $jobQueueLength = $synchronizationJobRepository->countQueuedJobs();
-
-        $nextJob = $synchronizationJobRepository->getNextJob();
-
-        $failedJobs = $synchronizationJobRepository->countFailedJobs();
-        $currentJob = $synchronizationJobRepository->getCurrentJob();
-        $elapsedSeconds = null;
-        $elapsed = null;
-        if (null !== $currentJob) {
-            $started = $currentJob->getStarted();
-            if (null !== $started) {
-                $elapsedSeconds = ((new \DateTime('now'))->getTimestamp() - $started->getTimestamp());
-                $elapsed = (new \DateTime('now'))->diff($started)->format('%H:%I:%S');
-            }
-        }
-        if (null === $nextJob) {
-            return new JsonResponse([], 200);
-        }
+        $queueLength = $this->syncService->countPendingJobsByQueueName('async');
+        $failedJobs = $this->syncService->countPendingJobsByQueueName('failed');
 
         return new JsonResponse([
-            'queueLength' => $jobQueueLength,
-            'status' => $nextJob->getStatus()?->value,
-            'ended' => $nextJob->getEnded()?->format('c'),
-            'elapsed' => $elapsedSeconds > 20 ? $elapsed : null,
-            'errors' => $failedJobs,
+            'status' => 'DONE',
+            'queueLength' => $queueLength,
+            'errors' => $failedJobs
         ]);
     }
 
@@ -54,8 +38,11 @@ class SynchronizationJobController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function sync(SyncService $syncService): Response
     {
-        if (!$syncService->canStartNewSync()) {
-            return new JsonResponse(['message' => 'existing job'], Response::HTTP_CONFLICT);
+        $queueLength = $this->syncService->countPendingJobsByQueueName('async');
+
+        if (0 !== $queueLength)
+        {
+            return new JsonResponse(['message' => 'Queue not empty'], Response::HTTP_CONFLICT);
         }
 
         $syncService->sync();
