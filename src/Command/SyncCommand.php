@@ -2,8 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\SynchronizationJob;
-use App\Enum\SynchronizationStatusEnum;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Message\SyncAccountsMessage;
@@ -12,7 +10,6 @@ use App\Message\SyncProjectsMessage;
 use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\SynchronizationJobRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -58,7 +55,7 @@ class SyncCommand extends Command
         // Sync accounts
         $this->dispatchDataProviderJobs(
             $io,
-            array_filter($dataProviders, fn($dp) => $dp->isEnableAccountSync()),
+            array_filter($dataProviders, fn ($dp) => $dp->isEnableAccountSync()),
             'Accounts',
             fn ($dataProvider, $dataProviderId) => new SyncAccountsMessage($dataProviderId)
         );
@@ -99,7 +96,7 @@ class SyncCommand extends Command
         SymfonyStyle $io,
         array $dataProviders,
         string $type,
-        callable $messageFactory
+        callable $messageFactory,
     ): void {
         $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
 
@@ -121,10 +118,10 @@ class SyncCommand extends Command
 
     private function dispatchProjectJobs(
         SymfonyStyle $io,
-                     $dataProvider,
+        $dataProvider,
         array $projects,
         string $type,
-        callable $messageFactory
+        callable $messageFactory,
     ): void {
         $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
 
@@ -143,6 +140,4 @@ class SyncCommand extends Command
             $this->messageBus->dispatch($message);
         }
     }
-
-
 }

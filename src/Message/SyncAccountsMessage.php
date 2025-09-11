@@ -13,5 +13,4 @@ class SyncAccountsMessage
     {
         return $this->dataProviderId;
     }
-
 }

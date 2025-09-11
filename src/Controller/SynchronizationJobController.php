@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Repository\SynchronizationJobRepository;
 use App\Service\SyncService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,9 +14,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SynchronizationJobController extends AbstractController
 {
     public function __construct(
-        private readonly SyncService $syncService
-    )
-    {
+        private readonly SyncService $syncService,
+    ) {
     }
 
     #[Route('/status', name: 'app_synchronization_status', methods: ['GET'])]
@@ -30,7 +28,7 @@ class SynchronizationJobController extends AbstractController
         return new JsonResponse([
             'status' => 'DONE',
             'queueLength' => $queueLength,
-            'errors' => $failedJobs
+            'errors' => $failedJobs,
         ]);
     }
 
@@ -40,8 +38,7 @@ class SynchronizationJobController extends AbstractController
     {
         $queueLength = $this->syncService->countPendingJobsByQueueName('async');
 
-        if (0 !== $queueLength)
-        {
+        if (0 !== $queueLength) {
             return new JsonResponse(['message' => 'Queue not empty'], Response::HTTP_CONFLICT);
         }
 

@@ -19,5 +19,4 @@ readonly class SyncProjectWorklogsMessage
     {
         return $this->dataProviderId;
     }
-
 }

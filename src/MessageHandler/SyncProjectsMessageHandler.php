@@ -2,11 +2,9 @@
 
 namespace App\MessageHandler;
 
-use App\Enum\SynchronizationStatusEnum;
 use App\Exception\UnsupportedDataProviderException;
 use App\Message\SyncProjectsMessage;
 use App\Repository\DataProviderRepository;
-use App\Repository\SynchronizationJobRepository;
 use App\Service\DataSynchronizationService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -16,10 +14,9 @@ readonly class SyncProjectsMessageHandler
 {
     public function __construct(
         private DataSynchronizationService $dataSynchronizationService,
-        private DataProviderRepository     $dataProviderRepository,
-        private LoggerInterface            $logger,
-    )
-    {
+        private DataProviderRepository $dataProviderRepository,
+        private LoggerInterface $logger,
+    ) {
     }
 
     /**
@@ -50,7 +47,5 @@ readonly class SyncProjectsMessageHandler
             ]);
             throw $e;
         }
-
-
     }
 }

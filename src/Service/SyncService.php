@@ -16,12 +16,11 @@ use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 readonly class SyncService
 {
     public function __construct(
-        private ProjectRepository      $projectRepository,
+        private ProjectRepository $projectRepository,
         private DataProviderRepository $dataProviderRepository,
-        private MessageBusInterface    $messageBus,
+        private MessageBusInterface $messageBus,
         private ContainerInterface $transportLocator,
-    )
-    {
+    ) {
     }
 
     /**
@@ -82,7 +81,6 @@ readonly class SyncService
         }
     }
 
-
     /**
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -98,7 +96,7 @@ readonly class SyncService
         if (!$transport instanceof MessageCountAwareInterface) {
             throw new \RuntimeException('The transport is not message count aware.');
         }
-        
+
         return $transport->getMessageCount();
     }
 }

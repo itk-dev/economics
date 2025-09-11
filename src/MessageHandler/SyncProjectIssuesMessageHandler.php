@@ -2,12 +2,10 @@
 
 namespace App\MessageHandler;
 
-use App\Enum\SynchronizationStatusEnum;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
 use App\Message\SyncProjectIssuesMessage;
 use App\Repository\DataProviderRepository;
-use App\Repository\SynchronizationJobRepository;
 use App\Service\DataSynchronizationService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -50,7 +48,5 @@ readonly class SyncProjectIssuesMessageHandler
             ]);
             throw $e;
         }
-
-
     }
 }

@@ -13,5 +13,4 @@ class SyncProjectsMessage
     {
         return $this->dataProviderId;
     }
-
 }
