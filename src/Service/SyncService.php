@@ -44,14 +44,14 @@ readonly class SyncService
             $providerName = $dataProvider->getName();
             if (null !== $providerName) {
                 $io?->info(sprintf('Syncing projects for provider %s', $providerName));
-                $this->messageBus->dispatch(new SyncProjectsMessage($dataProviderId, 0));
+                $this->messageBus->dispatch(new SyncProjectsMessage($dataProviderId));
             }
 
             // Sync accounts for enabled providers
             if ($dataProvider->isEnableAccountSync()) {
                 if (null !== $providerName) {
                     $io?->info(sprintf('Syncing accounts for provider %s', $providerName));
-                    $this->messageBus->dispatch(new SyncAccountsMessage($dataProviderId, 0));
+                    $this->messageBus->dispatch(new SyncAccountsMessage($dataProviderId));
                 }
             }
         }
@@ -70,11 +70,11 @@ readonly class SyncService
                     if (null !== $projectName) {
                         // Sync issues
                         $io?->info(sprintf('Dispatching sync for issues for project: %s', $projectName));
-                        $this->messageBus->dispatch(new SyncProjectIssuesMessage($projectId, $dataProviderId, 0));
+                        $this->messageBus->dispatch(new SyncProjectIssuesMessage($projectId, $dataProviderId));
 
                         // Sync worklogs
                         $io?->info(sprintf('Dispatching sync for worklogs for project: %s (%s)', $projectName, $projectId));
-                        $this->messageBus->dispatch(new SyncProjectWorklogsMessage($projectId, $dataProviderId, 0));
+                        $this->messageBus->dispatch(new SyncProjectWorklogsMessage($projectId, $dataProviderId));
                     }
                 }
             }
@@ -82,9 +82,14 @@ readonly class SyncService
     }
 
     /**
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
-     * @throws ContainerExceptionInterface
+     * Counts the number of pending jobs for a specific queue based on the transport name.
+     *
+     * @param string $transportName the name of the transport (queue) to count pending jobs for
+     *
+     * @return int the number of pending jobs in the specified queue
+     *
+     * @throws \RuntimeException if the specified transport does not support message count functionality
+     * @throws \InvalidArgumentException if the specified transport does not exist
      */
     public function countPendingJobsByQueueName(string $transportName): int
     {
