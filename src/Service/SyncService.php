@@ -86,7 +86,7 @@ readonly class SyncService
      *
      * @return int the number of pending jobs in the specified queue
      *
-     * @throws \RuntimeException if the specified transport does not support message count functionality
+     * @throws \RuntimeException         if the specified transport does not support message count functionality
      * @throws \InvalidArgumentException if the specified transport does not exist
      */
     public function countPendingJobsByQueueName(string $transportName): int
