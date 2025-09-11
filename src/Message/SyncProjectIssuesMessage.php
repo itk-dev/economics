@@ -7,7 +7,6 @@ class SyncProjectIssuesMessage
     public function __construct(
         private readonly int $projectId,
         private readonly int $dataProviderId,
-        private readonly int $jobId,
     ) {
     }
 
@@ -19,10 +18,5 @@ class SyncProjectIssuesMessage
     public function getDataProviderId(): int
     {
         return $this->dataProviderId;
-    }
-
-    public function getJobId(): int
-    {
-        return $this->jobId;
     }
 }

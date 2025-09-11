@@ -6,7 +6,6 @@ class SyncAccountsMessage
 {
     public function __construct(
         private readonly int $dataProviderId,
-        private readonly int $jobId,
     ) {
     }
 
@@ -15,8 +14,4 @@ class SyncAccountsMessage
         return $this->dataProviderId;
     }
 
-    public function getJobId(): int
-    {
-        return $this->jobId;
-    }
 }
