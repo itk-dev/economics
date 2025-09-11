@@ -8,8 +8,10 @@ use App\Message\SyncProjectsMessage;
 use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 
 readonly class SyncService
 {
@@ -17,6 +19,7 @@ readonly class SyncService
         private ProjectRepository      $projectRepository,
         private DataProviderRepository $dataProviderRepository,
         private MessageBusInterface    $messageBus,
+        private ContainerInterface $transportLocator,
     )
     {
     }
@@ -71,11 +74,31 @@ readonly class SyncService
                         $this->messageBus->dispatch(new SyncProjectIssuesMessage($projectId, $dataProviderId, 0));
 
                         // Sync worklogs
-                        $io?->info(sprintf('Dispatching sync for worklogs for project: %s', $projectName));
+                        $io?->info(sprintf('Dispatching sync for worklogs for project: %s (%s)', $projectName, $projectId));
                         $this->messageBus->dispatch(new SyncProjectWorklogsMessage($projectId, $dataProviderId, 0));
                     }
                 }
             }
         }
+    }
+
+
+    /**
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     * @throws ContainerExceptionInterface
+     */
+    public function countPendingJobsByQueueName(string $transportName): int
+    {
+        if (!$this->transportLocator->has($transportName)) {
+            throw new \InvalidArgumentException('The transport does not exist.');
+        }
+
+        $transport = $this->transportLocator->get($transportName);
+        if (!$transport instanceof MessageCountAwareInterface) {
+            throw new \RuntimeException('The transport is not message count aware.');
+        }
+        
+        return $transport->getMessageCount();
     }
 }
