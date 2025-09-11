@@ -9,6 +9,7 @@ use App\Repository\DataProviderRepository;
 use App\Service\DataSynchronizationService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 
 #[AsMessageHandler]
 readonly class SyncProjectIssuesMessageHandler
@@ -46,7 +47,7 @@ readonly class SyncProjectIssuesMessageHandler
                 'dataProviderId' => $message->getDataProviderId(),
                 'error' => $e->getMessage(),
             ]);
-            throw $e;
+            throw new UnrecoverableMessageHandlingException($e->getMessage(), $e->getCode(), $e);
         }
     }
 }
