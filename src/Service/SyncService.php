@@ -2,28 +2,25 @@
 
 namespace App\Service;
 
-use App\Entity\SynchronizationJob;
-use App\Enum\SynchronizationStatusEnum;
 use App\Message\SyncAccountsMessage;
 use App\Message\SyncProjectIssuesMessage;
 use App\Message\SyncProjectsMessage;
 use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\SynchronizationJobRepository;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\MessageBusInterface;
-use TwigCsFixer\Standard\Symfony;
+use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 
-class SyncService
+readonly class SyncService
 {
     public function __construct(
-        private readonly ProjectRepository            $projectRepository,
-        private readonly DataProviderRepository       $dataProviderRepository,
-        private readonly SynchronizationJobRepository $synchronizationJobRepository,
-        private readonly MessageBusInterface          $messageBus,
-    )
-    {
+        private ProjectRepository $projectRepository,
+        private DataProviderRepository $dataProviderRepository,
+        private MessageBusInterface $messageBus,
+        private ContainerInterface $transportLocator,
+    ) {
     }
 
     /**
@@ -43,26 +40,18 @@ class SyncService
             if (!$dataProviderId) {
                 continue;
             }
-            $message = sprintf('Projects - dataProviderId: %d', $dataProviderId);
-            $job = $this->createJob($message, $io);
-            $providerName = $dataProvider->getName();
-            $jobId = $job?->getId();
 
-            if (null !== $job && null !== $jobId && null !== $providerName) {
+            $providerName = $dataProvider->getName();
+            if (null !== $providerName) {
                 $io?->info(sprintf('Syncing projects for provider %s', $providerName));
-                $this->messageBus->dispatch(new SyncProjectsMessage($dataProviderId, $jobId));
+                $this->messageBus->dispatch(new SyncProjectsMessage($dataProviderId));
             }
 
             // Sync accounts for enabled providers
             if ($dataProvider->isEnableAccountSync()) {
-                $message = sprintf('Accounts - dataProviderId: %d', $dataProviderId);
-                $job = $this->createJob($message, $io);
-                $providerName = $dataProvider->getName();
-                $jobId = $job?->getId();
-
-                if (null !== $job && null !== $jobId && null !== $providerName) {
+                if (null !== $providerName) {
                     $io?->info(sprintf('Syncing accounts for provider %s', $providerName));
-                    $this->messageBus->dispatch(new SyncAccountsMessage($dataProviderId, $jobId));
+                    $this->messageBus->dispatch(new SyncAccountsMessage($dataProviderId));
                 }
             }
         }
@@ -76,26 +65,16 @@ class SyncService
                 $dataProviderId = $dataProvider->getId();
 
                 if (null !== $projectId && null !== $dataProviderId) {
-                    // Sync issues
-                    $message = sprintf('Issues - projectId: %d dataProviderId: %d', $projectId, $dataProviderId);
-                    $job = $this->createJob($message, $io);
-                    $jobId = $job?->getId();
                     $projectName = $project->getName();
 
-                    if (null !== $job && null !== $jobId && null !== $projectName) {
-                        $io?->info(sprintf('Dispatched job for syncing issues for project: %s', $projectName));
-                        $this->messageBus->dispatch(new SyncProjectIssuesMessage($projectId, $dataProviderId, $jobId));
-                    }
+                    if (null !== $projectName) {
+                        // Sync issues
+                        $io?->info(sprintf('Dispatching sync for issues for project: %s', $projectName));
+                        $this->messageBus->dispatch(new SyncProjectIssuesMessage($projectId, $dataProviderId));
 
-                    // Sync worklogs
-                    $message = sprintf('Worklogs - projectId: %d dataProviderId: %d', $projectId, $dataProviderId);
-                    $job = $this->createJob($message, $io);
-                    $jobId = $job?->getId();
-                    $projectName = $project->getName();
-
-                    if (null !== $job && null !== $jobId && null !== $projectName) {
-                        $io?->info(sprintf('Dispatched job for syncing worklogs for project: %s', $projectName));
-                        $this->messageBus->dispatch(new SyncProjectWorklogsMessage($projectId, $dataProviderId, $jobId));
+                        // Sync worklogs
+                        $io?->info(sprintf('Dispatching sync for worklogs for project: %s (%s)', $projectName, $projectId));
+                        $this->messageBus->dispatch(new SyncProjectWorklogsMessage($projectId, $dataProviderId));
                     }
                 }
             }
@@ -103,62 +82,26 @@ class SyncService
     }
 
     /**
-     * Determines if a new synchronization process can be started
-     * by checking the status of the latest job in the database.
+     * Counts the number of pending jobs for a specific queue based on the transport name.
      *
-     * @return bool true if a new synchronization can be started, false otherwise
-     */
-    public function canStartNewSync(): bool
-    {
-        $latestJob = $this->synchronizationJobRepository->getLatestJob();
-
-        return null === $latestJob || !in_array($latestJob->getStatus(), [
-                SynchronizationStatusEnum::NOT_STARTED,
-                SynchronizationStatusEnum::RUNNING,
-            ]);
-    }
-
-    /**
-     * Creates and initializes a new synchronization job.
+     * @param string $transportName the name of the transport (queue) to count pending jobs for
      *
-     * @return SynchronizationJob|null the created synchronization job, or null if the creation fails
+     * @return int the number of pending jobs in the specified queue
+     *
+     * @throws \RuntimeException if the specified transport does not support message count functionality
+     * @throws \InvalidArgumentException if the specified transport does not exist
      */
-    public function createJob(string $message, ?SymfonyStyle $io): ?SynchronizationJob
+    public function countPendingJobsByQueueName(string $transportName): int
     {
-        // Cleanup completed jobs with the same message
-        $this->deleteDoneJobsByMessage($message);
-
-        // Check for an existing not started job
-        $jobExists = $this->checkForExistingJobsByMessage($message);
-        if ($jobExists) {
-            $io?->info(sprintf('Duplicate job exists for syncing %s', $message));
-
+        if (!$this->transportLocator->has($transportName)) {
+            throw new \InvalidArgumentException('The transport does not exist.');
         }
-        // Create a new job
-        $job = new SynchronizationJob();
-        $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
-        $job->setMessages($message);
-        $this->synchronizationJobRepository->save($job, true);
 
-        return $job;
-    }
-
-    private function deleteDoneJobsByMessage(string $message): void
-    {
-        $doneJobs = $this->synchronizationJobRepository->findBy([
-            'status' => SynchronizationStatusEnum::DONE,
-            'messages' => $message,
-        ]);
-        foreach ($doneJobs as $doneJob) {
-            $this->synchronizationJobRepository->remove($doneJob, true);
+        $transport = $this->transportLocator->get($transportName);
+        if (!$transport instanceof MessageCountAwareInterface) {
+            throw new \RuntimeException('The transport is not message count aware.');
         }
-    }
 
-    private function checkForExistingJobsByMessage(string $message): SynchronizationJob|null
-    {
-        return $this->synchronizationJobRepository->findOneBy([
-            'status' => SynchronizationStatusEnum::NOT_STARTED,
-            'messages' => $message,
-        ]);
+        return $transport->getMessageCount();
     }
 }

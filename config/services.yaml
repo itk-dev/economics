@@ -71,6 +71,6 @@ services:
         arguments:
             $emailFromAddress: '%env(string:EMAIL_FROM_ADDRESS)%'
 
-    App\MessageHandler\SynchronizeHandler:
+    App\Service\SyncService:
         arguments:
-            $monitoringUrl: '%env(string:SYNC_MONITORING_URL)%'
+            $transportLocator: '@messenger.receiver_locator'
