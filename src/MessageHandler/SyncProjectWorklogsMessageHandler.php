@@ -48,7 +48,7 @@ readonly class SyncProjectWorklogsMessageHandler
                 'dataProviderId' => $message->getDataProviderId(),
                 'error' => $e->getMessage(),
             ]);
-            throw new UnrecoverableMessageHandlingException($e->getMessage(), $e->getCode(), $e);
+            throw new UnrecoverableMessageHandlingException($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
 }
