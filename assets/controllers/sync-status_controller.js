@@ -1,5 +1,4 @@
 import { Controller } from "@hotwired/stimulus";
-import dayjs from "dayjs";
 
 /** Synchronization status. */
 export default class extends Controller {
