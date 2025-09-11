@@ -2,12 +2,17 @@
 
 namespace App\Command;
 
+use App\Entity\SynchronizationJob;
+use App\Enum\SynchronizationStatusEnum;
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
+use App\Message\SyncAccountsMessage;
+use App\Message\SyncProjectIssuesMessage;
+use App\Message\SyncProjectsMessage;
 use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
-use App\Service\DataSynchronizationService;
+use App\Repository\SynchronizationJobRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,7 +29,6 @@ class SyncCommand extends Command
     public function __construct(
         private readonly ProjectRepository $projectRepository,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly DataSynchronizationService $dataSynchronizationService,
         private readonly MessageBusInterface $messageBus,
     ) {
         parent::__construct($this->getName());
@@ -41,82 +45,104 @@ class SyncCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-
-        $io->info('Processing projects');
-
         $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
-        /*  foreach ($dataProviders as $dataProvider) {
-             $this->dataSynchronizationService->syncProjects(function ($i, $length) use ($io) {
-                 if (0 == $i) {
-                     $io->progressStart($length);
-                 } elseif ($i >= $length - 1) {
-                     $io->progressFinish();
-                 } else {
-                     $io->progressAdvance();
-                 }
-             }, $dataProvider);
-         }
+        // Sync projects
+        $this->dispatchDataProviderJobs(
+            $io,
+            $dataProviders,
+            'Projects',
+            fn ($dataProvider, $dataProviderId) => new SyncProjectsMessage($dataProviderId)
+        );
 
-         $io->info('Processing accounts');
+        // Sync accounts
+        $this->dispatchDataProviderJobs(
+            $io,
+            array_filter($dataProviders, fn($dp) => $dp->isEnableAccountSync()),
+            'Accounts',
+            fn ($dataProvider, $dataProviderId) => new SyncAccountsMessage($dataProviderId)
+        );
 
-         foreach ($dataProviders as $dataProvider) {
-             $this->dataSynchronizationService->syncAccounts(function ($i, $length) use ($io) {
-                 if (0 == $i) {
-                     $io->progressStart($length);
-                 } elseif ($i >= $length - 1) {
-                     $io->progressFinish();
-                 } else {
-                     $io->progressAdvance();
-                 }
-             }, $dataProvider);
-         }
-
-         $io->info('Processing issues');
-
-         foreach ($dataProviders as $dataProvider) {
-             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
-
-             foreach ($projects as $project) {
-                 $io->writeln("Processing issues for {$project->getName()}");
-
-                 $this->dataSynchronizationService->syncIssuesForProject($project->getId(), $dataProvider, function ($i, $length) use ($io) {
-                     if (0 == $i) {
-                         $io->progressStart($length);
-                     } elseif ($i >= $length - 1) {
-                         $io->progressFinish();
-                     } else {
-                         $io->progressAdvance();
-                     }
-                 });
-
-                 $io->writeln('');
-             }
-         }*/
-
-        // Replace the worklogs processing section with:
-        $io->info('Dispatching worklog sync jobs');
-
+        // Sync issues and worklogs (project-based)
         foreach ($dataProviders as $dataProvider) {
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
-            foreach ($projects as $project) {
-                $io->writeln("Dispatching worklog sync job for {$project->getName()}");
-
-                $dataProviderId = $dataProvider->getId();
-                if (null === $dataProviderId) {
-                    continue;
-                }
-
-                $message = new SyncProjectWorklogsMessage(
+            // Sync issues
+            $this->dispatchProjectJobs(
+                $io,
+                $dataProvider,
+                $projects,
+                'Issues',
+                fn ($project, $dataProviderId) => new SyncProjectIssuesMessage(
                     $project->getProjectTrackerId(),
                     $dataProviderId
-                );
+                )
+            );
 
-                $this->messageBus->dispatch($message);
-            }
+            // Sync worklogs
+            $this->dispatchProjectJobs(
+                $io,
+                $dataProvider,
+                $projects,
+                'Worklogs',
+                fn ($project, $dataProviderId) => new SyncProjectWorklogsMessage(
+                    $project->getProjectTrackerId(),
+                    $dataProviderId
+                )
+            );
         }
 
         return Command::SUCCESS;
     }
+
+    private function dispatchDataProviderJobs(
+        SymfonyStyle $io,
+        array $dataProviders,
+        string $type,
+        callable $messageFactory
+    ): void {
+        $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
+
+        foreach ($dataProviders as $dataProvider) {
+            $dataProviderId = $dataProvider->getId();
+            if (null === $dataProviderId) {
+                continue;
+            }
+
+            $io->writeln(sprintf('Dispatching %s sync job for %s',
+                strtolower($type),
+                $dataProvider->getName()
+            ));
+
+            $message = $messageFactory($dataProvider, $dataProviderId);
+            $this->messageBus->dispatch($message);
+        }
+    }
+
+    private function dispatchProjectJobs(
+        SymfonyStyle $io,
+                     $dataProvider,
+        array $projects,
+        string $type,
+        callable $messageFactory
+    ): void {
+        $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
+
+        foreach ($projects as $project) {
+            $dataProviderId = $dataProvider->getId();
+            if (null === $dataProviderId) {
+                continue;
+            }
+
+            $io->writeln(sprintf('Dispatching %s sync job for %s',
+                strtolower($type),
+                $project->getName()
+            ));
+
+            $message = $messageFactory($project, $dataProviderId);
+            $this->messageBus->dispatch($message);
+        }
+    }
+
+
 }
