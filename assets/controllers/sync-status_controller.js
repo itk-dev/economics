@@ -60,42 +60,24 @@ export default class extends Controller {
                 // Hide elements after fetch, to stop content from dissapearing before reappearing when running.
                 this.hideAllElements();
 
-                switch (data.status) {
-                    case "DONE":
-                        this.doneTarget.classList.remove("hidden");
-                        this.okTarget.classList.remove("hidden");
-                        this.endedTarget.innerHTML = dayjs(data.ended).format(
-                            "DD/MM-YYYY HH:mm:ss",
-                        );
-                        this.buttonTarget.classList.remove("hidden");
-                        break;
-                    case "NOT_STARTED":
+                if (data.queueLength === 0) {
+                    this.doneTarget.classList.remove("hidden");
+                    this.buttonTarget.classList.remove("hidden");
+                    this.nextRefresh = this.updateIntervalSeconds;
+                } else if (data.queueLength > 0) {
+                    if (data.queueLength === 1) {
+                        this.progressTarget.classList.remove("hidden");
+                        this.progressTarget.innerText = `Sidste job afvikles.`;
+                        this.runningTarget.classList.remove("hidden");
+                    } else {
+                        this.progressTarget.classList.remove("hidden");
+                        this.progressTarget.innerText = `${data.queueLength} jobs i kø`;
                         this.activeTarget.classList.remove("hidden");
-                        this.notStartedTarget.classList.remove("hidden");
-                        this.notStartedTarget.innerText = `Afventer.. ${data.queueLength} jobs i kø`;
-                        break;
-                    case "ERROR":
-                        this.errorTarget.classList.remove("hidden");
-                        this.buttonTarget.classList.remove("hidden");
-                        break;
-                    case "RUNNING":
-                        if (data.queueLength === 0) {
-                            this.progressTarget.classList.remove("hidden");
-                            this.progressTarget.innerText = `Sidste job afvikles.`;
-                            this.runningTarget.classList.remove("hidden");
-                        } else {
-                            this.progressTarget.classList.remove("hidden");
-                            this.progressTarget.innerText = data.elapsed
-                                ? `${data.queueLength} jobs i kø \n Job tid: ${data.elapsed}`
-                                : `${data.queueLength} jobs i kø`;
-                            this.activeTarget.classList.remove("hidden");
-                            this.runningTarget.classList.remove("hidden");
-                        }
-                        this.nextRefresh = this.updateIntervalRunningSeconds;
-                        break;
-                    default:
-                        this.buttonTarget.classList.remove("hidden");
-                        break;
+                        this.runningTarget.classList.remove("hidden");
+                    }
+                    this.nextRefresh = this.updateIntervalRunningSeconds;
+                } else {
+                    this.buttonTarget.classList.remove("hidden");
                 }
             })
             .finally(() => {
