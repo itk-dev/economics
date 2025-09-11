@@ -109,7 +109,7 @@ class SyncCommand extends Command
                 }
 
                 $message = new SyncProjectWorklogsMessage(
-                    $project->getId(),
+                    $project->getProjectTrackerId(),
                     $dataProviderId
                 );
 
