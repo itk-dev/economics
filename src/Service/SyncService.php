@@ -45,7 +45,7 @@ readonly class SyncService
         $enabledProviders = array_filter($dataProviders, fn($dp) => $dp->isEnableAccountSync());
 
         if (empty($enabledProviders)) {
-            return;
+            $io->error('No data providers with account sync is enabled.');
         }
 
         $io->info('Dispatching accounts sync jobs');
