@@ -6,7 +6,7 @@ class SyncProjectIssuesMessage
 {
     public function __construct(
         private readonly string $projectId,
-        private readonly int $dataProviderId,g
+        private readonly int $dataProviderId,
     ) {
     }
 
