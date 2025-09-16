@@ -50,7 +50,7 @@ class SyncCommand extends Command
             $io->error(sprintf('Invalid sync type "%s". Valid types are: %s', $type, implode(', ', self::VALID_TYPES)));
             return Command::INVALID;
         }
-g
+
         $queueLength = $this->syncService->countPendingJobsByQueueName('async');
         if ($queueLength > 0) {
             $io->error(sprintf('There are already %d jobs in the sync queue. Please wait until they are processed.', $queueLength));
