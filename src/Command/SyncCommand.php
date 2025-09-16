@@ -50,7 +50,8 @@ class SyncCommand extends Command
 
         if ($queueLength > 0) {
             $io->error(sprintf('There are already %d jobs in the sync queue. Please wait until they are processed.', $queueLength));
-            return false;
+
+            return Command::INVALID;
         }
 
         // Sync projects
