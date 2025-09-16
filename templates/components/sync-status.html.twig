@@ -1,19 +1,5 @@
-<div class="mt-5 selections pb-2 pt-5 px-5" {{ stimulus_controller('sync-status') }} data-interval="60">
+<div class="mt-5 selections pb-2 pt-5 px-5" {{ stimulus_controller('sync-status') }} data-status="{{ 'sync_status.status' | trans }}">
     <div style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: .25em">
-        <span>{{ 'sync_status.header'|trans }}
-
-            <span class="hidden" {{ stimulus_target('sync-status', 'running') }}>{{ 'sync_status.running'|trans }}</span>
-            <span class="hidden text-red-600 text-xl" {{ stimulus_target('sync-status', 'error') }}>{{ 'sync_status.error'|trans }}</span>
-        </span>
-    </div>
-    <div >
-        <div class="hidden" {{ stimulus_target('sync-status', 'done') }}>
-            <span class="hidden text-green-500 text-xl" {{ stimulus_target('sync-status', 'ok') }}>{{ 'sync_status.ok'|trans }}</span>
-            <span {{ stimulus_target('sync-status', 'ended') }}></span>
-        </div>
-        <div class="hidden" {{ stimulus_target('sync-status', 'active') }}>
-            <span class="hidden" {{ stimulus_target('sync-status', 'progress') }}></span>
-            <span class="hidden" {{ stimulus_target('sync-status', 'notStarted') }}>{{ 'sync_status.not_started'|trans }}</span>
-        </div>
+        <span {{ stimulus_target('sync-status', 'status') }}></span>
     </div>
 </div>

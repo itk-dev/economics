@@ -802,13 +802,7 @@ forecast_report:
   total: "Total"
 
 sync_status:
-  header: "Synkronisering"
-  error: "⚠"
-  ok: "✓"
-  button: "Kør!"
-  not_started: "Job sat i kø"
-  running: "I gang..."
-  fetching_status: "Henter status..."
+  status: "<numberOfJobs> jobs i kø"
 
 synchronization_step_enum:
   projects: "Projekter"

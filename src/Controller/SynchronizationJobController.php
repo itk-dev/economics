@@ -20,30 +20,14 @@ class SynchronizationJobController extends AbstractController
 
     #[Route('/status', name: 'app_synchronization_status', methods: ['GET'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function status(TranslatorInterface $translator): Response
+    public function status(): Response
     {
         $queueLength = $this->syncService->countPendingJobsByQueueName('async');
         $failedJobs = $this->syncService->countPendingJobsByQueueName('failed');
 
         return new JsonResponse([
-            'status' => 'DONE',
             'queueLength' => $queueLength,
             'errors' => $failedJobs,
         ]);
-    }
-
-    #[Route('/start', name: 'app_synchronization_sync', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
-    public function sync(SyncService $syncService): Response
-    {
-        $queueLength = $this->syncService->countPendingJobsByQueueName('async');
-
-        if (0 !== $queueLength) {
-            return new JsonResponse(['message' => 'Queue not empty'], Response::HTTP_CONFLICT);
-        }
-
-        $syncService->sync();
-
-        return new JsonResponse([], Response::HTTP_OK);
     }
 }
