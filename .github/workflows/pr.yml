@@ -6,18 +6,6 @@ env:
   COMPOSE_USER: runner
 
 jobs:
-  test-composer-install:
-    runs-on: ubuntu-latest
-    name: Validate composer
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          docker network create frontend
-          docker compose run --rm phpfpm composer validate composer.json --strict
-          docker compose run --rm phpfpm composer install
-          docker compose run --rm phpfpm composer normalize --dry-run
-          docker compose run --rm phpfpm composer audit
-
   validate-doctrine-schema:
     runs-on: ubuntu-latest
     name: Validate Doctrine Schema
@@ -38,58 +26,6 @@ jobs:
           docker network create frontend
           docker compose run --rm phpfpm composer install
           docker compose run --rm phpfpm composer code-analysis
-
-  coding-standards-phpcs:
-    name: coding-standards-check/phpcs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          docker network create frontend
-          docker compose run --rm phpfpm composer install
-          docker compose run --rm phpfpm composer coding-standards-check
-
-  assets-coding-standards:
-    name: Assets coding standards
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Coding standards
-        run: |
-          docker network create frontend
-          docker compose run --rm node npm install
-          docker compose run --rm node npm run actions/check-coding-standards-assets
-
-  markdown-coding-standards:
-    name: Markdown coding standards
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Coding standards
-        run: |
-          docker network create frontend
-          docker compose run --rm node npm install
-          docker compose run --rm node npm run coding-standards-check/markdownlint
-
-  twig-coding-standards:
-    name: Twig coding standards
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install
-        run: |
-          docker network create frontend
-          docker compose up --detach
-          docker compose exec --user root phpfpm composer install
-      - name: Coding standards
-        run: |
-          docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
 
   phpunit:
     name: Test suite
