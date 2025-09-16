@@ -4,12 +4,7 @@
 
             <span class="hidden" {{ stimulus_target('sync-status', 'running') }}>{{ 'sync_status.running'|trans }}</span>
             <span class="hidden text-red-600 text-xl" {{ stimulus_target('sync-status', 'error') }}>{{ 'sync_status.error'|trans }}</span>
-
         </span>
-        <button class="button hidden" style="padding: .25em .5em; margin-left: .5em"
-            {{ stimulus_action('sync-status', 'run') }} {{ stimulus_target('sync-status', 'button') }}>
-            {{ 'sync_status.button'|trans }}
-        </button>
     </div>
     <div >
         <div class="hidden" {{ stimulus_target('sync-status', 'done') }}>

@@ -11,7 +11,6 @@ export default class extends Controller {
         "active",
         "done",
         "progress",
-        "button",
     ];
 
     updateIntervalSeconds = 20;
@@ -22,25 +21,6 @@ export default class extends Controller {
 
     timeout;
 
-    run = () => {
-        this.buttonTarget.innerHTML = "Kører...";
-        this.buttonTarget.disabled = true;
-        this.doneTarget.classList.add("hidden");
-        this.activeTarget.classList.add("hidden");
-
-        fetch("/admin/synchronization/start", {
-            method: "POST",
-            mode: "same-origin",
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            redirect: "follow",
-            referrerPolicy: "no-referrer",
-        }).finally(() => setTimeout(this.refresh, 1500));
-    };
-
     refresh = () => {
         this.nextRefresh = this.updateIntervalSeconds;
 
@@ -49,7 +29,6 @@ export default class extends Controller {
                 if (response.status === 404) {
                     this.hideAllElements();
                     this.endedTarget.innerHTML = "Not found";
-                    this.buttonTarget.classList.remove("hidden");
                     this.doneTarget.classList.remove("hidden");
                     this.errorTarget.classList.remove("hidden");
                 }
@@ -61,7 +40,6 @@ export default class extends Controller {
 
                 if (data.queueLength === 0) {
                     this.doneTarget.classList.remove("hidden");
-                    this.buttonTarget.classList.remove("hidden");
                     this.nextRefresh = this.updateIntervalSeconds;
                 } else if (data.queueLength > 0) {
                     if (data.queueLength === 1) {
@@ -75,8 +53,6 @@ export default class extends Controller {
                         this.runningTarget.classList.remove("hidden");
                     }
                     this.nextRefresh = this.updateIntervalRunningSeconds;
-                } else {
-                    this.buttonTarget.classList.remove("hidden");
                 }
             })
             .finally(() => {
@@ -88,7 +64,6 @@ export default class extends Controller {
     };
 
     hideAllElements() {
-        this.buttonTarget.classList.add("hidden");
         this.okTarget.classList.add("hidden");
         this.errorTarget.classList.add("hidden");
         this.runningTarget.classList.add("hidden");
