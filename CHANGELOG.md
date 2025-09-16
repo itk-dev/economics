@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-228](https://github.com/itk-dev/economics/pull/228)
   Use jobs to reduce synchronization load.
+* [PR-234](https://github.com/itk-dev/economics/pull/234/)
+  Update templates.
 
 ## [2.9.4] - 2025-07-10
 

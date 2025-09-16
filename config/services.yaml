@@ -12,11 +12,10 @@ parameters:
         'Account': '%env(JIRA_API_SERVICE_CUSTOM_FIELD_ACCOUNT)%'
         'Sprint': '%env(JIRA_API_SERVICE_CUSTOM_FIELD_SPRINT)%'
 
-
 services:
     # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
+        autowire: true # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
         bind:

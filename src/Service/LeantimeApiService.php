@@ -81,10 +81,6 @@ class LeantimeApiService implements DataProviderServiceInterface
 
     /**
      * Get all worklogs for project.
-     *
-     * @param $projectId
-     *
-     * @return mixed
      */
     public function getProjectWorklogs($projectId): mixed
     {
@@ -208,7 +204,7 @@ class LeantimeApiService implements DataProviderServiceInterface
      * Get project.
      *
      * @param $key
-     *   A project key or id
+     *             A project key or id
      *
      * @throws ApiServiceException
      */

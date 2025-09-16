@@ -492,10 +492,6 @@ class DataSynchronizationService
 
     /**
      * Migrate from issue.epicName to issue.epics.
-     *
-     * @param callable|null $progressCallback
-     *
-     * @return void
      */
     public function migrateEpics(?callable $progressCallback = null): void
     {

@@ -1,4 +1,3 @@
-
 framework:
     messenger:
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
@@ -7,7 +6,7 @@ framework:
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
-                dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 retry_strategy:
                     # 1, 3, 9, 27
                     max_retries: 4
@@ -24,7 +23,6 @@ framework:
             'App\Message\SyncProjectWorklogsMessage': async
             'App\Message\SyncAccountsMessage': async
             'App\Message\SyncProjectIssuesMessage': async
-
 # when@test:
 #    framework:
 #        messenger:

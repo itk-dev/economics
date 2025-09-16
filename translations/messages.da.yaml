@@ -1,873 +1,873 @@
 navigation:
-    reporting: 'Rapportering'
-    setup: 'Opsætning'
-    views: 'Views'
-    home: "Forside"
-    create_project: "Projektopretter"
-    invoices: "Faktura"
-    planning: "Planlægning"
-    title: "Economics"
-    accounts: "Konto"
-    project_billing: "Projektfakturering"
-    products: "Produkter"
-    projects: "Projekter"
-    client: "Kunder"
-    account: "Konti"
-    pricelist: "Prisliste"
-    user: "Brugere"
-    data: "Data"
-    admin: "Admin"
-    management_report: "Ledelsesrapport"
-    planning_users: 'Brugere'
-    planning_projects: 'Projekter'
-    forecast_report: "Forecast"
-    hour_report: "Timerapport"
-    workload_report: "Normtidsrapport"
-    worker: "Medarbejdere"
-    subscription: "Abonnementer"
-    invoicing_rate_report: "Udfaktureringsrapport"
-    billable_unbilled_hours_report: 'Ufakturerede timer'
-    planning_holidays: 'Ferieplan'
-    group: 'Grupper'
+  reporting: "Rapportering"
+  setup: "Opsætning"
+  views: "Views"
+  home: "Forside"
+  create_project: "Projektopretter"
+  invoices: "Faktura"
+  planning: "Planlægning"
+  title: "Economics"
+  accounts: "Konto"
+  project_billing: "Projektfakturering"
+  products: "Produkter"
+  projects: "Projekter"
+  client: "Kunder"
+  account: "Konti"
+  pricelist: "Prisliste"
+  user: "Brugere"
+  data: "Data"
+  admin: "Admin"
+  management_report: "Ledelsesrapport"
+  planning_users: "Brugere"
+  planning_projects: "Projekter"
+  forecast_report: "Forecast"
+  hour_report: "Timerapport"
+  workload_report: "Normtidsrapport"
+  worker: "Medarbejdere"
+  subscription: "Abonnementer"
+  invoicing_rate_report: "Udfaktureringsrapport"
+  billable_unbilled_hours_report: "Ufakturerede timer"
+  planning_holidays: "Ferieplan"
+  group: "Grupper"
 
 planning:
-    group: 'Vælg gruppe'
-    select_group: 'Alle medarbejdere'
-    title: 'Planlægning'
-    titles:
-        projects: "Planlægning: Projekter"
-        users: "Planlægning: Brugere"
-        holiday: 'Ferieplan'
-    assignees: "Brugere"
-    projects: "Projekter"
-    hidden-entries: "Skjulte brugere"
-    data_provider_helptext: ""
-    data_provider: "Vælg datakilde"
-    search: "Vis"
-    view_type: "Vælg visningstype"
-    week_view: "Ugevisning"
-    sprint_view: "Sprintvisning"
-    description: 'Vælg visning'
-    year: 'Vælg år'
-    sync_all_issues_action: 'Synkronisér opgaver'
-    sync-project-select: 'Vælg projekt at synkronisere'
-    holiday_unit: 'Tabellen viser antal feriedage for en medarbejder for en given uge.'
+  group: "Vælg gruppe"
+  select_group: "Alle medarbejdere"
+  title: "Planlægning"
+  titles:
+    projects: "Planlægning: Projekter"
+    users: "Planlægning: Brugere"
+    holiday: "Ferieplan"
+  assignees: "Brugere"
+  projects: "Projekter"
+  hidden-entries: "Skjulte brugere"
+  data_provider_helptext: ""
+  data_provider: "Vælg datakilde"
+  search: "Vis"
+  view_type: "Vælg visningstype"
+  week_view: "Ugevisning"
+  sprint_view: "Sprintvisning"
+  description: "Vælg visning"
+  year: "Vælg år"
+  sync_all_issues_action: "Synkronisér opgaver"
+  sync-project-select: "Vælg projekt at synkronisere"
+  holiday_unit: "Tabellen viser antal feriedage for en medarbejder for en given uge."
 
 client:
-    title: "Kunder"
-    create_new: "Opret kunde"
-    no_records_found: "Ingen kunder at vise"
-    new: "Opret kunde"
-    client_type_select: "Vælg kundetype"
-    action_create: "Opret kunde"
-    back_to_list: "Tilbage til listen"
-    name: "Navn"
-    contact: "Kontakt"
-    search: "Søg"
+  title: "Kunder"
+  create_new: "Opret kunde"
+  no_records_found: "Ingen kunder at vise"
+  new: "Opret kunde"
+  client_type_select: "Vælg kundetype"
+  action_create: "Opret kunde"
+  back_to_list: "Tilbage til listen"
+  name: "Navn"
+  contact: "Kontakt"
+  search: "Søg"
 
 price_list:
-    title: "Prisliste"
-    create_new: "Opret pris"
-    no_records_found: "Ingen priser at vise"
-    new: "Opret pris"
-    client_type_select: "Vælg kundetype"
-    action_create: "Opret pris"
-    back_to_list: "Tilbage til listen"
+  title: "Prisliste"
+  create_new: "Opret pris"
+  no_records_found: "Ingen priser at vise"
+  new: "Opret pris"
+  client_type_select: "Vælg kundetype"
+  action_create: "Opret pris"
+  back_to_list: "Tilbage til listen"
 
 create_pricelist_form:
-    price_list_name:
-        label: "Navn"
-        help: ""
-    price_list_price:
-        label: "Pris"
-        help: ""
+  price_list_name:
+    label: "Navn"
+    help: ""
+  price_list_price:
+    label: "Pris"
+    help: ""
 
 create_client_form:
-    client_name:
-        label: "Navn"
-        help: ""
-    client_contact:
-        label: "Kontakt"
-        help: ""
-    client_standardPrice:
-        label: "Standardpris"
-        help: "Hvis standardpris ikke er sat bruges den globale værdi (pt. %standard_price%)"
-    type:
-        label: "Kundetype"
-        help: ""
-    client_account:
-        label: "Konto"
-        help: ""
-    client_psp:
-        label: "PSP-element"
-        help: ""
-    client_ean:
-        label: "EAN-nummer"
-        help: ""
-    client_projectTrackerId:
-        label: "ProjectTrackerId"
-        help: ""
-    sales_channel:
-        label: "Salgskanal"
-        help: ""
-    customer_key:
-        label: "Ordregiver/Bestiller"
-        help: ""
-    version_id:
-        label: "VersionID"
-        help: "Hvis dette passer med en version på en opgave i projektfakturering, vil kunden automatisk blive udfyldt."
+  client_name:
+    label: "Navn"
+    help: ""
+  client_contact:
+    label: "Kontakt"
+    help: ""
+  client_standardPrice:
+    label: "Standardpris"
+    help: "Hvis standardpris ikke er sat bruges den globale værdi (pt. %standard_price%)"
+  type:
+    label: "Kundetype"
+    help: ""
+  client_account:
+    label: "Konto"
+    help: ""
+  client_psp:
+    label: "PSP-element"
+    help: ""
+  client_ean:
+    label: "EAN-nummer"
+    help: ""
+  client_projectTrackerId:
+    label: "ProjectTrackerId"
+    help: ""
+  sales_channel:
+    label: "Salgskanal"
+    help: ""
+  customer_key:
+    label: "Ordregiver/Bestiller"
+    help: ""
+  version_id:
+    label: "VersionID"
+    help: "Hvis dette passer med en version på en opgave i projektfakturering, vil kunden automatisk blive udfyldt."
 
 account:
-    title: "Konti"
-    create_new: "Opret konto"
-    no_records_found: "Ingen konti at vise"
-    new: "Opret konto"
-    action_create: "Opret konto"
-    back_to_list: "Tilbage til listen"
-    name: "Navn"
+  title: "Konti"
+  create_new: "Opret konto"
+  no_records_found: "Ingen konti at vise"
+  new: "Opret konto"
+  action_create: "Opret konto"
+  back_to_list: "Tilbage til listen"
+  name: "Navn"
 
 create_account_form:
-    account_name_label: "Navn"
-    account_name_help: ""
-    account_value_label: "Værdi"
-    account_value_help: ""
-    account_project_tracker_id_label: "Projekt"
-    account_project_tracker_id_help: ""
-    account_status_label: "Status"
-    account_status_help: ""
-    account_category_label: "Kategori"
-    account_category_help: ""
+  account_name_label: "Navn"
+  account_name_help: ""
+  account_value_label: "Værdi"
+  account_value_help: ""
+  account_project_tracker_id_label: "Projekt"
+  account_project_tracker_id_help: ""
+  account_status_label: "Status"
+  account_status_help: ""
+  account_category_label: "Kategori"
+  account_category_help: ""
 
 invoices:
-    title: "Faktura"
-    list_id: "#"
-    list_name: "Faktura"
-    list_project: "Projekt"
-    list_created_by: "Opretter"
-    list_updated_at: "Dato"
-    list_total_price: "Beløb"
-    list_project_data_provider: "Datakilde"
-    list_actions: "Handlinger"
-    list_no_records_found: "Ingen fundet"
-    action_create_new: "Opret ny faktura"
-    id: "Faktura"
-    status: "Status"
-    status_posted: "Bogført"
-    status_not_posted: "Ikke bogført"
-    action_update: "Gem ændringer"
-    edit: "Rediger faktura"
-    client_information: "Kundeinformationer"
-    invoice_for: "Faktura for [%project%] (%projectTrackerId%)"
-    no_client: "Ingen kunde valgt"
-    client_psp: "PSP"
-    client_account: "Konto"
-    client_type: "Type"
-    client_standard_price: "Standardpris"
-    client_contact: "Kontakt"
-    client_name: "Kunde"
-    info: "Faktura"
-    create_new: "Opret faktura"
-    action_edit: "Redigér"
-    action_save: "Gem faktura"
-    action_delete: "Slet faktura"
-    action_create: "Opret faktura"
-    back_to_list: "Tilbage til listen"
-    search: "Søg"
-    recorded_true: "Bogført"
-    recorded_false: "Ikke bogført"
-    recorded: "Bogført"
-    created_by: "Opretter"
-    invoice_entry_receiver_account: "Til konto"
-    invoice_entry_receiver_account_helptext: "Vælg konto der skal faktureres"
-    invoice_entry_material_number: "Materialenummer"
-    invoice_entry_product: "Vare"
-    invoice_entry_amount: "Antal"
-    invoice_entry_price: "Pris pr. stk. (DKK)"
-    invoice_entry_total_price: "Samlet pris (DKK)"
-    action_create_new_invoice_entry: "Opret ny fakturalinje"
-    invoice_entries: "Fakturalinjer"
-    back_to_invoice: "Tilbage til faktura"
-    entry_new: "Opret ny fakturalinje"
-    entry_edit: "Redigér fakturalinje"
-    entry_for_invoice: "Faktura: %invoice%"
-    name: "Navn"
-    description: "Beskrivelse"
-    project: "Projekt"
-    client: "Kunde"
-    default_material_number: "Materialenummer"
-    default_receiver_account: "Til konto"
-    paid_by_account: "Betales af konto"
-    period_from: "Periode fra"
-    period_to: "Periode til"
-    period_from_helptext: "Dette felt skal udfyldes på eksterne fakturaer."
-    period_to_helptext: "Dette felt skal udfyldes på eksterne fakturaer."
-    name_helptext: "Vælg faktuens navn."
-    description_helptext: "Indsættes i tekstfeltet i fakturaen. Autoudfyld er tilgængelig, hvis der er valgt et projekt med en project lead."
-    project_helptext: "Vælg projekt."
-    client_helptext: "Vælg hvilken kunde fakturaen skal udstedes til."
-    payer_account_helptext: "Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: \"Betales af [KONTO]\"."
-    default_material_number_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
-    default_receiver_account_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
-    client_type_internal: "Intern"
-    client_type_external: "Ekstern"
-    client_ean: "EAN"
-    invoice_entry_type: "Type"
-    invoice_entry_type_manual: "Manuel"
-    invoice_entry_type_product: "Produkt"
-    invoice_entry_type_worklog: "Worklog"
-    action_create_new_invoice_entry_worklog: "Tilføj worklog linje"
-    action_create_new_invoice_entry_manual: "Tilføj manuel linje"
-    action_delete_invoice_entry: "Slet fakturalinje"
-    action_save_invoice_entry: "Gem fakturalinje"
-    invoice_entry_material_number_helptext: "Denne værdi kan kun ændres på fakturaniveau."
-    invoice_entry_product_helptext: "Beskriv fakturalinjen."
-    invoice_entry_price_helptext: "Vælg prisen pr. stk."
-    invoice_entry_amount_helptext: "Vælg antal."
-    invoice_entry_type_heading: "Type: %type%"
-    add_worklogs: "Vælg worklogs"
-    confirm_record_title: "Bogfør faktura"
-    confirm_record_are_you_sure: "Er du sikker på at du vil bogføre fakturaen \"%invoiceName%\"?"
-    confirm_record_cannot_be_undone: "Når fakturaen er bogført kan den ikke ændres mere."
-    record_save: "Gennemfør valg"
-    record_invoice_no: "Nej. Gå tilbage."
-    record_invoice_yes: "Ja. Bogfør faktura."
-    record_invoice_yes_no_cost: "Ja. Bogfør faktura UB."
-    record_invoice: "Bogfør faktura?"
-    record_invoice_helptext: ""
-    cannot_record_errors_exist: "Kan ikke bogføre faktura, idet der er fejl i data:"
-    already_recorded: "Fakturaen er allerede bogført"
-    action_show_export: "Vis eksport"
-    action_record: "Bogfør faktura"
-    locked_client_values: "Låste fakturaværdier. Disse værdier bruges i fakturaen og ændres ikke selvom kunden bliver opdateret."
-    locked_type: "Type"
-    locked_sales_channel: "Salgskanal"
-    locked_contact_name: "Kontakt"
-    locked_customer_key: "Ordregiver/Bestiller"
-    client_sales_channel: "Salgskanal"
-    client_customer_key: "Ordregiver/Bestiller"
-    all_worklogs_will_be_marked_as_billed: "Alle worklogs i fakturaen vil blive markeret som faktureret."
-    show_worklogs: "Vis worklogs"
-    export_title: "Eksport"
-    action_export: "Download .csv"
-    back_to_invoice_entry: "Tilbage til fakturalinje"
-    invoice_info: "Fakturainformation"
-    project_billing: "PF"
-    include_project_billing: "Projektfakturering"
-    with_project_billing: "Inkludér"
-    without_project_billing: "Udelad"
-    only_project_billing: "Kun PF"
-    list_recorded: "Bogført"
-    export_only_available_when_mandatory_fields_are_set: "Eksport kun muligt når der er sat en kundekonto"
-    action_export_selected: "Eksporter valg"
-    action_view: "Se"
-    list_exported_date: "Eksportdato"
-    list_recorded_date: "Bogført"
-    list_no_cost: UB
-    list_no_cost_true: 'Ja'
-    list_no_cost_false: 'Nej'
-    client_type_is_null: ""
-    generate_description: "Autoudfyld"
-    client_project_lead: "Project Lead"
-    required_fields_not_set_for_creating_entries: "\"Til konto\" og \"Materialenummer\" skal være valgt før der kan oprettes fakturalinjer."
-    type: "Kundekonto type"
-    query_label: Søg
-    query_placeholder: Søg på fakturanavn
-    list_amount: 'Antal'
+  title: "Faktura"
+  list_id: "#"
+  list_name: "Faktura"
+  list_project: "Projekt"
+  list_created_by: "Opretter"
+  list_updated_at: "Dato"
+  list_total_price: "Beløb"
+  list_project_data_provider: "Datakilde"
+  list_actions: "Handlinger"
+  list_no_records_found: "Ingen fundet"
+  action_create_new: "Opret ny faktura"
+  id: "Faktura"
+  status: "Status"
+  status_posted: "Bogført"
+  status_not_posted: "Ikke bogført"
+  action_update: "Gem ændringer"
+  edit: "Rediger faktura"
+  client_information: "Kundeinformationer"
+  invoice_for: "Faktura for [%project%] (%projectTrackerId%)"
+  no_client: "Ingen kunde valgt"
+  client_psp: "PSP"
+  client_account: "Konto"
+  client_type: "Type"
+  client_standard_price: "Standardpris"
+  client_contact: "Kontakt"
+  client_name: "Kunde"
+  info: "Faktura"
+  create_new: "Opret faktura"
+  action_edit: "Redigér"
+  action_save: "Gem faktura"
+  action_delete: "Slet faktura"
+  action_create: "Opret faktura"
+  back_to_list: "Tilbage til listen"
+  search: "Søg"
+  recorded_true: "Bogført"
+  recorded_false: "Ikke bogført"
+  recorded: "Bogført"
+  created_by: "Opretter"
+  invoice_entry_receiver_account: "Til konto"
+  invoice_entry_receiver_account_helptext: "Vælg konto der skal faktureres"
+  invoice_entry_material_number: "Materialenummer"
+  invoice_entry_product: "Vare"
+  invoice_entry_amount: "Antal"
+  invoice_entry_price: "Pris pr. stk. (DKK)"
+  invoice_entry_total_price: "Samlet pris (DKK)"
+  action_create_new_invoice_entry: "Opret ny fakturalinje"
+  invoice_entries: "Fakturalinjer"
+  back_to_invoice: "Tilbage til faktura"
+  entry_new: "Opret ny fakturalinje"
+  entry_edit: "Redigér fakturalinje"
+  entry_for_invoice: "Faktura: %invoice%"
+  name: "Navn"
+  description: "Beskrivelse"
+  project: "Projekt"
+  client: "Kunde"
+  default_material_number: "Materialenummer"
+  default_receiver_account: "Til konto"
+  paid_by_account: "Betales af konto"
+  period_from: "Periode fra"
+  period_to: "Periode til"
+  period_from_helptext: "Dette felt skal udfyldes på eksterne fakturaer."
+  period_to_helptext: "Dette felt skal udfyldes på eksterne fakturaer."
+  name_helptext: "Vælg faktuens navn."
+  description_helptext: "Indsættes i tekstfeltet i fakturaen. Autoudfyld er tilgængelig, hvis der er valgt et projekt med en project lead."
+  project_helptext: "Vælg projekt."
+  client_helptext: "Vælg hvilken kunde fakturaen skal udstedes til."
+  payer_account_helptext: 'Anvendes kun når der er tale om ITK-projektposteringer på PSP-element. Hvis valgt indsættes følgende i starten af tekstfeltet i fakturaen: "Betales af [KONTO]".'
+  default_material_number_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
+  default_receiver_account_helptext: "Dette bliver sat automatisk i alle fakturaindgange."
+  client_type_internal: "Intern"
+  client_type_external: "Ekstern"
+  client_ean: "EAN"
+  invoice_entry_type: "Type"
+  invoice_entry_type_manual: "Manuel"
+  invoice_entry_type_product: "Produkt"
+  invoice_entry_type_worklog: "Worklog"
+  action_create_new_invoice_entry_worklog: "Tilføj worklog linje"
+  action_create_new_invoice_entry_manual: "Tilføj manuel linje"
+  action_delete_invoice_entry: "Slet fakturalinje"
+  action_save_invoice_entry: "Gem fakturalinje"
+  invoice_entry_material_number_helptext: "Denne værdi kan kun ændres på fakturaniveau."
+  invoice_entry_product_helptext: "Beskriv fakturalinjen."
+  invoice_entry_price_helptext: "Vælg prisen pr. stk."
+  invoice_entry_amount_helptext: "Vælg antal."
+  invoice_entry_type_heading: "Type: %type%"
+  add_worklogs: "Vælg worklogs"
+  confirm_record_title: "Bogfør faktura"
+  confirm_record_are_you_sure: 'Er du sikker på at du vil bogføre fakturaen "%invoiceName%"?'
+  confirm_record_cannot_be_undone: "Når fakturaen er bogført kan den ikke ændres mere."
+  record_save: "Gennemfør valg"
+  record_invoice_no: "Nej. Gå tilbage."
+  record_invoice_yes: "Ja. Bogfør faktura."
+  record_invoice_yes_no_cost: "Ja. Bogfør faktura UB."
+  record_invoice: "Bogfør faktura?"
+  record_invoice_helptext: ""
+  cannot_record_errors_exist: "Kan ikke bogføre faktura, idet der er fejl i data:"
+  already_recorded: "Fakturaen er allerede bogført"
+  action_show_export: "Vis eksport"
+  action_record: "Bogfør faktura"
+  locked_client_values: "Låste fakturaværdier. Disse værdier bruges i fakturaen og ændres ikke selvom kunden bliver opdateret."
+  locked_type: "Type"
+  locked_sales_channel: "Salgskanal"
+  locked_contact_name: "Kontakt"
+  locked_customer_key: "Ordregiver/Bestiller"
+  client_sales_channel: "Salgskanal"
+  client_customer_key: "Ordregiver/Bestiller"
+  all_worklogs_will_be_marked_as_billed: "Alle worklogs i fakturaen vil blive markeret som faktureret."
+  show_worklogs: "Vis worklogs"
+  export_title: "Eksport"
+  action_export: "Download .csv"
+  back_to_invoice_entry: "Tilbage til fakturalinje"
+  invoice_info: "Fakturainformation"
+  project_billing: "PF"
+  include_project_billing: "Projektfakturering"
+  with_project_billing: "Inkludér"
+  without_project_billing: "Udelad"
+  only_project_billing: "Kun PF"
+  list_recorded: "Bogført"
+  export_only_available_when_mandatory_fields_are_set: "Eksport kun muligt når der er sat en kundekonto"
+  action_export_selected: "Eksporter valg"
+  action_view: "Se"
+  list_exported_date: "Eksportdato"
+  list_recorded_date: "Bogført"
+  list_no_cost: UB
+  list_no_cost_true: "Ja"
+  list_no_cost_false: "Nej"
+  client_type_is_null: ""
+  generate_description: "Autoudfyld"
+  client_project_lead: "Project Lead"
+  required_fields_not_set_for_creating_entries: '"Til konto" og "Materialenummer" skal være valgt før der kan oprettes fakturalinjer.'
+  type: "Kundekonto type"
+  query_label: Søg
+  query_placeholder: Søg på fakturanavn
+  list_amount: "Antal"
 
 material_number_enum:
-    internal: "Interne: 103361"
-    external_with_moms: "Eksterne m/moms: 100006"
-    external_without_moms: "Eksterne u/moms: 100008"
+  internal: "Interne: 103361"
+  external_with_moms: "Eksterne m/moms: 100006"
+  external_without_moms: "Eksterne u/moms: 100008"
 
 accounts:
-    id: "#"
-    create_new: "Opret ny konto"
-    no_records_found: "Ingen fundet"
-    edit: "Redigér"
-    value: "Værdi"
-    actions: "Handlinger"
-    name: "Navn"
-    title: "Konto"
-    back_to_list: "Tilbage til listen"
-    action_save: "Gem"
-    name_helptext: "Vælg et navn"
-    value_helptext: "Vælg kontoens værdi, som sættes ind i fakturaen."
-    delete: "Slet konto"
-    created_by: "Oprettet af"
-    source: "Kilde"
-    manual: "Manuel"
-    action_delete_account: "Slet konto"
-    list_no_records_found: "Ingen konti"
-    status: "Status"
-    category: "Kategori"
-    action_create_new: "Opret ny konto"
-    action_edit: "Redigér"
-    data_provider: "Datakilde"
+  id: "#"
+  create_new: "Opret ny konto"
+  no_records_found: "Ingen fundet"
+  edit: "Redigér"
+  value: "Værdi"
+  actions: "Handlinger"
+  name: "Navn"
+  title: "Konto"
+  back_to_list: "Tilbage til listen"
+  action_save: "Gem"
+  name_helptext: "Vælg et navn"
+  value_helptext: "Vælg kontoens værdi, som sættes ind i fakturaen."
+  delete: "Slet konto"
+  created_by: "Oprettet af"
+  source: "Kilde"
+  manual: "Manuel"
+  action_delete_account: "Slet konto"
+  list_no_records_found: "Ingen konti"
+  status: "Status"
+  category: "Kategori"
+  action_create_new: "Opret ny konto"
+  action_edit: "Redigér"
+  data_provider: "Datakilde"
 
 worklog:
-    title: "Tilføj worklogs til fakturalinje"
-    name: "Worklog"
-    is_billed: "Faktureret"
-    epic: "Tag / Epic"
-    version: "Milestone / Version"
-    worker: "Arbejder"
-    time_spent: "Timer"
-    date: "Dato"
-    is_billed_true: "Ja"
-    is_billed_false: "Nej"
-    period_from: "Periode fra"
-    period_to: "Periode til"
-    is_billed_helptext: ""
-    period_from_helptext: ""
-    period_to_helptext: ""
-    worker_helptext: ""
-    version_helptext: ""
-    epic_helptext: ""
-    owned_by_other: "Anden faktura"
-    action_save: "Gem valgte worklogs"
-    error_already_billed: "Fejl: Indeholder worklog der allerede er faktureret. Prøv at genindlæse siden..."
-    error_added_to_other_invoice_entry: "Fejl: Indeholder worklog der er bundet til anden fakturaindgang. Prøv at genindlæse siden..."
-    only_available_false: "Nej. Vis alle."
-    only_available_true: "Ja"
-    only_available: "Kun \"frie\" worklogs"
-    only_available_helptext: "Worklogs der ikke er i en anden fakturalinje."
-    title_show: "Worklogs"
-    sync_worklogs: "Synkroniser worklogs"
-    sync_worklogs_success: "Succes - siden opdateres.."
+  title: "Tilføj worklogs til fakturalinje"
+  name: "Worklog"
+  is_billed: "Faktureret"
+  epic: "Tag / Epic"
+  version: "Milestone / Version"
+  worker: "Arbejder"
+  time_spent: "Timer"
+  date: "Dato"
+  is_billed_true: "Ja"
+  is_billed_false: "Nej"
+  period_from: "Periode fra"
+  period_to: "Periode til"
+  is_billed_helptext: ""
+  period_from_helptext: ""
+  period_to_helptext: ""
+  worker_helptext: ""
+  version_helptext: ""
+  epic_helptext: ""
+  owned_by_other: "Anden faktura"
+  action_save: "Gem valgte worklogs"
+  error_already_billed: "Fejl: Indeholder worklog der allerede er faktureret. Prøv at genindlæse siden..."
+  error_added_to_other_invoice_entry: "Fejl: Indeholder worklog der er bundet til anden fakturaindgang. Prøv at genindlæse siden..."
+  only_available_false: "Nej. Vis alle."
+  only_available_true: "Ja"
+  only_available: 'Kun "frie" worklogs'
+  only_available_helptext: "Worklogs der ikke er i en anden fakturalinje."
+  title_show: "Worklogs"
+  sync_worklogs: "Synkroniser worklogs"
+  sync_worklogs_success: "Succes - siden opdateres.."
 
 invoice_entry:
-    amount: "Antal enheder"
-    amount_worklogs: "Antal worklogs tilkoblet"
-    new_worklog_information: "Bemærk! Der kan først tilkobles worklogs efter linjen er gemt første gang."
+  amount: "Antal enheder"
+  amount_worklogs: "Antal worklogs tilkoblet"
+  new_worklog_information: "Bemærk! Der kan først tilkobles worklogs efter linjen er gemt første gang."
 
 invoice_recordable:
-    error_no_client: "Ingen kunde tilkoblet"
-    error_no_contact: "Ingen kontakt"
-    error_no_type: "Ingen type"
-    error_empty_invoice_entry: "Fakturaindgangen med id: %invoiceEntryId% har et tomt antal"
+  error_no_client: "Ingen kunde tilkoblet"
+  error_no_contact: "Ingen kontakt"
+  error_no_type: "Ingen type"
+  error_empty_invoice_entry: "Fakturaindgangen med id: %invoiceEntryId% har et tomt antal"
 
 title: "Economics"
 
 home:
-    title: "Hjem"
-    invoice: "Faktura"
-    invoice_desctiption: "Opret og rediger fakturaer baseret på opgaver og worklogs i Project Tracker."
-    planning: "Planlægning"
-    planning_description: "Planlægningsoversigt baseret på opgaver i Project Tracker."
-    create_project: "Projektopretter"
-    create_project_description: "Hjælper med at oprette projekter i Project Tracker."
-    accounts: "Konti"
-    accounts_description: "Liste over konti. Bruges i valglister i resten af systemet."
-    account_details: "Liste over kontoer der bruges i faktura."
-    project_billing: "Projektfakturering"
-    project_billing_description: "Fakturér alle kunder i et projekt for en given periode."
-    projects: "Projekter"
-    projects_description: "Liste over projekter. Vælg hvilke skal vises i resten af systemet."
-    clients_description: "Liste over kunder, som kan kobles på projekter."
-    clients: "Kunder"
-    users: 'Brugere'
-    users_description: 'Administrér brugeres adgang til systemet'
-    views: "Visning"
-    views_description: "Visninger kan bruges til begrænse, hvilke data en bruger kan se."
+  title: "Hjem"
+  invoice: "Faktura"
+  invoice_desctiption: "Opret og rediger fakturaer baseret på opgaver og worklogs i Project Tracker."
+  planning: "Planlægning"
+  planning_description: "Planlægningsoversigt baseret på opgaver i Project Tracker."
+  create_project: "Projektopretter"
+  create_project_description: "Hjælper med at oprette projekter i Project Tracker."
+  accounts: "Konti"
+  accounts_description: "Liste over konti. Bruges i valglister i resten af systemet."
+  account_details: "Liste over kontoer der bruges i faktura."
+  project_billing: "Projektfakturering"
+  project_billing_description: "Fakturér alle kunder i et projekt for en given periode."
+  projects: "Projekter"
+  projects_description: "Liste over projekter. Vælg hvilke skal vises i resten af systemet."
+  clients_description: "Liste over kunder, som kan kobles på projekter."
+  clients: "Kunder"
+  users: "Brugere"
+  users_description: "Administrér brugeres adgang til systemet"
+  views: "Visning"
+  views_description: "Visninger kan bruges til begrænse, hvilke data en bruger kan se."
 
 frontpage:
-    title: "Velkommen til Economics"
-    login: "Log ind"
+  title: "Velkommen til Economics"
+  login: "Log ind"
 
 project_billing:
-    title: "Projektfakturering"
-    list_id: "#"
-    list_name: "Navn"
-    list_project: "Projekt"
-    list_created_by: "Opretter"
-    list_updated_at: "Dato"
-    list_project_data_provider: "Datakilde"
-    list_actions: "Handlinger"
-    action_edit: "Redigér"
-    list_no_records_found: "Ingen fundet"
-    action_create_new: "Opret ny projektfakturering"
-    edit: "Redigér projektfakturering"
-    new: "Opret ny projektfakturering"
-    back_to_list: "Tilbage til listen"
-    action_save: "Gem"
-    action_create: "Opret"
-    name: "Navn"
-    name_helptext: "Navn på projektfakturering"
-    invoices: "Tilkoblede fakturaer"
-    action_delete: "Slet projektfakturering"
-    field_name: "Navn"
-    field_name_helptext: "Skriv projektfaktureringens navn"
-    field_project: "Projekt"
-    field_project_helptext: "Vælg projek der skal projektfaktureres"
-    field_period_start: "Fra"
-    field_period_start_helptext: "Vælg hvor perioden skal starte"
-    field_period_end: "Til"
-    field_period_end_helptext: "Vælg hvor perioden skal strække sig til"
-    field_description: "Beskrivelse"
-    field_description_help: "Teksten sættes efter \"Projektnavn: Accountnavn (faktureringsperiode).\" i H på faktura."
-    action_export: "Eksportér"
-    action_record: "Bogfør projektfakturering"
-    action_show_export: "Vis eksport"
-    back_to_invoice: "Tilbage til projektfakturering"
-    confirm_record_are_you_sure: "Er du sikker på at du vil bogføre projektfaktureringen \"%projectBillingName%\"?"
-    all_worklogs_will_be_marked_as_billed: "Alle worklogs og fakturaer i projektfaktureringen vil blive markeret som faktureret."
-    confirm_record_cannot_be_undone: "Når fakturaen er bogført kan den ikke ændres mere."
-    confirm_record_title: "Bogfør projektfaktureringen"
-    record_save: "Gennemfør valg"
-    record_project_billing_false: "Nej. Gå tilbage."
-    record_project_billing_true: "Ja. Bogfør projektfaktureringen."
-    record_project_billing: "Bogfør projektfakturering?"
-    record_project_billing_helptext: ""
-    cannot_record_errors_exist: "Kan ikke bogføre projektfaktureringen, idet der er fejl i dataen:"
-    already_recorded: "Projektfaktureringen er allerede bogført"
-    export_title: "Eksport"
-    recorded: "Ja"
-    list_recorded: "Bogført"
-    issues_not_included: "Opgaver der ikke er inkluderet"
-    issues_not_included_helptext: "En opgave er ikke inkluderet, hvis der ikke er timer registreret på den, eller hvis den ikke har en version sat, som er koblet på en kunde. Sæt version/milestone (skal starte med PB-) på opgaven for at få den med i projektfaktureringen. Synkronisér derefter projektet i \"Projekter\", og tryk derefter \"Gem\" på denne projektfaktureringen for at få opgaverne med."
-    issue:
-        name: "navn"
-        status: "status"
-        key: "nøgle"
-        versions: 'Version'
-        worklog_time_spent: 'Timer'
-    search: "Søg"
-    form_recorded: "Bogført"
-    form_created_by: "Opretter"
-    existing_errors_before_on_record: "Følgende fejl skal rettes før projektfakturering kan bogføres."
-    on_record_errors_invoice_id: "Faktura ID"
-    on_record_errors_error: "Fejlbesked"
-    on_record_errors_invoice_link: "Link til faktura"
-    action_record_internal: "Eksportér interne"
-    action_record_external: "Eksportér eksterne"
+  title: "Projektfakturering"
+  list_id: "#"
+  list_name: "Navn"
+  list_project: "Projekt"
+  list_created_by: "Opretter"
+  list_updated_at: "Dato"
+  list_project_data_provider: "Datakilde"
+  list_actions: "Handlinger"
+  action_edit: "Redigér"
+  list_no_records_found: "Ingen fundet"
+  action_create_new: "Opret ny projektfakturering"
+  edit: "Redigér projektfakturering"
+  new: "Opret ny projektfakturering"
+  back_to_list: "Tilbage til listen"
+  action_save: "Gem"
+  action_create: "Opret"
+  name: "Navn"
+  name_helptext: "Navn på projektfakturering"
+  invoices: "Tilkoblede fakturaer"
+  action_delete: "Slet projektfakturering"
+  field_name: "Navn"
+  field_name_helptext: "Skriv projektfaktureringens navn"
+  field_project: "Projekt"
+  field_project_helptext: "Vælg projek der skal projektfaktureres"
+  field_period_start: "Fra"
+  field_period_start_helptext: "Vælg hvor perioden skal starte"
+  field_period_end: "Til"
+  field_period_end_helptext: "Vælg hvor perioden skal strække sig til"
+  field_description: "Beskrivelse"
+  field_description_help: 'Teksten sættes efter "Projektnavn: Accountnavn (faktureringsperiode)." i H på faktura.'
+  action_export: "Eksportér"
+  action_record: "Bogfør projektfakturering"
+  action_show_export: "Vis eksport"
+  back_to_invoice: "Tilbage til projektfakturering"
+  confirm_record_are_you_sure: 'Er du sikker på at du vil bogføre projektfaktureringen "%projectBillingName%"?'
+  all_worklogs_will_be_marked_as_billed: "Alle worklogs og fakturaer i projektfaktureringen vil blive markeret som faktureret."
+  confirm_record_cannot_be_undone: "Når fakturaen er bogført kan den ikke ændres mere."
+  confirm_record_title: "Bogfør projektfaktureringen"
+  record_save: "Gennemfør valg"
+  record_project_billing_false: "Nej. Gå tilbage."
+  record_project_billing_true: "Ja. Bogfør projektfaktureringen."
+  record_project_billing: "Bogfør projektfakturering?"
+  record_project_billing_helptext: ""
+  cannot_record_errors_exist: "Kan ikke bogføre projektfaktureringen, idet der er fejl i dataen:"
+  already_recorded: "Projektfaktureringen er allerede bogført"
+  export_title: "Eksport"
+  recorded: "Ja"
+  list_recorded: "Bogført"
+  issues_not_included: "Opgaver der ikke er inkluderet"
+  issues_not_included_helptext: 'En opgave er ikke inkluderet, hvis der ikke er timer registreret på den, eller hvis den ikke har en version sat, som er koblet på en kunde. Sæt version/milestone (skal starte med PB-) på opgaven for at få den med i projektfaktureringen. Synkronisér derefter projektet i "Projekter", og tryk derefter "Gem" på denne projektfaktureringen for at få opgaverne med.'
+  issue:
+    name: "navn"
+    status: "status"
+    key: "nøgle"
+    versions: "Version"
+    worklog_time_spent: "Timer"
+  search: "Søg"
+  form_recorded: "Bogført"
+  form_created_by: "Opretter"
+  existing_errors_before_on_record: "Følgende fejl skal rettes før projektfakturering kan bogføres."
+  on_record_errors_invoice_id: "Faktura ID"
+  on_record_errors_error: "Fejlbesked"
+  on_record_errors_invoice_link: "Link til faktura"
+  action_record_internal: "Eksportér interne"
+  action_record_external: "Eksportér eksterne"
 
 product:
-    title: "Produkter"
-    id: "#"
-    name: "Navn"
-    price: "Pris"
-    project: "Projekt"
-    created_at: "Oprettet"
-    updated_at: "Opdateret"
-    list_no_records_found: "Ingen produkter fundet"
-    create: "Opret produkt"
-    update: "Gem"
-    search: "Søg"
-    new: "Opret nyt produkt"
-    form_name: "Navn"
-    form_project: "Projekt"
-    edit: 'Redigér produkt'
-    back_to_list: 'Tilbage til listen'
-    action_save: 'Gem produkt'
-    action_delete: 'Slet produkt'
-    actions: 'Handlinger'
-    action_create_new: 'Opret nyt produkt'
-    action_edit: 'Redigér'
-    select_project: "Vælg projekt"
-    # @TODO Provide some useful help if needed.
-    project_helptext: ""
-    name_helptext: ""
-    price_helptext: ""
+  title: "Produkter"
+  id: "#"
+  name: "Navn"
+  price: "Pris"
+  project: "Projekt"
+  created_at: "Oprettet"
+  updated_at: "Opdateret"
+  list_no_records_found: "Ingen produkter fundet"
+  create: "Opret produkt"
+  update: "Gem"
+  search: "Søg"
+  new: "Opret nyt produkt"
+  form_name: "Navn"
+  form_project: "Projekt"
+  edit: "Redigér produkt"
+  back_to_list: "Tilbage til listen"
+  action_save: "Gem produkt"
+  action_delete: "Slet produkt"
+  actions: "Handlinger"
+  action_create_new: "Opret nyt produkt"
+  action_edit: "Redigér"
+  select_project: "Vælg projekt"
+  # @TODO Provide some useful help if needed.
+  project_helptext: ""
+  name_helptext: ""
+  price_helptext: ""
 
 project:
-    title: "Projekter"
-    include: "Inkludér"
-    id: "#"
-    holiday_planning: "Ferieplanlægning"
-    holiday_planning_helptext: "Hvis valgt bliver projektet inkluderet i ferieplanlægningsoverblikket."
-    name: "Navn"
-    project_tracker_key: "Nøgle"
-    updated_at: "Opdateret"
-    list_no_records_found: "Ingen projekter fundet"
-    sync: "Synkronisér"
-    sync_action: "Synkronisér"
-    search: "Søg"
-    include_null: ""
-    include_false: "Ikke inkluderet"
-    include_true: "Inkluderet"
-    form_name: "Navn"
-    form_key: "Nøgle"
-    form_include: "Inkluderet"
-    information: "Kun inkluderede projekter bliver vist og synkroniseret i resten af system."
-    data_provider_id: "Datakilde"
-    edit: 'Redigér projekt'
-    back_to_list: 'Tilbage til listen'
-    action_save: 'Gem projekt'
-    project_lead_name: 'Project Lead navn'
-    project_lead_name_helptext: ''
-    project_lead_mail: 'Project Lead email'
-    project_lead_mail_helptext: ''
-    project_lead: 'Project Lead'
-    actions: 'Handlinger'
-    action_edit: 'Redigér'
-    action_view_issues: "Vis opgaver"
-    is_billable: "Fakturerbart"
-    is_billable_null: ""
-    is_billable_true: "Fakturerbart"
-    is_billable_false: "Ikke fakturerbart"
+  title: "Projekter"
+  include: "Inkludér"
+  id: "#"
+  holiday_planning: "Ferieplanlægning"
+  holiday_planning_helptext: "Hvis valgt bliver projektet inkluderet i ferieplanlægningsoverblikket."
+  name: "Navn"
+  project_tracker_key: "Nøgle"
+  updated_at: "Opdateret"
+  list_no_records_found: "Ingen projekter fundet"
+  sync: "Synkronisér"
+  sync_action: "Synkronisér"
+  search: "Søg"
+  include_null: ""
+  include_false: "Ikke inkluderet"
+  include_true: "Inkluderet"
+  form_name: "Navn"
+  form_key: "Nøgle"
+  form_include: "Inkluderet"
+  information: "Kun inkluderede projekter bliver vist og synkroniseret i resten af system."
+  data_provider_id: "Datakilde"
+  edit: "Redigér projekt"
+  back_to_list: "Tilbage til listen"
+  action_save: "Gem projekt"
+  project_lead_name: "Project Lead navn"
+  project_lead_name_helptext: ""
+  project_lead_mail: "Project Lead email"
+  project_lead_mail_helptext: ""
+  project_lead: "Project Lead"
+  actions: "Handlinger"
+  action_edit: "Redigér"
+  action_view_issues: "Vis opgaver"
+  is_billable: "Fakturerbart"
+  is_billable_null: ""
+  is_billable_true: "Fakturerbart"
+  is_billable_false: "Ikke fakturerbart"
 
 reports:
-    title: 'Rapporter'
-    description: 'Generer rapporter baseret på data fra eConomics.'
-    management-title: 'Ny ledelsesrapport'
-    fetch_management_report: 'Hent ledelsesrapport'
-    from: 'Fra'
-    to: 'Til'
-    management-title-output: 'Ledelsesrapport %from% - %to%'
-    management-description: 'Rapport med nøgletal til ledelsesrapportering'
-    management-year: 'År'
-    management-total: 'Total'
-    management-1st-quarter: '1. Kvartal'
-    management-2nd-quarter: '2. Kvartal'
-    management-3rd-quarter: '3. Kvartal'
-    management-4th-quarter: '4. Kvartal'
-    management-export-xls: 'Eksportér til excel'
-    management-no-recorded-invoices: 'Ingen bogførte faktura.'
+  title: "Rapporter"
+  description: "Generer rapporter baseret på data fra eConomics."
+  management-title: "Ny ledelsesrapport"
+  fetch_management_report: "Hent ledelsesrapport"
+  from: "Fra"
+  to: "Til"
+  management-title-output: "Ledelsesrapport %from% - %to%"
+  management-description: "Rapport med nøgletal til ledelsesrapportering"
+  management-year: "År"
+  management-total: "Total"
+  management-1st-quarter: "1. Kvartal"
+  management-2nd-quarter: "2. Kvartal"
+  management-3rd-quarter: "3. Kvartal"
+  management-4th-quarter: "4. Kvartal"
+  management-export-xls: "Eksportér til excel"
+  management-no-recorded-invoices: "Ingen bogførte faktura."
 
 workload_report:
-    title: 'Normtidsrapport'
-    select_data_provider: 'Vælg datakilde'
-    workload: 'Normtid'
-    logged_hours: 'Loggede timer'
-    select_viewmode: 'Vælg visningstype'
-    select_view_period_type: 'Vælg periode'
-    week: 'Uge'
-    workers: 'Medarbejdere'
-    worker: 'Medarbejder'
-    hidden-entries: 'Skjulte medarbejdere'
-    submit: 'Hent'
-    average: "Gennemsnit"
-    average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
+  title: "Normtidsrapport"
+  select_data_provider: "Vælg datakilde"
+  workload: "Normtid"
+  logged_hours: "Loggede timer"
+  select_viewmode: "Vælg visningstype"
+  select_view_period_type: "Vælg periode"
+  week: "Uge"
+  workers: "Medarbejdere"
+  worker: "Medarbejder"
+  hidden-entries: "Skjulte medarbejdere"
+  submit: "Hent"
+  average: "Gennemsnit"
+  average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
 
 invoicing_rate_report:
-    title: 'Udfaktureringsrapport'
-    year: 'Vælg år'
-    select_view_period_type: 'Vælg periode'
-    include_issues: 'Inkludér to-dos (+10s load)'
-    reading-guide-header: 'Læsevejledning'
-    submit: 'Hent udfaktureringsrapport'
-    reading-guide: '
-        Aflæsning af todelt celle (medarbejder):
-        [ Fakturerbare timer for perioden ---- Procent af totalt loggede timer faktureret for perioden ].
+  title: "Udfaktureringsrapport"
+  year: "Vælg år"
+  select_view_period_type: "Vælg periode"
+  include_issues: "Inkludér to-dos (+10s load)"
+  reading-guide-header: "Læsevejledning"
+  submit: "Hent udfaktureringsrapport"
+  reading-guide: "
+    Aflæsning af todelt celle (medarbejder):
+    [ Fakturerbare timer for perioden ---- Procent af totalt loggede timer faktureret for perioden ].
 
-        Aflæsning af todelt celle (projekt og to-do):
-        [ Fakturerbare timer for perioden ---- Fakturerede timer for perioden ].
-
-
-        Gennemsnit for periode: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
-
-        Gennemsnit for medarbejder: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
+    Aflæsning af todelt celle (projekt og to-do):
+    [ Fakturerbare timer for perioden ---- Fakturerede timer for perioden ].
 
 
-        Ved hover på faktureringsprocent vises [ Fakturerede timer for perioden ---- Loggede timer for perioden ]'
+    Gennemsnit for periode: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
+
+    Gennemsnit for medarbejder: Procentvist gennemsnit af fakturerede timer af totalt tid logget.
+
+
+    Ved hover på faktureringsprocent vises [ Fakturerede timer for perioden ---- Loggede timer for perioden ]"
 
 hour_report:
-    data_provider_helptext: ''
-    title: 'Timerapport'
-    data_provider: 'Datakilde'
-    project: 'Projekt'
-    version: 'Version'
-    estimated_hours: 'Estimeret'
-    logged_hours: 'Registeret'
-    total: 'Total'
-    from_date: 'Fra dato'
-    to_date: 'Til dato'
-    select_data_provider: 'Vælg datakilde'
-    select_project: 'Vælg project'
-    all_versions: 'Alle versioner'
-    tags: 'Tags'
-    sync_project_action: 'Synkronisér projekt'
+  data_provider_helptext: ""
+  title: "Timerapport"
+  data_provider: "Datakilde"
+  project: "Projekt"
+  version: "Version"
+  estimated_hours: "Estimeret"
+  logged_hours: "Registeret"
+  total: "Total"
+  from_date: "Fra dato"
+  to_date: "Til dato"
+  select_data_provider: "Vælg datakilde"
+  select_project: "Vælg project"
+  all_versions: "Alle versioner"
+  tags: "Tags"
+  sync_project_action: "Synkronisér projekt"
 
 view:
-    list_title: 'Views'
-    list_description: 'Oversigt over de views der er mulige i EConomics'
-    list_name: 'Navn'
-    list_date: 'Dato'
-    list_actions: 'Funktioner'
-    list_edit: 'Redigér'
-    list_delete: 'Slet'
-    list_required_view: 'Påkrævet'
-    list_no_records_found: 'Ingen views'
-    action_create_new: 'Opret View'
-    create_new_step_one: 'Opret nyt view'
-    name: 'Navn'
-    description: 'Beskrivelse'
-    data_providers: 'Installationer'
-    projects: 'Projekter'
-    workers: 'Brugere'
-    edit: 'Angiv filtre'
-    edit_description: 'Brug filtrene herunder til at tilpasse hvilke data der skal være tilgængelige'
-    create_step3_description: 'Dit view'
-    back_to_list: 'Tilbage til listen'
-    save: 'Gem view'
-    action_next: 'Næste'
-    action_create: 'Opret view'
-    action_delete: 'Slet view'
-    delete_page: 'Slet'
-    display_name: 'Navn'
-    display_description: 'Beskrivelse'
-    display_installations: 'Installationer'
-    display_projects: 'Projekter'
-    display_workers: 'Brugere'
-    title: 'Views'
+  list_title: "Views"
+  list_description: "Oversigt over de views der er mulige i EConomics"
+  list_name: "Navn"
+  list_date: "Dato"
+  list_actions: "Funktioner"
+  list_edit: "Redigér"
+  list_delete: "Slet"
+  list_required_view: "Påkrævet"
+  list_no_records_found: "Ingen views"
+  action_create_new: "Opret View"
+  create_new_step_one: "Opret nyt view"
+  name: "Navn"
+  description: "Beskrivelse"
+  data_providers: "Installationer"
+  projects: "Projekter"
+  workers: "Brugere"
+  edit: "Angiv filtre"
+  edit_description: "Brug filtrene herunder til at tilpasse hvilke data der skal være tilgængelige"
+  create_step3_description: "Dit view"
+  back_to_list: "Tilbage til listen"
+  save: "Gem view"
+  action_next: "Næste"
+  action_create: "Opret view"
+  action_delete: "Slet view"
+  delete_page: "Slet"
+  display_name: "Navn"
+  display_description: "Beskrivelse"
+  display_installations: "Installationer"
+  display_projects: "Projekter"
+  display_workers: "Brugere"
+  title: "Views"
 
 exception:
-    invoices_record_entry_amount_not_set: "Faktura can ikke bogføres, da den indeholder fakturalinjer hvor antal ikke er sat. Se: %invoiceEntryUrl%."
-    invoices_record_part_of_project_billing: "Fakturaen er en del af en projektfakturering og kan kun bogføres separat."
-    invoices_export_must_be_on_record: "Faktura skal være en bogført før den kan eksporteres til .csv."
-    invoices_export_part_of_project_billing: "Faktura kan ikke eksporteres da den er en del af en projektfakturering."
-    invoices_export_failure: "Eksport fejlede."
-    invoices_delete_on_record: "Faktura kan ikke slettes, da den er bogført."
-    invoices_delete_part_of_project_billing: "Faktura kan ikke slettes, da den er en del af projektfakturering."
-    invoices_export_failure_could_not_generate_html: "Faktura kan ikke eksporteres. HTML eksport fejlede."
-    project_not_found: "Projektet blev ikke fundet."
-    project_tracker_id_not_set: "Project Tracker id er ikke sat."
-    invoices_part_of_project_billing_cannot_edit: "Fakturaen er en del af en projektfakturering og kan derfor ikke redigeres."
-    invoices_on_record_cannot_edit: "Fakturaen er bogført og kan derfor ikke redigeres."
-    invoice_entry_invoice_on_record_cannot_add_entries: "Fakturaen er bogført og kan derfor ikke få tilføjet fakturalinjer."
-    invoice_entry_invoice_on_record_cannot_edit_entries: "Fakturaen er bogført og kan derfor ikke redigeres."
-    invoice_entry_invoice_on_record_cannot_delete_entries: "Fakturaen er bogført og kan derfor ikke slettes."
-    invoice_entry_not_worklog_type: "Fakturalinjen er ikke af worklog typen."
-    invoice_entry_project_not_set_on_invoice: "Projekt er ikke sat på fakturaen."
-    worklog_not_found: "Worklog blev ikke fundet."
-    project_billing_on_record_cannot_delete: "Projektfaktureringen er bogført og kan derfor ikke slettes."
-    project_billing_on_record_cannot_edit: "Projektfaktureringen er bogført og kan derfor ikke redigeres."
-    project_billing_invoice_on_record_cannot_delete: "Projektfaktureringen er bogført og derfor kan fakturaen ikke slettes."
-    project_billing_no_entity_found: "Projektfakturering ikke fundet."
-    project_billing_no_project_project_tracker_id: "Projektets project tracker id ikke fundet."
-    project_billing_no_project_selected: "Projekt ikke valgt."
-    project_billing_period_cannot_be_null: "Perioden skal være valgt."
-    billing_cannot_put_invoice_on_record_errors_found: "Kan ikke bogføre fakturaen %invoiceName% (%invoiceId%). Følgende fejl er ikke håndteret: %errors%"
-    invoice_client_must_be_set: "Kunde skal være valgt."
-    invoice_errors_exit_cannot_put_on_record: "Der er problemer med projektfaktureringen. Kan ikke bogføre den."
+  invoices_record_entry_amount_not_set: "Faktura can ikke bogføres, da den indeholder fakturalinjer hvor antal ikke er sat. Se: %invoiceEntryUrl%."
+  invoices_record_part_of_project_billing: "Fakturaen er en del af en projektfakturering og kan kun bogføres separat."
+  invoices_export_must_be_on_record: "Faktura skal være en bogført før den kan eksporteres til .csv."
+  invoices_export_part_of_project_billing: "Faktura kan ikke eksporteres da den er en del af en projektfakturering."
+  invoices_export_failure: "Eksport fejlede."
+  invoices_delete_on_record: "Faktura kan ikke slettes, da den er bogført."
+  invoices_delete_part_of_project_billing: "Faktura kan ikke slettes, da den er en del af projektfakturering."
+  invoices_export_failure_could_not_generate_html: "Faktura kan ikke eksporteres. HTML eksport fejlede."
+  project_not_found: "Projektet blev ikke fundet."
+  project_tracker_id_not_set: "Project Tracker id er ikke sat."
+  invoices_part_of_project_billing_cannot_edit: "Fakturaen er en del af en projektfakturering og kan derfor ikke redigeres."
+  invoices_on_record_cannot_edit: "Fakturaen er bogført og kan derfor ikke redigeres."
+  invoice_entry_invoice_on_record_cannot_add_entries: "Fakturaen er bogført og kan derfor ikke få tilføjet fakturalinjer."
+  invoice_entry_invoice_on_record_cannot_edit_entries: "Fakturaen er bogført og kan derfor ikke redigeres."
+  invoice_entry_invoice_on_record_cannot_delete_entries: "Fakturaen er bogført og kan derfor ikke slettes."
+  invoice_entry_not_worklog_type: "Fakturalinjen er ikke af worklog typen."
+  invoice_entry_project_not_set_on_invoice: "Projekt er ikke sat på fakturaen."
+  worklog_not_found: "Worklog blev ikke fundet."
+  project_billing_on_record_cannot_delete: "Projektfaktureringen er bogført og kan derfor ikke slettes."
+  project_billing_on_record_cannot_edit: "Projektfaktureringen er bogført og kan derfor ikke redigeres."
+  project_billing_invoice_on_record_cannot_delete: "Projektfaktureringen er bogført og derfor kan fakturaen ikke slettes."
+  project_billing_no_entity_found: "Projektfakturering ikke fundet."
+  project_billing_no_project_project_tracker_id: "Projektets project tracker id ikke fundet."
+  project_billing_no_project_selected: "Projekt ikke valgt."
+  project_billing_period_cannot_be_null: "Perioden skal være valgt."
+  billing_cannot_put_invoice_on_record_errors_found: "Kan ikke bogføre fakturaen %invoiceName% (%invoiceId%). Følgende fejl er ikke håndteret: %errors%"
+  invoice_client_must_be_set: "Kunde skal være valgt."
+  invoice_errors_exit_cannot_put_on_record: "Der er problemer med projektfaktureringen. Kan ikke bogføre den."
 
 error:
-    title: "Der opstod en fejl"
-    code: "Fejlkode"
-    message: "Besked"
+  title: "Der opstod en fejl"
+  code: "Fejlkode"
+  message: "Besked"
 
 clients:
-    action_delete_account: "Slet kunde"
-    edit: "Redigér kunde"
-    action_save: "Gem"
-    action_create_new: "Opret ny kunde"
-    id: "#"
-    name: "Navn"
-    contact: "Kontakt"
-    standard_price: "Standardpris"
-    type: "Type"
-    account: "Konto"
-    psp: "PSP"
-    ean: "EAN"
-    sales_channel: "Salgskanal"
-    customer_key: "Ordregiver/Bestiller"
-    actions: "Handlinger"
-    action_edit: "Redigér"
-    list_no_records_found: "Ingen kunder"
-    data_provider: "Datakilde"
-    version_name: 'Version'
+  action_delete_account: "Slet kunde"
+  edit: "Redigér kunde"
+  action_save: "Gem"
+  action_create_new: "Opret ny kunde"
+  id: "#"
+  name: "Navn"
+  contact: "Kontakt"
+  standard_price: "Standardpris"
+  type: "Type"
+  account: "Konto"
+  psp: "PSP"
+  ean: "EAN"
+  sales_channel: "Salgskanal"
+  customer_key: "Ordregiver/Bestiller"
+  actions: "Handlinger"
+  action_edit: "Redigér"
+  list_no_records_found: "Ingen kunder"
+  data_provider: "Datakilde"
+  version_name: "Version"
 
 delete:
-    confirm: "Er du sikker på at du vil slette dette?"
+  confirm: "Er du sikker på at du vil slette dette?"
 
 client_type_enum:
-    internal: "Intern"
-    external: "Ekstern"
+  internal: "Intern"
+  external: "Ekstern"
 
 users:
-    title: "Brugere"
-    id: "#"
-    name: "Navn"
-    email: "Email"
-    roles: "Roller"
-    actions: "Handlinger"
-    list_no_records_found: "Ingen brugere fundet."
-    views: 'Views'
+  title: "Brugere"
+  id: "#"
+  name: "Navn"
+  email: "Email"
+  roles: "Roller"
+  actions: "Handlinger"
+  list_no_records_found: "Ingen brugere fundet."
+  views: "Views"
 
 roles:
-    ROLE_ADMIN: 'Administrator'
-    ROLE_USER: 'Bruger'
-    ROLE_INVOICE: 'Faktura'
-    ROLE_PROJECT_BILLING: 'Projektfakturering'
-    ROLE_PLANNING: 'Planlægning'
-    ROLE_REPORT: 'Rapporter'
-    ROLE_PRODUCT_MANAGER: 'Produktadministrator'
+  ROLE_ADMIN: "Administrator"
+  ROLE_USER: "Bruger"
+  ROLE_INVOICE: "Faktura"
+  ROLE_PROJECT_BILLING: "Projektfakturering"
+  ROLE_PLANNING: "Planlægning"
+  ROLE_REPORT: "Rapporter"
+  ROLE_PRODUCT_MANAGER: "Produktadministrator"
 
 issue:
-    title: "Opgaver (%project%)"
-    id: "#"
-    project: "Projekt"
-    name: "Navn"
-    status: "Status"
-    actions: "Handlinger"
-    title_show: "Opgave"
-    placeholder_select_product: "Vælg produkt"
-    products: "Produkter"
-    products_total: "I alt"
-    back_to_list: "Tilbage til listen"
-    form_name: "Navn"
-    action_show: "Vis"
-    no_products_defined_in_project: "Projektet har ingen produkter."
-    manage_products_in_project: "Rediger produkter"
-    list_no_records_found: "Ingen opgaver fundet."
+  title: "Opgaver (%project%)"
+  id: "#"
+  project: "Projekt"
+  name: "Navn"
+  status: "Status"
+  actions: "Handlinger"
+  title_show: "Opgave"
+  placeholder_select_product: "Vælg produkt"
+  products: "Produkter"
+  products_total: "I alt"
+  back_to_list: "Tilbage til listen"
+  form_name: "Navn"
+  action_show: "Vis"
+  no_products_defined_in_project: "Projektet har ingen produkter."
+  manage_products_in_project: "Rediger produkter"
+  list_no_records_found: "Ingen opgaver fundet."
 
-    product_added: "Produkt %product% tilføjet"
-    error_adding_product: "Fejl under tilføjelse af produkt"
-    product_updated: "Produkt %product% opdateret"
-    error_editing_product: "Fejl under opdatering af produkt"
-    product_deleted: "Produkt %product% fjernet"
+  product_added: "Produkt %product% tilføjet"
+  error_adding_product: "Fejl under tilføjelse af produkt"
+  product_updated: "Produkt %product% opdateret"
+  error_editing_product: "Fejl under opdatering af produkt"
+  product_deleted: "Produkt %product% fjernet"
 
-    product:
-        action_delete: "Fjern"
-        action_add: "Tilføj produkt"
-        action_update: "Opdatér"
-        name: "Produkt"
-        price: "Pris"
-        quantity: "Antal"
-        description: "Beskrivelse"
-        total: "I alt"
-        list_no_records_found: "Ingen produkter"
+  product:
+    action_delete: "Fjern"
+    action_add: "Tilføj produkt"
+    action_update: "Opdatér"
+    name: "Produkt"
+    price: "Pris"
+    quantity: "Antal"
+    description: "Beskrivelse"
+    total: "I alt"
+    list_no_records_found: "Ingen produkter"
 
 name_filter_type:
-    name: 'Navn'
+  name: "Navn"
 
 worker:
-    groups: 'Grupper'
-    in_groups: 'I grupper'
-    title: 'Medarbejdere'
-    index_description: 'På denne side kan synkroniserede medarbejderes norm tid defineres'
-    id: 'Id'
-    name: 'Navn'
-    email: 'Email'
-    workload: 'Normtid (inkl. middagspause)'
-    include_in_reports:
-        title: 'Inkludér i rapporter'
-        yes: 'Ja'
-        no: 'Nej'
-    actions: 'Handlinger'
-    action_edit: 'Rediger'
-    edit: 'Rediger medarbejder'
-    action_save: 'Gem'
-    back_to_list: "Tilbage til listen"
-    no_records_found: 'Ingen arbejdere'
+  groups: "Grupper"
+  in_groups: "I grupper"
+  title: "Medarbejdere"
+  index_description: "På denne side kan synkroniserede medarbejderes norm tid defineres"
+  id: "Id"
+  name: "Navn"
+  email: "Email"
+  workload: "Normtid (inkl. middagspause)"
+  include_in_reports:
+    title: "Inkludér i rapporter"
+    yes: "Ja"
+    no: "Nej"
+  actions: "Handlinger"
+  action_edit: "Rediger"
+  edit: "Rediger medarbejder"
+  action_save: "Gem"
+  back_to_list: "Tilbage til listen"
+  no_records_found: "Ingen arbejdere"
 
 workload_report_period_type_enum:
-    week:
-        label: 'Uge'
-    month:
-        label: 'Måned'
-    year:
-        label: 'År'
+  week:
+    label: "Uge"
+  month:
+    label: "Måned"
+  year:
+    label: "År"
 
 workload_report_view_mode_enum:
-    workload:
-        label: 'Loggede timer'
-    billable:
-        label: 'Fakturerbare timer'
-    billed:
-        label: 'Fakturerede timer'
+  workload:
+    label: "Loggede timer"
+  billable:
+    label: "Fakturerbare timer"
+  billed:
+    label: "Fakturerede timer"
 
 invoicing_rate_report_view_mode_enum:
-    summary:
-        label: 'Opsummering'
+  summary:
+    label: "Opsummering"
 
 subscription:
-    list_no_records_found: 'Ingen abonnementer'
-    title: 'Dine abonnementer'
-    subject: 'Rapporttype'
-    frequency: 'Frekvens'
-    urlParams: 'Abonnement'
-    urlParams_search: 'Søg i Abonnementer'
-    delete: 'Slet'
-    confirm_delete: "Er du sikker på at du vil slette dette abonnement?"
-    search: 'Søg'
-    from: 'Fra'
-    subjects:
-        hour_report: 'Timerapport'
-    frequencies:
-        monthly: 'Månedligt'
-        quarterly: 'Kvartalsvist'
-    button:
-        subscribe: 'Abonnér'
-        edit: 'Rediger'
-        monthly: 'Månedligt'
-        quarterly: 'Kvartalsvist'
+  list_no_records_found: "Ingen abonnementer"
+  title: "Dine abonnementer"
+  subject: "Rapporttype"
+  frequency: "Frekvens"
+  urlParams: "Abonnement"
+  urlParams_search: "Søg i Abonnementer"
+  delete: "Slet"
+  confirm_delete: "Er du sikker på at du vil slette dette abonnement?"
+  search: "Søg"
+  from: "Fra"
+  subjects:
+    hour_report: "Timerapport"
+  frequencies:
+    monthly: "Månedligt"
+    quarterly: "Kvartalsvist"
+  button:
+    subscribe: "Abonnér"
+    edit: "Rediger"
+    monthly: "Månedligt"
+    quarterly: "Kvartalsvist"
 
 forecast_report:
-    title: 'Forecast rapport'
-    projects: 'Projekter'
-    invoiced_hours: 'Fakturerede timer'
-    invoiced_recorded_hours: 'Bogførte timer'
-    missing_hours: 'Rest timer'
-    total: 'Total'
+  title: "Forecast rapport"
+  projects: "Projekter"
+  invoiced_hours: "Fakturerede timer"
+  invoiced_recorded_hours: "Bogførte timer"
+  missing_hours: "Rest timer"
+  total: "Total"
 
 sync_status:
-    header: 'Synkronisering'
-    error: '⚠'
-    ok: '✓'
-    button: 'Kør!'
-    not_started: 'Job sat i kø'
-    running: 'I gang...'
-    fetching_status: 'Henter status...'
+  header: "Synkronisering"
+  error: "⚠"
+  ok: "✓"
+  button: "Kør!"
+  not_started: "Job sat i kø"
+  running: "I gang..."
+  fetching_status: "Henter status..."
 
 synchronization_step_enum:
-    projects: 'Projekter'
-    accounts: 'Kontoer'
-    worklogs: 'Tid'
-    issues: 'Opgaver'
+  projects: "Projekter"
+  accounts: "Kontoer"
+  worklogs: "Tid"
+  issues: "Opgaver"
 
 synchronization_status_enum:
-    not_started: 'Afventer'
-    running: 'Kører'
-    done: 'Færdig'
-    error: 'Fejlede'
+  not_started: "Afventer"
+  running: "Kører"
+  done: "Færdig"
+  error: "Fejlede"
 
 billable_unbilled_hours_report:
-    no_description: 'Ingen beskrivelse'
-    no_worker: 'Ingen medarbejder'
-    submit: 'Hent'
-    total: 'Total'
-    unbilled_hours: 'Ufakturerede timer'
-    projects: 'Projekter'
-    year: 'År'
-    title: 'Ufakturerede fakturerbare timer'
-    quarter: 'Kvartal'
-    quarters:
-        all: 'Alle'
-        q1: '1. kvartal'
-        q2: '2. kvartal'
-        q3: '3. kvartal'
-        q4: '4. kvartal'
+  no_description: "Ingen beskrivelse"
+  no_worker: "Ingen medarbejder"
+  submit: "Hent"
+  total: "Total"
+  unbilled_hours: "Ufakturerede timer"
+  projects: "Projekter"
+  year: "År"
+  title: "Ufakturerede fakturerbare timer"
+  quarter: "Kvartal"
+  quarters:
+    all: "Alle"
+    q1: "1. kvartal"
+    q2: "2. kvartal"
+    q3: "3. kvartal"
+    q4: "4. kvartal"
 subscribe_button:
-    subscribe: 'messages'
-    unsubscribe: 'messages'
+  subscribe: "messages"
+  unsubscribe: "messages"
 
 dashboard:
-    work_hours: 'Timestatus for %year%'
-    work_hours_value: '%value% t.'
-    no_user_data: 'Ingen brugerdata tilgængelig'
-    logged_in_as: 'Bruger:  %name%'
-    title: 'Dashboard'
-    norm: 'Timenorm pr. uge'
-    norm_value: '%value% t.'
-    work_hours_months: 'Timestatus måned'
-    work_hours_weeks: 'Timestatus uge'
+  work_hours: "Timestatus for %year%"
+  work_hours_value: "%value% t."
+  no_user_data: "Ingen brugerdata tilgængelig"
+  logged_in_as: "Bruger:  %name%"
+  title: "Dashboard"
+  norm: "Timenorm pr. uge"
+  norm_value: "%value% t."
+  work_hours_months: "Timestatus måned"
+  work_hours_weeks: "Timestatus uge"
 
 groups:
-    action_delete_group: 'Slet gruppe'
-    action_create_new: 'Opret gruppe'
-    action_create: 'Opret gruppe'
-    action_save: 'Gem gruppe'
-    back_to_list: 'Tilbage til listen'
-    edit: 'Redigér gruppe'
-    name_label: 'Navn'
-    new: 'Opret ny gruppe'
-    name_help: 'Vælg et navn for gruppen'
-    users_in_group: 'Medarbejdere i gruppen'
-    actions: 'Handlinger'
-    id: '#'
-    name: 'Navn'
-    action_edit: 'Redigér'
-    list_no_records_found: 'Ingen grupper fundet'
-    title: 'Grupper'
-    workers: 'Medarbejdere'
+  action_delete_group: "Slet gruppe"
+  action_create_new: "Opret gruppe"
+  action_create: "Opret gruppe"
+  action_save: "Gem gruppe"
+  back_to_list: "Tilbage til listen"
+  edit: "Redigér gruppe"
+  name_label: "Navn"
+  new: "Opret ny gruppe"
+  name_help: "Vælg et navn for gruppen"
+  users_in_group: "Medarbejdere i gruppen"
+  actions: "Handlinger"
+  id: "#"
+  name: "Navn"
+  action_edit: "Redigér"
+  list_no_records_found: "Ingen grupper fundet"
+  title: "Grupper"
+  workers: "Medarbejdere"

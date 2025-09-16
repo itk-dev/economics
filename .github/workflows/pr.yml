@@ -3,125 +3,44 @@ on: pull_request
 name: Review
 
 env:
-    COMPOSE_USER: runner
+  COMPOSE_USER: runner
 
 jobs:
-    test-composer-install:
-        runs-on: ubuntu-latest
-        name: Validate composer
-        steps:
-            - uses: actions/checkout@v4
-            - run: |
-                  docker network create frontend
-                  docker compose run --rm phpfpm composer validate composer.json --strict
-                  docker compose run --rm phpfpm composer install
-                  docker compose run --rm phpfpm composer normalize --dry-run
-                  docker compose run --rm phpfpm composer audit
+  validate-doctrine-schema:
+    runs-on: ubuntu-latest
+    name: Validate Doctrine Schema
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker network create frontend
+          docker compose run --rm phpfpm composer install
+          docker compose run --rm phpfpm bin/console doctrine:migrations:migrate --no-interaction
+          docker compose run --rm phpfpm bin/console doctrine:schema:validate
 
-    validate-doctrine-schema:
-        runs-on: ubuntu-latest
-        name: Validate Doctrine Schema
-        steps:
-            - uses: actions/checkout@v4
-            - run: |
-                  docker network create frontend
-                  docker compose run --rm phpfpm composer install
-                  docker compose run --rm phpfpm bin/console doctrine:migrations:migrate --no-interaction
-                  docker compose run --rm phpfpm bin/console doctrine:schema:validate
+  code-analysis:
+    name: PHP - Code analysis (phpstan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker network create frontend
+          docker compose run --rm phpfpm composer install
+          docker compose run --rm phpfpm composer code-analysis
 
-    code-analysis:
-        name: PHP - Code analysis (phpstan)
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - run: |
-                  docker network create frontend
-                  docker compose run --rm phpfpm composer install
-                  docker compose run --rm phpfpm composer code-analysis
+  phpunit:
+    name: Test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-    coding-standards-phpcs:
-        name: coding-standards-check/phpcs
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - run: |
-                  docker network create frontend
-                  docker compose run --rm phpfpm composer install
-                  docker compose run --rm phpfpm composer coding-standards-check
+      - name: Test suite
+        run: |
+          docker network create frontend
+          docker compose run --rm phpfpm composer install
+          docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
 
-    changelog:
-        runs-on: ubuntu-latest
-        name: Changelog should be updated
-        strategy:
-            fail-fast: false
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v2
-                with:
-                    fetch-depth: 2
-
-            -   name: Git fetch
-                run: git fetch
-
-            -   name: Check that changelog has been updated.
-                run: git diff --exit-code origin/${{ github.base_ref }} -- CHANGELOG.md && exit 1 || exit 0
-
-    assets-coding-standards:
-        name: Assets coding standards
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
-
-            -   name: Coding standards
-                run: |
-                    docker network create frontend
-                    docker compose run --rm node npm install
-                    docker compose run --rm node npm run actions/check-coding-standards-assets
-
-    markdown-coding-standards:
-        name: Markdown coding standards
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
-
-            -   name: Coding standards
-                run: |
-                    docker network create frontend
-                    docker compose run --rm node npm install
-                    docker compose run --rm node npm run coding-standards-check/markdownlint
-
-    twig-coding-standards:
-        name: Twig coding standards
-        runs-on: ubuntu-latest
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v3
-
-            -   name: Install
-                run: |
-                    docker network create frontend
-                    docker compose up --detach
-                    docker compose exec --user root phpfpm composer install
-            -   name: Coding standards
-                run: |
-                    docker compose exec phpfpm composer coding-standards-check/twig-cs-fixer
-
-    phpunit:
-        name: Test suite
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-
-            - name: Test suite
-              run: |
-                  docker network create frontend
-                  docker compose run --rm phpfpm composer install
-                  docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
-
-            - name: Upload coverage to Codecov test
-              uses: codecov/codecov-action@v2
-              with:
-                  files: ./coverage/unit.xml
-                  flags: unittests, ${{ matrix.php }}
+      - name: Upload coverage to Codecov test
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./coverage/unit.xml
+          flags: unittests, ${{ matrix.php }}

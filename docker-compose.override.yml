@@ -7,13 +7,18 @@ services:
     ports:
       - "15672"
     environment:
-        - "RABBITMQ_DEFAULT_USER=user"
-        - "RABBITMQ_DEFAULT_PASS=password"
-        - "RABBITMQ_ERLANG_COOKIE=d53f319cd7376f8f840aaf9889f315ab"
+      - "RABBITMQ_DEFAULT_USER=user"
+      - "RABBITMQ_DEFAULT_PASS=password"
+      - "RABBITMQ_ERLANG_COOKIE=d53f319cd7376f8f840aaf9889f315ab"
 
   phpfpm:
     environment:
       - PHP_MEMORY_LIMIT=512M
+
+  nginx:
+    labels:
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
   node:
     image: node:20

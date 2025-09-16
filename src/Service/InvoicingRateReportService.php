@@ -23,10 +23,10 @@ class InvoicingRateReportService
     /**
      * Generates an invoicing rate report for a specific year based on various parameters.
      *
-     * @param int $year the year for which the report is generated
-     * @param PeriodTypeEnum $viewPeriodType the period type
-     * @param InvoicingRateReportViewModeEnum $viewMode the view mode
-     * @param bool $includeIssues whether to include detailed issue-level data in the report
+     * @param int                             $year           the year for which the report is generated
+     * @param PeriodTypeEnum                  $viewPeriodType the period type
+     * @param InvoicingRateReportViewModeEnum $viewMode       the view mode
+     * @param bool                            $includeIssues  whether to include detailed issue-level data in the report
      *
      * @return InvoicingRateReportData the calculated invoicing rate report data
      *
@@ -191,8 +191,8 @@ class InvoicingRateReportService
     /**
      * Retrieves an array of dates for a given period based on the view mode.
      *
-     * @param int $period the period for which to retrieve dates
-     * @param int $year the year for the period
+     * @param int            $period   the period for which to retrieve dates
+     * @param int            $year     the year for the period
      * @param PeriodTypeEnum $viewMode the view mode to determine the dates of the period
      *
      * @return array an array of dates for the given period
@@ -209,7 +209,7 @@ class InvoicingRateReportService
     /**
      * Retrieves the readable period based on the given period and view mode.
      *
-     * @param int $period the period to be made readable
+     * @param int            $period   the period to be made readable
      * @param PeriodTypeEnum $viewMode the view mode to determine the format of the readable period
      *
      * @return string the readable period
@@ -226,7 +226,7 @@ class InvoicingRateReportService
      * Retrieves an array of periods based on the given view mode.
      *
      * @param PeriodTypeEnum $viewMode the view mode to determine the periods
-     * @param int $year the year containing the periods
+     * @param int            $year     the year containing the periods
      *
      * @return array an array of periods
      */
@@ -242,10 +242,8 @@ class InvoicingRateReportService
     /**
      * Returns workloads based on the provided view mode, worker, and date range.
      *
-     * @param InvoicingRateReportViewModeEnum $viewMode defines the view mode
-     * @param string $workerIdentifier the worker's identifier
-     * @param \DateTime $dateFrom
-     * @param \DateTime $dateTo
+     * @param InvoicingRateReportViewModeEnum $viewMode         defines the view mode
+     * @param string                          $workerIdentifier the worker's identifier
      *
      * @return array the list of workloads matching the criteria defined by the parameters
      */

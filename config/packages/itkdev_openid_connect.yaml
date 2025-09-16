@@ -1,16 +1,16 @@
 itkdev_openid_connect:
-  cache_options:
-    cache_pool: 'cache.app'
-  cli_login_options:
-    route: '%env(string:OIDC_CLI_LOGIN_ROUTE)%'
-  user_provider: ~
-  openid_providers:
-    user:
-      options:
-        metadata_url: '%env(string:USER_OIDC_METADATA_URL)%'
-        client_id: '%env(string:USER_OIDC_CLIENT_ID)%'
-        client_secret: '%env(string:USER_OIDC_CLIENT_SECRET)%'
-        redirect_uri: '%env(string:USER_OIDC_REDIRECT_URI)%'
-        #redirect_route: 'index'
-        allow_http: '%env(bool:USER_OIDC_ALLOW_HTTP)%'
-        leeway: '%env(int:USER_OIDC_LEEWAY)%'
+    cache_options:
+        cache_pool: 'cache.app'
+    cli_login_options:
+        route: '%env(string:OIDC_CLI_LOGIN_ROUTE)%'
+    user_provider: ~
+    openid_providers:
+        user:
+            options:
+                metadata_url: '%env(string:USER_OIDC_METADATA_URL)%'
+                client_id: '%env(string:USER_OIDC_CLIENT_ID)%'
+                client_secret: '%env(string:USER_OIDC_CLIENT_SECRET)%'
+                redirect_uri: '%env(string:USER_OIDC_REDIRECT_URI)%'
+                #redirect_route: 'index'
+                allow_http: '%env(bool:USER_OIDC_ALLOW_HTTP)%'
+                leeway: '%env(int:USER_OIDC_LEEWAY)%'
