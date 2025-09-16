@@ -398,11 +398,17 @@
 
     .collapsible:has(+ .navigation-item-submenu):after {
         content: "▲";
+        padding-right: 5px;
+        font-size: 0.6rem;
+        transform: scaleX(1.7) scaleY(0.9) !important;
         @apply pr-4 text-xs;
     }
 
     .collapsible:has(+ .navigation-item-submenu.shown):after {
         content: "▼";
+        padding-right: 5px;
+        font-size: 0.6rem;
+        transform: scaleX(1.7) scaleY(0.9) !important;
         @apply pr-4 text-xs;
     }
     .loading {
@@ -460,14 +466,6 @@
     tr[data-toggle-parent-child-target="child"]:not(.hidden)
         + tr[data-toggle-parent-child-target="parent"]
         > th {
-        content: "▲";
-        padding-right: 5px;
-        font-size: 0.6rem;
-        transform: scaleX(1.7) scaleY(0.9) !important;
-        content: "▼";
-        padding-right: 5px;
-        font-size: 0.6rem;
-        transform: scaleX(1.7) scaleY(0.9) !important;
         border-top: 1px solid #fff;
     }
 }
