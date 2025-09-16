@@ -58,22 +58,22 @@ tasks:
   sync:projects:
     desc: "Sync projects"
     cmds:
-      - task compose -- exec phpfpm bin/console app:sync-projects
+      - task compose -- exec phpfpm bin/console app:sync projects
 
   sync:accounts:
     desc: "Sync accounts"
     cmds:
-      - task compose -- exec phpfpm bin/console app:sync-accounts
+      - task compose -- exec phpfpm bin/console app:sync accounts
 
   sync:issues:
     desc: "Sync issues"
     cmds:
-      - task compose -- exec phpfpm bin/console app:sync-issues
+      - task compose -- exec phpfpm bin/console app:sync issues
 
   sync:worklogs:
     desc: "Sync worklogs"
     cmds:
-      - task compose -- exec phpfpm bin/console app:sync-worklogs
+      - task compose -- exec phpfpm bin/console app:sync worklogs
 
   queue:enqueue:
     desc: "Queue sync jobs"
