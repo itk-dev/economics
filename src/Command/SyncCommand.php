@@ -10,6 +10,7 @@ use App\Message\SyncProjectsMessage;
 use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
+use App\Service\SyncService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,6 +28,7 @@ class SyncCommand extends Command
         private readonly ProjectRepository $projectRepository,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly MessageBusInterface $messageBus,
+        private readonly SyncService $syncService,
     ) {
         parent::__construct($this->getName());
     }
@@ -43,6 +45,13 @@ class SyncCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
+
+        $queueLength = $this->syncService->countPendingJobsByQueueName('async');
+
+        if ($queueLength > 0) {
+            $io->error(sprintf('There are already %d jobs in the sync queue. Please wait until they are processed.', $queueLength));
+            return false;
+        }
 
         // Sync projects
         $this->dispatchDataProviderJobs(
