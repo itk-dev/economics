@@ -34,7 +34,7 @@ readonly class SyncProjectIssuesMessageHandler
                 'dataProviderId' => $message->getDataProviderId(),
             ]);
 
-            return;
+            throw new UnrecoverableMessageHandlingException('Data provider not found', 404);
         }
         try {
             $this->dataSynchronizationService->syncIssuesForProject(
