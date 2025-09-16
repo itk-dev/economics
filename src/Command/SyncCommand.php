@@ -23,7 +23,7 @@ use Symfony\Component\Scheduler\Attribute\AsCronTask;
     name: 'app:sync',
     description: 'Sync all data.',
 )]
-#[AsCronTask(expression: '0 0 * * *', schedule: 'default')]
+#[AsCronTask(expression: '0 1 * * *', schedule: 'default')]
 class SyncCommand extends Command
 {
     public function __construct(
