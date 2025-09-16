@@ -15,6 +15,11 @@ services:
     environment:
       - PHP_MEMORY_LIMIT=512M
 
+  nginx:
+    labels:
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
   node:
     image: node:20
     command: npm run watch
