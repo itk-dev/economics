@@ -15,7 +15,7 @@ readonly class SyncProjectWorklogsMessage
         return $this->projectId;
     }
 
-    public function getDataProviderId(): string
+    public function getDataProviderId(): int
     {
         return $this->dataProviderId;
     }
