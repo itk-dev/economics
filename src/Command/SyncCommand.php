@@ -4,152 +4,77 @@ namespace App\Command;
 
 use App\Exception\EconomicsException;
 use App\Exception\UnsupportedDataProviderException;
-use App\Message\SyncAccountsMessage;
-use App\Message\SyncProjectIssuesMessage;
-use App\Message\SyncProjectsMessage;
-use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\DataProviderRepository;
-use App\Repository\ProjectRepository;
 use App\Service\SyncService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
 #[AsCommand(
     name: 'app:sync',
-    description: 'Sync all data.',
+    description: 'Sync all data or specific type (projects, accounts, issues, worklogs).',
 )]
 #[AsCronTask(expression: '0 1 * * *', schedule: 'default')]
 class SyncCommand extends Command
 {
+    private const VALID_TYPES = ['projects', 'accounts', 'issues', 'worklogs'];
+
     public function __construct(
-        private readonly ProjectRepository $projectRepository,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly MessageBusInterface $messageBus,
         private readonly SyncService $syncService,
     ) {
-        parent::__construct($this->getName());
+        parent::__construct();
     }
 
     protected function configure(): void
     {
+        $this->addArgument(
+            'type',
+            InputArgument::OPTIONAL,
+            'Sync type: projects, accounts, issues, worklogs (if not specified, syncs all)',
+            null
+        );
     }
 
-    /**
-     * @throws UnsupportedDataProviderException
-     * @throws EconomicsException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
+        $type = $input->getArgument('type');
 
-        $queueLength = $this->syncService->countPendingJobsByQueueName('async');
-
-        if ($queueLength > 0) {
-            $io->error(sprintf('There are already %d jobs in the sync queue. Please wait until they are processed.', $queueLength));
-
+        // Validate type if provided
+        if ($type !== null && !in_array($type, self::VALID_TYPES)) {
+            $io->error(sprintf('Invalid sync type "%s". Valid types are: %s', $type, implode(', ', self::VALID_TYPES)));
             return Command::INVALID;
         }
 
-        // Sync projects
-        $this->dispatchDataProviderJobs(
-            $io,
-            $dataProviders,
-            'Projects',
-            fn ($dataProvider, $dataProviderId) => new SyncProjectsMessage($dataProviderId)
-        );
+        $queueLength = $this->syncService->countPendingJobsByQueueName('async');
+        if ($queueLength > 0) {
+            $io->error(sprintf('There are already %d jobs in the sync queue. Please wait until they are processed.', $queueLength));
+            return Command::INVALID;
+        }
 
-        // Sync accounts
-        $this->dispatchDataProviderJobs(
-            $io,
-            array_filter($dataProviders, fn ($dp) => $dp->isEnableAccountSync()),
-            'Accounts',
-            fn ($dataProvider, $dataProviderId) => new SyncAccountsMessage($dataProviderId)
-        );
+        $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
-        // Sync issues and worklogs (project-based)
-        foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
-
-            // Sync issues
-            $this->dispatchProjectJobs(
-                $io,
-                $dataProvider,
-                $projects,
-                'Issues',
-                fn ($project, $dataProviderId) => new SyncProjectIssuesMessage(
-                    $project->getProjectTrackerId(),
-                    $dataProviderId
-                )
-            );
-
-            // Sync worklogs
-            $this->dispatchProjectJobs(
-                $io,
-                $dataProvider,
-                $projects,
-                'Worklogs',
-                fn ($project, $dataProviderId) => new SyncProjectWorklogsMessage(
-                    $project->getProjectTrackerId(),
-                    $dataProviderId
-                )
-            );
+        // If no type specified, sync all
+        if ($type === null) {
+            $this->syncService->syncProjects($dataProviders, $io);
+            $this->syncService->syncAccounts($dataProviders, $io);
+            $this->syncService->syncIssues($dataProviders, $io);
+            $this->syncService->syncWorklogs($dataProviders, $io);
+        } else {
+            // Sync only the specified type
+            match ($type) {
+                'projects' => $this->syncService->syncProjects($dataProviders, $io),
+                'accounts' => $this->syncService->syncAccounts($dataProviders, $io),
+                'issues' => $this->syncService->syncIssues($dataProviders, $io),
+                'worklogs' => $this->syncService->syncWorklogs($dataProviders, $io),
+            };
         }
 
         return Command::SUCCESS;
-    }
-
-    private function dispatchDataProviderJobs(
-        SymfonyStyle $io,
-        array $dataProviders,
-        string $type,
-        callable $messageFactory,
-    ): void {
-        $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
-
-        foreach ($dataProviders as $dataProvider) {
-            $dataProviderId = $dataProvider->getId();
-            if (null === $dataProviderId) {
-                continue;
-            }
-
-            $io->writeln(sprintf('Dispatching %s sync job for %s',
-                strtolower($type),
-                $dataProvider->getName()
-            ));
-
-            $message = $messageFactory($dataProvider, $dataProviderId);
-            $this->messageBus->dispatch($message);
-        }
-    }
-
-    private function dispatchProjectJobs(
-        SymfonyStyle $io,
-        $dataProvider,
-        array $projects,
-        string $type,
-        callable $messageFactory,
-    ): void {
-        $io->info(sprintf('Dispatching %s sync jobs', strtolower($type)));
-
-        foreach ($projects as $project) {
-            $dataProviderId = $dataProvider->getId();
-            if (null === $dataProviderId) {
-                continue;
-            }
-
-            $io->writeln(sprintf('Dispatching %s sync job for %s',
-                strtolower($type),
-                $project->getName()
-            ));
-
-            $message = $messageFactory($project, $dataProviderId);
-            $this->messageBus->dispatch($message);
-        }
     }
 }
