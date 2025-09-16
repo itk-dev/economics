@@ -72,7 +72,27 @@ tasks:
   queue:enqueue-all:
     desc: "Queue all sync jobs"
     cmds:
-      - task compose -- exec phpfpm bin/console app:sync
+      - task compose -- exec phpfpm bin/console app:sync-projects
+
+  sync:accounts:
+    desc: "Sync accounts"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:sync-accounts
+
+  sync:issues:
+    desc: "Sync issues"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:sync-issues
+
+  sync:worklogs:
+    desc: "Sync worklogs"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:sync-worklogs
+
+  queue:enqueue:
+    desc: "Queue sync jobs"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:queue-sync
 
   queue:consume-one:
     desc: "Run messenger worker - consume one"
