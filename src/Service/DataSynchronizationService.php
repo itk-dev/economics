@@ -201,14 +201,14 @@ class DataSynchronizationService
      * @throws EconomicsException
      * @throws UnsupportedDataProviderException
      */
-    public function syncIssuesForProject(string $projectId, DataProvider $dataProvider, ?callable $progressCallback = null): void
+    public function syncIssuesForProject(int $projectId, DataProvider $dataProvider, ?callable $progressCallback = null): void
     {
         $dataProviderId = $dataProvider->getId();
 
         $service = $this->dataProviderService->getService($dataProvider);
 
         $project = $this->projectRepository->findOneBy([
-            'projectTrackerId' => $projectId,
+            'id' => $projectId,
         ]);
 
         if (!$project) {
@@ -227,7 +227,7 @@ class DataSynchronizationService
         do {
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
             $project = $this->projectRepository->findOneBy([
-                'projectTrackerId' => $projectId,
+                'id' => $projectId,
             ]);
 
             if (!$project) {
@@ -320,14 +320,14 @@ class DataSynchronizationService
      * @throws EconomicsException
      * @throws UnsupportedDataProviderException
      */
-    public function syncWorklogsForProject(string $projectId, DataProvider $dataProvider, ?callable $progressCallback = null): void
+    public function syncWorklogsForProject(int $projectId, DataProvider $dataProvider, ?callable $progressCallback = null): void
     {
         $dataProviderId = $dataProvider->getId();
 
         $service = $this->dataProviderService->getService($dataProvider);
 
         $project = $this->projectRepository->findOneBy([
-            'projectTrackerId' => $projectId,
+            'id' => $projectId,
         ]);
 
         if (!$project) {
@@ -365,7 +365,7 @@ class DataSynchronizationService
         $worklogsAdded = 0;
         foreach ($worklogData->worklogData as $worklogDatum) {
             $project = $this->projectRepository->findOneBy([
-                'projectTrackerId' => $projectId,
+                'id' => $projectId,
             ]);
 
             if (!$project) {
