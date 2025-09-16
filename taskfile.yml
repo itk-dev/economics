@@ -55,30 +55,30 @@ tasks:
   # ---------------------------
   # Data synchronization
   # ---------------------------
-  sync:projects:
+  queue:projects:
     desc: "Sync projects"
     cmds:
       - task compose -- exec phpfpm bin/console app:sync projects
 
-  sync:accounts:
+  queue:accounts:
     desc: "Sync accounts"
     cmds:
       - task compose -- exec phpfpm bin/console app:sync accounts
 
-  sync:issues:
+  queue:issues:
     desc: "Sync issues"
     cmds:
       - task compose -- exec phpfpm bin/console app:sync issues
 
-  sync:worklogs:
+  queue:worklogs:
     desc: "Sync worklogs"
     cmds:
       - task compose -- exec phpfpm bin/console app:sync worklogs
 
-  queue:enqueue:
+  queue:all:
     desc: "Queue sync jobs"
     cmds:
-      - task compose -- exec phpfpm bin/console app:queue-sync
+      - task compose -- exec phpfpm bin/console app:sync
 
   queue:consume-one:
     desc: "Run messenger worker (dev)"
