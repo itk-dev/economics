@@ -50,4 +50,4 @@ readonly class SyncProjectIssuesMessageHandler
             throw new UnrecoverableMessageHandlingException($e->getMessage(), $e->getCode(), $e);
         }
     }
-}git
+}g
