@@ -2,10 +2,10 @@
 
 namespace App\Message;
 
-class SyncProjectsMessage
+readonly class SyncProjectsMessage
 {
     public function __construct(
-        private readonly int $dataProviderId,
+        private int $dataProviderId,
     ) {
     }
 

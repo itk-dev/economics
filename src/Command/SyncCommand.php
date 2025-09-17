@@ -2,8 +2,6 @@
 
 namespace App\Command;
 
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Repository\DataProviderRepository;
 use App\Service\SyncService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -21,7 +19,7 @@ use Symfony\Component\Scheduler\Attribute\AsCronTask;
 #[AsCronTask(expression: '0 1 * * *', schedule: 'default')]
 class SyncCommand extends Command
 {
-    private const VALID_TYPES = ['projects', 'accounts', 'issues', 'worklogs'];
+    private const array VALID_TYPES = ['projects', 'accounts', 'issues', 'worklogs'];
 
     public function __construct(
         private readonly DataProviderRepository $dataProviderRepository,
@@ -46,21 +44,23 @@ class SyncCommand extends Command
         $type = $input->getArgument('type');
 
         // Validate type if provided
-        if ($type !== null && !in_array($type, self::VALID_TYPES)) {
+        if (null !== $type && !in_array($type, self::VALID_TYPES)) {
             $io->error(sprintf('Invalid sync type "%s". Valid types are: %s', $type, implode(', ', self::VALID_TYPES)));
+
             return Command::INVALID;
         }
 
         $queueLength = $this->syncService->countPendingJobsByQueueName('async');
         if ($queueLength > 0) {
             $io->error(sprintf('There are already %d jobs in the sync queue. Please wait until they are processed.', $queueLength));
+
             return Command::INVALID;
         }
 
         $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
 
         // If no type specified, sync all
-        if ($type === null) {
+        if (null === $type) {
             $this->syncService->syncProjects($dataProviders, $io);
             $this->syncService->syncAccounts($dataProviders, $io);
             $this->syncService->syncIssues($dataProviders, $io);
@@ -72,6 +72,7 @@ class SyncCommand extends Command
                 'accounts' => $this->syncService->syncAccounts($dataProviders, $io),
                 'issues' => $this->syncService->syncIssues($dataProviders, $io),
                 'worklogs' => $this->syncService->syncWorklogs($dataProviders, $io),
+                default => throw new \InvalidArgumentException('Invalid sync type'),
             };
         }
 
