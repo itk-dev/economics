@@ -5,12 +5,12 @@ namespace App\Message;
 class SyncProjectIssuesMessage
 {
     public function __construct(
-        private readonly string $projectId,
+        private readonly int $projectId,
         private readonly int $dataProviderId,
     ) {
     }
 
-    public function getProjectId(): string
+    public function getProjectId(): int
     {
         return $this->projectId;
     }

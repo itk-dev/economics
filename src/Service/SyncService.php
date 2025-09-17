@@ -21,6 +21,7 @@ readonly class SyncService
         private ContainerInterface $transportLocator,
     ) {
     }
+
     /**
      * @param DataProvider[] $dataProviders
      */
@@ -29,8 +30,12 @@ readonly class SyncService
         $io->info('Dispatching projects sync jobs');
 
         foreach ($dataProviders as $dataProvider) {
+            $providerId = $dataProvider->getId();
+            if (null === $providerId) {
+                continue;
+            }
             $this->dispatchJob(
-                new SyncProjectsMessage($dataProvider->getId()),
+                new SyncProjectsMessage($providerId),
                 "projects sync job for {$dataProvider->getName()}",
                 $io
             );
@@ -42,7 +47,7 @@ readonly class SyncService
      */
     public function syncAccounts(array $dataProviders, SymfonyStyle $io): void
     {
-        $enabledProviders = array_filter($dataProviders, fn($dp) => $dp->isEnableAccountSync());
+        $enabledProviders = array_filter($dataProviders, fn ($dp) => $dp->isEnableAccountSync());
 
         if (empty($enabledProviders)) {
             $io->error('No data providers with account sync is enabled.');
@@ -51,8 +56,12 @@ readonly class SyncService
         $io->info('Dispatching accounts sync jobs');
 
         foreach ($enabledProviders as $dataProvider) {
+            $providerId = $dataProvider->getId();
+            if (null === $providerId) {
+                continue;
+            }
             $this->dispatchJob(
-                new SyncAccountsMessage($dataProvider->getId()),
+                new SyncAccountsMessage($providerId),
                 "accounts sync job for {$dataProvider->getName()}",
                 $io
             );
@@ -67,11 +76,15 @@ readonly class SyncService
         $io->info('Dispatching issues sync jobs');
 
         foreach ($dataProviders as $dataProvider) {
+            $providerId = $dataProvider->getId();
+            if (null === $providerId) {
+                continue;
+            }
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
             foreach ($projects as $project) {
                 $this->dispatchJob(
-                    new SyncProjectIssuesMessage($project->getId(), $dataProvider->getId()),
+                    new SyncProjectIssuesMessage($project->getId(), $providerId),
                     "issues sync job for {$project->getName()}",
                     $io
                 );
@@ -89,9 +102,14 @@ readonly class SyncService
         foreach ($dataProviders as $dataProvider) {
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
+            $providerId = $dataProvider->getId();
+            if (null === $providerId) {
+                continue;
+            }
+
             foreach ($projects as $project) {
                 $this->dispatchJob(
-                    new SyncProjectWorklogsMessage($project->getId(), $dataProvider->getId()),
+                    new SyncProjectWorklogsMessage($project->getId(), $providerId),
                     "worklogs sync job for {$project->getName()}",
                     $io
                 );
