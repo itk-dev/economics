@@ -2,12 +2,12 @@
 
 namespace App\Service;
 
-use App\Entity\DataProvider;
 use App\Message\SyncAccountsMessage;
 use App\Message\SyncProjectIssuesMessage;
 use App\Message\SyncProjectsMessage;
 use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\ProjectRepository;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -23,7 +23,12 @@ readonly class SyncService
     }
 
     /**
-     * @param DataProvider[] $dataProviders
+     * Dispatch jobs for syncing projects.
+     *
+     * @param array        $dataProviders Array of data providers to sync worklogs for
+     * @param SymfonyStyle $io            The SymfonyStyle instance to use for output
+     *
+     * @return void the number of pending jobs in the specified queue
      */
     public function syncProjects(array $dataProviders, SymfonyStyle $io): void
     {
@@ -43,7 +48,12 @@ readonly class SyncService
     }
 
     /**
-     * @param DataProvider[] $dataProviders
+     * Dispatch jobs for syncing accounts.
+     *
+     * @param array        $dataProviders Array of data providers to sync worklogs for
+     * @param SymfonyStyle $io            The SymfonyStyle instance to use for output
+     *
+     * @return void the number of pending jobs in the specified queue
      */
     public function syncAccounts(array $dataProviders, SymfonyStyle $io): void
     {
@@ -69,7 +79,12 @@ readonly class SyncService
     }
 
     /**
-     * @param DataProvider[] $dataProviders
+     * Dispatch jobs for syncing issues.
+     *
+     * @param array        $dataProviders Array of data providers to sync worklogs for
+     * @param SymfonyStyle $io            The SymfonyStyle instance to use for output
+     *
+     * @return void the number of pending jobs in the specified queue
      */
     public function syncIssues(array $dataProviders, SymfonyStyle $io): void
     {
@@ -93,7 +108,12 @@ readonly class SyncService
     }
 
     /**
-     * @param DataProvider[] $dataProviders
+     *  Dispatch jobs for syncing worklogs.
+     *
+     * @param array        $dataProviders Array of data providers to sync worklogs for
+     * @param SymfonyStyle $io            The SymfonyStyle instance to use for output
+     *
+     * @return void the number of pending jobs in the specified queue
      */
     public function syncWorklogs(array $dataProviders, SymfonyStyle $io): void
     {
@@ -117,6 +137,15 @@ readonly class SyncService
         }
     }
 
+    /**
+     * Dispatches a given job.
+     *
+     * @param object       $message     The job to dispatch
+     * @param string       $description The description of the job
+     * @param SymfonyStyle $io          The SymfonyStyle instance to use for output
+     *
+     * @return void the number of pending jobs in the specified queue
+     */
     private function dispatchJob(object $message, string $description, SymfonyStyle $io): void
     {
         $io->writeln("Dispatching {$description}");
@@ -126,12 +155,11 @@ readonly class SyncService
     /**
      * Counts the number of pending jobs for a specific queue based on the transport name.
      *
-     * @param string $transportName the name of the transport (queue) to count pending jobs for
+     * @param string $transportName The name of the transport (queue) to count pending jobs for
      *
-     * @return int the number of pending jobs in the specified queue
+     * @return int The number of pending jobs in the specified queue
      *
-     * @throws \RuntimeException         if the specified transport does not support message count functionality
-     * @throws \InvalidArgumentException if the specified transport does not exist
+     * @throws ContainerExceptionInterface
      */
     public function countPendingJobsByQueueName(string $transportName): int
     {
