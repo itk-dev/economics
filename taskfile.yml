@@ -42,7 +42,7 @@ tasks:
   # ---------------------------
   # Project setup
   # ---------------------------
-  project:init:
+  start:
     desc: "Initial local setup"
     cmds:
       - task compose -- pull
@@ -52,9 +52,33 @@ tasks:
       - task compose -- exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
     silent: true
 
+  data-provider:create:
+    desc: "Create a data provider"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:data-provider:create
+
+  fixtures:load:
+    desc: "Load fixtures"
+    cmds:
+      - task compose -- exec phpfpm bin/console doctrine:fixtures:load --no-interaction
+
+  user:set-roles:
+    desc: "Set roles of a user"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:user:set-roles
+
+  tests:
+    desc: "Run tests"
+    cmds:
+      - task compose -- exec phpfpm composer tests
   # ---------------------------
   # Data synchronization
   # ---------------------------
+  queue:all:
+    desc: "Queue all sync jobs"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:sync
+
   queue:projects:
     desc: "Sync projects"
     cmds:
@@ -75,18 +99,13 @@ tasks:
     cmds:
       - task compose -- exec phpfpm bin/console app:sync worklogs
 
-  queue:all:
-    desc: "Queue sync jobs"
-    cmds:
-      - task compose -- exec phpfpm bin/console app:sync
-
   queue:consume-one:
-    desc: "Run messenger worker (dev)"
+    desc: "Run messenger worker - consume one"
     cmds:
       - task compose -- exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
 
   queue:consume-all:
-    desc: "Run messenger worker"
+    desc: "Run messenger worker - consume all"
     cmds:
       - task compose -- exec phpfpm bin/console messenger:consume async -vv
 
@@ -115,3 +134,4 @@ tasks:
       - task compose -- run --rm prettier 'assets/**/*.{css,scss}' --check
       - task compose -- run --rm prettier '**/*.{yml,yaml}' --check
       - task compose -- run --rm node npm run coding-standards-check/markdownlint
+      - task composer -- code-analysis/psalm

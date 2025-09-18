@@ -7,102 +7,48 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/itk-dev/economics?style=flat-square)](https://github.com/itk-dev/economics/commits/develop/)
 [![GitHub License](https://img.shields.io/github/license/itk-dev/economics?style=flat-square)](https://github.com/itk-dev/economics/blob/develop/LICENSE)
 
-Integration with project/issue tracker to ease management. The worklogs
-and projects are synced from a project tracker (e.g. Jira).
+Economics is designed to integrate with project trackers (Jira, Leantime, etc.) to ease project management and
+billing processes.
 
-The project consists of the following parts:
-
-* Invoices: Create invoices for projects and clients. These can consist of manual
-invoice entries and invoice entries created from worklogs.
-* Project Billing: Automatically create invoices from a project for a given period.
-* Planning: Overview of planned work for the coming sprints.
-* Sprint Report: Detailed overview of the work for a given project/version.
-* Projects: Overview of which projects to work with in the system.
-* Project Creator: Create a new project in the Project Tracker.
-
-## Entity model
+It synchronizes projects, issues and worklogs from external project trackers into its own database to allow
+creation of useful dashboards and reports.
 
 ```mermaid
-graph TD;
-   ProjectBilling-->Invoice;
-   ProjectBilling-->Project;
-   Invoice-->Project;
-   Invoice-->Client;
-   Invoice-->InvoiceEntry;
-   InvoiceEntry-->Worklog;
-   Issue-->Worklog;
-   Issue-->Project;
-   Issue-->Account;
-   Client-->Account;
+graph TD
+;
+    ProjectBilling --> Invoice; ProjectBilling --> Project; Invoice --> Project; Invoice --> Client; Invoice --> InvoiceEntry; InvoiceEntry --> Worklog; Issue --> Worklog; Issue --> Project; Issue --> Account; Client --> Account;
 ```
 
-The system is build around Invoices.
-Each invoice is connected to a project and consists of invoice entries.
-The output is a .csv file.
-
-Projects, clients, accounts, issues and worklogs are synchronized from a project tracker.
-
-Invoice entries can be manual entries or connected to a number of worklogs from
-a project tracker.
-
-Project billing can create a number of invoices for a given project for a given project.
-Only issues from the project tracker that have a connected account will be included. This
-is used to create invoices for the Support project, where issues are billed to different
-accounts.
-
-## Synchronization
-
-Economics depends on data fra external systems. The integrations with external systems are called Data Providers.
-
-Each Data Provider integration should implement `App\Interface\DataProviderServiceInterface`.
-
-The data synchronization is handled by symfony messenger. This is handled differently in development and production.
-
-### Production
-
-Supervisor is added to `docker-compose.server.override.yaml` to make sure the job queue is running.
-
-Symfony scheduler is used for creating a new job each hour at minute 5. See `App\Command\QueueSyncCommand`.
-
-### Develop
-
-In development the job queue should be run manually.
-
-```sh
-docker compose exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
-```
-
-### Queuing jobs
-
-Jobs can be queued manually with App\Command\QueueSyncCommand
-
-```sh
-docker compose exec phpfpm bin/console app:queue-sync
-```
-
-Jobs can also be queued in the admin interface in the bottom left corner.
-
-In production jobs are queued automatically each hour.
+<!-- GETTING STARTED -->
 
 ## Development
 
-Getting started:
+### Getting Started
 
-```shell
-docker compose pull
-docker compose run --rm node npm install
-docker compose up --detach
-docker compose exec phpfpm composer install
-docker compose exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
+Run initialization script:
+
+```sh
+task start
 ```
 
-Set create `.env.local` with the following values set
+Open website:
 
-```shell
+```sh
+itkdev-docker-compose open
+```
+
+Login and afterward assign roles to your user
+
+```sh
+task user:set-roles
+```
+
+Reload page and you should have access to everything.
+
+Create .env.local with the following values set:
+
+```md
 ###> Project tracker connection ###
-JIRA_PROJECT_TRACKER_URL=<VALUE>
-JIRA_PROJECT_TRACKER_USER=<VALUE>
-JIRA_PROJECT_TRACKER_TOKEN=<VALUE>
 LEANTIME_PROJECT_TRACKER_URL=<VALUE>
 LEANTIME_PROJECT_TRACKER_TOKEN=<VALUE>
 ###< Project tracker connection ###
@@ -119,40 +65,75 @@ USER_OIDC_LEEWAY=<VALUE>
 APP_INVOICE_RECEIVER_ACCOUNT=<VALUE>
 APP_INVOICE_DEFAULT_DESCRIPTION=<VALUE>
 
-JIRA_API_SERVICE_CUSTOM_FIELD_EPIC_LINK=<VALUE>
-JIRA_API_SERVICE_CUSTOM_FIELD_ACCOUNT=<VALUE>
-JIRA_API_SERVICE_CUSTOM_FIELD_SPRINT=<VALUE>
-JIRA_API_SERVICE_DEFAULT_BOARD=<VALUE>
+###> symfony/mailer ###
+MAILER_DSN=smtp://mail:1025
+###< symfony/mailer ###
 ```
 
-Sync projects and accounts.
+### Data
 
-```shell
-docker compose exec phpfpm bin/console app:sync-projects
-docker compose exec phpfpm bin/console app:sync-accounts
+You have two options to get some data into the database.
+
+You can either:
+
+- [Load in fixtures](#fixtures)
+- [Synchronize data](#synchronize-data) from an actual project tracker.
+
+#### Fixtures
+
+To load fixtures
+
+```sh
+task fixtures:load
 ```
 
-Visit /admin/project and "include" the projects that should be synchronized in the installation.
+#### Synchronize Data
 
-Then sync issues and worklogs
+##### Data provider
 
-```shell
-docker compose exec phpfpm bin/console app:sync-issues
-docker compose exec phpfpm bin/console app:sync-worklogs
+To synchronize data, we need to setup a data provider.
+
+Create data-provider
+
+```sh
+task data-provider:create
 ```
 
-### Assets
+- Enter name
+- Enter the base url of the project tracker(e.g. <https://leantime.whatever.com>)
+- Enter secret
+- Use up-down arrows to select an implementation class
+  - A class is implemented for each supported project tracker
 
-The node container will watch for code changes in the `assets` folder and
-recompile.
+##### Synchronize projects
 
-Use
+Before issues and worklogs can be synchronized, projects need to be synchronized and "included".
 
-``` shell
-docker compose logs --tail 0 --follow node
+Queue project and account sync jobs and consume the jobs
+
+```sh
+task queue:projects
+task queue:accounts
+task queue:consume-all
 ```
 
-to see the compilation log, e.g. to detect errors.
+- Navigate to /admin/project/ and filter by "Not included"
+- Include the projects you want to synchronize data for.
+
+##### Synchronize issues/worklogs
+
+After including the projects, you can synchronize issues and worklogs for these projects.
+
+Queue and consume issue and worklog jobs
+
+- Note that this might take a while.
+
+```sh
+task queue:all
+task queue:consume-all
+```
+
+All relevant data should now be synchronized to the database.
 
 ### Coding standards
 
@@ -161,29 +142,13 @@ Each PR is reviewed with Github Actions.
 Check coding standards with:
 
 ```shell
-# Apply coding standards and run static analysis for php and twig
-docker compose exec phpfpm composer coding-standards-check
-
-# Check coding standards for assets and markdown
-docker compose run --rm node npm run coding-standards-check
+task coding-standards:check
 ```
 
-Apply some coding standards with:
+Apply coding standards with:
 
 ```shell
-# Apply coding standards and run static analysis for php and twig
-docker compose exec phpfpm composer prepare-code
-
-# Apply coding standards for assets and markdown
-docker compose run --rm node npm run coding-standards-apply
-```
-
-### Code analysis
-
-We use [Psalm](https://psalm.dev/) for static code analysis:
-
-``` shell
-docker compose exec phpfpm composer code-analysis
+task coding-standards:apply
 ```
 
 ### Testing
@@ -193,50 +158,16 @@ The test setup follows the guidelines from: <https://symfony.com/doc/current/tes
 To run tests:
 
 ```shell
-docker compose exec phpfpm composer tests
+task tests
 ```
 
-DoctrineFixtures are load each time phpunit is run.
+DoctrineFixtures are loaded each time PHPUnit is run.
 Between each test the initial state of the database is restored using DAMADoctrineTestBundle.
 
 ## Production
 
-### Deploy
+### Deployment
 
-Build the assets locally
+Deployment is done using Woodpecker.
 
-```shell
-docker compose run --rm node npm run build
-```
-
-Copy the `/public/build` folder to the server.
-
-```shell
-docker compose up --detach
-docker compose exec phpfpm composer install --no-dev --classmap-authoritative
-docker compose exec phpfpm bin/console doctrine:migrations:migrate
-```
-
-### Sync
-
-Run synchronization with a cron process with a given interval to synchronize with the project tracker:
-
- ```shell
-   bin/console app:sync
-```
-
-## Importing products
-
-We need an initial product import to get going. Use
-
-``` shell
-docker compose exec phpfpm bin/console app:product:import «CSV filename»
-```
-
-to import from a CSV file.
-
-The CSV **must** contain the following headers:
-
-``` csv
-id,name,price,project.id,project.name
-```
+Building of assets is handled by Github Actions.
