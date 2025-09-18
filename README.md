@@ -174,7 +174,7 @@ To run tests:
 task tests
 ```
 
-DoctrineFixtures are load each time phpunit is run.
+DoctrineFixtures are loaded each time PHPUnit is run.
 Between each test the initial state of the database is restored using DAMADoctrineTestBundle.
 
 ## Production
