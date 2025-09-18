@@ -10,7 +10,8 @@
 Economics is designed to integrate with project trackers (Jira, Leantime, etc.) to ease project management and
 billing processes.
 
-It synchronizes projects, issues and worklogs from external project trackers into its own database.
+It synchronizes projects, issues and worklogs from external project trackers into its own database to allow creation of useful dashboards and reports.
+
 
 ```mermaid
 graph TD
@@ -100,21 +101,21 @@ task data-provider:create
 ```
 
 2. Enter name
-2. Enter the base url of the project tracker(e.g. <https://leantime.whatever.com>)
-3. Enter secret
-4. Use up-down arrows to select an implementation class
-
-- A class is implemented for each supported project tracker
+3. Enter the base url of the project tracker(e.g. <https://leantime.whatever.com>)
+4. Enter secret
+5. Use up-down arrows to select an implementation class
+   * A class is implemented for each supported project tracker
 
 #### Synchronize projects
 
 Before issues and worklogs can be synchronized, projects need to be synchronized and "included".
 
-1. Queue projects job and consume the job
+1. Queue project and account sync jobs and consume the jobs
 
 ```sh
 task queue:projects
-task queue:consume-one
+task queue:accounts
+task queue:consume-all
 ```
 
 2. Navigate to /admin/project/ and filter by "Not included"
@@ -125,8 +126,7 @@ task queue:consume-one
 After including the projects you want to synchronize data for, you can synchronize issues and worklogs.
 
 1. Queue issues and worklogs job and consume the jobs
-
-- Note that this might take a while.
+    * Note that this might take a while.
 
 ```sh
 task queue:all
@@ -176,3 +176,21 @@ task tests
 
 DoctrineFixtures are load each time phpunit is run.
 Between each test the initial state of the database is restored using DAMADoctrineTestBundle.
+
+# Production
+
+### Deploy
+
+Build the assets locally
+
+```shell
+docker compose run --rm node npm run build
+```
+
+Copy the `/public/build` folder to the server.
+
+```shell
+docker compose up --detach
+docker compose exec phpfpm composer install --no-dev --classmap-authoritative
+docker compose exec phpfpm bin/console doctrine:migrations:migrate
+```
