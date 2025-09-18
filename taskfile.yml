@@ -71,6 +71,11 @@ tasks:
     desc: "Add a user"
     cmds:
       - task compose -- exec phpfpm bin/console app:user:set-roles
+
+  tests:
+    desc: "Run tests"
+    cmds:
+      - task compose -- exec phpfpm composer tests
   # ---------------------------
   # Data synchronization
   # ---------------------------

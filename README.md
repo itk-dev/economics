@@ -40,8 +40,9 @@ task user:set-roles
 
 5. Reload page and you should have access to everything.
 
+6. Set create .env.local with the following values set
 ```
-Set create .env.local with the following values set
+
 ###> Project tracker connection ###
 LEANTIME_PROJECT_TRACKER_URL=<VALUE>
 LEANTIME_PROJECT_TRACKER_TOKEN=<VALUE>
@@ -165,7 +166,7 @@ The test setup follows the guidelines from: <https://symfony.com/doc/current/tes
 To run tests:
 
 ```shell
-docker compose exec phpfpm composer tests
+task tests
 ```
 
 DoctrineFixtures are load each time phpunit is run.
