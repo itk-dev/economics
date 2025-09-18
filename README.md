@@ -122,7 +122,7 @@ task queue:consume-all
 
 ##### Synchronize issues/worklogs
 
-After including the projects you want to synchronize data for, you can synchronize issues and worklogs.
+After including the projects, you can synchronize issues and worklogs for these projects.
 
 Queue issues and worklogs job and consume the jobs
 
