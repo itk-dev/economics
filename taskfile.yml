@@ -52,6 +52,11 @@ tasks:
       - task compose -- exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
     silent: true
 
+  watch:
+    desc: "Watch for changes and re-build"
+    cmds:
+      - task compose -- logs --tail 0 --follow node
+
   data-provider:create:
     desc: "Create a data provider"
     cmds:
@@ -69,25 +74,30 @@ tasks:
   # ---------------------------
   # Data synchronization
   # ---------------------------
-  queue:enqueue-all:
+  queue:all:
     desc: "Queue all sync jobs"
     cmds:
-      - task compose -- exec phpfpm bin/console app:sync-projects
+      - task compose -- exec phpfpm bin/console app:sync
 
-  sync:accounts:
+  queue:projects:
+    desc: "Sync projects"
+    cmds:
+      - task compose -- exec phpfpm bin/console app:sync projects
+
+  queue:accounts:
     desc: "Sync accounts"
     cmds:
-      - task compose -- exec phpfpm bin/console app:sync-accounts
+      - task compose -- exec phpfpm bin/console app:sync accounts
 
-  sync:issues:
+  queue:issues:
     desc: "Sync issues"
     cmds:
-      - task compose -- exec phpfpm bin/console app:sync-issues
+      - task compose -- exec phpfpm bin/console app:sync issues
 
-  sync:worklogs:
+  queue:worklogs:
     desc: "Sync worklogs"
     cmds:
-      - task compose -- exec phpfpm bin/console app:sync-worklogs
+      - task compose -- exec phpfpm bin/console app:sync worklogs
 
   queue:enqueue:
     desc: "Queue sync jobs"
@@ -129,3 +139,4 @@ tasks:
       - task compose -- run --rm prettier 'assets/**/*.{css,scss}' --check
       - task compose -- run --rm prettier '**/*.{yml,yaml}' --check
       - task compose -- run --rm node npm run coding-standards-check/markdownlint
+      - task composer -- code-analysis/psalm
