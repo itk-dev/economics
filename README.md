@@ -143,7 +143,7 @@ recompile.
 Use
 
 ```sh
-task watch
+docker compose logs --tail 0 --follow node
 ```
 
 to see the compilation log, e.g. to detect errors.

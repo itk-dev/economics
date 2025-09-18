@@ -52,11 +52,6 @@ tasks:
       - task compose -- exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
     silent: true
 
-  watch:
-    desc: "Watch for changes and re-build"
-    cmds:
-      - task compose -- logs --tail 0 --follow node
-
   data-provider:create:
     desc: "Create a data provider"
     cmds:
@@ -68,7 +63,7 @@ tasks:
       - task compose -- exec phpfpm bin/console doctrine:fixtures:load --no-interaction
 
   user:set-roles:
-    desc: "Add a user"
+    desc: "Set roles of a user"
     cmds:
       - task compose -- exec phpfpm bin/console app:user:set-roles
 
