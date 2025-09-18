@@ -2,8 +2,6 @@
 
 namespace App\MessageHandler;
 
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
 use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\DataProviderRepository;
 use App\Service\DataSynchronizationService;
@@ -22,8 +20,7 @@ readonly class SyncProjectWorklogsMessageHandler
     }
 
     /**
-     * @throws UnsupportedDataProviderException
-     * @throws EconomicsException
+     * @throws UnrecoverableMessageHandlingException
      */
     public function __invoke(SyncProjectWorklogsMessage $message): void
     {
