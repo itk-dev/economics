@@ -99,10 +99,10 @@ tasks:
     cmds:
       - task compose -- exec phpfpm bin/console app:sync worklogs
 
-  queue:enqueue:
+  queue:all:
     desc: "Queue sync jobs"
     cmds:
-      - task compose -- exec phpfpm bin/console app:queue-sync
+      - task compose -- exec phpfpm bin/console app:sync
 
   queue:consume-one:
     desc: "Run messenger worker - consume one"
