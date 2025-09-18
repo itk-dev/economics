@@ -180,6 +180,7 @@ Between each test the initial state of the database is restored using DAMADoctri
 ## Production
 
 ### Deployment
+
 Deployment is done using Woodpecker.
 
 Building of assets is handled by Github Actions.
