@@ -135,19 +135,6 @@ task queue:consume-all
 
 All relevant data should now be synchronized to the database.
 
-### Assets
-
-The node container will watch for code changes in the `assets` folder and
-recompile.
-
-Use
-
-```sh
-docker compose logs --tail 0 --follow node
-```
-
-to see the compilation log, e.g. to detect errors.
-
 ### Coding standards
 
 Each PR is reviewed with Github Actions.
