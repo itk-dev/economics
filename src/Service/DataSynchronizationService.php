@@ -326,7 +326,7 @@ class DataSynchronizationService
 
         $service = $this->dataProviderService->getService($dataProvider);
 
-        $project = $this->projectRepository->findOneBy([
+        $project = $this->projectRepository->find([
             'id' => $projectId,
         ]);
 
@@ -364,7 +364,7 @@ class DataSynchronizationService
         $worklogData = $service->getWorklogDataCollection($projectTrackerId);
         $worklogsAdded = 0;
         foreach ($worklogData->worklogData as $worklogDatum) {
-            $project = $this->projectRepository->findOneBy([
+            $project = $this->projectRepository->find([
                 'id' => $projectId,
             ]);
 
