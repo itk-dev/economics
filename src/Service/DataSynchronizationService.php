@@ -207,7 +207,7 @@ class DataSynchronizationService
 
         $service = $this->dataProviderService->getService($dataProvider);
 
-        $project = $this->projectRepository->findOneBy([
+        $project = $this->projectRepository->find($projectId);
             'id' => $projectId,
         ]);
 
