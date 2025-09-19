@@ -226,7 +226,7 @@ class DataSynchronizationService
         $startAt = 0;
         do {
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
-            $project = $this->projectRepository->findOneBy([
+    $project = $this->projectRepository->find($projectId);
                 'id' => $projectId,
             ]);
 
