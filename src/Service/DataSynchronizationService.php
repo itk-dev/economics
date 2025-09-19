@@ -27,7 +27,6 @@ use App\Repository\VersionRepository;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DataSynchronizationService
@@ -49,7 +48,6 @@ class DataSynchronizationService
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly WorkerRepository $workerRepository,
         private readonly EpicRepository $epicRepository,
-        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -208,8 +206,6 @@ class DataSynchronizationService
         $service = $this->dataProviderService->getService($dataProvider);
 
         $project = $this->projectRepository->find($projectId);
-            'id' => $projectId,
-        ]);
 
         if (!$project) {
             throw new EconomicsException($this->translator->trans('exception.project_not_found'));
@@ -226,9 +222,7 @@ class DataSynchronizationService
         $startAt = 0;
         do {
             $dataProvider = $this->dataProviderRepository->find($dataProviderId);
-    $project = $this->projectRepository->find($projectId);
-                'id' => $projectId,
-            ]);
+            $project = $this->projectRepository->find($projectId);
 
             if (!$project) {
                 throw new EconomicsException($this->translator->trans('exception.project_not_found'));
