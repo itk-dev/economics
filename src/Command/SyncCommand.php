@@ -61,17 +61,17 @@ class SyncCommand extends Command
 
         // If no type specified, sync all
         if (null === $type) {
-            $this->syncService->syncProjects($dataProviders, $io);
-            $this->syncService->syncAccounts($dataProviders, $io);
-            $this->syncService->syncIssues($dataProviders, $io);
-            $this->syncService->syncWorklogs($dataProviders, $io);
+            $this->syncService->syncProjects($dataProviders);
+            $this->syncService->syncAccounts($dataProviders);
+            $this->syncService->syncIssues($dataProviders);
+            $this->syncService->syncWorklogs($dataProviders);
         } else {
             // Sync only the specified type
             match ($type) {
-                'projects' => $this->syncService->syncProjects($dataProviders, $io),
-                'accounts' => $this->syncService->syncAccounts($dataProviders, $io),
-                'issues' => $this->syncService->syncIssues($dataProviders, $io),
-                'worklogs' => $this->syncService->syncWorklogs($dataProviders, $io),
+                'projects' => $this->syncService->syncProjects($dataProviders),
+                'accounts' => $this->syncService->syncAccounts($dataProviders),
+                'issues' => $this->syncService->syncIssues($dataProviders),
+                'worklogs' => $this->syncService->syncWorklogs($dataProviders),
                 default => throw new \InvalidArgumentException('Invalid sync type'),
             };
         }

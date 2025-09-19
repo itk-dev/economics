@@ -9,7 +9,7 @@ use App\Message\SyncProjectWorklogsMessage;
 use App\Repository\ProjectRepository;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 
@@ -19,30 +19,27 @@ readonly class SyncService
         private ProjectRepository $projectRepository,
         private MessageBusInterface $messageBus,
         private ContainerInterface $transportLocator,
+        private LoggerInterface $logger,
     ) {
     }
 
     /**
      * Dispatch jobs for syncing projects.
      *
-     * @param array        $dataProviders Array of data providers to sync worklogs for
-     * @param SymfonyStyle $io            The SymfonyStyle instance to use for output
+     * @param array $dataProviders Array of data providers to sync worklogs for
      *
      * @return void the number of pending jobs in the specified queue
      */
-    public function syncProjects(array $dataProviders, SymfonyStyle $io): void
+    public function syncProjects(array $dataProviders): void
     {
-        $io->info('Dispatching projects sync jobs');
-
         foreach ($dataProviders as $dataProvider) {
             $providerId = $dataProvider->getId();
             if (null === $providerId) {
+                $this->logger->error('Data provider ID is null.', ['dataProvider' => $dataProvider]);
                 continue;
             }
             $this->dispatchJob(
                 new SyncProjectsMessage($providerId),
-                "projects sync job for {$dataProvider->getName()}",
-                $io
             );
         }
     }
@@ -50,30 +47,26 @@ readonly class SyncService
     /**
      * Dispatch jobs for syncing accounts.
      *
-     * @param array        $dataProviders Array of data providers to sync worklogs for
-     * @param SymfonyStyle $io            The SymfonyStyle instance to use for output
+     * @param array $dataProviders Array of data providers to sync worklogs for
      *
      * @return void the number of pending jobs in the specified queue
      */
-    public function syncAccounts(array $dataProviders, SymfonyStyle $io): void
+    public function syncAccounts(array $dataProviders): void
     {
         $enabledProviders = array_filter($dataProviders, fn ($dp) => $dp->isEnableAccountSync());
 
         if (empty($enabledProviders)) {
-            $io->error('No data providers with account sync is enabled.');
+            $this->logger->error('No data providers with account sync is enabled.');
         }
-
-        $io->info('Dispatching accounts sync jobs');
 
         foreach ($enabledProviders as $dataProvider) {
             $providerId = $dataProvider->getId();
             if (null === $providerId) {
+                $this->logger->error('Data provider ID is null.', ['dataProvider' => $dataProvider]);
                 continue;
             }
             $this->dispatchJob(
                 new SyncAccountsMessage($providerId),
-                "accounts sync job for {$dataProvider->getName()}",
-                $io
             );
         }
     }
@@ -81,18 +74,16 @@ readonly class SyncService
     /**
      * Dispatch jobs for syncing issues.
      *
-     * @param array        $dataProviders Array of data providers to sync worklogs for
-     * @param SymfonyStyle $io            The SymfonyStyle instance to use for output
+     * @param array $dataProviders Array of data providers to sync worklogs for
      *
      * @return void the number of pending jobs in the specified queue
      */
-    public function syncIssues(array $dataProviders, SymfonyStyle $io): void
+    public function syncIssues(array $dataProviders): void
     {
-        $io->info('Dispatching issues sync jobs');
-
         foreach ($dataProviders as $dataProvider) {
             $providerId = $dataProvider->getId();
             if (null === $providerId) {
+                $this->logger->error('Data provider ID is null.', ['dataProvider' => $dataProvider]);
                 continue;
             }
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
@@ -100,8 +91,6 @@ readonly class SyncService
             foreach ($projects as $project) {
                 $this->dispatchJob(
                     new SyncProjectIssuesMessage($project->getId(), $providerId),
-                    "issues sync job for {$project->getName()}",
-                    $io
                 );
             }
         }
@@ -110,28 +99,24 @@ readonly class SyncService
     /**
      *  Dispatch jobs for syncing worklogs.
      *
-     * @param array        $dataProviders Array of data providers to sync worklogs for
-     * @param SymfonyStyle $io            The SymfonyStyle instance to use for output
+     * @param array $dataProviders Array of data providers to sync worklogs for
      *
      * @return void the number of pending jobs in the specified queue
      */
-    public function syncWorklogs(array $dataProviders, SymfonyStyle $io): void
+    public function syncWorklogs(array $dataProviders): void
     {
-        $io->info('Dispatching worklogs sync jobs');
-
         foreach ($dataProviders as $dataProvider) {
             $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
             $providerId = $dataProvider->getId();
             if (null === $providerId) {
+                $this->logger->error('Data provider ID is null.', ['dataProvider' => $dataProvider]);
                 continue;
             }
 
             foreach ($projects as $project) {
                 $this->dispatchJob(
                     new SyncProjectWorklogsMessage($project->getId(), $providerId),
-                    "worklogs sync job for {$project->getName()}",
-                    $io
                 );
             }
         }
@@ -140,15 +125,12 @@ readonly class SyncService
     /**
      * Dispatches a given job.
      *
-     * @param object       $message     The job to dispatch
-     * @param string       $description The description of the job
-     * @param SymfonyStyle $io          The SymfonyStyle instance to use for output
+     * @param object $message The job to dispatch
      *
      * @return void the number of pending jobs in the specified queue
      */
-    private function dispatchJob(object $message, string $description, SymfonyStyle $io): void
+    private function dispatchJob(object $message): void
     {
-        $io->writeln("Dispatching {$description}");
         $this->messageBus->dispatch($message);
     }
 
