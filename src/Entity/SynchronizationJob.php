@@ -100,4 +100,11 @@ class SynchronizationJob extends AbstractBaseEntity
 
         return $this;
     }
+
+    public function addMessage(string $message): static
+    {
+        $this->messages .= $message."\n";
+
+        return $this;
+    }
 }
