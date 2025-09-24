@@ -6,7 +6,6 @@ use App\Entity\SynchronizationJob;
 use App\Enum\SynchronizationStatusEnum;
 use App\Message\SynchronizeMessage;
 use App\Repository\SynchronizationJobRepository;
-use HttpResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,27 +46,27 @@ class SynchronizationJobController extends AbstractController
     {
         return new JsonResponse([], Response::HTTP_SERVICE_UNAVAILABLE);
 
-//        @TODO re-enable when sync is fully re-factored
-//        $latestJob = $synchronizationJobRepository->getLatestJob();
-//
-//        if (null !== $latestJob && in_array($latestJob->getStatus(), [SynchronizationStatusEnum::NOT_STARTED, SynchronizationStatusEnum::RUNNING])) {
-//            return new JsonResponse(['message' => 'existing job'], Response::HTTP_CONFLICT);
-//        }
-//
-//        $job = new SynchronizationJob();
-//        $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
-//        $synchronizationJobRepository->save($job, true);
-//
-//        $jobId = $job->getId();
-//
-//        if (null === $jobId) {
-//            throw new \Exception('Job id not found');
-//        }
-//
-//        $message = new SynchronizeMessage($jobId);
-//
-//        $bus->dispatch($message);
-//
-//        return new JsonResponse([], 200);
+        //        @TODO re-enable when sync is fully re-factored
+        //        $latestJob = $synchronizationJobRepository->getLatestJob();
+        //
+        //        if (null !== $latestJob && in_array($latestJob->getStatus(), [SynchronizationStatusEnum::NOT_STARTED, SynchronizationStatusEnum::RUNNING])) {
+        //            return new JsonResponse(['message' => 'existing job'], Response::HTTP_CONFLICT);
+        //        }
+        //
+        //        $job = new SynchronizationJob();
+        //        $job->setStatus(SynchronizationStatusEnum::NOT_STARTED);
+        //        $synchronizationJobRepository->save($job, true);
+        //
+        //        $jobId = $job->getId();
+        //
+        //        if (null === $jobId) {
+        //            throw new \Exception('Job id not found');
+        //        }
+        //
+        //        $message = new SynchronizeMessage($jobId);
+        //
+        //        $bus->dispatch($message);
+        //
+        //        return new JsonResponse([], 200);
     }
 }
