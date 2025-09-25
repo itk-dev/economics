@@ -20,7 +20,7 @@ class Issue extends AbstractBaseEntity
     use DataProviderTrait;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private ?string $name = '';
 
     #[ORM\Column(type: 'string', nullable: true, enumType: IssueStatusEnum::class)]
     private ?IssueStatusEnum $status = null;
