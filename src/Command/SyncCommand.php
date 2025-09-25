@@ -13,6 +13,7 @@ use App\Repository\ProjectRepository;
 use App\Repository\SynchronizationJobRepository;
 use App\Service\DataSynchronizationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -33,6 +34,7 @@ class SyncCommand extends Command
         private readonly DataSynchronizationService $dataSynchronizationService,
         private readonly SynchronizationJobRepository $synchronizationJobRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly ManagerRegistry $managerRegistry,
         private readonly HttpClientInterface $client,
         private readonly LoggerInterface $logger,
         private readonly string $monitoringUrl,
@@ -61,83 +63,97 @@ class SyncCommand extends Command
         $job->setStatus(SynchronizationStatusEnum::RUNNING);
         $this->synchronizationJobRepository->save($job, true);
 
-        $io->info('Processing projects');
-        $job->setStep(SynchronizationStepEnum::PROJECTS);
+        try {
+            $io->info('Processing projects');
+            $job->setStep(SynchronizationStepEnum::PROJECTS);
 
-        $this->entityManager->flush();
+            $this->entityManager->flush();
 
-        foreach ($dataProviders as $dataProvider) {
-            $job->addMessage('Processing projects from '.$dataProvider->getName());
-            $this->dataSynchronizationService->syncProjects(function ($i, $length) use ($io, $job) {
-                $this->setProgress($i, $length, $io, $job);
-            }, $dataProvider);
-        }
-
-        $io->info('Processing accounts');
-        $this->setStep(SynchronizationStepEnum::ACCOUNTS, $job);
-
-        foreach ($dataProviders as $dataProvider) {
-            $this->dataSynchronizationService->syncAccounts(function ($i, $length) use ($io, $job) {
-                $this->setProgress($i, $length, $io, $job);
-            }, $dataProvider);
-        }
-
-        $io->info('Processing issues');
-        $this->setStep(SynchronizationStepEnum::ISSUES, $job);
-
-        foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
-
-            foreach ($projects as $project) {
-                $io->writeln("Processing issues for {$project->getName()}");
-
-                $this->dataSynchronizationService->syncIssuesForProject($project->getId(), $dataProvider, function ($i, $length) use ($io, $job) {
+            foreach ($dataProviders as $dataProvider) {
+                $job->addMessage('Processing projects from '.$dataProvider->getName());
+                $this->dataSynchronizationService->syncProjects(function ($i, $length) use ($io, $job) {
                     $this->setProgress($i, $length, $io, $job);
-                });
-
-                $io->writeln('');
+                }, $dataProvider);
             }
-        }
 
-        $io->info('Processing worklogs');
-        $this->setStep(SynchronizationStepEnum::WORKLOGS, $job);
+            $io->info('Processing accounts');
+            $this->setStep(SynchronizationStepEnum::ACCOUNTS, $job);
 
-        foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
+            foreach ($dataProviders as $dataProvider) {
+                $this->dataSynchronizationService->syncAccounts(function ($i, $length) use ($io, $job) {
+                    $this->setProgress($i, $length, $io, $job);
+                }, $dataProvider);
+            }
 
-            /** @var Project $project */
-            foreach ($projects as $project) {
-                $io->writeln("Processing worklogs for {$project->getName()}");
+            $io->info('Processing issues');
+            $this->setStep(SynchronizationStepEnum::ISSUES, $job);
 
-                $projectId = $project->getId();
+            foreach ($dataProviders as $dataProvider) {
+                $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
 
-                if (null === $projectId) {
-                    throw new \RuntimeException('Project id is null');
+                foreach ($projects as $project) {
+                    $io->writeln("Processing issues for {$project->getName()}");
+
+                    $this->dataSynchronizationService->syncIssuesForProject($project->getId(), $dataProvider, function ($i, $length) use ($io, $job) {
+                        $this->setProgress($i, $length, $io, $job);
+                    });
+
+                    $io->writeln('');
                 }
-
-                $this->dataSynchronizationService->syncWorklogsForProject($projectId, $dataProvider, function ($i, $length) use ($io, $job) {
-                    $this->setProgress($i, $length, $io, $job);
-                });
-
-                $io->writeln('');
             }
-        }
 
-        $job = $this->getJob($job);
-        $job->setStatus(SynchronizationStatusEnum::DONE);
-        $job->setEnded(new \DateTime());
-        $this->entityManager->flush();
+            $io->info('Processing worklogs');
+            $this->setStep(SynchronizationStepEnum::WORKLOGS, $job);
 
-        // Call monitoring url if defined.
-        if ('' !== $this->monitoringUrl) {
-            try {
-                $this->client->request('GET', $this->monitoringUrl);
-            } catch (\Throwable $e) {
-                $this->logger->error('Error calling monitoringUrl: '.$e->getMessage());
+            foreach ($dataProviders as $dataProvider) {
+                $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
+
+                /** @var Project $project */
+                foreach ($projects as $project) {
+                    $io->writeln("Processing worklogs for {$project->getName()}");
+
+                    $projectId = $project->getId();
+
+                    if (null === $projectId) {
+                        throw new \RuntimeException('Project id is null');
+                    }
+
+                    $this->dataSynchronizationService->syncWorklogsForProject($projectId, $dataProvider, function ($i, $length) use ($io, $job) {
+                        $this->setProgress($i, $length, $io, $job);
+                    });
+
+                    $io->writeln('');
+                }
             }
-        }
 
-        return Command::SUCCESS;
+            $job = $this->getJob($job);
+            $job->setStatus(SynchronizationStatusEnum::DONE);
+            $job->setEnded(new \DateTime());
+            $this->entityManager->flush();
+
+            // Call monitoring url if defined.
+            if ('' !== $this->monitoringUrl) {
+                try {
+                    $this->client->request('GET', $this->monitoringUrl);
+                } catch (\Throwable $e) {
+                    $this->logger->error('Error calling monitoringUrl: '.$e->getMessage());
+                }
+            }
+
+            return Command::SUCCESS;
+        } catch (\Exception $exception) {
+            $this->managerRegistry->resetManager();
+
+            $job = $this->getJob($job);
+            $job->setStatus(SynchronizationStatusEnum::ERROR);
+            $job->addMessage($exception->getMessage());
+
+            $this->entityManager->flush();
+
+            $io->error($exception->getMessage());
+
+            return Command::FAILURE;
+        }
     }
 
     private function setProgress(int $i, int $length, SymfonyStyle $io, SynchronizationJob $job): void
