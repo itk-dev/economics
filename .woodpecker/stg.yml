@@ -35,3 +35,12 @@ steps:
         - docker compose run --rm node npm clean-install
         - docker compose run --rm node npm run build
         - docker compose run --rm node rm -rf node_modules
+      cron:
+        # @TODO This should run with Symfony scheduler, see App\Command\QueueSyncCommand
+        leantime-sync:
+          minute: '22'
+          hour: '*'
+          day: '*'
+          month: '*'
+          weekday: '*'
+          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:sync'
