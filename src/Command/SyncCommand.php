@@ -146,6 +146,7 @@ class SyncCommand extends Command
 
             $job = $this->getJob($job);
             $job->setStatus(SynchronizationStatusEnum::ERROR);
+            $job->setEnded(new \DateTime());
             $job->addMessage($exception->getMessage());
 
             $this->entityManager->flush();
