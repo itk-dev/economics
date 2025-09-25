@@ -8,8 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.6] - 2025-09-25
+
 * [PR-240](https://github.com/itk-dev/economics/pull/240)
-  Fixes and optimizations for app:sync command
+  Fixes and optimizations for `app:sync` command
+
+## [2.9.5] - 2025-07-10
+
+* [PR-235](https://github.com/itk-dev/economics/pull/235)
+  Various minor changes and request timeout increase
 
 ## [2.9.4] - 2025-07-10
 
