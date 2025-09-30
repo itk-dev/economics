@@ -32,65 +32,6 @@ class DataProviderService
     ) {
     }
 
-    /**
-     * @throws UnsupportedDataProviderException
-     * @throws EconomicsException
-     */
-    public function getService(DataProvider $dataProvider): DataProviderServiceInterface
-    {
-        if (!in_array($dataProvider->getClass(), self::IMPLEMENTATIONS)) {
-            throw new UnsupportedDataProviderException();
-        }
-
-        $url = $dataProvider->getUrl();
-        if (null == $url) {
-            throw new EconomicsException('Data provider url is null');
-        }
-
-        switch ($dataProvider->getClass()) {
-            case JiraApiService::class:
-                $client = $this->httpClient->withOptions([
-                    'base_uri' => $url,
-                    'auth_basic' => $dataProvider->getSecret(),
-                ]);
-
-                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([Response::HTTP_TOO_MANY_REQUESTS], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
-
-                $service = new JiraApiService(
-                    $retryableHttpClient,
-                    $this->customFieldMappings,
-                    $this->defaultBoard,
-                    $url,
-                    $this->weekGoalLow,
-                    $this->weekGoalHigh,
-                    $this->sprintNameRegex,
-                );
-                break;
-            case LeantimeApiService::class:
-                $client = $this->httpClient->withOptions([
-                    'base_uri' => $url,
-                    'headers' => [
-                        'x-api-key' => $dataProvider->getSecret(),
-                    ],
-                ]);
-
-                $retryableHttpClient = new RetryableHttpClient($client, new GenericRetryStrategy([Response::HTTP_TOO_MANY_REQUESTS], $this->httpClientRetryDelayMs, 1.0), $this->httpClientMaxRetries);
-
-                $service = new LeantimeApiService(
-                    $retryableHttpClient,
-                    $url,
-                    $this->weekGoalLow,
-                    $this->weekGoalHigh,
-                    $this->sprintNameRegex,
-                );
-                break;
-            default:
-                throw new UnsupportedDataProviderException();
-        }
-
-        return $service;
-    }
-
     public function createDataProvider(string $name, string $class, string $url, string $secret, bool $enableClientSync = false, bool $enableAccountSync = false): DataProvider
     {
         $dataProvider = new DataProvider();

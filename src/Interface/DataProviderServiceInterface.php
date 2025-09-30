@@ -11,21 +11,5 @@ use App\Model\Planning\PlanningData;
 
 interface DataProviderServiceInterface
 {
-    public function getPlanningDataWeeks(): PlanningData;
-
-    /**
-     * @return array<ClientData>
-     */
-    public function getClientDataForProject(string $projectId): array;
-
-    /**
-     * @return array<AccountData>
-     */
-    public function getAllAccountData(): array;
-
-    public function getIssuesDataForProjectPaged(string $projectId, int $startAt = 0, $maxResults = 50): PagedResult;
-
-    public function getProjectDataCollection(): ProjectDataCollection;
-
-    public function getWorklogDataCollection(string $projectId): WorklogDataCollection;
+    public function update(): void;
 }
