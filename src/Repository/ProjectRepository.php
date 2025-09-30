@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\DataProvider;
 use App\Entity\Project;
 use App\Model\Invoices\ProjectFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -90,5 +91,19 @@ class ProjectRepository extends ServiceEntityRepository
             10,
             ['defaultSortFieldName' => 'project.id', 'defaultSortDirection' => 'asc']
         );
+    }
+
+    public function getByProjectTrackerIds(array $projectTrackerIds, DataProvider $dataProvider): array
+    {
+        $qb = $this->createQueryBuilder('project');
+
+        $qb
+            ->where('project.projectTrackerId IN (:projectTrackerIds)')
+            ->andWhere('project.dataProvider = :dataProvider')
+            ->setParameter('projectTrackerIds', $projectTrackerIds)
+            ->setParameter('dataProvider', $dataProvider)
+            ->orderBy('project.projectTrackerId', 'ASC');
+
+        return $qb->getQuery()->getResult();
     }
 }
