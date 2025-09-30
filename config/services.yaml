@@ -33,8 +33,6 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-            - '../src/Service/JiraApiService.php'
-            - '../src/Service/LeantimeApiService.php'
 
     App\Service\DataProviderService:
         arguments:
@@ -71,6 +69,9 @@ services:
         arguments:
             $emailFromAddress: '%env(string:EMAIL_FROM_ADDRESS)%'
 
-    App\MessageHandler\SynchronizeHandler:
+    App\Service\LeantimeApiService:
         arguments:
-            $monitoringUrl: '%env(string:SYNC_MONITORING_URL)%'
+            $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
+            $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
+            $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
+

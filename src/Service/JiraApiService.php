@@ -444,4 +444,9 @@ class JiraApiService implements DataProviderServiceInterface
     {
         return $this->get("/rest/api/2/issue/$issueId");
     }
+
+    public function update(): void
+    {
+        // TODO: Implement update() method.
+    }
 }
