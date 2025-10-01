@@ -20,6 +20,7 @@ framework:
         routing:
             # Route your messages to the transports
             'App\Message\UpsertProjectMessage': async
+            'App\Message\UpsertVersionMessage': async
 
 # when@test:
 #    framework:

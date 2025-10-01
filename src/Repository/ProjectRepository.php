@@ -93,17 +93,17 @@ class ProjectRepository extends ServiceEntityRepository
         );
     }
 
-    public function getByProjectTrackerIds(array $projectTrackerIds, DataProvider $dataProvider): array
+    public function getProjectTrackerIdsByDataProviders(array $dataProviders)
     {
         $qb = $this->createQueryBuilder('project');
 
         $qb
-            ->where('project.projectTrackerId IN (:projectTrackerIds)')
-            ->andWhere('project.dataProvider = :dataProvider')
-            ->setParameter('projectTrackerIds', $projectTrackerIds)
-            ->setParameter('dataProvider', $dataProvider)
+            ->select('project.projectTrackerId')
+            ->where($qb->expr()->eq('project.include', true))
+            ->where($qb->expr()->in('project.dataProvider', ':dataProviders'))
+            ->setParameter('dataProviders', $dataProviders)
             ->orderBy('project.projectTrackerId', 'ASC');
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery()->getSingleColumnResult();
     }
 }
