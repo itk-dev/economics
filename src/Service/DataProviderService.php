@@ -85,7 +85,7 @@ class DataProviderService
         $project->setProjectTrackerId($upsertProjectData->projectTrackerId);
         // TODO: Remove from entity:
         $project->setProjectTrackerKey($upsertProjectData->projectTrackerId);
-        $project->setProjectTrackerProjectUrl($dataProvider->getUrl() . "/errorpage#/tickets/showTicket/".$upsertProjectData->projectTrackerId);
+        $project->setProjectTrackerProjectUrl($dataProvider->getUrl()."/projects/showProject/".$upsertProjectData->projectTrackerId);
 
         $this->entityManager->flush();
     }
@@ -160,6 +160,7 @@ class DataProviderService
             ->setProjectTrackerIssueId($upsertWorklogData->projectTrackerIssueId)
             ->setTimeSpentSeconds($upsertWorklogData->hours * $this::SECONDS_IN_HOUR)
             ->setKind(BillableKindsEnum::tryFrom($upsertWorklogData->kind))
+            ->setProject($issue->getProject())
             ->setIssue($issue);
 
         $this->entityManager->flush();
