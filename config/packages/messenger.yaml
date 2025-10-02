@@ -21,6 +21,8 @@ framework:
             # Route your messages to the transports
             'App\Message\UpsertProjectMessage': async
             'App\Message\UpsertVersionMessage': async
+            'App\Message\UpsertIssueMessage': async
+            'App\Message\UpsertWorklogMessage': async
 
 # when@test:
 #    framework:

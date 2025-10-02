@@ -68,10 +68,3 @@ services:
     App\Service\SubscriptionHandlerService:
         arguments:
             $emailFromAddress: '%env(string:EMAIL_FROM_ADDRESS)%'
-
-    App\Service\LeantimeApiService:
-        arguments:
-            $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
-            $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
-            $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
-

@@ -9,7 +9,9 @@ use App\Model\Invoices\ProjectDataCollection;
 use App\Model\Invoices\WorklogDataCollection;
 use App\Model\Planning\PlanningData;
 
-interface DataProviderServiceInterface
+interface DataProviderInterface
 {
-    public function update(): void;
+    public function update(bool $enableJobHandling = true): void;
+
+    public function updateProjects(bool $enableJobHandling = true): void;
 }

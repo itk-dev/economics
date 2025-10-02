@@ -5,7 +5,7 @@ namespace App\Service;
 use App\Enum\ClientTypeEnum;
 use App\Enum\IssueStatusEnum;
 use App\Exception\ApiServiceException;
-use App\Interface\DataProviderServiceInterface;
+use App\Interface\DataProviderInterface;
 use App\Model\Invoices\AccountData;
 use App\Model\Invoices\ClientData;
 use App\Model\Invoices\IssueData;
@@ -20,7 +20,7 @@ use App\Model\Invoices\WorklogDataCollection;
 use App\Model\Planning\PlanningData;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class JiraApiService implements DataProviderServiceInterface
+class JiraApiService implements DataProviderInterface
 {
     private const API_PATH_SEARCH = '/rest/api/2/search';
     private const API_PATH_ACCOUNT = '/rest/tempo-accounts/1/account/';
@@ -38,6 +38,16 @@ class JiraApiService implements DataProviderServiceInterface
         protected readonly float $weekGoalHigh,
         protected readonly string $sprintNameRegex,
     ) {
+    }
+
+    public function update(bool $enableJobHandling = true): void
+    {
+        // TODO: Implement update() method.
+    }
+
+    public function updateProjects(bool $enableJobHandling = true): void
+    {
+        // TODO: Implement updateProjects() method.
     }
 
     public function getEndpoints(): array
@@ -443,10 +453,5 @@ class JiraApiService implements DataProviderServiceInterface
     private function getIssue(string $issueId): mixed
     {
         return $this->get("/rest/api/2/issue/$issueId");
-    }
-
-    public function update(): void
-    {
-        // TODO: Implement update() method.
     }
 }
