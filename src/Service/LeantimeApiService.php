@@ -3,12 +3,8 @@
 namespace App\Service;
 
 use App\Entity\DataProvider;
-use App\Entity\Project;
-use App\Entity\Version;
 use App\Enum\IssueStatusEnum;
-use App\Exception\NotFoundException;
 use App\Interface\DataProviderInterface;
-use App\Interface\LeantimeDataInterface;
 use App\Message\UpsertIssueMessage;
 use App\Message\UpsertProjectMessage;
 use App\Message\UpsertVersionMessage;
@@ -20,20 +16,13 @@ use App\Model\Upsert\UpsertWorklogData;
 use App\Repository\DataProviderRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\VersionRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class LeantimeApiService implements DataProviderInterface
 {
-    private const LEANTIME_TIMEZONE = 'UTC';
     private const API_PATH_DATA = '/apidata/api/';
     private const PROJECTS = 'projects';
     private const MILESTONES = 'milestones';
@@ -51,7 +40,7 @@ class LeantimeApiService implements DataProviderInterface
         private readonly IssueRepository $issueRepository,
     ) {}
 
-    public function update(bool $enableJobHandling = true): void
+    public function updateAll(bool $enableJobHandling = true): void
     {
         $this->updateProjects($enableJobHandling);
         $this->updateVersions($enableJobHandling);

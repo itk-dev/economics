@@ -42,7 +42,7 @@ class SyncCommand extends Command
 
         if ($input->getOption('all')) {
             $io->info("Syncing all.");
-            $this->leantimeApiService->update($job);
+            $this->leantimeApiService->updateAll($job);
             return Command::SUCCESS;
         }
 
