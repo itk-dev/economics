@@ -130,4 +130,17 @@ class IssueRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+
+    public function getProjectTrackerIdsByDataProviders(array $dataProviders)
+    {
+        $qb = $this->createQueryBuilder('issue');
+
+        $qb
+            ->select('issue.projectTrackerId')
+            ->where($qb->expr()->in('issue.dataProvider', ':dataProviders'))
+            ->setParameter('dataProviders', $dataProviders)
+            ->orderBy('issue.projectTrackerId', 'ASC');
+
+        return $qb->getQuery()->getSingleColumnResult();
+    }
 }

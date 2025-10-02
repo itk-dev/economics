@@ -8,9 +8,9 @@ use App\Service\ProjectBillingService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class CreateProjectBillingHandler
+readonly class CreateProjectBillingHandler
 {
-    public function __construct(private readonly ProjectBillingService $projectBillingService)
+    public function __construct(private ProjectBillingService $projectBillingService)
     {
     }
 

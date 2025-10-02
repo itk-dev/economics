@@ -2,13 +2,12 @@
 
 namespace App\Command;
 
-use App\Service\DataProviderService;
 use App\Service\LeantimeApiService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
@@ -25,13 +24,47 @@ class SyncCommand extends Command
 
     protected function configure(): void
     {
+        $this->addOption("job", 'j', InputOption::VALUE_NONE, "Handle as jobs");
+        $this->addOption("projects", "p", InputOption::VALUE_NONE, "Sync projects");
+        $this->addOption("milestones", "m", InputOption::VALUE_NONE, "Sync milestones");
+        $this->addOption('issues', "i", InputOption::VALUE_NONE, "Sync issues");
+        $this->addOption('worklogs', "w", InputOption::VALUE_NONE, "Sync worklogs");
+        $this->addOption("all", "a", InputOption::VALUE_NONE, "Sync all");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $this->leantimeApiService->update();
+        $job = $input->getOption("job");
+
+        $io->info("Handle as jobs: " . ($job ? 'TRUE' : 'FALSE'));
+
+        if ($input->getOption('all')) {
+            $io->info("Syncing all.");
+            $this->leantimeApiService->update($job);
+            return Command::SUCCESS;
+        }
+
+        if ($input->getOption("projects")) {
+            $io->info("Syncing projects.");
+            $this->leantimeApiService->updateProjects($job);
+        }
+
+        if ($input->getOption("milestones")) {
+            $io->info("Syncing milestones.");
+            $this->leantimeApiService->updateProjects($job);
+        }
+
+        if ($input->getOption("issues")) {
+            $io->info("Syncing issues.");
+            $this->leantimeApiService->updateProjects($job);
+        }
+
+        if ($input->getOption("worklogs")) {
+            $io->info("Syncing worklogs.");
+            $this->leantimeApiService->updateProjects($job);
+        }
 
         return Command::SUCCESS;
     }
