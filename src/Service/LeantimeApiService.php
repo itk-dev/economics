@@ -2,23 +2,36 @@
 
 namespace App\Service;
 
+use App\Entity\DataProvider;
 use App\Entity\Project;
 use App\Entity\Version;
 use App\Enum\IssueStatusEnum;
 use App\Exception\NotFoundException;
-use App\Interface\DataProviderServiceInterface;
+use App\Interface\DataProviderInterface;
+use App\Interface\LeantimeDataInterface;
+use App\Message\UpsertIssueMessage;
 use App\Message\UpsertProjectMessage;
 use App\Message\UpsertVersionMessage;
+use App\Message\UpsertWorklogMessage;
+use App\Model\Upsert\UpsertIssueData;
 use App\Model\Upsert\UpsertProjectData;
 use App\Model\Upsert\UpsertVersionData;
+use App\Model\Upsert\UpsertWorklogData;
 use App\Repository\DataProviderRepository;
+use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class LeantimeApiService implements DataProviderServiceInterface
+class LeantimeApiService implements DataProviderInterface
 {
     private const LEANTIME_TIMEZONE = 'UTC';
     private const API_PATH_DATA = '/apidata/api/';
@@ -26,139 +39,54 @@ class LeantimeApiService implements DataProviderServiceInterface
     private const MILESTONES = 'milestones';
     private const TICKETS = 'tickets';
     private const TIMESHEETS = 'timesheets';
-    private const LIMIT = 1;
-
-    private \DateTimeZone $leantimeTimeZone;
-
-    private const STATUS_MAPPING = [
-        'NEW' => IssueStatusEnum::NEW,
-        'INPROGRESS' => IssueStatusEnum::IN_PROGRESS,
-        'DONE' => IssueStatusEnum::DONE,
-        'NONE' => IssueStatusEnum::ARCHIVED,
-    ];
+    private const LIMIT = 100;
 
     public function __construct(
         private readonly ProjectRepository $projectRepository,
         private readonly DataProviderRepository $dataProviderRepository,
-        private readonly VersionRepository $versionRepository,
+        private readonly DataProviderService $dataProviderService,
         private readonly HttpClientInterface $httpClient,
-        private readonly EntityManagerInterface $entityManager,
         private readonly MessageBusInterface $messageBus,
-        private readonly float $weekGoalLow,
-        private readonly float $weekGoalHigh,
-        private readonly string $sprintNameRegex,
-    ) {
-        $this->leantimeTimeZone = new \DateTimeZone(self::LEANTIME_TIMEZONE);
-    }
+        private readonly LoggerInterface $logger,
+        private readonly IssueRepository $issueRepository,
+    ) {}
 
-    public function update(): void
+    public function update(bool $enableJobHandling = true): void
     {
-        $this->updateProjects();
-        $this->updateVersions();
-        //$this->updateIssues();
-        //$this->updateWorklogs();
-    }
-
-    public function updateVersions(bool $enableJobHandling = true): void
-    {
-        $dataProviders = $this->dataProviderRepository->findBy(["class" => LeantimeApiService::class, 'enabled' => true]);
-
-        foreach ($dataProviders as $dataProvider) {
-            $projectTrackerProjectIds = $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]);
-            $dataProviderId = $dataProvider->getId();
-            $secret = $dataProvider->getSecret();
-            $url = $dataProvider->getUrl();
-            $index = 0;
-
-            do {
-                $response = $this->httpClient->request('POST', $url.$this::API_PATH_DATA.$this::MILESTONES, [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                        'x-api-key' => $secret,
-                    ],
-                    "json" => [
-                        "start" => $index,
-                        "limit" => $this::LIMIT,
-                        "projectId" => $projectTrackerProjectIds,
-                        // TODO: Request modified
-                    ],
-                ]);
-
-                try {
-                    $data = json_decode($response->getContent(), null, 512, JSON_THROW_ON_ERROR);
-
-                    foreach ($data->results as $result) {
-                        $projectTrackerId = (string) $result->id;
-
-                        $upsertData = new UpsertVersionData(
-                            $dataProviderId,
-                            $result->name,
-                            $projectTrackerId,
-                            (string) $result->projectId,
-                        );
-
-                        if ($enableJobHandling) {
-                            $this->messageBus->dispatch(new UpsertVersionMessage($upsertData));
-                        } else {
-                            $this->upsertVersion($upsertData);
-                        }
-
-                        $index = $result->id;
-                    }
-                } catch (\Exception $e) {
-                    // TODO: Log error.
-                    break;
-                }
-
-                $index = $index + 1;
-            } while ($data->resultsCount === $this::LIMIT);
-        }
+        $this->updateProjects($enableJobHandling);
+        $this->updateVersions($enableJobHandling);
+        $this->updateIssues($enableJobHandling);
+        $this->updateWorklogs($enableJobHandling);
     }
 
     public function updateProjects(bool $enableJobHandling = true): void
     {
-        $dataProviders = $this->dataProviderRepository->findBy(["class" => LeantimeApiService::class, 'enabled' => true]);
+        $dataProviders = $this->getEnabledLeantimeDataProviders();
 
         foreach ($dataProviders as $dataProvider) {
             $index = 0;
             do {
-                $response = $this->httpClient->request('POST', $dataProvider->getUrl().$this::API_PATH_DATA.$this::PROJECTS, [
-                    'headers' => [
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json',
-                        'x-api-key' => $dataProvider->getSecret(),
-                    ],
-                    "json" => [
+                try {
+                    $data = $this->fetchFromLeantime($dataProvider, $this::PROJECTS, [
                         "start" => $index,
                         "limit" => $this::LIMIT,
                         // TODO: Request modified
-                    ],
-                ]);
-
-                try {
-                    $data = json_decode($response->getContent(), null, 512, JSON_THROW_ON_ERROR);
+                    ]);
 
                     foreach ($data->results as $result) {
-                        $projectTrackerId = (string) $result->id;
-
-                        $upsertData = new UpsertProjectData(
-                            $dataProvider->getId(),
-                            $result->name,
-                            $projectTrackerId,
-                            $dataProvider->getUrl() . "/errorpage#/tickets/showTicket/".$projectTrackerId,
-                        );
+                        $upsertData = $this->getProjectUpsertFromResult($result, $dataProvider);
 
                         if ($enableJobHandling) {
+                            $this->logger->info("Queuing Project Message.");
                             $this->messageBus->dispatch(new UpsertProjectMessage($upsertData));
                         } else {
-                            $this->upsertProject($upsertData);
+                            $this->dataProviderService->upsertProject($upsertData);
                         }
 
                         $index = $result->id;
                     }
-                } catch (\Exception $e) {
-                    // TODO: Log error.
+                } catch (\Throwable $e) {
+                    $this->logger->error($e->getMessage());
                     break;
                 }
 
@@ -167,64 +95,219 @@ class LeantimeApiService implements DataProviderServiceInterface
         }
     }
 
-    public function upsertProject(UpsertProjectData $upsertProjectData): void
+    public function updateVersions(bool $enableJobHandling = true): void
     {
-        $dataProvider = $this->dataProviderRepository->find($upsertProjectData->dataProviderId);
+        $dataProviders = $this->getEnabledLeantimeDataProviders();
 
-        if (!$dataProvider) {
-            throw new NotFoundException("DataProvider with id: $upsertProjectData->dataProviderId not found");
+        foreach ($dataProviders as $dataProvider) {
+            $projectTrackerProjectIds = $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]);
+            $index = 0;
+
+            do {
+                try {
+                    $data = $this->fetchFromLeantime($dataProvider, $this::MILESTONES, [
+                        "start" => $index,
+                        "limit" => $this::LIMIT,
+                        "projectIds" => $projectTrackerProjectIds,
+                        // TODO: Request modified
+                    ]);
+
+                    foreach ($data->results as $result) {
+                        $upsertData = $this->getVersionUpsertFromResult($result, $dataProvider);
+
+                        if ($enableJobHandling) {
+                            $this->logger->info("Queuing Version Message.");
+                            $this->messageBus->dispatch(new UpsertVersionMessage($upsertData));
+                        } else {
+                            $this->dataProviderService->upsertVersion($upsertData);
+                        }
+
+                        $index = $result->id;
+                    }
+                } catch (\Throwable $e) {
+                    $this->logger->error($e->getMessage());
+                    break;
+                }
+
+                $index = $index + 1;
+            } while ($data->resultsCount === $this::LIMIT);
         }
-
-        $project = $this->projectRepository->findOneBy([
-            'projectTrackerId' => $upsertProjectData->projectTrackerId, 'dataProvider' => $dataProvider,
-        ]);
-
-        if ($project === null) {
-            $project = new Project();
-            $project->setDataProvider($dataProvider);
-            $this->entityManager->persist($project);
-        }
-
-        $project->setName($upsertProjectData->name);
-        $project->setProjectTrackerId($upsertProjectData->projectTrackerId);
-        // TODO: Remove from entity:
-        $project->setProjectTrackerKey($upsertProjectData->projectTrackerId);
-        $project->setProjectTrackerProjectUrl($dataProvider->getUrl() . "/errorpage#/tickets/showTicket/".$upsertProjectData->projectTrackerId);
-
-        $this->entityManager->flush();
     }
 
-    public function upsertVersion(UpsertVersionData $upsertVersionData): void
+    public function updateIssues(bool $enableJobHandling = true): void
     {
-        $dataProvider = $this->dataProviderRepository->find($upsertVersionData->dataProviderId);
+        $dataProviders = $this->getEnabledLeantimeDataProviders();
 
-        if ($dataProvider === null) {
-            throw new NotFoundException("DataProvider with id: $upsertVersionData->dataProviderId not found");
+        foreach ($dataProviders as $dataProvider) {
+            $projectTrackerProjectIds = $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]);
+            $index = 0;
+
+            do {
+                try {
+                    $data = $this->fetchFromLeantime($dataProvider, $this::TICKETS, [
+                        "start" => $index,
+                        "limit" => $this::LIMIT,
+                        "projectIds" => $projectTrackerProjectIds,
+                        // TODO: Request modified
+                    ]);
+
+                    foreach ($data->results as $result) {
+                        $upsertData = $this->getIssueUpsertFromResult($result, $dataProvider);
+
+                        if ($enableJobHandling) {
+                            $this->logger->info("Queuing Issue Message.");
+                            $this->messageBus->dispatch(new UpsertIssueMessage($upsertData));
+                        } else {
+                            $this->dataProviderService->upsertIssue($upsertData);
+                        }
+
+                        $index = $result->id;
+                    }
+                } catch (\Throwable $e) {
+                    $this->logger->error($e->getMessage());
+                    break;
+                }
+
+                $index = $index + 1;
+            } while ($data->resultsCount === $this::LIMIT);
         }
+    }
 
-        $project = $this->projectRepository->findOneBy([
-            'projectTrackerId' => $upsertVersionData->projectTrackerProjectId, 'dataProvider' => $dataProvider,
+    public function updateWorklogs(bool $enableJobHandling = true): void
+    {
+        $dataProviders = $this->getEnabledLeantimeDataProviders();
+
+        foreach ($dataProviders as $dataProvider) {
+            $projectTrackerTicketIds = $this->issueRepository->getProjectTrackerIdsByDataProviders([$dataProvider]);
+            $index = 0;
+
+            do {
+                try {
+                    $data = $this->fetchFromLeantime($dataProvider, $this::TIMESHEETS, [
+                        "start" => $index,
+                        "limit" => $this::LIMIT,
+                        "ticketIds" => $projectTrackerTicketIds,
+                        // TODO: Request modified
+                    ]);
+
+                    foreach ($data->results as $result) {
+                        $upsertData = $this->getWorklogUpsertFromResult($result, $dataProvider);
+
+                        if ($enableJobHandling) {
+                            $this->logger->info("Queuing Worklog Message.");
+                            $this->messageBus->dispatch(new UpsertWorklogMessage($upsertData));
+                        } else {
+                            $this->dataProviderService->upsertWorklog($upsertData);
+                        }
+
+                        $index = $result->id;
+                    }
+                } catch (\Throwable $e) {
+                    $this->logger->error($e->getMessage());
+                    break;
+                }
+
+                $index = $index + 1;
+            } while ($data->resultsCount === $this::LIMIT);
+        }
+    }
+
+    private function getProjectUpsertFromResult(object $result, DataProvider $dataProvider): UpsertProjectData
+    {
+        $projectTrackerId = (string) $result->id;
+
+        return new UpsertProjectData(
+            $dataProvider->getId(),
+            $result->name,
+            $projectTrackerId,
+            // Error page is the fastest to load.
+            "TODO/".$projectTrackerId,
+        );
+    }
+
+    private function getVersionUpsertFromResult(object $result, DataProvider $dataProvider): UpsertVersionData
+    {
+        $projectTrackerId = (string) $result->id;
+
+        return new UpsertVersionData(
+            $dataProvider->getId(),
+            $result->name,
+            $projectTrackerId,
+            (string) $result->projectId,
+        );
+    }
+
+    private function getIssueUpsertFromResult(object $result, DataProvider $dataProvider): UpsertIssueData
+    {
+        $projectTrackerId = (string) $result->id;
+
+        return new UpsertIssueData(
+            $projectTrackerId,
+            $dataProvider->getId(),
+            (string) $result->projectId,
+            $result->name,
+            $result->tags,
+            $result->plannedHours,
+            $result->remainingHours,
+            $result->worker,
+            $this->convertStatusToEnum($result->status),
+            $result->dueDate !== null ? $this->getLeanDateTime($result->dueDate) : null,
+            $result->resolutionDate !== null ? $this->getLeanDateTime($result->resolutionDate) : null,
+        );
+    }
+
+    private function getWorklogUpsertFromResult(object $result, DataProvider $dataProvider): UpsertWorklogData
+    {
+        $projectTrackerId = (string) $result->id;
+
+        return new UpsertWorklogData(
+            $projectTrackerId,
+            $dataProvider->getId(),
+            (string) $result->ticketId,
+            $result->description,
+            $result->workDate !== null ? $this->getLeanDateTime($result->workDate) : null,
+            $result->username,
+            $result->hours,
+            $result->kind,
+        );
+    }
+
+    private function fetchFromLeantime(DataProvider $dataProvider, string $type, array $params): object
+    {
+        $response = $this->post($dataProvider, $type, $params);
+        return json_decode($response->getContent(), null, 512, JSON_THROW_ON_ERROR);
+    }
+
+    private function post(DataProvider $dataProvider,  $path, array $body): ResponseInterface
+    {
+        return $this->httpClient->request('POST', $dataProvider->getUrl().$this::API_PATH_DATA.$path, [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'x-api-key' => $dataProvider->getSecret(),
+            ],
+            "json" => $body,
         ]);
+    }
 
-        if ($project === null) {
-            throw new NotFoundException("Project with projectTrackerId: $upsertVersionData->projectTrackerProjectId not found");
-        }
+    private function getLeanDateTime(string $dateString): ?\DateTimeInterface
+    {
+        return new \DateTime($dateString, new \DateTimeZone('UTC'));
+    }
 
-        $version = $this->versionRepository->findOneBy([
-            'projectTrackerId' => $upsertVersionData->projectTrackerId, 'dataProvider' => $dataProvider,
-        ]);
+    private function convertStatusToEnum(string $statusString): IssueStatusEnum
+    {
+        return match ($statusString) {
+            'NEW' => IssueStatusEnum::NEW,
+            'INPROGRESS' => IssueStatusEnum::IN_PROGRESS,
+            'DONE' => IssueStatusEnum::DONE,
+            'NONE' => IssueStatusEnum::ARCHIVED,
+            default => IssueStatusEnum::OTHER,
+        };
+    }
 
-        if (!$version) {
-            $version = new Version();
-            $version->setDataProvider($dataProvider);
-            $version->setProjectTrackerId($upsertVersionData->projectTrackerId);
-            $version->setProject($project);
-
-            $this->entityManager->persist($version);
-        }
-
-        $version->setName($upsertVersionData->name);
-
-        $this->entityManager->flush();
+    private function getEnabledLeantimeDataProviders(): array
+    {
+        return $this->dataProviderRepository->findBy(["class" => LeantimeApiService::class, 'enabled' => true]);
     }
 }
