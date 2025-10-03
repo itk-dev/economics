@@ -24,7 +24,7 @@ class SyncCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption("job", 'j', InputOption::VALUE_NONE, "Handle as jobs");
+        $this->addOption("job", 'j', InputOption::VALUE_NONE, "Use async job handling");
         $this->addOption("projects", "p", InputOption::VALUE_NONE, "Sync projects");
         $this->addOption("milestones", "m", InputOption::VALUE_NONE, "Sync milestones");
         $this->addOption('issues', "i", InputOption::VALUE_NONE, "Sync issues");
@@ -36,34 +36,34 @@ class SyncCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $job = $input->getOption("job");
+        $jobHandling = $input->getOption("job");
 
-        $io->info("Handle as jobs: " . ($job ? 'TRUE' : 'FALSE'));
+        $io->info("Handle as jobs: " . ($jobHandling ? 'TRUE' : 'FALSE'));
 
         if ($input->getOption('all')) {
             $io->info("Syncing all.");
-            $this->leantimeApiService->updateAll($job);
+            $this->leantimeApiService->updateAll($jobHandling);
             return Command::SUCCESS;
         }
 
         if ($input->getOption("projects")) {
             $io->info("Syncing projects.");
-            $this->leantimeApiService->updateProjects($job);
+            $this->leantimeApiService->updateProjects($jobHandling);
         }
 
         if ($input->getOption("milestones")) {
             $io->info("Syncing milestones.");
-            $this->leantimeApiService->updateProjects($job);
+            $this->leantimeApiService->updateProjects($jobHandling);
         }
 
         if ($input->getOption("issues")) {
             $io->info("Syncing issues.");
-            $this->leantimeApiService->updateProjects($job);
+            $this->leantimeApiService->updateProjects($jobHandling);
         }
 
         if ($input->getOption("worklogs")) {
             $io->info("Syncing worklogs.");
-            $this->leantimeApiService->updateProjects($job);
+            $this->leantimeApiService->updateProjects($jobHandling);
         }
 
         return Command::SUCCESS;
