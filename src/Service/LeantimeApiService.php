@@ -41,7 +41,7 @@ class LeantimeApiService implements DataProviderInterface
         private readonly IssueRepository $issueRepository,
     ) {}
 
-    public function updateAll(bool $asyncJobQueue = true): void
+    public function updateAll(bool $asyncJobQueue = false): void
     {
         $this->updateProjects($asyncJobQueue);
         $this->updateVersions($asyncJobQueue);
