@@ -40,30 +40,30 @@ class JiraApiService implements DataProviderInterface
     ) {
     }
 
-    public function updateAll(bool $enableJobHandling = true): void
+    public function updateAll(bool $asyncJobQueue = true): void
     {
-        $this->updateProjects($enableJobHandling);
-        $this->updateVersions($enableJobHandling);
-        $this->updateIssues($enableJobHandling);
-        $this->updateWorklogs($enableJobHandling);
+        $this->updateProjects($asyncJobQueue);
+        $this->updateVersions($asyncJobQueue);
+        $this->updateIssues($asyncJobQueue);
+        $this->updateWorklogs($asyncJobQueue);
     }
 
-    public function updateProjects(bool $enableJobHandling = true): void
+    public function updateProjects(bool $asyncJobQueue = true): void
     {
         // TODO: Implement updateProjects() method.
     }
 
-    public function updateVersions(bool $enableJobHandling = true): void
+    public function updateVersions(bool $asyncJobQueue = true): void
     {
         // TODO: Implement updateVersions() method.
     }
 
-    public function updateIssues(bool $enableJobHandling = true): void
+    public function updateIssues(bool $asyncJobQueue = true): void
     {
         // TODO: Implement updateIssues() method.
     }
 
-    public function updateWorklogs(bool $enableJobHandling = true): void
+    public function updateWorklogs(bool $asyncJobQueue = true): void
     {
         // TODO: Implement updateWorklogs() method.
     }

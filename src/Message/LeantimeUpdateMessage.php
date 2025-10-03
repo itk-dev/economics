@@ -11,6 +11,8 @@ readonly class LeantimeUpdateMessage
         public int $start,
         public int $limit,
         public DataProvider $dataProvider,
+        public bool $asyncJobQueue,
         public ?array $projectTrackerProjectIds = null,
+        public ?array $projectTrackerTicketIds = null,
     ) {}
 }

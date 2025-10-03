@@ -11,13 +11,13 @@ use App\Model\Planning\PlanningData;
 
 interface DataProviderInterface
 {
-    public function updateAll(bool $enableJobHandling = true): void;
+    public function updateAll(bool $asyncJobQueue = true): void;
 
-    public function updateProjects(bool $enableJobHandling = true): void;
+    public function updateProjects(bool $asyncJobQueue = true): void;
 
-    public function updateVersions(bool $enableJobHandling = true): void;
+    public function updateVersions(bool $asyncJobQueue = true): void;
 
-    public function updateIssues(bool $enableJobHandling = true): void;
+    public function updateIssues(bool $asyncJobQueue = true): void;
 
-    public function updateWorklogs(bool $enableJobHandling = true): void;
+    public function updateWorklogs(bool $asyncJobQueue = true): void;
 }
