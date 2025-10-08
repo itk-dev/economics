@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\DataProvider;
 use App\Entity\Project;
+use App\Interface\FetchDateInterface;
 use App\Model\Invoices\ProjectFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -19,7 +20,7 @@ use Knp\Component\Pager\PaginatorInterface;
  * @method findAll()
  * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProjectRepository extends ServiceEntityRepository
+class ProjectRepository extends ServiceEntityRepository implements FetchDateInterface
 {
     public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {
@@ -107,7 +108,7 @@ class ProjectRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleColumnResult();
     }
 
-    public function getOldestFetchTime(DataProvider $dataProvider): ?\DateTimeInterface
+    public function getOldestFetchTime(DataProvider $dataProvider, ?array $projectTrackerProjectIds = null): ?\DateTimeInterface
     {
         $qb = $this->createQueryBuilder('project');
         $qb->select("project.fetchTime");

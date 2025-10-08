@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\DataProvider;
 use App\Entity\Version;
+use App\Interface\FetchDateInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,7 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Version[]    findAll()
  * @method Version[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VersionRepository extends ServiceEntityRepository
+class VersionRepository extends ServiceEntityRepository implements FetchDateInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -40,7 +41,7 @@ class VersionRepository extends ServiceEntityRepository
         }
     }
 
-    public function getOldestFetchTime(DataProvider $dataProvider, ?array $projectTrackerProjectIds): ?\DateTimeInterface
+    public function getOldestFetchTime(DataProvider $dataProvider, ?array $projectTrackerProjectIds = null): ?\DateTimeInterface
     {
         $qb = $this->createQueryBuilder('version');
         $qb->select("version.fetchTime");
