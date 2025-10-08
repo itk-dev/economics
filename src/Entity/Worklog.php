@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Trait\DataProviderTrait;
+use App\Entity\Trait\FetchDateTrait;
 use App\Enum\BillableKindsEnum;
 use App\Repository\WorklogRepository;
 use Doctrine\DBAL\Types\Types;
@@ -17,6 +18,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Worklog extends AbstractBaseEntity
 {
     use DataProviderTrait;
+    use FetchDateTrait;
 
     #[ORM\Column]
     private ?int $worklogId = null;

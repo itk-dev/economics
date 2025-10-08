@@ -50,7 +50,8 @@ class DataProviderService
         protected readonly string $sprintNameRegex,
         protected readonly int $httpClientRetryDelayMs = 1000,
         protected readonly int $httpClientMaxRetries = 3,
-    ) {
+    )
+    {
     }
 
     public function createDataProvider(string $name, string $class, string $url, string $secret, bool $enableClientSync = false, bool $enableAccountSync = false): DataProvider
@@ -85,7 +86,8 @@ class DataProviderService
         $project->setProjectTrackerId($upsertProjectData->projectTrackerId);
         // TODO: Remove from entity:
         $project->setProjectTrackerKey($upsertProjectData->projectTrackerId);
-        $project->setProjectTrackerProjectUrl($dataProvider->getUrl()."/projects/showProject/".$upsertProjectData->projectTrackerId);
+        $project->setProjectTrackerProjectUrl($dataProvider->getUrl() . "/projects/showProject/" . $upsertProjectData->projectTrackerId);
+        $project->setFetchTime($upsertProjectData->fetchTime);
 
         $this->entityManager->flush();
     }
@@ -107,6 +109,7 @@ class DataProviderService
         }
 
         $version->setName($upsertVersionData->name);
+        $version->setFetchTime($upsertVersionData->fetchTime);
 
         $this->entityManager->flush();
     }
@@ -135,6 +138,7 @@ class DataProviderService
         $issue->setDueDate($upsertIssueData->dueDate);
         $issue->setWorker($upsertIssueData->worker);
         $issue->setLinkToIssue($this->linkToTicket($upsertIssueData->projectTrackerId, $dataProvider));
+        $issue->setFetchTime($upsertIssueData->fetchTime);
 
         $this->entityManager->flush();
     }
@@ -152,16 +156,16 @@ class DataProviderService
             $this->entityManager->persist($worklog);
         }
 
-        $worklog
-            ->setWorklogId($upsertWorklogData->projectTrackerId)
-            ->setDescription($upsertWorklogData->description)
-            ->setWorker($upsertWorklogData->username)
-            ->setStarted($upsertWorklogData->startedDate)
-            ->setProjectTrackerIssueId($upsertWorklogData->projectTrackerIssueId)
-            ->setTimeSpentSeconds($upsertWorklogData->hours * $this::SECONDS_IN_HOUR)
-            ->setKind(BillableKindsEnum::tryFrom($upsertWorklogData->kind))
-            ->setProject($issue->getProject())
-            ->setIssue($issue);
+        $worklog->setWorklogId($upsertWorklogData->projectTrackerId);
+        $worklog->setDescription($upsertWorklogData->description);
+        $worklog->setWorker($upsertWorklogData->username);
+        $worklog->setStarted($upsertWorklogData->startedDate);
+        $worklog->setProjectTrackerIssueId($upsertWorklogData->projectTrackerIssueId);
+        $worklog->setTimeSpentSeconds($upsertWorklogData->hours * $this::SECONDS_IN_HOUR);
+        $worklog->setKind(BillableKindsEnum::tryFrom($upsertWorklogData->kind));
+        $worklog->setProject($issue->getProject());
+        $worklog->setIssue($issue);
+        $worklog->setFetchTime($upsertWorklogData->fetchTime);
 
         $this->entityManager->flush();
     }
@@ -211,6 +215,6 @@ class DataProviderService
 
     private function linkToTicket(string $ticketId, DataProvider $dataProvider): string
     {
-        return $dataProvider->getUrl() . "/errorpage/#/tickets/showTicket/".$ticketId;
+        return $dataProvider->getUrl() . "/errorpage/#/tickets/showTicket/" . $ticketId;
     }
 }

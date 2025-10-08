@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\DataProvider;
 use App\Entity\Version;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -37,5 +38,32 @@ class VersionRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getOldestFetchTime(DataProvider $dataProvider, ?array $projectTrackerProjectIds): ?\DateTimeInterface
+    {
+        $qb = $this->createQueryBuilder('version');
+        $qb->select("version.fetchTime");
+        $qb->where($qb->expr()->isNotNull('version.fetchTime'));
+        $qb->where('version.dataProvider = :dataProvider');
+        $qb->setParameter('dataProvider', $dataProvider);
+
+        if ($projectTrackerProjectIds !== null) {
+            $qb->leftJoin('version.project', 'project');
+            $qb->andWhere($qb->expr()->in('project.projectTrackerId', $projectTrackerProjectIds));
+        }
+
+        $qb->orderBy("version.fetchTime", "ASC");
+        $qb->setMaxResults(1);
+
+        $result = $qb->getQuery()->getResult();
+
+        if (count($result) > 0) {
+            $result = $result[0];
+
+            return $result['fetchTime'] ?? null;
+        }
+
+        return null;
     }
 }
