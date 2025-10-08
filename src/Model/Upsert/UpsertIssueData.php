@@ -18,5 +18,6 @@ class UpsertIssueData
         public IssueStatusEnum $status,
         public ?\DateTimeInterface $dueDate,
         public ?\DateTimeInterface $resolutionDate,
+        public ?\DateTimeInterface $fetchTime,
     ) {}
 }

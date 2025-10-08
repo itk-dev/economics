@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Trait\DataProviderTrait;
+use App\Entity\Trait\FetchDateTrait;
 use App\Enum\IssueStatusEnum;
 use App\Repository\IssueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,6 +19,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Issue extends AbstractBaseEntity
 {
     use DataProviderTrait;
+    use FetchDateTrait;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;

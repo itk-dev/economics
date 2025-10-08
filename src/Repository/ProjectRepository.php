@@ -106,4 +106,27 @@ class ProjectRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getSingleColumnResult();
     }
+
+    public function getOldestFetchTime(DataProvider $dataProvider): ?\DateTimeInterface
+    {
+        $qb = $this->createQueryBuilder('project');
+        $qb->select("project.fetchTime");
+        $qb->where($qb->expr()->isNotNull('project.fetchTime'));
+        $qb->where($qb->expr()->eq('project.include', true));
+        $qb->where('project.dataProvider = :dataProvider');
+        $qb->setParameter('dataProvider', $dataProvider);
+
+        $qb->orderBy("project.fetchTime", "ASC");
+        $qb->setMaxResults(1);
+
+        $result = $qb->getQuery()->getResult();
+
+        if (count($result) > 0) {
+            $result = $result[0];
+
+            return $result['fetchTime'] ?? null;
+        }
+
+        return null;
+    }
 }

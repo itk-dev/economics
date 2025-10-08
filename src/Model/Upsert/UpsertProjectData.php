@@ -9,5 +9,6 @@ class UpsertProjectData
         public string $name,
         public string $projectTrackerId,
         public string $url,
+        public ?\DateTimeInterface $fetchTime,
     ) {}
 }

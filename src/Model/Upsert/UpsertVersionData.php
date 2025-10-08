@@ -9,5 +9,6 @@ class UpsertVersionData
         public string $name,
         public string $projectTrackerId,
         public string $projectTrackerProjectId,
+        public ?\DateTimeInterface $fetchTime,
     ) {}
 }

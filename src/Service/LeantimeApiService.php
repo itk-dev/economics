@@ -17,6 +17,8 @@ use App\Model\Upsert\UpsertWorklogData;
 use App\Repository\DataProviderRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
+use App\Repository\VersionRepository;
+use App\Repository\WorklogRepository;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -29,7 +31,7 @@ class LeantimeApiService implements DataProviderInterface
     public const MILESTONES = 'milestones';
     public const TICKETS = 'tickets';
     public const TIMESHEETS = 'timesheets';
-    private const LIMIT = 1;
+    private const LIMIT = 100;
     private const QUEUE_ASYNC = 'async';
     private const QUEUE_SYNC = 'sync';
 
@@ -39,35 +41,44 @@ class LeantimeApiService implements DataProviderInterface
         private readonly HttpClientInterface $httpClient,
         private readonly MessageBusInterface $messageBus,
         private readonly IssueRepository $issueRepository,
+        private readonly WorklogRepository $worklogRepository, private readonly VersionRepository $versionRepository,
     ) {}
 
-    public function updateAll(bool $asyncJobQueue = false): void
+    public function updateAll(bool $asyncJobQueue = false, bool $modified = false): void
     {
-        $this->updateProjects($asyncJobQueue);
-        $this->updateVersions($asyncJobQueue);
-        $this->updateIssues($asyncJobQueue);
-        $this->updateWorklogs($asyncJobQueue);
+        $this->updateProjects($asyncJobQueue, $modified);
+        $this->updateVersions($asyncJobQueue, $modified);
+        $this->updateIssues($asyncJobQueue, $modified);
+        $this->updateWorklogs($asyncJobQueue, $modified);
     }
 
-    public function updateProjects(bool $asyncJobQueue = false): void
+    public function updateProjects(bool $asyncJobQueue = false, bool $modified = false): void
     {
         $dataProviders = $this->getEnabledLeantimeDataProviders();
 
         foreach ($dataProviders as $dataProvider) {
-            $this->updateProjectsAsJob(0, $this::LIMIT, $dataProvider, $asyncJobQueue);
+            $this->updateProjectsAsJob(0, $this::LIMIT, $dataProvider, $asyncJobQueue, $modified);
         }
     }
 
-    public function updateProjectsAsJob($startId, $limit, DataProvider $dataProvider, bool $asyncJobQueue = false): void
+    public function updateProjectsAsJob($startId, $limit, DataProvider $dataProvider, bool $asyncJobQueue = false, bool $modified = false): void
     {
-        $data = $this->fetchFromLeantime($dataProvider, $this::PROJECTS, [
+        $params = [
             "start" => $startId,
             "limit" => $limit,
-            // TODO: Request modified
-        ]);
+        ];
+
+        if ($modified) {
+            $oldestModified = $this->projectRepository->getOldestFetchTime($dataProvider);
+            $params['modified'] = $oldestModified?->getTimestamp();
+        }
+
+        $data = $this->fetchFromLeantime($dataProvider, $this::PROJECTS, $params);
+
+        $fetchDate = new \DateTime();
 
         foreach ($data->results as $result) {
-            $upsertData = $this->getProjectUpsertFromResult($result, $dataProvider);
+            $upsertData = $this->getProjectUpsertFromResult($result, $dataProvider, $fetchDate);
 
             $this->messageBus->dispatch(
                 new UpsertProjectMessage($upsertData),
@@ -88,7 +99,7 @@ class LeantimeApiService implements DataProviderInterface
         }
     }
 
-    public function updateVersions(bool $asyncJobQueue = false): void
+    public function updateVersions(bool $asyncJobQueue = false, bool $modified = false): void
     {
         $dataProviders = $this->getEnabledLeantimeDataProviders();
 
@@ -99,17 +110,25 @@ class LeantimeApiService implements DataProviderInterface
         }
     }
 
-    public function updateVersionsAsJob($startId, $limit, DataProvider $dataProvider, array $projectTrackerProjectIds, bool $asyncJobQueue = false): void
+    public function updateVersionsAsJob($startId, $limit, DataProvider $dataProvider, ?array $projectTrackerProjectIds, bool $asyncJobQueue = false, bool $modified = false): void
     {
-        $data = $this->fetchFromLeantime($dataProvider, $this::MILESTONES, [
+        $params = [
             "start" => $startId,
             "limit" => $limit,
             "projectIds" => $projectTrackerProjectIds,
-            // TODO: Request modified
-        ]);
+        ];
+
+        if ($modified) {
+            $oldestModified = $this->versionRepository->getOldestFetchTime($dataProvider, $projectTrackerProjectIds);
+            $params['modified'] = $oldestModified?->getTimestamp();
+        }
+
+        $data = $this->fetchFromLeantime($dataProvider, $this::MILESTONES, $params);
+
+        $fetchDate = new \DateTime();
 
         foreach ($data->results as $result) {
-            $upsertData = $this->getVersionUpsertFromResult($result, $dataProvider);
+            $upsertData = $this->getVersionUpsertFromResult($result, $dataProvider, $fetchDate);
 
             $this->messageBus->dispatch(
                 new UpsertVersionMessage($upsertData),
@@ -130,7 +149,7 @@ class LeantimeApiService implements DataProviderInterface
         }
     }
 
-    public function updateIssues(bool $asyncJobQueue = false): void
+    public function updateIssues(bool $asyncJobQueue = false, bool $modified = false): void
     {
         $dataProviders = $this->getEnabledLeantimeDataProviders();
 
@@ -141,17 +160,25 @@ class LeantimeApiService implements DataProviderInterface
         }
     }
 
-    public function updateIssuesAsJob($startId, $limit, DataProvider $dataProvider, array $projectTrackerProjectIds, bool $asyncJobQueue = false): void
+    public function updateIssuesAsJob($startId, $limit, DataProvider $dataProvider, ?array $projectTrackerProjectIds, bool $asyncJobQueue = false, bool $modified = false): void
     {
-        $data = $this->fetchFromLeantime($dataProvider, $this::TICKETS, [
+        $params = [
             "start" => $startId,
             "limit" => $limit,
             "projectIds" => $projectTrackerProjectIds,
-            // TODO: Request modified
-        ]);
+        ];
+
+        if ($modified) {
+            $oldestModified = $this->issueRepository->getOldestFetchTime($dataProvider, $projectTrackerProjectIds);
+            $params['modified'] = $oldestModified?->getTimestamp();
+        }
+
+        $data = $this->fetchFromLeantime($dataProvider, $this::TICKETS, $params);
+
+        $fetchDate = new \DateTime();
 
         foreach ($data->results as $result) {
-            $upsertData = $this->getIssueUpsertFromResult($result, $dataProvider);
+            $upsertData = $this->getIssueUpsertFromResult($result, $dataProvider, $fetchDate);
 
             $this->messageBus->dispatch(
                 new UpsertIssueMessage($upsertData),
@@ -172,28 +199,36 @@ class LeantimeApiService implements DataProviderInterface
         }
     }
 
-    public function updateWorklogs(bool $asyncJobQueue = false): void
+    public function updateWorklogs(bool $asyncJobQueue = false, bool $modified = false): void
     {
         $dataProviders = $this->getEnabledLeantimeDataProviders();
 
         foreach ($dataProviders as $dataProvider) {
-            $projectTrackerTicketIds = $this->issueRepository->getProjectTrackerIdsByDataProviders([$dataProvider]);
+            $projectTrackerProjectIds = $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]);
 
-            $this->updateWorklogsAsJob(0, $this::LIMIT, $dataProvider, $projectTrackerTicketIds, $asyncJobQueue);
+            $this->updateWorklogsAsJob(0, $this::LIMIT, $dataProvider, $projectTrackerProjectIds, $asyncJobQueue, $modified);
         }
     }
 
-    public function updateWorklogsAsJob($startId, $limit, DataProvider $dataProvider, array $projectTrackerTicketIds, bool $asyncJobQueue = false): void
+    public function updateWorklogsAsJob($startId, $limit, DataProvider $dataProvider, ?array $projectTrackerProjectIds, bool $asyncJobQueue = false, bool $modified = false): void
     {
-        $data = $this->fetchFromLeantime($dataProvider, $this::TIMESHEETS, [
+        $params =  [
             "start" => $startId,
             "limit" => $this::LIMIT,
-            "ticketIds" => $projectTrackerTicketIds,
-            // TODO: Request modified
-        ]);
+            "projectIds" => $projectTrackerProjectIds,
+        ];
+
+        if ($modified) {
+            $oldestModified = $this->worklogRepository->getOldestFetchTime($dataProvider, $projectTrackerProjectIds);
+            $params['modified'] = $oldestModified?->getTimestamp();
+        }
+
+        $data = $this->fetchFromLeantime($dataProvider, $this::TIMESHEETS, $params);
+
+        $fetchDate = new \DateTime();
 
         foreach ($data->results as $result) {
-            $upsertData = $this->getWorklogUpsertFromResult($result, $dataProvider);
+            $upsertData = $this->getWorklogUpsertFromResult($result, $dataProvider, $fetchDate);
 
             $this->messageBus->dispatch(
                 new UpsertWorklogMessage($upsertData),
@@ -208,13 +243,13 @@ class LeantimeApiService implements DataProviderInterface
         // Queue next page.
         if ($data->resultsCount === $limit) {
             $this->messageBus->dispatch(
-                new LeantimeUpdateMessage($this::TIMESHEETS, $startId, $limit, $dataProvider, $asyncJobQueue, null, $projectTrackerTicketIds),
+                new LeantimeUpdateMessage($this::TIMESHEETS, $startId, $limit, $dataProvider, $asyncJobQueue, $projectTrackerProjectIds),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
             );
         }
     }
 
-    private function getProjectUpsertFromResult(object $result, DataProvider $dataProvider): UpsertProjectData
+    private function getProjectUpsertFromResult(object $result, DataProvider $dataProvider, \DateTimeInterface $fetchDate): UpsertProjectData
     {
         $projectTrackerId = (string) $result->id;
 
@@ -224,10 +259,11 @@ class LeantimeApiService implements DataProviderInterface
             $projectTrackerId,
             // Error page is the fastest to load.
             "TODO/".$projectTrackerId,
+            $fetchDate,
         );
     }
 
-    private function getVersionUpsertFromResult(object $result, DataProvider $dataProvider): UpsertVersionData
+    private function getVersionUpsertFromResult(object $result, DataProvider $dataProvider, \DateTimeInterface $fetchDate): UpsertVersionData
     {
         $projectTrackerId = (string) $result->id;
 
@@ -236,10 +272,11 @@ class LeantimeApiService implements DataProviderInterface
             $result->name,
             $projectTrackerId,
             (string) $result->projectId,
+            $fetchDate,
         );
     }
 
-    private function getIssueUpsertFromResult(object $result, DataProvider $dataProvider): UpsertIssueData
+    private function getIssueUpsertFromResult(object $result, DataProvider $dataProvider, \DateTimeInterface $fetchDate): UpsertIssueData
     {
         $projectTrackerId = (string) $result->id;
 
@@ -255,10 +292,11 @@ class LeantimeApiService implements DataProviderInterface
             $this->convertStatusToEnum($result->status),
             $result->dueDate !== null ? $this->getLeanDateTime($result->dueDate) : null,
             $result->resolutionDate !== null ? $this->getLeanDateTime($result->resolutionDate) : null,
+            $fetchDate,
         );
     }
 
-    private function getWorklogUpsertFromResult(object $result, DataProvider $dataProvider): UpsertWorklogData
+    private function getWorklogUpsertFromResult(object $result, DataProvider $dataProvider, \DateTimeInterface $fetchDate): UpsertWorklogData
     {
         $projectTrackerId = (string) $result->id;
 
@@ -271,6 +309,7 @@ class LeantimeApiService implements DataProviderInterface
             $result->username,
             $result->hours,
             $result->kind,
+            $fetchDate,
         );
     }
 

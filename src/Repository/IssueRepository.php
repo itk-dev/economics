@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\DataProvider;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
@@ -142,5 +143,32 @@ class IssueRepository extends ServiceEntityRepository
             ->orderBy('issue.projectTrackerId', 'ASC');
 
         return $qb->getQuery()->getSingleColumnResult();
+    }
+
+    public function getOldestFetchTime(DataProvider $dataProvider, ?array $projectTrackerProjectIds): ?\DateTimeInterface
+    {
+        $qb = $this->createQueryBuilder('issue');
+        $qb->select("issue.fetchTime");
+        $qb->where($qb->expr()->isNotNull('issue.fetchTime'));
+        $qb->where('issue.dataProvider = :dataProvider');
+        $qb->setParameter('dataProvider', $dataProvider);
+
+        if ($projectTrackerProjectIds !== null) {
+            $qb->leftJoin('issue.project', 'project');
+            $qb->andWhere($qb->expr()->in('project.projectTrackerId', $projectTrackerProjectIds));
+        }
+
+        $qb->orderBy("issue.fetchTime", "ASC");
+        $qb->setMaxResults(1);
+
+        $result = $qb->getQuery()->getResult();
+
+        if (count($result) > 0) {
+            $result = $result[0];
+
+            return $result['fetchTime'] ?? null;
+        }
+
+        return null;
     }
 }
