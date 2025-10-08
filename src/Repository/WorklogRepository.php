@@ -9,6 +9,7 @@ use App\Entity\Project;
 use App\Entity\Worklog;
 use App\Enum\NonBillableEpicsEnum;
 use App\Enum\NonBillableVersionsEnum;
+use App\Interface\FetchDateInterface;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Mapping\OrderBy;
@@ -24,7 +25,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method findAll()
  * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class WorklogRepository extends ServiceEntityRepository
+class WorklogRepository extends ServiceEntityRepository implements FetchDateInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
