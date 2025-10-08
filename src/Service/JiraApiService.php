@@ -40,34 +40,6 @@ class JiraApiService implements DataProviderInterface
     ) {
     }
 
-    public function updateAll(bool $asyncJobQueue = true): void
-    {
-        $this->updateProjects($asyncJobQueue);
-        $this->updateVersions($asyncJobQueue);
-        $this->updateIssues($asyncJobQueue);
-        $this->updateWorklogs($asyncJobQueue);
-    }
-
-    public function updateProjects(bool $asyncJobQueue = true): void
-    {
-        // TODO: Implement updateProjects() method.
-    }
-
-    public function updateVersions(bool $asyncJobQueue = true): void
-    {
-        // TODO: Implement updateVersions() method.
-    }
-
-    public function updateIssues(bool $asyncJobQueue = true): void
-    {
-        // TODO: Implement updateIssues() method.
-    }
-
-    public function updateWorklogs(bool $asyncJobQueue = true): void
-    {
-        // TODO: Implement updateWorklogs() method.
-    }
-
     public function getEndpoints(): array
     {
         return [
@@ -471,5 +443,15 @@ class JiraApiService implements DataProviderInterface
     private function getIssue(string $issueId): mixed
     {
         return $this->get("/rest/api/2/issue/$issueId");
+    }
+
+    public function updateAll(bool $asyncJobQueue = false, bool $modified = false): void
+    {
+        // TODO: Implement updateAll() method.
+    }
+
+    public function update(string $className, bool $asyncJobQueue = false, bool $modified = false): void
+    {
+        // TODO: Implement update() method.
     }
 }

@@ -2,6 +2,10 @@
 
 namespace App\Command;
 
+use App\Entity\Issue;
+use App\Entity\Project;
+use App\Entity\Version;
+use App\Entity\Worklog;
 use App\Service\LeantimeApiService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -51,22 +55,22 @@ class SyncCommand extends Command
 
         if ($input->getOption("projects")) {
             $io->info("Syncing projects.");
-            $this->leantimeApiService->updateProjects($jobHandling, $modified);
+            $this->leantimeApiService->update(Project::class, $jobHandling, $modified);
         }
 
         if ($input->getOption("versions")) {
             $io->info("Syncing versions.");
-            $this->leantimeApiService->updateVersions($jobHandling, $modified);
+            $this->leantimeApiService->update(Version::class, $jobHandling, $modified);
         }
 
         if ($input->getOption("issues")) {
             $io->info("Syncing issues.");
-            $this->leantimeApiService->updateIssues($jobHandling, $modified);
+            $this->leantimeApiService->update(Issue::class, $jobHandling, $modified);
         }
 
         if ($input->getOption("worklogs")) {
             $io->info("Syncing worklogs.");
-            $this->leantimeApiService->updateWorklogs($jobHandling, $modified);
+            $this->leantimeApiService->update(Worklog::class, $jobHandling, $modified);
         }
 
         return Command::SUCCESS;
