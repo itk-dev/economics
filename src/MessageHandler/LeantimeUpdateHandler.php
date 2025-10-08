@@ -25,7 +25,7 @@ readonly class LeantimeUpdateHandler
                 $message->className,
                 $message->start,
                 $message->limit,
-                $message->dataProvider,
+                $message->dataProviderId,
                 $message->projectTrackerProjectIds,
                 $message->asyncJobQueue,
                 $message->modified,
