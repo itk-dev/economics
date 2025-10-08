@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\DataProvider;
 use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
 use App\Entity\Project;
@@ -10,6 +11,8 @@ use App\Enum\NonBillableEpicsEnum;
 use App\Enum\NonBillableVersionsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Mapping\OrderBy;
+use Doctrine\ORM\Query\AST\OrderByItem;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -44,6 +47,33 @@ class WorklogRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getOldestFetchTime(DataProvider $dataProvider, ?array $projectTrackerProjectIds = null)
+    {
+        $qb = $this->createQueryBuilder('worklog');
+        $qb->select("worklog.fetchTime");
+        $qb->where($qb->expr()->isNotNull('worklog.fetchTime'));
+        $qb->where('worklog.dataProvider = :dataProvider');
+        $qb->setParameter('dataProvider', $dataProvider);
+
+        if ($projectTrackerProjectIds !== null) {
+            $qb->leftJoin('worklog.project', 'project');
+            $qb->andWhere($qb->expr()->in('project.projectTrackerId', $projectTrackerProjectIds));
+        }
+
+        $qb->orderBy("worklog.fetchTime", "ASC");
+        $qb->setMaxResults(1);
+
+        $result = $qb->getQuery()->getResult();
+
+        if (count($result) > 0) {
+            $result = $result[0];
+
+            return $result['fetchTime'] ?? null;
+        }
+
+        return null;
     }
 
     public function findByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): iterable

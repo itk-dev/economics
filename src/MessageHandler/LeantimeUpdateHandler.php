@@ -25,8 +25,9 @@ readonly class LeantimeUpdateHandler
 
     public function __invoke(LeantimeUpdateMessage $message): void
     {
-        $this->logger->info("Handling $message->type update message. start: $message->start, limit: $message->limit");
         try {
+            $this->logger->info("Handling $message->type update message. start: $message->start, limit: $message->limit");
+
             match ($message->type) {
                 LeantimeApiService::PROJECTS => $this->leantimeApiService->updateProjectsAsJob(
                     $message->start,
@@ -49,7 +50,7 @@ readonly class LeantimeUpdateHandler
                     $message->start,
                     $message->limit,
                     $message->dataProvider,
-                    $message->projectTrackerTicketIds,
+                    $message->projectTrackerProjectIds,
                 )
             };
         } catch (\Exception $e) {
