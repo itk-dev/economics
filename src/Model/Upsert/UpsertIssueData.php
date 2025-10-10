@@ -20,5 +20,6 @@ class UpsertIssueData
         public ?\DateTimeInterface $resolutionDate,
         public ?\DateTimeInterface $fetchTime,
         public ?string $url,
+        public ?\DateTimeInterface $sourceModifiedDate,
     ) {}
 }

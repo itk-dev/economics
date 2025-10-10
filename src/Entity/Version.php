@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Trait\DataProviderTrait;
-use App\Entity\Trait\FetchDateTrait;
+use App\Entity\Trait\SynchronizedEntityTrait;
 use App\Repository\VersionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,7 +16,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Version extends AbstractBaseEntity
 {
     use DataProviderTrait;
-    use FetchDateTrait;
+    use SynchronizedEntityTrait;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
