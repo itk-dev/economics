@@ -28,49 +28,52 @@ class SyncCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption("job", 'j', InputOption::VALUE_NONE, "Use async job handling");
-        $this->addOption("modified", "m", InputOption::VALUE_NONE, "Only items modified since last update");
-        $this->addOption("all", "a", InputOption::VALUE_NONE, "Sync all");
-        $this->addOption("projects", "p", InputOption::VALUE_NONE, "Sync projects");
-        $this->addOption("versions", "s", InputOption::VALUE_NONE, "Sync versions");
-        $this->addOption('issues', "i", InputOption::VALUE_NONE, "Sync issues");
-        $this->addOption('worklogs', "w", InputOption::VALUE_NONE, "Sync worklogs");
+        $this->addOption('job', 'j', InputOption::VALUE_NONE, 'Use async job handling');
+        $this->addOption('modified', 'm', InputOption::VALUE_OPTIONAL, 'Only update items modified since this unix timestamp');
+        $this->addOption('all', 'a', InputOption::VALUE_NONE, 'Sync all');
+        $this->addOption('projects', 'p', InputOption::VALUE_NONE, 'Sync projects');
+        $this->addOption('versions', 's', InputOption::VALUE_NONE, 'Sync versions');
+        $this->addOption('issues', 'i', InputOption::VALUE_NONE, 'Sync issues');
+        $this->addOption('worklogs', 'w', InputOption::VALUE_NONE, 'Sync worklogs');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $jobHandling = $input->getOption("job");
-        $modified = $input->getOption("modified");
+        $jobHandling = $input->getOption('job');
+        $modified = $input->getOption('modified');
 
-        $io->info("Handle as jobs: " . ($jobHandling ? 'TRUE' : 'FALSE'));
-        $io->info("Only handle items modified since last update: " . ($modified ? 'TRUE' : 'FALSE'));
+        $modifiedAfter = \DateTime::createFromFormat('U', $modified);
+
+        $io->info('Handle as jobs: '.($jobHandling ? 'TRUE' : 'FALSE'));
+        $io->info('Only handle items modified since: '.$modifiedAfter);
 
         if ($input->getOption('all')) {
-            $io->info("Syncing all.");
-            $this->leantimeApiService->updateAll($jobHandling, $modified);
+            $io->info('Syncing all.');
+            $this->leantimeApiService->updateAll($jobHandling, $modifiedAfter);
+
             return Command::SUCCESS;
         }
 
-        if ($input->getOption("projects")) {
-            $io->info("Syncing projects.");
-            $this->leantimeApiService->update(Project::class, $jobHandling, $modified);
+        if ($input->getOption('projects')) {
+            $io->info('Syncing projects.');
+            $this->leantimeApiService->update(Project::class, $jobHandling, $modifiedAfter);
         }
 
-        if ($input->getOption("versions")) {
-            $io->info("Syncing versions.");
-            $this->leantimeApiService->update(Version::class, $jobHandling, $modified);
+        if ($input->getOption('versions')) {
+            $io->info('Syncing versions.');
+            $this->leantimeApiService->update(Version::class, $jobHandling, $modifiedAfter);
         }
 
-        if ($input->getOption("issues")) {
-            $io->info("Syncing issues.");
-            $this->leantimeApiService->update(Issue::class, $jobHandling, $modified);
+        if ($input->getOption('issues')) {
+            $io->info('Syncing issues.');
+            $this->leantimeApiService->update(Issue::class, $jobHandling, $modifiedAfter);
         }
 
-        if ($input->getOption("worklogs")) {
-            $io->info("Syncing worklogs.");
-            $this->leantimeApiService->update(Worklog::class, $jobHandling, $modified);
+        if ($input->getOption('worklogs')) {
+            $io->info('Syncing worklogs.');
+            $this->leantimeApiService->update(Worklog::class, $jobHandling, $modifiedAfter);
         }
 
         return Command::SUCCESS;

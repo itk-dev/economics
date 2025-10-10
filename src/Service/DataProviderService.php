@@ -8,10 +8,7 @@ use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
-use App\Exception\EconomicsException;
 use App\Exception\NotFoundException;
-use App\Exception\UnsupportedDataProviderException;
-use App\Interface\DataProviderInterface;
 use App\Model\Upsert\UpsertIssueData;
 use App\Model\Upsert\UpsertProjectData;
 use App\Model\Upsert\UpsertVersionData;
@@ -22,9 +19,6 @@ use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpClient\Retry\GenericRetryStrategy;
-use Symfony\Component\HttpClient\RetryableHttpClient;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DataProviderService
@@ -32,7 +26,7 @@ class DataProviderService
     public const IMPLEMENTATIONS = [
         LeantimeApiService::class,
     ];
-    const SECONDS_IN_HOUR = 60 * 60;
+    public const SECONDS_IN_HOUR = 60 * 60;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -49,8 +43,7 @@ class DataProviderService
         protected readonly string $sprintNameRegex,
         protected readonly int $httpClientRetryDelayMs = 1000,
         protected readonly int $httpClientMaxRetries = 3,
-    )
-    {
+    ) {
     }
 
     public function createDataProvider(string $name, string $class, string $url, string $secret, bool $enableClientSync = false, bool $enableAccountSync = false): DataProvider
@@ -75,7 +68,7 @@ class DataProviderService
         $dataProvider = $this->getDataProvider($upsertProjectData->dataProviderId);
         $project = $this->getProject($upsertProjectData->projectTrackerId, $dataProvider);
 
-        if ($project === null) {
+        if (null === $project) {
             $project = new Project();
             $project->setDataProvider($dataProvider);
             $this->entityManager->persist($project);
@@ -149,6 +142,11 @@ class DataProviderService
     {
         $dataProvider = $this->getDataProvider($upsertWorklogData->dataProviderId);
         $issue = $this->getIssue($upsertWorklogData->projectTrackerIssueId, $dataProvider);
+
+        if (null === $issue) {
+            throw new NotFoundException('Issue not found');
+        }
+
         $worklog = $this->getWorklog($upsertWorklogData->projectTrackerId, $dataProvider);
 
         if (!$worklog) {
@@ -177,14 +175,14 @@ class DataProviderService
     {
         $dataProvider = $this->dataProviderRepository->find($id);
 
-        if ($dataProvider === null) {
+        if (null === $dataProvider) {
             throw new NotFoundException("DataProvider with id $id not found");
         }
 
         return $dataProvider;
     }
 
-    private function getProject(int $projectTrackerId, DataProvider $dataProvider): ?Project
+    private function getProject(string $projectTrackerId, DataProvider $dataProvider): ?Project
     {
         return $this->projectRepository->findOneBy([
             'projectTrackerId' => $projectTrackerId,
@@ -192,7 +190,7 @@ class DataProviderService
         ]);
     }
 
-    private function getVersion(int $projectTrackerId, DataProvider $dataProvider): ?Version
+    private function getVersion(string $projectTrackerId, DataProvider $dataProvider): ?Version
     {
         return $this->versionRepository->findOneBy([
             'projectTrackerId' => $projectTrackerId,
@@ -208,7 +206,7 @@ class DataProviderService
         ]);
     }
 
-    private function getWorklog(string $projectTrackerId, DataProvider $dataProvider): ?Worklog
+    private function getWorklog(int $projectTrackerId, DataProvider $dataProvider): ?Worklog
     {
         return $this->worklogRepository->findOneBy([
             'worklogId' => $projectTrackerId,

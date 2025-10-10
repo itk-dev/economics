@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\DataProvider;
 use App\Entity\Version;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

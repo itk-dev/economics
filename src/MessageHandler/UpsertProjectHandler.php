@@ -2,12 +2,8 @@
 
 namespace App\MessageHandler;
 
-use App\Exception\EconomicsException;
-use App\Message\UpdateProjectBillingMessage;
 use App\Message\UpsertProjectMessage;
 use App\Service\DataProviderService;
-use App\Service\LeantimeApiService;
-use App\Service\ProjectBillingService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
@@ -17,15 +13,17 @@ readonly class UpsertProjectHandler
 {
     public function __construct(
         private LoggerInterface $logger,
-        private DataProviderService $dataProviderService
-    ) {}
+        private DataProviderService $dataProviderService,
+    ) {
+    }
 
     public function __invoke(UpsertProjectMessage $message): void
     {
         try {
-            $this->logger->info("Upserting project: ".$message->projectData->name);
+            $this->logger->info('Upserting project: '.$message->projectData->name);
             $this->dataProviderService->upsertProject($message->projectData);
         } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }
     }
