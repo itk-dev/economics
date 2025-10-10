@@ -75,8 +75,9 @@ class DataProviderService
             $this->entityManager->persist($project);
         } else {
             // Ignore upsert if modified date has not changed.
-            if ($upsertProjectData->sourceModifiedDate->getTimestamp() === $project->getSourceModifiedDate()->getTimestamp()) {
+            if (null !== $upsertProjectData->sourceModifiedDate && $upsertProjectData->sourceModifiedDate->getTimestamp() === $project->getSourceModifiedDate()?->getTimestamp()) {
                 $this->logger->info("Ignoring project {$project->getId()} update as source modified field is not changed.");
+
                 return;
             }
         }
@@ -108,8 +109,9 @@ class DataProviderService
             $this->entityManager->persist($version);
         } else {
             // Ignore upsert if modified date has not changed.
-            if ($upsertVersionData->sourceModifiedDate->getTimestamp() === $version->getSourceModifiedDate()->getTimestamp()) {
+            if (null !== $upsertVersionData->sourceModifiedDate && $upsertVersionData->sourceModifiedDate->getTimestamp() === $version->getSourceModifiedDate()?->getTimestamp()) {
                 $this->logger->info("Ignoring version {$version->getId()} update as source modified field is not changed.");
+
                 return;
             }
         }
@@ -134,8 +136,9 @@ class DataProviderService
             $this->entityManager->persist($issue);
         } else {
             // Ignore upsert if modified date has not changed.
-            if ($upsertIssueData->sourceModifiedDate->getTimestamp() === $issue->getSourceModifiedDate()->getTimestamp()) {
+            if (null !== $upsertIssueData->sourceModifiedDate && $upsertIssueData->sourceModifiedDate->getTimestamp() === $issue->getSourceModifiedDate()?->getTimestamp()) {
                 $this->logger->info("Ignoring issue {$issue->getId()} update as source modified field is not changed.");
+
                 return;
             }
         }
@@ -175,8 +178,9 @@ class DataProviderService
             $this->entityManager->persist($worklog);
         } else {
             // Ignore upsert if modified date has not changed.
-            if ($upsertWorklogData->sourceModifiedDate->getTimestamp() === $worklog->getSourceModifiedDate()->getTimestamp()) {
+            if (null !== $upsertWorklogData->sourceModifiedDate && $upsertWorklogData->sourceModifiedDate->getTimestamp() === $worklog->getSourceModifiedDate()?->getTimestamp()) {
                 $this->logger->info("Ignoring worklog {$worklog->getId()} update as source modified field is not changed.");
+
                 return;
             }
         }
