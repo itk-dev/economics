@@ -47,7 +47,7 @@ class SyncCommand extends Command
         $modifiedAfter = \DateTime::createFromFormat('U', $modified);
 
         $io->info('Handle as jobs: '.($jobHandling ? 'TRUE' : 'FALSE'));
-        $io->info('Only handle items modified since: '.$modifiedAfter);
+        $io->info('Only handle items modified since: '.$modifiedAfter->format('Y-m-d H:i:s') ?? '');
 
         if ($input->getOption('all')) {
             $io->info('Syncing all.');
