@@ -9,7 +9,7 @@ class UpsertWorklogData
         public int $dataProviderId,
         public string $projectTrackerIssueId,
         public ?string $description,
-        public ?\DateTimeInterface $startedDate,
+        public \DateTimeInterface $startedDate,
         public string $username,
         public float $hours,
         public string $kind,
