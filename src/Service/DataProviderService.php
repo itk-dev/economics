@@ -19,6 +19,7 @@ use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DataProviderService
@@ -40,7 +41,7 @@ class DataProviderService
         protected readonly string $defaultBoard,
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
-        protected readonly string $sprintNameRegex,
+        protected readonly string $sprintNameRegex, private readonly LoggerInterface $logger,
         protected readonly int $httpClientRetryDelayMs = 1000,
         protected readonly int $httpClientMaxRetries = 3,
     ) {
@@ -72,6 +73,12 @@ class DataProviderService
             $project = new Project();
             $project->setDataProvider($dataProvider);
             $this->entityManager->persist($project);
+        } else {
+            // Ignore upsert if modified date has not changed.
+            if ($upsertProjectData->sourceModifiedDate->getTimestamp() === $project->getSourceModifiedDate()->getTimestamp()) {
+                $this->logger->info("Ignoring project {$project->getId()} update as source modified field is not changed.");
+                return;
+            }
         }
 
         $project->setName($upsertProjectData->name);
@@ -99,6 +106,12 @@ class DataProviderService
             $version->setProject($project);
 
             $this->entityManager->persist($version);
+        } else {
+            // Ignore upsert if modified date has not changed.
+            if ($upsertVersionData->sourceModifiedDate->getTimestamp() === $version->getSourceModifiedDate()->getTimestamp()) {
+                $this->logger->info("Ignoring version {$version->getId()} update as source modified field is not changed.");
+                return;
+            }
         }
 
         $version->setName($upsertVersionData->name);
@@ -119,6 +132,12 @@ class DataProviderService
             $issue->setDataProvider($dataProvider);
 
             $this->entityManager->persist($issue);
+        } else {
+            // Ignore upsert if modified date has not changed.
+            if ($upsertIssueData->sourceModifiedDate->getTimestamp() === $issue->getSourceModifiedDate()->getTimestamp()) {
+                $this->logger->info("Ignoring issue {$issue->getId()} update as source modified field is not changed.");
+                return;
+            }
         }
 
         $issue->setName($upsertIssueData->name);
@@ -154,6 +173,12 @@ class DataProviderService
             $worklog->setDataProvider($dataProvider);
 
             $this->entityManager->persist($worklog);
+        } else {
+            // Ignore upsert if modified date has not changed.
+            if ($upsertWorklogData->sourceModifiedDate->getTimestamp() === $worklog->getSourceModifiedDate()->getTimestamp()) {
+                $this->logger->info("Ignoring worklog {$worklog->getId()} update as source modified field is not changed.");
+                return;
+            }
         }
 
         $worklog->setWorklogId($upsertWorklogData->projectTrackerId);

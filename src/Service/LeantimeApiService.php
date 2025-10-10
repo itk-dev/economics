@@ -65,7 +65,10 @@ class LeantimeApiService implements DataProviderInterface
                 default => $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]),
             };
 
-            $this->updateAsJob($className, 0, $this::LIMIT, $dataProvider->getId(), $projectTrackerProjectIds, $asyncJobQueue, $modifiedAfter);
+            $this->messageBus->dispatch(
+                new LeantimeUpdateMessage($className, 0, $this::LIMIT,  $dataProvider->getId(), $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds),
+                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+            );
         }
     }
 
