@@ -8,5 +8,6 @@ readonly class UpsertIssueMessage
 {
     public function __construct(
         public UpsertIssueData $issueData,
-    ) {}
+    ) {
+    }
 }

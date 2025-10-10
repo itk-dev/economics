@@ -14,7 +14,8 @@ readonly class LeantimeUpdateHandler
     public function __construct(
         private LoggerInterface $logger,
         private LeantimeApiService $leantimeApiService,
-    ) {}
+    ) {
+    }
 
     public function __invoke(LeantimeUpdateMessage $message): void
     {
@@ -28,7 +29,7 @@ readonly class LeantimeUpdateHandler
                 $message->dataProviderId,
                 $message->projectTrackerProjectIds,
                 $message->asyncJobQueue,
-                $message->modified,
+                $message->modifiedAfter,
             );
         } catch (\Exception $e) {
             throw new UnrecoverableMessageHandlingException($e->getMessage());

@@ -2,14 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\DataProvider;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\WorkerGroup;
 use App\Enum\IssueStatusEnum;
-use App\Interface\SynchronizedEntityInterface;
 use App\Model\Invoices\IssueFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

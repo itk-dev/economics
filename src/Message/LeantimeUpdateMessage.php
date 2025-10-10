@@ -10,7 +10,8 @@ readonly class LeantimeUpdateMessage
         public int $limit,
         public int $dataProviderId,
         public bool $asyncJobQueue,
-        public bool $modified,
+        public ?\DateTimeInterface $modifiedAfter,
         public ?array $projectTrackerProjectIds = null,
-    ) {}
+    ) {
+    }
 }
