@@ -8,6 +8,7 @@ use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\IssueStatusEnum;
+use App\Exception\NotAcceptableException;
 use App\Exception\NotFoundException;
 use App\Interface\DataProviderInterface;
 use App\Message\LeantimeUpdateMessage;
@@ -22,6 +23,7 @@ use App\Model\Upsert\UpsertWorklogData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -43,7 +45,7 @@ class LeantimeApiService implements DataProviderInterface
         private readonly MessageBusInterface $messageBus,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProjectRepository $projectRepository,
+        private readonly ProjectRepository $projectRepository, private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -66,7 +68,7 @@ class LeantimeApiService implements DataProviderInterface
             };
 
             $this->messageBus->dispatch(
-                new LeantimeUpdateMessage($className, 0, $this::LIMIT,  $dataProvider->getId(), $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds),
+                new LeantimeUpdateMessage($className, 0, $this::LIMIT, $dataProvider->getId(), $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
             );
         }
@@ -131,13 +133,19 @@ class LeantimeApiService implements DataProviderInterface
 
     private function dispatchUpsertMessage(string $className, object $data, int $dataProviderId, \DateTimeInterface $fetchDate, bool $asyncJobQueue = false, ?string $dataProviderUrl = null): void
     {
-        $message = match ($className) {
-            Project::class => new UpsertProjectMessage($this->getProjectUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
-            Version::class => new UpsertVersionMessage($this->getVersionUpsertFromResult($data, $dataProviderId, $fetchDate)),
-            Issue::class => new UpsertIssueMessage($this->getIssueUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
-            Worklog::class => new UpsertWorklogMessage($this->getWorklogUpsertFromResult($data, $dataProviderId, $fetchDate)),
-            default => null,
-        };
+        try {
+            $message = match ($className) {
+                Project::class => new UpsertProjectMessage($this->getProjectUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
+                Version::class => new UpsertVersionMessage($this->getVersionUpsertFromResult($data, $dataProviderId, $fetchDate)),
+                Issue::class => new UpsertIssueMessage($this->getIssueUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
+                Worklog::class => new UpsertWorklogMessage($this->getWorklogUpsertFromResult($data, $dataProviderId, $fetchDate)),
+                default => null,
+            };
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return;
+        }
 
         if (null !== $message) {
             $this->messageBus->dispatch(
@@ -197,12 +205,18 @@ class LeantimeApiService implements DataProviderInterface
 
     private function getWorklogUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): UpsertWorklogData
     {
+        $startedDate = $this->getLeanDateTime($result->workDate);
+
+        if (null === $startedDate) {
+            throw new NotAcceptableException('Worklog upsert not acceptable: startedDate is null');
+        }
+
         return new UpsertWorklogData(
             $result->id,
             $dataProviderId,
             (string) $result->ticketId,
             $result->description,
-            $this->getLeanDateTime($result->workDate),
+            $startedDate,
             $result->username,
             $result->hours,
             $result->kind,
