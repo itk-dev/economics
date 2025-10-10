@@ -19,5 +19,6 @@ class UpsertIssueData
         public ?\DateTimeInterface $dueDate,
         public ?\DateTimeInterface $resolutionDate,
         public ?\DateTimeInterface $fetchTime,
+        public ?string $url,
     ) {}
 }

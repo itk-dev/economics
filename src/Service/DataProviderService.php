@@ -30,7 +30,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class DataProviderService
 {
     public const IMPLEMENTATIONS = [
-        JiraApiService::class,
         LeantimeApiService::class,
     ];
     const SECONDS_IN_HOUR = 60 * 60;
@@ -137,7 +136,7 @@ class DataProviderService
         $issue->setHoursRemaining($upsertIssueData->remainingHours);
         $issue->setDueDate($upsertIssueData->dueDate);
         $issue->setWorker($upsertIssueData->worker);
-        $issue->setLinkToIssue($this->linkToTicket($upsertIssueData->projectTrackerId, $dataProvider));
+        $issue->setLinkToIssue($upsertIssueData->url);
         $issue->setFetchTime($upsertIssueData->fetchTime);
 
         $this->entityManager->flush();
@@ -211,10 +210,5 @@ class DataProviderService
             'worklogId' => $projectTrackerId,
             'dataProvider' => $dataProvider,
         ]);
-    }
-
-    private function linkToTicket(string $ticketId, DataProvider $dataProvider): string
-    {
-        return $dataProvider->getUrl() . "/errorpage/#/tickets/showTicket/" . $ticketId;
     }
 }
