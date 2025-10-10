@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\DataProvider;
 use App\Entity\Version;
-use App\Interface\FetchDateInterface;
+use App\Interface\SynchronizedEntityInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,7 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Version[]    findAll()
  * @method Version[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VersionRepository extends ServiceEntityRepository implements FetchDateInterface
+class VersionRepository extends ServiceEntityRepository implements SynchronizedEntityInterface
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\DataProvider;
 use App\Entity\Project;
-use App\Interface\FetchDateInterface;
+use App\Interface\SynchronizedEntityInterface;
 use App\Model\Invoices\ProjectFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -20,7 +20,7 @@ use Knp\Component\Pager\PaginatorInterface;
  * @method findAll()
  * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProjectRepository extends ServiceEntityRepository implements FetchDateInterface
+class ProjectRepository extends ServiceEntityRepository implements SynchronizedEntityInterface
 {
     public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
     {

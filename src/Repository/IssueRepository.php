@@ -9,7 +9,7 @@ use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\WorkerGroup;
 use App\Enum\IssueStatusEnum;
-use App\Interface\FetchDateInterface;
+use App\Interface\SynchronizedEntityInterface;
 use App\Model\Invoices\IssueFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,7 +24,7 @@ use Knp\Component\Pager\PaginatorInterface;
  * @method Issue[]    findAll()
  * @method Issue[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class IssueRepository extends ServiceEntityRepository implements FetchDateInterface
+class IssueRepository extends ServiceEntityRepository implements SynchronizedEntityInterface
 {
     public function __construct(
         ManagerRegistry $registry,
