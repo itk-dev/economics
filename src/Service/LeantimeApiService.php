@@ -10,7 +10,6 @@ use App\Entity\Worklog;
 use App\Enum\IssueStatusEnum;
 use App\Exception\NotFoundException;
 use App\Interface\DataProviderInterface;
-use App\Interface\SynchronizedEntityInterface;
 use App\Message\LeantimeUpdateMessage;
 use App\Message\UpsertIssueMessage;
 use App\Message\UpsertProjectMessage;
@@ -89,9 +88,7 @@ class LeantimeApiService implements DataProviderInterface
 
         if ($onlyModified) {
             $repository = $this->entityManager->getRepository($className);
-            if ($repository instanceof SynchronizedEntityInterface) {
-                $params['modified'] = $repository->getOldestFetchTime($dataProvider)?->getTimestamp();
-            }
+            $params['modified'] = $repository->getOldestFetchTime($dataProvider)?->getTimestamp();
         }
 
         $endpoint = match ($className) {
@@ -151,9 +148,9 @@ class LeantimeApiService implements DataProviderInterface
             $dataProviderId,
             $result->name,
             $projectTrackerId,
-            // Error page is the fastest to load.
             $this->linkToProject($projectTrackerId, $dataProviderUrl),
             $fetchDate,
+            $this->getLeanDateTime($result->modified),
         );
     }
 
@@ -167,6 +164,7 @@ class LeantimeApiService implements DataProviderInterface
             $projectTrackerId,
             (string) $result->projectId,
             $fetchDate,
+            $this->getLeanDateTime($result->modified),
         );
     }
 
@@ -184,10 +182,11 @@ class LeantimeApiService implements DataProviderInterface
             $result->remainingHours,
             $result->worker,
             $this->convertStatusToEnum($result->status),
-            $result->dueDate !== null ? $this->getLeanDateTime($result->dueDate) : null,
-            $result->resolutionDate !== null ? $this->getLeanDateTime($result->resolutionDate) : null,
+            $this->getLeanDateTime($result->dueDate),
+            $this->getLeanDateTime($result->resolutionDate),
             $fetchDate,
             $this->linkToTicket($projectTrackerId, $dataProviderUrl),
+            $this->getLeanDateTime($result->modified),
         );
     }
 
@@ -200,11 +199,12 @@ class LeantimeApiService implements DataProviderInterface
             $dataProviderId,
             (string) $result->ticketId,
             $result->description,
-            $result->workDate !== null ? $this->getLeanDateTime($result->workDate) : null,
+            $this->getLeanDateTime($result->workDate),
             $result->username,
             $result->hours,
             $result->kind,
             $fetchDate,
+            $this->getLeanDateTime($result->modified),
         );
     }
 
@@ -226,8 +226,11 @@ class LeantimeApiService implements DataProviderInterface
         ]);
     }
 
-    private function getLeanDateTime(string $dateString): ?\DateTimeInterface
+    private function getLeanDateTime(?string $dateString): ?\DateTimeInterface
     {
+        if ($dateString === null) {
+            return null;
+        }
         return new \DateTime($dateString, new \DateTimeZone('UTC'));
     }
 
@@ -249,6 +252,7 @@ class LeantimeApiService implements DataProviderInterface
 
     private function linkToTicket(string $ticketId, string $dataProviderUrl): string
     {
+        // Error page is the fastest to load.
         return $dataProviderUrl . "/errorpage/#/tickets/showTicket/" . $ticketId;
     }
 

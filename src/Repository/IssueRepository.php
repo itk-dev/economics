@@ -24,7 +24,7 @@ use Knp\Component\Pager\PaginatorInterface;
  * @method Issue[]    findAll()
  * @method Issue[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class IssueRepository extends ServiceEntityRepository implements SynchronizedEntityInterface
+class IssueRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
@@ -131,45 +131,5 @@ class IssueRepository extends ServiceEntityRepository implements SynchronizedEnt
         $query = $qb->getQuery();
 
         return $query->getResult();
-    }
-
-    public function getProjectTrackerIdsByDataProviders(array $dataProviders)
-    {
-        $qb = $this->createQueryBuilder('issue');
-
-        $qb
-            ->select('issue.projectTrackerId')
-            ->where($qb->expr()->in('issue.dataProvider', ':dataProviders'))
-            ->setParameter('dataProviders', $dataProviders)
-            ->orderBy('issue.projectTrackerId', 'ASC');
-
-        return $qb->getQuery()->getSingleColumnResult();
-    }
-
-    public function getOldestFetchTime(DataProvider $dataProvider, ?array $projectTrackerProjectIds = null): ?\DateTimeInterface
-    {
-        $qb = $this->createQueryBuilder('issue');
-        $qb->select("issue.fetchTime");
-        $qb->where($qb->expr()->isNotNull('issue.fetchTime'));
-        $qb->where('issue.dataProvider = :dataProvider');
-        $qb->setParameter('dataProvider', $dataProvider);
-
-        if ($projectTrackerProjectIds !== null) {
-            $qb->leftJoin('issue.project', 'project');
-            $qb->andWhere($qb->expr()->in('project.projectTrackerId', $projectTrackerProjectIds));
-        }
-
-        $qb->orderBy("issue.fetchTime", "ASC");
-        $qb->setMaxResults(1);
-
-        $result = $qb->getQuery()->getResult();
-
-        if (count($result) > 0) {
-            $result = $result[0];
-
-            return $result['fetchTime'] ?? null;
-        }
-
-        return null;
     }
 }
