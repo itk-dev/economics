@@ -85,8 +85,9 @@ class DataProviderService
         $project->setProjectTrackerId($upsertProjectData->projectTrackerId);
         // TODO: Remove from entity:
         $project->setProjectTrackerKey($upsertProjectData->projectTrackerId);
-        $project->setProjectTrackerProjectUrl($dataProvider->getUrl() . "/projects/showProject/" . $upsertProjectData->projectTrackerId);
-        $project->setFetchTime($upsertProjectData->fetchTime);
+        $project->setProjectTrackerProjectUrl($upsertProjectData->url);
+        $project->setFetchDate($upsertProjectData->fetchTime);
+        $project->setSourceModifiedDate($upsertProjectData->sourceModifiedDate);
 
         $this->entityManager->flush();
     }
@@ -108,7 +109,8 @@ class DataProviderService
         }
 
         $version->setName($upsertVersionData->name);
-        $version->setFetchTime($upsertVersionData->fetchTime);
+        $version->setFetchDate($upsertVersionData->fetchTime);
+        $version->setSourceModifiedDate($upsertVersionData->sourceModifiedDate);
 
         $this->entityManager->flush();
     }
@@ -137,7 +139,8 @@ class DataProviderService
         $issue->setDueDate($upsertIssueData->dueDate);
         $issue->setWorker($upsertIssueData->worker);
         $issue->setLinkToIssue($upsertIssueData->url);
-        $issue->setFetchTime($upsertIssueData->fetchTime);
+        $issue->setFetchDate($upsertIssueData->fetchTime);
+        $issue->setSourceModifiedDate($upsertIssueData->sourceModifiedDate);
 
         $this->entityManager->flush();
     }
@@ -164,7 +167,8 @@ class DataProviderService
         $worklog->setKind(BillableKindsEnum::tryFrom($upsertWorklogData->kind));
         $worklog->setProject($issue->getProject());
         $worklog->setIssue($issue);
-        $worklog->setFetchTime($upsertWorklogData->fetchTime);
+        $worklog->setFetchDate($upsertWorklogData->fetchTime);
+        $worklog->setSourceModifiedDate($upsertWorklogData->sourceModifiedDate);
 
         $this->entityManager->flush();
     }

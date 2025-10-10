@@ -25,7 +25,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method findAll()
  * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class WorklogRepository extends ServiceEntityRepository implements SynchronizedEntityInterface
+class WorklogRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -48,33 +48,6 @@ class WorklogRepository extends ServiceEntityRepository implements SynchronizedE
         if ($flush) {
             $this->getEntityManager()->flush();
         }
-    }
-
-    public function getOldestFetchTime(DataProvider $dataProvider, ?array $projectTrackerProjectIds = null)
-    {
-        $qb = $this->createQueryBuilder('worklog');
-        $qb->select("worklog.fetchTime");
-        $qb->where($qb->expr()->isNotNull('worklog.fetchTime'));
-        $qb->where('worklog.dataProvider = :dataProvider');
-        $qb->setParameter('dataProvider', $dataProvider);
-
-        if ($projectTrackerProjectIds !== null) {
-            $qb->leftJoin('worklog.project', 'project');
-            $qb->andWhere($qb->expr()->in('project.projectTrackerId', $projectTrackerProjectIds));
-        }
-
-        $qb->orderBy("worklog.fetchTime", "ASC");
-        $qb->setMaxResults(1);
-
-        $result = $qb->getQuery()->getResult();
-
-        if (count($result) > 0) {
-            $result = $result[0];
-
-            return $result['fetchTime'] ?? null;
-        }
-
-        return null;
     }
 
     public function findByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): iterable

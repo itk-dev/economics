@@ -14,5 +14,6 @@ class UpsertWorklogData
         public float $hours,
         public string $kind,
         public ?\DateTimeInterface $fetchTime,
+        public ?\DateTimeInterface $sourceModifiedDate,
     ) {}
 }
