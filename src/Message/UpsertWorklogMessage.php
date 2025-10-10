@@ -8,5 +8,6 @@ readonly class UpsertWorklogMessage
 {
     public function __construct(
         public UpsertWorklogData $worklogData,
-    ) {}
+    ) {
+    }
 }

@@ -8,5 +8,6 @@ readonly class UpsertProjectMessage
 {
     public function __construct(
         public UpsertProjectData $projectData,
-    ) {}
+    ) {
+    }
 }

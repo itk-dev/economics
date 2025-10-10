@@ -8,5 +8,6 @@ readonly class UpsertVersionMessage
 {
     public function __construct(
         public UpsertVersionData $versionData,
-    ) {}
+    ) {
+    }
 }

@@ -2,9 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\DataProvider;
 use App\Entity\Project;
-use App\Interface\SynchronizedEntityInterface;
 use App\Model\Invoices\ProjectFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;

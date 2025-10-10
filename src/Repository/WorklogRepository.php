@@ -2,18 +2,14 @@
 
 namespace App\Repository;
 
-use App\Entity\DataProvider;
 use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
 use App\Enum\NonBillableEpicsEnum;
 use App\Enum\NonBillableVersionsEnum;
-use App\Interface\SynchronizedEntityInterface;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Mapping\OrderBy;
-use Doctrine\ORM\Query\AST\OrderByItem;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 

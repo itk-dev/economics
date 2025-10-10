@@ -44,51 +44,52 @@ class LeantimeApiService implements DataProviderInterface
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly ProjectRepository $projectRepository,
-    ) {}
-
-    public function updateAll(bool $asyncJobQueue = false, bool $onlyModified = false): void
-    {
-        $this->update(Project::class, $asyncJobQueue, $onlyModified);
-        $this->update(Version::class, $asyncJobQueue, $onlyModified);
-        $this->update(Issue::class, $asyncJobQueue, $onlyModified);
-        $this->update(Worklog::class, $asyncJobQueue, $onlyModified);
+    ) {
     }
 
-    public function update(string $className, bool $asyncJobQueue = false, bool $onlyModified = false): void
+    public function updateAll(bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
+    {
+        $this->update(Project::class, $asyncJobQueue, $modifiedAfter);
+        $this->update(Version::class, $asyncJobQueue, $modifiedAfter);
+        $this->update(Issue::class, $asyncJobQueue, $modifiedAfter);
+        $this->update(Worklog::class, $asyncJobQueue, $modifiedAfter);
+    }
+
+    public function update(string $className, bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
     {
         $dataProviders = $this->getEnabledLeantimeDataProviders();
 
         foreach ($dataProviders as $dataProvider) {
             $projectTrackerProjectIds = match ($className) {
                 Project::class => null,
-                default => $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider])
+                default => $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]),
             };
 
-            $this->updateAsJob($className,0, $this::LIMIT, $dataProvider->getId(), $projectTrackerProjectIds, $asyncJobQueue, $onlyModified);
+            $this->updateAsJob($className, 0, $this::LIMIT, $dataProvider->getId(), $projectTrackerProjectIds, $asyncJobQueue, $modifiedAfter);
         }
     }
 
-    public function updateAsJob(string $className, int $startId, int $limit, int $dataProviderId, ?array $projectTrackerProjectIds = null, bool $asyncJobQueue = false, bool $onlyModified = false): void
+    public function updateAsJob(string $className, int $startId, int $limit, int $dataProviderId, ?array $projectTrackerProjectIds = null, bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
     {
         $dataProvider = $this->dataProviderRepository->find($dataProviderId);
-        $dataProviderUrl = $dataProvider->getUrl();
 
-        if ($dataProvider === null) {
+        if (null === $dataProvider) {
             throw new NotFoundException("DataProvider with id: $dataProviderId not found");
         }
 
+        $dataProviderUrl = $dataProvider->getUrl();
+
         $params = [
-            "start" => $startId,
-            "limit" => $limit,
+            'start' => $startId,
+            'limit' => $limit,
         ];
 
-        if ($projectTrackerProjectIds !== null) {
+        if (null !== $projectTrackerProjectIds) {
             $params['projectIds'] = $projectTrackerProjectIds;
         }
 
-        if ($onlyModified) {
-            $repository = $this->entityManager->getRepository($className);
-            $params['modified'] = $repository->getOldestFetchTime($dataProvider)?->getTimestamp();
+        if (null !== $modifiedAfter) {
+            $params['modifiedAfter'] = $modifiedAfter->getTimestamp();
         }
 
         $endpoint = match ($className) {
@@ -119,7 +120,7 @@ class LeantimeApiService implements DataProviderInterface
         // Queue next page.
         if ($data->resultsCount === $limit) {
             $this->messageBus->dispatch(
-                new LeantimeUpdateMessage($className, $startId, $limit, $dataProviderId, $asyncJobQueue, $onlyModified, $projectTrackerProjectIds),
+                new LeantimeUpdateMessage($className, $startId, $limit, $dataProviderId, $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
             );
         }
@@ -127,17 +128,20 @@ class LeantimeApiService implements DataProviderInterface
 
     private function dispatchUpsertMessage(string $className, object $data, int $dataProviderId, \DateTimeInterface $fetchDate, bool $asyncJobQueue = false, ?string $dataProviderUrl = null): void
     {
-        match ($className) {
-            Project::class => $message = new UpsertProjectMessage($this->getProjectUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
-            Version::class => $message = new UpsertVersionMessage($this->getVersionUpsertFromResult($data, $dataProviderId, $fetchDate)),
-            Issue::class => $message = new UpsertIssueMessage($this->getIssueUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
-            Worklog::class => $message = new UpsertWorklogMessage($this->getWorklogUpsertFromResult($data, $dataProviderId, $fetchDate)),
+        $message = match ($className) {
+            Project::class => new UpsertProjectMessage($this->getProjectUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
+            Version::class => new UpsertVersionMessage($this->getVersionUpsertFromResult($data, $dataProviderId, $fetchDate)),
+            Issue::class => new UpsertIssueMessage($this->getIssueUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
+            Worklog::class => new UpsertWorklogMessage($this->getWorklogUpsertFromResult($data, $dataProviderId, $fetchDate)),
+            default => null,
         };
 
-        $this->messageBus->dispatch(
-            $message,
-            [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
-        );
+        if (null !== $message) {
+            $this->messageBus->dispatch(
+                $message,
+                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+            );
+        }
     }
 
     private function getProjectUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null): UpsertProjectData
@@ -156,12 +160,10 @@ class LeantimeApiService implements DataProviderInterface
 
     private function getVersionUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): UpsertVersionData
     {
-        $projectTrackerId = (string) $result->id;
-
         return new UpsertVersionData(
             $dataProviderId,
             $result->name,
-            $projectTrackerId,
+            (string) $result->id,
             (string) $result->projectId,
             $fetchDate,
             $this->getLeanDateTime($result->modified),
@@ -192,10 +194,8 @@ class LeantimeApiService implements DataProviderInterface
 
     private function getWorklogUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): UpsertWorklogData
     {
-        $projectTrackerId = (string) $result->id;
-
         return new UpsertWorklogData(
-            $projectTrackerId,
+            $result->id,
             $dataProviderId,
             (string) $result->ticketId,
             $result->description,
@@ -211,10 +211,11 @@ class LeantimeApiService implements DataProviderInterface
     private function fetchFromLeantime(DataProvider $dataProvider, string $type, array $params): object
     {
         $response = $this->post($dataProvider, $type, $params);
+
         return json_decode($response->getContent(), null, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function post(DataProvider $dataProvider,  $path, array $body): ResponseInterface
+    private function post(DataProvider $dataProvider, $path, array $body): ResponseInterface
     {
         return $this->httpClient->request('POST', $dataProvider->getUrl().$this::API_PATH_DATA.$path, [
             'headers' => [
@@ -222,15 +223,16 @@ class LeantimeApiService implements DataProviderInterface
                 'Content-Type' => 'application/json',
                 'x-api-key' => $dataProvider->getSecret(),
             ],
-            "json" => $body,
+            'json' => $body,
         ]);
     }
 
     private function getLeanDateTime(?string $dateString): ?\DateTimeInterface
     {
-        if ($dateString === null) {
+        if (null === $dateString) {
             return null;
         }
+
         return new \DateTime($dateString, new \DateTimeZone('UTC'));
     }
 
@@ -247,17 +249,25 @@ class LeantimeApiService implements DataProviderInterface
 
     private function getEnabledLeantimeDataProviders(): array
     {
-        return $this->dataProviderRepository->findBy(["class" => LeantimeApiService::class, 'enabled' => true]);
+        return $this->dataProviderRepository->findBy(['class' => LeantimeApiService::class, 'enabled' => true]);
     }
 
-    private function linkToTicket(string $ticketId, string $dataProviderUrl): string
+    private function linkToTicket(string $ticketId, ?string $dataProviderUrl): ?string
     {
+        if (null === $dataProviderUrl) {
+            return null;
+        }
+
         // Error page is the fastest to load.
-        return $dataProviderUrl . "/errorpage/#/tickets/showTicket/" . $ticketId;
+        return $dataProviderUrl.'/errorpage/#/tickets/showTicket/'.$ticketId;
     }
 
-    private function linkToProject(string $projectTrackerId, string $dataProviderUrl): string
+    private function linkToProject(string $projectTrackerId, ?string $dataProviderUrl): ?string
     {
-        return $dataProviderUrl . "/projects/showProject/" . $projectTrackerId;
+        if (null === $dataProviderUrl) {
+            return null;
+        }
+
+        return $dataProviderUrl.'/projects/showProject/'.$projectTrackerId;
     }
 }

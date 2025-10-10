@@ -11,5 +11,6 @@ class UpsertVersionData
         public string $projectTrackerProjectId,
         public ?\DateTimeInterface $fetchTime,
         public ?\DateTimeInterface $sourceModifiedDate,
-    ) {}
+    ) {
+    }
 }
