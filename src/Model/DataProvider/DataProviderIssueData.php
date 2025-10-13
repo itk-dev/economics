@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Model\Upsert;
+namespace App\Model\DataProvider;
 
 use App\Enum\IssueStatusEnum;
 
-class UpsertIssueData
+class DataProviderIssueData
 {
     public function __construct(
         public string $projectTrackerId,

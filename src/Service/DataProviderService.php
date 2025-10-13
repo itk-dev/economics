@@ -9,10 +9,10 @@ use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
 use App\Exception\NotFoundException;
-use App\Model\Upsert\UpsertIssueData;
-use App\Model\Upsert\UpsertProjectData;
-use App\Model\Upsert\UpsertVersionData;
-use App\Model\Upsert\UpsertWorklogData;
+use App\Model\DataProvider\DataProviderIssueData;
+use App\Model\DataProvider\DataProviderProjectData;
+use App\Model\DataProvider\DataProviderVersionData;
+use App\Model\DataProvider\DataProviderWorklogData;
 use App\Repository\DataProviderRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
@@ -64,7 +64,7 @@ class DataProviderService
         return $dataProvider;
     }
 
-    public function upsertProject(UpsertProjectData $upsertProjectData): void
+    public function upsertProject(DataProviderProjectData $upsertProjectData): void
     {
         $dataProvider = $this->getDataProvider($upsertProjectData->dataProviderId);
         $project = $this->getProject($upsertProjectData->projectTrackerId, $dataProvider);
@@ -93,7 +93,7 @@ class DataProviderService
         $this->entityManager->flush();
     }
 
-    public function upsertVersion(UpsertVersionData $upsertVersionData): void
+    public function upsertVersion(DataProviderVersionData $upsertVersionData): void
     {
         $dataProvider = $this->getDataProvider($upsertVersionData->dataProviderId);
         $project = $this->getProject($upsertVersionData->projectTrackerProjectId, $dataProvider);
@@ -123,7 +123,7 @@ class DataProviderService
         $this->entityManager->flush();
     }
 
-    public function upsertIssue(UpsertIssueData $upsertIssueData): void
+    public function upsertIssue(DataProviderIssueData $upsertIssueData): void
     {
         $dataProvider = $this->getDataProvider($upsertIssueData->dataProviderId);
         $project = $this->getProject($upsertIssueData->projectTrackerProjectId, $dataProvider);
@@ -160,7 +160,7 @@ class DataProviderService
         $this->entityManager->flush();
     }
 
-    public function upsertWorklog(UpsertWorklogData $upsertWorklogData): void
+    public function upsertWorklog(DataProviderWorklogData $upsertWorklogData): void
     {
         $dataProvider = $this->getDataProvider($upsertWorklogData->dataProviderId);
         $issue = $this->getIssue($upsertWorklogData->projectTrackerIssueId, $dataProvider);

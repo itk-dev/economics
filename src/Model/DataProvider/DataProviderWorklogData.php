@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Model\Upsert;
+namespace App\Model\DataProvider;
 
-class UpsertWorklogData
+class DataProviderWorklogData
 {
     public function __construct(
         public int $projectTrackerId,

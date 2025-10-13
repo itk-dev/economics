@@ -2,12 +2,12 @@
 
 namespace App\Message;
 
-use App\Model\Upsert\UpsertVersionData;
+use App\Model\DataProvider\DataProviderVersionData;
 
 readonly class UpsertVersionMessage
 {
     public function __construct(
-        public UpsertVersionData $versionData,
+        public DataProviderVersionData $versionData,
     ) {
     }
 }
