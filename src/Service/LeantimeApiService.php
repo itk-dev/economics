@@ -16,10 +16,10 @@ use App\Message\UpsertIssueMessage;
 use App\Message\UpsertProjectMessage;
 use App\Message\UpsertVersionMessage;
 use App\Message\UpsertWorklogMessage;
-use App\Model\Upsert\UpsertIssueData;
-use App\Model\Upsert\UpsertProjectData;
-use App\Model\Upsert\UpsertVersionData;
-use App\Model\Upsert\UpsertWorklogData;
+use App\Model\DataProvider\DataProviderIssueData;
+use App\Model\DataProvider\DataProviderProjectData;
+use App\Model\DataProvider\DataProviderVersionData;
+use App\Model\DataProvider\DataProviderWorklogData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -155,11 +155,11 @@ class LeantimeApiService implements DataProviderInterface
         }
     }
 
-    private function getProjectUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null): UpsertProjectData
+    private function getProjectUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null): DataProviderProjectData
     {
         $projectTrackerId = (string) $result->id;
 
-        return new UpsertProjectData(
+        return new DataProviderProjectData(
             $dataProviderId,
             $result->name,
             $projectTrackerId,
@@ -169,9 +169,9 @@ class LeantimeApiService implements DataProviderInterface
         );
     }
 
-    private function getVersionUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): UpsertVersionData
+    private function getVersionUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): DataProviderVersionData
     {
-        return new UpsertVersionData(
+        return new DataProviderVersionData(
             $dataProviderId,
             $result->name,
             (string) $result->id,
@@ -181,11 +181,11 @@ class LeantimeApiService implements DataProviderInterface
         );
     }
 
-    private function getIssueUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null): UpsertIssueData
+    private function getIssueUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null): DataProviderIssueData
     {
         $projectTrackerId = (string) $result->id;
 
-        return new UpsertIssueData(
+        return new DataProviderIssueData(
             $projectTrackerId,
             $dataProviderId,
             (string) $result->projectId,
@@ -203,7 +203,7 @@ class LeantimeApiService implements DataProviderInterface
         );
     }
 
-    private function getWorklogUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): UpsertWorklogData
+    private function getWorklogUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): DataProviderWorklogData
     {
         $startedDate = $this->getLeanDateTime($result->workDate);
 
@@ -211,7 +211,7 @@ class LeantimeApiService implements DataProviderInterface
             throw new NotAcceptableException('Worklog upsert not acceptable: startedDate is null');
         }
 
-        return new UpsertWorklogData(
+        return new DataProviderWorklogData(
             $result->id,
             $dataProviderId,
             (string) $result->ticketId,

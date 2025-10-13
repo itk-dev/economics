@@ -2,12 +2,12 @@
 
 namespace App\Message;
 
-use App\Model\Upsert\UpsertWorklogData;
+use App\Model\DataProvider\DataProviderWorklogData;
 
 readonly class UpsertWorklogMessage
 {
     public function __construct(
-        public UpsertWorklogData $worklogData,
+        public DataProviderWorklogData $worklogData,
     ) {
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Message;
 
-use App\Model\Upsert\UpsertIssueData;
+use App\Model\DataProvider\DataProviderIssueData;
 
 readonly class UpsertIssueMessage
 {
     public function __construct(
-        public UpsertIssueData $issueData,
+        public DataProviderIssueData $issueData,
     ) {
     }
 }
