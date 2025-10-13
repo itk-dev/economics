@@ -11,7 +11,7 @@ use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
 #[AsCommand(
     name: 'app:data-providers:sync-all',
-    description: 'Sync all Data Provider data as jobs',
+    description: 'Sync all Data Provider data as jobs, scheduled at 01:15 each night.',
 )]
 #[AsCronTask('15 1 * * *')]
 class SyncAllCommand extends Command
