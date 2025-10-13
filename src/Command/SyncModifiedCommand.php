@@ -11,7 +11,7 @@ use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
 
 #[AsCommand(
     name: 'app:data-providers:sync-modified',
-    description: 'Sync Data Provider data, that has been modified within the last hour, as jobs',
+    description: 'Sync Data Provider data, that has been modified within the last hour, as jobs. Scheduled to run every 15 minutes.',
 )]
 #[AsPeriodicTask(frequency: '15 minutes')]
 class SyncModifiedCommand extends Command
