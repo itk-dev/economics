@@ -19,7 +19,10 @@ use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DataProviderService
@@ -37,6 +40,7 @@ class DataProviderService
         private readonly WorklogRepository $worklogRepository,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly VersionRepository $versionRepository,
+        private readonly ContainerInterface $transportLocator,
         protected readonly array $customFieldMappings,
         protected readonly string $defaultBoard,
         protected readonly float $weekGoalLow,
@@ -241,5 +245,38 @@ class DataProviderService
             'worklogId' => $projectTrackerId,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+
+    /**
+     * Counts the number of pending jobs for a specific queue based on the transport name.
+     *
+     * @param string $transportName The name of the transport (queue) to count pending jobs for
+     *
+     * @return int The number of pending jobs in the specified queue
+     *
+     * @throws ContainerExceptionInterface
+     */
+    public function countPendingJobsByQueueName(string $transportName): int
+    {
+        if (!$this->transportLocator->has($transportName)) {
+            throw new \InvalidArgumentException('The transport does not exist.');
+        }
+
+        $transport = $this->transportLocator->get($transportName);
+        if (!$transport instanceof MessageCountAwareInterface) {
+            throw new \RuntimeException('The transport is not message count aware.');
+        }
+
+        return $transport->getMessageCount();
+    }
+
+    public function countFailedJobsTheLastDay(): int
+    {
+        $conn = $this->entityManager
+            ->getConnection();
+        $sql = 'SELECT COUNT(*) FROM messenger_messages WHERE queue_name = "failed" AND created_at > DATE_SUB(NOW(), INTERVAL 1 DAY)';
+        $stmt = $conn->prepare($sql);
+        return $stmt->execute()->fetchOne();
     }
 }

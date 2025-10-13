@@ -43,6 +43,7 @@ services:
             $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
             $httpClientRetryDelayMs: '%env(int:APP_HTTP_CLIENT_RETRY_DELAY_MS)%'
             $httpClientMaxRetries: '%env(int:APP_HTTP_CLIENT_MAX_RETRIES)%'
+            $transportLocator: '@messenger.receiver_locator'
 
     App\Service\ClientHelper:
         arguments:
