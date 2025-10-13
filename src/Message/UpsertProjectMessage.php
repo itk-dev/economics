@@ -2,12 +2,12 @@
 
 namespace App\Message;
 
-use App\Model\Upsert\UpsertProjectData;
+use App\Model\DataProvider\DataProviderProjectData;
 
 readonly class UpsertProjectMessage
 {
     public function __construct(
-        public UpsertProjectData $projectData,
+        public DataProviderProjectData $projectData,
     ) {
     }
 }

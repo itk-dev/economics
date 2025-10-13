@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Model\Upsert;
+namespace App\Model\DataProvider;
 
-class UpsertProjectData
+class DataProviderVersionData
 {
     public function __construct(
         public int $dataProviderId,
         public string $name,
         public string $projectTrackerId,
-        public ?string $url,
+        public string $projectTrackerProjectId,
         public ?\DateTimeInterface $fetchTime,
         public ?\DateTimeInterface $sourceModifiedDate,
     ) {
