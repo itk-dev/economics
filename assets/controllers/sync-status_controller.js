@@ -4,9 +4,9 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
     static targets = ["queue", "error"];
 
-    statusMessageTemplate = "";
-
-    nextTimeout = 20000;
+    queueMessageTemplate = "";
+    errorMessageTemplate = "";
+    nextTimeout = 60000;
 
     refresh = () => {
         fetch("/admin/synchronization/status")
@@ -14,7 +14,6 @@ export default class extends Controller {
                 return response.json();
             })
             .then((data) => {
-                console.log(data);
                 this.queueTarget.innerText =
                     this.queueMessageTemplate.replace(
                         "<numberOfJobs>",
@@ -26,7 +25,7 @@ export default class extends Controller {
                         data.error ?? 0,
                     );
 
-                this.nextTimeout = data.async > 0 ? 5000 : 20000;
+                this.nextTimeout = data.async > 0 ? 5000 : 60000;
             })
             .finally(() => {
                 setTimeout(this.refresh, this.nextTimeout);
