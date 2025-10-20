@@ -247,7 +247,6 @@ class DataProviderService
         ]);
     }
 
-
     /**
      * Counts the number of pending jobs for a specific queue based on the transport name.
      *
@@ -271,12 +270,23 @@ class DataProviderService
         return $transport->getMessageCount();
     }
 
+    /**
+     * Get number of failed jobs that last 24 hours.
+     *
+     * @return int Number of failed jobs.
+     */
     public function countFailedJobsTheLastDay(): int
     {
-        $conn = $this->entityManager
-            ->getConnection();
-        $sql = 'SELECT COUNT(*) FROM messenger_messages WHERE queue_name = "failed" AND created_at > DATE_SUB(NOW(), INTERVAL 1 DAY)';
-        $stmt = $conn->prepare($sql);
-        return $stmt->execute()->fetchOne();
+        try {
+            $conn = $this->entityManager->getConnection();
+            $sql = 'SELECT COUNT(*) FROM messenger_messages WHERE queue_name = "failed" AND created_at > DATE_SUB(NOW(), INTERVAL 1 DAY)';
+            $stmt = $conn->prepare($sql);
+
+            return $stmt->execute()->fetchOne();
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return 0;
+        }
     }
 }
