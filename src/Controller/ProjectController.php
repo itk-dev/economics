@@ -2,12 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Issue;
 use App\Entity\Project;
+use App\Entity\Worklog;
 use App\Form\ProjectFilterType;
 use App\Form\ProjectType;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\ProjectRepository;
 use App\Service\DataSynchronizationService;
+use App\Service\LeantimeApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -102,7 +105,7 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]
-    public function sync(Project $project, DataSynchronizationService $dataSynchronizationService): Response
+    public function sync(Project $project, LeantimeApiService $leantimeApiService): Response
     {
         try {
             $projectId = $project->getId();
@@ -113,10 +116,11 @@ class ProjectController extends AbstractController
 
             $dataProvider = $project->getDataProvider();
 
-            if (null != $dataProvider) {
-                $dataSynchronizationService->syncIssuesForProject($projectId, $dataProvider);
-
-                $dataSynchronizationService->syncWorklogsForProject($projectId, $dataProvider);
+            if (null !== $dataProvider) {
+                if ($dataProvider->getClass() === LeantimeApiService::class) {
+                    $leantimeApiService->updateAsJob(Issue::class, 0, 100, $dataProvider->getId(), [$project->getProjectTrackerId()]);
+                    $leantimeApiService->updateAsJob(Worklog::class, 0, 100, $dataProvider->getId(), [$project->getProjectTrackerId()]);
+                }
             }
 
             return new JsonResponse([], 200);

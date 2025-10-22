@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Issue;
+use App\Entity\Worklog;
 use App\Form\PlanningType;
 use App\Model\Planning\PlanningFormData;
 use App\Repository\ProjectRepository;
 use App\Service\DataSynchronizationService;
+use App\Service\LeantimeApiService;
 use App\Service\PlanningService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -73,7 +76,7 @@ class PlanningController extends AbstractController
     }
 
     #[Route('/sync-issues', name: 'app_planning_issues_sync', methods: ['POST'])]
-    public function syncAllIssues(Request $request, DataSynchronizationService $dataSynchronizationService, ProjectRepository $projectRepository): Response
+    public function syncAllIssues(Request $request, LeantimeApiService $leantimeApiService, ProjectRepository $projectRepository): Response
     {
         $projectId = $request->query->get('id');
 
@@ -92,12 +95,12 @@ class PlanningController extends AbstractController
             throw new NotFoundHttpException('Project data provider not set');
         }
 
-        $issuesSynced = 0;
-        $dataSynchronizationService->syncIssuesForProject((int) $projectId, $dataProvider, function () use (&$issuesSynced) {
-            ++$issuesSynced;
-        });
+        if ($dataProvider->getClass() === LeantimeApiService::class) {
+            $leantimeApiService->updateAsJob(Issue::class, 0, 100, $dataProvider->getId(), [$project->getProjectTrackerId()], true);
+            $leantimeApiService->updateAsJob(Worklog::class, 0, 100, $dataProvider->getId(), [$project->getProjectTrackerId()], true);
+        }
 
-        return new JsonResponse(['issuesSynced' => $issuesSynced], 200);
+        return new JsonResponse(['issuesSynced' => 0], 200);
     }
 
     private function createResponse(string $mode, array $data): Response
