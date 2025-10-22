@@ -29,7 +29,7 @@ class SyncCommand extends Command
     protected function configure(): void
     {
         $this->addOption('job', 'j', InputOption::VALUE_NONE, 'Use async job handling');
-        $this->addOption('modified', 'm', InputOption::VALUE_OPTIONAL, 'Only update items modified since this unix timestamp');
+        $this->addOption('modified', null, InputOption::VALUE_OPTIONAL, 'Only update items modified since this datetime string (valid formats: https://www.php.net/manual/en/datetime.formats.php)');
         $this->addOption('all', 'a', InputOption::VALUE_NONE, 'Sync all');
         $this->addOption('projects', 'p', InputOption::VALUE_NONE, 'Sync projects');
         $this->addOption('versions', 's', InputOption::VALUE_NONE, 'Sync versions');
@@ -44,10 +44,16 @@ class SyncCommand extends Command
         $jobHandling = $input->getOption('job');
         $modified = $input->getOption('modified');
 
-        $modifiedAfter = \DateTime::createFromFormat('U', $modified);
+        try {
+            $modifiedAfter = $modified !== false ? new \DateTime($modified) : null;
+        } catch (\Exception $e) {
+            $io->error("Error parsing modified option: " . $e->getMessage());
+            return Command::FAILURE;
+        }
 
         $io->info('Handle as jobs: '.($jobHandling ? 'TRUE' : 'FALSE'));
-        $io->info('Only handle items modified since: '.$modifiedAfter->format('Y-m-d H:i:s') ?? '');
+
+        $modifiedAfter !== null && $io->info('Only handle items modified since: '.$modifiedAfter->format('Y-m-d H:i:s') ?? '');
 
         if ($input->getOption('all')) {
             $io->info('Syncing all.');
