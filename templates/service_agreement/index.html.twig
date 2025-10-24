@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ServiceAgreement index{% endblock %}
+
+{% block content %}
+
+    {{ include('components/page-header.html.twig', {
+        title: 'serviceAgreement.title'|trans,
+        type: 'link',
+        link_text: 'serviceAgreement.action_create_new'|trans,
+        link_url: 'app_service_agreement_new',
+    }) }}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>ProjectId</th>
+                <th>ClientId</th>
+                <th>CybersecurityAgreementId</th>
+                <th>HostingProvider</th>
+                <th>DocumentUrl</th>
+                <th>Price</th>
+                <th>ProjectLeadId</th>
+                <th>ValidFrom</th>
+                <th>ValidTo</th>
+                <th>IsActive</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for service_agreement in service_agreements %}
+            <tr>
+                <td>{{ service_agreement.id }}</td>
+                <td>{{ service_agreement.projectId }}</td>
+                <td>{{ service_agreement.clientId }}</td>
+                <td>{{ service_agreement.cybersecurityAgreementId }}</td>
+                <td>{{ service_agreement.hostingProvider }}</td>
+                <td>{{ service_agreement.documentUrl }}</td>
+                <td>{{ service_agreement.price }}</td>
+                <td>{{ service_agreement.projectLeadId }}</td>
+                <td>{{ service_agreement.validFrom ? service_agreement.validFrom|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ service_agreement.validTo ? service_agreement.validTo|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ service_agreement.isActive ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('app_service_agreement_show', {'id': service_agreement.id}) }}">show</a>
+                    <a href="{{ path('app_service_agreement_edit', {'id': service_agreement.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

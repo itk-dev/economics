@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit ServiceAgreement{% endblock %}
+
+{% block body %}
+    <h1>Edit ServiceAgreement</h1>
+
+    {{ include('service_agreement/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_service_agreement_index') }}">back to list</a>
+
+    {{ include('service_agreement/_delete_form.html.twig') }}
+{% endblock %}

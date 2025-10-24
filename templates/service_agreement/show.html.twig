@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ServiceAgreement{% endblock %}
+
+{% block body %}
+    <h1>ServiceAgreement</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ service_agreement.id }}</td>
+            </tr>
+            <tr>
+                <th>ProjectId</th>
+                <td>{{ service_agreement.projectId }}</td>
+            </tr>
+            <tr>
+                <th>ClientId</th>
+                <td>{{ service_agreement.clientId }}</td>
+            </tr>
+            <tr>
+                <th>CybersecurityAgreementId</th>
+                <td>{{ service_agreement.cybersecurityAgreementId }}</td>
+            </tr>
+            <tr>
+                <th>HostingProvider</th>
+                <td>{{ service_agreement.hostingProvider }}</td>
+            </tr>
+            <tr>
+                <th>DocumentUrl</th>
+                <td>{{ service_agreement.documentUrl }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>{{ service_agreement.price }}</td>
+            </tr>
+            <tr>
+                <th>ProjectLeadId</th>
+                <td>{{ service_agreement.projectLeadId }}</td>
+            </tr>
+            <tr>
+                <th>ValidFrom</th>
+                <td>{{ service_agreement.validFrom ? service_agreement.validFrom|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>ValidTo</th>
+                <td>{{ service_agreement.validTo ? service_agreement.validTo|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>IsActive</th>
+                <td>{{ service_agreement.isActive ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_service_agreement_index') }}">back to list</a>
+
+    <a href="{{ path('app_service_agreement_edit', {'id': service_agreement.id}) }}">edit</a>
+
+    {{ include('service_agreement/_delete_form.html.twig') }}
+{% endblock %}
