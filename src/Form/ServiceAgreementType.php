@@ -2,9 +2,16 @@
 
 namespace App\Form;
 
+use App\Entity\Client;
+use App\Entity\Project;
 use App\Entity\ServiceAgreement;
+use App\Entity\User;
+use App\Entity\Worker;
+use App\Enum\HostingProviderEnum;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -13,28 +20,25 @@ class ServiceAgreementType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('projectId', null, [
-                'label' => 'serviceAgreement.project_id',
+            ->add('projectId', EntityType::class, [
+                'class' => Project::class,
+                'label' => 'serviceAgreement.project',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row']
             ])
-            ->add('clientId', null, [
-                'label' => 'serviceAgreement.client_id',
+            ->add('clientId', EntityType::class, [
+                'class' => Client::class,
+                'label' => 'serviceAgreement.client',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row']
             ])
-            ->add('cybersecurityAgreementId', null, [
-                'label' => 'serviceAgreement.cybersecurity_agreement_id',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
-                'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row']
-            ])
-            ->add('hostingProvider', null, [
+            ->add('hostingProvider', ChoiceType::class, [
+                'choices' => HostingProviderEnum::cases(),
+                'choice_label' => fn($choice) => $choice->value,
                 'label' => 'serviceAgreement.hosting_provider',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
@@ -55,7 +59,8 @@ class ServiceAgreementType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row']
             ])
-            ->add('projectLeadId', null, [
+            ->add('projectLeadId', EntityType::class, [
+                'class' => Worker::class,
                 'label' => 'serviceAgreement.project_lead_id',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
