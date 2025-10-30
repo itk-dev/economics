@@ -1,18 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'serviceAgreement.new'|trans }}{% endblock %}
+{% block title %}{{ 'service_agreement.new'|trans }}{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ 'serviceAgreement.new'|trans }}</h1>
+    <h1 class="page-title">{{ 'service_agreement.new'|trans }}</h1>
 
     {{ form_start(form) }}
-    <div class="selections" {{ stimulus_controller('choices') }}>
+    <div class="selections">
         {{ form_rest(form) }}
     </div>
-    <button class="button">{{ 'serviceAgreement.action_create'|trans }}</button>
+    <button class="button">{{ 'service_agreement.action_create'|trans }}</button>
     {{ form_end(form) }}
 
     <div class="bottom-actions">
-        <a class="link" href="{{ path('app_service_agreement_index') }}">{{ 'serviceAgreement.back_to_list'|trans }}</a>
+        <a class="link" href="{{ path('app_service_agreement_index') }}">{{ 'service_agreement.back_to_list'|trans }}</a>
     </div>
 {% endblock %}

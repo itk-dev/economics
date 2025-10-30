@@ -1,58 +1,91 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ServiceAgreement index{% endblock %}
+{% block title %}{{ 'service_agreement.title'|trans }}{% endblock %}
 
 {% block content %}
-
     {{ include('components/page-header.html.twig', {
-        title: 'serviceAgreement.title'|trans,
+        title: 'service_agreement.title'|trans,
         type: 'link',
-        link_text: 'serviceAgreement.action_create_new'|trans,
+        link_text: 'service_agreement.action_create_new'|trans,
         link_url: 'app_service_agreement_new',
     }) }}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>ProjectId</th>
-                <th>ClientId</th>
-                <th>CybersecurityAgreementId</th>
-                <th>HostingProvider</th>
-                <th>DocumentUrl</th>
-                <th>Price</th>
-                <th>ProjectLeadId</th>
-                <th>ValidFrom</th>
-                <th>ValidTo</th>
-                <th>IsActive</th>
-                <th>actions</th>
-            </tr>
+    <table class="table margin-bottom">
+        <thead class="table-th">
+        <tr>
+            <th class="table-th">#</th>
+            <th class="table-th">{{ 'service_agreement.project'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.client'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.cybersecurity_agreement'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.hosting_provider'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.document_url'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.price'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.cyber_security_agreement.quarterly_hours'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.project_lead'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.valid_from'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.valid_to'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.is_active'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.actions'|trans }}</th>
+        </tr>
         </thead>
         <tbody>
-        {% for service_agreement in service_agreements %}
-            <tr>
-                <td>{{ service_agreement.id }}</td>
-                <td>{{ service_agreement.projectId }}</td>
-                <td>{{ service_agreement.clientId }}</td>
-                <td>{{ service_agreement.cybersecurityAgreementId }}</td>
-                <td>{{ service_agreement.hostingProvider }}</td>
-                <td>{{ service_agreement.documentUrl }}</td>
-                <td>{{ service_agreement.price }}</td>
-                <td>{{ service_agreement.projectLeadId }}</td>
-                <td>{{ service_agreement.validFrom ? service_agreement.validFrom|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ service_agreement.validTo ? service_agreement.validTo|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ service_agreement.isActive ? 'Yes' : 'No' }}</td>
-                <td>
-                    <a href="{{ path('app_service_agreement_show', {'id': service_agreement.id}) }}">show</a>
-                    <a href="{{ path('app_service_agreement_edit', {'id': service_agreement.id}) }}">edit</a>
+        {% for index, service_agreement in service_agreements %}
+            <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                <td class="table-td">{{ service_agreement.id }}</td>
+                <td class="table-td whitespace-nowrap">{{ service_agreement.project }}</td>
+                <td class="table-td whitespace-nowrap">{{ service_agreement.client }}</td>
+                <td class="table-td">
+                    {% if service_agreement.cybersecurityAgreement %}
+                        <span
+                            class="badge bg-success">{{ 'service_agreement.has_cybersecurity_agreement_true'|trans }}</span>
+                    {% else %}
+                        <span
+                            class="text-muted">{{ 'service_agreement.has_cybersecurity_agreement_false'|trans }}</span>
+                    {% endif %}
+                </td>
+                <td class="table-td">{{ service_agreement.hostingProvider.value }}</td>
+                <td class="table-td"><a class="flex flex-row" target="_blank" title="{{ service_agreement.documentUrl }}" href="{{ service_agreement.documentUrl }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                        </svg>
+                    </a></td>
+                <td class="table-td">{{ service_agreement.price }},-</td>
+                <td class="table-td">{{ service_agreement.cybersecurityAgreement ? cyber_security_agreements[service_agreement.cybersecurityAgreement.id].quarterlyHours : '-' }}</td>
+                <td class="table-td">{{ service_agreement.projectLead }}</td>
+                <td class="table-td whitespace-nowrap">{{ service_agreement.validFrom ? service_agreement.validFrom|date('d/m Y') : '' }}</td>
+                <td class="table-td whitespace-nowrap">{{ service_agreement.validTo ? service_agreement.validTo|date('d/m Y') : '' }}</td>
+                <td class="table-td">{{ service_agreement.isActive ? 'service_agreement.yes'|trans : 'service_agreement.no'|trans }}</td>
+                <td class="table-td">
+                    <a class="link whitespace-nowrap"
+                       href="{{ path('app_service_agreement_edit', {'id': service_agreement.id}) }}">{{ 'service_agreement.action_edit'|trans }}</a>
                 </td>
             </tr>
+             {% if service_agreement.cybersecurityAgreement %}
+                {% set cyber_agreement = cyber_security_agreements[service_agreement.cybersecurityAgreement.id] %}
+                {% if cyber_agreement %}
+                    <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                        <td colspan="13" class="table-td pl-7">
+                            <div>
+                                {% if cyber_agreement.note %}
+                                    <span>{{ cyber_agreement.note }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endif %}
         {% else %}
-            <tr>
-                <td colspan="12">no records found</td>
+            <tr class="table-tr">
+                <td class="table-td" colspan="12">{{ 'service_agreement.no_records_found'|trans }}</td>
             </tr>
         {% endfor %}
+        <tr class="table-tr">
+            <td class="table-td" colspan="2">
+                <a class="link whitespace-nowrap" href="{{ path('app_service_agreement_new') }}">
+                    {{ 'service_agreement.action_create_new'|trans }}
+                </a>
+            </td>
+        </tr>
         </tbody>
     </table>
-
 {% endblock %}

@@ -1,13 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit ServiceAgreement{% endblock %}
+{% block title %}{{ 'service_agreement.edit'|trans }}{% endblock %}
 
-{% block body %}
-    <h1>Edit ServiceAgreement</h1>
+{% block content %}
+    <h1 class="page-title">{{ 'service_agreement.edit'|trans }}</h1>
 
-    {{ include('service_agreement/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ form_start(form) }}
+    <div class="selections" {{ stimulus_controller('choices') }}>
+        {{ form_rest(form) }}
+    </div>
+    <button class="button mt-3">{{ 'clients.action_save'|trans }}</button>
+    {{ form_end(form) }}
 
-    <a href="{{ path('app_service_agreement_index') }}">back to list</a>
-
-    {{ include('service_agreement/_delete_form.html.twig') }}
+    <div class="bottom-actions">
+        <a class="link"
+           href="{{ path('app_service_agreement_index') }}">{{ 'service_agreement.back_to_list'|trans }}</a>
+        {{ include('service_agreement/_delete_form.html.twig') }}
+    </div>
 {% endblock %}
