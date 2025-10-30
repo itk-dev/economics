@@ -13,10 +13,11 @@ class CybersecurityAgreement
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $ServiceAgreementId = null;
+    #[ORM\ManyToOne(targetEntity: ServiceAgreement::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ServiceAgreement $serviceAgreement = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $quarterlyHours = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -27,14 +28,14 @@ class CybersecurityAgreement
         return $this->id;
     }
 
-    public function getServiceAgreementId(): ?int
+    public function getServiceAgreement(): ?ServiceAgreement
     {
-        return $this->ServiceAgreementId;
+        return $this->serviceAgreement;
     }
 
-    public function setServiceAgreementId(int $ServiceAgreementId): static
+    public function setServiceAgreement(?ServiceAgreement $serviceAgreement): static
     {
-        $this->ServiceAgreementId = $ServiceAgreementId;
+        $this->serviceAgreement = $serviceAgreement;
 
         return $this;
     }
