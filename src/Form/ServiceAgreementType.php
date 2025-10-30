@@ -5,32 +5,37 @@ namespace App\Form;
 use App\Entity\Client;
 use App\Entity\Project;
 use App\Entity\ServiceAgreement;
-use App\Entity\User;
 use App\Entity\Worker;
 use App\Enum\HostingProviderEnum;
+use App\Enum\SystemOwnerNoticeEnum;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ServiceAgreementType extends AbstractType
 {
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('projectId', EntityType::class, [
+            ->add('project', EntityType::class, [
                 'class' => Project::class,
-                'label' => 'serviceAgreement.project',
+                'label' => 'service_agreement.project',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row']
+                'row_attr' => ['class' => 'form-row'],
             ])
-            ->add('clientId', EntityType::class, [
+            ->add('client', EntityType::class, [
                 'class' => Client::class,
-                'label' => 'serviceAgreement.client',
+                'label' => 'service_agreement.client',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
@@ -39,77 +44,82 @@ class ServiceAgreementType extends AbstractType
             ->add('hostingProvider', ChoiceType::class, [
                 'choices' => HostingProviderEnum::cases(),
                 'choice_label' => fn($choice) => $choice->value,
-                'label' => 'serviceAgreement.hosting_provider',
+                'label' => 'service_agreement.hosting_provider',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row']
             ])
-            ->add('documentUrl', null, [
-                'label' => 'serviceAgreement.document_url',
+            ->add('price', NumberType::class, [
+                'label' => 'service_agreement.price',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row']
+                'row_attr' => ['class' => 'form-row service-agreement-price'],
+                'html5' => true,
             ])
-            ->add('price', null, [
-                'label' => 'serviceAgreement.price',
+            ->add('SystemOwnerNotice', EnumType::class, [
+                'class' => SystemOwnerNoticeEnum::class,
+                'label' => 'service_agreement.system_owner_notice',
+                'label_attr' => ['class' => 'label'],
+                'choice_label' => fn ($choice) => match ($choice) {
+                    SystemOwnerNoticeEnum::ON_UPDATE => 'system_owner_notice_enum.on_update',
+                    SystemOwnerNoticeEnum::ON_SERVER => 'system_owner_notice_enum.on_server',
+                    SystemOwnerNoticeEnum::NEVER => 'system_owner_notice_enum.never',
+                },
+                'attr' => ['class' => 'form-element'],
+                'help_attr' => ['class' => 'form-help'],
+                'row_attr' => ['class' => 'form-row service-agreement-price'],
+            ])
+            ->add('documentUrl', UrlType::class, [
+                'label' => 'service_agreement.document_url',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row']
+                'row_attr' => ['class' => 'form-row'],
+                'required' => false,
             ])
-            ->add('projectLeadId', EntityType::class, [
+            ->add('projectLead', EntityType::class, [
                 'class' => Worker::class,
-                'label' => 'serviceAgreement.project_lead_id',
+                'label' => 'service_agreement.project_lead_id',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row']
             ])
-            ->add('validFrom', null, [
+            ->add('validFrom', DateType::class, [
                 'widget' => 'single_text',
-                'label' => 'serviceAgreement.valid_from',
+                'label' => 'service_agreement.valid_from',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row']
             ])
-            ->add('validTo', null, [
+            ->add('validTo', DateType::class, [
                 'widget' => 'single_text',
-                'label' => 'serviceAgreement.valid_to',
+                'label' => 'service_agreement.valid_to',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row']
             ])
             ->add('isActive', CheckboxType::class, [
-                'label' => 'serviceAgreement.is_active',
-                'label_attr' => ['class' => 'label'],
+                'label' => 'service_agreement.is_active',
+                'label_attr' => ['class' => 'label toggle-label'],
                 'help_attr' => ['class' => 'form-help'],
-            ])
-            ->add('hasCybersecurityAgreement', CheckboxType::class, [
-                'mapped' => false,
+                'row_attr' => ['class' => 'form-row select-none'],
+                'attr' => ['class' => 'ml-1'],
                 'required' => false,
-                'label' => 'serviceAgreement.has_cybersecurity_agreement',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'toggle-additional-info'],
-                'help_attr' => ['class' => 'form-help'],
-            ])
-            ->add('cybersecurityAgreementData', CybersecurityAgreementType::class, [
-                'mapped' => false,
-                'required' => false,
-                'label' => false,
-                'attr' => ['class' => 'd-block'],
-                'data_class' => CybersecurityAgreementType::class,
-
+                'data' => true
             ]);
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => ServiceAgreement::class,
+            'cascade_validation' => true,
         ]);
     }
 }
