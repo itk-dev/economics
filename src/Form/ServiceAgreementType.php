@@ -65,6 +65,7 @@ class ServiceAgreementType extends AbstractType
                     SystemOwnerNoticeEnum::ON_UPDATE => 'system_owner_notice_enum.on_update',
                     SystemOwnerNoticeEnum::ON_SERVER => 'system_owner_notice_enum.on_server',
                     SystemOwnerNoticeEnum::NEVER => 'system_owner_notice_enum.never',
+                    default => null,
                 },
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],

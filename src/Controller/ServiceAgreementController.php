@@ -97,8 +97,9 @@ final class ServiceAgreementController extends AbstractController
                 }
             } else {
                 // Remove existing cybersecurity agreement if checkbox is unchecked
-                if ($serviceAgreement->getCybersecurityAgreement()) {
-                    $entityManager->remove($serviceAgreement->getCybersecurityAgreement());
+                $cybersecurityAgreement = $serviceAgreement->getCybersecurityAgreement();
+                if ($cybersecurityAgreement) {
+                    $entityManager->remove($cybersecurityAgreement);
                     $serviceAgreement->setCybersecurityAgreement(null);
                 }
             }
