@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\CybersecurityAgreement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,28 +17,17 @@ class CybersecurityAgreementRepository extends ServiceEntityRepository
         parent::__construct($registry, CybersecurityAgreement::class);
     }
 
-    //    /**
-    //     * @return CybersecurityAgreement[] Returns an array of CybersecurityAgreement objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Retrieves all CybersecurityAgreement entities with array keys indexed by their IDs
+     *
+     * @return array<int,CybersecurityAgreement>
+     * @throws QueryException
+     */
+    public function findAllIndexed(): array
+    {
+        $qb = $this->createQueryBuilder('cybersecurityAgreement');;
+        $query = $qb->indexBy('cybersecurityAgreement', 'cybersecurityAgreement.id')->getQuery();
+        return $query->getResult();
+    }
 
-    //    public function findOneBySomeField($value): ?CybersecurityAgreement
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }
