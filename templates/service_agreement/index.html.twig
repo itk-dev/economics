@@ -57,7 +57,7 @@
                 <td class="table-td">{{ service_agreement.isActive ? 'service_agreement.yes'|trans : 'service_agreement.no'|trans }}</td>
                 <td class="table-td">
                     <a class="link whitespace-nowrap"
-                       href="{{ path('app_service_agreement_edit', {'id': service_agreement.id}) }}">{{ 'service_agreement.action_edit'|trans }}</a>
+                       href="{{ path('app_service_agreement_edit', {id: service_agreement.id}) }}">{{ 'service_agreement.action_edit'|trans }}</a>
                 </td>
             </tr>
              {% if service_agreement.cybersecurityAgreement %}

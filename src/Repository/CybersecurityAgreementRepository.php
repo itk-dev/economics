@@ -18,16 +18,17 @@ class CybersecurityAgreementRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retrieves all CybersecurityAgreement entities with array keys indexed by their IDs
+     * Retrieves all CybersecurityAgreement entities with array keys indexed by their IDs.
      *
      * @return array<int,CybersecurityAgreement>
+     *
      * @throws QueryException
      */
     public function findAllIndexed(): array
     {
-        $qb = $this->createQueryBuilder('cybersecurityAgreement');;
+        $qb = $this->createQueryBuilder('cybersecurityAgreement');
         $query = $qb->indexBy('cybersecurityAgreement', 'cybersecurityAgreement.id')->getQuery();
+
         return $query->getResult();
     }
-
 }

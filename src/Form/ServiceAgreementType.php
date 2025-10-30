@@ -21,7 +21,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ServiceAgreementType extends AbstractType
 {
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -39,16 +38,16 @@ class ServiceAgreementType extends AbstractType
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row']
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('hostingProvider', ChoiceType::class, [
                 'choices' => HostingProviderEnum::cases(),
-                'choice_label' => fn($choice) => $choice->value,
+                'choice_label' => fn ($choice) => $choice->value,
                 'label' => 'service_agreement.hosting_provider',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row']
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('price', NumberType::class, [
                 'label' => 'service_agreement.price',
@@ -85,7 +84,7 @@ class ServiceAgreementType extends AbstractType
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row']
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('validFrom', DateType::class, [
                 'widget' => 'single_text',
@@ -93,7 +92,7 @@ class ServiceAgreementType extends AbstractType
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row']
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('validTo', DateType::class, [
                 'widget' => 'single_text',
@@ -101,7 +100,7 @@ class ServiceAgreementType extends AbstractType
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row']
+                'row_attr' => ['class' => 'form-row'],
             ])
             ->add('isActive', CheckboxType::class, [
                 'label' => 'service_agreement.is_active',
@@ -110,9 +109,8 @@ class ServiceAgreementType extends AbstractType
                 'row_attr' => ['class' => 'form-row select-none'],
                 'attr' => ['class' => 'ml-1'],
                 'required' => false,
-                'data' => true
+                'data' => true,
             ]);
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -13,7 +13,7 @@ class CombinedServiceAgreementType extends AbstractType
     {
         $builder
             ->add('serviceAgreement', ServiceAgreementType::class, [
-                'label' => false
+                'label' => false,
             ])
             ->add('hasCybersecurityAgreement', CheckboxType::class, [
                 'mapped' => false,
@@ -23,10 +23,10 @@ class CombinedServiceAgreementType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row select-none'],
                 'attr' => ['class' => 'ml-1'],
-                'data' => $options['data']['hasCybersecurityAgreement'] ?? false
+                'data' => $options['data']['hasCybersecurityAgreement'] ?? false,
             ])
             ->add('cybersecurityAgreement', CybersecurityAgreementType::class, [
-                'label' => false
+                'label' => false,
             ]);
     }
 
@@ -34,8 +34,7 @@ class CombinedServiceAgreementType extends AbstractType
     {
         $resolver->setDefaults([
             'hasCybersecurityAgreement' => false,
-            'data_class' => null
+            'data_class' => null,
         ]);
-
     }
 }
