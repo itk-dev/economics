@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\HostingProviderEnum;
+use App\Enum\SystemOwnerNoticeEnum;
 use App\Repository\ServiceAgreementRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,14 +16,17 @@ class ServiceAgreement
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $projectId = null;
+    #[ORM\ManyToOne(targetEntity: Project::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Project $project = null;
 
-    #[ORM\Column]
-    private ?int $clientId = null;
+    #[ORM\ManyToOne(targetEntity: Client::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Client $client = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $cybersecurityAgreementId = null;
+    #[ORM\ManyToOne(targetEntity: CybersecurityAgreement::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?CybersecurityAgreement $cybersecurityAgreement = null;
 
     #[ORM\Column(enumType: HostingProviderEnum::class)]
     private ?HostingProviderEnum $hostingProvider = null;
@@ -33,8 +37,9 @@ class ServiceAgreement
     #[ORM\Column]
     private ?float $price = null;
 
-    #[ORM\Column]
-    private ?int $projectLeadId = null;
+    #[ORM\ManyToOne(targetEntity: Worker::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Worker $projectLead = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $validFrom = null;
@@ -45,43 +50,46 @@ class ServiceAgreement
     #[ORM\Column]
     private ?bool $isActive = null;
 
+    #[ORM\Column(enumType: SystemOwnerNoticeEnum::class)]
+    private ?SystemOwnerNoticeEnum $SystemOwnerNotice = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getProjectId(): ?int
+    public function getProject(): ?Project
     {
-        return $this->projectId;
+        return $this->project;
     }
 
-    public function setProjectId(int $projectId): static
+    public function setProject(?Project $project): static
     {
-        $this->projectId = $projectId;
+        $this->project = $project;
 
         return $this;
     }
 
-    public function getClientId(): ?int
+    public function getClient(): ?Client
     {
-        return $this->clientId;
+        return $this->client;
     }
 
-    public function setClientId(int $clientId): static
+    public function setClient(?Client $client): static
     {
-        $this->clientId = $clientId;
+        $this->client = $client;
 
         return $this;
     }
 
-    public function getCybersecurityAgreementId(): ?int
+    public function getCybersecurityAgreement(): ?CybersecurityAgreement
     {
-        return $this->cybersecurityAgreementId;
+        return $this->cybersecurityAgreement;
     }
 
-    public function setCybersecurityAgreementId(?int $cybersecurityAgreementId): static
+    public function setCybersecurityAgreement(?CybersecurityAgreement $cybersecurityAgreement): static
     {
-        $this->cybersecurityAgreementId = $cybersecurityAgreementId;
+        $this->cybersecurityAgreement = $cybersecurityAgreement;
 
         return $this;
     }
@@ -122,14 +130,14 @@ class ServiceAgreement
         return $this;
     }
 
-    public function getProjectLeadId(): ?int
+    public function getProjectLead(): ?Worker
     {
-        return $this->projectLeadId;
+        return $this->projectLead;
     }
 
-    public function setProjectLeadId(int $projectLeadId): static
+    public function setProjectLead(?Worker $projectLead): static
     {
-        $this->projectLeadId = $projectLeadId;
+        $this->projectLead = $projectLead;
 
         return $this;
     }
@@ -166,6 +174,18 @@ class ServiceAgreement
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getSystemOwnerNotice(): ?SystemOwnerNoticeEnum
+    {
+        return $this->SystemOwnerNotice;
+    }
+
+    public function setSystemOwnerNotice(SystemOwnerNoticeEnum $SystemOwnerNotice): static
+    {
+        $this->SystemOwnerNotice = $SystemOwnerNotice;
 
         return $this;
     }
