@@ -15,7 +15,7 @@
         "gedmo/doctrine-extensions": "^3.9",
         "itk-dev/openid-connect-bundle": "^3.0",
         "knplabs/knp-paginator-bundle": "^6.1",
-        "mpdf/mpdf": "^8.1.2",
+        "mpdf/mpdf": "^8.2.6",
         "openspout/openspout": "^4.23",
         "phpoffice/phpspreadsheet": "^1.30",
         "stof/doctrine-extensions-bundle": "^1.7",
