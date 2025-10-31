@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\ServiceAgreement;
-use App\Model\Invoices\ClientFilterData;
 use App\Model\Invoices\ServiceAgreementFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,12 +21,11 @@ class ServiceAgreementRepository extends ServiceEntityRepository
 
     public function getFilteredPagination(ServiceAgreementFilterData $serviceAgreementFilterData, int $page = 1): PaginationInterface
     {
-        $qb = $this->createQueryBuilder('service_agreement');;
+        $qb = $this->createQueryBuilder('service_agreement');
         $qb->leftJoin('service_agreement.project', 'project')
             ->leftJoin('service_agreement.client', 'client')
             ->leftJoin('service_agreement.projectLead', 'projectLead')
             ->leftJoin('service_agreement.cybersecurityAgreement', 'cybersecurityAgreement');
-
 
         if (!is_null($serviceAgreementFilterData->project)) {
             $project = $serviceAgreementFilterData->project;
@@ -44,7 +42,7 @@ class ServiceAgreementRepository extends ServiceEntityRepository
         }
 
         if (!is_null($serviceAgreementFilterData->cybersecurityAgreement)) {
-            if ($serviceAgreementFilterData->cybersecurityAgreement === true) {
+            if (true === $serviceAgreementFilterData->cybersecurityAgreement) {
                 $qb->andWhere('service_agreement.cybersecurityAgreement IS NOT NULL');
             } else {
                 $qb->andWhere('service_agreement.cybersecurityAgreement IS NULL');
@@ -60,7 +58,6 @@ class ServiceAgreementRepository extends ServiceEntityRepository
             $qb->andWhere('service_agreement.isActive = :active')
                 ->setParameter('active', $serviceAgreementFilterData->active);
         }
-
 
         return $this->paginator->paginate(
             $qb,

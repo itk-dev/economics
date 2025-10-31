@@ -2,13 +2,13 @@
 
 namespace App\Form;
 
+use App\Enum\HostingProviderEnum;
 use App\Model\Invoices\ServiceAgreementFilterData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Enum\HostingProviderEnum;
 
 class ServiceAgreementFilterType extends AbstractType
 {
@@ -43,7 +43,7 @@ class ServiceAgreementFilterType extends AbstractType
                 'label' => 'service_agreement.hosting_provider',
                 'label_attr' => ['class' => 'label'],
                 'choices' => HostingProviderEnum::cases(),
-                'choice_label' => fn(HostingProviderEnum $enum) => $enum->value,
+                'choice_label' => fn (HostingProviderEnum $enum) => $enum->value,
                 'attr' => ['class' => 'form-element'],
             ])
             ->add('active', ChoiceType::class, [
@@ -63,7 +63,7 @@ class ServiceAgreementFilterType extends AbstractType
         $resolver->setDefaults([
             'method' => 'GET',
             'data_class' => ServiceAgreementFilterData::class,
-            'attr' => ['class' => 'service_agreement_filter']
+            'attr' => ['class' => 'service_agreement_filter'],
         ]);
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Model\Invoices;
 
 use App\Enum\HostingProviderEnum;
