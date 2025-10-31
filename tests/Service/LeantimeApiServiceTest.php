@@ -19,25 +19,145 @@ use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use App\Service\LeantimeApiService;
 use Doctrine\ORM\EntityManagerInterface;
-use http\Client\Response;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class LeantimeApiServiceTest extends KernelTestCase
 {
-    /*
-    public function testSynchronization(): void
+    public function testUpdate(): void
     {
         self::bootKernel();
         $container = self::getContainer();
 
+        $messageBus = $container->get(MessageBusInterface::class);
+        $dataProviderRepository = $container->get(DataProviderRepository::class);
+        $projectRepository = $container->get(ProjectRepository::class);
+        $versionRepository = $container->get(VersionRepository::class);
+        $issueRepository = $container->get(IssueRepository::class);
+        $worklogRepository = $container->get(WorklogRepository::class);
+        $entityManager = $container->get(EntityManagerInterface::class);
 
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $httpClientMock = $this->createMock(HttpClientInterface::class);
+
+        $responseMock1 = $this->createMock(ResponseInterface::class);
+        $responseMock1->method('getStatusCode')->willReturn(200);
+        $responseMock1->method('getContent')->willReturn(json_encode($this->getProjects()));
+        $responseMock1modified = $this->createMock(ResponseInterface::class);
+        $responseMock1modified->method('getStatusCode')->willReturn(200);
+        $responseMock1modified->method('getContent')->willReturn(json_encode($this->getProjects(2025)));
+        $responseMock2 = $this->createMock(ResponseInterface::class);
+        $responseMock2->method('getStatusCode')->willReturn(200);
+        $responseMock2->method('getContent')->willReturn(json_encode($this->getMilestones()));
+        $responseMock2modified = $this->createMock(ResponseInterface::class);
+        $responseMock2modified->method('getStatusCode')->willReturn(200);
+        $responseMock2modified->method('getContent')->willReturn(json_encode($this->getMilestones(2025)));
+        $responseMock3 = $this->createMock(ResponseInterface::class);
+        $responseMock3->method('getStatusCode')->willReturn(200);
+        $responseMock3->method('getContent')->willReturn(json_encode($this->getTickets()));
+        $responseMock3modified = $this->createMock(ResponseInterface::class);
+        $responseMock3modified->method('getStatusCode')->willReturn(200);
+        $responseMock3modified->method('getContent')->willReturn(json_encode($this->getTickets(2025)));
+        $responseMock4 = $this->createMock(ResponseInterface::class);
+        $responseMock4->method('getStatusCode')->willReturn(200);
+        $responseMock4->method('getContent')->willReturn(json_encode($this->getTimesheets()));
+        $responseMock4modified = $this->createMock(ResponseInterface::class);
+        $responseMock4modified->method('getStatusCode')->willReturn(200);
+        $responseMock4modified->method('getContent')->willReturn(json_encode($this->getTimesheets(2025)));
+
+        $httpClientMock->method('request')->willReturn(
+            $responseMock1,
+            $responseMock1modified,
+            $responseMock2,
+            $responseMock2modified,
+            $responseMock3,
+            $responseMock3modified,
+            $responseMock4,
+            $responseMock4modified,
+        );
+
+        $service = new LeantimeApiService(
+            $httpClientMock,
+            $messageBus,
+            $dataProviderRepository,
+            $entityManager,
+            $projectRepository,
+            $loggerMock,
+        );
+
+        $dataProvider = new DataProvider();
+        $dataProvider->setName('Data Provider 4');
+        $dataProvider->setEnabled(true);
+        $dataProvider->setClass(LeantimeApiService::class);
+        $dataProvider->setUrl('http://localhost/');
+        $dataProvider->setSecret('Not so secret');
+        $entityManager->persist($dataProvider);
+        $entityManager->flush();
+
+        // Projects
+
+        $before = count($projectRepository->findAll());
+        $service->updateAsJob(Project::class, 0, 100, $dataProvider->getId());
+        $after = count($projectRepository->findAll());
+        $this->assertEquals($before + 2, $after);
+        $project = $projectRepository->findOneBy(['projectTrackerId' => 50]);
+        $this->assertEquals((new \DateTime("2024-10-03T13:47:30.000000Z"))->getTimestamp(), $project->getSourceModifiedDate()->getTimestamp());
+        // Repeat process to test that no extra entries are added and test modifiedAfter
+        $service->updateAsJob(Project::class, 0, 100, $dataProvider->getId(), [], false, new \DateTime("2025-01-01"));
+        $after = count($projectRepository->findAll());
+        $this->assertEquals($before + 2, $after);
+        $project = $projectRepository->findOneBy(['projectTrackerId' => 50]);
+        $this->assertEquals((new \DateTime("2025-10-03T13:47:30.000000Z"))->getTimestamp(), $project->getSourceModifiedDate()->getTimestamp());
+
+        // Milestones
+
+        $before = count($versionRepository->findAll());
+        $service->updateAsJob(Version::class, 0, 100, $dataProvider->getId());
+        $after = count($versionRepository->findAll());
+        $this->assertEquals($before + 2, $after);
+        $version = $versionRepository->findOneBy(['projectTrackerId' => 10, 'dataProvider' => $dataProvider]);
+        $this->assertEquals((new \DateTime("2024-10-03T13:47:30.000000Z"))->getTimestamp(), $version->getSourceModifiedDate()->getTimestamp());
+        // Repeat process to test that no extra entries are added and test modifiedAfter
+        $service->updateAsJob(Version::class, 0, 100, $dataProvider->getId(), [], false, new \DateTime("2025-01-01"));
+        $after = count($versionRepository->findAll());
+        $this->assertEquals($before + 2, $after);
+        $version = $versionRepository->findOneBy(['projectTrackerId' => 10, 'dataProvider' => $dataProvider]);
+        $this->assertEquals((new \DateTime("2025-10-03T13:47:30.000000Z"))->getTimestamp(), $version->getSourceModifiedDate()->getTimestamp());
+
+        // Tickets
+
+        $before = count($issueRepository->findAll());
+        $service->updateAsJob(Issue::class, 0, 100, $dataProvider->getId());
+        $after = count($issueRepository->findAll());
+        $this->assertEquals($before + 2, $after);
+        $issue = $issueRepository->findOneBy(['projectTrackerId' => 10, 'dataProvider' => $dataProvider]);
+        $this->assertEquals((new \DateTime("2024-10-03T13:47:30.000000Z"))->getTimestamp(), $issue->getSourceModifiedDate()->getTimestamp());
+        // Repeat process to test that no extra entries are added and test modifiedAfter
+        $service->updateAsJob(Issue::class, 0, 100, $dataProvider->getId(), [], false, new \DateTime("2025-01-01"));
+        $after = count($issueRepository->findAll());
+        $this->assertEquals($before + 2, $after);
+        $issue = $issueRepository->findOneBy(['projectTrackerId' => 10, 'dataProvider' => $dataProvider]);
+        $this->assertEquals((new \DateTime("2025-10-03T13:47:30.000000Z"))->getTimestamp(), $issue->getSourceModifiedDate()->getTimestamp());
+
+        // Timesheets
+
+        $before = count($worklogRepository->findAll());
+        $service->updateAsJob(Worklog::class, 0, 100, $dataProvider->getId());
+        $after = count($worklogRepository->findAll());
+        $this->assertEquals($before + 2, $after);
+        $worklog = $worklogRepository->findOneBy(['worklogId' => 1, 'dataProvider' => $dataProvider]);
+        $this->assertEquals((new \DateTime("2024-10-03T13:47:30.000000Z"))->getTimestamp(), $worklog->getSourceModifiedDate()->getTimestamp());
+        // Repeat process to test that no extra entries are added and test modifiedAfter
+        $service->updateAsJob(Worklog::class, 0, 100, $dataProvider->getId(), [], false, new \DateTime("2025-01-01"));
+        $after = count($worklogRepository->findAll());
+        $this->assertEquals($before + 2, $after);
+        $worklog = $worklogRepository->findOneBy(['worklogId' => 1, 'dataProvider' => $dataProvider]);
+        $this->assertEquals((new \DateTime("2025-10-03T13:47:30.000000Z"))->getTimestamp(), $worklog->getSourceModifiedDate()->getTimestamp());
     }
-    */
 
     public function testDeleted(): void
     {
@@ -298,5 +418,137 @@ class LeantimeApiServiceTest extends KernelTestCase
           }
         }
         ', null, 512, JSON_THROW_ON_ERROR);
+    }
+
+    private function getProjects($modifiedYear = 2024): object
+    {
+        return json_decode('
+            {
+              "parameters": {
+                "start": 0,
+                "limit": 100
+              },
+              "resultsCount": 2,
+              "results": [
+                {
+                  "id": 50,
+                  "name": "123",
+                  "modified": "'.$modifiedYear.'-10-03T13:47:30.000000Z"
+                },
+                {
+                  "id": 51,
+                  "name": "Lorem 1a",
+                  "modified": "'.$modifiedYear.'-10-03T13:47:30.000000Z"
+                }
+              ]
+            }
+        ');
+    }
+
+    private function getMilestones($modifiedYear = 2024): object
+    {
+        return json_decode('
+            {
+              "parameters": {
+                "start": 0,
+                "limit": 100
+              },
+              "resultsCount": 2,
+              "results": [
+                {
+                  "id": 10,
+                  "projectId": 50,
+                  "name": "Milepæl 1a",
+                  "modified": "'.$modifiedYear.'-10-03T13:47:30.000000Z"
+                },
+                {
+                  "id": 11,
+                  "projectId": 51,
+                  "name": "Den fede del",
+                  "modified": "'.$modifiedYear.'-10-03T13:47:30.000000Z"
+                }
+              ]
+            }
+        ');
+    }
+
+    private function getTickets($modifiedYear = 2024): object
+    {
+        return json_decode('
+            {
+              "parameters": {
+                "start": 0,
+                "limit": 100
+              },
+              "resultsCount": 2,
+              "results": [
+                {
+                  "id": 10,
+                  "projectId": 50,
+                  "name": "Getting Started with Leantime",
+                  "status": "DONE",
+                  "milestoneId": null,
+                  "tags": [],
+                  "worker": "admin@example.com",
+                  "plannedHours": 0,
+                  "remainingHours": 0,
+                  "dueDate": "2024-08-08T00:00:00.000000Z",
+                  "resolutionDate": "1969-12-31T00:00:00.000000Z",
+                  "modified": "'.$modifiedYear.'-10-03T13:47:30.000000Z"
+                },
+                {
+                  "id": 11,
+                  "projectId": 51,
+                  "name": "Nyt opgave 1a",
+                  "status": "NEW",
+                  "milestoneId": null,
+                  "tags": [],
+                  "worker": "admin@example.com",
+                  "plannedHours": 10,
+                  "remainingHours": 5,
+                  "dueDate": null,
+                  "resolutionDate": null,
+                  "modified": "'.$modifiedYear.'-10-03T13:47:30.000000Z"
+                }
+              ]
+            }
+        ');
+    }
+
+    private function getTimesheets($modifiedYear = 2024): object
+    {
+        return json_decode('
+            {
+              "parameters": {
+                "start": 0,
+                "limit": 100
+              },
+              "resultsCount": 2,
+              "results": [
+                {
+                  "id": 1,
+                  "ticketId": 10,
+                  "projectId": 50,
+                  "description": "Fisk",
+                  "hours": 5.5,
+                  "kind": "GENERAL_BILLABLE",
+                  "username": "admin@example.com",
+                  "workDate": "2024-09-23T22:00:00.000000Z",
+                  "modified": "'.$modifiedYear.'-10-03T13:47:30.000000Z"
+                },
+                {
+                  "id": 2,
+                  "ticketId": 11,
+                  "projectId": 51,
+                  "description": "add",
+                  "hours": 1,
+                  "kind": "GENERAL_BILLABLE",
+                  "username": "admin@example.com",
+                  "workDate": "2024-09-24T22:00:00.000000Z",
+                  "modified": "'.$modifiedYear.'-10-03T13:47:30.000000Z"
+                }
+              ]
+            }
+        ');
     }
 }
