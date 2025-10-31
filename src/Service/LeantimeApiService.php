@@ -11,6 +11,8 @@ use App\Enum\IssueStatusEnum;
 use App\Exception\NotAcceptableException;
 use App\Exception\NotFoundException;
 use App\Interface\DataProviderInterface;
+use App\Message\EntityRemovedFromDataProviderMessage;
+use App\Message\LeantimeDeleteMessage;
 use App\Message\LeantimeUpdateMessage;
 use App\Message\UpsertIssueMessage;
 use App\Message\UpsertProjectMessage;
@@ -45,7 +47,8 @@ class LeantimeApiService implements DataProviderInterface
         private readonly MessageBusInterface $messageBus,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProjectRepository $projectRepository, private readonly LoggerInterface $logger,
+        private readonly ProjectRepository $projectRepository,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -55,6 +58,11 @@ class LeantimeApiService implements DataProviderInterface
         $this->update(Version::class, $asyncJobQueue, $modifiedAfter);
         $this->update(Issue::class, $asyncJobQueue, $modifiedAfter);
         $this->update(Worklog::class, $asyncJobQueue, $modifiedAfter);
+    }
+
+    public function deleteAll(bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
+    {
+        $this->delete($asyncJobQueue, $modifiedAfter);
     }
 
     public function update(string $className, bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
@@ -71,6 +79,66 @@ class LeantimeApiService implements DataProviderInterface
                 new LeantimeUpdateMessage($className, 0, $this::LIMIT, $dataProvider->getId(), $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
             );
+        }
+    }
+
+    public function delete(bool $asyncJobQueue = false, ?\DateTimeInterface $deletedAfter = null): void
+    {
+        $dataProviders = $this->getEnabledLeantimeDataProviders();
+
+        foreach ($dataProviders as $dataProvider) {
+            $this->messageBus->dispatch(
+                new LeantimeDeleteMessage($dataProvider->getId(), $asyncJobQueue, $deletedAfter),
+                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+            );
+        }
+    }
+
+    public function deleteAsJob(int $dataProviderId, bool $asyncJobQueue = false, ?\DateTimeInterface $deletedAfter = null): void
+    {
+        $dataProvider = $this->dataProviderRepository->find($dataProviderId);
+
+        if (null === $dataProvider) {
+            throw new NotFoundException("DataProvider with id: $dataProviderId not found");
+        }
+
+        $types = [
+            self::TIMESHEETS,
+            self::TICKETS,
+            self::MILESTONES,
+            self::PROJECTS,
+        ];
+
+        $params = [
+            'types' => $types,
+            'deletedAfter' => $deletedAfter->getTimestamp(),
+        ];
+
+        // Get data from Leantime.
+        $data = $this->fetchFromLeantime($dataProvider, 'deleted', $params);
+        $results = $data->results;
+
+        // Queue delete.
+        foreach ($types as $type) {
+            if (!isset($results->{$type})) {
+                continue;
+            }
+
+            $classname = match ($type) {
+                self::PROJECTS => Project::class,
+                self::MILESTONES => Version::class,
+                self::TICKETS => Issue::class,
+                self::TIMESHEETS => Worklog::class,
+            };
+
+            foreach ($results->{$type} as $result) {
+                $projectTrackerId = $result->id;
+
+                $this->messageBus->dispatch(
+                    new EntityRemovedFromDataProviderMessage($classname, $dataProviderId, $projectTrackerId),
+                    [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+                );
+            }
         }
     }
 
