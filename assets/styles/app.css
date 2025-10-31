@@ -458,4 +458,7 @@
     .select-none {
         user-select: none;
     }
+    .service_agreement_filter > div.form-default {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
 }

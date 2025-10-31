@@ -25,7 +25,7 @@ class CybersecurityAgreementType extends AbstractType
             ->add('note', TextareaType::class, [
                 'label' => 'service_agreement.note',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => ['class' => 'form-element', 'style' => 'height: 400px;'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row'],
                 'required' => false,

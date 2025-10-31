@@ -10,21 +10,36 @@
         link_url: 'app_service_agreement_new',
     }) }}
 
+    {% set number_of_columns = 11 %}
+
+    {{ form_start(form) }}
+    <div class="form-default">
+        {{ form_row(form.project) }}
+        {{ form_row(form.client) }}
+        {{ form_row(form.cybersecurityAgreement) }}
+        {{ form_row(form.hostingProvider) }}
+        {{ form_row(form.active) }}
+        <div>
+            <button class="button form-element">{{ 'service_agreement.search'|trans }}</button>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
     <table class="table margin-bottom">
         <thead class="table-th">
         <tr>
-            <th class="table-th">#</th>
-            <th class="table-th">{{ 'service_agreement.project'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.client'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.cybersecurity_agreement'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.hosting_provider'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.document_url'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.price'|trans }}</th>
+            <th class="table-th {% if service_agreements.isSorted('service_agreement.id') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, '#', 'service_agreement.id') }}</th>
+            <th class="table-th {% if service_agreements.isSorted('project.name') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.project'|trans, 'project.name') }}</th>
+            <th class="table-th {% if service_agreements.isSorted('client.name') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.client'|trans, 'client.name') }}</th>
+            <th class="table-th {% if service_agreements.isSorted('cybersecurityAgreement.id') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.cybersecurity_agreement'|trans, 'cybersecurityAgreement.id') }}</th>
+            <th class="table-th {% if service_agreements.isSorted('service_agreement.hostingProvider') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.hosting_provider'|trans, 'service_agreement.hostingProvider') }}</th>
+            <th class="table-th {% if service_agreements.isSorted('service_agreement.documentUrl') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.document_url'|trans, 'service_agreement.documentUrl') }}</th>
+            <th class="table-th {% if service_agreements.isSorted('service_agreement.price') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.price'|trans, 'service_agreement.price') }}</th>
             <th class="table-th">{{ 'service_agreement.cyber_security_agreement.quarterly_hours'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.project_lead'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.valid_from'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.valid_to'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.is_active'|trans }}</th>
+            <th class="table-th {% if service_agreements.isSorted('projectLead.name') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.project_lead'|trans, 'projectLead.name') }}</th>
+            <th class="table-th {% if service_agreements.isSorted('service_agreement.validFrom') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.valid_from'|trans, 'service_agreement.validFrom') }}</th>
+            <th class="table-th {% if service_agreements.isSorted('service_agreement.validTo') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.valid_to'|trans, 'service_agreement.validTo') }}</th>
+            <th class="table-th {% if service_agreements.isSorted('service_agreement.isActive') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.is_active'|trans, 'service_agreement.isActive') }}</th>
             <th class="table-th">{{ 'service_agreement.actions'|trans }}</th>
         </tr>
         </thead>
@@ -44,9 +59,13 @@
                     {% endif %}
                 </td>
                 <td class="table-td">{{ service_agreement.hostingProvider.value }}</td>
-                <td class="table-td"><a class="flex flex-row" target="_blank" title="{{ service_agreement.documentUrl }}" href="{{ service_agreement.documentUrl }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 w-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                <td class="table-td"><a class="flex flex-row" target="_blank"
+                                        title="{{ service_agreement.documentUrl }}"
+                                        href="{{ service_agreement.documentUrl }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="size-6 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/>
                         </svg>
                     </a></td>
                 <td class="table-td">{{ service_agreement.price }},-</td>
@@ -60,20 +79,7 @@
                        href="{{ path('app_service_agreement_edit', {id: service_agreement.id}) }}">{{ 'service_agreement.action_edit'|trans }}</a>
                 </td>
             </tr>
-             {% if service_agreement.cybersecurityAgreement %}
-                {% set cyber_agreement = cyber_security_agreements[service_agreement.cybersecurityAgreement.id] %}
-                {% if cyber_agreement %}
-                    <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
-                        <td colspan="13" class="table-td pl-7">
-                            <div>
-                                {% if cyber_agreement.note %}
-                                    <span>{{ cyber_agreement.note }}</span>
-                                {% endif %}
-                            </div>
-                        </td>
-                    </tr>
-                {% endif %}
-            {% endif %}
+
         {% else %}
             <tr class="table-tr">
                 <td class="table-td" colspan="12">{{ 'service_agreement.no_records_found'|trans }}</td>
@@ -84,6 +90,9 @@
                 <a class="link whitespace-nowrap" href="{{ path('app_service_agreement_new') }}">
                     {{ 'service_agreement.action_create_new'|trans }}
                 </a>
+            </td>
+            <td class="table-td" colspan="{{ number_of_columns - 2 }}">
+                {{ knp_pagination_render(service_agreements) }}
             </td>
         </tr>
         </tbody>

@@ -108,7 +108,7 @@ class ServiceAgreementType extends AbstractType
                 'label_attr' => ['class' => 'label toggle-label'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row select-none'],
-                'attr' => ['class' => 'ml-1'],
+                'attr' => ['style' => 'margin-left: 10px;'],
                 'required' => false,
                 'data' => true,
             ]);
