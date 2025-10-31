@@ -47,13 +47,13 @@ final class ServiceAgreementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $hasCybersecurityAgreement = $request->request->all('combined_service_agreement')['hasCybersecurityAgreement'] ?? false;
+            $attachCybersecurityAgreement = $request->request->all('combined_service_agreement')['attachCybersecurityAgreement'] ?? false;
 
             // First persist the ServiceAgreement
             $entityManager->persist($serviceAgreement);
             $entityManager->flush(); // Flush to get the ID
 
-            if ($hasCybersecurityAgreement) {
+            if ($attachCybersecurityAgreement) {
                 // Set up the bidirectional relationship
                 $cybersecurityAgreement->setServiceAgreement($serviceAgreement);
                 $serviceAgreement->setCybersecurityAgreement($cybersecurityAgreement);
@@ -79,16 +79,15 @@ final class ServiceAgreementController extends AbstractController
         // Create the combined form
         $form = $this->createForm(CombinedServiceAgreementType::class, [
             'serviceAgreement' => $serviceAgreement,
-            'hasCybersecurityAgreement' => null !== $serviceAgreement->getCybersecurityAgreement(),
+            'attachCybersecurityAgreement' => null !== $serviceAgreement->getCybersecurityAgreement(),
             'cybersecurityAgreement' => $cybersecurityAgreement,
         ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $hasCybersecurityAgreement = $request->request->all('combined_service_agreement')['hasCybersecurityAgreement'] ?? false;
-
-            if ($hasCybersecurityAgreement) {
+            $attachCybersecurityAgreement = $request->request->all('combined_service_agreement')['attachCybersecurityAgreement'] ?? false;
+            if ($attachCybersecurityAgreement) {
                 if (!$serviceAgreement->getCybersecurityAgreement()) {
                     // Set up the bidirectional relationship if it doesn't exist
                     $cybersecurityAgreement->setServiceAgreement($serviceAgreement);
