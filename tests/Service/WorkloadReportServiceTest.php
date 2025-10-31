@@ -19,17 +19,6 @@ class WorkloadReportServiceTest extends TestCase
     /**
      * @throws Exception
      */
-    protected function setUp(): void
-    {
-        $this->workerRepository = $this->createMock(WorkerRepository::class);
-        $this->worklogRepository = $this->createMock(WorklogRepository::class);
-        $this->dateTimeHelper = $this->createMock(DateTimeHelper::class);
-        $this->workloadReportService = new WorkloadReportService($this->workerRepository, $this->worklogRepository, $this->dateTimeHelper);
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testGetWorkloadReport()
     {
         $workerMock1 = $this->createMock(Worker::class);

@@ -20,6 +20,7 @@ class Worklog extends AbstractBaseEntity
     use DataProviderTrait;
     use SynchronizedEntityTrait;
 
+    // TODO: Rename to projectTrackerId.
     #[ORM\Column]
     private ?int $worklogId = null;
 
