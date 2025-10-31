@@ -95,7 +95,12 @@ class DataProviderService
     public function upsertVersion(DataProviderVersionData $upsertVersionData): void
     {
         $dataProvider = $this->getDataProvider($upsertVersionData->dataProviderId);
+
         $project = $this->getProject($upsertVersionData->projectTrackerProjectId, $dataProvider);
+
+        if (null === $project) {
+            throw new NotFoundException("Project $upsertVersionData->projectTrackerProjectId not found.");
+        }
 
         $version = $this->getVersion($upsertVersionData->projectTrackerId, $dataProvider);
 
