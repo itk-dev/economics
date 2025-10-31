@@ -7,14 +7,14 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Scheduler\Attribute\AsCronTask;
+use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
 
 #[AsCommand(
-    name: 'app:data-providers:sync-all',
-    description: 'Sync all Data Provider data as jobs, scheduled at 01:15 each night.',
+    name: 'app:data-providers:sync-deleted',
+    description: 'Sync Data Provider deleted data, that has been deleted within the last hour, as jobs. Scheduled to run every 15 minutes.',
 )]
-#[AsCronTask('15 1 * * *')]
-class SyncAllCommand extends Command
+#[AsPeriodicTask(frequency: '15 minutes')]
+class SyncDeletedCommand extends Command
 {
     public function __construct(
         private readonly LeantimeApiService $leantimeApiService,
@@ -24,7 +24,11 @@ class SyncAllCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->leantimeApiService->updateAll(true);
+        // Look at entries modified within the last hour.
+        $deletedAfter = new \DateTime();
+        $deletedAfter->sub(new \DateInterval('P1D'));
+
+        $this->leantimeApiService->updateAll(true, $deletedAfter);
 
         return Command::SUCCESS;
     }

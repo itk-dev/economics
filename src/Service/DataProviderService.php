@@ -23,7 +23,6 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DataProviderService
 {
@@ -34,20 +33,16 @@ class DataProviderService
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        protected readonly HttpClientInterface $httpClient,
         private readonly ProjectRepository $projectRepository,
         private readonly IssueRepository $issueRepository,
         private readonly WorklogRepository $worklogRepository,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly VersionRepository $versionRepository,
         private readonly ContainerInterface $transportLocator,
-        protected readonly array $customFieldMappings,
-        protected readonly string $defaultBoard,
+        private readonly LoggerInterface $logger,
         protected readonly float $weekGoalLow,
         protected readonly float $weekGoalHigh,
-        protected readonly string $sprintNameRegex, private readonly LoggerInterface $logger,
-        protected readonly int $httpClientRetryDelayMs = 1000,
-        protected readonly int $httpClientMaxRetries = 3,
+        protected readonly string $sprintNameRegex,
     ) {
     }
 
@@ -288,5 +283,83 @@ class DataProviderService
 
             return 0;
         }
+    }
+
+    public function projectRemovedFromDataProvider(int $dataProviderId, string $projectTrackerId): void
+    {
+        // A project can be removed if no worklogs are bound to any invoices.
+
+        $dataProvider = $this->getDataProvider($dataProviderId);
+
+        $project = $this->projectRepository->findOneBy(['dataProvider' => $dataProvider, 'projectTrackerId' => $projectTrackerId]);
+
+        if (!$project->getInvoices()->isEmpty()) {
+            $this->logger->warning("Cannot remove project since project invoices exist");
+            return;
+        }
+
+        if (!$project->getIssues()->isEmpty()) {
+            $this->logger->warning("Cannot remove project since project issues exist");
+            return;
+        }
+
+        if (!$project->getWorklogs()->isEmpty()) {
+            $this->logger->warning("Cannot remove project since project worklogs exist");
+            return;
+        }
+
+        $this->entityManager->remove($project);
+        $this->entityManager->flush();
+    }
+
+    public function versionRemovedFromDataProvider(int $dataProviderId, string $projectTrackerId): void
+    {
+        // Versions can always be removed.
+
+        $dataProvider = $this->getDataProvider($dataProviderId);
+
+        $version = $this->versionRepository->findOneBy(['dataProvider' => $dataProvider, 'projectTrackerId' => $projectTrackerId]);
+
+        $this->entityManager->remove($version);
+        $this->entityManager->flush();
+    }
+
+    public function issueRemovedFromDataProvider(int $dataProviderId, string $projectTrackerId): void
+    {
+        // Issues can be removed if no worklogs connected to the issue are bound to invoices.
+
+        $dataProvider = $this->getDataProvider($dataProviderId);
+
+        $issue = $this->issueRepository->findOneBy(['dataProvider' => $dataProvider, 'projectTrackerId' => $projectTrackerId]);
+
+        if (!$issue->getWorklogs()->isEmpty()) {
+            $this->logger->warning("Cannot remove issue worklogs attached to issue.");
+            return;
+        }
+
+        $this->entityManager->remove($issue);
+        $this->entityManager->flush();
+    }
+
+    public function worklogRemovedFromDataProvider(int $dataProviderId, int $projectTrackerId): void
+    {
+        // Worklogs can be removed if they are not bound to invoices.
+
+        $dataProvider = $this->getDataProvider($dataProviderId);
+
+        $worklog = $this->worklogRepository->findOneBy(['dataProvider' => $dataProvider, 'worklogId' => $projectTrackerId]);
+
+        if ($worklog === null) {
+            $this->logger->warning("Worklog does not exist. Aborting remove.");
+            return;
+        }
+
+        if ($worklog->getInvoiceEntry() !== null) {
+            $this->logger->warning("Cannot remove worklog since it is bound to an invoice entry.");
+            return;
+        }
+
+        $this->entityManager->remove($worklog);
+        $this->entityManager->flush();
     }
 }
