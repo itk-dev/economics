@@ -51,7 +51,7 @@
                     </a></td>
                 <td class="table-td">{{ service_agreement.price }},-</td>
                 <td class="table-td">{{ service_agreement.cybersecurityAgreement ? cyber_security_agreements[service_agreement.cybersecurityAgreement.id].quarterlyHours : '-' }}</td>
-                <td class="table-td">{{ service_agreement.projectLead }}</td>
+                <td class="table-td">{{ service_agreement.projectLead ? (service_agreement.projectLead.name ?? service_agreement.projectLead.email) : service_agreement.projectLead.email }}</td>
                 <td class="table-td whitespace-nowrap">{{ service_agreement.validFrom ? service_agreement.validFrom|date('d/m Y') : '' }}</td>
                 <td class="table-td whitespace-nowrap">{{ service_agreement.validTo ? service_agreement.validTo|date('d/m Y') : '' }}</td>
                 <td class="table-td">{{ service_agreement.isActive ? 'service_agreement.yes'|trans : 'service_agreement.no'|trans }}</td>
