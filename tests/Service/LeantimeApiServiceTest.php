@@ -117,7 +117,7 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         $version2 = new Version();
         $version2->setDataProvider($dataProvider);
-        $version2->setName("Version 2 - protected");
+        $version2->setName("Version 2");
         $version2->setProject($project2);
         $version2->setProjectTrackerId(6725);
         $entityManager->persist($version2);
@@ -127,7 +127,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         $issue1->setProject($project1);
         $issue1->setProjectTrackerId(6723);
         $issue1->setProjectTrackerKey(6723);
-        $issue1->setName("issue 1");
+        $issue1->setName("issue 1 - protected");
         $issue1->setAccountId('Account 1');
         $issue1->setAccountKey('Account 1');
         $issue1->setEpicName('Epic 1');
@@ -169,7 +169,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         $worklog1->setDataProvider($dataProvider);
         $worklog1->setProjectTrackerIssueId(6723);
         $worklog1->setWorklogId(66937);
-        $worklog1->setDescription("Beskrivelse af worklog");
+        $worklog1->setDescription("Beskrivelse af worklog - protected");
         $worklog1->setIsBilled(false);
         $worklog1->setWorker("admin@example.com");
         $worklog1->setTimeSpentSeconds(60 * 15);
@@ -209,7 +209,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         // Create Invoice and InvoiceEntry to test protection of elements that are bound to invoices.
 
         $invoice = new Invoice();
-        $invoice->setProject($project2);
+        $invoice->setProject($project1);
         $invoice->setName("Invoice 1");
         $invoice->setRecorded(false);
         $entityManager->persist($invoice);
@@ -218,7 +218,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         $invoiceEntry->setInvoice($invoice);
         $invoiceEntry->setEntryType(InvoiceEntryTypeEnum::WORKLOG);
         $invoiceEntry->setIndex(1);
-        $invoiceEntry->addWorklog($worklog2);
+        $invoiceEntry->addWorklog($worklog1);
         $entityManager->persist($invoiceEntry);
 
         $entityManager->flush();
@@ -238,7 +238,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         $this->assertEquals($countIssuesBeforeCreate + 1, $countIssuesAfterDelete);
         // Versions can always be removed.
         $this->assertEquals($countVersionsBeforeCreate, $countVersionsAfterDelete);
-        $this->assertEquals($countProjectsBeforeCreate + 2, $countProjectsAfterDelete);
+        $this->assertEquals($countProjectsBeforeCreate + 1, $countProjectsAfterDelete);
     }
 
     private function getDeletedData(): object
