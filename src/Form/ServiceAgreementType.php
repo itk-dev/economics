@@ -18,7 +18,6 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Url;
 
 class ServiceAgreementType extends AbstractType
@@ -77,7 +76,7 @@ class ServiceAgreementType extends AbstractType
                 'label' => 'service_agreement.document_url',
                 'label_attr' => ['class' => 'label'],
                 'attr' => ['class' => 'form-element'],
-                'constraints'=> new Url(),
+                'constraints' => new Url(),
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row'],
                 'required' => false,
