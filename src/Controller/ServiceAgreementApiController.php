@@ -33,6 +33,7 @@ final class ServiceAgreementApiController extends AbstractController
                 Response::HTTP_SERVICE_UNAVAILABLE
             );
         }
+        
         if (!$providedKey) {
             $this->logger->error("The endpoint $endpointUrl was called but no API key was provided.", $request->headers->all());
 
