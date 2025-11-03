@@ -27,6 +27,7 @@ final class ServiceAgreementApiController extends AbstractController
 
         if (empty($this->apiKey)) {
             $this->logger->error("The endpoint $endpointUrl was called but no API key was defined in env.", $request->headers->all());
+
             return new JsonResponse(
                 ['error' => 'Service Unavailable'],
                 Response::HTTP_SERVICE_UNAVAILABLE
@@ -34,6 +35,7 @@ final class ServiceAgreementApiController extends AbstractController
         }
         if (!$providedKey) {
             $this->logger->error("The endpoint $endpointUrl was called but no API key was provided.", $request->headers->all());
+
             return new JsonResponse(
                 ['error' => 'No API key provided'],
                 Response::HTTP_UNAUTHORIZED
@@ -42,6 +44,7 @@ final class ServiceAgreementApiController extends AbstractController
 
         if ($providedKey !== $this->apiKey) {
             $this->logger->error("The endpoint $endpointUrl was called but the provided API key was invalid.", $request->headers->all());
+
             return new JsonResponse(
                 ['error' => 'Invalid API key'],
                 Response::HTTP_UNAUTHORIZED
