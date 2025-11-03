@@ -66,4 +66,18 @@ class ServiceAgreementRepository extends ServiceEntityRepository
             ['defaultSortFieldName' => 'service_agreement.id', 'defaultSortDirection' => 'asc']
         );
     }
+
+    /**
+     * Retrieves a list of API service agreements along with their associated cybersecurity agreements.
+     *
+     * @return array
+     */
+    public function getApiServiceAgreements(): array
+    {
+        return $this->createQueryBuilder('sa')
+            ->select('sa', 'ca')
+            ->leftJoin('sa.cybersecurityAgreement', 'ca')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }
