@@ -22,6 +22,12 @@ final class ServiceAgreementApiController extends AbstractController
     {
         $providedKey = $request->headers->get('X-Api-Key');
 
+        if (empty($this->apiKey)) {
+            return new JsonResponse(
+                ['error' => 'Service Unavailable'],
+                Response::HTTP_SERVICE_UNAVAILABLE
+            );
+        }
         if (!$providedKey) {
             return new JsonResponse(
                 ['error' => 'No API key provided'],
