@@ -25,6 +25,7 @@ framework:
             'App\Message\UpsertIssueMessage': async
             'App\Message\UpsertWorklogMessage': async
             'App\Message\LeantimeUpdateMessage': async
+            'App\Message\LeantimeDeleteMessage': async
 
 # when@test:
 #    framework:
