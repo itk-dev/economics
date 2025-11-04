@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-243](https://github.com/itk-dev/economics/pull/243)
   Added CRUD for service agreements and cyber security agreements.
+  Added JSON endpoint for retrieving agreements.
 * [PR-240](https://github.com/itk-dev/economics/pull/240)
   Fixes and optimizations for app:sync command
 
