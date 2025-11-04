@@ -273,7 +273,7 @@ class DataProviderService
     /**
      * Get number of failed jobs that last 24 hours.
      *
-     * @return int Number of failed jobs.
+     * @return int number of failed jobs
      */
     public function countFailedJobsTheLastDay(): int
     {
@@ -282,7 +282,13 @@ class DataProviderService
             $sql = 'SELECT COUNT(*) FROM messenger_messages WHERE queue_name = "failed" AND created_at > DATE_SUB(NOW(), INTERVAL 1 DAY)';
             $stmt = $conn->prepare($sql);
 
-            return $stmt->execute()->fetchOne();
+            $result = $stmt->execute()->fetchOne();
+
+            if (false === $result) {
+                throw new \RuntimeException('No result found.');
+            }
+
+            return $result;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 
@@ -298,18 +304,27 @@ class DataProviderService
 
         $project = $this->projectRepository->findOneBy(['dataProvider' => $dataProvider, 'projectTrackerId' => $projectTrackerId]);
 
+        if (null === $project) {
+            $this->logger->warning('Cannot remove project since it does not exist');
+
+            return;
+        }
+
         if (!$project->getInvoices()->isEmpty()) {
-            $this->logger->warning("Cannot remove project since project invoices exist");
+            $this->logger->warning('Cannot remove project since project invoices exist');
+
             return;
         }
 
         if (!$project->getIssues()->isEmpty()) {
-            $this->logger->warning("Cannot remove project since project issues exist");
+            $this->logger->warning('Cannot remove project since project issues exist');
+
             return;
         }
 
         if (!$project->getWorklogs()->isEmpty()) {
-            $this->logger->warning("Cannot remove project since project worklogs exist");
+            $this->logger->warning('Cannot remove project since project worklogs exist');
+
             return;
         }
 
@@ -325,6 +340,12 @@ class DataProviderService
 
         $version = $this->versionRepository->findOneBy(['dataProvider' => $dataProvider, 'projectTrackerId' => $projectTrackerId]);
 
+        if (null === $version) {
+            $this->logger->warning('Cannot remove version since it does not exist');
+
+            return;
+        }
+
         $this->entityManager->remove($version);
         $this->entityManager->flush();
     }
@@ -337,8 +358,15 @@ class DataProviderService
 
         $issue = $this->issueRepository->findOneBy(['dataProvider' => $dataProvider, 'projectTrackerId' => $projectTrackerId]);
 
+        if (null === $issue) {
+            $this->logger->warning('Cannot remove issue since it does not exist');
+
+            return;
+        }
+
         if (!$issue->getWorklogs()->isEmpty()) {
-            $this->logger->warning("Cannot remove issue worklogs attached to issue.");
+            $this->logger->warning('Cannot remove issue worklogs attached to issue.');
+
             return;
         }
 
@@ -354,13 +382,15 @@ class DataProviderService
 
         $worklog = $this->worklogRepository->findOneBy(['dataProvider' => $dataProvider, 'worklogId' => $projectTrackerId]);
 
-        if ($worklog === null) {
-            $this->logger->warning("Worklog does not exist. Aborting remove.");
+        if (null === $worklog) {
+            $this->logger->warning('Worklog does not exist. Aborting remove.');
+
             return;
         }
 
-        if ($worklog->getInvoiceEntry() !== null) {
-            $this->logger->warning("Cannot remove worklog since it is bound to an invoice entry.");
+        if (null !== $worklog->getInvoiceEntry()) {
+            $this->logger->warning('Cannot remove worklog since it is bound to an invoice entry.');
+
             return;
         }
 

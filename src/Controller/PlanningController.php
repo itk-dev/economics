@@ -4,10 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Issue;
 use App\Entity\Worklog;
+use App\Exception\NotAcceptableException;
 use App\Form\PlanningType;
 use App\Model\Planning\PlanningFormData;
 use App\Repository\ProjectRepository;
-use App\Service\DataSynchronizationService;
 use App\Service\LeantimeApiService;
 use App\Service\PlanningService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -85,9 +85,13 @@ class PlanningController extends AbstractController
         }
 
         $project = $projectRepository->find($projectId);
-
         if (null === $project) {
-            throw new BadRequestHttpException('Project not found');
+            throw new NotFoundHttpException('Project not found');
+        }
+
+        $projectTrackerId = $project->getProjectTrackerId();
+        if (null == $projectTrackerId) {
+            throw new NotAcceptableException('Project.projectTrackerId is null');
         }
 
         $dataProvider = $project->getDataProvider();
@@ -95,9 +99,14 @@ class PlanningController extends AbstractController
             throw new NotFoundHttpException('Project data provider not set');
         }
 
-        if ($dataProvider->getClass() === LeantimeApiService::class) {
-            $leantimeApiService->updateAsJob(Issue::class, 0, 100, $dataProvider->getId(), [$project->getProjectTrackerId()], true);
-            $leantimeApiService->updateAsJob(Worklog::class, 0, 100, $dataProvider->getId(), [$project->getProjectTrackerId()], true);
+        $dataProviderId = $dataProvider->getId();
+        if (null === $dataProviderId) {
+            throw new NotFoundHttpException('Project data provider id not set');
+        }
+
+        if (LeantimeApiService::class === $dataProvider->getClass()) {
+            $leantimeApiService->updateAsJob(Issue::class, 0, 100, $dataProviderId, [$projectTrackerId]);
+            $leantimeApiService->updateAsJob(Worklog::class, 0, 100, $dataProviderId, [$projectTrackerId]);
         }
 
         return new JsonResponse(['issuesSynced' => 0], 200);

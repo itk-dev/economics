@@ -111,7 +111,7 @@ class LeantimeApiService implements DataProviderInterface
 
         $params = [
             'types' => $types,
-            'deletedAfter' => $deletedAfter->getTimestamp(),
+            'deletedAfter' => $deletedAfter?->getTimestamp(),
         ];
 
         // Get data from Leantime.

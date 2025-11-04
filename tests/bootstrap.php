@@ -38,7 +38,6 @@ passthru(sprintf(
     __DIR__
 ));
 
-
 // Load database fixtures.
 passthru(sprintf(
     'APP_ENV=%s php "%s/../bin/console" --env=test doctrine:fixtures:load --no-interaction',
