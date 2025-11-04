@@ -5,7 +5,9 @@ export default class extends Controller {
     static targets = ["queue", "error"];
 
     queueMessageTemplate = "";
+
     errorMessageTemplate = "";
+
     nextTimeout = 60000;
 
     refresh = () => {
@@ -14,16 +16,14 @@ export default class extends Controller {
                 return response.json();
             })
             .then((data) => {
-                this.queueTarget.innerText =
-                    this.queueMessageTemplate.replace(
-                        "<numberOfJobs>",
-                        data.async ?? 0,
-                    );
-                this.errorTarget.innerText =
-                    this.errorMessageTemplate.replace(
-                        "<numberOfJobs>",
-                        data.error ?? 0,
-                    );
+                this.queueTarget.innerText = this.queueMessageTemplate.replace(
+                    "<numberOfJobs>",
+                    data.async ?? 0,
+                );
+                this.errorTarget.innerText = this.errorMessageTemplate.replace(
+                    "<numberOfJobs>",
+                    data.error ?? 0,
+                );
 
                 this.nextTimeout = data.async > 0 ? 5000 : 60000;
             })
