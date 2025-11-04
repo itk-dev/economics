@@ -50,15 +50,17 @@ class SyncCommand extends Command
         $modified = $input->getOption('modified');
 
         try {
-            $modifiedAfter = $modified !== false ? new \DateTime($modified) : null;
+            $modifiedAfter = false !== $modified ? new \DateTime($modified) : null;
+            $modifiedAfterString = $modifiedAfter?->format('Y-m-d H:i:s') ?? '';
         } catch (\Exception $e) {
-            $io->error("Error parsing modified option: " . $e->getMessage());
+            $io->error('Error parsing modified option: '.$e->getMessage());
+
             return Command::FAILURE;
         }
 
         $io->info('Handle as jobs: '.($jobHandling ? 'TRUE' : 'FALSE'));
 
-        $modifiedAfter !== null && $io->info('Only handle items modified since: '.$modifiedAfter->format('Y-m-d H:i:s') ?? '');
+        null !== $modifiedAfter && $io->info('Only handle items modified since: '.$modifiedAfterString);
 
         if ($input->getOption('all')) {
             $io->info('Syncing all.');

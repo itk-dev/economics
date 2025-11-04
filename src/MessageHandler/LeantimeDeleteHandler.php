@@ -20,7 +20,7 @@ readonly class LeantimeDeleteHandler
     public function __invoke(LeantimeDeleteMessage $message): void
     {
         try {
-            $this->logger->info("Handling delete message. deletedAfter: ".$message->deletedAfter->format('c'));
+            $this->logger->info('Handling delete message. deletedAfter: '.$message->deletedAfter?->format('c'));
 
             $this->leantimeApiService->deleteAsJob(
                 $message->dataProviderId,
