@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.7] - 2025-11-04
+
 * [PR-243](https://github.com/itk-dev/economics/pull/243)
   Added CRUD for service agreements and cyber security agreements.
   Added JSON endpoint for retrieving agreements.
@@ -501,7 +503,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.9.4...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.9.7...HEAD
+[2.9.7]: https://github.com/itk-dev/economics/compare/2.9.4...2.9.7
 [2.9.4]: https://github.com/itk-dev/economics/compare/2.9.3...2.9.4
 [2.9.3]: https://github.com/itk-dev/economics/compare/2.9.2...2.9.3
 [2.9.2]: https://github.com/itk-dev/economics/compare/2.9.0...2.9.2
