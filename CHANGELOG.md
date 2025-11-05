@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-246](https://github.com/itk-dev/economics/pull/246)
-  Minor api adjustments.g
+  Minor api adjustments.
 * [PR-243](https://github.com/itk-dev/economics/pull/243)
   Added CRUD for service agreements and cyber security agreements.
   Added JSON endpoint for retrieving agreements.
