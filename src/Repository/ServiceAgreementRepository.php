@@ -82,7 +82,7 @@ class ServiceAgreementRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
 
-        return array_map(function($result) {
+        return array_map(function ($result) {
             return [
                 ...$result[0],
                 'projectTrackerKey' => $result['projectTrackerKey'],
