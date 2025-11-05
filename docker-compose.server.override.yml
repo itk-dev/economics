@@ -17,15 +17,6 @@ services:
             timeout: 3s
             retries: 30
 
-    phpfpm:
-        environment:
-            - PHP_MEMORY_LIMIT=512M
-            - PHP_MAX_EXECUTION_TIME=300
-
-    nginx:
-        environment:
-            NGINX_FASTCGI_READ_TIMEOUT: 300
-
     supervisor:
         image: itkdev/supervisor-php8.3:alpine
         restart: unless-stopped
