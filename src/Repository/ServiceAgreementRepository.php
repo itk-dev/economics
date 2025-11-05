@@ -74,10 +74,20 @@ class ServiceAgreementRepository extends ServiceEntityRepository
      */
     public function getApiServiceAgreements(): array
     {
-        return $this->createQueryBuilder('sa')
-            ->select('sa', 'ca')
+        $results = $this->createQueryBuilder('sa')
+            ->select('sa', 'ca', 'p.projectTrackerKey as projectTrackerKey', 'c.name as clientName')
             ->leftJoin('sa.cybersecurityAgreement', 'ca')
+            ->leftJoin('sa.project', 'p')
+            ->leftJoin('sa.client', 'c')
             ->getQuery()
             ->getArrayResult();
+
+        return array_map(function($result) {
+            return [
+                ...$result[0],
+                'projectTrackerKey' => $result['projectTrackerKey'],
+                'clientName' => $result['clientName'],
+            ];
+        }, $results);
     }
 }
