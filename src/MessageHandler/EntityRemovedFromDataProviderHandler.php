@@ -32,7 +32,7 @@ readonly class EntityRemovedFromDataProviderHandler
                 Version::class => $this->dataProviderService->versionRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId),
                 Issue::class => $this->dataProviderService->issueRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId),
                 Worklog::class => $this->dataProviderService->worklogRemovedFromDataProvider($message->dataProviderId, (int) $message->projectTrackerId),
-                default => throw new NotSupportedException("classname not supported"),
+                default => throw new NotSupportedException('classname not supported'),
             };
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
