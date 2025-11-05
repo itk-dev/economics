@@ -109,7 +109,7 @@ class PlanningController extends AbstractController
             $leantimeApiService->updateAsJob(Worklog::class, 0, 100, $dataProviderId, [$projectTrackerId]);
         }
 
-        return new JsonResponse(['issuesSynced' => 0], 200);
+        return new Response("Sync done.", 200);
     }
 
     private function createResponse(string $mode, array $data): Response
