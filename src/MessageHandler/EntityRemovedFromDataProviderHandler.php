@@ -27,22 +27,13 @@ readonly class EntityRemovedFromDataProviderHandler
         try {
             $this->logger->info('EntityRemovedFromSourceHandler: '.$message->classname.' '.$message->projectTrackerId);
 
-            switch ($message->classname) {
-                case Project::class:
-                    $this->dataProviderService->projectRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId);
-                    break;
-                case Version::class:
-                    $this->dataProviderService->versionRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId);
-                    break;
-                case Issue::class:
-                    $this->dataProviderService->issueRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId);
-                    break;
-                case Worklog::class:
-                    $this->dataProviderService->worklogRemovedFromDataProvider($message->dataProviderId, (int) $message->projectTrackerId);
-                    break;
-                default:
-                    throw new NotSupportedException('classname not supported');
-            }
+            match ($message->classname) {
+                Project::class => $this->dataProviderService->projectRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId),
+                Version::class => $this->dataProviderService->versionRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId),
+                Issue::class => $this->dataProviderService->issueRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId),
+                Worklog::class => $this->dataProviderService->worklogRemovedFromDataProvider($message->dataProviderId, (int) $message->projectTrackerId),
+                default => throw new NotSupportedException("classname not supported"),
+            };
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
