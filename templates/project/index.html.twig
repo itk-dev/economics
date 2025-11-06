@@ -43,8 +43,15 @@
         {% for index, project in projects %}
             <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
                 <td class="table-td">{{ project.id }}</td>
-                <td class="table-td">{{ project.name }}</td>
-                <td class="table-td">{{ project.dataprovider }}</td>
+                <td class="table-td">
+                    {{ project.name }}
+                </td>
+                <td class="table-td">
+                    {{ project.dataprovider }}
+                    {% if project.sourceDeletedDate is defined and project.sourceDeletedDate is not null %}
+                        <span title="{{ 'common.deleted_in_the_source'|trans }}">{{ include('components/icons.html.twig', {icon: 'warning', class: 'w-6 h-6 fill-red-500'}) }}</span>
+                    {% endif %}
+                </td>
                 <td class="table-td">{{ project.projectLeadName ~ (project.projectLeadMail is not empty ? ' (' ~ project.projectLeadMail ~ ')' : '') }}</td>
                 <td class="table-td">{{ project.projectTrackerKey }}</td>
                 <td class="table-td">{{ project.updatedAt ? project.updatedAt|date : '' }}</td>

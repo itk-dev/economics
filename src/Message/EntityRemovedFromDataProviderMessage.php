@@ -8,6 +8,7 @@ readonly class EntityRemovedFromDataProviderMessage
         public string $classname,
         public int $dataProviderId,
         public string $projectTrackerId,
+        public ?\DateTimeInterface $deletedDate,
     ) {
     }
 }
