@@ -316,6 +316,10 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         $entityManager->flush();
 
+        $worklogId1 = $worklog1->getId();
+        $issueId1 = $issue1->getId();
+        $projectId1 = $project1->getId();
+
         $countProjectsAfterCreate = count($projectRepository->findAll());
         $countVersionsAfterCreate = count($versionRepository->findAll());
         $countIssuesAfterCreate = count($issueRepository->findAll());
@@ -359,6 +363,15 @@ class LeantimeApiServiceTest extends KernelTestCase
         // Versions can always be removed.
         $this->assertEquals($countVersionsBeforeCreate, $countVersionsAfterDelete);
         $this->assertEquals($countProjectsBeforeCreate + 1, $countProjectsAfterDelete);
+
+        $project1 = $projectRepository->find($projectId1);
+        $this->assertEquals(new \DateTime('2025-10-24T11:36:08.000000Z'), $project1->getSourceDeletedDate());
+
+        $issue1 = $issueRepository->find($issueId1);
+        $this->assertEquals(new \DateTime('2025-10-24T11:36:08.000000Z'), $issue1->getSourceDeletedDate());
+
+        $worklog1 = $worklogRepository->find($worklogId1);
+        $this->assertEquals(new \DateTime('2025-10-24T11:36:08.000000Z'), $worklog1->getSourceDeletedDate());
     }
 
     private function getDeletedData(): object
@@ -388,7 +401,7 @@ class LeantimeApiServiceTest extends KernelTestCase
             "milestones": [
               {
                 "id": 6724,
-                "deletedDate": "2025-10-09T11:46:33.000000Z"
+                "deletedDate": "2025-10-24T11:36:08.000000Z"
               },
               {
                 "id": 6725,
@@ -398,7 +411,7 @@ class LeantimeApiServiceTest extends KernelTestCase
             "tickets": [
               {
                 "id": 6723,
-                "deletedDate": "2025-10-09T11:46:41.000000Z"
+                "deletedDate": "2025-10-24T11:36:08.000000Z"
               },
               {
                 "id": 6726,
@@ -408,11 +421,11 @@ class LeantimeApiServiceTest extends KernelTestCase
             "timesheets": [
               {
                 "id": 66937,
-                "deletedDate": "2025-10-09T11:49:34.000000Z"
+                "deletedDate": "2025-10-24T11:36:08.000000Z"
               },
               {
                 "id": 66938,
-                "deletedDate": "2025-10-09T11:49:34.000000Z"
+                "deletedDate": "2025-10-24T11:36:08.000000Z"
               }
             ]
           }

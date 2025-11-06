@@ -296,7 +296,7 @@ class DataProviderService
         }
     }
 
-    public function projectRemovedFromDataProvider(int $dataProviderId, string $projectTrackerId): void
+    public function projectRemovedFromDataProvider(int $dataProviderId, string $projectTrackerId, ?\DateTimeInterface $sourceDeletedDate): void
     {
         // A project can be removed if no worklogs are bound to any invoices.
 
@@ -310,25 +310,39 @@ class DataProviderService
             return;
         }
 
+        $removable = true;
+
         if (!$project->getInvoices()->isEmpty()) {
             $this->logger->warning('Cannot remove project since project invoices exist');
 
-            return;
+            $removable = false;
         }
 
         if (!$project->getIssues()->isEmpty()) {
             $this->logger->warning('Cannot remove project since project issues exist');
 
-            return;
+            $removable = false;
         }
 
         if (!$project->getWorklogs()->isEmpty()) {
             $this->logger->warning('Cannot remove project since project worklogs exist');
 
-            return;
+            $removable = false;
         }
 
-        $this->entityManager->remove($project);
+        if ($removable) {
+            $this->entityManager->remove($project);
+        } else {
+            if (null !== $project->getSourceDeletedDate()) {
+                $this->logger->info('Project already marked as deleted in the source');
+
+                return;
+            }
+
+            // If it cannot be removed, mark it as deleted in the source.
+            $project->setSourceDeletedDate($sourceDeletedDate);
+        }
+
         $this->entityManager->flush();
     }
 
@@ -350,13 +364,16 @@ class DataProviderService
         $this->entityManager->flush();
     }
 
-    public function issueRemovedFromDataProvider(int $dataProviderId, string $projectTrackerId): void
+    public function issueRemovedFromDataProvider(int $dataProviderId, string $projectTrackerId, ?\DateTimeInterface $sourceDeletedDate): void
     {
         // Issues can be removed if no worklogs connected to the issue are bound to invoices.
+        // If it cannot be removed, set the sourceDeletedDate to signal that the entity has been removed in the source.
 
         $dataProvider = $this->getDataProvider($dataProviderId);
 
         $issue = $this->issueRepository->findOneBy(['dataProvider' => $dataProvider, 'projectTrackerId' => $projectTrackerId]);
+
+        $removable = true;
 
         if (null === $issue) {
             $this->logger->warning('Cannot remove issue since it does not exist');
@@ -367,14 +384,26 @@ class DataProviderService
         if (!$issue->getWorklogs()->isEmpty()) {
             $this->logger->warning('Cannot remove issue worklogs attached to issue.');
 
-            return;
+            $removable = false;
         }
 
-        $this->entityManager->remove($issue);
+        if ($removable) {
+            $this->entityManager->remove($issue);
+        } else {
+            if (null !== $issue->getSourceDeletedDate()) {
+                $this->logger->info('Issue already marked as deleted in the source');
+
+                return;
+            }
+
+            // If it cannot be removed, mark it as deleted in the source.
+            $issue->setSourceDeletedDate($sourceDeletedDate);
+        }
+
         $this->entityManager->flush();
     }
 
-    public function worklogRemovedFromDataProvider(int $dataProviderId, int $projectTrackerId): void
+    public function worklogRemovedFromDataProvider(int $dataProviderId, int $projectTrackerId, ?\DateTimeInterface $sourceDeletedDate): void
     {
         // Worklogs can be removed if they are not bound to invoices.
 
@@ -382,8 +411,10 @@ class DataProviderService
 
         $worklog = $this->worklogRepository->findOneBy(['dataProvider' => $dataProvider, 'worklogId' => $projectTrackerId]);
 
+        $removable = true;
+
         if (null === $worklog) {
-            $this->logger->warning('Worklog does not exist. Aborting remove.');
+            $this->logger->warning('Cannot remove worklog since it does not exist');
 
             return;
         }
@@ -391,10 +422,22 @@ class DataProviderService
         if (null !== $worklog->getInvoiceEntry()) {
             $this->logger->warning('Cannot remove worklog since it is bound to an invoice entry.');
 
-            return;
+            $removable = false;
         }
 
-        $this->entityManager->remove($worklog);
+        if ($removable) {
+            $this->entityManager->remove($worklog);
+        } else {
+            if (null !== $worklog->getSourceDeletedDate()) {
+                $this->logger->info('Issue already marked as deleted in the source');
+
+                return;
+            }
+
+            // If it cannot be removed, mark it as deleted in the source.
+            $worklog->setSourceDeletedDate($sourceDeletedDate);
+        }
+
         $this->entityManager->flush();
     }
 }

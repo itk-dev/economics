@@ -133,9 +133,10 @@ class LeantimeApiService implements DataProviderInterface
 
             foreach ($results->{$type} as $result) {
                 $projectTrackerId = $result->id;
+                $deletedDate = $this->getLeanDateTime($result->deletedDate);
 
                 $this->messageBus->dispatch(
-                    new EntityRemovedFromDataProviderMessage($classname, $dataProviderId, $projectTrackerId),
+                    new EntityRemovedFromDataProviderMessage($classname, $dataProviderId, $projectTrackerId, $deletedDate),
                     [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
                 );
             }

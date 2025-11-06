@@ -28,10 +28,10 @@ readonly class EntityRemovedFromDataProviderHandler
             $this->logger->info('EntityRemovedFromSourceHandler: '.$message->classname.' '.$message->projectTrackerId);
 
             match ($message->classname) {
-                Project::class => $this->dataProviderService->projectRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId),
+                Project::class => $this->dataProviderService->projectRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId, $message->deletedDate),
                 Version::class => $this->dataProviderService->versionRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId),
-                Issue::class => $this->dataProviderService->issueRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId),
-                Worklog::class => $this->dataProviderService->worklogRemovedFromDataProvider($message->dataProviderId, (int) $message->projectTrackerId),
+                Issue::class => $this->dataProviderService->issueRemovedFromDataProvider($message->dataProviderId, $message->projectTrackerId, $message->deletedDate),
+                Worklog::class => $this->dataProviderService->worklogRemovedFromDataProvider($message->dataProviderId, (int) $message->projectTrackerId, $message->deletedDate),
                 default => throw new NotSupportedException('classname not supported'),
             };
         } catch (\Exception $e) {
