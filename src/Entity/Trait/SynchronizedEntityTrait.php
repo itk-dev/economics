@@ -13,6 +13,9 @@ trait SynchronizedEntityTrait
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $sourceModifiedDate = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $sourceDeletedDate = null;
+
     public function getFetchDate(): ?\DateTimeInterface
     {
         return $this->fetchDate;
@@ -31,5 +34,15 @@ trait SynchronizedEntityTrait
     public function setSourceModifiedDate(?\DateTimeInterface $sourceModifiedDate): void
     {
         $this->sourceModifiedDate = $sourceModifiedDate;
+    }
+
+    public function getSourceDeletedDate(): ?\DateTimeInterface
+    {
+        return $this->sourceDeletedDate;
+    }
+
+    public function setSourceDeletedDate(?\DateTimeInterface $sourceDeletedDate): void
+    {
+        $this->sourceDeletedDate = $sourceDeletedDate;
     }
 }
