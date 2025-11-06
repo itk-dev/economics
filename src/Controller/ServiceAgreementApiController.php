@@ -52,8 +52,6 @@ final class ServiceAgreementApiController extends AbstractController
             );
         }
 
-        return $this->json([
-            'serviceAgreements' => $serviceAgreementRepository->getApiServiceAgreements(),
-        ]);
+        return $this->json($serviceAgreementRepository->getApiServiceAgreements());
     }
 }
