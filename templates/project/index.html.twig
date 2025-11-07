@@ -49,7 +49,7 @@
                 <td class="table-td">
                     {{ project.dataprovider }}
                     {% if project.sourceDeletedDate is defined and project.sourceDeletedDate is not null %}
-                        <span title="{{ 'common.deleted_in_the_source'|trans }}">{{ include('components/icons.html.twig', {icon: 'warning', class: 'w-6 h-6 fill-red-500'}) }}</span>
+                        <span title="{{ 'common.deleted_in_the_source'|trans }}">{{ include('components/icons.html.twig', {icon: 'warning', class: 'w-6 h-6 fill-red-500 inline-block'}) }}</span>
                     {% endif %}
                 </td>
                 <td class="table-td">{{ project.projectLeadName ~ (project.projectLeadMail is not empty ? ' (' ~ project.projectLeadMail ~ ')' : '') }}</td>
