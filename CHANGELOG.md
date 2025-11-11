@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-242](https://github.com/itk-dev/economics/pull/242)
   Changed Leantime data provider to use apidata plugin instead of leantime api.
+* [PR-246](https://github.com/itk-dev/economics/pull/246)
+  Minor api adjustments.
 * [PR-243](https://github.com/itk-dev/economics/pull/243)
   Added CRUD for service agreements and cyber security agreements.
   Added JSON endpoint for retrieving agreements.
