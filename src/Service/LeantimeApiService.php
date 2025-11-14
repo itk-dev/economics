@@ -2,565 +2,358 @@
 
 namespace App\Service;
 
+use App\Entity\DataProvider;
+use App\Entity\Issue;
+use App\Entity\Project;
+use App\Entity\Version;
+use App\Entity\Worklog;
 use App\Enum\IssueStatusEnum;
-use App\Exception\ApiServiceException;
-use App\Interface\DataProviderServiceInterface;
-use App\Model\Invoices\IssueData;
-use App\Model\Invoices\PagedResult;
-use App\Model\Invoices\ProjectData;
-use App\Model\Invoices\ProjectDataCollection;
-use App\Model\Invoices\VersionData;
-use App\Model\Invoices\VersionModel;
-use App\Model\Invoices\Versions;
-use App\Model\Invoices\WorklogData;
-use App\Model\Invoices\WorklogDataCollection;
-use App\Model\Planning\Assignee;
-use App\Model\Planning\AssigneeProject;
-use App\Model\Planning\Issue;
-use App\Model\Planning\PlanningData;
-use App\Model\Planning\Project;
-use App\Model\Planning\SprintSum;
-use App\Model\Planning\Weeks;
-use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Uid\Ulid;
+use App\Exception\NotAcceptableException;
+use App\Exception\NotFoundException;
+use App\Interface\DataProviderInterface;
+use App\Message\EntityRemovedFromDataProviderMessage;
+use App\Message\LeantimeDeleteMessage;
+use App\Message\LeantimeUpdateMessage;
+use App\Message\UpsertIssueMessage;
+use App\Message\UpsertProjectMessage;
+use App\Message\UpsertVersionMessage;
+use App\Message\UpsertWorklogMessage;
+use App\Model\DataProvider\DataProviderIssueData;
+use App\Model\DataProvider\DataProviderProjectData;
+use App\Model\DataProvider\DataProviderVersionData;
+use App\Model\DataProvider\DataProviderWorklogData;
+use App\Repository\DataProviderRepository;
+use App\Repository\ProjectRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class LeantimeApiService implements DataProviderServiceInterface
+class LeantimeApiService implements DataProviderInterface
 {
-    private const API_PATH_JSONRPC = '/api/jsonrpc/';
-    private const LEANTIME_TIMEZONE = 'UTC';
-
-    private static ?\DateTimeZone $leantimeTimeZone = null;
-
-    private const STATUS_MAPPING = [
-        'NEW' => IssueStatusEnum::NEW,
-        'INPROGRESS' => IssueStatusEnum::IN_PROGRESS,
-        'DONE' => IssueStatusEnum::DONE,
-        'NONE' => IssueStatusEnum::ARCHIVED,
-    ];
+    private const API_PATH_DATA = '/apidata/api/';
+    public const PROJECTS = 'projects';
+    public const MILESTONES = 'milestones';
+    public const TICKETS = 'tickets';
+    public const TIMESHEETS = 'timesheets';
+    private const LIMIT = 100;
+    private const QUEUE_ASYNC = 'async';
+    private const QUEUE_SYNC = 'sync';
 
     public function __construct(
-        protected readonly HttpClientInterface $leantimeProjectTrackerApi,
-        protected readonly string $leantimeUrl,
-        protected readonly float $weekGoalLow,
-        protected readonly float $weekGoalHigh,
-        protected readonly string $sprintNameRegex,
+        private readonly HttpClientInterface $httpClient,
+        private readonly MessageBusInterface $messageBus,
+        private readonly DataProviderRepository $dataProviderRepository,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ProjectRepository $projectRepository,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
-    public function getEndpoints(): array
+    public function updateAll(bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
     {
-        return [
-            'base' => $this->leantimeUrl,
-        ];
+        $this->update(Project::class, $asyncJobQueue, $modifiedAfter);
+        $this->update(Version::class, $asyncJobQueue, $modifiedAfter);
+        $this->update(Issue::class, $asyncJobQueue, $modifiedAfter);
+        $this->update(Worklog::class, $asyncJobQueue, $modifiedAfter);
     }
 
-    /**
-     * Get all projects, including archived.
-     *
-     * @throws ApiServiceException
-     */
-    public function getAllProjects(): mixed
+    public function deleteAll(bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getAll', []);
+        $this->delete($asyncJobQueue, $modifiedAfter);
     }
 
-    /**
-     * Retrieves the ticket status settings for a specific project.
-     *
-     * @param string $projectId the ID of the project
-     *
-     * @return \stdClass the ticket status settings of the project
-     *
-     * @throws ApiServiceException
-     */
-    private function getProjectTicketStatusSettings(string $projectId): \stdClass
+    public function update(string $className, bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
     {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getStatusLabels', ['projectId' => $projectId]);
-    }
-
-    /**
-     * Get all worklogs for project.
-     *
-     * @param $projectId
-     *
-     * @return mixed
-     */
-    public function getProjectWorklogs($projectId): mixed
-    {
-        return $this->getTimesheets([
-            'id' => $projectId,
-        ]);
-    }
-
-    /**
-     * @throws ApiServiceException
-     */
-    private function getProjectIssuesPaged($projectId, $startAt, $maxResults = 50): array
-    {
-        // TODO: Implement pagination.
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => ['currentProject' => $projectId, 'excludeType' => 'milestone']]);
-    }
-
-    /**
-     * @throws ApiServiceException
-     */
-    public function getIssuesDataForProjectPaged(string $projectId, $startAt = 0, $maxResults = 50): PagedResult
-    {
-        $result = [];
-
-        $projectTicketStatusSettings = $this->getProjectTicketStatusSettings($projectId);
-
-        $issues = $this->getProjectIssuesPaged($projectId, $startAt, $maxResults);
-
-        $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
-
-        $workers = array_reduce($workersData, function ($carry, $item) {
-            $carry[$item->id] = $item->username;
-
-            return $carry;
-        }, []);
-        foreach ($issues as $issue) {
-            $issueData = new IssueData();
-
-            $issueData->name = $issue->headline;
-            $issueData->status = $this->convertStatusToEnum($issue->status, $projectTicketStatusSettings);
-            $issueData->projectTrackerId = $issue->id;
-            // Leantime does not have a key for each issue.
-            $issueData->projectTrackerKey = $issue->id;
-            $issueData->accountId = '';
-            $issueData->accountKey = '';
-            $issueData->epicKey = $issue->tags;
-            $issueData->epicName = $issue->tags;
-
-            $issueData->epics = explode(',', $issue->tags);
-
-            $issueData->planHours = $issue->planHours;
-            $issueData->hourRemaining = $issue->hourRemaining;
-            $issueData->dueDate = !empty($issue->dateToFinish) && '0000-00-00 00:00:00' !== $issue->dateToFinish ? new \DateTime($issue->dateToFinish, self::getLeantimeTimeZone()) : null;
-
-            if (isset($issue->milestoneid) && isset($issue->milestoneHeadline)) {
-                $issueData->versions?->add(new VersionData($issue->milestoneid, $issue->milestoneHeadline));
-            }
-
-            $issueData->projectId = $issue->projectId;
-            $issueData->resolutionDate = $this->getLeanDateTime($issue->editTo);
-            $issueData->worker = $workers[$issue->editorId] ?? $issue->editorId;
-            $issueData->linkToIssue = $this->getLeantimeTicketUrl($issue->id);
-            $result[] = $issueData;
-        }
-
-        return new PagedResult($result, $startAt, count($issues), count($issues));
-    }
-
-    private function convertStatusToEnum(string $statusKey, \stdClass $projectTicketStatusSettings): IssueStatusEnum
-    {
-        $statusType = $projectTicketStatusSettings->{$statusKey}->statusType;
-
-        if (array_key_exists($statusType, self::STATUS_MAPPING)) {
-            return self::STATUS_MAPPING[$statusType];
-        }
-
-        // Default fallback for unmatched statuses
-        return IssueStatusEnum::OTHER;
-    }
-
-    private function getLeanDateTime(string $s): ?\DateTime
-    {
-        try {
-            $date = new \DateTime($s, new \DateTimeZone('UTC'));
-        } catch (\Exception) {
-        }
-
-        return isset($date) && ($date->getTimestamp() > 0) ? $date : null;
-    }
-
-    public function getProjectDataCollection(): ProjectDataCollection
-    {
-        $projectDataCollection = new ProjectDataCollection();
-        $projects = $this->getAllProjects();
-
-        foreach ($projects as $project) {
-            $projectData = new ProjectData();
-            $projectData->name = $project->name;
-            $projectData->projectTrackerId = $project->id;
-            // Leantime does not have a key for each project.
-            $projectData->projectTrackerKey = $project->id;
-            $projectData->projectTrackerProjectUrl = $this->leantimeUrl.'#/tickets/showTicket/'.$project->id;
-
-            $projectVersions = $this->getProjectVersions($project->id);
-            foreach ($projectVersions as $projectVersion) {
-                $projectData->versions?->add($projectVersion);
-            }
-
-            $projectDataCollection->projectData->add($projectData);
-        }
-
-        return $projectDataCollection;
-    }
-
-    public function getClientDataForProject(string $projectId): array
-    {
-        throw new ApiServiceException('Method not implemented', 501);
-    }
-
-    /**
-     * Get project.
-     *
-     * @param $key
-     *   A project key or id
-     *
-     * @throws ApiServiceException
-     */
-    public function getProject($key): mixed
-    {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.projects.getProject', ['id' => $key]);
-    }
-
-    public function getAllAccountData(): array
-    {
-        return [];
-    }
-
-    public function getProjectVersions(string $projectId): Versions
-    {
-        $versions = new Versions();
-        $projectVersions = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAllMilestones', ['searchCriteria' => ['currentProject' => $projectId, 'type' => 'milestone']]);
-
-        foreach ($projectVersions as $projectVersion) {
-            $version = new VersionModel();
-            $version->id = $projectVersion->id;
-            $version->name = $projectVersion->headline;
-            $version->projectTrackerId = $projectVersion->projectId;
-
-            $versions->versions->add($version);
-        }
-
-        return $versions;
-    }
-
-    private function getLeantimeTicketUrl($id)
-    {
-        // Error page is fastestest
-        return $this->leantimeUrl.'/errorpage#/tickets/showTicket/'.$id;
-    }
-
-    public function getWorklogDataCollection(string $projectId): WorklogDataCollection
-    {
-        $worklogDataCollection = new WorklogDataCollection();
-        $worklogs = $this->getProjectWorklogs($projectId);
-
-        $workersData = $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.users.getAll');
-
-        $workers = array_reduce($workersData, function ($carry, $item) {
-            $carry[$item->id] = $item->username;
-
-            return $carry;
-        }, []);
-
-        // Filter out all worklogs that do not belong to the project.
-        // TODO: Remove filter when worklogs are filtered correctly by projectId in the API.
-        $worklogs = array_filter($worklogs, fn ($worklog) => $worklog->projectId == $projectId);
-
-        foreach ($worklogs as $worklog) {
-            $worklogData = new WorklogData();
-            if (isset($worklog->ticketId)) {
-                $worklogData->projectTrackerId = $worklog->id;
-                $worklogData->comment = $worklog->description ?? '';
-                $worklogData->worker = $workers[$worklog->userId] ?? $worklog->userId;
-                $worklogData->timeSpentSeconds = (int) ($worklog->hours * 60 * 60);
-                $worklogData->started = new \DateTime($worklog->workDate, self::getLeantimeTimeZone());
-                $worklogData->projectTrackerIsBilled = false;
-                $worklogData->projectTrackerIssueId = $worklog->ticketId;
-                $worklogData->kind = $worklog->kind;
-
-                $worklogDataCollection->worklogData->add($worklogData);
-            }
-        }
-
-        return $worklogDataCollection;
-    }
-
-    /**
-     * @throws ApiServiceException
-     */
-    private function getAllIssues(): array
-    {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.tickets.getAll', ['searchCriteria' => []]);
-    }
-
-    /**
-     * Create data for planning page.
-     *
-     * @throws ApiServiceException
-     * @throws \Exception
-     */
-    public function getPlanningDataWeeks(): PlanningData
-    {
-        $planning = new PlanningData();
-        $assignees = $planning->assignees;
-        $projects = $planning->projects;
-        $weeks = $planning->weeks;
-
-        $currentYear = (int) (new \DateTime())->format('Y');
-        $currentWeek = (int) (new \DateTime())->format('W');
-
-        // TODO: How to handle 53 weeks
-        // A year can actually have 53 weeks (cf. https://en.wikipedia.org/wiki/ISO_week_date#Weeks_per_year), and the year 2026 (in the near future is one of them), so this should be rewritten to iterate over all weeks in the year (or use https://stackoverflow.com/a/21480444).
-        for ($weekNumber = 1; $weekNumber <= 52; ++$weekNumber) {
-            $date = (new \DateTime())->setISODate($currentYear, $weekNumber);
-            $week = (int) $date->format('W'); // Cast as int to remove leading zero.
-            $weekIsSupport = 1 === $week % 4;
-
-            if ($weekIsSupport) {
-                $supportWeek = new Weeks();
-                $supportWeek->weekCollection->add($week);
-                $supportWeek->weeks = 1;
-                $supportWeek->weekGoalLow = $this->weekGoalLow;
-                $supportWeek->weekGoalHigh = $this->weekGoalHigh;
-                $supportWeek->displayName = (string) $week;
-                if ($week == $currentWeek) {
-                    $supportWeek->activeSprint = true;
-                }
-                $weeks->add($supportWeek);
-            } else {
-                if (isset($regularWeek)) {
-                    $regularWeek->weekCollection->add($week);
-                    ++$regularWeek->weeks;
-                    $regularWeek->displayName .= '-'.$week;
-                    if ($week == $currentWeek) {
-                        $regularWeek->activeSprint = true;
-                    }
-
-                    if (3 === count($regularWeek->weekCollection)) {
-                        $weeks->add($regularWeek);
-                        unset($regularWeek);
-                    }
-                } else {
-                    $regularWeek = new Weeks();
-                    $regularWeek->weekCollection->add($week);
-                    $regularWeek->weeks = 1;
-                    $regularWeek->weekGoalLow = $this->weekGoalLow * 3;
-                    $regularWeek->weekGoalHigh = $this->weekGoalHigh * 3;
-                    $regularWeek->displayName = (string) $week;
-                    if ($week == $currentWeek) {
-                        $regularWeek->activeSprint = true;
-                    }
-                }
-            }
-        }
-
-        $weekIssues = [];
-        $allIssues = $this->getAllIssues();
-
-        foreach ($allIssues as $issue) {
-            $issueYear = new \DateTime($issue->dateToFinish);
-            $issueYear = $issueYear->format('Y');
-
-            $issueWeek = new \DateTime($issue->dateToFinish);
-            $issueWeek = (int) $issueWeek->format('W');
-
-            if ('-0001' !== $issueYear) {
-                $weekIssues[$issueWeek][] = $issue;
-            } else {
-                $weekIssues['unscheduled'][] = $issue;
-            }
-        }
-
-        foreach ($weekIssues as $week => $issues) {
-            foreach ($issues as $issueData) {
-                if ('0' !== $issueData->status) { // excludes done issues.
-                    $week = (string) $week;
-                    $projectKey = (string) $issueData->projectId;
-                    $projectDisplayName = $issueData->projectName;
-
-                    $hoursRemaining = $issueData->hourRemaining;
-                    if (empty($issueData->editorId)) {
-                        $assigneeKey = 'unassigned';
-                        $assigneeDisplayName = 'Unassigned';
-                    } else {
-                        $assigneeKey = (string) $issueData->editorId;
-                        if (isset($issueData->editorFirstname) || isset($issueData->editorLastname)) {
-                            $assigneeDisplayName = $issueData->editorFirstname.' '.$issueData->editorLastname;
-                        } else {
-                            $assigneeDisplayName = 'Name missing';
-                        }
-                    }
-                    // Add assignee if not already added.
-                    if (!$assignees->containsKey($assigneeKey)) {
-                        $assignees->set($assigneeKey, new Assignee($assigneeKey, $assigneeDisplayName));
-                    }
-
-                    /** @var Assignee $assignee */
-                    $assignee = $assignees->get($assigneeKey);
-
-                    // Add sprint if not already added.
-                    if (!$assignee->sprintSums->containsKey($week)) {
-                        $assignee->sprintSums->set($week, new SprintSum($week));
-                    }
-
-                    /** @var SprintSum $sprintSum */
-                    $sprintSum = $assignee->sprintSums->get($week);
-                    $sprintSum->sumHours += $hoursRemaining;
-
-                    // Add assignee project if not already added.
-                    if (!$assignee->projects->containsKey($projectKey)) {
-                        $assigneeProject = new AssigneeProject($projectKey, $projectDisplayName);
-                        $assignee->projects->set($projectKey, $assigneeProject);
-                    }
-
-                    /** @var AssigneeProject $assigneeProject */
-                    $assigneeProject = $assignee->projects->get($projectKey);
-
-                    // Add project sprint sum if not already added.
-                    if (!$assigneeProject->sprintSums->containsKey($week)) {
-                        $assigneeProject->sprintSums->set($week, new SprintSum($week));
-                    }
-
-                    /** @var SprintSum $projectSprintSum */
-                    $projectSprintSum = $assigneeProject->sprintSums->get($week);
-                    if (isset($projectSprintSum)) {
-                        $projectSprintSum->sumHours += $hoursRemaining;
-                    }
-
-                    $assigneeProject->issues->add(
-                        new Issue(
-                            $issueData->id,
-                            $issueData->headline,
-                            isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                            $this->getLeantimeTicketUrl($issueData->id),
-                            $week
-                        )
-                    );
-
-                    // Add project if not already added.
-                    if (!$projects->containsKey($projectKey)) {
-                        $projects->set($projectKey, new Project(
-                            $projectKey,
-                            $projectDisplayName,
-                        ));
-                    }
-
-                    /** @var Project $project */
-                    $project = $projects->get($projectKey);
-
-                    // Add sprint sum if not already added.
-
-                    if (!$project->sprintSums->containsKey($week)) {
-                        $project->sprintSums->set($week, new SprintSum($week));
-                    }
-
-                    /** @var SprintSum $projectSprintSum */
-                    $projectSprintSum = $project->sprintSums->get($week);
-                    $projectSprintSum->sumHours += $hoursRemaining;
-
-                    if (!$project->assignees->containsKey($assigneeKey)) {
-                        $project->assignees->set($assigneeKey, new AssigneeProject(
-                            $assigneeKey,
-                            $assigneeDisplayName,
-                        ));
-                    }
-
-                    /** @var AssigneeProject $projectAssignee */
-                    $projectAssignee = $project->assignees->get($assigneeKey);
-
-                    if (!$projectAssignee->sprintSums->containsKey($week)) {
-                        $projectAssignee->sprintSums->set($week, new SprintSum($week));
-                    }
-
-                    /** @var SprintSum $projectAssigneeSprintSum */
-                    $projectAssigneeSprintSum = $projectAssignee->sprintSums->get($week);
-                    $projectAssigneeSprintSum->sumHours += $hoursRemaining;
-
-                    $projectAssignee->issues->add(new Issue(
-                        $issueData->id,
-                        $issueData->headline,
-                        isset($issueData->hourRemaining) ? $hoursRemaining : null,
-                        $this->getLeantimeTicketUrl($issueData->id),
-                        $week
-                    ));
-                }
-            }
-        }
-
-        // Sort assignees by name.
-        /** @var \ArrayIterator $iterator */
-        $iterator = $assignees->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
-        });
-        $planning->assignees = new ArrayCollection(iterator_to_array($iterator));
-
-        // Sort projects by name.
-        /** @var \ArrayIterator $iterator */
-        $iterator = $projects->getIterator();
-        $iterator->uasort(function ($a, $b) {
-            return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
-        });
-
-        $planning->projects = new ArrayCollection(iterator_to_array($iterator));
-
-        return $planning;
-    }
-
-    private function getTimesheets(array $params): mixed
-    {
-        return $this->request(self::API_PATH_JSONRPC, 'POST', 'leantime.rpc.timesheets.getAll', $params + [
-            // The datatime format must match the internal Leantime date format
-            // (cf. https://github.com/Leantime/leantime/blob/master/app/Core/Support/DateTimeHelper.php#L53)
-            'dateFrom' => '2000-01-01 00:00:00',
-            'dateTo' => '3000-01-01 00:00:00',
-            'invEmpl' => '-1',
-            'invComp' => '-1',
-            'paid' => '-1',
-        ]);
-    }
-
-    /**
-     * Get from Leantime.
-     *
-     * @throws ApiServiceException
-     */
-    private function request(string $path, string $type, string $method, array $params = []): mixed
-    {
-        try {
-            $response = $this->leantimeProjectTrackerApi->request($type, $path,
-                ['json' => [
-                    'jsonrpc' => '2.0',
-                    'method' => $method,
-                    'id' => (new Ulid())->jsonSerialize(),
-                    'params' => $params,
-                ]]
+        $dataProviders = $this->getEnabledLeantimeDataProviders();
+
+        foreach ($dataProviders as $dataProvider) {
+            $projectTrackerProjectIds = match ($className) {
+                Project::class => null,
+                default => $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]),
+            };
+
+            $this->messageBus->dispatch(
+                new LeantimeUpdateMessage($className, 0, $this::LIMIT, $dataProvider->getId(), $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds),
+                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
             );
-
-            $body = $response->getContent();
-
-            if ($body) {
-                $data = json_decode($body, null, 512, JSON_THROW_ON_ERROR);
-
-                if (isset($data->error)) {
-                    $message = $data->error->message;
-                    if (isset($data->error->data)) {
-                        $message .= ': '.(is_scalar($data->error->data) ? $data->error->data : json_encode($data->error->data));
-                    }
-                    throw new ApiServiceException($message, $data->error->code);
-                }
-
-                return $data->result;
-            }
-        } catch (\Throwable $e) {
-            throw new ApiServiceException('Error from Leantime API: '.$e->getMessage(), (int) $e->getCode(), $e);
         }
-
-        return null;
     }
 
-    private function getLeantimeTimeZone(): \DateTimeZone
+    public function delete(bool $asyncJobQueue = false, ?\DateTimeInterface $deletedAfter = null): void
     {
-        if (null === self::$leantimeTimeZone) {
-            self::$leantimeTimeZone = new \DateTimeZone(self::LEANTIME_TIMEZONE);
+        $dataProviders = $this->getEnabledLeantimeDataProviders();
+
+        foreach ($dataProviders as $dataProvider) {
+            $this->messageBus->dispatch(
+                new LeantimeDeleteMessage($dataProvider->getId(), $asyncJobQueue, $deletedAfter),
+                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+            );
+        }
+    }
+
+    public function deleteAsJob(int $dataProviderId, bool $asyncJobQueue = false, ?\DateTimeInterface $deletedAfter = null): void
+    {
+        $dataProvider = $this->dataProviderRepository->find($dataProviderId);
+
+        if (null === $dataProvider) {
+            throw new NotFoundException("DataProvider with id: $dataProviderId not found");
         }
 
-        return self::$leantimeTimeZone;
+        $types = [
+            self::TIMESHEETS,
+            self::TICKETS,
+            self::MILESTONES,
+            self::PROJECTS,
+        ];
+
+        $params = [
+            'types' => $types,
+            'deletedAfter' => $deletedAfter?->getTimestamp(),
+        ];
+
+        // Get data from Leantime.
+        $data = $this->fetchFromLeantime($dataProvider, 'deleted', $params);
+        $results = $data->results;
+
+        // Queue delete.
+        foreach ($types as $type) {
+            if (!isset($results->{$type})) {
+                continue;
+            }
+
+            $classname = match ($type) {
+                self::PROJECTS => Project::class,
+                self::MILESTONES => Version::class,
+                self::TICKETS => Issue::class,
+                self::TIMESHEETS => Worklog::class,
+            };
+
+            foreach ($results->{$type} as $result) {
+                $projectTrackerId = $result->id;
+                $deletedDate = $this->getLeanDateTime($result->deletedDate);
+
+                $this->messageBus->dispatch(
+                    new EntityRemovedFromDataProviderMessage($classname, $dataProviderId, $projectTrackerId, $deletedDate),
+                    [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+                );
+            }
+        }
+    }
+
+    public function updateAsJob(string $className, int $startId, int $limit, int $dataProviderId, ?array $projectTrackerProjectIds = null, bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
+    {
+        $dataProvider = $this->dataProviderRepository->find($dataProviderId);
+
+        if (null === $dataProvider) {
+            throw new NotFoundException("DataProvider with id: $dataProviderId not found");
+        }
+
+        $dataProviderUrl = $dataProvider->getUrl();
+
+        $params = [
+            'start' => $startId,
+            'limit' => $limit,
+        ];
+
+        if (null !== $projectTrackerProjectIds) {
+            $params['projectIds'] = $projectTrackerProjectIds;
+        }
+
+        if (null !== $modifiedAfter) {
+            $params['modifiedAfter'] = $modifiedAfter->getTimestamp();
+        }
+
+        $endpoint = match ($className) {
+            Project::class => self::PROJECTS,
+            Version::class => self::MILESTONES,
+            Issue::class => self::TICKETS,
+            Worklog::class => self::TIMESHEETS,
+        };
+
+        // Get data from Leantime.
+        $data = $this->fetchFromLeantime($dataProvider, $endpoint, $params);
+
+        $fetchDate = new \DateTime();
+
+        // Queue upsert.
+        foreach ($data->results as $result) {
+            $this->dispatchUpsertMessage($className, $result, $dataProviderId, $fetchDate, $asyncJobQueue, $dataProviderUrl);
+            $startId = $result->id;
+        }
+
+        $startId = $startId + 1;
+
+        // Clear the entity manager in sync handling, to avoid memory issues.
+        if (!$asyncJobQueue) {
+            $this->entityManager->clear();
+        }
+
+        // Queue next page.
+        if ($data->resultsCount === $limit) {
+            $this->messageBus->dispatch(
+                new LeantimeUpdateMessage($className, $startId, $limit, $dataProviderId, $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds),
+                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+            );
+        }
+    }
+
+    private function dispatchUpsertMessage(string $className, object $data, int $dataProviderId, \DateTimeInterface $fetchDate, bool $asyncJobQueue = false, ?string $dataProviderUrl = null): void
+    {
+        try {
+            $message = match ($className) {
+                Project::class => new UpsertProjectMessage($this->getProjectUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
+                Version::class => new UpsertVersionMessage($this->getVersionUpsertFromResult($data, $dataProviderId, $fetchDate)),
+                Issue::class => new UpsertIssueMessage($this->getIssueUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
+                Worklog::class => new UpsertWorklogMessage($this->getWorklogUpsertFromResult($data, $dataProviderId, $fetchDate)),
+                default => null,
+            };
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            return;
+        }
+
+        if (null !== $message) {
+            $this->messageBus->dispatch(
+                $message,
+                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+            );
+        }
+    }
+
+    private function getProjectUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null): DataProviderProjectData
+    {
+        $projectTrackerId = (string) $result->id;
+
+        return new DataProviderProjectData(
+            $dataProviderId,
+            $result->name,
+            $projectTrackerId,
+            $this->linkToProject($projectTrackerId, $dataProviderUrl),
+            $fetchDate,
+            $this->getLeanDateTime($result->modified),
+        );
+    }
+
+    private function getVersionUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): DataProviderVersionData
+    {
+        return new DataProviderVersionData(
+            $dataProviderId,
+            $result->name,
+            (string) $result->id,
+            (string) $result->projectId,
+            $fetchDate,
+            $this->getLeanDateTime($result->modified),
+        );
+    }
+
+    private function getIssueUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null): DataProviderIssueData
+    {
+        $projectTrackerId = (string) $result->id;
+
+        return new DataProviderIssueData(
+            $projectTrackerId,
+            $dataProviderId,
+            (string) $result->projectId,
+            $result->name,
+            $result->tags,
+            $result->plannedHours,
+            $result->remainingHours,
+            $result->worker,
+            $this->convertStatusToEnum($result->status),
+            $this->getLeanDateTime($result->dueDate),
+            $this->getLeanDateTime($result->resolutionDate),
+            $fetchDate,
+            $this->linkToTicket($projectTrackerId, $dataProviderUrl),
+            $this->getLeanDateTime($result->modified),
+        );
+    }
+
+    private function getWorklogUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): DataProviderWorklogData
+    {
+        $startedDate = $this->getLeanDateTime($result->workDate);
+
+        if (null === $startedDate) {
+            throw new NotAcceptableException('Worklog upsert not acceptable: startedDate is null');
+        }
+
+        return new DataProviderWorklogData(
+            $result->id,
+            $dataProviderId,
+            (string) $result->ticketId,
+            $result->description,
+            $startedDate,
+            $result->username,
+            $result->hours,
+            $result->kind,
+            $fetchDate,
+            $this->getLeanDateTime($result->modified),
+        );
+    }
+
+    private function fetchFromLeantime(DataProvider $dataProvider, string $type, array $params): object
+    {
+        $response = $this->post($dataProvider, $type, $params);
+
+        return json_decode($response->getContent(), null, 512, JSON_THROW_ON_ERROR);
+    }
+
+    private function post(DataProvider $dataProvider, $path, array $body): ResponseInterface
+    {
+        return $this->httpClient->request('POST', $dataProvider->getUrl().$this::API_PATH_DATA.$path, [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'x-api-key' => $dataProvider->getSecret(),
+            ],
+            'json' => $body,
+        ]);
+    }
+
+    private function getLeanDateTime(?string $dateString): ?\DateTimeInterface
+    {
+        if (null === $dateString) {
+            return null;
+        }
+
+        return new \DateTime($dateString, new \DateTimeZone('UTC'));
+    }
+
+    private function convertStatusToEnum(string $statusString): IssueStatusEnum
+    {
+        return match ($statusString) {
+            'NEW' => IssueStatusEnum::NEW,
+            'INPROGRESS' => IssueStatusEnum::IN_PROGRESS,
+            'DONE' => IssueStatusEnum::DONE,
+            'NONE' => IssueStatusEnum::ARCHIVED,
+            default => IssueStatusEnum::OTHER,
+        };
+    }
+
+    private function getEnabledLeantimeDataProviders(): array
+    {
+        return $this->dataProviderRepository->findBy(['class' => LeantimeApiService::class, 'enabled' => true]);
+    }
+
+    private function linkToTicket(string $ticketId, ?string $dataProviderUrl): ?string
+    {
+        if (null === $dataProviderUrl) {
+            return null;
+        }
+
+        // Error page is the fastest to load.
+        return $dataProviderUrl.'/errorpage/#/tickets/showTicket/'.$ticketId;
+    }
+
+    private function linkToProject(string $projectTrackerId, ?string $dataProviderUrl): ?string
+    {
+        if (null === $dataProviderUrl) {
+            return null;
+        }
+
+        return $dataProviderUrl.'/projects/showProject/'.$projectTrackerId;
     }
 }

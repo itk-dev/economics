@@ -91,4 +91,18 @@ class ProjectRepository extends ServiceEntityRepository
             ['defaultSortFieldName' => 'project.id', 'defaultSortDirection' => 'asc']
         );
     }
+
+    public function getProjectTrackerIdsByDataProviders(array $dataProviders)
+    {
+        $qb = $this->createQueryBuilder('project');
+
+        $qb
+            ->select('project.projectTrackerId')
+            ->where($qb->expr()->eq('project.include', true))
+            ->where($qb->expr()->in('project.dataProvider', ':dataProviders'))
+            ->setParameter('dataProviders', $dataProviders)
+            ->orderBy('project.projectTrackerId', 'ASC');
+
+        return $qb->getQuery()->getSingleColumnResult();
+    }
 }

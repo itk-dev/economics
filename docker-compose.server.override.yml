@@ -17,10 +17,6 @@ services:
             timeout: 3s
             retries: 30
 
-    phpfpm:
-        environment:
-            - PHP_MEMORY_LIMIT=512M
-
     supervisor:
         image: itkdev/supervisor-php8.3:alpine
         restart: unless-stopped

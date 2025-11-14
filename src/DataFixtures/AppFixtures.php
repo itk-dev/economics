@@ -13,7 +13,6 @@ use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
 use App\Enum\ClientTypeEnum;
 use App\Enum\IssueStatusEnum;
-use App\Service\JiraApiService;
 use App\Service\LeantimeApiService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -25,16 +24,16 @@ class AppFixtures extends Fixture
         $dataProviders = [];
 
         $dataProvider1 = new DataProvider();
-        $dataProvider1->setName('Data Provider 1 - Jira');
+        $dataProvider1->setName('Data Provider 1 - Leantime 1');
         $dataProvider1->setEnabled(true);
-        $dataProvider1->setClass(JiraApiService::class);
+        $dataProvider1->setClass(LeantimeApiService::class);
         $dataProvider1->setUrl('http://localhost/');
         $dataProvider1->setSecret('Not so secret');
 
         $dataProviders[] = $dataProvider1;
 
         $dataProvider2 = new DataProvider();
-        $dataProvider2->setName('Data Provider 2 - Leantime');
+        $dataProvider2->setName('Data Provider 2 - Leantime 2');
         $dataProvider2->setEnabled(true);
         $dataProvider2->setClass(LeantimeApiService::class);
         $dataProvider2->setUrl('http://localhost/');

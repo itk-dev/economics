@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2025-11-14
 
+* [PR-242](https://github.com/itk-dev/economics/pull/242)
+  Changed Leantime data provider to use apidata plugin instead of leantime api.
 * [PR-246](https://github.com/itk-dev/economics/pull/246)
   Minor api adjustments.
 * [PR-243](https://github.com/itk-dev/economics/pull/243)
