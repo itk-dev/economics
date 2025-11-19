@@ -1,7 +1,8 @@
 <div class="mt-5 selections p-5" {{ stimulus_controller('sync-status') }} data-interval="60">
     <div style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: .25em">
         <span>{{ 'sync_status.header'|trans }}</span>
-        <button class="button hidden" style="padding: .25em .5em; margin-left: .5em"
+        {# @TODO re-enable button when sync is fully re-factored #}
+        <button disabled class="button hidden btn-disabled" style="padding: .25em .5em; margin-left: .5em"
             {{ stimulus_action('sync-status', 'run') }} {{ stimulus_target('sync-status', 'button') }}>
             {{ 'sync_status.button'|trans }}
         </button>

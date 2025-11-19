@@ -29,6 +29,7 @@ navigation:
     billable_unbilled_hours_report: 'Ufakturerede timer'
     planning_holidays: 'Ferieplan'
     group: 'Grupper'
+    serviceagreements: 'Driftsaftaler'
 
 planning:
     group: 'Vælg gruppe'
@@ -279,6 +280,10 @@ material_number_enum:
     external_with_moms: "Eksterne m/moms: 100006"
     external_without_moms: "Eksterne u/moms: 100008"
 
+system_owner_notice_enum:
+    on_update: 'Opdateringer af systemet'
+    on_server: 'På server'
+    never: 'Aldrig'
 accounts:
     id: "#"
     create_new: "Opret ny konto"
@@ -505,6 +510,7 @@ project:
     is_billable_null: ""
     is_billable_true: "Fakturerbart"
     is_billable_false: "Ikke fakturerbart"
+
 
 reports:
     title: 'Rapporter'
@@ -871,3 +877,42 @@ groups:
     list_no_records_found: 'Ingen grupper fundet'
     title: 'Grupper'
     workers: 'Medarbejdere'
+
+service_agreement:
+    title: 'Driftsaftaler'
+    project: 'Projekt'
+    client: 'Kunde'
+    cybersecurity_agreement: 'CSA'
+    hosting_provider: 'Hosting'
+    document_url: 'Aftale'
+    price: 'Pris'
+    project_lead: 'Projektleder'
+    project_lead_id: 'Projektleder'
+    valid_from: 'Gyldig fra'
+    valid_to: 'Gyldig til'
+    is_active: 'Aktiv'
+    has_cybersecurity_agreement: 'Har CSA'
+    quarterly_hours: 'Timer pr. kvartal'
+    note: 'Note'
+    actions: 'Handlinger'
+    action_create_new: 'Opret driftsaftale'
+    action_show: 'Vis driftsaftale'
+    action_edit: 'Rediger driftsaftale'
+    has_cybersecurity_agreement_true: '✅'
+    has_cybersecurity_agreement_false: '❌'
+    new: 'Ny driftsaftale'
+    action_create: 'Gem'
+    action_delete: 'Slet driftsaftale'
+    back_to_list: 'Tilbage til listen'
+    yes: 'Ja'
+    no: 'Nej'
+    no_records_found: 'Ingen driftsaftaler'
+    system_owner_notice: 'Systemejer skal inddrages ved ændringer'
+    hours_per_quarter: 'timer/kvartal'
+    search: 'Søg'
+    cyber_security_agreement:
+        quarterly_hours: 'Timer/kvartal'
+        filter_label: 'Har CSA'
+        include_all: 'Alle'
+        include_false: 'Nej'
+        include_true: 'Ja'

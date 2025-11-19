@@ -1,0 +1,5 @@
+<form method="post" action="{{ path('app_service_agreement_delete', {id: service_agreement.id}) }}"
+      onsubmit="return confirm('{{ 'delete.confirm'|trans }}');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ service_agreement.id) }}">
+    <button class="button button-danger">{{ 'service_agreement.action_delete'|trans }}</button>
+</form>

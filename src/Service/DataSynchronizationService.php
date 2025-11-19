@@ -32,8 +32,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DataSynchronizationService
 {
-    private const BATCH_SIZE = 200;
-    private const MAX_RESULTS = 50;
+    private const int BATCH_SIZE = 200;
+    private const int MAX_RESULTS = 50;
+
+    private array $issues = [];
+    private array $workers = [];
+    private array $versions = [];
+    private array $epics = [];
 
     public function __construct(
         private readonly ProjectRepository $projectRepository,
@@ -60,8 +65,6 @@ class DataSynchronizationService
      */
     public function syncProjects(callable $progressCallback, DataProvider $dataProvider): void
     {
-        $dataProviderId = $dataProvider->getId();
-
         $service = $this->dataProviderService->getService($dataProvider);
 
         // Get all projects from ApiService.
@@ -71,7 +74,7 @@ class DataSynchronizationService
                 'projectTrackerId' => $projectDatum->projectTrackerId,
                 'dataProvider' => $dataProvider,
             ]);
-            $dataProvider = $this->dataProviderRepository->find($dataProviderId);
+            $dataProvider = $this->getDataProvider($dataProvider);
 
             if (!$project) {
                 $project = new Project();
@@ -87,10 +90,7 @@ class DataSynchronizationService
             foreach ($projectDatum->versions as $versions) {
                 /** @var VersionModel $versionDatum */
                 foreach ($versions as $versionDatum) {
-                    $version = $this->versionRepository->findOneBy([
-                        'projectTrackerId' => $versionDatum->id,
-                        'dataProvider' => $dataProvider,
-                    ]);
+                    $version = $this->getVersion($versionDatum->id, $dataProvider);
 
                     if (!$version) {
                         $version = new Version();
@@ -105,7 +105,7 @@ class DataSynchronizationService
             }
 
             // Only synchronize clients if this is enabled.
-            if (null != $dataProvider && $dataProvider->isEnableClientSync()) {
+            if ($dataProvider->isEnableClientSync()) {
                 $projectClientData = $service->getClientDataForProject($projectDatum->projectTrackerId);
 
                 foreach ($projectClientData as $clientData) {
@@ -138,14 +138,14 @@ class DataSynchronizationService
             // Flush and clear for each batch.
             if (0 === intval($index) % self::BATCH_SIZE) {
                 $this->entityManager->flush();
-                $this->entityManager->clear();
+                $this->clear();
             }
 
             $progressCallback($index, count($allProjectData->projectData));
         }
 
         $this->entityManager->flush();
-        $this->entityManager->clear();
+        $this->clear();
     }
 
     /**
@@ -184,14 +184,14 @@ class DataSynchronizationService
                 // Flush and clear for each batch.
                 if (0 === intval($index) % self::BATCH_SIZE) {
                     $this->entityManager->flush();
-                    $this->entityManager->clear();
+                    $this->clear();
                 }
 
                 $progressCallback($index, count($allAccountData));
             }
 
             $this->entityManager->flush();
-            $this->entityManager->clear();
+            $this->clear();
         }
     }
 
@@ -203,8 +203,6 @@ class DataSynchronizationService
      */
     public function syncIssuesForProject(int $projectId, DataProvider $dataProvider, ?callable $progressCallback = null): void
     {
-        $dataProviderId = $dataProvider->getId();
-
         $service = $this->dataProviderService->getService($dataProvider);
 
         $project = $this->projectRepository->find($projectId);
@@ -223,20 +221,15 @@ class DataSynchronizationService
 
         $startAt = 0;
         do {
-            $dataProvider = $this->dataProviderRepository->find($dataProviderId);
-            $project = $this->projectRepository->find($projectId);
-            if (!$project) {
-                throw new EconomicsException($this->translator->trans('exception.project_not_found'));
-            }
+            $dataProvider = $this->getDataProvider($dataProvider);
+            $project = $this->getProject($project);
 
             $pagedIssueData = $service->getIssuesDataForProjectPaged($projectTrackerId, $startAt, self::MAX_RESULTS);
             $total = $pagedIssueData->total;
 
             foreach ($pagedIssueData->items as $issueDatum) {
-                $issue = $this->issueRepository->findOneBy([
-                    'projectTrackerId' => $issueDatum->projectTrackerId,
-                    'dataProvider' => $dataProvider,
-                ]);
+                $dataProvider = $this->getDataProvider($dataProvider);
+                $issue = $this->getIssue($issueDatum->projectTrackerId, $dataProvider);
 
                 if (!$issue) {
                     $issue = new Issue();
@@ -264,15 +257,12 @@ class DataSynchronizationService
                 $issue->setLinkToIssue($issueDatum->linkToIssue);
 
                 // Leantime (as of now) supports only a single version (milestone) per issue.
-                if (LeantimeApiService::class === $dataProvider?->getClass()) {
+                if (LeantimeApiService::class === $dataProvider->getClass()) {
                     $issue->getVersions()->clear();
                 }
 
                 foreach ($issueDatum->versions as $versionData) {
-                    $version = $this->versionRepository->findOneBy([
-                        'projectTrackerId' => $versionData->projectTrackerId,
-                        'dataProvider' => $dataProvider,
-                    ]);
+                    $version = $this->getVersion($versionData->projectTrackerId, $dataProvider);
 
                     if (null !== $version) {
                         $issue->addVersion($version);
@@ -283,13 +273,12 @@ class DataSynchronizationService
                     if (empty($epicTitle)) {
                         continue;
                     }
-                    $epic = $this->epicRepository->findOneBy(['title' => $epicTitle]);
+                    $epic = $this->getEpic($epicTitle);
 
                     if (null === $epic) {
                         $epic = new Epic();
                         $epic->setTitle($epicTitle);
                         $this->entityManager->persist($epic);
-                        $this->entityManager->flush();
                     }
 
                     $issue->addEpic($epic);
@@ -304,11 +293,11 @@ class DataSynchronizationService
             $startAt += $pagedIssueData->maxResults;
 
             $this->entityManager->flush();
-            $this->entityManager->clear();
+            $this->clear();
         } while ($startAt < $total);
 
         $this->entityManager->flush();
-        $this->entityManager->clear();
+        $this->clear();
     }
 
     /**
@@ -319,8 +308,6 @@ class DataSynchronizationService
      */
     public function syncWorklogsForProject(int $projectId, DataProvider $dataProvider, ?callable $progressCallback = null): void
     {
-        $dataProviderId = $dataProvider->getId();
-
         $service = $this->dataProviderService->getService($dataProvider);
 
         $project = $this->projectRepository->find($projectId);
@@ -358,17 +345,11 @@ class DataSynchronizationService
 
         $worklogData = $service->getWorklogDataCollection($projectTrackerId);
         $worklogsAdded = 0;
+        $worklogsCount = count($worklogData->worklogData);
         foreach ($worklogData->worklogData as $worklogDatum) {
-            $project = $this->projectRepository->find($projectId);
+            $project = $this->getProject($project);
 
-            if (!$project) {
-                throw new EconomicsException($this->translator->trans('exception.project_not_found'));
-            }
-
-            $issue = !empty($worklogDatum->projectTrackerIssueId) ? $this->issueRepository->findOneBy([
-                'projectTrackerId' => $worklogDatum->projectTrackerIssueId,
-                'dataProvider' => $dataProvider,
-            ]) : null;
+            $issue = $this->getIssue($worklogDatum->projectTrackerIssueId, $dataProvider);
 
             if (null === $issue) {
                 // A worklog should always have an issue, so ignore the worklog.
@@ -382,8 +363,6 @@ class DataSynchronizationService
 
             if (!$worklog) {
                 $worklog = new Worklog();
-
-                $dataProvider = $this->dataProviderRepository->find($dataProviderId);
 
                 $worklog->setDataProvider($dataProvider);
 
@@ -399,12 +378,8 @@ class DataSynchronizationService
                 ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
                 ->setTimeSpentSeconds($worklogDatum->timeSpentSeconds)
                 ->setIssue($issue)
-                ->setKind(BillableKindsEnum::tryFrom($worklogDatum->kind));
-
-            if (null != $worklog->getProjectTrackerIssueId()) {
-                $issue = $this->issueRepository->findOneBy(['projectTrackerId' => $worklog->getProjectTrackerIssueId()]);
-                $worklog->setIssue($issue);
-            }
+                ->setKind(BillableKindsEnum::tryFrom($worklogDatum->kind))
+                ->setIssue($issue);
 
             if (null === $worklog->isBilled()) {
                 $worklog->setIsBilled(false);
@@ -419,7 +394,7 @@ class DataSynchronizationService
             }
 
             if (null !== $progressCallback) {
-                $progressCallback($worklogsAdded, count($worklogData->worklogData));
+                $progressCallback($worklogsAdded, $worklogsCount);
 
                 ++$worklogsAdded;
             }
@@ -427,21 +402,13 @@ class DataSynchronizationService
             $workerEmail = $worklog->getWorker();
 
             if ($workerEmail && filter_var($workerEmail, FILTER_VALIDATE_EMAIL)) {
-                $worker = $this->workerRepository->findOneBy(['email' => $workerEmail]);
-
-                if (!$worker) {
-                    $worker = new Worker();
-                    $worker->setEmail($workerEmail);
-
-                    $this->entityManager->persist($worker);
-                    $this->entityManager->flush();
-                }
+                $this->getWorker($workerEmail);
             }
 
             // Flush and clear for each batch.
             if (0 === $worklogsAdded % self::BATCH_SIZE) {
                 $this->entityManager->flush();
-                $this->entityManager->clear();
+                $this->clear();
             }
         }
 
@@ -453,7 +420,7 @@ class DataSynchronizationService
         }
 
         $this->entityManager->flush();
-        $this->entityManager->clear();
+        $this->clear();
     }
 
     /**
@@ -553,5 +520,107 @@ class DataSynchronizationService
 
         // Save changes to the database
         $this->entityManager->flush();
+    }
+
+    private function getWorker(string $email): Worker
+    {
+        if (isset($this->workers[$email])) {
+            return $this->workers[$email];
+        }
+
+        $worker = $this->workerRepository->findOneBy([
+            'email' => $email,
+        ]);
+
+        if (null === $worker) {
+            $worker = new Worker();
+            $worker->setEmail($email);
+            $this->entityManager->persist($worker);
+        }
+
+        $this->workers[$email] = $worker;
+
+        return $worker;
+    }
+
+    private function getIssue(string $projectTrackerIssueId, DataProvider $dataProvider): ?Issue
+    {
+        if (isset($this->issues[$projectTrackerIssueId])) {
+            return $this->issues[$projectTrackerIssueId];
+        }
+
+        $issue = $this->issueRepository->findOneBy([
+            'projectTrackerId' => $projectTrackerIssueId,
+            'dataProvider' => $dataProvider,
+        ]);
+
+        $this->issues[$projectTrackerIssueId] = $issue;
+
+        return $issue;
+    }
+
+    private function getVersion(string $projectTrackerId, DataProvider $dataProvider): ?Version
+    {
+        if (isset($this->versions[$projectTrackerId])) {
+            return $this->versions[$projectTrackerId];
+        }
+
+        $version = $this->versionRepository->findOneBy([
+            'projectTrackerId' => $projectTrackerId,
+            'dataProvider' => $dataProvider,
+        ]);
+
+        $this->versions[$projectTrackerId] = $version;
+
+        return $version;
+    }
+
+    private function getEpic(string $title): ?Epic
+    {
+        if (isset($this->epics[$title])) {
+            return $this->epics[$title];
+        }
+
+        $epic = $this->epicRepository->findOneBy(['title' => $title]);
+
+        $this->epics[$title] = $epic;
+
+        return $epic;
+    }
+
+    private function getProject(Project $project): Project
+    {
+        if (!$this->entityManager->contains($project)) {
+            $project = $this->projectRepository->find($project->getId());
+        }
+
+        if (null === $project) {
+            throw new \RuntimeException('Project not found');
+        }
+
+        return $project;
+    }
+
+    private function getDataProvider(DataProvider $dataProvider): DataProvider
+    {
+        if (!$this->entityManager->contains($dataProvider)) {
+            $dataProvider = $this->dataProviderRepository->find($dataProvider->getId());
+        }
+
+        if (null === $dataProvider) {
+            throw new \RuntimeException('DataProvider not found');
+        }
+
+        return $dataProvider;
+    }
+
+    private function clear(): void
+    {
+        $this->workers = [];
+        $this->issues = [];
+        $this->versions = [];
+        $this->epics = [];
+
+        $this->entityManager->clear();
     }
 }
