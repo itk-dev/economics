@@ -238,8 +238,7 @@ class DataSynchronizationService
                     $this->entityManager->persist($issue);
                 }
                 if (!$issueDatum->worker) {
-                    $this->logger->error(sprintf('Issue %s worker is null', $issueDatum->projectTrackerId));
-                    continue;
+                    $this->logger->info(sprintf('Issue %s worker is null', $issueDatum->projectTrackerId));
                 }
                 $issue->setName($issueDatum->name);
                 $issue->setAccountId($issueDatum->accountId);

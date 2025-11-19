@@ -9,3 +9,16 @@ services:
       - NODE_ENV=development
     volumes:
       - ./:/app
+
+  phpfpm:
+    environment:
+      - PHP_MEMORY_LIMIT=512M
+      - PHP_MAX_EXECUTION_TIME=300
+
+  nginx:
+    environment:
+      NGINX_FASTCGI_READ_TIMEOUT: 300
+    labels:
+      # HTTPS config - uncomment to enable redirect from :80 to :443
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
