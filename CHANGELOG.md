@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Added JSON endpoint for retrieving agreements.
 * [PR-240](https://github.com/itk-dev/economics/pull/240)
   Fixes and optimizations for app:sync command
+* [PR-235](https://github.com/itk-dev/economics/pull/235)
+  Increased timeout of nginx.
+  Included archived issues in sync.
+  Template files updated.
 
 ## [2.9.4] - 2025-07-10
 
