@@ -33,7 +33,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class LeantimeApiService implements DataProviderInterface
 {
-    private const API_PATH_DATA = '/apidata/api/';
+    private const API_PATH_DATA = '/APIData/API/';
     public const PROJECTS = 'projects';
     public const MILESTONES = 'milestones';
     public const TICKETS = 'tickets';
