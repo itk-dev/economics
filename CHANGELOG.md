@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.1] - 2025-11-24
+
+* [PR-250](https://github.com/itk-dev/economics/pull/250)
+  hotfix dataprovider reference
+
 ## [2.10.0] - 2025-11-19
 
 * [PR-246](https://github.com/itk-dev/economics/pull/246)
@@ -509,7 +514,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.10.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/2.10.1...HEAD
+[2.10.1]: https://github.com/itk-dev/economics/compare/2.10.0...2.10.1
 [2.10.0]: https://github.com/itk-dev/economics/compare/2.9.4...2.10.0
 [2.9.4]: https://github.com/itk-dev/economics/compare/2.9.3...2.9.4
 [2.9.3]: https://github.com/itk-dev/economics/compare/2.9.2...2.9.3
