@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-250](https://github.com/itk-dev/economics/pull/250)
+  hotfix dataprovider reference
+
 ## [2.10.0] - 2025-11-19
 
 * [PR-246](https://github.com/itk-dev/economics/pull/246)

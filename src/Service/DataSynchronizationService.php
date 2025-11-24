@@ -348,6 +348,7 @@ class DataSynchronizationService
         $worklogsCount = count($worklogData->worklogData);
         foreach ($worklogData->worklogData as $worklogDatum) {
             $project = $this->getProject($project);
+            $dataProvider = $this->getDataProvider($dataProvider);
 
             $issue = $this->getIssue($worklogDatum->projectTrackerIssueId, $dataProvider);
 
