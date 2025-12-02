@@ -262,7 +262,7 @@ class LeantimeApiService implements DataProviderInterface
             $result->tags,
             $result->plannedHours,
             $result->remainingHours,
-            $result->worker,
+            $result->worker ?? '',
             $this->convertStatusToEnum($result->status),
             $this->getLeanDateTime($result->dueDate),
             $this->getLeanDateTime($result->resolutionDate),
