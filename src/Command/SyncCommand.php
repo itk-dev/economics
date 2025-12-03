@@ -40,6 +40,7 @@ class SyncCommand extends Command
         $this->addOption('versions', 's', InputOption::VALUE_NONE, 'Sync versions');
         $this->addOption('issues', 'i', InputOption::VALUE_NONE, 'Sync issues');
         $this->addOption('worklogs', 'w', InputOption::VALUE_NONE, 'Sync worklogs');
+        $this->addOption('workers', 'wo', InputOption::VALUE_NONE, 'Sync workers');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
