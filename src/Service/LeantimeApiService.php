@@ -6,6 +6,7 @@ use App\Entity\DataProvider;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\IssueStatusEnum;
 use App\Exception\NotAcceptableException;
@@ -38,6 +39,7 @@ class LeantimeApiService implements DataProviderInterface
     public const MILESTONES = 'milestones';
     public const TICKETS = 'tickets';
     public const TIMESHEETS = 'timesheets';
+    public const WORKERS = 'workers';
     private const LIMIT = 100;
     private const QUEUE_ASYNC = 'async';
     private const QUEUE_SYNC = 'sync';
@@ -58,6 +60,7 @@ class LeantimeApiService implements DataProviderInterface
         $this->update(Version::class, $asyncJobQueue, $modifiedAfter);
         $this->update(Issue::class, $asyncJobQueue, $modifiedAfter);
         $this->update(Worklog::class, $asyncJobQueue, $modifiedAfter);
+        $this->update(Worker::class, $asyncJobQueue, $modifiedAfter);
     }
 
     public function deleteAll(bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
@@ -171,6 +174,7 @@ class LeantimeApiService implements DataProviderInterface
             Version::class => self::MILESTONES,
             Issue::class => self::TICKETS,
             Worklog::class => self::TIMESHEETS,
+            Worker::class => self::WORKERS,
         };
 
         // Get data from Leantime.
