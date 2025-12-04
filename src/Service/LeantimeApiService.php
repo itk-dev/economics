@@ -112,6 +112,7 @@ class LeantimeApiService implements DataProviderInterface
             self::TICKETS,
             self::MILESTONES,
             self::PROJECTS,
+            self::WORKERS,
         ];
 
         $params = [
