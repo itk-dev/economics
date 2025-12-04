@@ -120,7 +120,7 @@ class LeantimeApiService implements DataProviderInterface
         ];
 
         // Get data from Leantime.
-        $data = $this->x($dataProvider, 'deleted', $params);
+        $data = $this->fetchFromLeantime($dataProvider, 'deleted', $params);
         $results = $data->results;
 
         // Queue delete.
