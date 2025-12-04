@@ -18,10 +18,12 @@ use App\Message\LeantimeUpdateMessage;
 use App\Message\UpsertIssueMessage;
 use App\Message\UpsertProjectMessage;
 use App\Message\UpsertVersionMessage;
+use App\Message\UpsertWorkerMessage;
 use App\Message\UpsertWorklogMessage;
 use App\Model\DataProvider\DataProviderIssueData;
 use App\Model\DataProvider\DataProviderProjectData;
 use App\Model\DataProvider\DataProviderVersionData;
+use App\Model\DataProvider\DataProviderWorkerData;
 use App\Model\DataProvider\DataProviderWorklogData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
@@ -74,7 +76,7 @@ class LeantimeApiService implements DataProviderInterface
 
         foreach ($dataProviders as $dataProvider) {
             $projectTrackerProjectIds = match ($className) {
-                Project::class => null,
+                Project::class, Worker::class => null,
                 default => $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]),
             };
 
@@ -118,7 +120,7 @@ class LeantimeApiService implements DataProviderInterface
         ];
 
         // Get data from Leantime.
-        $data = $this->fetchFromLeantime($dataProvider, 'deleted', $params);
+        $data = $this->x($dataProvider, 'deleted', $params);
         $results = $data->results;
 
         // Queue delete.
@@ -132,6 +134,7 @@ class LeantimeApiService implements DataProviderInterface
                 self::MILESTONES => Version::class,
                 self::TICKETS => Issue::class,
                 self::TIMESHEETS => Worklog::class,
+                self::WORKERS => Worker::class,
             };
 
             foreach ($results->{$type} as $result) {
@@ -212,6 +215,7 @@ class LeantimeApiService implements DataProviderInterface
                 Version::class => new UpsertVersionMessage($this->getVersionUpsertFromResult($data, $dataProviderId, $fetchDate)),
                 Issue::class => new UpsertIssueMessage($this->getIssueUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
                 Worklog::class => new UpsertWorklogMessage($this->getWorklogUpsertFromResult($data, $dataProviderId, $fetchDate)),
+                Worker::class => new UpsertWorkerMessage($this->getWorkerUpsertFromResult($data, $dataProviderId, $fetchDate)),
                 default => null,
             };
         } catch (\Exception $e) {
@@ -295,6 +299,15 @@ class LeantimeApiService implements DataProviderInterface
             $result->kind,
             $fetchDate,
             $this->getLeanDateTime($result->modified),
+        );
+    }
+
+    private function getWorkerUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): DataProviderWorkerData
+    {
+        return new DataProviderWorkerData(
+            $result->id,
+            $result->name,
+            $result->email,
         );
     }
 
