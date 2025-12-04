@@ -17,6 +17,10 @@ services:
       timeout: 3s
       retries: 30
 
+  nginx:
+    environment:
+      NGINX_FASTCGI_READ_TIMEOUT: 300
+
   supervisor:
     image: itkdev/supervisor-php8.3:alpine
     restart: unless-stopped
