@@ -43,6 +43,7 @@ class HourReportController extends AbstractController
         $version = null;
 
         $requestData = $request->query->all('hour_report');
+
         if (!empty($requestData['dataProvider'])) {
             $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
         } elseif (null !== $this->defaultDataProvider) {
