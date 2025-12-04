@@ -6,17 +6,20 @@ use App\Entity\DataProvider;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
 use App\Exception\NotFoundException;
 use App\Model\DataProvider\DataProviderIssueData;
 use App\Model\DataProvider\DataProviderProjectData;
 use App\Model\DataProvider\DataProviderVersionData;
+use App\Model\DataProvider\DataProviderWorkerData;
 use App\Model\DataProvider\DataProviderWorklogData;
 use App\Repository\DataProviderRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
+use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerExceptionInterface;
@@ -38,6 +41,7 @@ class DataProviderService
         private readonly WorklogRepository $worklogRepository,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly VersionRepository $versionRepository,
+        private readonly WorkerRepository $workerRepository,
         private readonly ContainerInterface $transportLocator,
         private readonly LoggerInterface $logger,
         protected readonly float $weekGoalLow,
@@ -204,6 +208,24 @@ class DataProviderService
         $this->entityManager->flush();
     }
 
+    public function upsertWorker(DataProviderWorkerData $upsertWorkerData): void
+    {
+        $worker = $this->getWorker($upsertWorkerData->email);
+
+        if (!$worker) {
+            $worker = new Worker();
+            $worker->setEmail($upsertWorkerData->email);
+            $worker->setName($upsertWorkerData->name);
+            $this->entityManager->persist($worker);
+        } else {
+            if (empty($worker->getName())) {
+                $worker->setName($upsertWorkerData->name);
+            }
+        }
+
+        $this->entityManager->flush();
+    }
+
     private function getDataProvider(int $id): DataProvider
     {
         $dataProvider = $this->dataProviderRepository->find($id);
@@ -244,6 +266,13 @@ class DataProviderService
         return $this->worklogRepository->findOneBy([
             'worklogId' => $projectTrackerId,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    private function getWorker(string $email): ?Worker
+    {
+        return $this->workerRepository->findOneBy([
+            'email' => $email,
         ]);
     }
 
