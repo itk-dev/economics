@@ -129,9 +129,6 @@ class HourReportType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => HourReportFormData::class,
-            'data_provider' => null,
-            'project' => null,
-            'version' => null,
         ])
             ->setRequired('data_provider')
             ->setRequired('project')
