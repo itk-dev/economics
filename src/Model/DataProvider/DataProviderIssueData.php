@@ -14,7 +14,7 @@ class DataProviderIssueData
         public array $epics,
         public float $plannedHours,
         public float $remainingHours,
-        public string $worker,
+        public ?string $worker,
         public IssueStatusEnum $status,
         public ?\DateTimeInterface $dueDate,
         public ?\DateTimeInterface $resolutionDate,

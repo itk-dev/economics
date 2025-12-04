@@ -11,11 +11,6 @@ services:
       - "RABBITMQ_DEFAULT_PASS=password"
       - "RABBITMQ_ERLANG_COOKIE=d53f319cd7376f8f840aaf9889f315ab"
 
-  nginx:
-    labels:
-      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-
   node:
     image: node:20
     command: npm run watch
@@ -26,3 +21,11 @@ services:
       - NODE_ENV=development
     volumes:
       - ./:/app
+
+  nginx:
+    environment:
+      NGINX_FASTCGI_READ_TIMEOUT: 300
+    labels:
+      # HTTPS config - uncomment to enable redirect from :80 to :443
+      - "traefik.http.routers.${COMPOSE_PROJECT_NAME}.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"

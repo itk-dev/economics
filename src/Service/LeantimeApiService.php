@@ -6,6 +6,7 @@ use App\Entity\DataProvider;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\IssueStatusEnum;
 use App\Exception\NotAcceptableException;
@@ -17,10 +18,12 @@ use App\Message\LeantimeUpdateMessage;
 use App\Message\UpsertIssueMessage;
 use App\Message\UpsertProjectMessage;
 use App\Message\UpsertVersionMessage;
+use App\Message\UpsertWorkerMessage;
 use App\Message\UpsertWorklogMessage;
 use App\Model\DataProvider\DataProviderIssueData;
 use App\Model\DataProvider\DataProviderProjectData;
 use App\Model\DataProvider\DataProviderVersionData;
+use App\Model\DataProvider\DataProviderWorkerData;
 use App\Model\DataProvider\DataProviderWorklogData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
@@ -38,6 +41,7 @@ class LeantimeApiService implements DataProviderInterface
     public const MILESTONES = 'milestones';
     public const TICKETS = 'tickets';
     public const TIMESHEETS = 'timesheets';
+    public const WORKERS = 'workers';
     private const LIMIT = 100;
     private const QUEUE_ASYNC = 'async';
     private const QUEUE_SYNC = 'sync';
@@ -58,6 +62,7 @@ class LeantimeApiService implements DataProviderInterface
         $this->update(Version::class, $asyncJobQueue, $modifiedAfter);
         $this->update(Issue::class, $asyncJobQueue, $modifiedAfter);
         $this->update(Worklog::class, $asyncJobQueue, $modifiedAfter);
+        $this->update(Worker::class, $asyncJobQueue, $modifiedAfter);
     }
 
     public function deleteAll(bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null): void
@@ -71,7 +76,7 @@ class LeantimeApiService implements DataProviderInterface
 
         foreach ($dataProviders as $dataProvider) {
             $projectTrackerProjectIds = match ($className) {
-                Project::class => null,
+                Project::class, Worker::class => null,
                 default => $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]),
             };
 
@@ -107,6 +112,7 @@ class LeantimeApiService implements DataProviderInterface
             self::TICKETS,
             self::MILESTONES,
             self::PROJECTS,
+            self::WORKERS,
         ];
 
         $params = [
@@ -129,6 +135,7 @@ class LeantimeApiService implements DataProviderInterface
                 self::MILESTONES => Version::class,
                 self::TICKETS => Issue::class,
                 self::TIMESHEETS => Worklog::class,
+                self::WORKERS => Worker::class,
             };
 
             foreach ($results->{$type} as $result) {
@@ -171,6 +178,7 @@ class LeantimeApiService implements DataProviderInterface
             Version::class => self::MILESTONES,
             Issue::class => self::TICKETS,
             Worklog::class => self::TIMESHEETS,
+            Worker::class => self::WORKERS,
         };
 
         // Get data from Leantime.
@@ -208,6 +216,7 @@ class LeantimeApiService implements DataProviderInterface
                 Version::class => new UpsertVersionMessage($this->getVersionUpsertFromResult($data, $dataProviderId, $fetchDate)),
                 Issue::class => new UpsertIssueMessage($this->getIssueUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl)),
                 Worklog::class => new UpsertWorklogMessage($this->getWorklogUpsertFromResult($data, $dataProviderId, $fetchDate)),
+                Worker::class => new UpsertWorkerMessage($this->getWorkerUpsertFromResult($data, $dataProviderId, $fetchDate)),
                 default => null,
             };
         } catch (\Exception $e) {
@@ -291,6 +300,15 @@ class LeantimeApiService implements DataProviderInterface
             $result->kind,
             $fetchDate,
             $this->getLeanDateTime($result->modified),
+        );
+    }
+
+    private function getWorkerUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): DataProviderWorkerData
+    {
+        return new DataProviderWorkerData(
+            $result->id,
+            $result->name,
+            $result->email,
         );
     }
 

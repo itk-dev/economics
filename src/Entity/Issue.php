@@ -73,7 +73,7 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dueDate = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $worker = null;
 
     #[ORM\Column(length: 255)]
@@ -356,7 +356,7 @@ class Issue extends AbstractBaseEntity
         return $this->worker;
     }
 
-    public function setWorker(string $worker): self
+    public function setWorker(?string $worker): self
     {
         $this->worker = $worker;
 

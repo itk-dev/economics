@@ -8,10 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.0.0] - 2025-11-14
-
+* [PR-252](https://github.com/itk-dev/economics/pull/252)
+  Added support for new workers endpoint.
+* [PR-253](https://github.com/itk-dev/economics/pull/253)
+  Made worker optional on issue entity.
 * [PR-242](https://github.com/itk-dev/economics/pull/242)
   Changed Leantime data provider to use apidata plugin instead of leantime api.
+
+## [2.10.1] - 2025-11-24
+
+* [PR-250](https://github.com/itk-dev/economics/pull/250)
+  hotfix dataprovider reference
+
+## [2.10.0] - 2025-11-19
+
 * [PR-246](https://github.com/itk-dev/economics/pull/246)
   Minor api adjustments.
 * [PR-243](https://github.com/itk-dev/economics/pull/243)
@@ -19,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Added JSON endpoint for retrieving agreements.
 * [PR-240](https://github.com/itk-dev/economics/pull/240)
   Fixes and optimizations for app:sync command
+* [PR-235](https://github.com/itk-dev/economics/pull/235)
+  Increased timeout of nginx.
+  Included archived issues in sync.
+  Template files updated.
 
 ## [2.9.4] - 2025-07-10
 
