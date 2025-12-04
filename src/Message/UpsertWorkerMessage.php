@@ -8,7 +8,6 @@ readonly class UpsertWorkerMessage
 {
     public function __construct(
         public DataProviderWorkerData $workerData,
-    )
-    {
+    ) {
     }
 }
