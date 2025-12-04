@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Service\LeantimeApiService;
 use Psr\Log\LoggerInterface;
@@ -88,6 +89,11 @@ class SyncCommand extends Command
         if ($input->getOption('worklogs')) {
             $io->info('Syncing worklogs.');
             $this->leantimeApiService->update(Worklog::class, $jobHandling, $modifiedAfter);
+        }
+
+        if ($input->getOption('workers')) {
+            $io->info('Syncing workers.');
+            $this->leantimeApiService->update(Worker::class, $jobHandling, $modifiedAfter);
         }
 
         // Call monitoring url if defined.
