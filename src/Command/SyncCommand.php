@@ -5,14 +5,17 @@ namespace App\Command;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Service\LeantimeApiService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
     name: 'app:data-providers:sync',
@@ -22,6 +25,9 @@ class SyncCommand extends Command
 {
     public function __construct(
         private readonly LeantimeApiService $leantimeApiService,
+        private readonly string $monitoringUrl,
+        private readonly HttpClientInterface $client,
+        private readonly LoggerInterface $logger,
     ) {
         parent::__construct($this->getName());
     }
@@ -83,6 +89,20 @@ class SyncCommand extends Command
         if ($input->getOption('worklogs')) {
             $io->info('Syncing worklogs.');
             $this->leantimeApiService->update(Worklog::class, $jobHandling, $modifiedAfter);
+        }
+
+        if ($input->getOption('workers')) {
+            $io->info('Syncing workers.');
+            $this->leantimeApiService->update(Worker::class, $jobHandling, $modifiedAfter);
+        }
+
+        // Call monitoring url if defined.
+        if ('' !== $this->monitoringUrl) {
+            try {
+                $this->client->request('GET', $this->monitoringUrl);
+            } catch (\Throwable $e) {
+                $this->logger->error('Error calling monitoringUrl: '.$e->getMessage());
+            }
         }
 
         return Command::SUCCESS;
