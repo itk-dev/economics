@@ -54,6 +54,7 @@ class HourReportType extends AbstractType
                 'required' => false,
                 'query_builder' => function (ProjectRepository $projectRepository) use ($options) {
                     $query = $projectRepository->getIncluded();
+
                     if (null !== $options['data_provider']) {
                         $query->where('project.dataProvider = :dataProvider')->setParameter('dataProvider', $options['data_provider']);
                     }
@@ -128,6 +129,9 @@ class HourReportType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => HourReportFormData::class,
+            'data_provider' => null,
+            'project' => null,
+            'version' => null,
         ])
             ->setRequired('data_provider')
             ->setRequired('project')
