@@ -18,7 +18,6 @@
         "mpdf/mpdf": "^8.2.5",
         "openspout/openspout": "^4.23",
         "phpoffice/phpspreadsheet": "^1.30",
-        "robrichards/xmlseclibs": "^3.1.4",
         "setasign/fpdi": "^2.6.4",
         "stof/doctrine-extensions-bundle": "^1.7",
         "symfony/amqp-messenger": "~6.4.0",
