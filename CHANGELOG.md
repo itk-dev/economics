@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-255](https://github.com/itk-dev/economics/pull/255)
+  Minor synchronization adjustments.
 * [PR-252](https://github.com/itk-dev/economics/pull/252)
   Added support for new workers endpoint.
 * [PR-253](https://github.com/itk-dev/economics/pull/253)

@@ -174,7 +174,7 @@ class DataProviderService
         $issue = $this->getIssue($upsertWorklogData->projectTrackerIssueId, $dataProvider);
 
         if (null === $issue) {
-            throw new NotFoundException('Issue not found');
+            throw new NotFoundException('Issue with projectTrackerId '.$upsertWorklogData->projectTrackerIssueId.' was not found.');
         }
 
         $worklog = $this->getWorklog($upsertWorklogData->projectTrackerId, $dataProvider);
