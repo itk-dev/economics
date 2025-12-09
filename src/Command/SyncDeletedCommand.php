@@ -36,7 +36,7 @@ class SyncDeletedCommand extends Command
         $deletedAfter = new \DateTime();
         $deletedAfter->sub(new \DateInterval($interval));
 
-        $this->leantimeApiService->updateAll(true, $deletedAfter);
+        $this->leantimeApiService->deleteAll(false, $deletedAfter);
 
         return Command::SUCCESS;
     }
