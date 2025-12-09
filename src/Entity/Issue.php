@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Trait\DataProviderTrait;
+use App\Entity\Trait\SynchronizedEntityTrait;
 use App\Enum\IssueStatusEnum;
 use App\Repository\IssueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,6 +19,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Issue extends AbstractBaseEntity
 {
     use DataProviderTrait;
+    use SynchronizedEntityTrait;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -71,7 +73,7 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dueDate = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $worker = null;
 
     #[ORM\Column(length: 255)]
@@ -354,7 +356,7 @@ class Issue extends AbstractBaseEntity
         return $this->worker;
     }
 
-    public function setWorker(string $worker): self
+    public function setWorker(?string $worker): self
     {
         $this->worker = $worker;
 

@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Issue;
+use App\Entity\Worklog;
+use App\Exception\NotAcceptableException;
 use App\Form\PlanningType;
 use App\Model\Planning\PlanningFormData;
 use App\Repository\ProjectRepository;
-use App\Service\DataSynchronizationService;
+use App\Service\LeantimeApiService;
 use App\Service\PlanningService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -73,7 +76,7 @@ class PlanningController extends AbstractController
     }
 
     #[Route('/sync-issues', name: 'app_planning_issues_sync', methods: ['POST'])]
-    public function syncAllIssues(Request $request, DataSynchronizationService $dataSynchronizationService, ProjectRepository $projectRepository): Response
+    public function syncAllIssues(Request $request, LeantimeApiService $leantimeApiService, ProjectRepository $projectRepository): Response
     {
         $projectId = $request->query->get('id');
 
@@ -82,9 +85,13 @@ class PlanningController extends AbstractController
         }
 
         $project = $projectRepository->find($projectId);
-
         if (null === $project) {
-            throw new BadRequestHttpException('Project not found');
+            throw new NotFoundHttpException('Project not found');
+        }
+
+        $projectTrackerId = $project->getProjectTrackerId();
+        if (null == $projectTrackerId) {
+            throw new NotAcceptableException('Project.projectTrackerId is null');
         }
 
         $dataProvider = $project->getDataProvider();
@@ -92,12 +99,17 @@ class PlanningController extends AbstractController
             throw new NotFoundHttpException('Project data provider not set');
         }
 
-        $issuesSynced = 0;
-        $dataSynchronizationService->syncIssuesForProject((int) $projectId, $dataProvider, function () use (&$issuesSynced) {
-            ++$issuesSynced;
-        });
+        $dataProviderId = $dataProvider->getId();
+        if (null === $dataProviderId) {
+            throw new NotFoundHttpException('Project data provider id not set');
+        }
 
-        return new JsonResponse(['issuesSynced' => $issuesSynced], 200);
+        if (LeantimeApiService::class === $dataProvider->getClass()) {
+            $leantimeApiService->updateAsJob(Issue::class, 0, 100, $dataProviderId, [$projectTrackerId]);
+            $leantimeApiService->updateAsJob(Worklog::class, 0, 100, $dataProviderId, [$projectTrackerId]);
+        }
+
+        return new Response('Sync done.', 200);
     }
 
     private function createResponse(string $mode, array $data): Response

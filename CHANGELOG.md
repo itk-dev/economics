@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-255](https://github.com/itk-dev/economics/pull/255)
+  Minor synchronization adjustments.
+* [PR-252](https://github.com/itk-dev/economics/pull/252)
+  Added support for new workers endpoint.
+* [PR-253](https://github.com/itk-dev/economics/pull/253)
+  Made worker optional on issue entity.
+* [PR-242](https://github.com/itk-dev/economics/pull/242)
+  Changed Leantime data provider to use apidata plugin instead of leantime api.
+
 ## [2.10.1] - 2025-11-24
 
 * [PR-250](https://github.com/itk-dev/economics/pull/250)
@@ -514,9 +523,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.10.1...HEAD
-[2.10.1]: https://github.com/itk-dev/economics/compare/2.10.0...2.10.1
-[2.10.0]: https://github.com/itk-dev/economics/compare/2.9.4...2.10.0
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/itk-dev/economics/compare/2.9.4...3.0.0
 [2.9.4]: https://github.com/itk-dev/economics/compare/2.9.3...2.9.4
 [2.9.3]: https://github.com/itk-dev/economics/compare/2.9.2...2.9.3
 [2.9.2]: https://github.com/itk-dev/economics/compare/2.9.0...2.9.2
