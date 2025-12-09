@@ -112,7 +112,6 @@ class LeantimeApiService implements DataProviderInterface
             self::TICKETS,
             self::MILESTONES,
             self::PROJECTS,
-            self::WORKERS,
         ];
 
         $params = [
@@ -135,7 +134,6 @@ class LeantimeApiService implements DataProviderInterface
                 self::MILESTONES => Version::class,
                 self::TICKETS => Issue::class,
                 self::TIMESHEETS => Worklog::class,
-                self::WORKERS => Worker::class,
             };
 
             foreach ($results->{$type} as $result) {
