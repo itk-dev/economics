@@ -25,18 +25,22 @@ class SyncDeletedCommand extends Command
 
     protected function configure(): void
     {
+        $this->addOption('job', 'j', InputOption::VALUE_NONE, 'Use async job handling');
         $this->addOption('interval', 'i', InputOption::VALUE_OPTIONAL, 'Only consider items deleted within the specified interval. See https://www.php.net/manual/en/dateinterval.construct.php for format.', 'PT1H');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $interval = $input->getOption('interval');
+        $jobHandling = $input->getOption('job') ?? false;
 
         // Look at entries modified within the last hour.
         $deletedAfter = new \DateTime();
         $deletedAfter->sub(new \DateInterval($interval));
 
-        $this->leantimeApiService->deleteAll(false, $deletedAfter);
+
+
+        $this->leantimeApiService->deleteAll($jobHandling, $deletedAfter);
 
         return Command::SUCCESS;
     }
