@@ -14,7 +14,7 @@ class PlanningType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        [$currentYear, $nextYear] = $options['years'];
+        [$lastYear, $currentYear, $nextYear] = $options['years'];
 
         $builder
             ->add('year', ChoiceType::class, [
@@ -25,7 +25,7 @@ class PlanningType extends AbstractType
                 'row_attr' => ['class' => 'form-row'],
                 'required' => false,
                 'empty_data' => $currentYear,
-                'choices' => [$currentYear => $currentYear, $nextYear => $nextYear],
+                'choices' => [$lastYear => $lastYear, $currentYear => $currentYear, $nextYear => $nextYear],
                 'placeholder' => null,
             ])
             ->add('group', EntityType::class, [
