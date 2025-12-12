@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-265](https://github.com/itk-dev/economics/pull/256)
   Add next year as an option for the planning overview.
+* [PR-252](https://github.com/itk-dev/economics/pull/252)
+  Added support for new workers endpoint.
+* [PR-253](https://github.com/itk-dev/economics/pull/253)
+  Made worker optional on issue entity.
+* [PR-242](https://github.com/itk-dev/economics/pull/242)
+  Changed Leantime data provider to use apidata plugin instead of leantime api.
 
 ## [2.10.1] - 2025-11-24
 

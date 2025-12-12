@@ -7,11 +7,6 @@ imports:
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    app.jira_custom_fields:
-        'Epic Link': '%env(JIRA_API_SERVICE_CUSTOM_FIELD_EPIC_LINK)%'
-        'Account': '%env(JIRA_API_SERVICE_CUSTOM_FIELD_ACCOUNT)%'
-        'Sprint': '%env(JIRA_API_SERVICE_CUSTOM_FIELD_SPRINT)%'
-
 
 services:
     # default configuration for services in *this* file
@@ -33,18 +28,13 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-            - '../src/Service/JiraApiService.php'
-            - '../src/Service/LeantimeApiService.php'
 
     App\Service\DataProviderService:
         arguments:
-            $customFieldMappings: '%app.jira_custom_fields%'
-            $defaultBoard: '%env(JIRA_API_SERVICE_DEFAULT_BOARD)%'
             $weekGoalLow: '%env(float:APP_WEEK_GOAL_LOW)%'
             $weekGoalHigh: '%env(float:APP_WEEK_GOAL_HIGH)%'
             $sprintNameRegex: '%env(API_SERVICE_SPRINT_NAME_REGEX)%'
-            $httpClientRetryDelayMs: '%env(int:APP_HTTP_CLIENT_RETRY_DELAY_MS)%'
-            $httpClientMaxRetries: '%env(int:APP_HTTP_CLIENT_MAX_RETRIES)%'
+            $transportLocator: '@messenger.receiver_locator'
 
     App\Service\ClientHelper:
         arguments:
@@ -70,10 +60,6 @@ services:
     App\Service\SubscriptionHandlerService:
         arguments:
             $emailFromAddress: '%env(string:EMAIL_FROM_ADDRESS)%'
-
-    App\MessageHandler\SynchronizeHandler:
-        arguments:
-            $monitoringUrl: '%env(string:SYNC_MONITORING_URL)%'
 
     App\Command\SyncCommand:
         arguments:
