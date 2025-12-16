@@ -95,13 +95,11 @@ class WorkloadReportServiceTest extends TestCase
         $workerMock2->method('getId')->willReturn(22);
         $workerMock2->method('getIncludeInReports')->willReturn(true);
 
-
         $workerMock3 = $this->createMock(Worker::class);
         $workerMock3->method('getUserIdentifier')->willReturn('');
         $workerMock3->method('getWorkload')->willReturn(20.0);
         $workerMock3->method('getId')->willReturn(23);
         $workerMock3->method('getIncludeInReports')->willReturn(true);
-
 
         $worklogMock1 = $this->createMock(Worklog::class);
         $worklogMock1->method('getTimeSpentSeconds')->willReturn(36000);
