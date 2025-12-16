@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-258](https://github.com/itk-dev/economics/pull/258)
+  Skip excluded workers from workload report.
 * [PR-265](https://github.com/itk-dev/economics/pull/256)
   Add next year as an option for the planning overview.
 * [PR-252](https://github.com/itk-dev/economics/pull/252)
