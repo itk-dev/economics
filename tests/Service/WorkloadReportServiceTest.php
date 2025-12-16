@@ -87,16 +87,21 @@ class WorkloadReportServiceTest extends TestCase
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');
         $workerMock1->method('getWorkload')->willReturn(40.0);
         $workerMock1->method('getId')->willReturn(21);
+        $workerMock1->method('getIncludeInReports')->willReturn(true);
 
         $workerMock2 = $this->createMock(Worker::class);
         $workerMock2->method('getUserIdentifier')->willReturn('test1@test');
         $workerMock2->method('getWorkload')->willReturn(30.0);
         $workerMock2->method('getId')->willReturn(22);
+        $workerMock2->method('getIncludeInReports')->willReturn(true);
+
 
         $workerMock3 = $this->createMock(Worker::class);
         $workerMock3->method('getUserIdentifier')->willReturn('');
         $workerMock3->method('getWorkload')->willReturn(20.0);
         $workerMock3->method('getId')->willReturn(23);
+        $workerMock3->method('getIncludeInReports')->willReturn(true);
+
 
         $worklogMock1 = $this->createMock(Worklog::class);
         $worklogMock1->method('getTimeSpentSeconds')->willReturn(36000);
@@ -143,16 +148,19 @@ class WorkloadReportServiceTest extends TestCase
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');
         $workerMock1->method('getWorkload')->willReturn(40.0);
         $workerMock1->method('getId')->willReturn(21);
+        $workerMock1->method('getIncludeInReports')->willReturn(true);
 
         $workerMock2 = $this->createMock(Worker::class);
         $workerMock2->method('getUserIdentifier')->willReturn('test1@test');
         $workerMock2->method('getWorkload')->willReturn(30.0);
         $workerMock2->method('getId')->willReturn(22);
+        $workerMock2->method('getIncludeInReports')->willReturn(true);
 
         $workerMock3 = $this->createMock(Worker::class);
         $workerMock3->method('getUserIdentifier')->willReturn('test2@test');
         $workerMock3->method('getWorkload')->willReturn(null);
         $workerMock3->method('getId')->willReturn(23);
+        $workerMock3->method('getIncludeInReports')->willReturn(true);
 
         $worklogMock1 = $this->createMock(Worklog::class);
         $worklogMock1->method('getTimeSpentSeconds')->willReturn(36000);
