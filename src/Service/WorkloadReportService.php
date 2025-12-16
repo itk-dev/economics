@@ -51,6 +51,10 @@ class WorkloadReportService
         }
 
         foreach ($workers as $worker) {
+            $workerIncludedInReports = $worker->getIncludeInReports();
+            if (!$workerIncludedInReports) {
+                continue;
+            }
             $workloadReportWorker = new WorkloadReportWorker();
             $workloadReportWorker->setEmail($worker->getUserIdentifier());
             $workloadReportWorker->setWorkload($worker->getWorkload());
