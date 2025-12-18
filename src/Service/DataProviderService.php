@@ -155,6 +155,8 @@ class DataProviderService
         $issue->setProject($project);
         $issue->setProjectTrackerId($upsertIssueData->projectTrackerId);
         $issue->setProjectTrackerKey($upsertIssueData->projectTrackerId);
+        $issue->setEpicKey(implode(',', $upsertIssueData->epics));
+        $issue->setEpicName(implode(',', $upsertIssueData->epics));
         $issue->setResolutionDate($upsertIssueData->resolutionDate);
         $issue->setStatus($upsertIssueData->status);
         $issue->setPlanHours($upsertIssueData->plannedHours);
