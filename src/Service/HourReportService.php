@@ -10,6 +10,7 @@ use App\Model\Reports\HourReportData;
 use App\Model\Reports\HourReportProjectTag;
 use App\Model\Reports\HourReportProjectTicket;
 use App\Model\Reports\HourReportWorklog;
+use App\Repository\EpicRepository;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 
@@ -18,6 +19,7 @@ class HourReportService
     public function __construct(
         private readonly IssueRepository $issueRepository,
         private readonly WorklogRepository $worklogRepository,
+        private readonly EpicRepository $epicRepository,
     ) {
     }
 
@@ -59,7 +61,9 @@ class HourReportService
 
             $projectTicket->timesheets->add($timesheets);
 
-            $issueEpicName = $issue->getEpicName() ?? '';
+            $epics = $issue->getEpics();
+            // There should only be one tag per issue, but in case of multiple, we comma separate them in the list.
+            $issueEpicName = $epics->isEmpty() ? '' : implode(', ', $epics->map(fn($epic) => $epic->getTitle())->toArray());
 
             if ($hourReportData->projectTags->containsKey($issueEpicName)) {
                 $projectTag = $hourReportData->projectTags->get((string) $issueEpicName);
