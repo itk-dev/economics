@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-259](https://github.com/itk-dev/economics/pull/259)
+  Attach epics to issues during sync.
 * [PR-258](https://github.com/itk-dev/economics/pull/258)
   Skip excluded workers from workload report.
 * [PR-265](https://github.com/itk-dev/economics/pull/256)
