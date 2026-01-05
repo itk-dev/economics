@@ -45,7 +45,7 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $epicName = null;
 
-    #[ORM\ManyToMany(targetEntity: Epic::class, inversedBy: 'issues')]
+    #[ORM\ManyToMany(targetEntity: Epic::class, inversedBy: 'issues', cascade: ['persist'])]
     private Collection $epics;
 
     #[ORM\ManyToMany(targetEntity: Version::class, inversedBy: 'issues')]
