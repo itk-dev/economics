@@ -161,7 +161,6 @@ class DataProviderService
         $issue->setProjectTrackerKey($upsertIssueData->projectTrackerId);
 
         foreach ($upsertIssueData->epics as $epicTitle) {
-
             if (empty($epicTitle)) {
                 continue;
             }
