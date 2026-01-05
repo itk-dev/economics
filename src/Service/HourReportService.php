@@ -10,7 +10,6 @@ use App\Model\Reports\HourReportData;
 use App\Model\Reports\HourReportProjectTag;
 use App\Model\Reports\HourReportProjectTicket;
 use App\Model\Reports\HourReportWorklog;
-use App\Repository\EpicRepository;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 
@@ -19,7 +18,6 @@ class HourReportService
     public function __construct(
         private readonly IssueRepository $issueRepository,
         private readonly WorklogRepository $worklogRepository,
-        private readonly EpicRepository $epicRepository,
     ) {
     }
 
