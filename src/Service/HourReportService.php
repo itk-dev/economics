@@ -61,7 +61,7 @@ class HourReportService
 
             $epics = $issue->getEpics();
             // There should only be one tag per issue, but in case of multiple, we comma separate them in the list.
-            $issueEpicName = $epics->isEmpty() ? '' : implode(', ', $epics->map(fn($epic) => $epic->getTitle())->toArray());
+            $issueEpicName = $epics->isEmpty() ? '' : implode(', ', $epics->map(fn ($epic) => $epic->getTitle())->toArray());
 
             if ($hourReportData->projectTags->containsKey($issueEpicName)) {
                 $projectTag = $hourReportData->projectTags->get((string) $issueEpicName);
