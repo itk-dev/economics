@@ -40,7 +40,7 @@ class WorkloadReportService
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
         }
-        $workers = $this->workerRepository->findAll();
+        $workers = $this->workerRepository->findBy(["includeInReports" => true]);
         $periods = $this->getPeriods($viewPeriodType, $year);
         $periodSums = [];
         $periodCounts = [];
@@ -51,10 +51,6 @@ class WorkloadReportService
         }
 
         foreach ($workers as $worker) {
-            $workerIncludedInReports = $worker->getIncludeInReports();
-            if (!$workerIncludedInReports) {
-                continue;
-            }
             $workloadReportWorker = new WorkloadReportWorker();
             $workloadReportWorker->setEmail($worker->getUserIdentifier());
             $workloadReportWorker->setWorkload($worker->getWorkload());
