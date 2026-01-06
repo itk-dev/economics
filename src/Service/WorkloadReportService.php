@@ -40,7 +40,7 @@ class WorkloadReportService
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
         }
-        $workers = $this->workerRepository->findBy(["includeInReports" => true]);
+        $workers = $this->workerRepository->findBy(['includeInReports' => true]);
         $periods = $this->getPeriods($viewPeriodType, $year);
         $periodSums = [];
         $periodCounts = [];
