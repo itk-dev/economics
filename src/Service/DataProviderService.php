@@ -35,7 +35,6 @@ class DataProviderService
         LeantimeApiService::class,
     ];
     public const SECONDS_IN_HOUR = 60 * 60;
-    private array $epics = [];
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -164,7 +163,7 @@ class DataProviderService
             if (empty($epicTitle)) {
                 continue;
             }
-            $epic = $this->getEpic($epicTitle);
+            $epic = $this->epicRepository->findOneBy(['title' => $epicTitle]);
 
             if (null === $epic) {
                 $epic = new Epic();
@@ -487,18 +486,5 @@ class DataProviderService
         }
 
         $this->entityManager->flush();
-    }
-
-    private function getEpic(string $title): ?Epic
-    {
-        if (isset($this->epics[$title])) {
-            return $this->epics[$title];
-        }
-
-        $epic = $this->epicRepository->findOneBy(['title' => $title]);
-
-        $this->epics[$title] = $epic;
-
-        return $epic;
     }
 }
