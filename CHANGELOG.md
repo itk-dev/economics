@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-262](https://github.com/itk-dev/economics/pull/262)
+  Fixed includedProjects query.
+
 ## [2.10.2] - 2025-12-11
 
 * [PR-265](https://github.com/itk-dev/economics/pull/256)
