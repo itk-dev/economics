@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\DataProvider;
+use App\Entity\Epic;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
