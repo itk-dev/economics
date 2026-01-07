@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\DataProvider;
+use App\Entity\Epic;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
@@ -16,6 +17,7 @@ use App\Model\DataProvider\DataProviderVersionData;
 use App\Model\DataProvider\DataProviderWorkerData;
 use App\Model\DataProvider\DataProviderWorklogData;
 use App\Repository\DataProviderRepository;
+use App\Repository\EpicRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
@@ -42,6 +44,7 @@ class DataProviderService
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly VersionRepository $versionRepository,
         private readonly WorkerRepository $workerRepository,
+        private readonly EpicRepository $epicRepository,
         private readonly ContainerInterface $transportLocator,
         private readonly LoggerInterface $logger,
         protected readonly float $weekGoalLow,
@@ -155,6 +158,21 @@ class DataProviderService
         $issue->setProject($project);
         $issue->setProjectTrackerId($upsertIssueData->projectTrackerId);
         $issue->setProjectTrackerKey($upsertIssueData->projectTrackerId);
+
+        foreach ($upsertIssueData->epics as $epicTitle) {
+            if (empty($epicTitle)) {
+                continue;
+            }
+            $epic = $this->epicRepository->findOneBy(['title' => $epicTitle]);
+
+            if (null === $epic) {
+                $epic = new Epic();
+                $epic->setTitle($epicTitle);
+                $this->entityManager->persist($epic);
+            }
+
+            $issue->addEpic($epic);
+        }
         $issue->setResolutionDate($upsertIssueData->resolutionDate);
         $issue->setStatus($upsertIssueData->status);
         $issue->setPlanHours($upsertIssueData->plannedHours);
