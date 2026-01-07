@@ -16,6 +16,7 @@ use App\Model\DataProvider\DataProviderVersionData;
 use App\Model\DataProvider\DataProviderWorkerData;
 use App\Model\DataProvider\DataProviderWorklogData;
 use App\Repository\DataProviderRepository;
+use App\Repository\EpicRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
@@ -42,6 +43,7 @@ class DataProviderService
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly VersionRepository $versionRepository,
         private readonly WorkerRepository $workerRepository,
+        private readonly EpicRepository $epicRepository,
         private readonly ContainerInterface $transportLocator,
         private readonly LoggerInterface $logger,
         protected readonly float $weekGoalLow,
