@@ -155,6 +155,21 @@ class DataProviderService
         $issue->setProject($project);
         $issue->setProjectTrackerId($upsertIssueData->projectTrackerId);
         $issue->setProjectTrackerKey($upsertIssueData->projectTrackerId);
+
+        foreach ($upsertIssueData->epics as $epicTitle) {
+            if (empty($epicTitle)) {
+                continue;
+            }
+            $epic = $this->epicRepository->findOneBy(['title' => $epicTitle]);
+
+            if (null === $epic) {
+                $epic = new Epic();
+                $epic->setTitle($epicTitle);
+                $this->entityManager->persist($epic);
+            }
+
+            $issue->addEpic($epic);
+        }
         $issue->setResolutionDate($upsertIssueData->resolutionDate);
         $issue->setStatus($upsertIssueData->status);
         $issue->setPlanHours($upsertIssueData->plannedHours);
