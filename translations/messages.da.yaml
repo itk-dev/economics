@@ -815,6 +815,8 @@ sync_status:
     not_started: 'Job sat i kø'
     running: 'I gang...'
     fetching_status: 'Henter status...'
+    jobs-in-queue: '<numberOfJobs> jobs i kø'
+    error-last-day: '<numberOfJobs> fejl /24 t.'
 
 synchronization_step_enum:
     projects: 'Projekter'
@@ -916,3 +918,6 @@ service_agreement:
         include_all: 'Alle'
         include_false: 'Nej'
         include_true: 'Ja'
+
+common:
+    deleted_in_the_source: 'Slettet i kilden'

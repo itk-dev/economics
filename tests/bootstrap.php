@@ -17,23 +17,30 @@ passthru(sprintf(
     __DIR__
 ));
 
+// Drop test database.
+passthru(sprintf(
+    'APP_ENV=%s php "%s/../bin/console" --env=test doctrine:database:drop --force --if-exists --no-interaction',
+    $_ENV['APP_ENV'],
+    __DIR__
+));
+
 // Create database if it does not exist.
 passthru(sprintf(
-    'APP_ENV=%s php "%s/../bin/console" --env=test doctrine:database:create --no-interaction --if-not-exists --quiet',
+    'APP_ENV=%s php "%s/../bin/console" --env=test doctrine:database:create --no-interaction',
     $_ENV['APP_ENV'],
     __DIR__
 ));
 
 // Migrate to latest database schema.
 passthru(sprintf(
-    'APP_ENV=%s php "%s/../bin/console" --env=test doctrine:migrations:migrate --no-interaction --quiet',
+    'APP_ENV=%s php "%s/../bin/console" --env=test doctrine:migrations:migrate --no-interaction',
     $_ENV['APP_ENV'],
     __DIR__
 ));
 
 // Load database fixtures.
 passthru(sprintf(
-    'APP_ENV=%s php "%s/../bin/console" --env=test doctrine:fixtures:load --quiet',
+    'APP_ENV=%s php "%s/../bin/console" --env=test doctrine:fixtures:load --no-interaction',
     $_ENV['APP_ENV'],
     __DIR__
 ));

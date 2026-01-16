@@ -1,4 +1,16 @@
 services:
+  rabbit:
+    image: rabbitmq:4-management-alpine
+    networks:
+      - app
+      - frontend
+    ports:
+      - "15672"
+    environment:
+      - "RABBITMQ_DEFAULT_USER=user"
+      - "RABBITMQ_DEFAULT_PASS=password"
+      - "RABBITMQ_ERLANG_COOKIE=d53f319cd7376f8f840aaf9889f315ab"
+
   node:
     image: node:20
     command: npm run watch
@@ -9,11 +21,6 @@ services:
       - NODE_ENV=development
     volumes:
       - ./:/app
-
-  phpfpm:
-    environment:
-      - PHP_MEMORY_LIMIT=512M
-      - PHP_MAX_EXECUTION_TIME=300
 
   nginx:
     environment:
