@@ -54,6 +54,7 @@ class HourReportType extends AbstractType
                 'required' => false,
                 'query_builder' => function (ProjectRepository $projectRepository) use ($options) {
                     $query = $projectRepository->getIncluded();
+
                     if (null !== $options['data_provider']) {
                         $query->where('project.dataProvider = :dataProvider')->setParameter('dataProvider', $options['data_provider']);
                     }
