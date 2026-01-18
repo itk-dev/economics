@@ -48,7 +48,7 @@ class ProjectRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('project');
 
         $qb
-            ->where('project.include IS NOT NULL')
+            ->where($qb->expr()->eq('project.include', true))
             ->orderBy('project.name', 'ASC');
 
         return $qb;

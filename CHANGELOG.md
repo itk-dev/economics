@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-262](https://github.com/itk-dev/economics/pull/262)
+  Fixed includedProjects query.
 * [PR-261](https://github.com/itk-dev/economics/pull/261)
   In hourReport, get epics on issue via join.
 * [PR-259](https://github.com/itk-dev/economics/pull/259)
