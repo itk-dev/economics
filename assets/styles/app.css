@@ -148,6 +148,10 @@
         @apply grid gap-3 mb-6 md:grid-cols-6;
     }
 
+    #cybersecurity_report {
+        @apply grid gap-3 mb-6 md:grid-cols-6;
+    }
+
     .form-default {
         @apply grid gap-3 mb-6 md:grid-cols-6;
     }

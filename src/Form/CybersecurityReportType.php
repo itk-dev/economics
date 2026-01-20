@@ -3,8 +3,10 @@
 namespace App\Form;
 
 use App\Entity\DataProvider;
+use App\Entity\Version;
 use App\Model\Reports\CybersecurityReportFormData;
 use App\Repository\DataProviderRepository;
+use App\Repository\VersionRepository;
 use App\Service\CybersecurityReportService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -20,11 +22,16 @@ class CybersecurityReportType extends AbstractType
         private readonly CybersecurityReportService $cybersecurityReportService,
         private readonly DataProviderRepository $dataProviderRepository,
         private readonly ?string $defaultDataProvider,
+        private readonly VersionRepository $versionRepository,
     ) {
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $version = $this->versionRepository->findOneBy(['name' => self::DEFAULT_CYBERSECURITY_MILESTONE]);
         $dataProviders = $this->dataProviderRepository->findAll();
         $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
 
@@ -49,18 +56,17 @@ class CybersecurityReportType extends AbstractType
             ])
             ->add('version', ChoiceType::class, [
                 'choices' => [
-                    self::DEFAULT_CYBERSECURITY_MILESTONE => self::DEFAULT_CYBERSECURITY_MILESTONE,
+                    self::DEFAULT_CYBERSECURITY_MILESTONE => $version,
                 ],
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'class' => 'form-element',
                     'onchange' => 'this.form.submit()',
                 ],
                 'row_attr' => ['class' => 'form-row form-choices'],
-                'placeholder' => 'cybersecurity_report.all_versions',
                 'label' => 'cybersecurity_report.version',
                 'label_attr' => ['class' => 'label'],
-                'data' => self::DEFAULT_CYBERSECURITY_MILESTONE,
+                'data' => $version,
             ])
             ->add('fromDate', DateType::class, [
                 'widget' => 'single_text',
