@@ -134,4 +134,14 @@ class IssueRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+
+    public function issuesContainingVersionTitle(string $versionTitle): array
+    {
+        $qb = $this->createQueryBuilder('issue')
+            ->where(':version MEMBER OF issue.versions')
+            ->setParameter('version', $version);
+
+        return $qb->getQuery()->getResult();
+    }
+
 }
