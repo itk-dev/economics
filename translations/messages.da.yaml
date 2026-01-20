@@ -30,6 +30,7 @@ navigation:
     planning_holidays: 'Ferieplan'
     group: 'Grupper'
     serviceagreements: 'Driftsaftaler'
+    cybersecurity_report: 'Cybersikkerhedsrapport'
 
 planning:
     group: 'Vælg gruppe'
