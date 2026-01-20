@@ -37,6 +37,7 @@
                     <th class="table-th">{{ 'worklog.worker'|trans }}</th>
                     <th class="table-th">{{ 'worklog.time_spent'|trans }}</th>
                     <th class="table-th">{{ 'worklog.date'|trans }}</th>
+                    <th class="table-th"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -82,6 +83,13 @@
                         <td class="table-td">{{ worklog.worker }}</td>
                         <td class="table-td">{{ worklog.timeSpentSeconds / 60 / 60 }}</td>
                         <td class="table-td">{{ worklog.started|date }}</td>
+                        <td class="table-td">
+                            {% if worklog.sourceDeletedDate is defined and worklog.sourceDeletedDate is not null %}
+                                {% if worklog.sourceDeletedDate is defined and worklog.sourceDeletedDate is not null %}
+                                    <span title="{{ 'common.deleted_in_the_source'|trans }}">{{ include('components/icons.html.twig', {icon: 'warning', class: 'w-6 h-6 fill-red-500'}) }}</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 {% if worklogs is empty %}

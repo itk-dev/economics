@@ -1,116 +1,40 @@
 import { Controller } from "@hotwired/stimulus";
-import dayjs from "dayjs";
 
 /** Synchronization status. */
 export default class extends Controller {
-    static targets = [
-        "ended",
-        "ok",
-        "error",
-        "running",
-        "notStarted",
-        "active",
-        "done",
-        "progress",
-        "button",
-    ];
+    static targets = ["queue", "error"];
 
-    updateIntervalSeconds = 60;
+    queueMessageTemplate = "";
 
-    updateIntervalRunningSeconds = 5;
+    errorMessageTemplate = "";
 
-    nextRefresh = 60;
-
-    timeout;
-
-    run = () => {
-        this.doneTarget.classList.add("hidden");
-        this.activeTarget.classList.add("hidden");
-
-        fetch("/admin/synchronization/start", {
-            method: "POST",
-            mode: "same-origin",
-            cache: "no-cache",
-            credentials: "same-origin",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            redirect: "follow",
-            referrerPolicy: "no-referrer",
-        }).finally(() => setTimeout(this.refresh, 3000));
-    };
+    nextTimeout = 60000;
 
     refresh = () => {
-        this.buttonTarget.classList.add("hidden");
-        this.okTarget.classList.add("hidden");
-        this.errorTarget.classList.add("hidden");
-        this.runningTarget.classList.add("hidden");
-        this.notStartedTarget.classList.add("hidden");
-        this.doneTarget.classList.add("hidden");
-        this.activeTarget.classList.add("hidden");
-        this.progressTarget.classList.add("hidden");
-
-        this.nextRefresh = this.updateIntervalSeconds;
-
         fetch("/admin/synchronization/status")
             .then((response) => {
-                if (response.status === 404) {
-                    this.endedTarget.innerHTML = "Not found";
-                    this.buttonTarget.classList.remove("hidden");
-                    this.doneTarget.classList.remove("hidden");
-                    this.errorTarget.classList.remove("hidden");
-                }
                 return response.json();
             })
             .then((data) => {
-                if (data) {
-                    this.endedTarget.innerHTML = dayjs(data.ended).format(
-                        "DD/MM-YYYY HH:mm:ss",
-                    );
+                this.queueTarget.innerText = this.queueMessageTemplate.replace(
+                    "<numberOfJobs>",
+                    data.async ?? 0,
+                );
+                this.errorTarget.innerText = this.errorMessageTemplate.replace(
+                    "<numberOfJobs>",
+                    data.error ?? 0,
+                );
 
-                    switch (data.status) {
-                        case "DONE":
-                            this.buttonTarget.classList.remove("hidden");
-                            this.doneTarget.classList.remove("hidden");
-                            this.okTarget.classList.remove("hidden");
-                            break;
-                        case "ERROR":
-                            this.buttonTarget.classList.remove("hidden");
-                            this.doneTarget.classList.remove("hidden");
-                            this.errorTarget.classList.remove("hidden");
-                            break;
-                        case "RUNNING":
-                            this.progressTarget.classList.remove("hidden");
-                            this.progressTarget.innerText = `(${
-                                data.step ?? "-"
-                            }: ${data.progress} %)`;
-                            this.activeTarget.classList.remove("hidden");
-                            this.runningTarget.classList.remove("hidden");
-
-                            this.nextRefresh =
-                                this.updateIntervalRunningSeconds;
-                            break;
-                        case "NOT_STARTED":
-                            this.activeTarget.classList.remove("hidden");
-                            this.notStartedTarget.classList.remove("hidden");
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                this.nextTimeout = data.async > 0 ? 5000 : 60000;
             })
             .finally(() => {
-                this.timeout = setTimeout(
-                    this.refresh,
-                    this.nextRefresh * 1000,
-                );
+                setTimeout(this.refresh, this.nextTimeout);
             });
     };
 
     connect() {
-        if (this.element.dataset.interval) {
-            this.updateIntervalSeconds = this.element.dataset.interval;
-        }
+        this.queueMessageTemplate = this.element.dataset.jobqueue ?? "";
+        this.errorMessageTemplate = this.element.dataset.errorqueue ?? "";
 
         this.refresh();
     }

@@ -48,7 +48,7 @@ class ProjectRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('project');
 
         $qb
-            ->where('project.include IS NOT NULL')
+            ->where($qb->expr()->eq('project.include', true))
             ->orderBy('project.name', 'ASC');
 
         return $qb;
@@ -90,5 +90,19 @@ class ProjectRepository extends ServiceEntityRepository
             10,
             ['defaultSortFieldName' => 'project.id', 'defaultSortDirection' => 'asc']
         );
+    }
+
+    public function getProjectTrackerIdsByDataProviders(array $dataProviders)
+    {
+        $qb = $this->createQueryBuilder('project');
+
+        $qb
+            ->select('project.projectTrackerId')
+            ->where($qb->expr()->eq('project.include', true))
+            ->where($qb->expr()->in('project.dataProvider', ':dataProviders'))
+            ->setParameter('dataProviders', $dataProviders)
+            ->orderBy('project.projectTrackerId', 'ASC');
+
+        return $qb->getQuery()->getSingleColumnResult();
     }
 }

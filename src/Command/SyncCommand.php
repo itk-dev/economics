@@ -2,131 +2,99 @@
 
 namespace App\Command;
 
+use App\Entity\Issue;
 use App\Entity\Project;
-use App\Entity\SynchronizationJob;
-use App\Enum\SynchronizationStatusEnum;
-use App\Enum\SynchronizationStepEnum;
-use App\Exception\EconomicsException;
-use App\Exception\UnsupportedDataProviderException;
-use App\Repository\DataProviderRepository;
-use App\Repository\ProjectRepository;
-use App\Repository\SynchronizationJobRepository;
-use App\Service\DataSynchronizationService;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Version;
+use App\Entity\Worker;
+use App\Entity\Worklog;
+use App\Service\LeantimeApiService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
-    name: 'app:sync',
-    description: 'Sync all data.',
+    name: 'app:data-providers:sync',
+    description: 'Sync Data Provider data',
 )]
 class SyncCommand extends Command
 {
     public function __construct(
-        private readonly ProjectRepository $projectRepository,
-        private readonly DataProviderRepository $dataProviderRepository,
-        private readonly DataSynchronizationService $dataSynchronizationService,
-        private readonly SynchronizationJobRepository $synchronizationJobRepository,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly LeantimeApiService $leantimeApiService,
+        private readonly string $monitoringUrl,
         private readonly HttpClientInterface $client,
         private readonly LoggerInterface $logger,
-        private readonly string $monitoringUrl,
     ) {
         parent::__construct($this->getName());
     }
 
     protected function configure(): void
     {
+        $this->addOption('job', 'j', InputOption::VALUE_NONE, 'Use async job handling');
+        $this->addOption('modified', null, InputOption::VALUE_OPTIONAL, 'Only update items modified since this datetime string (valid formats: https://www.php.net/manual/en/datetime.formats.php)');
+        $this->addOption('all', 'a', InputOption::VALUE_NONE, 'Sync all');
+        $this->addOption('projects', 'p', InputOption::VALUE_NONE, 'Sync projects');
+        $this->addOption('versions', 's', InputOption::VALUE_NONE, 'Sync versions');
+        $this->addOption('issues', 'i', InputOption::VALUE_NONE, 'Sync issues');
+        $this->addOption('worklogs', 'w', InputOption::VALUE_NONE, 'Sync worklogs');
+        $this->addOption('workers', 'wo', InputOption::VALUE_NONE, 'Sync workers');
     }
 
-    /**
-     * @throws UnsupportedDataProviderException
-     * @throws EconomicsException
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $dataProviders = $this->dataProviderRepository->findBy(['enabled' => true]);
+        $jobHandling = $input->getOption('job');
+        $modified = $input->getOption('modified');
 
-        $job = new SynchronizationJob();
-        $job->setStarted(new \DateTime());
-        $job->addMessage('Synchronization started');
-        $job->setProgress(0);
-        $job->setStatus(SynchronizationStatusEnum::RUNNING);
-        $this->synchronizationJobRepository->save($job, true);
+        try {
+            $modifiedAfter = false !== $modified ? new \DateTime($modified) : null;
+            $modifiedAfterString = $modifiedAfter?->format('Y-m-d H:i:s') ?? '';
+        } catch (\Exception $e) {
+            $io->error('Error parsing modified option: '.$e->getMessage());
 
-        $io->info('Processing projects');
-        $job->setStep(SynchronizationStepEnum::PROJECTS);
-
-        $this->entityManager->flush();
-
-        foreach ($dataProviders as $dataProvider) {
-            $job->addMessage('Processing projects from '.$dataProvider->getName());
-            $this->dataSynchronizationService->syncProjects(function ($i, $length) use ($io, $job) {
-                $this->setProgress($i, $length, $io, $job);
-            }, $dataProvider);
+            return Command::FAILURE;
         }
 
-        $io->info('Processing accounts');
-        $this->setStep(SynchronizationStepEnum::ACCOUNTS, $job);
+        $io->info('Handle as jobs: '.($jobHandling ? 'TRUE' : 'FALSE'));
 
-        foreach ($dataProviders as $dataProvider) {
-            $this->dataSynchronizationService->syncAccounts(function ($i, $length) use ($io, $job) {
-                $this->setProgress($i, $length, $io, $job);
-            }, $dataProvider);
+        null !== $modifiedAfter && $io->info('Only handle items modified since: '.$modifiedAfterString);
+
+        if ($input->getOption('all')) {
+            $io->info('Syncing all.');
+            $this->leantimeApiService->updateAll($jobHandling, $modifiedAfter);
+
+            return Command::SUCCESS;
         }
 
-        $io->info('Processing issues');
-        $this->setStep(SynchronizationStepEnum::ISSUES, $job);
-
-        foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
-
-            foreach ($projects as $project) {
-                $io->writeln("Processing issues for {$project->getName()}");
-
-                $this->dataSynchronizationService->syncIssuesForProject($project->getId(), $dataProvider, function ($i, $length) use ($io, $job) {
-                    $this->setProgress($i, $length, $io, $job);
-                });
-
-                $io->writeln('');
-            }
+        if ($input->getOption('projects')) {
+            $io->info('Syncing projects.');
+            $this->leantimeApiService->update(Project::class, $jobHandling, $modifiedAfter);
         }
 
-        $io->info('Processing worklogs');
-        $this->setStep(SynchronizationStepEnum::WORKLOGS, $job);
-
-        foreach ($dataProviders as $dataProvider) {
-            $projects = $this->projectRepository->findBy(['include' => true, 'dataProvider' => $dataProvider]);
-
-            /** @var Project $project */
-            foreach ($projects as $project) {
-                $io->writeln("Processing worklogs for {$project->getName()}");
-
-                $projectId = $project->getId();
-
-                if (null === $projectId) {
-                    throw new \RuntimeException('Project id is null');
-                }
-
-                $this->dataSynchronizationService->syncWorklogsForProject($projectId, $dataProvider, function ($i, $length) use ($io, $job) {
-                    $this->setProgress($i, $length, $io, $job);
-                });
-
-                $io->writeln('');
-            }
+        if ($input->getOption('versions')) {
+            $io->info('Syncing versions.');
+            $this->leantimeApiService->update(Version::class, $jobHandling, $modifiedAfter);
         }
 
-        $job = $this->getJob($job);
-        $job->setStatus(SynchronizationStatusEnum::DONE);
-        $job->setEnded(new \DateTime());
-        $this->entityManager->flush();
+        if ($input->getOption('issues')) {
+            $io->info('Syncing issues.');
+            $this->leantimeApiService->update(Issue::class, $jobHandling, $modifiedAfter);
+        }
+
+        if ($input->getOption('worklogs')) {
+            $io->info('Syncing worklogs.');
+            $this->leantimeApiService->update(Worklog::class, $jobHandling, $modifiedAfter);
+        }
+
+        if ($input->getOption('workers')) {
+            $io->info('Syncing workers.');
+            $this->leantimeApiService->update(Worker::class, $jobHandling, $modifiedAfter);
+        }
 
         // Call monitoring url if defined.
         if ('' !== $this->monitoringUrl) {
@@ -138,43 +106,5 @@ class SyncCommand extends Command
         }
 
         return Command::SUCCESS;
-    }
-
-    private function setProgress(int $i, int $length, SymfonyStyle $io, SynchronizationJob $job): void
-    {
-        $job = $this->getJob($job);
-
-        if (0 == $i) {
-            $io->progressStart($length);
-            $job->setProgress($i);
-        } elseif ($i >= $length - 1) {
-            $io->progressFinish();
-            $job->setProgress(100);
-        } else {
-            $length = 0 < $length ? $length : 1;
-            $io->progressAdvance();
-            $job->setProgress(intdiv($i * 100, $length));
-        }
-    }
-
-    private function setStep(SynchronizationStepEnum $step, SynchronizationJob $job): void
-    {
-        $job = $this->getJob($job);
-
-        $job->setStep($step);
-        $this->entityManager->flush();
-    }
-
-    private function getJob(SynchronizationJob $job): SynchronizationJob
-    {
-        if (!$this->entityManager->contains($job)) {
-            $job = $this->synchronizationJobRepository->find($job->getId());
-
-            if (null === $job) {
-                throw new \RuntimeException('Job not found');
-            }
-        }
-
-        return $job;
     }
 }

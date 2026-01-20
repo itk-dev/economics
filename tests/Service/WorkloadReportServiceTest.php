@@ -19,17 +19,6 @@ class WorkloadReportServiceTest extends TestCase
     /**
      * @throws Exception
      */
-    protected function setUp(): void
-    {
-        $this->workerRepository = $this->createMock(WorkerRepository::class);
-        $this->worklogRepository = $this->createMock(WorklogRepository::class);
-        $this->dateTimeHelper = $this->createMock(DateTimeHelper::class);
-        $this->workloadReportService = new WorkloadReportService($this->workerRepository, $this->worklogRepository, $this->dateTimeHelper);
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testGetWorkloadReport()
     {
         $workerMock1 = $this->createMock(Worker::class);
@@ -98,16 +87,19 @@ class WorkloadReportServiceTest extends TestCase
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');
         $workerMock1->method('getWorkload')->willReturn(40.0);
         $workerMock1->method('getId')->willReturn(21);
+        $workerMock1->method('getIncludeInReports')->willReturn(true);
 
         $workerMock2 = $this->createMock(Worker::class);
         $workerMock2->method('getUserIdentifier')->willReturn('test1@test');
         $workerMock2->method('getWorkload')->willReturn(30.0);
         $workerMock2->method('getId')->willReturn(22);
+        $workerMock2->method('getIncludeInReports')->willReturn(true);
 
         $workerMock3 = $this->createMock(Worker::class);
         $workerMock3->method('getUserIdentifier')->willReturn('');
         $workerMock3->method('getWorkload')->willReturn(20.0);
         $workerMock3->method('getId')->willReturn(23);
+        $workerMock3->method('getIncludeInReports')->willReturn(true);
 
         $worklogMock1 = $this->createMock(Worklog::class);
         $worklogMock1->method('getTimeSpentSeconds')->willReturn(36000);
@@ -116,7 +108,7 @@ class WorkloadReportServiceTest extends TestCase
         $worklogMock2->method('getTimeSpentSeconds')->willReturn(36000);
 
         $workerRepoMock = $this->createMock(WorkerRepository::class);
-        $workerRepoMock->method('findAll')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
+        $workerRepoMock->method('findBy')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
 
         $worklogRepoMock = $this->createMock(WorklogRepository::class);
         $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock1]);
@@ -154,16 +146,19 @@ class WorkloadReportServiceTest extends TestCase
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');
         $workerMock1->method('getWorkload')->willReturn(40.0);
         $workerMock1->method('getId')->willReturn(21);
+        $workerMock1->method('getIncludeInReports')->willReturn(true);
 
         $workerMock2 = $this->createMock(Worker::class);
         $workerMock2->method('getUserIdentifier')->willReturn('test1@test');
         $workerMock2->method('getWorkload')->willReturn(30.0);
         $workerMock2->method('getId')->willReturn(22);
+        $workerMock2->method('getIncludeInReports')->willReturn(true);
 
         $workerMock3 = $this->createMock(Worker::class);
         $workerMock3->method('getUserIdentifier')->willReturn('test2@test');
         $workerMock3->method('getWorkload')->willReturn(null);
         $workerMock3->method('getId')->willReturn(23);
+        $workerMock3->method('getIncludeInReports')->willReturn(true);
 
         $worklogMock1 = $this->createMock(Worklog::class);
         $worklogMock1->method('getTimeSpentSeconds')->willReturn(36000);
@@ -172,7 +167,7 @@ class WorkloadReportServiceTest extends TestCase
         $worklogMock2->method('getTimeSpentSeconds')->willReturn(36000);
 
         $workerRepoMock = $this->createMock(WorkerRepository::class);
-        $workerRepoMock->method('findAll')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
+        $workerRepoMock->method('findBy')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
 
         $worklogRepoMock = $this->createMock(WorklogRepository::class);
         $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock1]);

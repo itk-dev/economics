@@ -8,10 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-01-20
+
+* [PR-262](https://github.com/itk-dev/economics/pull/262)
+  Fixed includedProjects query.
+* [PR-261](https://github.com/itk-dev/economics/pull/261)
+  In hourReport, get epics on issue via join.
+* [PR-259](https://github.com/itk-dev/economics/pull/259)
+  Attach epics to issues during sync.
+* [PR-258](https://github.com/itk-dev/economics/pull/258)
+  Skip excluded workers from workload report.
+
 ## [2.10.2] - 2025-12-11
 
 * [PR-265](https://github.com/itk-dev/economics/pull/256)
   Add next year as an option for the planning overview.
+* [PR-252](https://github.com/itk-dev/economics/pull/252)
+  Added support for new workers endpoint.
+* [PR-253](https://github.com/itk-dev/economics/pull/253)
+  Made worker optional on issue entity.
+* [PR-242](https://github.com/itk-dev/economics/pull/242)
+  Changed Leantime data provider to use apidata plugin instead of leantime api.
 
 ## [2.10.1] - 2025-11-24
 
@@ -519,7 +536,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/2.10.2...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/itk-dev/economics/compare/2.10.2...3.0.0
 [2.10.2]: https://github.com/itk-dev/economics/compare/2.10.1...2.10.2
 [2.10.1]: https://github.com/itk-dev/economics/compare/2.10.0...2.10.1
 [2.10.0]: https://github.com/itk-dev/economics/compare/2.9.4...2.10.0
