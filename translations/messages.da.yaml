@@ -585,6 +585,16 @@ hour_report:
     tags: 'Tags'
     sync_project_action: 'Synkronisér projekt'
 
+cybersecurity_report:
+    title: 'Cybersikkerhedsrapport'
+    data_provider: 'Datakilde'
+    select_data_provider: 'Vælg datakilde'
+    data_provider_helptext: ''
+    version: 'Version'
+    from_date: 'Fra dato'
+    to_date: 'Til dato'
+
+
 view:
     list_title: 'Views'
     list_description: 'Oversigt over de views der er mulige i EConomics'
