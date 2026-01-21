@@ -27,6 +27,10 @@ class CybersecurityReportService
     ): CybersecurityReportData {
         $report = new CybersecurityReportData();
 
+        if (!$version) {
+            return $report;
+        }
+        
         $issues = $this->issueRepository
             ->issuesContainingVersion($version);
 
