@@ -5,12 +5,12 @@ namespace App\Form;
 use App\Entity\DataProvider;
 use App\Model\Reports\CybersecurityReportFormData;
 use App\Repository\DataProviderRepository;
-use App\Repository\VersionRepository;
 use App\Service\CybersecurityReportService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,10 +20,10 @@ class CybersecurityReportType extends AbstractType
 
     public function __construct(
         private readonly CybersecurityReportService $cybersecurityReportService,
-        private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ?string $defaultDataProvider,
-        private readonly VersionRepository $versionRepository,
-    ) {
+        private readonly DataProviderRepository     $dataProviderRepository,
+        private readonly ?string                    $defaultDataProvider,
+    )
+    {
     }
 
     /**
@@ -31,7 +31,6 @@ class CybersecurityReportType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $version = $this->versionRepository->findOneBy(['name' => self::DEFAULT_CYBERSECURITY_MILESTONE]);
         $dataProviders = $this->dataProviderRepository->findAll();
         $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
 
@@ -47,26 +46,24 @@ class CybersecurityReportType extends AbstractType
                 'label_attr' => ['class' => 'label'],
                 'placeholder' => 'cybersecurity_report.select_data_provider',
                 'attr' => [
-                    'onchange' => 'this.form.submit()',
                     'class' => 'form-element',
                 ],
                 'help' => 'cybersecurity_report.data_provider_helptext',
                 'data' => $defaultProvider,
                 'choices' => $dataProviders,
             ])
-            ->add('version', ChoiceType::class, [
+            ->add('versionTitle', ChoiceType::class, [
                 'choices' => [
-                    self::DEFAULT_CYBERSECURITY_MILESTONE => $version,
+                    self::DEFAULT_CYBERSECURITY_MILESTONE => self::DEFAULT_CYBERSECURITY_MILESTONE,
                 ],
                 'required' => true,
                 'attr' => [
                     'class' => 'form-element',
-                    'onchange' => 'this.form.submit()',
                 ],
                 'row_attr' => ['class' => 'form-row form-choices'],
-                'label' => 'cybersecurity_report.version',
+                'label' => 'cybersecurity_report.versionTitle',
                 'label_attr' => ['class' => 'label'],
-                'data' => $version,
+                'data' => self::DEFAULT_CYBERSECURITY_MILESTONE,
             ])
             ->add('fromDate', DateType::class, [
                 'widget' => 'single_text',
@@ -78,7 +75,6 @@ class CybersecurityReportType extends AbstractType
                 'data' => $options['fromDate'] ?? $this->cybersecurityReportService->getDefaultFromDate(),
                 'attr' => [
                     'class' => 'form-element',
-                    'onchange' => 'this.form.submit()',
                 ],
             ])
             ->add('toDate', DateType::class, [
@@ -91,7 +87,12 @@ class CybersecurityReportType extends AbstractType
                 'by_reference' => true,
                 'attr' => [
                     'class' => 'form-element',
-                    'onchange' => 'this.form.submit()',
+                ],
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'workload_report.submit',
+                'attr' => [
+                    'class' => 'hour-report-submit button',
                 ],
             ]);
     }
@@ -102,7 +103,6 @@ class CybersecurityReportType extends AbstractType
             'data_class' => CybersecurityReportFormData::class,
         ])
             ->setRequired('data_provider')
-            ->setRequired('version')
-        ;
+            ->setRequired('versionTitle');
     }
 }
