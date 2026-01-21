@@ -8,7 +8,7 @@ use App\Entity\Version;
 class CybersecurityReportFormData
 {
     public DataProvider $dataProvider;
-    public Version $version;
+    public string $versionTitle;
     public \DateTimeInterface $fromDate;
     public \DateTimeInterface $toDate;
 }
