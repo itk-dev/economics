@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Project;
+use App\Entity\ServiceAgreement;
 use App\Model\Invoices\ProjectFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -105,4 +106,18 @@ class ProjectRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getSingleColumnResult();
     }
+
+    public function getProjectIdsWithCybersecurityAgreement(): array
+    {
+        $result = $this->_em->createQueryBuilder()
+            ->select('DISTINCT p.id')
+            ->from(ServiceAgreement::class, 'sa')
+            ->innerJoin('sa.project', 'p')
+            ->where('sa.cybersecurityAgreement IS NOT NULL')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column($result, 'id');
+    }
+
 }
