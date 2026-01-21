@@ -9,7 +9,7 @@ final class CybersecurityTicketData
      */
     public function __construct(
         public int $issueId,
-        public string $trackerId,
+        public string $projectTrackerId,
         public string $headline,
         public float $totalSpent,
         public string $linkToIssue,

@@ -12,6 +12,7 @@ final class CybersecurityProjectData
     public function __construct(
         public string $projectName,
         public float $totalSpent = 0.0,
+        public bool $hasCybersecurityAgreement = false,
     ) {
     }
 }
