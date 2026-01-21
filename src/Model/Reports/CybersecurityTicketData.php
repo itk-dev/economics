@@ -8,13 +8,12 @@ final class CybersecurityTicketData
      * @param CybersecurityWorklogData[] $worklogs
      */
     public function __construct(
-        public int    $issueId,
+        public int $issueId,
         public string $trackerId,
         public string $headline,
-        public float  $totalSpent,
+        public float $totalSpent,
         public string $linkToIssue,
-        public array  $worklogs = []
-    )
-    {
+        public array $worklogs = [],
+    ) {
     }
 }

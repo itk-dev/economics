@@ -143,5 +143,4 @@ class IssueRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
-
 }

@@ -22,11 +22,12 @@ final class CybersecurityReportController extends AbstractController
         private readonly CybersecurityReportService $cybersecurityReportService,
     ) {
     }
+
     #[Route('/', name: 'app_cybersecurity_report')]
     public function index(Request $request): Response
     {
         $reportData = null;
-        $reportFormData = new CyberSecurityReportFormData();
+        $reportFormData = new CybersecurityReportFormData();
 
         $dataProvider = null;
         $version = null;

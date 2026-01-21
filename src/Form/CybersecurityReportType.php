@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\DataProvider;
-use App\Entity\Version;
 use App\Model\Reports\CybersecurityReportFormData;
 use App\Repository\DataProviderRepository;
 use App\Repository\VersionRepository;
@@ -18,6 +17,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class CybersecurityReportType extends AbstractType
 {
     private const string DEFAULT_CYBERSECURITY_MILESTONE = 'Cybersikkerhedsaftale';
+
     public function __construct(
         private readonly CybersecurityReportService $cybersecurityReportService,
         private readonly DataProviderRepository $dataProviderRepository,
