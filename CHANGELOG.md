@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-264](https://github.com/itk-dev/economics/pull/264)
   Added cybersecurity report.
+* [PR-265](https://github.com/itk-dev/economics/pull/265)
+  Add version to issue during sync.
 
 ## [3.0.0] - 2026-01-20
 
