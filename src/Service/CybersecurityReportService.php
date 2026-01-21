@@ -2,77 +2,93 @@
 
 namespace App\Service;
 
-use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Model\Reports\CybersecurityProjectData;
 use App\Model\Reports\CybersecurityReportData;
 use App\Model\Reports\CybersecurityTicketData;
 use App\Model\Reports\CybersecurityWorklogData;
-use App\Model\Reports\HourReportWorklog;
 use App\Repository\IssueRepository;
+use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
 
-class CybersecurityReportService
+readonly class CybersecurityReportService
 {
+    private const SECONDS_TO_HOURS = 1 / 3600;
     public function __construct(
-        private readonly IssueRepository $issueRepository,
-        private readonly WorklogRepository $worklogRepository,
+        private IssueRepository   $issueRepository,
+        private WorklogRepository $worklogRepository,
+        private ProjectRepository $projectRepository,
     ) {
     }
 
     public function getCybersecurityReport(
         ?\DateTimeInterface $fromDate,
         ?\DateTimeInterface $toDate,
-        ?Version $version,
+        string $versionTitle,
     ): CybersecurityReportData {
         $report = new CybersecurityReportData();
 
-        if (!$version) {
-            return $report;
-        }
+        // Fetch all project IDs that have a cybersecurity agreement
+        $projectIdsWithAgreement = array_flip(
+            $this->projectRepository->getProjectIdsWithCybersecurityAgreement()
+        );
 
-        $issues = $this->issueRepository
-            ->issuesContainingVersion($version);
+        // Fetch issues that have the version with the given title
+        $issues = $this->issueRepository->issuesContainingVersionTitle($versionTitle);
 
         foreach ($issues as $issue) {
-            $timesheetData = $this->worklogRepository->findBy([
-                'issue' => $issue->getId(),
-            ]);
-
-            [$timesheets, $totalTicketSpent] = $this->processTimesheetsData(
-                $timesheetData,
+            // Fetch worklogs for this issue restricted to the period
+            $worklogs = $this->worklogRepository->getWorklogsByIssueAndPeriod(
+                $issue->getId(),
                 $fromDate,
                 $toDate
             );
 
-            // Skip tickets without logged hours
-            if (0.0 === $totalTicketSpent) {
+            // Sum total time spent (seconds → hours)
+            $totalTicketSpent = array_reduce(
+                $worklogs,
+                fn (float $carry, Worklog $w) =>
+                    $carry + ($w->getTimeSpentSeconds() * self::SECONDS_TO_HOURS),
+                0
+            );
+
+            if (0 === $totalTicketSpent) {
                 continue;
             }
+            $projectEntity = $issue->getProject();
+            $projectId = $projectEntity->getId();
+            $projectName = $projectEntity->getName();
 
-            $projectName = $issue->getProject()->getName();
-
+            // Create project entry once
             if (!isset($report->projects[$projectName])) {
-                $report->projects[$projectName] = new CybersecurityProjectData(
-                    $projectName
-                );
+                $projectData = new CybersecurityProjectData($projectName);
+                $projectData->hasCybersecurityAgreement =
+                    isset($projectIdsWithAgreement[$projectId]);
+
+                $report->projects[$projectName] = $projectData;
             }
 
+            // Create worklog DTOs
+            $worklogData = array_map(
+                fn (Worklog $w) => new CybersecurityWorklogData(
+                    $w->getId(),
+                    $w->getTimeSpentSeconds() * self::SECONDS_TO_HOURS,
+                    $w->getDescription()
+                ),
+                $worklogs
+            );
+
+            // Create ticket DTO
             $ticket = new CybersecurityTicketData(
                 $issue->getId(),
                 $issue->getProjectTrackerId(),
                 $issue->getName(),
                 $totalTicketSpent,
                 $issue->getLinkToIssue(),
-                array_map(
-                    fn ($worklog) => new CybersecurityWorklogData(
-                        $worklog->id,
-                        $worklog->hours
-                    ),
-                    $timesheets
-                )
+                $worklogData
             );
 
+            // Attach ticket to project
             $project = $report->projects[$projectName];
             $project->tickets[] = $ticket;
             $project->totalSpent += $totalTicketSpent;
@@ -83,35 +99,6 @@ class CybersecurityReportService
         return $report;
     }
 
-    private function processTimesheetsData(array $worklogs, ?\DateTimeInterface $fromDate = null, ?\DateTimeInterface $toDate = null): array
-    {
-        $timesheets = [];
-        $totalTicketSpent = 0;
-
-        /** @var Worklog $worklog */
-        foreach ($worklogs as $worklog) {
-            $timesheetDate = $worklog->getStarted();
-
-            if (null !== $fromDate) {
-                if ($timesheetDate < $fromDate) {
-                    continue;
-                }
-            }
-
-            if (null !== $toDate) {
-                if ($timesheetDate > $toDate) {
-                    continue;
-                }
-            }
-
-            $hoursSpent = $worklog->getTimeSpentSeconds() / 3600;
-            $timesheet = new HourReportWorklog($worklog->getId(), $hoursSpent);
-            $timesheets[] = $timesheet;
-            $totalTicketSpent += $hoursSpent;
-        }
-
-        return [$timesheets, $totalTicketSpent];
-    }
 
     /**
      * @throws \DateMalformedStringException
