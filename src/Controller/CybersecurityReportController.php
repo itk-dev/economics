@@ -30,7 +30,7 @@ final class CybersecurityReportController extends AbstractController
         $reportFormData = new CybersecurityReportFormData();
 
         $dataProvider = null;
-        $version = null;
+        $versionTitle = null;
 
         $requestData = $request->query->all('cybersecurity_report');
 
@@ -49,18 +49,18 @@ final class CybersecurityReportController extends AbstractController
                 'id' => 'cybersecurity_report',
             ],
             'data_provider' => $dataProvider,
-            'version' => $version,
+            'versionTitle' => $versionTitle,
         ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $version = $form->get('version')->getData() ?? null;
+            $versionTitle = $form->get('versionTitle')->getData() ?? null;
             $fromDate = $form->get('fromDate')->getData() ?? null;
             $toDate = $form->get('toDate')->getData() ?? null;
 
-            if ($version && $fromDate && $toDate) {
-                $reportData = $this->cybersecurityReportService->getCybersecurityReport($fromDate, $toDate, $version);
+            if ($versionTitle && $fromDate && $toDate) {
+                $reportData = $this->cybersecurityReportService->getCybersecurityReport($fromDate, $toDate, $versionTitle);
             }
         }
 
