@@ -4,25 +4,21 @@ namespace App\Service;
 
 use App\Entity\Version;
 use App\Entity\Worklog;
-use App\Model\Reports\HourReportWorklog;
-use App\Repository\IssueRepository;
-use App\Repository\WorklogRepository;
 use App\Model\Reports\CybersecurityProjectData;
 use App\Model\Reports\CybersecurityReportData;
 use App\Model\Reports\CybersecurityTicketData;
 use App\Model\Reports\CybersecurityWorklogData;
+use App\Model\Reports\HourReportWorklog;
+use App\Repository\IssueRepository;
+use App\Repository\WorklogRepository;
 
 class CybersecurityReportService
 {
     public function __construct(
         private readonly IssueRepository $issueRepository,
         private readonly WorklogRepository $worklogRepository,
-    )
-    {
-
-
+    ) {
     }
-
 
     public function getCybersecurityReport(
         ?\DateTimeInterface $fromDate,
@@ -46,7 +42,7 @@ class CybersecurityReportService
             );
 
             // Skip tickets without logged hours
-            if ($totalTicketSpent === 0.0) {
+            if (0.0 === $totalTicketSpent) {
                 continue;
             }
 
@@ -113,7 +109,6 @@ class CybersecurityReportService
         return [$timesheets, $totalTicketSpent];
     }
 
-
     /**
      * @throws \DateMalformedStringException
      */
@@ -135,6 +130,4 @@ class CybersecurityReportService
 
         return $fromDate;
     }
-
-
 }
