@@ -133,10 +133,15 @@ class IssueRepository extends ServiceEntityRepository
 
     public function issuesContainingVersionTitle(string $versionTitle): array
     {
-        $qb = $this->createQueryBuilder('issue')
-            ->where(':version MEMBER OF issue.versions')
-            ->setParameter('version', $version);
-
-        return $qb->getQuery()->getResult();
+        return $this->createQueryBuilder('issue')
+            ->select('DISTINCT issue')
+            ->innerJoin('issue.versions', 'version')
+            ->andWhere('version.name = :versionTitle')
+            ->setParameter('versionTitle', $versionTitle)
+            ->getQuery()
+            ->getResult();
     }
+
+
+
 }
