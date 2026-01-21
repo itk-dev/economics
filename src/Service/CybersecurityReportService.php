@@ -30,7 +30,7 @@ class CybersecurityReportService
         if (!$version) {
             return $report;
         }
-        
+
         $issues = $this->issueRepository
             ->issuesContainingVersion($version);
 

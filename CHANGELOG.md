@@ -48,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Fixed `/admin/reports` landing page crash by replacing the stub with a minimal page linking to each report.
   * Aligned `config/packages/security.yaml` with the report controllers: `/admin/reports/*` now requires
     `ROLE_REPORT` instead of `ROLE_ADMIN`.
+* [PR-264](https://github.com/itk-dev/economics/pull/264)
+  Added cybersecurity report.
 
 ## [3.3.0] - 2026-05-12
 
