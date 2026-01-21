@@ -590,9 +590,15 @@ cybersecurity_report:
     data_provider: 'Datakilde'
     select_data_provider: 'Vælg datakilde'
     data_provider_helptext: ''
-    version: 'Version'
+    versionTitle: 'Version'
     from_date: 'Fra dato'
     to_date: 'Til dato'
+    project: 'Projekt'
+    logged_hours: 'Loggede timer'
+    has_cybersecurity_agreement: 'Har CSA'
+    cybersecurity_agreement: 'Cybersikkerhedsaftale'
+    has_cybersecurity_agreement_true: '✅'
+    has_cybersecurity_agreement_false: '❌'
 
 
 view:
