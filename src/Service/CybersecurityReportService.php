@@ -52,9 +52,11 @@ readonly class CybersecurityReportService
                 0
             );
 
+            // Skip tickets with no time logged
             if (0 === $totalTicketSpent) {
                 continue;
             }
+
             $projectEntity = $issue->getProject();
             $projectId = $projectEntity->getId();
             $projectName = $projectEntity->getName();
