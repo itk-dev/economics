@@ -8,6 +8,7 @@ final class CybersecurityWorklogData
         public int $id,
         public float $hours,
         public ?string $description,
+        public ?string $worker,
     ) {
     }
 }

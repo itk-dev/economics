@@ -119,5 +119,4 @@ class ProjectRepository extends ServiceEntityRepository
 
         return array_column($result, 'id');
     }
-
 }

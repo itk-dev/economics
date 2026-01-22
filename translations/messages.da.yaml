@@ -595,10 +595,8 @@ cybersecurity_report:
     to_date: 'Til dato'
     project: 'Projekt'
     logged_hours: 'Loggede timer'
-    has_cybersecurity_agreement: 'Har CSA'
-    cybersecurity_agreement: 'Cybersikkerhedsaftale'
+    has_cybersecurity_agreement: 'Har Cybersikkerhedsaftale'
     has_cybersecurity_agreement_true: '✅'
-    has_cybersecurity_agreement_false: '❌'
 
 
 view:
