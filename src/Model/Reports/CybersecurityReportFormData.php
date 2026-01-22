@@ -3,7 +3,6 @@
 namespace App\Model\Reports;
 
 use App\Entity\DataProvider;
-use App\Entity\Version;
 
 class CybersecurityReportFormData
 {

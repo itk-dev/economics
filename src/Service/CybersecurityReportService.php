@@ -14,8 +14,9 @@ use App\Repository\WorklogRepository;
 readonly class CybersecurityReportService
 {
     private const SECONDS_TO_HOURS = 1 / 3600;
+
     public function __construct(
-        private IssueRepository   $issueRepository,
+        private IssueRepository $issueRepository,
         private WorklogRepository $worklogRepository,
         private ProjectRepository $projectRepository,
     ) {
@@ -47,8 +48,7 @@ readonly class CybersecurityReportService
             // Sum total time spent (seconds → hours)
             $totalTicketSpent = array_reduce(
                 $worklogs,
-                fn (float $carry, Worklog $w) =>
-                    $carry + ($w->getTimeSpentSeconds() * self::SECONDS_TO_HOURS),
+                fn (float $carry, Worklog $w) => $carry + ($w->getTimeSpentSeconds() * self::SECONDS_TO_HOURS),
                 0
             );
 
@@ -73,7 +73,8 @@ readonly class CybersecurityReportService
                 fn (Worklog $w) => new CybersecurityWorklogData(
                     $w->getId(),
                     $w->getTimeSpentSeconds() * self::SECONDS_TO_HOURS,
-                    $w->getDescription()
+                    $w->getDescription(),
+                    $w->getWorker()
                 ),
                 $worklogs
             );
@@ -98,7 +99,6 @@ readonly class CybersecurityReportService
 
         return $report;
     }
-
 
     /**
      * @throws \DateMalformedStringException

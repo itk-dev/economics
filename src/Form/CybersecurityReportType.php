@@ -20,10 +20,9 @@ class CybersecurityReportType extends AbstractType
 
     public function __construct(
         private readonly CybersecurityReportService $cybersecurityReportService,
-        private readonly DataProviderRepository     $dataProviderRepository,
-        private readonly ?string                    $defaultDataProvider,
-    )
-    {
+        private readonly DataProviderRepository $dataProviderRepository,
+        private readonly ?string $defaultDataProvider,
+    ) {
     }
 
     /**

@@ -338,8 +338,4 @@ class WorklogRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
-
-
-
-
 }
