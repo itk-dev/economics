@@ -71,7 +71,7 @@ readonly class CybersecurityReportService
             // Create worklog DTOs
             $worklogData = array_map(
                 fn (Worklog $w) => new CybersecurityWorklogData(
-                    $w->getId(),
+                    (int) $w->getId(),
                     $w->getTimeSpentSeconds() * self::SECONDS_TO_HOURS,
                     $w->getDescription(),
                     $w->getWorker()
