@@ -173,6 +173,14 @@ class DataProviderService
 
             $issue->addEpic($epic);
         }
+
+        if (!empty($upsertIssueData->versionId)) {
+            $version = $this->getVersion($upsertIssueData->versionId, $dataProvider);
+
+            if ($version) {
+                $issue->addVersion($version);
+            }
+        }
         $issue->setResolutionDate($upsertIssueData->resolutionDate);
         $issue->setStatus($upsertIssueData->status);
         $issue->setPlanHours($upsertIssueData->plannedHours);

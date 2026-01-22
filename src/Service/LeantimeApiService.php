@@ -276,6 +276,7 @@ class LeantimeApiService implements DataProviderInterface
             $fetchDate,
             $this->linkToTicket($projectTrackerId, $dataProviderUrl),
             $this->getLeanDateTime($result->modified),
+            $result->milestoneId
         );
     }
 

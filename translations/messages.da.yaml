@@ -30,6 +30,7 @@ navigation:
     planning_holidays: 'Ferieplan'
     group: 'Grupper'
     serviceagreements: 'Driftsaftaler'
+    cybersecurity_report: 'Cybersikkerhedsrapport'
 
 planning:
     group: 'Vælg gruppe'
@@ -583,6 +584,20 @@ hour_report:
     all_versions: 'Alle versioner'
     tags: 'Tags'
     sync_project_action: 'Synkronisér projekt'
+
+cybersecurity_report:
+    title: 'Cybersikkerhedsrapport'
+    data_provider: 'Datakilde'
+    select_data_provider: 'Vælg datakilde'
+    data_provider_helptext: ''
+    versionTitle: 'Version'
+    from_date: 'Fra dato'
+    to_date: 'Til dato'
+    project: 'Projekt'
+    logged_hours: 'Loggede timer'
+    has_cybersecurity_agreement: 'Har Cybersikkerhedsaftale'
+    has_cybersecurity_agreement_true: '✅'
+
 
 view:
     list_title: 'Views'

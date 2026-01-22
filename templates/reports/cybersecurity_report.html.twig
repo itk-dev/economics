@@ -1,0 +1,130 @@
+<div id="scrollContainer"
+     class="overflow-x-auto w-full">
+
+    <table
+        class="table-auto border-separate border-spacing-0 border border-slate-600 relative"
+        {{ stimulus_controller('planning-scroll') }}
+    >
+        <thead>
+        <tr>
+            <th class="text-left px-2 sticky left-0 z-10 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                {{ 'cybersecurity_report.project'|trans }}
+            </th>
+            <th class="text-center px-3 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                {{ 'cybersecurity_report.logged_hours'|trans }}
+            </th>
+            <th class="text-center px-3 border border-slate-600 bg-slate-100 dark:bg-slate-700 py-3">
+                {{ 'cybersecurity_report.has_cybersecurity_agreement'|trans }}
+            </th>
+        </tr>
+        </thead>
+
+        {% for project in data.projects %}
+            <tbody
+                {{ stimulus_controller('toggle-parent-child') }}
+                data-toggle-id="{{ project.projectName }}"
+            >
+
+            {# ─────────────── Project row ─────────────── #}
+            <tr>
+                <td class="text-left sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900 p-1">
+                    <div class="flex flex-row items-center">
+                        <span class="flex-grow mx-3 py-1">
+                            {{ project.projectName }}
+
+                        </span>
+
+                        <button
+                            type="button"
+                            class="expand-btn mr-4 w-4"
+                            {{ stimulus_action('toggle-parent-child', 'toggleParent') }}
+                            data-toggle-target="button"
+                        >
+                            <i class="fa-solid fa-maximize"></i>
+                            <i class="fa-solid fa-minimize hidden"></i>
+                        </button>
+                    </div>
+                </td>
+
+                <td class="text-center px-3 border border-slate-600">
+                    {{ project.totalSpent }}
+                </td>
+                <td class="text-center px-3 border border-slate-600">
+                    {% if project.hasCybersecurityAgreement %}
+                        <span class="text-green-500 ml-2">{{ 'cybersecurity_report.has_cybersecurity_agreement_true'|trans }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+
+            {# ─────────────── Issue rows ─────────────── #}
+            {% for ticket in project.tickets %}
+                <tr {{ stimulus_target('toggle-parent-child', 'parent') }}>
+                    <td class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900 p-1">
+                        <div class="flex flex-row items-center">
+                            <span class="flex-grow mx-3 py-1">
+                                {{ ticket.headline }}
+                                <a href="{{ ticket.linkToIssue }}"
+                                   target="_blank"
+                                   class="link">
+                                    #{{ ticket.projectTrackerId }}
+                                </a>
+                            </span>
+
+                            {% if ticket.worklogs|length > 0 %}
+                                <button
+                                    type="button"
+                                    class="expand-btn mr-4 w-4"
+                                    data-parent-id="{{ ticket.projectTrackerId }}"
+                                    {{ stimulus_action('toggle-parent-child', 'toggleChild') }}
+                                >
+                                    <i class="fa-solid fa-maximize"></i>
+                                    <i class="fa-solid fa-minimize hidden"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td class="text-center border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                        {{ ticket.totalSpent }}
+                    </td>
+                    <td class="text-center px-3 border border-slate-600">
+
+                    </td>
+                </tr>
+
+                {# ─────────────── Worklog rows ─────────────── #}
+                {% for worklog in ticket.worklogs %}
+                    <tr
+                        {{ stimulus_target('toggle-parent-child', 'child') }}
+                        data-parent-id="{{ ticket.projectTrackerId }}"
+                    >
+                        <td class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900 p-1">
+                            <div class="ml-8 py-1 text-sm">
+                                {{ worklog.description ?: '—' }} <span class="float-right pr-4 cursor-help" title="{{ worklog.worker }}">🧑</span>
+                            </div>
+                        </td>
+                        <td class="sticky left-0 z-10 text-left border border-slate-600 bg-slate-100 dark:bg-slate-900 text-center">
+                            {{ worklog.hours }}
+                        </td>
+                        <td class="text-center px-3 border border-slate-600">
+
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+
+            </tbody>
+        {% endfor %}
+
+        <tfoot>
+        <tr>
+            <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
+                {{ 'hour_report.total'|trans }}
+            </td>
+            <td class="text-center px-3 border border-slate-600">
+                {{ data.totalSpent }}
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+</div>
