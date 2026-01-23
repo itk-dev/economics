@@ -14,7 +14,6 @@ use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
     name: 'app:data-providers:sync-modified',
     description: 'Sync Data Provider data, that has been modified within the given frequency, as jobs. Run frequency can be set with the DATA_PROVIDER_UPDATE_FREQUENCY environment variable.',
 )]
-#[AsPeriodicTask(frequency: '%env(DATA_PROVIDER_UPDATE_FREQUENCY)%', jitter: 30)]
 class SyncModifiedCommand extends Command
 {
     public function __construct(

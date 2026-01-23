@@ -14,7 +14,6 @@ use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
     name: 'app:data-providers:sync-deleted',
     description: 'Sync Data Provider deleted data, that has been deleted within the given interval, as jobs. Run frequency can be set with the DATA_PROVIDER_DELETE_FREQUENCY environment variable.',
 )]
-#[AsPeriodicTask(frequency: '%env(DATA_PROVIDER_DELETE_FREQUENCY)%', jitter: 30)]
 class SyncDeletedCommand extends Command
 {
     public function __construct(
