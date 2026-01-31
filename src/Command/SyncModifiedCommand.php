@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'app:data-providers:sync-modified',
-    description: 'Sync Data Provider data, that has been modified within the given frequency, as jobs. Run frequency can be set with the DATA_PROVIDER_UPDATE_FREQUENCY environment variable.',
+    description: 'Sync Data Provider data, that has been modified within the given frequency, as jobs.',
 )]
 class SyncModifiedCommand extends Command
 {

@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'app:data-providers:sync-deleted',
-    description: 'Sync Data Provider deleted data, that has been deleted within the given interval, as jobs. Run frequency can be set with the DATA_PROVIDER_DELETE_FREQUENCY environment variable.',
+    description: 'Sync Data Provider deleted data, that has been deleted within the given interval, as jobs.',
 )]
 class SyncDeletedCommand extends Command
 {
