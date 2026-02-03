@@ -66,7 +66,7 @@ class SyncCommand extends Command
 
         $io->info('Handle as jobs: '.($jobHandling ? 'TRUE' : 'FALSE'));
 
-        null !== $modifiedAfterString && $io->info('Only handle items modified since: '.$modifiedAfterString);
+        null !== $modifiedAfter && $io->info('Only handle items modified since: '.$modifiedAfter->format('Y-m-d H:i:s'));
 
         if ($input->getOption('all')) {
             $io->info('Syncing all.');
