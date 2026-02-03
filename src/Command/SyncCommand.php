@@ -55,7 +55,7 @@ class SyncCommand extends Command
 
         if (!empty($modified)) {
             try {
-                $modifiedAfter = new \DateTime($modified);
+                $modifiedAfter = new \DateTimeImmutable($modified);
                 $modifiedAfterString = $modifiedAfter->format('Y-m-d H:i:s');
             } catch (\Exception $e) {
                 $io->error('Error parsing modified option: '.$e->getMessage());
