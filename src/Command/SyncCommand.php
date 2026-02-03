@@ -57,6 +57,7 @@ class SyncCommand extends Command
                 $modifiedAfter = new \DateTimeImmutable($modified);
             } catch (\Exception $e) {
                 $io->error('Error parsing modified option: '.$e->getMessage());
+
                 return Command::FAILURE;
             }
         }
