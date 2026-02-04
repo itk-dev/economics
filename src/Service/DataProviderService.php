@@ -186,7 +186,7 @@ class DataProviderService
         if (!empty($upsertIssueData->versionId)) {
             $version = $this->getVersion($upsertIssueData->versionId, $dataProvider);
 
-            if ($version !== null) {
+            if (null !== $version) {
                 $issue->addVersion($version);
             }
         }
