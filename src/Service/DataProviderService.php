@@ -159,10 +159,15 @@ class DataProviderService
         $issue->setProjectTrackerId($upsertIssueData->projectTrackerId);
         $issue->setProjectTrackerKey($upsertIssueData->projectTrackerId);
 
+        // Remove existing epics.
+        $issue->getEpics()->clear();
+
+        // Add epics to the issue.
         foreach ($upsertIssueData->epics as $epicTitle) {
             if (empty($epicTitle)) {
                 continue;
             }
+
             $epic = $this->epicRepository->findOneBy(['title' => $epicTitle]);
 
             if (null === $epic) {
@@ -173,6 +178,19 @@ class DataProviderService
 
             $issue->addEpic($epic);
         }
+
+        // Remove existing versions.
+        $issue->getVersions()->clear();
+
+        // Add version.
+        if (!empty($upsertIssueData->versionId)) {
+            $version = $this->getVersion($upsertIssueData->versionId, $dataProvider);
+
+            if (null !== $version) {
+                $issue->addVersion($version);
+            }
+        }
+
         $issue->setResolutionDate($upsertIssueData->resolutionDate);
         $issue->setStatus($upsertIssueData->status);
         $issue->setPlanHours($upsertIssueData->plannedHours);
