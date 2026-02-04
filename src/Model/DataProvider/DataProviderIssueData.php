@@ -21,6 +21,7 @@ class DataProviderIssueData
         public ?\DateTimeInterface $fetchTime,
         public ?string $url,
         public ?\DateTimeInterface $sourceModifiedDate,
+        public ?string $versionId,
     ) {
     }
 }
