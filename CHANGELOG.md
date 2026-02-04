@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-266](https://github.com/itk-dev/economics/pull/266)
   Replace symfony scheduler with cron.
+  Fixed issue version and epic synchronization.
 
 ## [3.0.0] - 2026-01-20
 
