@@ -23,6 +23,16 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 )]
 class SyncCommand extends Command
 {
+    private const OPTION_JOB = 'job';
+    private const OPTION_MODIFIED = 'modified';
+    private const OPTION_ALL = 'all';
+    private const OPTION_PROJECTS = 'projects';
+    private const OPTION_VERSIONS = 'versions';
+    private const OPTION_ISSUES = 'issues';
+    private const OPTION_WORKLOGS = 'worklogs';
+    private const OPTION_WORKERS = 'workers';
+    private const OPTION_DISABLE_MODIFIED_AT_CHECK = 'disable-modified-at-check';
+
     public function __construct(
         private readonly LeantimeApiService $leantimeApiService,
         private readonly string $monitoringUrl,
@@ -34,22 +44,24 @@ class SyncCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption('job', 'j', InputOption::VALUE_NONE, 'Use async job handling');
-        $this->addOption('modified', null, InputOption::VALUE_OPTIONAL, 'Only update items modified since this datetime string (valid formats: https://www.php.net/manual/en/datetime.formats.php)');
-        $this->addOption('all', 'a', InputOption::VALUE_NONE, 'Sync all');
-        $this->addOption('projects', 'p', InputOption::VALUE_NONE, 'Sync projects');
-        $this->addOption('versions', 's', InputOption::VALUE_NONE, 'Sync versions');
-        $this->addOption('issues', 'i', InputOption::VALUE_NONE, 'Sync issues');
-        $this->addOption('worklogs', 'w', InputOption::VALUE_NONE, 'Sync worklogs');
-        $this->addOption('workers', 'wo', InputOption::VALUE_NONE, 'Sync workers');
+        $this->addOption(self::OPTION_JOB, 'j', InputOption::VALUE_NONE, 'Use async job handling');
+        $this->addOption(self::OPTION_MODIFIED, null, InputOption::VALUE_OPTIONAL, 'Only update items modified since this datetime string (valid formats: https://www.php.net/manual/en/datetime.formats.php)');
+        $this->addOption(self::OPTION_ALL, 'a', InputOption::VALUE_NONE, 'Sync all');
+        $this->addOption(self::OPTION_PROJECTS, 'p', InputOption::VALUE_NONE, 'Sync projects');
+        $this->addOption(self::OPTION_VERSIONS, 's', InputOption::VALUE_NONE, 'Sync versions');
+        $this->addOption(self::OPTION_ISSUES, 'i', InputOption::VALUE_NONE, 'Sync issues');
+        $this->addOption(self::OPTION_WORKLOGS, 'w', InputOption::VALUE_NONE, 'Sync worklogs');
+        $this->addOption(self::OPTION_WORKERS, 'r', InputOption::VALUE_NONE, 'Sync workers');
+        $this->addOption(self::OPTION_DISABLE_MODIFIED_AT_CHECK, 'd', InputOption::VALUE_NONE, 'Disable modifiedAt check. This will synchronize all items even though item.modifiedAt has not changed.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $jobHandling = $input->getOption('job');
-        $modified = $input->getOption('modified');
+        $jobHandling = $input->getOption(self::OPTION_JOB);
+        $disableModifiedAtCheck = $input->getOption(self::OPTION_DISABLE_MODIFIED_AT_CHECK);
+        $modified = $input->getOption(self::OPTION_MODIFIED);
         $modifiedAfter = null;
 
         if (!empty($modified)) {
@@ -63,39 +75,40 @@ class SyncCommand extends Command
         }
 
         $io->info('Handle as jobs: '.($jobHandling ? 'TRUE' : 'FALSE'));
+        $io->info('Ignore modified at checks: '.($disableModifiedAtCheck ? 'TRUE' : 'FALSE'));
 
         null !== $modifiedAfter && $io->info('Only handle items modified since: '.$modifiedAfter->format('Y-m-d H:i:s'));
 
-        if ($input->getOption('all')) {
+        if ($input->getOption(self::OPTION_ALL)) {
             $io->info('Syncing all.');
-            $this->leantimeApiService->updateAll($jobHandling, $modifiedAfter);
+            $this->leantimeApiService->updateAll($jobHandling, $modifiedAfter, $disableModifiedAtCheck);
 
             return Command::SUCCESS;
         }
 
-        if ($input->getOption('projects')) {
+        if ($input->getOption(self::OPTION_PROJECTS)) {
             $io->info('Syncing projects.');
-            $this->leantimeApiService->update(Project::class, $jobHandling, $modifiedAfter);
+            $this->leantimeApiService->update(Project::class, $jobHandling, $modifiedAfter, $disableModifiedAtCheck);
         }
 
-        if ($input->getOption('versions')) {
+        if ($input->getOption(self::OPTION_VERSIONS)) {
             $io->info('Syncing versions.');
-            $this->leantimeApiService->update(Version::class, $jobHandling, $modifiedAfter);
+            $this->leantimeApiService->update(Version::class, $jobHandling, $modifiedAfter, $disableModifiedAtCheck);
         }
 
-        if ($input->getOption('issues')) {
+        if ($input->getOption(self::OPTION_ISSUES)) {
             $io->info('Syncing issues.');
-            $this->leantimeApiService->update(Issue::class, $jobHandling, $modifiedAfter);
+            $this->leantimeApiService->update(Issue::class, $jobHandling, $modifiedAfter, $disableModifiedAtCheck);
         }
 
-        if ($input->getOption('worklogs')) {
+        if ($input->getOption(self::OPTION_WORKLOGS)) {
             $io->info('Syncing worklogs.');
-            $this->leantimeApiService->update(Worklog::class, $jobHandling, $modifiedAfter);
+            $this->leantimeApiService->update(Worklog::class, $jobHandling, $modifiedAfter, $disableModifiedAtCheck);
         }
 
-        if ($input->getOption('workers')) {
+        if ($input->getOption(self::OPTION_WORKERS)) {
             $io->info('Syncing workers.');
-            $this->leantimeApiService->update(Worker::class, $jobHandling, $modifiedAfter);
+            $this->leantimeApiService->update(Worker::class, $jobHandling, $modifiedAfter, $disableModifiedAtCheck);
         }
 
         // Call monitoring url if defined.

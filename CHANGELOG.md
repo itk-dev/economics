@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Replace symfony scheduler with cron.
   Fixed issue version and epic synchronization.
   Fixed issue epic use.
+  Added option to disable modifiedAt check for sync command.
 
 ## [3.0.0] - 2026-01-20
 

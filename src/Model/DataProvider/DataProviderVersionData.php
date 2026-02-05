@@ -11,6 +11,7 @@ class DataProviderVersionData
         public string $projectTrackerProjectId,
         public ?\DateTimeInterface $fetchTime,
         public ?\DateTimeInterface $sourceModifiedDate,
+        public bool $disableModifiedAtCheck = false,
     ) {
     }
 }
