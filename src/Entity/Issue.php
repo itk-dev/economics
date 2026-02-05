@@ -39,9 +39,11 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $projectTrackerKey = null;
 
+    #[\Deprecated(message: "Use epics instead", since: "3.0.1")]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $epicKey = null;
 
+    #[\Deprecated(message: "Use epics instead", since: "3.0.1")]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $epicName = null;
 
@@ -155,30 +157,6 @@ class Issue extends AbstractBaseEntity
     public function setProjectTrackerKey(string $projectTrackerKey): self
     {
         $this->projectTrackerKey = $projectTrackerKey;
-
-        return $this;
-    }
-
-    public function getEpicKey(): ?string
-    {
-        return $this->epicKey;
-    }
-
-    public function setEpicKey(?string $epicKey): self
-    {
-        $this->epicKey = $epicKey;
-
-        return $this;
-    }
-
-    public function getEpicName(): ?string
-    {
-        return $this->epicName;
-    }
-
-    public function setEpicName(?string $epicName): self
-    {
-        $this->epicName = $epicName;
 
         return $this;
     }
