@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Epic;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Version;
@@ -10,7 +9,6 @@ use App\Enum\InvoiceEntryTypeEnum;
 use App\Exception\EconomicsException;
 use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
-use App\Repository\EpicRepository;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillingService;

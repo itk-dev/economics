@@ -78,19 +78,24 @@ class ForecastReportService
                     $currentProject->invoicedAndRecorded += $worklogTime;
                 }
 
-                // Get issue details from worklog
+                // Get issue details from the worklog
                 $issueId = $worklog->getIssue()->getProjectTrackerKey();
                 $issueLink = $worklog->getIssue()->getLinkToIssue();
-                $issueTag = $worklog->getIssue()->getEpicName() ?: '[no tag]';
 
-                // Add issue in the project if it does not exist
+                if ($worklog->getIssue()->getEpics()->count() > 0) {
+                    $issueTag = implode(',', array_map(fn ($epic) => $epic->getName(), $worklog->getIssue()->getEpics()));
+                } else {
+                    $issueTag = '[no tag]';
+                }
+
+                // Add the issue in the project if it does not exist
                 if (!isset($currentProject->issues[$issueTag])) {
                     $currentProject->issues[$issueTag] = new ForecastReportIssueData($issueTag);
                     $currentProject->issues[$issueTag]->issueId = $issueId;
                     $currentProject->issues[$issueTag]->issueLink = $issueLink;
                 }
 
-                // Get current issue from project
+                // Get the current issue from the project
                 $currentIssue = $currentProject->issues[$issueTag];
 
                 // Add up the invoiced hours to the current issue
@@ -99,25 +104,25 @@ class ForecastReportService
                     $currentIssue->invoicedAndRecorded += $worklogTime;
                 }
 
-                // Get version details from issue
+                // Get version details from the issue
                 $issueVersions = $worklog->getIssue()->getVersions();
                 $issueVersion = count($issueVersions) > 0 ? implode(', ', array_map(function ($version) { return $version->getName(); }, $issueVersions->toArray())) : '[no version]';
 
                 $issueVersionIdentifier = $issueTag.$issueVersion;
 
-                // Add version entry in the issue if it does not exist
+                // Add the version entry in the issue if it does not exist
                 if (!isset($currentIssue->versions[$issueVersion])) {
                     $currentIssue->versions[$issueVersion] = new ForecastReportIssueVersionData($issueVersion);
                     $currentIssue->versions[$issueVersion]->issueVersionIdentifier = $issueVersionIdentifier;
                 }
 
-                // Get the current version from issue
+                // Get the current version from the issue
                 $currentVersion = $currentIssue->versions[$issueVersion];
 
-                // Add up invoiced hours in current version
+                // Add up invoiced hours in the current version
                 $currentVersion->invoiced += $worklogTime;
 
-                // If worklog is billed, add it to the recorded hours as well
+                // If the worklog is billed, add it to the recorded hours as well
                 if ($isWorklogBilled) {
                     $currentVersion->invoicedAndRecorded += $worklogTime;
                 }
@@ -128,7 +133,7 @@ class ForecastReportService
                 $workerName = $workerNameMapping[$workerEmail] ?? '[no worker]';
                 $description = $worklog->getDescription();
 
-                // Add worklog entry in the version if it does not exist
+                // Add the worklog entry in the version if it does not exist
                 if (!isset($currentVersion->worklogs[$worklogId])) {
                     $currentVersion->worklogs[$worklogId] = new ForecastReportWorklogData($worklogId, $description);
                     $currentVersion->worklogs[$worklogId]->worker = $workerName;
@@ -141,7 +146,7 @@ class ForecastReportService
                 // Add up invoiced hours in the current worklog
                 $currentWorklog->invoiced += $worklogTime;
 
-                // If worklog is billed, add it to the recorded hours as well
+                // If the worklog is billed, add it to the recorded hours as well
                 if ($isWorklogBilled) {
                     $currentWorklog->invoicedAndRecorded += $worklogTime;
                 }

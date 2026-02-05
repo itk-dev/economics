@@ -10,7 +10,6 @@ use App\Entity\WorkerGroup;
 use App\Enum\IssueStatusEnum;
 use App\Model\Invoices\IssueFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Persistence\ManagerRegistry;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
