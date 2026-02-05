@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Epic;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\Version;
@@ -9,6 +10,7 @@ use App\Enum\InvoiceEntryTypeEnum;
 use App\Exception\EconomicsException;
 use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
+use App\Repository\EpicRepository;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillingService;
@@ -67,14 +69,7 @@ class InvoiceEntryWorklogController extends AbstractController
             'choices' => $project->getVersions(),
         ]);
 
-        $epics = $issueRepository->findEpicsByProject($project);
-        $epicChoices = array_reduce($epics, function ($carry, $item) {
-            if (isset($item['epicName']) && isset($item['epicKey'])) {
-                $carry[$item['epicName']] = $item['epicKey'];
-            }
-
-            return $carry;
-        }, []);
+        $epicChoices = $issueRepository->findEpicOptionsByProject($project);
 
         $form->add('epic', ChoiceType::class, [
             'required' => false,

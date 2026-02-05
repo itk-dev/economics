@@ -76,9 +76,11 @@
                             </div>
                         </td>
                         <td class="table-td">{{ worklog.isBilled ? 'worklog.is_billed_true'|trans : 'worklog.is_billed_false'|trans }}</td>
-                        <td class="table-td">{{ worklog.issue.epicName }}</td>
                         <td class="table-td">
-                            {% for version in worklog.issue.versions %}{{ version.name }}{% endfor %}
+                            {% for epic in worklog.issue.epics %}{% if loop.index0 > 0 %}, {% endif %}{{ epic.title }}{% endfor %}
+                        </td>
+                        <td class="table-td">
+                            {% for version in worklog.issue.versions %}{% if loop.index0 > 0 %}, {% endif %}{{ version.name }}{% endfor %}
                         </td>
                         <td class="table-td">{{ worklog.worker }}</td>
                         <td class="table-td">{{ worklog.timeSpentSeconds / 60 / 60 }}</td>
