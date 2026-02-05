@@ -11,6 +11,7 @@ class DataProviderProjectData
         public ?string $url,
         public ?\DateTimeInterface $fetchTime,
         public ?\DateTimeInterface $sourceModifiedDate,
+        public bool $disableModifiedAtCheck = false,
     ) {
     }
 }
