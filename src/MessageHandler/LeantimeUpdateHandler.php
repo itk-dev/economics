@@ -30,6 +30,7 @@ readonly class LeantimeUpdateHandler
                 $message->projectTrackerProjectIds,
                 $message->asyncJobQueue,
                 $message->modifiedAfter,
+                $message->disableModifiedAtCheck,
             );
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());

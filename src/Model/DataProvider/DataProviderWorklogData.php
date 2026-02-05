@@ -15,6 +15,7 @@ class DataProviderWorklogData
         public string $kind,
         public ?\DateTimeInterface $fetchTime,
         public ?\DateTimeInterface $sourceModifiedDate,
+        public bool $disableModifiedAtCheck = false,
     ) {
     }
 }

@@ -12,6 +12,7 @@ readonly class LeantimeUpdateMessage
         public bool $asyncJobQueue,
         public ?\DateTimeInterface $modifiedAfter,
         public ?array $projectTrackerProjectIds = null,
+        public bool $disableModifiedAtCheck = false,
     ) {
     }
 }
