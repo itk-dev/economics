@@ -84,7 +84,8 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         if (!empty($filterData->epic)) {
-            $qb->andWhere(':epic = issue.epicKey')
+            $qb->innerJoin('issue.epics', 'epic')
+                ->andWhere('epic.title = :epic')
                 ->setParameter('epic', $filterData->epic);
         }
 

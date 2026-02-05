@@ -67,14 +67,7 @@ class InvoiceEntryWorklogController extends AbstractController
             'choices' => $project->getVersions(),
         ]);
 
-        $epics = $issueRepository->findEpicsByProject($project);
-        $epicChoices = array_reduce($epics, function ($carry, $item) {
-            if (isset($item['epicName']) && isset($item['epicKey'])) {
-                $carry[$item['epicName']] = $item['epicKey'];
-            }
-
-            return $carry;
-        }, []);
+        $epicChoices = $issueRepository->findEpicOptionsByProject($project);
 
         $form->add('epic', ChoiceType::class, [
             'required' => false,

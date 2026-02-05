@@ -71,16 +71,18 @@ class IssueRepository extends ServiceEntityRepository
         }
     }
 
-    public function findEpicsByProject(Project $project): array
+    public function findEpicOptionsByProject(Project $project): array
     {
         $qb = $this->createQueryBuilder('issue');
 
-        $qb->select('issue.epicName, issue.epicKey')
+        $qb->select('DISTINCT epic.title')
+            ->innerJoin('issue.epics', 'epic')
             ->where('issue.project = :project')
-            ->setParameter('project', $project)
-            ->distinct();
+            ->setParameter('project', $project);
 
-        return $qb->getQuery()->execute();
+        $titles = array_column($qb->getQuery()->getResult(), 'title');
+
+        return array_combine($titles, $titles);
     }
 
     public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)

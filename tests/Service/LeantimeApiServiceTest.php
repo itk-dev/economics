@@ -250,8 +250,6 @@ class LeantimeApiServiceTest extends KernelTestCase
         $issue1->setName('issue 1 - protected');
         $issue1->setAccountId('Account 1');
         $issue1->setAccountKey('Account 1');
-        $issue1->setEpicName('Epic 1');
-        $issue1->setEpicKey('Epic 1');
         $issue1->setStatus(IssueStatusEnum::DONE);
         $issue1->setDataProvider($dataProvider);
         $issue1->addVersion($version1);
@@ -271,8 +269,6 @@ class LeantimeApiServiceTest extends KernelTestCase
         $issue2->setName('issue 2');
         $issue2->setAccountId('Account 1');
         $issue2->setAccountKey('Account 1');
-        $issue2->setEpicName('Epic 1');
-        $issue2->setEpicKey('Epic 1');
         $issue2->setStatus(IssueStatusEnum::DONE);
         $issue2->setDataProvider($dataProvider);
         $issue2->addVersion($version1);
