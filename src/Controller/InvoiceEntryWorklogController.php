@@ -10,6 +10,7 @@ use App\Exception\EconomicsException;
 use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\IssueRepository;
+use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillingService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -69,7 +70,7 @@ class InvoiceEntryWorklogController extends AbstractController
 
         $epicChoices = $issueRepository->findEpicOptionsByProject($project);
 
-        $form->add('epic', ChoiceType::class, [
+        $form->add('epics', ChoiceType::class, [
             'required' => false,
             'label' => 'worklog.epic',
             'label_attr' => ['class' => 'label'],
@@ -79,6 +80,7 @@ class InvoiceEntryWorklogController extends AbstractController
                 'data-choices-target' => 'choices',
             ],
             'help' => 'worklog.epic_helptext',
+            'multiple' => true,
             'choices' => $epicChoices,
         ]);
 
