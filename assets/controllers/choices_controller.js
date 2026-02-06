@@ -15,6 +15,8 @@ export default class extends Controller {
                 new Choices(target, {
                     allowHTML: true,
                     itemSelectText: "",
+                    removeItems: true,
+                    removeItemButton: true,
                 });
             }
         });

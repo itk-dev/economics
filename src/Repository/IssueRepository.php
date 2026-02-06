@@ -75,14 +75,16 @@ class IssueRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('issue');
 
-        $qb->select('DISTINCT epic.title')
+        $qb->select('DISTINCT epic.title, epic.id')
             ->innerJoin('issue.epics', 'epic')
             ->where('issue.project = :project')
             ->setParameter('project', $project);
 
-        $titles = array_column($qb->getQuery()->getResult(), 'title');
+        $result = $qb->getQuery()->getResult();
+        $titles = array_column($result, 'title');
+        $ids = array_column($result, 'id');
 
-        return array_combine($titles, $titles);
+        return array_combine($titles, $ids);
     }
 
     public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
