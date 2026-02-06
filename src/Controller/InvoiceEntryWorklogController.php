@@ -10,7 +10,6 @@ use App\Exception\EconomicsException;
 use App\Form\InvoiceEntryWorklogFilterType;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\IssueRepository;
-use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillingService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
