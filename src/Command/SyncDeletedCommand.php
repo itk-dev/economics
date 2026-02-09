@@ -8,13 +8,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
 
 #[AsCommand(
     name: 'app:data-providers:sync-deleted',
-    description: 'Sync Data Provider deleted data, that has been deleted within the given interval, as jobs. Run frequency can be set with the DATA_PROVIDER_DELETE_FREQUENCY environment variable.',
+    description: 'Sync Data Provider deleted data, that has been deleted within the given interval, as jobs.',
 )]
-#[AsPeriodicTask(frequency: '%env(DATA_PROVIDER_DELETE_FREQUENCY)%', jitter: 30)]
 class SyncDeletedCommand extends Command
 {
     public function __construct(

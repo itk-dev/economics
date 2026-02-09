@@ -80,11 +80,13 @@ class DataProviderService
             $project->setDataProvider($dataProvider);
             $this->entityManager->persist($project);
         } else {
-            // Ignore upsert if modified date has not changed.
-            if (null !== $upsertProjectData->sourceModifiedDate && $upsertProjectData->sourceModifiedDate->getTimestamp() === $project->getSourceModifiedDate()?->getTimestamp()) {
-                $this->logger->info("Ignoring project {$project->getId()} update as source modified field is not changed.");
+            if (false === $upsertProjectData->disableModifiedAtCheck) {
+                // Ignore upsert if modified date has not changed.
+                if (null !== $upsertProjectData->sourceModifiedDate && $upsertProjectData->sourceModifiedDate->getTimestamp() === $project->getSourceModifiedDate()?->getTimestamp()) {
+                    $this->logger->info("Ignoring project {$project->getId()} update as source modified field is not changed.");
 
-                return;
+                    return;
+                }
             }
         }
 
@@ -119,11 +121,13 @@ class DataProviderService
 
             $this->entityManager->persist($version);
         } else {
-            // Ignore upsert if modified date has not changed.
-            if (null !== $upsertVersionData->sourceModifiedDate && $upsertVersionData->sourceModifiedDate->getTimestamp() === $version->getSourceModifiedDate()?->getTimestamp()) {
-                $this->logger->info("Ignoring version {$version->getId()} update as source modified field is not changed.");
+            if (false === $upsertVersionData->disableModifiedAtCheck) {
+                // Ignore upsert if modified date has not changed.
+                if (null !== $upsertVersionData->sourceModifiedDate && $upsertVersionData->sourceModifiedDate->getTimestamp() === $version->getSourceModifiedDate()?->getTimestamp()) {
+                    $this->logger->info("Ignoring version {$version->getId()} update as source modified field is not changed.");
 
-                return;
+                    return;
+                }
             }
         }
 
@@ -146,11 +150,13 @@ class DataProviderService
 
             $this->entityManager->persist($issue);
         } else {
-            // Ignore upsert if modified date has not changed.
-            if (null !== $upsertIssueData->sourceModifiedDate && $upsertIssueData->sourceModifiedDate->getTimestamp() === $issue->getSourceModifiedDate()?->getTimestamp()) {
-                $this->logger->info("Ignoring issue {$issue->getId()} update as source modified field is not changed.");
+            if (false === $upsertIssueData->disableModifiedAtCheck) {
+                // Ignore upsert if modified date has not changed.
+                if (null !== $upsertIssueData->sourceModifiedDate && $upsertIssueData->sourceModifiedDate->getTimestamp() === $issue->getSourceModifiedDate()?->getTimestamp()) {
+                    $this->logger->info("Ignoring issue {$issue->getId()} update as source modified field is not changed.");
 
-                return;
+                    return;
+                }
             }
         }
 
@@ -159,10 +165,15 @@ class DataProviderService
         $issue->setProjectTrackerId($upsertIssueData->projectTrackerId);
         $issue->setProjectTrackerKey($upsertIssueData->projectTrackerId);
 
+        // Remove existing epics.
+        $issue->getEpics()->clear();
+
+        // Add epics to the issue.
         foreach ($upsertIssueData->epics as $epicTitle) {
             if (empty($epicTitle)) {
                 continue;
             }
+
             $epic = $this->epicRepository->findOneBy(['title' => $epicTitle]);
 
             if (null === $epic) {
@@ -173,6 +184,19 @@ class DataProviderService
 
             $issue->addEpic($epic);
         }
+
+        // Remove existing versions.
+        $issue->getVersions()->clear();
+
+        // Add version.
+        if (!empty($upsertIssueData->versionId)) {
+            $version = $this->getVersion($upsertIssueData->versionId, $dataProvider);
+
+            if (null !== $version) {
+                $issue->addVersion($version);
+            }
+        }
+
         $issue->setResolutionDate($upsertIssueData->resolutionDate);
         $issue->setStatus($upsertIssueData->status);
         $issue->setPlanHours($upsertIssueData->plannedHours);
@@ -203,11 +227,13 @@ class DataProviderService
 
             $this->entityManager->persist($worklog);
         } else {
-            // Ignore upsert if modified date has not changed.
-            if (null !== $upsertWorklogData->sourceModifiedDate && $upsertWorklogData->sourceModifiedDate->getTimestamp() === $worklog->getSourceModifiedDate()?->getTimestamp()) {
-                $this->logger->info("Ignoring worklog {$worklog->getId()} update as source modified field is not changed.");
+            if (false === $upsertWorklogData->disableModifiedAtCheck) {
+                // Ignore upsert if modified date has not changed.
+                if (null !== $upsertWorklogData->sourceModifiedDate && $upsertWorklogData->sourceModifiedDate->getTimestamp() === $worklog->getSourceModifiedDate()?->getTimestamp()) {
+                    $this->logger->info("Ignoring worklog {$worklog->getId()} update as source modified field is not changed.");
 
-                return;
+                    return;
+                }
             }
         }
 

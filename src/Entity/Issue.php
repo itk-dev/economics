@@ -39,9 +39,11 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $projectTrackerKey = null;
 
+    // TODO: Deprecated. Remove in 4.0.0.
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $epicKey = null;
 
+    // TODO: Deprecated. Remove in 4.0.0.
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $epicName = null;
 
@@ -159,11 +161,13 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
+    #[\Deprecated(message: 'Use issue.epics instead', since: '3.0.1')]
     public function getEpicKey(): ?string
     {
         return $this->epicKey;
     }
 
+    #[\Deprecated(message: 'Use issue.epics instead', since: '3.0.1')]
     public function setEpicKey(?string $epicKey): self
     {
         $this->epicKey = $epicKey;
@@ -171,11 +175,13 @@ class Issue extends AbstractBaseEntity
         return $this;
     }
 
+    #[\Deprecated(message: 'Use issue.epics instead', since: '3.0.1')]
     public function getEpicName(): ?string
     {
         return $this->epicName;
     }
 
+    #[\Deprecated(message: 'Use issue.epics instead', since: '3.0.1')]
     public function setEpicName(?string $epicName): self
     {
         $this->epicName = $epicName;
