@@ -60,17 +60,18 @@ class HourReportService
             $projectTicket->timesheets->add($timesheets);
 
             $epics = $issue->getEpics();
+
             // There should only be one tag per issue, but in case of multiple, we comma separate them in the list.
             $issueEpicName = $epics->isEmpty() ? '' : implode(', ', $epics->map(fn ($epic) => $epic->getTitle())->toArray());
 
             if ($hourReportData->projectTags->containsKey($issueEpicName)) {
-                $projectTag = $hourReportData->projectTags->get((string) $issueEpicName);
+                $projectTag = $hourReportData->projectTags->get($issueEpicName);
                 if ($projectTag) {
                     $projectTag->totalEstimated += $totalTicketEstimated;
                     $projectTag->totalSpent += $totalTicketSpent;
                 }
             } else {
-                $projectTag = new HourReportProjectTag($totalTicketEstimated, $totalTicketSpent, (string) $issueEpicName);
+                $projectTag = new HourReportProjectTag($totalTicketEstimated, $totalTicketSpent, $issueEpicName);
             }
 
             if (!$projectTag) {
@@ -79,7 +80,7 @@ class HourReportService
 
             $projectTag->projectTickets->add($projectTicket);
 
-            $hourReportData->projectTags->set((string) $issueEpicName, $projectTag);
+            $hourReportData->projectTags->set($issueEpicName, $projectTag);
             $hourReportData->projectTotalEstimated += $totalTicketEstimated;
             $hourReportData->projectTotalSpent += $totalTicketSpent;
         }

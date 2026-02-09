@@ -74,7 +74,7 @@ class WorklogRepository extends ServiceEntityRepository
             $qb->andWhere('worklog.started < :periodTo')->setParameter('periodTo', $periodTo);
         }
 
-        if (!empty($filterData->version) || !empty($filterData->epic)) {
+        if (!empty($filterData->version) || !empty($filterData->epics)) {
             $qb->leftJoin(Issue::class, 'issue', 'WITH', 'issue.id = worklog.issue');
         }
 
@@ -83,9 +83,11 @@ class WorklogRepository extends ServiceEntityRepository
                 ->setParameter('version', $filterData->version);
         }
 
-        if (!empty($filterData->epic)) {
-            $qb->andWhere(':epic = issue.epicKey')
-                ->setParameter('epic', $filterData->epic);
+        if (!empty($filterData->epics)) {
+            foreach ($filterData->epics as $index => $epic) {
+                $qb->andWhere($qb->expr()->isMemberOf(':epic'.$index, 'issue.epics'))
+                    ->setParameter('epic'.$index, $epic);
+            }
         }
 
         if (isset($filterData->onlyAvailable) && $filterData->onlyAvailable) {

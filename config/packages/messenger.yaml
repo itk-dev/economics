@@ -5,15 +5,9 @@ framework:
 
         transports:
             sync: 'sync://'
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # @see https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
                 dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
-                retry_strategy:
-                    # 1, 3, 9, 27
-                    max_retries: 4
-                    delay: 60000 # 1 minutes
-                    multiplier: 3
-                    max_delay: 3600000 # 1 hour
             # @see https://symfony.com/doc/current/messenger.html#saving-retrying-failed-messages
             failed:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_FAILED)%'

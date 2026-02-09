@@ -8,8 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1] - 2026-02-02
+
 * [PR-266](https://github.com/itk-dev/economics/pull/266)
   Replace symfony scheduler with cron.
+  Fixed issue version and epic synchronization.
+  Fixed issue epic use.
+  Added option to disable modifiedAt check for sync command.
+  Changed invoice epic selector to multiple.
 
 ## [3.0.0] - 2026-01-20
 
@@ -539,7 +545,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.0.1...HEAD
+[3.0.1]: https://github.com/itk-dev/economics/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/itk-dev/economics/compare/2.10.2...3.0.0
 [2.10.2]: https://github.com/itk-dev/economics/compare/2.10.1...2.10.2
 [2.10.1]: https://github.com/itk-dev/economics/compare/2.10.0...2.10.1
