@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.2] - 2026-03-04
+
+* [PR-274](https://github.com/itk-dev/economics/pull/274)
+  Added cron to itk-economics woodpecker setup.
+
 ## [3.0.1] - 2026-02-02
 
 * [PR-266](https://github.com/itk-dev/economics/pull/266)
