@@ -49,7 +49,13 @@ class ProductsImportCommand extends Command
 
         $headerName = 'name';
 
-        $getRowAsStrings = static fn (Row $row) => array_map(
+        $getRowAsStrings =
+        /**
+         * @return string[]
+         *
+         * @psalm-return list<string>
+         */
+        static fn (Row $row): array => array_map(
             static fn ($value) => match (true) {
                 $value instanceof \DateTimeInterface,
                 $value instanceof \DateInterval => throw new RuntimeException(sprintf('Unexpected type: %s', $value::class)),

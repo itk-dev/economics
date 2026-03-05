@@ -14,6 +14,7 @@ use App\Repository\InvoiceRepository;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use PhpOffice\PhpSpreadsheet\Writer\Exception as PhpSpreadsheetException;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
@@ -251,8 +252,8 @@ class BillingService
         $row = 1;
 
         // Convenience helper to set a cell value.
-        $setCellValue = static fn (int|string $col, int $row, mixed $value) => $sheet->setCellValue((is_string($col) ? $col : Coordinate::stringFromColumnIndex($col)).$row, $value);
-        $formatDate = static fn (?\DateTimeInterface $date) => null !== $date ? $date->format('d.m.Y') : '';
+        $setCellValue = static fn (int|string $col, int $row, mixed $value): Worksheet => $sheet->setCellValue((is_string($col) ? $col : Coordinate::stringFromColumnIndex($col)).$row, $value);
+        $formatDate = static fn (?\DateTimeInterface $date): string => null !== $date ? $date->format('d.m.Y') : '';
 
         foreach ($invoiceIds as $invoiceId) {
             $invoice = $this->invoiceRepository->findOneBy(['id' => $invoiceId]);

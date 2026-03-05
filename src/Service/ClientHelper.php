@@ -14,7 +14,7 @@ class ClientHelper
     /**
      * Get standard price from client with fallback to global value.
      */
-    public function getStandardPrice(?Client $client = null)
+    public function getStandardPrice(?Client $client = null): float
     {
         $standardPrice = (float) $this->options['standard_price'];
 
