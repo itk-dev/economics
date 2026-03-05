@@ -9,7 +9,6 @@ class InvoicingRateReportWorker
 {
     private Worker $worker;
 
-    /** @var float */
     public float $average;
 
     /** @var ArrayCollection<int, array> */

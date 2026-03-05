@@ -241,8 +241,6 @@ class BillingService
      *
      * @param array $invoiceIds array of invoice ids that should be exported
      *
-     * @return Spreadsheet
-     *
      * @throws EconomicsException
      */
     public function exportInvoicesToSpreadsheet(array $invoiceIds): Spreadsheet

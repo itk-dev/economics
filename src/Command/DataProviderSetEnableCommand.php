@@ -45,10 +45,9 @@ class DataProviderSetEnableCommand extends Command
             $io->info('Data provider with id: '.$dataProvider->getId().' '.($dataProvider->isEnabled() ? 'enabled' : 'disabled'));
 
             return Command::SUCCESS;
-        } else {
-            $io->error('Data provider not found');
-
-            return Command::FAILURE;
         }
+        $io->error('Data provider not found');
+
+        return Command::FAILURE;
     }
 }

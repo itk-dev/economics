@@ -26,9 +26,9 @@ class WorkloadReportService
      * such as logged hours, expected workload, work percentage for each period,
      * average workloads, and overall summary statistics.
      *
-     * @param int $year the year for which the workload report is generated
+     * @param int            $year           the year for which the workload report is generated
      * @param PeriodTypeEnum $viewPeriodType the period type (e.g., week, month, year) for the report
-     * @param ViewModeEnum $viewMode the mode of viewing the workload (e.g., workload vs other modes)
+     * @param ViewModeEnum   $viewMode       the mode of viewing the workload (e.g., workload vs other modes)
      *
      * @return WorkloadReportData an object containing the workload report data
      *
@@ -146,7 +146,7 @@ class WorkloadReportService
      * to ensure correct data summation and no highlighting of current period.
      *
      * @param PeriodTypeEnum $viewMode the view mode to determine the current period
-     * @param int $year the provided year
+     * @param int            $year     the provided year
      *
      * @return int the current period as a numeric value
      */
@@ -173,8 +173,8 @@ class WorkloadReportService
     /**
      * Retrieves an array of dates for a given period based on the view mode.
      *
-     * @param int $period the period for which to retrieve dates
-     * @param int $year the year for the period
+     * @param int            $period   the period for which to retrieve dates
+     * @param int            $year     the year for the period
      * @param PeriodTypeEnum $viewMode the view mode to determine the dates of the period
      *
      * @return array an array of dates for the given period
@@ -191,7 +191,7 @@ class WorkloadReportService
     /**
      * Retrieves the readable period based on the given period and view mode.
      *
-     * @param int $period the period to be made readable
+     * @param int            $period   the period to be made readable
      * @param PeriodTypeEnum $viewMode the view mode to determine the format of the readable period
      *
      * @return string the readable period
@@ -208,7 +208,7 @@ class WorkloadReportService
      * Retrieves an array of periods based on the given view mode.
      *
      * @param PeriodTypeEnum $viewMode the view mode to determine the periods
-     * @param int $year the year containing the periods
+     * @param int            $year     the year containing the periods
      *
      * @return array an array of periods
      */
@@ -224,10 +224,8 @@ class WorkloadReportService
     /**
      * Returns workloads based on the provided view mode, worker, and date range.
      *
-     * @param ViewModeEnum $viewMode defines the view mode
-     * @param string $workerIdentifier the worker's identifier
-     * @param \DateTime $dateFrom
-     * @param \DateTime $dateTo
+     * @param ViewModeEnum $viewMode         defines the view mode
+     * @param string       $workerIdentifier the worker's identifier
      *
      * @return array the list of workloads matching the criteria defined by the parameters
      */
