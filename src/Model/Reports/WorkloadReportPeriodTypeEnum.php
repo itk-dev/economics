@@ -11,6 +11,7 @@ enum WorkloadReportPeriodTypeEnum: string implements TranslatableInterface
     case MONTH = 'month';
     case YEAR = 'year';
 
+    #[\Override]
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
         return match ($this) {

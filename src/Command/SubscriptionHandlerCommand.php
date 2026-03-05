@@ -27,6 +27,7 @@ class SubscriptionHandlerCommand extends Command
         parent::__construct($this->getName());
     }
 
+    #[\Override]
     protected function configure(): void
     {
     }
@@ -39,6 +40,7 @@ class SubscriptionHandlerCommand extends Command
      *
      * @return int Command status
      */
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

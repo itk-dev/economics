@@ -35,6 +35,7 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
         parent::__construct($providerManager);
     }
 
+    #[\Override]
     public function authenticate(Request $request): Passport
     {
         try {
@@ -69,11 +70,13 @@ class AzureOIDCAuthenticator extends OpenIdLoginAuthenticator
         }
     }
 
+    #[\Override]
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         return new RedirectResponse($this->router->generate('index'));
     }
 
+    #[\Override]
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
         return new RedirectResponse($this->router->generate('itkdev_openid_connect_login', [
