@@ -3,33 +3,33 @@ on: pull_request
 name: Review
 
 env:
-    COMPOSE_USER: runner
+  COMPOSE_USER: runner
 
 jobs:
-    code-analysis:
-        name: PHP - Code analysis (phpstan)
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - run: |
-                  docker network create frontend
-                  docker compose run --rm phpfpm composer install
-                  docker compose run --rm phpfpm composer code-analysis
+  code-analysis:
+    name: PHP - Code analysis (phpstan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker network create frontend
+          docker compose run --rm phpfpm composer install
+          docker compose run --rm phpfpm composer code-analysis
 
-    phpunit:
-        name: Test suite
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  phpunit:
+    name: Test suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Test suite
-              run: |
-                  docker network create frontend
-                  docker compose run --rm phpfpm composer install
-                  docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
+      - name: Test suite
+        run: |
+          docker network create frontend
+          docker compose run --rm phpfpm composer install
+          docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
 
-            - name: Upload coverage to Codecov test
-              uses: codecov/codecov-action@v2
-              with:
-                  files: ./coverage/unit.xml
-                  flags: unittests, ${{ matrix.php }}
+      - name: Upload coverage to Codecov test
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./coverage/unit.xml
+          flags: unittests, ${{ matrix.php }}
