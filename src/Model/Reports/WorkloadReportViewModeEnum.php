@@ -11,6 +11,7 @@ enum WorkloadReportViewModeEnum: string implements TranslatableInterface
     case BILLABLE = 'billable';
     case BILLED = 'billed';
 
+    #[\Override]
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
         return match ($this) {

@@ -69,8 +69,6 @@ class ServiceAgreementRepository extends ServiceEntityRepository
 
     /**
      * Retrieves a list of API service agreements along with their associated cybersecurity agreements.
-     *
-     * @return array
      */
     public function getApiServiceAgreements(): array
     {

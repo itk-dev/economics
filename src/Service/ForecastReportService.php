@@ -26,7 +26,7 @@ class ForecastReportService
      * Get forecast report data based on given date range.
      *
      * @param \DateTimeInterface $fromDate The start date of the period
-     * @param \DateTimeInterface $toDate The end date of the period
+     * @param \DateTimeInterface $toDate   The end date of the period
      *
      * @return ForecastReportData The forecast report data
      *
