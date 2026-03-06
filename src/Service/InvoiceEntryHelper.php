@@ -21,10 +21,10 @@ class InvoiceEntryHelper
      * Get all configured accounts.
      *
      * @param string|null $account
-     *   An account that must exist in the result
+     *                             An account that must exist in the result
      *
      * @return array<string, string>
-     *   label => id
+     *                               label => id
      */
     public function getAccountOptions(?string $account): array
     {
@@ -42,7 +42,7 @@ class InvoiceEntryHelper
      * Get ID of default account.
      *
      * @return string|null
-     *   The default account ID if any
+     *                     The default account ID if any
      */
     public function getDefaultAccount(): ?string
     {
@@ -61,7 +61,7 @@ class InvoiceEntryHelper
      * Get ID of product account.
      *
      * @return string|null
-     *   The product account ID if any
+     *                     The product account ID if any
      */
     public function getProductAccount(): ?string
     {
@@ -95,11 +95,6 @@ class InvoiceEntryHelper
             || count($this->getAccountOptions(null)) > 1;
     }
 
-    /**
-     * @param string $account
-     *
-     * @return array
-     */
     private function getAccounts(?string $account): array
     {
         $accounts = $this->options['accounts'] ?? [];

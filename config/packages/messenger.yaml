@@ -4,13 +4,13 @@ framework:
         failure_transport: failed
 
         transports:
-            sync: 'sync://'
+            sync: "sync://"
             # @see https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
                 dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
             # @see https://symfony.com/doc/current/messenger.html#saving-retrying-failed-messages
             failed:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN_FAILED)%'
+                dsn: "%env(MESSENGER_TRANSPORT_DSN_FAILED)%"
 
         routing:
             # Route your messages to the transports
@@ -20,7 +20,6 @@ framework:
             'App\Message\UpsertWorklogMessage': async
             'App\Message\LeantimeUpdateMessage': async
             'App\Message\LeantimeDeleteMessage': async
-
 # when@test:
 #    framework:
 #        messenger:
