@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.3] - 2026-03-06
+
 * [PR-276](https://github.com/itk-dev/economics/pull/276)
   Changed to use supercronic instead of woodpecker for crontabs.
 * [PR-277](https://github.com/itk-dev/economics/pull/277)
@@ -558,6 +560,8 @@ complete process.
 * Changed worklog save button styling to be sticky.
 
 [Unreleased]: https://github.com/itk-dev/economics/compare/3.0.1...HEAD
+[3.0.3]: https://github.com/itk-dev/economics/compare/3.0.2...3.0.3
+[3.0.2]: https://github.com/itk-dev/economics/compare/3.0.1...3.0.2
 [3.0.1]: https://github.com/itk-dev/economics/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/itk-dev/economics/compare/2.10.2...3.0.0
 [2.10.2]: https://github.com/itk-dev/economics/compare/2.10.1...2.10.2
