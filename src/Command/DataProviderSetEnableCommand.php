@@ -22,12 +22,14 @@ class DataProviderSetEnableCommand extends Command
         parent::__construct($this->getName());
     }
 
+    #[\Override]
     protected function configure(): void
     {
         $this->addArgument('id', InputArgument::REQUIRED, 'data provider id');
         $this->addArgument('enable', InputArgument::REQUIRED, 'data provider enable');
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -45,10 +47,9 @@ class DataProviderSetEnableCommand extends Command
             $io->info('Data provider with id: '.$dataProvider->getId().' '.($dataProvider->isEnabled() ? 'enabled' : 'disabled'));
 
             return Command::SUCCESS;
-        } else {
-            $io->error('Data provider not found');
-
-            return Command::FAILURE;
         }
+        $io->error('Data provider not found');
+
+        return Command::FAILURE;
     }
 }
