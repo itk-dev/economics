@@ -3,3 +3,6 @@
 
 # Sync deleted every hour starting at 10 minutes past the hour
 10 * * * * bin/console app:data-providers:sync-deleted
+
+# Anonymize worklogs after 5 years, every night at 03:00
+* 3 * * * bin/console app:anonymize-worklogs
