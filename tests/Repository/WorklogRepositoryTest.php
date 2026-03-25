@@ -100,14 +100,6 @@ class WorklogRepositoryTest extends KernelTestCase
         // Assert recent worklog was not anonymized
         $this->assertEquals('Recent worklog description', $recentWorklog->getDescription());
         $this->assertNull($recentWorklog->getAnonymizedDate());
-
-        // Cleanup
-        $this->entityManager->remove($oldWorklog);
-        $this->entityManager->remove($recentWorklog);
-        $this->entityManager->remove($issue);
-        $this->entityManager->remove($project);
-        $this->entityManager->remove($dataProvider);
-        $this->entityManager->flush();
     }
 
     public function testAnonymizeWorklogsWithNoMatchingRecords(): void
@@ -182,13 +174,6 @@ class WorklogRepositoryTest extends KernelTestCase
             $afterAnonymization->getTimestamp(),
             $worklog->getAnonymizedDate()->getTimestamp()
         );
-
-        // Cleanup
-        $this->entityManager->remove($worklog);
-        $this->entityManager->remove($issue);
-        $this->entityManager->remove($project);
-        $this->entityManager->remove($dataProvider);
-        $this->entityManager->flush();
     }
 
     public function testAnonymizeWorklogsIgnoresAlreadyAnonymized(): void
@@ -220,7 +205,7 @@ class WorklogRepositoryTest extends KernelTestCase
         // Create a worklog that has already been anonymized
         $alreadyAnonymized = new Worklog();
         $alreadyAnonymized->setWorklogId(3001);
-        $alreadyAnonymized->setDescription('worklog+123');
+        $alreadyAnonymized->setDescription('worklog 123');
         $alreadyAnonymized->setWorker('test@example.com');
         $alreadyAnonymized->setTimeSpentSeconds(3600);
         $alreadyAnonymized->setStarted(new \DateTime('2020-01-01'));
@@ -263,23 +248,15 @@ class WorklogRepositoryTest extends KernelTestCase
         $notYetAnonymized = $this->worklogRepository->find($notYetAnonymizedId);
 
         // Assert already anonymized worklog was not changed
-        $this->assertEquals('worklog+123', $alreadyAnonymized->getDescription());
+        $this->assertEquals('worklog 123', $alreadyAnonymized->getDescription());
         $this->assertEquals(
             $originalAnonymizedDate->getTimestamp(),
             $alreadyAnonymized->getAnonymizedDate()->getTimestamp()
         );
 
         // Assert not yet anonymized worklog was anonymized
-        $this->assertEquals('worklog+'.$notYetAnonymizedId, $notYetAnonymized->getDescription());
+        $this->assertEquals('worklog '.$notYetAnonymizedId, $notYetAnonymized->getDescription());
         $this->assertNotNull($notYetAnonymized->getAnonymizedDate());
-
-        // Cleanup
-        $this->entityManager->remove($alreadyAnonymized);
-        $this->entityManager->remove($notYetAnonymized);
-        $this->entityManager->remove($issue);
-        $this->entityManager->remove($project);
-        $this->entityManager->remove($dataProvider);
-        $this->entityManager->flush();
     }
 
     protected function tearDown(): void
