@@ -10,6 +10,7 @@ class EuropeCopenhagenDateTimeImmutableType extends DateTimeImmutableType
 {
     private static ?\DateTimeZone $europeCopenhagenTimeZone = null;
 
+    #[\Override]
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value instanceof \DateTimeImmutable) {
@@ -24,6 +25,7 @@ class EuropeCopenhagenDateTimeImmutableType extends DateTimeImmutableType
         return parent::convertToDatabaseValue($value, $platform);
     }
 
+    #[\Override]
     public function convertToPHPValue($value, AbstractPlatform $platform): ?\DateTimeImmutable
     {
         if (null === $value || $value instanceof \DateTimeImmutable) {

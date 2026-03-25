@@ -24,7 +24,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class SyncCommand extends Command
 {
     private const OPTION_JOB = 'job';
-    private const OPTION_MODIFIED = 'modified';
+    private const OPTION_INTERVAL = 'interval';
     private const OPTION_ALL = 'all';
     private const OPTION_PROJECTS = 'projects';
     private const OPTION_VERSIONS = 'versions';
@@ -42,10 +42,11 @@ class SyncCommand extends Command
         parent::__construct($this->getName());
     }
 
+    #[\Override]
     protected function configure(): void
     {
         $this->addOption(self::OPTION_JOB, 'j', InputOption::VALUE_NONE, 'Use async job handling');
-        $this->addOption(self::OPTION_MODIFIED, null, InputOption::VALUE_OPTIONAL, 'Only update items modified since this datetime string (valid formats: https://www.php.net/manual/en/datetime.formats.php)');
+        $this->addOption(self::OPTION_INTERVAL, null, InputOption::VALUE_OPTIONAL, 'Only consider items modified within the specified interval up to now. See https://www.php.net/manual/en/dateinterval.construct.php for format.');
         $this->addOption(self::OPTION_ALL, 'a', InputOption::VALUE_NONE, 'Sync all');
         $this->addOption(self::OPTION_PROJECTS, 'p', InputOption::VALUE_NONE, 'Sync projects');
         $this->addOption(self::OPTION_VERSIONS, 's', InputOption::VALUE_NONE, 'Sync versions');
@@ -55,20 +56,21 @@ class SyncCommand extends Command
         $this->addOption(self::OPTION_DISABLE_MODIFIED_AT_CHECK, 'd', InputOption::VALUE_NONE, 'Disable modifiedAt check. This will synchronize all items even though item.modifiedAt has not changed.');
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
         $jobHandling = $input->getOption(self::OPTION_JOB);
         $disableModifiedAtCheck = $input->getOption(self::OPTION_DISABLE_MODIFIED_AT_CHECK);
-        $modified = $input->getOption(self::OPTION_MODIFIED);
+        $interval = $input->getOption(self::OPTION_INTERVAL);
         $modifiedAfter = null;
 
-        if (!empty($modified)) {
+        if (!empty($interval)) {
             try {
-                $modifiedAfter = new \DateTimeImmutable($modified);
+                $modifiedAfter = (new \DateTime())->sub(new \DateInterval($interval));
             } catch (\Exception $e) {
-                $io->error('Error parsing modified option: '.$e->getMessage());
+                $io->error('Error parsing interval option: '.$e->getMessage());
 
                 return Command::FAILURE;
             }
