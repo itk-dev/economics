@@ -238,7 +238,11 @@ class DataProviderService
         }
 
         $worklog->setWorklogId($upsertWorklogData->projectTrackerId);
-        $worklog->setDescription($upsertWorklogData->description);
+
+        if (null === $worklog->getAnonymizedDate()) {
+            $worklog->setDescription($upsertWorklogData->description);
+        }
+
         $worklog->setWorker($upsertWorklogData->username);
         $worklog->setStarted($upsertWorklogData->startedDate);
         $worklog->setProjectTrackerIssueId($upsertWorklogData->projectTrackerIssueId);
