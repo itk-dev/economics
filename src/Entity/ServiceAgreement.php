@@ -288,7 +288,6 @@ class ServiceAgreement extends AbstractBaseEntity
         return $this;
     }
 
-
     public function getGitRepos(): ?string
     {
         return $this->gitRepos;
