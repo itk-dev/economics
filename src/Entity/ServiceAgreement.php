@@ -69,9 +69,6 @@ class ServiceAgreement extends AbstractBaseEntity
     #[ORM\Column(enumType: ServerSizeEnum::class, nullable: true)]
     private ?ServerSizeEnum $serverSize = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?float $cybersecurityPrice = null;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $gitRepos = null;
 
@@ -291,17 +288,6 @@ class ServiceAgreement extends AbstractBaseEntity
         return $this;
     }
 
-    public function getCybersecurityPrice(): ?float
-    {
-        return $this->cybersecurityPrice;
-    }
-
-    public function setCybersecurityPrice(?float $cybersecurityPrice): static
-    {
-        $this->cybersecurityPrice = $cybersecurityPrice;
-
-        return $this;
-    }
 
     public function getGitRepos(): ?string
     {
