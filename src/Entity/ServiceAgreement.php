@@ -12,14 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: ServiceAgreementRepository::class)]
-#[ORM\HasLifecycleCallbacks]
-class ServiceAgreement
+class ServiceAgreement extends AbstractBaseEntity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\ManyToOne(targetEntity: Project::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
@@ -80,17 +74,6 @@ class ServiceAgreement
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $gitRepos = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $createdAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $updatedAt = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getProject(): ?Project
     {
@@ -330,29 +313,6 @@ class ServiceAgreement
         $this->gitRepos = $gitRepos;
 
         return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeInterface
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
-    {
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
-    }
-
-    #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
-    {
-        $this->updatedAt = new \DateTime();
     }
 
     #[Assert\Callback]
