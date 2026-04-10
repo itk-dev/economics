@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-281](https://github.com/itk-dev/economics/pull/281)
+  Reworked index page columns and added project lead filter.
+  Added createdAt/updatedAt as read-only text on edit page.
+  Moved cybersecurity price to cybersecurity agreement entity.
 * [PR-280](https://github.com/itk-dev/economics/pull/280)
   Extended service agreement overview with new and updated fields.
   Tweaked form styling.

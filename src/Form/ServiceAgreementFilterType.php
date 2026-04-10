@@ -2,8 +2,11 @@
 
 namespace App\Form;
 
+use App\Entity\Worker;
 use App\Enum\HostingProviderEnum;
 use App\Model\Invoices\ServiceAgreementFilterData;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
@@ -56,6 +59,18 @@ class ServiceAgreementFilterType extends AbstractType
                     'service_agreement.no' => false,
                 ],
                 'attr' => ['class' => 'form-element'],
+            ])
+            ->add('projectLead', EntityType::class, [
+                'required' => false,
+                'class' => Worker::class,
+                'label' => 'service_agreement.project_lead',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element'],
+                'placeholder' => '',
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('w')
+                    ->innerJoin('App\Entity\ServiceAgreement', 'sa', 'WITH', 'sa.projectLead = w')
+                    ->groupBy('w.id')
+                    ->orderBy('w.name', 'ASC'),
             ]);
     }
 
