@@ -281,9 +281,15 @@ material_number_enum:
   external_without_moms: "Eksterne u/moms: 100008"
 
 system_owner_notice_enum:
-  on_update: "Opdateringer af systemet"
-  on_server: "På server"
-  never: "Aldrig"
+  serverflytning: "Serverflytning"
+  sikkerhedspatch: "Sikkerhedspatch"
+  cybersikkershedsopdatering: "Cybersikkershedsopdatering"
+
+server_size_enum:
+  lille: "Lille"
+  mellem: "Mellem"
+  stor: "Stor"
+  custom: "Custom"
 accounts:
   id: "#"
   create_new: "Opret ny konto"
@@ -901,6 +907,7 @@ service_agreement:
   action_edit: "Rediger driftsaftale"
   has_cybersecurity_agreement_true: "✅"
   has_cybersecurity_agreement_false: "❌"
+  edit: "Rediger driftsaftale"
   new: "Ny driftsaftale"
   action_create: "Gem"
   action_delete: "Slet driftsaftale"
@@ -909,6 +916,19 @@ service_agreement:
   no: "Nej"
   no_records_found: "Ingen driftsaftaler"
   system_owner_notice: "Systemejer skal inddrages ved ændringer"
+  system_owner_notices: "Systemejer notifikation"
+  operations_price: "Driftsaftale Pris"
+  is_eol: "EoL Aftale"
+  leantime_url: "Leantime Projekt"
+  client_contact_name: "Kontakt hos kunden (Navn)"
+  client_contact_email: "Kontakt hos kunden (Email)"
+  dedicated_server: "Dedikeret Server"
+  server_size: "Serverstørrelse"
+  cybersecurity_price: "Cybersikkerhedsaftale Pris"
+  git_repos: "GIT Repos"
+  created_at: "Oprettet"
+  updated_at: "Opdateret"
+  valid_to_required_when_eol: "Gyldig til er påkrævet når EoL er aktiveret"
   hours_per_quarter: "timer/kvartal"
   search: "Søg"
   cyber_security_agreement:
