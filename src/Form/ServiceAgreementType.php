@@ -177,15 +177,6 @@ class ServiceAgreementType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row'],
             ])
-            ->add('cybersecurityPrice', NumberType::class, [
-                'label' => 'service_agreement.cybersecurity_price',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
-                'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
-                'html5' => true,
-                'required' => false,
-            ])
             ->add('gitRepos', TextareaType::class, [
                 'label' => 'service_agreement.git_repos',
                 'label_attr' => ['class' => 'label'],
