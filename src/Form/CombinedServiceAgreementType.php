@@ -23,7 +23,6 @@ class CombinedServiceAgreementType extends AbstractType
                 'label_attr' => ['class' => 'label toggle-label'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row select-none'],
-                'attr' => ['style' => 'margin-left: 10px;'],
                 'data' => $options['data']['attachCybersecurityAgreement'] ?? false,
             ])
             ->add('cybersecurityAgreement', CybersecurityAgreementType::class, [
