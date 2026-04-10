@@ -917,7 +917,6 @@ service_agreement:
   yes: "Ja"
   no: "Nej"
   no_records_found: "Ingen driftsaftaler"
-  system_owner_notice: "Systemejer skal inddrages ved ændringer"
   system_owner_notices: "Systemejer notifikation"
   operations_price: "Driftsaftale Pris"
   is_eol: "EoL Aftale"
