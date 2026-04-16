@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-282](https://github.com/itk-dev/economics/pull/282)
+  Fixed worklog project not updating when ticket is moved to another project in Leantime.
+
 ## [3.0.2] - 2026-03-04
 
 * [PR-274](https://github.com/itk-dev/economics/pull/274)
