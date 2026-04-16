@@ -160,6 +160,8 @@ class DataProviderService
             }
         }
 
+        $currentProject = $issue->getProject();
+
         $issue->setName($upsertIssueData->name);
         $issue->setProject($project);
         $issue->setProjectTrackerId($upsertIssueData->projectTrackerId);
@@ -206,6 +208,12 @@ class DataProviderService
         $issue->setLinkToIssue($upsertIssueData->url);
         $issue->setFetchDate($upsertIssueData->fetchTime);
         $issue->setSourceModifiedDate($upsertIssueData->sourceModifiedDate);
+
+        // If the project has changed for an existing issue, update all associated worklogs.
+        if (null !== $currentProject && null !== $project && $currentProject->getId() !== $project->getId()) {
+            $updatedCount = $this->worklogRepository->updateProjectByIssue($issue, $project);
+            $this->logger->info("Updated project for {$updatedCount} worklogs of issue {$issue->getProjectTrackerId()} from project {$currentProject->getProjectTrackerId()} to {$project->getProjectTrackerId()}.");
+        }
 
         $this->entityManager->flush();
     }
