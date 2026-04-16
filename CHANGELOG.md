@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-282](https://github.com/itk-dev/economics/pull/282)
+  Fixed worklog project not updating when ticket is moved to another project in Leantime.
 * [PR-276](https://github.com/itk-dev/economics/pull/276)
   Changed to use supercronic instead of woodpecker for crontabs.
 * [PR-277](https://github.com/itk-dev/economics/pull/277)
