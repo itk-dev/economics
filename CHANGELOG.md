@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-282](https://github.com/itk-dev/economics/pull/282)
   Fixed worklog project not updating when ticket is moved to another project in Leantime.
+* [PR-281](https://github.com/itk-dev/economics/pull/281)
+  Reworked index page columns and added project lead filter.
+  Added createdAt/updatedAt as read-only text on edit page.
+  Moved cybersecurity price to cybersecurity agreement entity.
+* [PR-280](https://github.com/itk-dev/economics/pull/280)
+  Extended service agreement overview with new and updated fields.
+  Tweaked form styling.
 * [PR-276](https://github.com/itk-dev/economics/pull/276)
   Changed to use supercronic instead of woodpecker for crontabs.
 * [PR-277](https://github.com/itk-dev/economics/pull/277)

@@ -28,6 +28,7 @@ final class ServiceAgreementController extends AbstractController
     public function index(Request $request, ServiceAgreementRepository $serviceAgreementRepository, CybersecurityAgreementRepository $cybersecurityAgreementRepository): Response
     {
         $serviceAgreementFilterData = new ServiceAgreementFilterData();
+        $serviceAgreementFilterData->active = true;
         $form = $this->createForm(ServiceAgreementFilterType::class, $serviceAgreementFilterData);
         $form->handleRequest($request);
 

@@ -324,7 +324,15 @@
     }
 
     .toggle-label {
-        @apply relative inline-flex items-center cursor-pointer;
+        @apply relative inline-flex items-center cursor-pointer select-none;
+    }
+
+    .form-row.select-none {
+        @apply flex flex-row-reverse justify-end items-center gap-1;
+    }
+
+    .form-row.select-none .label {
+        @apply mb-0;
     }
 
     .selections .choices__list .choices__input {
@@ -468,5 +476,13 @@
     }
     .service_agreement_filter > div.form-default {
         grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+
+    .checkbox-inline-group {
+        @apply flex items-center;
+    }
+
+    .checkbox-inline-group label {
+        @apply mr-4 ml-1 text-sm font-medium text-gray-900 dark:text-white select-none cursor-pointer;
     }
 }
