@@ -342,6 +342,11 @@
       <code><![CDATA[ORM\PreUpdate]]></code>
     </InvalidAttribute>
   </file>
+  <file src="src/Entity/ServiceAgreement.php">
+    <InvalidAttribute>
+      <code><![CDATA[Assert\Callback]]></code>
+    </InvalidAttribute>
+  </file>
   <file src="src/Entity/Subscription.php">
     <InvalidAttribute>
       <code><![CDATA[\Override]]></code>
