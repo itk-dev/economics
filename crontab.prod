@@ -1,0 +1,14 @@
+# Sync modified twice every hour
+10,40 * * * * bin/console app:data-providers:sync -p -j --interval=PT2H
+10,40 * * * * bin/console app:data-providers:sync -s -j --interval=PT2H
+10,40 * * * * bin/console app:data-providers:sync -i -j --interval=PT2H
+15,45 * * * * bin/console app:data-providers:sync -w -j --interval=PT2H
+
+# Sync deleted twice every hour starting at 20 minutes past the hour
+20,50 * * * * bin/console app:data-providers:sync-deleted --interval=PT2H
+
+# Sync the last week every night.
+0 2 * * * bin/console app:data-providers:sync -p -j --interval=P1W
+0 2 * * * bin/console app:data-providers:sync -s -j --interval=P1W
+0 2 * * * bin/console app:data-providers:sync -i -j --interval=P1W
+10 2 * * * bin/console app:data-providers:sync -w -j --interval=P1W

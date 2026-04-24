@@ -44,8 +44,6 @@ class SubscriptionHandlerService
      *
      * @param array $notification the notification data
      *
-     * @return void
-     *
      * @throws TransportExceptionInterface
      */
     private function sendNotification(array $notification): void
@@ -67,10 +65,8 @@ class SubscriptionHandlerService
      * Handles a subscription for hour report.
      *
      * @param Subscription $subscription the subscription object
-     * @param \DateTime $fromDate the starting date of the report
-     * @param \DateTime $toDate the ending date of the report
-     *
-     * @return void
+     * @param \DateTime    $fromDate     the starting date of the report
+     * @param \DateTime    $toDate       the ending date of the report
      *
      * @throws EconomicsException
      * @throws LoaderError
@@ -146,12 +142,12 @@ class SubscriptionHandlerService
     /**
      * Prepare mail data for sending a subscription hour report.
      *
-     * @param Subscription $subscription the subscription object
-     * @param \DateTime $fromDate the starting date of the report
-     * @param \DateTime $toDate the ending date of the report
-     * @param Project $project the project object
-     * @param HourReportData $reportData the report data
-     * @param string $email the recipient email address
+     * @param Subscription   $subscription the subscription object
+     * @param \DateTime      $fromDate     the starting date of the report
+     * @param \DateTime      $toDate       the ending date of the report
+     * @param Project        $project      the project object
+     * @param HourReportData $reportData   the report data
+     * @param string         $email        the recipient email address
      *
      * @return array the prepared mail data
      *
@@ -216,7 +212,7 @@ class SubscriptionHandlerService
      * Creates the subject for a subscription email.
      *
      * @param Subscription $subscription the subscription object
-     * @param Project $project the project object
+     * @param Project      $project      the project object
      *
      * @return string the subject string for the subscription email
      *
@@ -250,9 +246,9 @@ class SubscriptionHandlerService
      * Creates the name for the attachment file.
      *
      * @param Subscription $subscription the subscription object
-     * @param \DateTime $fromDate the starting date for the subscription period
-     * @param \DateTime $toDate the ending date for the subscription period
-     * @param Project $project the project object
+     * @param \DateTime    $fromDate     the starting date for the subscription period
+     * @param \DateTime    $toDate       the ending date for the subscription period
+     * @param Project      $project      the project object
      *
      * @return string the name of the attachment file
      *

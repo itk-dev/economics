@@ -15,6 +15,8 @@ class OpenIdConnectController extends AbstractController
     }
 
     /**
+     * @return never
+     *
      * @throws \Exception
      */
     #[Route('/logout', name: 'app_logout', methods: ['GET'])]

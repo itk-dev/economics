@@ -1,3 +1,159 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.24.0@06dd975cb55d36af80f242561738f16c5f58264f">
+<files psalm-version="6.15.1@28dc127af1b5aecd52314f6f645bafc10d0e11f9">
+  <file src="src/Command/DataProviderCreateCommand.php">
+    <InvalidOperand>
+      <code><![CDATA[$dataProvider->getId()]]></code>
+      <code><![CDATA[$dataProvider->isEnableAccountSync()]]></code>
+      <code><![CDATA[$dataProvider->isEnableClientSync()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Command/DataProviderSetEnableCommand.php">
+    <InvalidOperand>
+      <code><![CDATA[$dataProvider->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Command/ProductsImportCommand.php">
+    <PossiblyFalseArgument>
+      <code><![CDATA[json_encode($row->toArray())]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Command/SubscriptionHandlerCommand.php">
+    <InvalidOperand>
+      <code><![CDATA[$subscription->getId()]]></code>
+      <code><![CDATA[$subscriptionId]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/AccountController.php">
+    <InvalidOperand>
+      <code><![CDATA[$account->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/ClientController.php">
+    <InvalidOperand>
+      <code><![CDATA[$client->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/InvoiceController.php">
+    <InvalidOperand>
+      <code><![CDATA[$invoice->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/InvoiceEntryController.php">
+    <InvalidOperand>
+      <code><![CDATA[$invoiceEntry->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/IssueController.php">
+    <InvalidOperand>
+      <code><![CDATA[$product->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/ProductController.php">
+    <InvalidOperand>
+      <code><![CDATA[$product->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/ProjectBillingController.php">
+    <InvalidOperand>
+      <code><![CDATA[$projectBilling->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/ServiceAgreementController.php">
+    <InvalidOperand>
+      <code><![CDATA[$serviceAgreement->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/SubscriptionController.php">
+    <PossiblyNullArgument>
+      <code><![CDATA[$reportType]]></code>
+    </PossiblyNullArgument>
+    <PossiblyNullArrayOffset>
+      <code><![CDATA[$content]]></code>
+    </PossiblyNullArrayOffset>
+  </file>
+  <file src="src/Controller/WorkerController.php">
+    <InvalidOperand>
+      <code><![CDATA[$worker->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Controller/WorkerGroupController.php">
+    <InvalidOperand>
+      <code><![CDATA[$group->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Entity/DataProvider.php">
+    <InvalidOperand>
+      <code><![CDATA[$this->getId()]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Form/BillableUnbilledHoursReportType.php">
+    <InvalidOperand>
+      <code><![CDATA[date('n') / 3]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Form/InvoiceNewType.php">
+    <ImplicitToStringCast>
+      <code><![CDATA[$pr->getDataProvider()]]></code>
+    </ImplicitToStringCast>
+  </file>
+  <file src="src/Service/BillingService.php">
+    <InvalidOperand>
+      <code><![CDATA[$totalPrice += ($invoiceEntry->getTotalPrice() ?? 0)]]></code>
+      <code><![CDATA[($invoiceEntry->getPrice() ?? 0) * $invoiceEntry->getAmount()]]></code>
+    </InvalidOperand>
+    <PossiblyFalseArgument>
+      <code><![CDATA[$csvOutputEncoded]]></code>
+    </PossiblyFalseArgument>
+  </file>
+  <file src="src/Service/DashboardService.php">
+    <InvalidOperand>
+      <code><![CDATA[$dayNorm * 3600]]></code>
+      <code><![CDATA[$weekNorm / 5]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Service/HourReportService.php">
+    <InvalidOperand>
+      <code><![CDATA[$totalTicketSpent += $hoursSpent]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Service/InvoicingRateReportService.php">
+    <InvalidOperand>
+      <code><![CDATA[$periodSums[$period] / $periodCounts[$period]]]></code>
+      <code><![CDATA[($periodSums[$period] ?? 0) + $loggedBilledPercentage]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Service/PlanningService.php">
+    <InvalidOperand>
+      <code><![CDATA[$this->weekGoalHigh * self::WEEKS_IN_SPRINT_PERIOD]]></code>
+      <code><![CDATA[$this->weekGoalLow * self::WEEKS_IN_SPRINT_PERIOD]]></code>
+    </InvalidOperand>
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->sortAssigneeCollectionByDisplayName($planning->assignees)]]></code>
+      <code><![CDATA[$this->sortProjectCollectionByDisplayName($planning->projects)]]></code>
+    </InvalidPropertyAssignmentValue>
+    <InvalidTemplateParam>
+      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
+      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
+    </InvalidTemplateParam>
+    <UndefinedDocblockClass>
+      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
+      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
+      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
+      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="src/Service/SubscriptionHandlerService.php">
+    <InvalidOperand>
+      <code><![CDATA[$projectId]]></code>
+    </InvalidOperand>
+  </file>
+  <file src="src/Service/WorkloadReportService.php">
+    <InvalidOperand>
+      <code><![CDATA[$expectedWorkloadSum += $expectedWorkload]]></code>
+      <code><![CDATA[$loggedHoursSum / $expectedWorkloadSum]]></code>
+      <code><![CDATA[$periodSums[$period] / $periodCounts[$period]]]></code>
+      <code><![CDATA[$workloadWeekBase / 5]]></code>
+      <code><![CDATA[($periodSums[$period] ?? 0) + $roundedLoggedPercentage]]></code>
+    </InvalidOperand>
+  </file>
 </files>
