@@ -154,6 +154,9 @@
         "tests": [
             "./vendor/bin/phpunit --stop-on-failure"
         ],
+        "tests-unit": [
+            "./vendor/bin/phpunit --testsuite unit --bootstrap tests/bootstrap_unit.php --stop-on-failure"
+        ],
         "tests-coverage": [
             "XDEBUG_MODE=coverage vendor/bin/phpunit --stop-on-failure --coverage-html coverage/"
         ]
