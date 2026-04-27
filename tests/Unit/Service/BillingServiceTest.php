@@ -530,6 +530,105 @@ class BillingServiceTest extends TestCase
         $this->assertNull($sheet->getCell('A1')->getValue());
     }
 
+    public function testGenerateSpreadsheetHtmlReturnsHtmlWithTableClass(): void
+    {
+        $entry = new InvoiceEntry();
+        $entry->setEntryType(InvoiceEntryTypeEnum::MANUAL);
+        $entry->setMaterialNumber(MaterialNumberEnum::INTERNAL);
+        $entry->setProduct('Test Product');
+        $entry->setAmount(10.0);
+        $entry->setPrice(100.0);
+        $entry->setAccount('PSP-123');
+
+        $invoice = new Invoice();
+        $invoice->setName('Test');
+        $invoice->setRecorded(true);
+        $invoice->setLockedType('INTERN');
+        $invoice->setLockedCustomerKey('CUST001');
+        $invoice->setLockedEan('');
+        $invoice->setLockedContactName('John Doe');
+        $invoice->setRecordedDate(new \DateTime('2024-01-15'));
+        $invoice->addInvoiceEntry($entry);
+
+        $this->invoiceRepository->method('findOneBy')
+            ->willReturn($invoice);
+
+        $html = $this->billingService->generateSpreadsheetHtml([1]);
+
+        $this->assertIsString($html);
+        $this->assertStringContainsString('table table-export', $html);
+        $this->assertStringContainsString('Test Product', $html);
+    }
+
+    public function testGenerateSpreadsheetHtmlEmptySpreadsheet(): void
+    {
+        $this->invoiceRepository->method('findOneBy')
+            ->willReturn(null);
+
+        $html = $this->billingService->generateSpreadsheetHtml([999]);
+
+        $this->assertIsString($html);
+    }
+
+    public function testGenerateSpreadsheetCsvResponseHeaders(): void
+    {
+        $entry = new InvoiceEntry();
+        $entry->setEntryType(InvoiceEntryTypeEnum::MANUAL);
+        $entry->setMaterialNumber(MaterialNumberEnum::INTERNAL);
+        $entry->setProduct('CSV Product');
+        $entry->setAmount(5.0);
+        $entry->setPrice(50.0);
+        $entry->setAccount('PSP-789');
+
+        $invoice = new Invoice();
+        $invoice->setName('Test CSV');
+        $invoice->setRecorded(true);
+        $invoice->setLockedType('INTERN');
+        $invoice->setLockedCustomerKey('CUST002');
+        $invoice->setLockedEan('');
+        $invoice->setLockedContactName('Jane');
+        $invoice->setRecordedDate(new \DateTime('2024-01-15'));
+        $invoice->addInvoiceEntry($entry);
+
+        $this->invoiceRepository->method('findOneBy')
+            ->willReturn($invoice);
+
+        $response = $this->billingService->generateSpreadsheetCsvResponse([1]);
+
+        $this->assertSame('text/csv', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('attachment', $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('.csv', $response->headers->get('Content-Disposition'));
+    }
+
+    public function testGenerateSpreadsheetCsvResponseUsesSemicolonDelimiter(): void
+    {
+        $entry = new InvoiceEntry();
+        $entry->setEntryType(InvoiceEntryTypeEnum::MANUAL);
+        $entry->setMaterialNumber(MaterialNumberEnum::INTERNAL);
+        $entry->setProduct('Delimited Product');
+        $entry->setAmount(1.0);
+        $entry->setPrice(10.0);
+        $entry->setAccount('ACC');
+
+        $invoice = new Invoice();
+        $invoice->setName('Test');
+        $invoice->setRecorded(true);
+        $invoice->setLockedType('INTERN');
+        $invoice->setLockedCustomerKey('CUST001');
+        $invoice->setLockedEan('');
+        $invoice->setLockedContactName('John');
+        $invoice->setRecordedDate(new \DateTime());
+        $invoice->addInvoiceEntry($entry);
+
+        $this->invoiceRepository->method('findOneBy')
+            ->willReturn($invoice);
+
+        $response = $this->billingService->generateSpreadsheetCsvResponse([1]);
+
+        $content = $response->getContent();
+        $this->assertStringContainsString(';', $content);
+    }
+
     public function testExportInvoicesToSpreadsheetInternalSupplierAccount(): void
     {
         $invoice = new Invoice();

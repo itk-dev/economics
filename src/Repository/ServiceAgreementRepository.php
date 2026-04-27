@@ -29,15 +29,13 @@ class ServiceAgreementRepository extends ServiceEntityRepository
 
         if (!is_null($serviceAgreementFilterData->project)) {
             $project = $serviceAgreementFilterData->project;
-            $qb->leftJoin('service_agreement.project', 'project')
-                ->andWhere('project.name LIKE :project')
+            $qb->andWhere('project.name LIKE :project')
                 ->setParameter('project', "%$project%");
         }
 
         if (!is_null($serviceAgreementFilterData->client)) {
             $client = $serviceAgreementFilterData->client;
-            $qb->leftJoin('service_agreement.client', 'client')
-                ->andWhere('client.name LIKE :client')
+            $qb->andWhere('client.name LIKE :client')
                 ->setParameter('client', "%$client%");
         }
 
