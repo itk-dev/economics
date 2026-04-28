@@ -2,7 +2,6 @@
 services:
   phpfpm:
     environment:
-      - CRONFILE=/app/crontab.stg
       - PHP_SENDMAIL_PATH=/usr/sbin/sendmail -S mail:1025
 
   nginx:
