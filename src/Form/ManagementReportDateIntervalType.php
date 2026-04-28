@@ -8,7 +8,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class ManagementReportDateIntervalType extends AbstractType
 {
-    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder

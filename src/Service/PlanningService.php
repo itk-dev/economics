@@ -210,6 +210,10 @@ class PlanningService
 
     /**
      * Get the assignee key and display name.
+     *
+     * @param  IssueEntity $issue
+     *
+     * @return array
      */
     private function getAssigneeData(IssueEntity $issue): array
     {
@@ -219,27 +223,29 @@ class PlanningService
                 'displayName' => 'Unassigned',
                 'weekNorm' => 37,
             ];
+        } else {
+            $assigneeKey = (string) $issue->getWorker();
+            $assigneeName = $assigneeKey;
+
+            $worker = $this->workerRepository->findOneBy(['email' => $assigneeKey]);
+
+            if (null !== $worker && null !== $worker->getName()) {
+                $assigneeName = $worker->getName();
+            }
+
+            return [
+                'key' => $assigneeKey,
+                'displayName' => $assigneeName,
+                'weekNorm' => $worker?->getWorkload() ?? 37,
+            ];
         }
-        $assigneeKey = (string) $issue->getWorker();
-        $assigneeName = $assigneeKey;
-
-        $worker = $this->workerRepository->findOneBy(['email' => $assigneeKey]);
-
-        if (null !== $worker && null !== $worker->getName()) {
-            $assigneeName = $worker->getName();
-        }
-
-        return [
-            'key' => $assigneeKey,
-            'displayName' => $assigneeName,
-            'weekNorm' => $worker?->getWorkload() ?? 37,
-        ];
     }
 
     /**
      * Gets or creates an Assignee object in an ArrayCollection.
      *
      * @param ArrayCollection<string, Assignee> $assignees the ArrayCollection containing the Assignee objects
+     * @param array $assigneeData
      *
      * @return Assignee the retrieved or created Assignee object
      */
@@ -256,7 +262,7 @@ class PlanningService
      * Gets or creates a SprintSum object in an ArrayCollection.
      *
      * @param ArrayCollection<string, SprintSum> $sprintSums The ArrayCollection containing SprintSum objects
-     * @param string                             $week       The week for which SprintSum object needs to be fetched or created
+     * @param string $week The week for which SprintSum object needs to be fetched or created
      *
      * @return SprintSum The SprintSum object corresponding to the given $week
      */
@@ -272,9 +278,9 @@ class PlanningService
     /**
      * Gets or creates a Project object in an ArrayCollection.
      *
-     * @param ArrayCollection<string, Project> $projects    the ArrayCollection containing the Project objects
-     * @param string                           $projectKey  the key of the Project object
-     * @param string                           $projectName the name of the Project object
+     * @param ArrayCollection<string, Project> $projects the ArrayCollection containing the Project objects
+     * @param string $projectKey the key of the Project object
+     * @param string $projectName the name of the Project object
      *
      * @return Project the retrieved or created Project object
      */
@@ -292,9 +298,9 @@ class PlanningService
     /**
      * Gets or creates an AssigneeProject object in an ArrayCollection.
      *
-     * @param ArrayCollection<string, AssigneeProject> $projects    The ArrayCollection containing AssigneeProject objects
-     * @param string                                   $projectKey  The key for the AssigneeProject object that needs to be fetched or created
-     * @param string                                   $projectName The name for the AssigneeProject object that needs to be fetched or created
+     * @param ArrayCollection<string, AssigneeProject> $projects The ArrayCollection containing AssigneeProject objects
+     * @param string $projectKey The key for the AssigneeProject object that needs to be fetched or created
+     * @param string $projectName The name for the AssigneeProject object that needs to be fetched or created
      *
      * @return AssigneeProject The AssigneeProject object corresponding to the given $projectKey
      */
@@ -313,9 +319,7 @@ class PlanningService
      *
      * @param ArrayCollection<string, Assignee> $collection The ArrayCollection to be sorted
      *
-     * @return ArrayCollection A new ArrayCollection with the sorted elements
-     *
-     * @psalm-return ArrayCollection<TKey, TValue|null>
+     * @return ArrayCollection<string, Assignee> A new ArrayCollection with the sorted elements
      */
     private function sortAssigneeCollectionByDisplayName(ArrayCollection $collection): ArrayCollection
     {
@@ -333,9 +337,7 @@ class PlanningService
      *
      * @param ArrayCollection<string, Project> $collection The ArrayCollection to be sorted
      *
-     * @return ArrayCollection A new ArrayCollection with the sorted elements
-     *
-     * @psalm-return ArrayCollection<TKey, TValue|null>
+     * @return ArrayCollection<string, Project> A new ArrayCollection with the sorted elements
      */
     private function sortProjectCollectionByDisplayName(ArrayCollection $collection): ArrayCollection
     {

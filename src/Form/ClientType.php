@@ -22,7 +22,6 @@ class ClientType extends AbstractType
     {
     }
 
-    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -137,7 +136,6 @@ class ClientType extends AbstractType
         return $result;
     }
 
-    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver

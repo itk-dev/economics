@@ -42,7 +42,6 @@ class SyncCommand extends Command
         parent::__construct($this->getName());
     }
 
-    #[\Override]
     protected function configure(): void
     {
         $this->addOption(self::OPTION_JOB, 'j', InputOption::VALUE_NONE, 'Use async job handling');
@@ -56,7 +55,6 @@ class SyncCommand extends Command
         $this->addOption(self::OPTION_DISABLE_MODIFIED_AT_CHECK, 'd', InputOption::VALUE_NONE, 'Disable modifiedAt check. This will synchronize all items even though item.modifiedAt has not changed.');
     }
 
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

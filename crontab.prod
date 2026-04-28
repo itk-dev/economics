@@ -1,5 +1,0 @@
-# Sync modified every 15 minutes starting at 5 minutes past the hour
-5,20,35,50 * * * * bin/console app:data-providers:sync-modified
-
-# Sync deleted every 15 minutes starting at 10 minutes past the hour
-10,25,40,55 * * * * bin/console app:data-providers:sync-deleted
