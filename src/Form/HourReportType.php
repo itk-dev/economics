@@ -25,6 +25,7 @@ class HourReportType extends AbstractType
     ) {
     }
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $dataProviders = $this->dataProviderRepository->findAll();
@@ -125,6 +126,7 @@ class HourReportType extends AbstractType
             ]);
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

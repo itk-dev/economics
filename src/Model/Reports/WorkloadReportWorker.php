@@ -10,7 +10,6 @@ class WorkloadReportWorker extends Worker
     /** @var ArrayCollection<int, float> */
     public ArrayCollection $loggedPercentage;
 
-    /** @var float */
     public float $average;
 
     public function __construct()
