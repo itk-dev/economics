@@ -21,7 +21,7 @@ steps:
         from_secret: prod_itk_economics_path
       user:
         from_secret: user
-      playbook: 'release'
+      playbook: "release"
       pre_up:
         - itkdev-docker-compose-server run --rm phpfpm bin/console doctrine:migrations:migrate --no-interaction
         - itkdev-docker-compose-server run --rm phpfpm bin/console messenger:setup-transports
