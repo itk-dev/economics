@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-276](https://github.com/itk-dev/economics/pull/276)
+  Changed to use supercronic instead of woodpecker for crontabs.
+* [PR-277](https://github.com/itk-dev/economics/pull/277)
+  Updated to the latest templates.
+  Updated bundles.
+  Removed GameCenter.
 * [PR-292](https://github.com/itk-dev/economics/pull/292)
   Workload report: right-align numbers and round percentages to 1 decimal.
 * [PR-290](https://github.com/itk-dev/economics/pull/290)
@@ -572,8 +578,7 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.1.0...HEAD
-[3.1.0]: https://github.com/itk-dev/economics/compare/3.0.1...3.1.0
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.0.1...HEAD
 [3.0.1]: https://github.com/itk-dev/economics/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/itk-dev/economics/compare/2.10.2...3.0.0
 [2.10.2]: https://github.com/itk-dev/economics/compare/2.10.1...2.10.2

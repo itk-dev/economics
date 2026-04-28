@@ -1,5 +1,7 @@
 services:
   phpfpm:
+    environment:
+      - CRONFILE=/app/crontab.prod
     volumes:
       - ../../shared/.env.local:/app/.env.local
 
