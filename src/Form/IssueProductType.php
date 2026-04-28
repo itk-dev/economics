@@ -19,6 +19,7 @@ use Symfony\Component\Translation\TranslatableMessage;
 
 class IssueProductType extends AbstractType
 {
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $quantityScale = $options['quantity_scale'];
@@ -61,6 +62,7 @@ class IssueProductType extends AbstractType
         ;
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver

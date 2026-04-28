@@ -9,6 +9,7 @@ enum InvoicingRateReportViewModeEnum: string implements TranslatableInterface
 {
     case SUMMARY = 'summary';
 
+    #[\Override]
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
         return match ($this) {

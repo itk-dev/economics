@@ -19,6 +19,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class AppFixtures extends Fixture
 {
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $dataProviders = [];
