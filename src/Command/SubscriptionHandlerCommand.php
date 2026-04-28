@@ -27,7 +27,6 @@ class SubscriptionHandlerCommand extends Command
         parent::__construct($this->getName());
     }
 
-    #[\Override]
     protected function configure(): void
     {
     }
@@ -35,12 +34,11 @@ class SubscriptionHandlerCommand extends Command
     /**
      * Execute the command.
      *
-     * @param InputInterface  $input  the input
+     * @param InputInterface $input the input
      * @param OutputInterface $output the output
      *
      * @return int Command status
      */
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -79,7 +77,9 @@ class SubscriptionHandlerCommand extends Command
      * for the previous month.
      *
      * @param Subscription $subscription the subscription to handle
-     * @param SymfonyStyle $io           the console output interface
+     * @param SymfonyStyle $io the console output interface
+     *
+     * @return void
      */
     private function handleMonthlyFrequency(Subscription $subscription, SymfonyStyle $io): void
     {
@@ -92,8 +92,10 @@ class SubscriptionHandlerCommand extends Command
      * Handles the quarterly frequency for the given subscription.
      *
      * @param Subscription $subscription the subscription to handle
-     * @param SymfonyStyle $io           the SymfonyStyle instance for console output
-     * @param \DateTime    $dateNow      the current date
+     * @param SymfonyStyle $io the SymfonyStyle instance for console output
+     * @param \DateTime $dateNow the current date
+     *
+     * @return void
      */
     private function handleQuarterlyFrequency(Subscription $subscription, SymfonyStyle $io, \DateTime $dateNow): void
     {
@@ -105,8 +107,10 @@ class SubscriptionHandlerCommand extends Command
      * Handle a subscription with exception handling.
      *
      * @param Subscription $subscription the subscription object
-     * @param \DateTime    $fromDate     the start date of the subscription
-     * @param \DateTime    $toDate       the end date of the subscription
+     * @param \DateTime $fromDate the start date of the subscription
+     * @param \DateTime $toDate the end date of the subscription
+     *
+     * @return void
      */
     private function handleSubscription(Subscription $subscription, \DateTime $fromDate, \DateTime $toDate): void
     {

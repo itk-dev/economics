@@ -27,6 +27,10 @@ class WorkloadReportData
 
     /**
      * Set current week.
+     *
+     * @param int $currentPeriodNumeric
+     *
+     * @return self
      */
     public function setCurrentPeriodNumeric(int $currentPeriodNumeric): self
     {

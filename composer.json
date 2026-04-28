@@ -4,7 +4,7 @@
     "license": "agpl-3.0-or-later",
     "type": "project",
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "beberlei/doctrineextensions": "^1.5",
@@ -58,7 +58,7 @@
         "symfony/phpunit-bridge": "~6.4.0",
         "symfony/stopwatch": "~6.4.0",
         "symfony/web-profiler-bundle": "~6.4.0",
-        "vimeo/psalm": "^6.13.0",
+        "vimeo/psalm": "^5.0",
         "vincentlanglet/twig-cs-fixer": "^3.5.1"
     },
     "replace": {

@@ -7,6 +7,9 @@ use PHPUnit\Framework\TestCase;
 
 class DateTimeHelperTest extends TestCase
 {
+    /**
+     * @var DateTimeHelper
+     */
     protected DateTimeHelper $dateTimeHelper;
 
     public function setUp(): void

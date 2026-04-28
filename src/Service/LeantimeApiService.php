@@ -56,7 +56,6 @@ class LeantimeApiService implements DataProviderInterface
     ) {
     }
 
-    #[\Override]
     public function updateAll(bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null, bool $disableModifiedAtCheck = false): void
     {
         $this->update(Project::class, $asyncJobQueue, $modifiedAfter, $disableModifiedAtCheck);
@@ -71,7 +70,6 @@ class LeantimeApiService implements DataProviderInterface
         $this->delete($asyncJobQueue, $modifiedAfter);
     }
 
-    #[\Override]
     public function update(string $className, bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null, bool $disableModifiedAtCheck = false): void
     {
         $dataProviders = $this->getEnabledLeantimeDataProviders();
