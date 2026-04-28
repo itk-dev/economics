@@ -10,6 +10,7 @@ class EuropeCopenhagenDateTimeType extends DateTimeType
 {
     private static ?\DateTimeZone $europeCopenhagenTimeZone = null;
 
+    #[\Override]
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value instanceof \DateTime) {
@@ -19,6 +20,7 @@ class EuropeCopenhagenDateTimeType extends DateTimeType
         return parent::convertToDatabaseValue($value, $platform);
     }
 
+    #[\Override]
     public function convertToPHPValue($value, AbstractPlatform $platform): ?\DateTimeInterface
     {
         if (null === $value) {

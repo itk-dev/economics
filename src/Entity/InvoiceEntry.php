@@ -242,7 +242,7 @@ class InvoiceEntry extends AbstractBaseEntity
 
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
-    public function setInvoiceIndex()
+    public function setInvoiceIndex(): void
     {
         $this->getInvoice()?->setInvoiceEntryIndexes();
     }

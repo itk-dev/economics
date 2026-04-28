@@ -26,6 +26,7 @@ class Subscription extends AbstractBaseEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $lastSent = null;
 
+    #[\Override]
     public function getId(): ?int
     {
         return $this->id;

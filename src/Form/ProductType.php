@@ -13,6 +13,7 @@ use Symfony\Component\Translation\TranslatableMessage;
 
 class ProductType extends AbstractType
 {
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -54,6 +55,7 @@ class ProductType extends AbstractType
         ;
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
