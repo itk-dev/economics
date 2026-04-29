@@ -1,270 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="6.15.1@28dc127af1b5aecd52314f6f645bafc10d0e11f9">
+<files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
   <file src="src/Command/CalculateSumsCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Command/DataProviderCreateCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$dataProvider->getId()]]></code>
       <code><![CDATA[$dataProvider->isEnableAccountSync()]]></code>
       <code><![CDATA[$dataProvider->isEnableClientSync()]]></code>
     </InvalidOperand>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Command/DataProviderListCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Command/DataProviderSetEnableCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$dataProvider->getId()]]></code>
     </InvalidOperand>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Command/MigrateFromJiraEconomicsCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Command/ProductsImportCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
     <PossiblyFalseArgument>
       <code><![CDATA[json_encode($row->toArray())]]></code>
     </PossiblyFalseArgument>
   </file>
   <file src="src/Command/SubscriptionHandlerCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$subscription->getId()]]></code>
       <code><![CDATA[$subscriptionId]]></code>
     </InvalidOperand>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Command/SyncCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Command/SyncDeletedCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Command/SyncModifiedCommand.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Command/UserSetRoles.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[protected function configure(): void]]></code>
+      <code><![CDATA[protected function execute(InputInterface $input, OutputInterface $output): int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Controller/AccountController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$account->getId()]]></code>
     </InvalidOperand>
   </file>
-  <file src="src/Controller/BillableUnbilledHoursReportController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
   <file src="src/Controller/ClientController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$client->getId()]]></code>
     </InvalidOperand>
   </file>
-  <file src="src/Controller/ForecastReportController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Controller/FrontpageController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Controller/HomeController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Controller/HourReportController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
   <file src="src/Controller/InvoiceController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$invoice->getId()]]></code>
     </InvalidOperand>
   </file>
   <file src="src/Controller/InvoiceEntryController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$invoiceEntry->getId()]]></code>
     </InvalidOperand>
   </file>
-  <file src="src/Controller/InvoiceEntryWorklogController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Controller/InvoicingRateReportController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
   <file src="src/Controller/IssueController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$product->getId()]]></code>
     </InvalidOperand>
   </file>
-  <file src="src/Controller/ManagementReportController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Controller/OpenIdConnectController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Controller/PlanningController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
   <file src="src/Controller/ProductController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$product->getId()]]></code>
     </InvalidOperand>
   </file>
   <file src="src/Controller/ProjectBillingController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$projectBilling->getId()]]></code>
     </InvalidOperand>
   </file>
-  <file src="src/Controller/ProjectController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Controller/ReportsController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Controller/ServiceAgreementApiController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
   <file src="src/Controller/ServiceAgreementController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$serviceAgreement->getId()]]></code>
     </InvalidOperand>
   </file>
   <file src="src/Controller/SubscriptionController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <PossiblyNullArgument>
       <code><![CDATA[$reportType]]></code>
     </PossiblyNullArgument>
@@ -272,323 +129,280 @@
       <code><![CDATA[$content]]></code>
     </PossiblyNullArrayOffset>
   </file>
-  <file src="src/Controller/SynchronizationJobController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Controller/UserController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
   <file src="src/Controller/WorkerController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$worker->getId()]]></code>
     </InvalidOperand>
   </file>
   <file src="src/Controller/WorkerGroupController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[$group->getId()]]></code>
     </InvalidOperand>
   </file>
-  <file src="src/Controller/WorkloadReportController.php">
-    <InvalidAttribute>
-      <code><![CDATA[Route]]></code>
-    </InvalidAttribute>
-  </file>
   <file src="src/DataFixtures/AppFixtures.php">
-    <InvalidArrayOffset>
-      <code><![CDATA[$workerArray[$i % 10]]]></code>
-    </InvalidArrayOffset>
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function load(ObjectManager $manager): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Doctrine/Extensions/DBAL/Types/EuropeCopenhagenDateTimeImmutableType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string]]></code>
+      <code><![CDATA[public function convertToPHPValue($value, AbstractPlatform $platform): ?\DateTimeImmutable]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Doctrine/Extensions/DBAL/Types/EuropeCopenhagenDateTimeType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string]]></code>
+      <code><![CDATA[public function convertToPHPValue($value, AbstractPlatform $platform): ?\DateTimeInterface]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Entity/DataProvider.php">
     <InvalidOperand>
       <code><![CDATA[$this->getId()]]></code>
     </InvalidOperand>
   </file>
-  <file src="src/Entity/InvoiceEntry.php">
-    <InvalidAttribute>
-      <code><![CDATA[ORM\PrePersist]]></code>
-      <code><![CDATA[ORM\PreUpdate]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="src/Entity/ServiceAgreement.php">
-    <InvalidAttribute>
-      <code><![CDATA[Assert\Callback]]></code>
-    </InvalidAttribute>
-  </file>
   <file src="src/Entity/Subscription.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function getId(): ?int]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Entity/User.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function eraseCredentials()]]></code>
+      <code><![CDATA[public function getRoles(): array]]></code>
+      <code><![CDATA[public function getUserIdentifier(): string]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/AccountType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/BillableUnbilledHoursReportType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
     <InvalidOperand>
       <code><![CDATA[date('n') / 3]]></code>
     </InvalidOperand>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ClientFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ClientType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/CombinedServiceAgreementType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/CybersecurityAgreementType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ForecastReportType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/HourReportType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/InvoiceEntryType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/InvoiceEntryWorklogFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/InvoiceEntryWorklogType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/InvoiceFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/InvoiceNewType.php">
     <ImplicitToStringCast>
       <code><![CDATA[$pr->getDataProvider()]]></code>
     </ImplicitToStringCast>
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/InvoiceRecordType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/InvoiceType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/InvoicingRateReportType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/IssueFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/IssueProductType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ManagementReportDateIntervalType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/NameFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/PlanningType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ProductFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ProductType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ProjectBillingFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ProjectBillingRecordType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ProjectBillingType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ProjectFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ProjectType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ServiceAgreementFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/ServiceAgreementType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/SubscriptionFilterType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/WorkerGroupType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/WorkerType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Form/WorkloadReportType.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function buildForm(FormBuilderInterface $builder, array $options): void]]></code>
+      <code><![CDATA[public function configureOptions(OptionsResolver $resolver): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Model/Reports/InvoicingRateReportViewModeEnum.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function trans(TranslatorInterface $translator, ?string $locale = null): string]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Model/Reports/WorkloadReportPeriodTypeEnum.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function trans(TranslatorInterface $translator, ?string $locale = null): string]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Model/Reports/WorkloadReportViewModeEnum.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function trans(TranslatorInterface $translator, ?string $locale = null): string]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Security/AzureOIDCAuthenticator.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function authenticate(Request $request): Passport]]></code>
+      <code><![CDATA[public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response]]></code>
+      <code><![CDATA[public function start(Request $request, ?AuthenticationException $authException = null): Response]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Service/BillingService.php">
     <InvalidOperand>
@@ -617,30 +431,28 @@
     </InvalidOperand>
   </file>
   <file src="src/Service/LeantimeApiService.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
+    <MissingOverrideAttribute>
+      <code><![CDATA[public function update(string $className, bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null, bool $disableModifiedAtCheck = false): void]]></code>
+      <code><![CDATA[public function updateAll(bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null, bool $disableModifiedAtCheck = false): void]]></code>
+    </MissingOverrideAttribute>
   </file>
   <file src="src/Service/PlanningService.php">
+    <InvalidArgument>
+      <code><![CDATA[iterator_to_array($iterator)]]></code>
+      <code><![CDATA[iterator_to_array($iterator)]]></code>
+    </InvalidArgument>
     <InvalidOperand>
       <code><![CDATA[$this->weekGoalHigh * self::WEEKS_IN_SPRINT_PERIOD]]></code>
       <code><![CDATA[$this->weekGoalLow * self::WEEKS_IN_SPRINT_PERIOD]]></code>
     </InvalidOperand>
-    <InvalidPropertyAssignmentValue>
-      <code><![CDATA[$this->sortAssigneeCollectionByDisplayName($planning->assignees)]]></code>
-      <code><![CDATA[$this->sortProjectCollectionByDisplayName($planning->projects)]]></code>
-    </InvalidPropertyAssignmentValue>
-    <InvalidTemplateParam>
-      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
-      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
-    </InvalidTemplateParam>
-    <UndefinedDocblockClass>
-      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
-      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
-      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
-      <code><![CDATA[ArrayCollection<TKey, TValue|null>]]></code>
-    </UndefinedDocblockClass>
+    <InvalidReturnStatement>
+      <code><![CDATA[new ArrayCollection(iterator_to_array($iterator))]]></code>
+      <code><![CDATA[new ArrayCollection(iterator_to_array($iterator))]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[ArrayCollection<string, Assignee>]]></code>
+      <code><![CDATA[ArrayCollection<string, Project>]]></code>
+    </InvalidReturnType>
   </file>
   <file src="src/Service/SubscriptionHandlerService.php">
     <InvalidOperand>
