@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Service agreements: Styling adjustments, index fields, QoL.
 * [PR-280](https://github.com/itk-dev/economics/pull/280)
   Additional fields for service agreements.
+
 ## [3.0.2] - 2026-03-04
 
 * [PR-274](https://github.com/itk-dev/economics/pull/274)
