@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-04-30
+
+* [PR-288](https://github.com/itk-dev/economics/pull/288)
+  Composer.lock cleanup.
+* [PR-286](https://github.com/itk-dev/economics/pull/286)
+  Security updates.
+* [PR-284](https://github.com/itk-dev/economics/pull/284)
+  Security updates.
+* [PR-283](https://github.com/itk-dev/economics/pull/283)
+  Revert supercronic and templates update.
+* [PR-282](https://github.com/itk-dev/economics/pull/282)
+  Fixed worklog project not updating when ticket is moved to another project in Leantime.
+* [PR-281](https://github.com/itk-dev/economics/pull/281)
+  Service agreements: Styling adjustments, index fields, QoL.
+* [PR-280](https://github.com/itk-dev/economics/pull/280)
+  Additional fields for service agreements.
+
 ## [3.0.2] - 2026-03-04
 
 * [PR-274](https://github.com/itk-dev/economics/pull/274)
@@ -550,7 +567,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.0.1...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.1.0...HEAD
+[3.1.0]: https://github.com/itk-dev/economics/compare/3.0.1...3.1.0
 [3.0.1]: https://github.com/itk-dev/economics/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/itk-dev/economics/compare/2.10.2...3.0.0
 [2.10.2]: https://github.com/itk-dev/economics/compare/2.10.1...2.10.2
