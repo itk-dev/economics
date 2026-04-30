@@ -9,10 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-288](https://github.com/itk-dev/economics/pull/288)
-  Reverted unintended composer.lock regeneration.
-  Regenerated psalm baseline.
+  Composer.lock cleanup.
+* [PR-286](https://github.com/itk-dev/economics/pull/286)
+  Security updates.
+* [PR-284](https://github.com/itk-dev/economics/pull/284)
+  Security updates.
+* [PR-283](https://github.com/itk-dev/economics/pull/283)
+  Revert supercronic and templates update.
 * [PR-282](https://github.com/itk-dev/economics/pull/282)
   Fixed worklog project not updating when ticket is moved to another project in Leantime.
+* [PR-281](https://github.com/itk-dev/economics/pull/281)
+  Service agreements: Styling adjustments, index fields, QoL.
+* [PR-280](https://github.com/itk-dev/economics/pull/280)
+  Additional fields for service agreements.
 
 ## [3.0.2] - 2026-03-04
 
