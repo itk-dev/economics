@@ -86,6 +86,7 @@ class HourReportService
             $hourReportData->projectTotalSpent += $totalTicketSpent;
         }
 
+        /** @var \ArrayIterator $tagsIterator */
         $tagsIterator = $hourReportData->projectTags->getIterator();
         $tagsIterator->uasort(fn ($a, $b) => mb_strtolower($a->tag) <=> mb_strtolower($b->tag));
         $hourReportData->projectTags = new ArrayCollection(iterator_to_array($tagsIterator));
