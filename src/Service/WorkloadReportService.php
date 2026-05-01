@@ -41,6 +41,7 @@ class WorkloadReportService
             $year = (int) (new \DateTime())->format('Y');
         }
         $workers = $this->workerRepository->findBy(['includeInReports' => true]);
+        usort($workers, fn ($a, $b) => mb_strtolower((string) $a->getName()) <=> mb_strtolower((string) $b->getName()));
         $periods = $this->getPeriods($viewPeriodType, $year);
         $periodSums = [];
         $periodCounts = [];

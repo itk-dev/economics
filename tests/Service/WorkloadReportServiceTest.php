@@ -43,7 +43,7 @@ class WorkloadReportServiceTest extends TestCase
         $worklogMock2->method('getTimeSpentSeconds')->willReturn(36000);
 
         $workerRepoMock = $this->createMock(WorkerRepository::class);
-        $workerRepoMock->method('findAll')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
+        $workerRepoMock->method('findBy')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
 
         $worklogRepoMock = $this->createMock(WorklogRepository::class);
         $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock1]);

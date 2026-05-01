@@ -75,6 +75,8 @@ class BillableUnbilledHoursReportService
             $totalHoursForAllProjects += $billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS;
         }
 
+        uksort($projectData, fn ($a, $b) => mb_strtolower((string) $a) <=> mb_strtolower((string) $b));
+
         // Add project data, project totals, and global total to the report data
         $billableUnbilledHoursReportData->projectData->add($projectData);
         $billableUnbilledHoursReportData->projectTotals = $projectTotals;
