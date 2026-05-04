@@ -50,17 +50,17 @@
                         </button>
                     </div>
                 </td>
-                <td class="text-center px-3 border border-slate-600">
+                <td class="text-right px-3 border border-slate-600">
                     {{ worker.workload }}
                 </td>
                 {% for periodNumeric, week in worker.loggedPercentage %}
-                    <td class="text-center px-3 border border-slate-600
+                    <td class="text-right px-3 border border-slate-600
 {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'bg-slate-300 dark:bg-slate-800' : '' }}
 ">
                         {{ week ~ '%' }}
                     </td>
                 {% endfor %}
-                <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800">
+                <td class="text-right px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800">
                     {{ worker.average ~ '%' }}
                 </td>
             </tr>
@@ -71,14 +71,14 @@
             <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-300 dark:bg-slate-800">
                 {{ 'workload_report.average'|trans }}
             </td>
-            <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"></td>
+            <td class="text-right px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"></td>
             {% for periodNumeric, period in data.period %}
-                <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800
+                <td class="text-right px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800
                 ">
                     {{ data.periodAverages[periodNumeric] ~ '%' }}
                 </td>
             {% endfor %}
-            <td class="text-center px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"> {{ data.totalAverage ~ '%' }}</td>
+            <td class="text-right px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"> {{ data.totalAverage ~ '%' }}</td>
         </tr>
         </tbody>
     </table>
