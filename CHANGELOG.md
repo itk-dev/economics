@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-297](https://github.com/itk-dev/economics/pull/297)
+  * Added group filter to workload report and invoicing rate report.
 * [PR-335](https://github.com/itk-dev/economics/pull/335)
   * Stopped `projectRemovedFromDataProvider()` hard-deleting a project that a version, a project billing or a
     service agreement still points at. Each of those points back with a non-nullable, non-cascading foreign key,
