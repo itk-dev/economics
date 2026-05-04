@@ -57,11 +57,11 @@
                     <td class="text-right px-3 border border-slate-600
 {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'bg-slate-300 dark:bg-slate-800' : '' }}
 ">
-                        {{ week|round(1) ~ '%' }}
+                        {{ week ~ '%' }}
                     </td>
                 {% endfor %}
                 <td class="text-right px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800">
-                    {{ worker.average|round(1) ~ '%' }}
+                    {{ worker.average ~ '%' }}
                 </td>
             </tr>
             </tbody>
@@ -75,10 +75,10 @@
             {% for periodNumeric, period in data.period %}
                 <td class="text-right px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800
                 ">
-                    {{ data.periodAverages[periodNumeric]|round(1) ~ '%' }}
+                    {{ data.periodAverages[periodNumeric] ~ '%' }}
                 </td>
             {% endfor %}
-            <td class="text-right px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"> {{ data.totalAverage|round(1) ~ '%' }}</td>
+            <td class="text-right px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800"> {{ data.totalAverage ~ '%' }}</td>
         </tr>
         </tbody>
     </table>

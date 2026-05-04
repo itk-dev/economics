@@ -92,7 +92,7 @@ class WorkloadReportService
                 }
 
                 $expectedWorkload = $this->getExpectedWorkHours($workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
-                $roundedLoggedPercentage = round($loggedHours / $expectedWorkload * 100, 2);
+                $roundedLoggedPercentage = round($loggedHours / $expectedWorkload * 100, 1);
 
                 // Count up sums until current period have been reached.
                 if (!$currentPeriodReached) {
@@ -108,11 +108,11 @@ class WorkloadReportService
                 $periodCounts[$period] = ($periodCounts[$period] ?? 0) + 1;
 
                 // Calculate and set the average for this period
-                $average = round($periodSums[$period] / $periodCounts[$period], 2);
+                $average = round($periodSums[$period] / $periodCounts[$period], 1);
                 $workloadReportData->periodAverages->set($period, $average);
             }
 
-            $workloadReportWorker->average = $expectedWorkloadSum > 0 ? round($loggedHoursSum / $expectedWorkloadSum * 100, 2) : 0;
+            $workloadReportWorker->average = $expectedWorkloadSum > 0 ? round($loggedHoursSum / $expectedWorkloadSum * 100, 1) : 0;
 
             $workloadReportData->workers->add($workloadReportWorker);
         }
@@ -127,7 +127,7 @@ class WorkloadReportService
 
         // Calculate the total average of averages
         if ($numberOfPeriods > 0) {
-            $workloadReportData->totalAverage = round($averageSum / $numberOfPeriods, 2);
+            $workloadReportData->totalAverage = round($averageSum / $numberOfPeriods, 1);
         }
 
         return $workloadReportData;
