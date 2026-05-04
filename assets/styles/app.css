@@ -141,7 +141,7 @@
     }
 
     #report {
-        @apply grid gap-3 mb-6 md:grid-cols-4;
+        @apply grid gap-3 mb-6 md:grid-cols-5;
     }
 
     #hour_report {
