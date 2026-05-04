@@ -2,45 +2,32 @@
 
 namespace App\Service;
 
+use App\Model\Reports\ReportContext;
 use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Model\Reports\WorkloadReportWorker;
-use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 
 class WorkloadReportService
 {
     public function __construct(
-        private readonly WorkerRepository $workerRepository,
+        private readonly WorkerFilter $workerFilter,
         private readonly WorklogRepository $worklogRepository,
         private readonly DateTimeHelper $dateTimeHelper,
     ) {
     }
 
     /**
-     * Generates a workload report for a specified year and period type.
-     *
-     * This method computes the workload report for all workers based on the
-     * specified year, period type, and view mode. It calculates various metrics
-     * such as logged hours, expected workload, work percentage for each period,
-     * average workloads, and overall summary statistics.
-     *
-     * @param int $year the year for which the workload report is generated
-     * @param PeriodTypeEnum $viewPeriodType the period type (e.g., week, month, year) for the report
-     * @param ViewModeEnum $viewMode the mode of viewing the workload (e.g., workload vs other modes)
-     *
-     * @return WorkloadReportData an object containing the workload report data
+     * Generates a workload report for the given context, period type, and view mode.
      *
      * @throws \Exception if a worker identifier is empty or the workload of a worker is null
      */
-    public function getWorkloadReport(int $year, PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
+    public function getWorkloadReport(ReportContext $context, PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
     {
         $workloadReportData = new WorkloadReportData($viewPeriodType->value);
-        if (!$year) {
-            $year = (int) (new \DateTime())->format('Y');
-        }
-        $workers = $this->workerRepository->findBy(['includeInReports' => true]);
+        $year = $context->year ?: (int) (new \DateTime())->format('Y');
+        $workers = $this->workerFilter->findWorkers($context);
         usort($workers, fn ($a, $b) => mb_strtolower((string) $a->getName()) <=> mb_strtolower((string) $b->getName()));
         $periods = $this->getPeriods($viewPeriodType, $year);
         $periodSums = [];

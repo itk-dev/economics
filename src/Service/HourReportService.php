@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Entity\Project;
 use App\Entity\Version;
+use App\Entity\Worker;
+use App\Entity\WorkerGroup;
 use App\Entity\Worklog;
 use App\Exception\EconomicsException;
 use App\Model\Reports\HourReportData;
@@ -25,9 +27,12 @@ class HourReportService
     /**
      * @throws EconomicsException
      */
-    public function getHourReport(Project $project, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, ?Version $version = null): HourReportData
+    public function getHourReport(Project $project, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate, ?Version $version = null, ?WorkerGroup $group = null): HourReportData
     {
         $hourReportData = new HourReportData(0, 0);
+        $allowedWorkerEmails = null !== $group
+            ? array_map(fn (Worker $w) => (string) $w->getEmail(), $group->getWorkers()->toArray())
+            : null;
 
         // If version is provided, we only want the issues containing the version.
         if ($version) {
@@ -41,7 +46,7 @@ class HourReportService
 
             $timesheetData = $this->worklogRepository->findBy(['issue' => $issue->getId()]);
 
-            list($timesheets, $totalTicketSpent) = $this->processTimesheetsData($timesheetData, $fromDate, $toDate);
+            list($timesheets, $totalTicketSpent) = $this->processTimesheetsData($timesheetData, $fromDate, $toDate, $allowedWorkerEmails);
 
             // If no worklogs have been registered in the interval,
             // ignore the issue in the report.
@@ -94,13 +99,20 @@ class HourReportService
         return $hourReportData;
     }
 
-    private function processTimesheetsData(array $worklogs, ?\DateTimeInterface $fromDate = null, ?\DateTimeInterface $toDate = null): array
+    /**
+     * @param string[]|null $allowedWorkerEmails
+     */
+    private function processTimesheetsData(array $worklogs, ?\DateTimeInterface $fromDate = null, ?\DateTimeInterface $toDate = null, ?array $allowedWorkerEmails = null): array
     {
         $timesheets = [];
         $totalTicketSpent = 0;
 
         /** @var Worklog $worklog */
         foreach ($worklogs as $worklog) {
+            if (null !== $allowedWorkerEmails && !in_array((string) $worklog->getWorker(), $allowedWorkerEmails, true)) {
+                continue;
+            }
+
             $timesheetDate = $worklog->getStarted();
 
             if (null !== $fromDate) {

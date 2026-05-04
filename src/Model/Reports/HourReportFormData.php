@@ -6,8 +6,10 @@ use App\Entity\DataProvider;
 use App\Entity\Project;
 use App\Entity\Version;
 
-class HourReportFormData
+class HourReportFormData implements HasGroupFilter
 {
+    use HasGroupFilterTrait;
+
     public DataProvider $dataProvider;
     public Project $project;
     public Version $version;

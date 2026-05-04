@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Form\InvoicingRateReportType;
 use App\Model\Reports\InvoicingRateReportFormData;
 use App\Model\Reports\InvoicingRateReportViewModeEnum;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Service\InvoicingRateReportService;
+use App\Service\ReportContextFactory;
+use App\Service\ReportRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +22,8 @@ class InvoicingRateReportController extends AbstractController
 {
     public function __construct(
         private readonly InvoicingRateReportService $invoicingRateReportService,
+        private readonly ReportContextFactory $reportContextFactory,
+        private readonly ReportRenderer $reportRenderer,
     ) {
     }
 
@@ -54,19 +59,27 @@ class InvoicingRateReportController extends AbstractController
             $year = $form->get('year')->getData();
             $includeIssues = $form->get('includeIssues')->getData();
 
+            /** @var User|null $user */
+            $user = $this->getUser();
+            $context = $this->reportContextFactory->fromForm($reportFormData, $user, (int) $year);
+
             try {
-                $reportData = $this->invoicingRateReportService->getInvoicingRateReport($year, $viewPeriodType, $viewMode, $includeIssues);
+                $reportData = $this->invoicingRateReportService->getInvoicingRateReport($context, $viewPeriodType, $viewMode, $includeIssues);
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }
         }
 
-        return $this->render('reports/reports.html.twig', [
-            'controller_name' => 'InvoicingRateReportController',
-            'form' => $form,
-            'error' => $error,
-            'data' => $reportData,
-            'mode' => $mode,
-        ]);
+        return $this->reportRenderer->render(
+            'reports/reports.html.twig',
+            'reports/invoicing_rate_report.html.twig',
+            [
+                'controller_name' => 'InvoicingRateReportController',
+                'form' => $form,
+                'error' => $error,
+                'data' => $reportData,
+                'mode' => $mode,
+            ],
+        );
     }
 }

@@ -78,9 +78,10 @@ class HourReportController extends AbstractController
             $version = $form->get('version')->getData() ?? null;
             $fromDate = $form->get('fromDate')->getData() ?? null;
             $toDate = $form->get('toDate')->getData() ?? null;
+            $group = $reportFormData->getGroup();
 
             if (null !== $project) {
-                $reportData = $this->hourReportService->getHourReport($project, $fromDate, $toDate, $version);
+                $reportData = $this->hourReportService->getHourReport($project, $fromDate, $toDate, $version, $group);
             }
         }
 

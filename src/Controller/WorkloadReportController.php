@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Form\WorkloadReportType;
 use App\Model\Reports\WorkloadReportFormData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
+use App\Service\ReportContextFactory;
+use App\Service\ReportRenderer;
 use App\Service\WorkloadReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +22,8 @@ class WorkloadReportController extends AbstractController
 {
     public function __construct(
         private readonly WorkloadReportService $workloadReportService,
+        private readonly ReportContextFactory $reportContextFactory,
+        private readonly ReportRenderer $reportRenderer,
     ) {
     }
 
@@ -53,19 +58,27 @@ class WorkloadReportController extends AbstractController
             $viewMode = $form->get('viewMode')->getData() ?? ViewModeEnum::WORKLOAD;
             $year = $form->get('year')->getData();
 
+            /** @var User|null $user */
+            $user = $this->getUser();
+            $context = $this->reportContextFactory->fromForm($reportFormData, $user, (int) $year);
+
             try {
-                $reportData = $this->workloadReportService->getWorkloadReport($year, $viewPeriodType, $viewMode);
+                $reportData = $this->workloadReportService->getWorkloadReport($context, $viewPeriodType, $viewMode);
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }
         }
 
-        return $this->render('reports/reports.html.twig', [
-            'controller_name' => 'WorkloadReportController',
-            'form' => $form,
-            'error' => $error,
-            'data' => $reportData,
-            'mode' => $mode,
-        ]);
+        return $this->reportRenderer->render(
+            'reports/reports.html.twig',
+            'reports/workload_report.html.twig',
+            [
+                'controller_name' => 'WorkloadReportController',
+                'form' => $form,
+                'error' => $error,
+                'data' => $reportData,
+                'mode' => $mode,
+            ],
+        );
     }
 }

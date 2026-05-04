@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\Worker;
+use App\Entity\WorkerGroup;
 use App\Model\Reports\BillableUnbilledHoursReportData;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
@@ -22,8 +24,12 @@ class BillableUnbilledHoursReportService
     public function getBillableUnbilledHoursReport(
         int $year,
         ?int $quarter = null,
+        ?WorkerGroup $group = null,
     ): BillableUnbilledHoursReportData {
         $billableUnbilledHoursReportData = new BillableUnbilledHoursReportData();
+        $allowedWorkerEmails = null !== $group
+            ? array_map(fn (Worker $w) => (string) $w->getEmail(), $group->getWorkers()->toArray())
+            : null;
 
         // If quarter is null, get the full year.
         ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = null !== $quarter
@@ -37,6 +43,9 @@ class BillableUnbilledHoursReportService
         $totalHoursForAllProjects = 0;
 
         foreach ($billableWorklogs as $billableWorklog) {
+            if (null !== $allowedWorkerEmails && !in_array((string) $billableWorklog->getWorker(), $allowedWorkerEmails, true)) {
+                continue;
+            }
             $projectName = $billableWorklog->getProject()->getName();
             $issueName = $billableWorklog->getIssue()->getName();
 

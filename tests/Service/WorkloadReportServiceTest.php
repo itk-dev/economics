@@ -4,12 +4,14 @@ namespace App\Tests\Service;
 
 use App\Entity\Worker;
 use App\Entity\Worklog;
+use App\Model\Reports\ReportContext;
 use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\DateTimeHelper;
+use App\Service\WorkerFilter;
 use App\Service\WorkloadReportService;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
@@ -39,11 +41,9 @@ class WorkloadReportServiceTest extends TestCase
         $worklogMock1 = $this->createMock(Worklog::class);
         $worklogMock1->method('getTimeSpentSeconds')->willReturn(36000);
 
-        $worklogMock2 = $this->createMock(Worklog::class);
-        $worklogMock2->method('getTimeSpentSeconds')->willReturn(36000);
-
         $workerRepoMock = $this->createMock(WorkerRepository::class);
-        $workerRepoMock->method('findBy')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
+        $workerRepoMock->method('findAllIncludedInReports')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
+        $workerFilter = new WorkerFilter($workerRepoMock);
 
         $worklogRepoMock = $this->createMock(WorklogRepository::class);
         $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock1]);
@@ -66,19 +66,53 @@ class WorkloadReportServiceTest extends TestCase
             'dateTo' => new \DateTime('2024-12-31 23:59:59'),
         ]);
         $dateTimeHelperMock->method('getWeekdaysBetween')->willReturn(5);
-        $dateTimeHelperMock->method('getWeekdaysBetween')->willReturn(23);
-        $dateTimeHelperMock->method('getWeekdaysBetween')->willReturn(262);
 
-        $workloadReportService = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $dateTimeHelperMock);
+        $workloadReportService = new WorkloadReportService($workerFilter, $worklogRepoMock, $dateTimeHelperMock);
+        $context = new ReportContext(2024);
 
-        $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
+        $result = $workloadReportService->getWorkloadReport($context, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
         $this->assertInstanceOf(WorkloadReportData::class, $result);
 
-        $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::MONTH, ViewModeEnum::WORKLOAD);
+        $result = $workloadReportService->getWorkloadReport($context, PeriodTypeEnum::MONTH, ViewModeEnum::WORKLOAD);
         $this->assertInstanceOf(WorkloadReportData::class, $result);
 
-        $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::YEAR, ViewModeEnum::WORKLOAD);
+        $result = $workloadReportService->getWorkloadReport($context, PeriodTypeEnum::YEAR, ViewModeEnum::WORKLOAD);
         $this->assertInstanceOf(WorkloadReportData::class, $result);
+    }
+
+    public function testHiddenWorkersAreExcluded()
+    {
+        $workerMock1 = $this->createMock(Worker::class);
+        $workerMock1->method('getUserIdentifier')->willReturn('keep@test');
+        $workerMock1->method('getEmail')->willReturn('keep@test');
+        $workerMock1->method('getWorkload')->willReturn(37.0);
+
+        $workerMock2 = $this->createMock(Worker::class);
+        $workerMock2->method('getUserIdentifier')->willReturn('hidden@test');
+        $workerMock2->method('getEmail')->willReturn('hidden@test');
+        $workerMock2->method('getWorkload')->willReturn(37.0);
+
+        $workerRepoMock = $this->createMock(WorkerRepository::class);
+        $workerRepoMock->method('findAllIncludedInReports')->willReturn([$workerMock1, $workerMock2]);
+        $workerFilter = new WorkerFilter($workerRepoMock);
+
+        $worklogMock = $this->createMock(Worklog::class);
+        $worklogMock->method('getTimeSpentSeconds')->willReturn(36000);
+        $worklogRepoMock = $this->createMock(WorklogRepository::class);
+        $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock]);
+
+        $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
+        $dateTimeHelperMock->method('getWeeksOfYear')->willReturn([1]);
+        $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+        ]);
+
+        $workloadReportService = new WorkloadReportService($workerFilter, $worklogRepoMock, $dateTimeHelperMock);
+        $context = new ReportContext(2024, null, ['hidden@test']);
+
+        $result = $workloadReportService->getWorkloadReport($context, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
+        $this->assertCount(1, $result->workers);
     }
 
     public function testExceptionIsThrownWhenWorkerIdentifierIsEmpty()
@@ -104,11 +138,9 @@ class WorkloadReportServiceTest extends TestCase
         $worklogMock1 = $this->createMock(Worklog::class);
         $worklogMock1->method('getTimeSpentSeconds')->willReturn(36000);
 
-        $worklogMock2 = $this->createMock(Worklog::class);
-        $worklogMock2->method('getTimeSpentSeconds')->willReturn(36000);
-
         $workerRepoMock = $this->createMock(WorkerRepository::class);
-        $workerRepoMock->method('findBy')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
+        $workerRepoMock->method('findAllIncludedInReports')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
+        $workerFilter = new WorkerFilter($workerRepoMock);
 
         $worklogRepoMock = $this->createMock(WorklogRepository::class);
         $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock1]);
@@ -131,13 +163,12 @@ class WorkloadReportServiceTest extends TestCase
             'dateTo' => new \DateTime('2024-12-31 23:59:59'),
         ]);
 
-        $workloadReportService = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $dateTimeHelperMock);
+        $workloadReportService = new WorkloadReportService($workerFilter, $worklogRepoMock, $dateTimeHelperMock);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Worker identifier cannot be empty');
 
-        // Run method that triggers exception
-        $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
+        $workloadReportService->getWorkloadReport(new ReportContext(2024), PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
     }
 
     public function testExceptionIsThrownWhenWorkerWorkloadIsUnset()
@@ -163,11 +194,9 @@ class WorkloadReportServiceTest extends TestCase
         $worklogMock1 = $this->createMock(Worklog::class);
         $worklogMock1->method('getTimeSpentSeconds')->willReturn(36000);
 
-        $worklogMock2 = $this->createMock(Worklog::class);
-        $worklogMock2->method('getTimeSpentSeconds')->willReturn(36000);
-
         $workerRepoMock = $this->createMock(WorkerRepository::class);
-        $workerRepoMock->method('findBy')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
+        $workerRepoMock->method('findAllIncludedInReports')->willReturn([$workerMock1, $workerMock2, $workerMock3]);
+        $workerFilter = new WorkerFilter($workerRepoMock);
 
         $worklogRepoMock = $this->createMock(WorklogRepository::class);
         $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklogMock1]);
@@ -190,13 +219,11 @@ class WorkloadReportServiceTest extends TestCase
             'dateTo' => new \DateTime('2024-12-31 23:59:59'),
         ]);
 
-        $workloadReportService = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $dateTimeHelperMock);
+        $workloadReportService = new WorkloadReportService($workerFilter, $worklogRepoMock, $dateTimeHelperMock);
 
-        // Expect this specific exception
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Workload of worker: test2@test cannot be null when generating workload report.');
 
-        // Run method that triggers exception
-        $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
+        $workloadReportService->getWorkloadReport(new ReportContext(2024), PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
     }
 }

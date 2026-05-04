@@ -45,8 +45,9 @@ class ForecastReportController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $fromDate = $form->get('dateFrom')->getData();
             $toDate = $form->get('dateTo')->getData();
+            $group = $reportFormData->getGroup();
 
-            $reportData = $this->forecastReportService->getForecastReport($fromDate, $toDate);
+            $reportData = $this->forecastReportService->getForecastReport($fromDate, $toDate, $group);
         }
 
         return $this->render('reports/reports.html.twig', [

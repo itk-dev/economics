@@ -52,9 +52,10 @@ class BillableUnbilledHoursReportController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $year = $form->get('year')->getData();
             $quarter = $form->get('quarter')->getData();
+            $group = $reportFormData->getGroup();
 
             try {
-                $reportData = $this->billableUnbilledHoursReportService->getBillableUnbilledHoursReport($year, $quarter);
+                $reportData = $this->billableUnbilledHoursReportService->getBillableUnbilledHoursReport($year, $quarter, $group);
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }

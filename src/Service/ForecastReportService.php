@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\Worker;
+use App\Entity\WorkerGroup;
 use App\Model\Reports\ForecastReportData;
 use App\Model\Reports\ForecastReportIssueData;
 use App\Model\Reports\ForecastReportIssueVersionData;
@@ -25,17 +27,15 @@ class ForecastReportService
     /**
      * Get forecast report data based on given date range.
      *
-     * @param \DateTimeInterface $fromDate The start date of the period
-     * @param \DateTimeInterface $toDate The end date of the period
-     *
-     * @return ForecastReportData The forecast report data
-     *
      * @throws \Exception
      */
-    public function getForecastReport(\DateTimeInterface $fromDate, \DateTimeInterface $toDate): ForecastReportData
+    public function getForecastReport(\DateTimeInterface $fromDate, \DateTimeInterface $toDate, ?WorkerGroup $group = null): ForecastReportData
     {
         $page = 1;
         $forecastReportData = new ForecastReportData();
+        $allowedWorkerEmails = null !== $group
+            ? array_map(fn (Worker $w) => (string) $w->getEmail(), $group->getWorkers()->toArray())
+            : null;
 
         $workerNameMapping = array_reduce($this->workerRepository->findAll(), function ($carry, $worker) {
             $carry[$worker->getEmail()] = $worker->getName() ?? '[no worker]';
@@ -47,6 +47,9 @@ class ForecastReportService
             $invoiceAttachedWorklogs = $this->worklogRepository->getWorklogsAttachedToInvoiceInDateRange($fromDate, $toDate, $page, self::PAGE_SIZE);
 
             foreach ($invoiceAttachedWorklogs['paginator'] as $worklog) {
+                if (null !== $allowedWorkerEmails && !in_array((string) $worklog->getWorker(), $allowedWorkerEmails, true)) {
+                    continue;
+                }
                 // Loop through each worklog
                 $projectId = $worklog->getProject()->getId();
 

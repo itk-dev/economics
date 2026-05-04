@@ -5,8 +5,8 @@ namespace App\Service;
 use App\Model\Reports\InvoicingRateReportData;
 use App\Model\Reports\InvoicingRateReportViewModeEnum;
 use App\Model\Reports\InvoicingRateReportWorker;
+use App\Model\Reports\ReportContext;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
-use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 
 class InvoicingRateReportService
@@ -14,36 +14,27 @@ class InvoicingRateReportService
     private const SECONDS_TO_HOURS = 1 / 3600;
 
     public function __construct(
-        private readonly WorkerRepository $workerRepository,
+        private readonly WorkerFilter $workerFilter,
         private readonly WorklogRepository $worklogRepository,
         private readonly DateTimeHelper $dateTimeHelper,
     ) {
     }
 
     /**
-     * Generates an invoicing rate report for a specific year based on various parameters.
-     *
-     * @param int $year the year for which the report is generated
-     * @param PeriodTypeEnum $viewPeriodType the period type
-     * @param InvoicingRateReportViewModeEnum $viewMode the view mode
-     * @param bool $includeIssues whether to include detailed issue-level data in the report
-     *
-     * @return InvoicingRateReportData the calculated invoicing rate report data
+     * Generates an invoicing rate report for the given context, period type, and view mode.
      *
      * @throws \Exception if a required worker identifier is empty
      */
     public function getInvoicingRateReport(
-        int $year,
+        ReportContext $context,
         PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK,
         InvoicingRateReportViewModeEnum $viewMode = InvoicingRateReportViewModeEnum::SUMMARY,
         bool $includeIssues = false,
     ): InvoicingRateReportData {
         $invoicingRateReportData = new InvoicingRateReportData($viewPeriodType->value);
         $invoicingRateReportData->includeIssues = $includeIssues;
-        if (!$year) {
-            $year = (int) (new \DateTime())->format('Y');
-        }
-        $workers = $this->workerRepository->findAllIncludedInReports();
+        $year = $context->year ?: (int) (new \DateTime())->format('Y');
+        $workers = $this->workerFilter->findWorkers($context);
         usort($workers, fn ($a, $b) => mb_strtolower((string) $a->getName()) <=> mb_strtolower((string) $b->getName()));
         $periods = $this->getPeriods($viewPeriodType, $year);
         $periodSums = [];

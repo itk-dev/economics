@@ -522,6 +522,8 @@ project:
 reports:
     title: 'Rapporter'
     description: 'Generer rapporter baseret på data fra eConomics.'
+    group: 'Gruppe'
+    select_group: 'Alle medarbejdere'
     management-title: 'Ny ledelsesrapport'
     fetch_management_report: 'Hent ledelsesrapport'
     from: 'Fra'
