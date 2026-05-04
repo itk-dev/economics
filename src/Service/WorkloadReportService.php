@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\WorkerGroup;
 use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
@@ -29,18 +30,21 @@ class WorkloadReportService
      * @param int            $year           the year for which the workload report is generated
      * @param PeriodTypeEnum $viewPeriodType the period type (e.g., week, month, year) for the report
      * @param ViewModeEnum   $viewMode       the mode of viewing the workload (e.g., workload vs other modes)
+     * @param ?WorkerGroup   $group          when set, only workers in this group are included
      *
      * @return WorkloadReportData an object containing the workload report data
      *
      * @throws \Exception if a worker identifier is empty or the workload of a worker is null
      */
-    public function getWorkloadReport(int $year, PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
+    public function getWorkloadReport(int $year, PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD, ?WorkerGroup $group = null): WorkloadReportData
     {
         $workloadReportData = new WorkloadReportData($viewPeriodType->value);
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
         }
-        $workers = $this->workerRepository->findBy(['includeInReports' => true]);
+        $workers = null !== $group
+            ? $this->workerRepository->findIncludedInReportsByGroup($group)
+            : $this->workerRepository->findBy(['includeInReports' => true]);
         // Sort workers alphabetically by name (usort: list of objects, no keys to preserve).
         usort($workers, fn ($a, $b) => mb_strtolower((string) $a->getName()) <=> mb_strtolower((string) $b->getName()));
         $periods = $this->getPeriods($viewPeriodType, $year);
