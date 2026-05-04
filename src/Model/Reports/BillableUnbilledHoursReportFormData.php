@@ -2,10 +2,8 @@
 
 namespace App\Model\Reports;
 
-class BillableUnbilledHoursReportFormData implements HasGroupFilter
+class BillableUnbilledHoursReportFormData
 {
-    use HasGroupFilterTrait;
-
     public int $year;
     public ?int $quarter;
 }

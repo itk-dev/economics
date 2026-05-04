@@ -2,10 +2,8 @@
 
 namespace App\Model\Reports;
 
-class ForecastReportFormData implements HasGroupFilter
+class ForecastReportFormData
 {
-    use HasGroupFilterTrait;
-
     public \DateTimeInterface $dateFrom;
     public \DateTimeInterface $dateTo;
 }
