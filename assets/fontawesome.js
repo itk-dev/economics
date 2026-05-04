@@ -11,4 +11,4 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faMaximize, faEyeSlash, faMinimize, faCaretRight, faCaretDown);
-dom.i2svg();
+dom.watch();

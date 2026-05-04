@@ -1,0 +1,14 @@
+{% set hiddenWorkers = app.user is not null ? app.user.hiddenWorkers : [] %}
+<div class="my-5 sticky left-0">
+    <span class="mr-2">{{ 'workload_report.hidden-entries'|trans }}:</span>
+    {% for email in hiddenWorkers %}
+        <button type="button"
+                class="hidden-entry-chip mr-2 px-2 py-1 border border-slate-400 rounded text-sm"
+                {{ stimulus_action('report-hide', 'show') }}
+                data-worker-email="{{ email }}">
+            {{ email }} <span class="ml-1" aria-hidden="true">&times;</span>
+        </button>
+    {% else %}
+        <span class="text-sm text-slate-500">—</span>
+    {% endfor %}
+</div>

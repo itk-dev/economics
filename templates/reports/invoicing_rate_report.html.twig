@@ -1,5 +1,7 @@
-<div id="scrollContainer" class="overflow-x-auto w-full" {{ stimulus_controller('show-hide') }}
-     data-storage-key="hidePlanningAssignees">
+<div id="report-fragment" {{ stimulus_controller('report-hide') }}
+    data-report-hide-url-value="{{ path(app.request.attributes.get('_route'), app.request.query.all) }}"
+    data-report-hide-prefs-url-value="{{ path('app_user_preferences_hidden_workers') }}">
+<div id="scrollContainer" class="overflow-x-auto w-full">
     <table {{ stimulus_controller('table-highlight') }}
             class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
         <thead>
@@ -36,7 +38,7 @@
         {% for worker in data.workers %}
 
             <tbody {{ stimulus_controller('toggle-parent-child') }}
-                    data-toggle-id="{{ worker.email }}" {{ stimulus_target('show-hide', 'entry') }}>
+                    data-toggle-id="{{ worker.email }}">
 
             <tr>
                 <td class="text-left py-2 px-2 sticky left-0 z-10 whitespace-nowrap border border-slate-600 bg-slate-100 dark:bg-slate-900">
@@ -45,9 +47,10 @@
                             {{ worker.name ?? worker.email }}
                         </span>
                         <button class="hide-btn mr-3 w-4"
-                                type="button" {{ stimulus_action('show-hide', 'toggleEntry') }}
-                                data-toggle-id="{{ worker.email }}" data-toggle-name="{{ worker.email }}"
-                                data-toggle-target="button">
+                                type="button"
+                                {{ stimulus_action('report-hide', 'hide') }}
+                                data-worker-email="{{ worker.email }}"
+                                data-worker-name="{{ worker.name ?? worker.email }}">
                             <i class="fa-solid fa-eye-slash"></i>
                         </button>
                         <button class="expand-btn mr-3 w-4"
@@ -169,10 +172,8 @@
         </tr>
         </tbody>
     </table>
-    <div class="my-5 sticky left-0">
-        {{ 'workload_report.hidden-entries'|trans }}:
-        <span {{ stimulus_target('show-hide', 'hiddenEntries') }}></span>
-    </div>
+</div>
+{{ include('reports/_hidden_entries.html.twig') }}
 </div>
 <div class="my-5 sticky left-0">
     {{ 'invoicing_rate_report.reading-guide-header'|trans }}:
