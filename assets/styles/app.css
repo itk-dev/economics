@@ -348,7 +348,7 @@
     }
 
     .selections .choices__inner {
-        @apply border border-gray-300 dark:border-gray-600 rounded-lg;
+        @apply border border-gray-300 dark:border-gray-600 rounded-lg text-sm;
     }
 
     .selections .choices.is-focused .choices__inner,
@@ -377,6 +377,14 @@
     .selections
         .choices__item.choices__item--choice.choices__item--selectable.is-highlighted {
         @apply dark:bg-gray-800 dark:text-white bg-gray-200 text-black;
+    }
+
+    .selections .choices__list--multiple .choices__item {
+        @apply bg-gray-200 text-gray-900 border-gray-300 dark:bg-gray-600 dark:text-white dark:border-gray-500;
+    }
+
+    .selections .choices__list--multiple .choices__item .choices__button {
+        @apply border-l border-gray-300 dark:border-gray-500 opacity-60 hover:opacity-100;
     }
 
     .planning-svg {
