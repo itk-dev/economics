@@ -313,9 +313,7 @@ class PlanningService
      *
      * @param ArrayCollection<string, Assignee> $collection The ArrayCollection to be sorted
      *
-     * @return ArrayCollection A new ArrayCollection with the sorted elements
-     *
-     * @psalm-return ArrayCollection<TKey, TValue|null>
+     * @return ArrayCollection<string, Assignee> A new ArrayCollection with the sorted elements
      */
     private function sortAssigneeCollectionByDisplayName(ArrayCollection $collection): ArrayCollection
     {
@@ -333,9 +331,7 @@ class PlanningService
      *
      * @param ArrayCollection<string, Project> $collection The ArrayCollection to be sorted
      *
-     * @return ArrayCollection A new ArrayCollection with the sorted elements
-     *
-     * @psalm-return ArrayCollection<TKey, TValue|null>
+     * @return ArrayCollection<string, Project> A new ArrayCollection with the sorted elements
      */
     private function sortProjectCollectionByDisplayName(ArrayCollection $collection): ArrayCollection
     {
