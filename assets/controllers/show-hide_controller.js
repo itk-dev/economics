@@ -58,26 +58,12 @@ export default class extends Controller {
 
         const newHiddenEntries = new Set(hiddenEntries);
 
-        if (newHiddenEntries.size === 0) {
-            newHiddenEntries.add({ key, displayName });
-        } else {
-            let found = false;
-            newHiddenEntries.forEach((newHiddenEntry) => {
-                if (newHiddenEntry.key === key) {
-                    newHiddenEntries.delete(newHiddenEntry);
-                    found = true;
-                }
-            });
+        const exists = hiddenEntries.some((entry) => entry.key === key);
+        const newHiddenEntries = exists
+            ? hiddenEntries.filter((entry) => entry.key !== key)
+            : [...hiddenEntries, { key, displayName }];
 
-            if (!found) {
-                newHiddenEntries.add({ key, displayName });
-            }
-        }
-
-        localStorage.setItem(
-            this.storageKey,
-            JSON.stringify(Array.from(newHiddenEntries)),
-        );
+        localStorage.setItem(this.storageKey, JSON.stringify(newHiddenEntries));
 
         this.hideEntries();
     }
