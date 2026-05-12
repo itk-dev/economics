@@ -56,8 +56,6 @@ export default class extends Controller {
             return;
         }
 
-        const newHiddenEntries = new Set(hiddenEntries);
-
         const exists = hiddenEntries.some((entry) => entry.key === key);
         const newHiddenEntries = exists
             ? hiddenEntries.filter((entry) => entry.key !== key)
