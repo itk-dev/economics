@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-05-12
+
+* [PR-292](https://github.com/itk-dev/economics/pull/292)
+  Workload report: right-align numbers and round percentages to 1 decimal.
+* [PR-290](https://github.com/itk-dev/economics/pull/290)
+  Sort reports alphabetically - unbilled projects report, hour report, invoicing rate report, workload report.
+
 ## [3.1.0] - 2026-04-30
 
 * [PR-288](https://github.com/itk-dev/economics/pull/288)
@@ -567,7 +574,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.1.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.3.0...HEAD
+[3.3.0]: https://github.com/itk-dev/economics/compare/3.1.0...3.3.0
 [3.1.0]: https://github.com/itk-dev/economics/compare/3.0.1...3.1.0
 [3.0.1]: https://github.com/itk-dev/economics/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/itk-dev/economics/compare/2.10.2...3.0.0
