@@ -43,7 +43,7 @@
                         {% endif %}
                     {% endfor %}
 
-                    {% set weekPercentage = res > 0 ? (res / assignee.weekNorm * 5)|round(0, 'ceil') : null %}
+                    {% set weekPercentage = res > 0 ? (res / assignee.weekNorm * 5)|round(0, 'common') : null %}
                     <td class="text-center px-3 border border-slate-600
                         {{ week.activeSprint is defined and week.activeSprint ? 'bg-slate-300 dark:bg-slate-800' : '' }}
                         {{ weekPercentage is not null and weekPercentage >= 1 and weekPercentage < 3 ? 'bg-blue-400' : '' }}

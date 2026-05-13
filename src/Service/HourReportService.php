@@ -12,6 +12,7 @@ use App\Model\Reports\HourReportProjectTicket;
 use App\Model\Reports\HourReportWorklog;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class HourReportService
 {
@@ -84,6 +85,12 @@ class HourReportService
             $hourReportData->projectTotalEstimated += $totalTicketEstimated;
             $hourReportData->projectTotalSpent += $totalTicketSpent;
         }
+
+        /** @var \ArrayIterator $tagsIterator */
+        $tagsIterator = $hourReportData->projectTags->getIterator();
+        // Sort tags by display name (uasort: keys are epic names, sort by the value's `tag` so 'noTag' lands in alphabetical position).
+        $tagsIterator->uasort(fn ($a, $b) => mb_strtolower($a->tag) <=> mb_strtolower($b->tag));
+        $hourReportData->projectTags = new ArrayCollection(iterator_to_array($tagsIterator));
 
         return $hourReportData;
     }

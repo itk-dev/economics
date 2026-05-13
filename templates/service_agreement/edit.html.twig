@@ -5,8 +5,13 @@
 {% block content %}
     <h1 class="page-title">{{ 'service_agreement.edit'|trans }}</h1>
 
+    <div class="mb-4 text-sm text-gray-500 dark:text-gray-400">
+        <p>{{ 'service_agreement.created_at'|trans }}: {{ service_agreement.createdAt ? service_agreement.createdAt|date('d/m Y H:i') : '-' }}</p>
+        <p>{{ 'service_agreement.updated_at'|trans }}: {{ service_agreement.updatedAt ? service_agreement.updatedAt|date('d/m Y H:i') : '-' }}</p>
+    </div>
+
     {{ form_start(form) }}
-    <div class="selections" {{ stimulus_controller('choices') }}>
+    <div class="selections" {{ stimulus_controller('choices eol-required') }}>
         {{ form_rest(form) }}
     </div>
     <button class="button mt-3">{{ 'clients.action_save'|trans }}</button>

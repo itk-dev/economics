@@ -6,7 +6,7 @@
     <h1 class="page-title">{{ 'service_agreement.new'|trans }}</h1>
 
     {{ form_start(form) }}
-    <div class="selections">
+    <div class="selections" {{ stimulus_controller('eol-required') }}>
         {{ form_rest(form) }}
     </div>
     <button class="button">{{ 'service_agreement.action_create'|trans }}</button>

@@ -100,6 +100,18 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
+    public function updateProjectByIssue(Issue $issue, Project $project): int
+    {
+        return $this->createQueryBuilder('w')
+            ->update()
+            ->set('w.project', ':project')
+            ->where('w.issue = :issue')
+            ->setParameter('project', $project)
+            ->setParameter('issue', $issue)
+            ->getQuery()
+            ->execute();
+    }
+
     public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
     {
         $qb = $this->createQueryBuilder('worklog');
