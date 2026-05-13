@@ -2,10 +2,8 @@
 
 namespace App\Tests\Unit\Service;
 
-use App\Entity\Epic;
 use App\Entity\Issue;
 use App\Entity\Project;
-use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Model\Reports\ForecastReportData;

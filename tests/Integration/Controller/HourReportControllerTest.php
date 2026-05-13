@@ -11,7 +11,7 @@ class HourReportControllerTest extends WebTestCase
     private function createUser(array $roles): User
     {
         $user = new User();
-        $user->setEmail('test-hr-' . uniqid() . '@test.com');
+        $user->setEmail('test-hr-'.uniqid().'@test.com');
         $user->setName('Test User');
         $user->setRoles($roles);
 

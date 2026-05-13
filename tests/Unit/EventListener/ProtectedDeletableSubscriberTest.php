@@ -5,8 +5,8 @@ namespace App\Tests\Unit\EventListener;
 use App\EventListener\ProtectedDeletableSubscriber;
 use App\Exception\DeleteProtectedViewException;
 use App\Interface\ProtectedInterface;
-use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\PreRemoveEventArgs;
 use PHPUnit\Framework\TestCase;
 
 class ProtectedDeletableSubscriberTest extends TestCase

@@ -4,7 +4,6 @@ namespace App\Tests\Unit\Service;
 
 use App\Entity\Worker;
 use App\Model\Reports\InvoicingRateReportData;
-use App\Model\Reports\InvoicingRateReportViewModeEnum;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;

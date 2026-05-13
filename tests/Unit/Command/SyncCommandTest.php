@@ -2,9 +2,9 @@
 
 namespace App\Tests\Unit\Command;
 
+use App\Command\SyncCommand;
 use App\Entity\Project;
 use App\Service\LeantimeApiService;
-use App\Command\SyncCommand;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;

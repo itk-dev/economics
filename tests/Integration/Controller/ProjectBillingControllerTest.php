@@ -11,7 +11,7 @@ class ProjectBillingControllerTest extends WebTestCase
     private function createUser(array $roles): User
     {
         $user = new User();
-        $user->setEmail('test-pb-' . uniqid() . '@test.com');
+        $user->setEmail('test-pb-'.uniqid().'@test.com');
         $user->setName('Test User');
         $user->setRoles($roles);
 

@@ -29,12 +29,36 @@ use App\Enum\SubscriptionSubjectEnum;
 use App\Enum\SystemOwnerNoticeEnum;
 use App\Service\LeantimeApiService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
 class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+        // Strip the DBAL logging + profiler middlewares: in dev they buffer every
+        // executed statement in memory, which dominates wall-clock time and memory
+        // when inserting ~20k worklogs.
+        if ($manager instanceof EntityManagerInterface) {
+            $configuration = $manager->getConnection()->getConfiguration();
+            $configuration->setMiddlewares(array_filter(
+                $configuration->getMiddlewares(),
+                static fn ($middleware) => !($middleware instanceof \Doctrine\DBAL\Logging\Middleware)
+                    && !($middleware instanceof \Doctrine\Bundle\DoctrineBundle\Middleware\DebugMiddleware),
+            ));
+        }
+
+        $year = (new \DateTime())->format('Y');
+
+        // Precompute the 100 distinct "started" timestamps the worklog loop uses
+        // instead of re-parsing them 20,000 times.
+        $startedByK = [];
+        for ($k = 0; $k < 100; ++$k) {
+            $modMonth = str_pad((string) ($k % 12 + 1), 2, '0', STR_PAD_LEFT);
+            $modDay = str_pad((string) ($k % 28 + 1), 2, '0', STR_PAD_LEFT);
+            $startedByK[$k] = \DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new \DateTimeZone('Europe/Copenhagen'));
+        }
+
         $dataProviders = [];
 
         $dataProvider1 = new DataProvider();
@@ -56,6 +80,7 @@ class AppFixtures extends Fixture
         $dataProviders[] = $dataProvider2;
 
         $workerArray = [];
+        $workerEntities = [];
 
         for ($i = 0; $i < 10; ++$i) {
             $worker = new Worker();
@@ -63,11 +88,20 @@ class AppFixtures extends Fixture
             $worker->setWorkload(37);
             $manager->persist($worker);
             $workerArray[] = 'test'.$i.'@test';
+            $workerEntities[] = $worker;
         }
 
         $epic = new Epic();
         $epic->setTitle('Epic 1');
         $manager->persist($epic);
+
+        // Stash references to entities the tail block needs, so we can avoid
+        // re-querying them after a clear().
+        $projectsByKey = [];
+        $clientsByKey = [];
+
+        $batchSize = 500;
+        $persisted = 0;
 
         foreach ($dataProviders as $key => $dataProvider) {
             $manager->persist($dataProvider);
@@ -87,6 +121,7 @@ class AppFixtures extends Fixture
                 $client->setVersionName($clientVersionName);
 
                 $manager->persist($client);
+                $clientsByKey["$key-$c"] = $client;
             }
 
             for ($i = 0; $i < 10; ++$i) {
@@ -104,6 +139,7 @@ class AppFixtures extends Fixture
                 $project->setIsBillable($modBillable);
 
                 $manager->persist($project);
+                $projectsByKey["$key-$i"] = $project;
 
                 $versions = [];
                 for ($v = 0; $v < 4; ++$v) {
@@ -147,51 +183,43 @@ class AppFixtures extends Fixture
                         $issue->addEpic($epic);
                     }
 
+                    $modKind = 0 == $i % 2 ? BillableKindsEnum::GENERAL_BILLABLE : null;
+                    $issueWorker = $workerArray[$i % 10];
+
                     for ($k = 0; $k < 100; ++$k) {
-                        $year = (new \DateTime())->format('Y');
-
-                        // Use modulo to get months and dates to create started-dates spanning the entire year
-                        $modMonth = str_pad((string) ($k % 12 + 1), 2, '0', STR_PAD_LEFT);
-                        $modDay = str_pad((string) ($k % 28 + 1), 2, '0', STR_PAD_LEFT);
-
-                        $modKind = 0 == $i % 2 ? BillableKindsEnum::GENERAL_BILLABLE : null;
-
                         $worklog = new Worklog();
                         $worklog->setProjectTrackerIssueId("worklog-$key-$i-$j-$k");
                         $worklog->setWorklogId($i * 100000 + $j * 1000 + $k);
                         $worklog->setDescription("Beskrivelse af worklog-$key-$i-$j-$k");
                         $worklog->setIsBilled(false);
                         $worklog->setProject($project);
-                        $worklog->setWorker($workerArray[$i % 10]);
+                        $worklog->setWorker($issueWorker);
                         $worklog->setTimeSpentSeconds(60 * 15 * ($k + 1));
-                        $worklog->setStarted(\DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new \DateTimeZone('Europe/Copenhagen')));
+                        $worklog->setStarted(clone $startedByK[$k]);
                         $worklog->setIssue($issue);
                         $worklog->setDataProvider($dataProvider);
                         $worklog->setKind($modKind);
                         $manager->persist($worklog);
-                    }
 
-                    $manager->flush();
+                        if (0 === ++$persisted % $batchSize) {
+                            $manager->flush();
+                            // Do not clear() — later iterations and the tail
+                            // block still reference these managed entities.
+                        }
+                    }
                 }
             }
-
-            $manager->flush();
-            $manager->clear();
         }
 
-        // Re-fetch entities after clear() for additional fixture data
-        $workerRepo = $manager->getRepository(Worker::class);
-        $projectRepo = $manager->getRepository(Project::class);
-        $clientRepo = $manager->getRepository(Client::class);
-        $worklogRepo = $manager->getRepository(Worklog::class);
+        $manager->flush();
 
-        $worker0 = $workerRepo->findOneBy(['email' => 'test0@test']);
-        $worker1 = $workerRepo->findOneBy(['email' => 'test1@test']);
-        $project00 = $projectRepo->findOneBy(['name' => 'project-0-0']);
-        $project01 = $projectRepo->findOneBy(['name' => 'project-0-1']);
-        $project02 = $projectRepo->findOneBy(['name' => 'project-0-2']);
-        $client00 = $clientRepo->findOneBy(['name' => 'client 0-0']);
-        $client01 = $clientRepo->findOneBy(['name' => 'client 0-1']);
+        $worker0 = $workerEntities[0];
+        $worker1 = $workerEntities[1];
+        $project00 = $projectsByKey['0-0'];
+        $project01 = $projectsByKey['0-1'];
+        $project02 = $projectsByKey['0-2'];
+        $client00 = $clientsByKey['0-0'];
+        $client01 = $clientsByKey['0-1'];
 
         // Accounts
         $account1 = new Account();
@@ -205,23 +233,17 @@ class AppFixtures extends Fixture
         $manager->persist($account2);
 
         // Worker Groups
-        $workers = $workerRepo->findAll();
-
         $groupAlpha = new WorkerGroup();
         $groupAlpha->setName('Group Alpha');
         for ($i = 0; $i < 5; ++$i) {
-            /** @var Worker $w */
-            $w = $workerRepo->findOneBy(['email' => 'test'.$i.'@test']);
-            $groupAlpha->addWorker($w);
+            $groupAlpha->addWorker($workerEntities[$i]);
         }
         $manager->persist($groupAlpha);
 
         $groupBeta = new WorkerGroup();
         $groupBeta->setName('Group Beta');
         for ($i = 5; $i < 10; ++$i) {
-            /** @var Worker $w */
-            $w = $workerRepo->findOneBy(['email' => 'test'.$i.'@test']);
-            $groupBeta->addWorker($w);
+            $groupBeta->addWorker($workerEntities[$i]);
         }
         $manager->persist($groupBeta);
 
@@ -245,8 +267,6 @@ class AppFixtures extends Fixture
         $manager->persist($product3);
 
         // Project Billings
-        $year = (new \DateTime())->format('Y');
-
         $billing1 = new ProjectBilling();
         $billing1->setName('Billing Q1');
         $billing1->setProject($project00);
@@ -311,6 +331,7 @@ class AppFixtures extends Fixture
         $manager->persist($invoiceEntry2);
 
         // Attach some worklogs to invoice entry and mark some as billed
+        $worklogRepo = $manager->getRepository(Worklog::class);
         $worklogsToAttach = $worklogRepo->findBy(['project' => $project00], ['id' => 'ASC'], 5);
         foreach ($worklogsToAttach as $wl) {
             $wl->setInvoiceEntry($invoiceEntry1);
@@ -331,7 +352,7 @@ class AppFixtures extends Fixture
         $sa1->setValidFrom(new \DateTime("$year-01-01"));
         $sa1->setValidTo(new \DateTime("$year-12-31"));
         $sa1->setIsActive(true);
-        $sa1->setSystemOwnerNotice(SystemOwnerNoticeEnum::ON_SERVER);
+        $sa1->setSystemOwnerNotices([SystemOwnerNoticeEnum::SERVERFLYTNING]);
         $manager->persist($sa1);
 
         $sa2 = new ServiceAgreement();
@@ -343,7 +364,7 @@ class AppFixtures extends Fixture
         $sa2->setValidFrom(new \DateTime("$year-01-01"));
         $sa2->setValidTo(new \DateTime("$year-12-31"));
         $sa2->setIsActive(false);
-        $sa2->setSystemOwnerNotice(SystemOwnerNoticeEnum::NEVER);
+        $sa2->setSystemOwnerNotices([SystemOwnerNoticeEnum::SIKKERHEDSPATCH]);
         $manager->persist($sa2);
 
         $sa3 = new ServiceAgreement();
@@ -355,7 +376,7 @@ class AppFixtures extends Fixture
         $sa3->setValidFrom(new \DateTime("$year-01-01"));
         $sa3->setValidTo(new \DateTime("$year-12-31"));
         $sa3->setIsActive(true);
-        $sa3->setSystemOwnerNotice(SystemOwnerNoticeEnum::ON_UPDATE);
+        $sa3->setSystemOwnerNotices([SystemOwnerNoticeEnum::CYBERSIKKERSHEDSOPDATERING]);
         $manager->persist($sa3);
 
         // Cybersecurity Agreement
