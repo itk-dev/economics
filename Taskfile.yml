@@ -1,0 +1,124 @@
+# https://taskfile.dev — install with `brew install go-task` (or see docs).
+# Run `task` (or `task --list`) to see all available commands.
+
+version: '3'
+
+vars:
+  PHP: docker compose exec phpfpm
+  PHP_COVERAGE: docker compose exec -e XDEBUG_MODE=coverage phpfpm
+  NODE: docker compose run --rm node
+  CONSOLE: docker compose exec phpfpm bin/console
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+    silent: true
+
+  # ---------------------------------------------------------------- Setup ---
+
+  setup:
+    desc: One-time stack setup — network, pull, install deps, run migrations
+    cmds:
+      - docker network create frontend || true
+      - docker compose pull
+      - "{{.NODE}} npm install"
+      - docker compose up --detach
+      - "{{.PHP}} composer install"
+      - "{{.CONSOLE}} doctrine:migrations:migrate --no-interaction"
+
+  up:
+    desc: Start the docker stack in the background
+    cmds:
+      - docker compose up --detach
+
+  down:
+    desc: Stop the docker stack
+    cmds:
+      - docker compose down
+
+  shell:
+    desc: Open a shell inside the phpfpm container
+    interactive: true
+    cmds:
+      - docker compose exec phpfpm sh
+
+  # ------------------------------------------------------------------ PHP ---
+
+  test:
+    desc: Run the PHP test suite
+    cmds:
+      - "{{.PHP}} composer tests"
+
+  test:coverage:
+    desc: Run tests and write HTML coverage to coverage/
+    cmds:
+      - "{{.PHP_COVERAGE}} vendor/bin/phpunit --coverage-html coverage/"
+
+  test:file:
+    desc: Run a single test file — `task test:file -- tests/Service/Foo.php`
+    cmds:
+      - "{{.PHP}} vendor/bin/phpunit {{.CLI_ARGS}}"
+
+  analyse:
+    desc: Run Psalm static analysis
+    cmds:
+      - "{{.PHP}} composer code-analysis"
+
+  cs:fix:
+    desc: Auto-fix PHP + Twig coding standards
+    cmds:
+      - "{{.PHP}} composer coding-standards-apply"
+
+  cs:check:
+    desc: Check PHP + Twig coding standards (dry-run)
+    cmds:
+      - "{{.PHP}} composer coding-standards-check"
+
+  prepare:
+    desc: Run all PHP pre-commit checks (cs apply + psalm + tests)
+    cmds:
+      - "{{.PHP}} composer prepare-code"
+
+  fixtures:
+    desc: Load data fixtures
+    cmds:
+      - "{{.PHP}} composer fixtures:load"
+
+  migrate:
+    desc: Apply Doctrine migrations
+    cmds:
+      - "{{.CONSOLE}} doctrine:migrations:migrate --no-interaction"
+
+  messenger:
+    desc: Consume async messages from the `async` transport
+    cmds:
+      - "{{.CONSOLE}} messenger:consume async"
+
+  # ------------------------------------------------------- JavaScript / CSS ---
+
+  js:dev:
+    desc: Build assets for development
+    cmds:
+      - "{{.NODE}} npm run dev"
+
+  js:watch:
+    desc: Watch and rebuild assets on change
+    cmds:
+      - "{{.NODE}} npm run watch"
+
+  js:build:
+    desc: Production asset build
+    cmds:
+      - "{{.NODE}} npm run build"
+
+  js:cs:fix:
+    desc: Auto-fix JS + Markdown coding standards
+    cmds:
+      - "{{.NODE}} npm run coding-standards-apply"
+
+  js:cs:check:
+    desc: Check JS + Markdown coding standards
+    cmds:
+      - "{{.NODE}} npm run coding-standards-check"

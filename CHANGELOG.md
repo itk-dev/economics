@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added `Taskfile.yml` (go-task) wrapping the common dev commands so they can be
+  run as `task tests`, `task fixtures`, `task prepare`, etc. Composer scripts are
+  unchanged and still work for CI.
 * Sped up `composer fixtures:load` by disabling DBAL debug/logging middlewares
   during the load, batching the worklog inserts in groups of 500 instead of
   flushing per-issue, hoisting per-iteration date construction out of the inner
