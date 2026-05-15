@@ -50,13 +50,13 @@ class WorklogRepositoryTest extends KernelTestCase
 
         $filterData = new InvoiceEntryWorklogsFilterData();
         $filterData->onlyAvailable = false;
-        $filterData->worker = 'test0@test';
+        $filterData->worker = 'admin@test.local';
 
         $result = $this->repository->findByFilterData($project, $invoiceEntry, $filterData);
 
         $this->assertNotEmpty($result);
         foreach ($result as $worklog) {
-            $this->assertStringContainsString('test0@test', $worklog->getWorker());
+            $this->assertStringContainsString('admin@test.local', $worklog->getWorker());
         }
     }
 
@@ -125,14 +125,14 @@ class WorklogRepositoryTest extends KernelTestCase
     {
         $year = (new \DateTime())->format('Y');
         $result = $this->repository->findWorklogsByWorkerAndDateRange(
-            'test0@test',
+            'admin@test.local',
             new \DateTime("$year-01-01"),
             new \DateTime("$year-12-31")
         );
 
         $this->assertNotEmpty($result);
         foreach ($result as $worklog) {
-            $this->assertEquals('test0@test', $worklog->getWorker());
+            $this->assertEquals('admin@test.local', $worklog->getWorker());
         }
     }
 
@@ -140,7 +140,7 @@ class WorklogRepositoryTest extends KernelTestCase
     {
         $year = (new \DateTime())->format('Y');
         $result = $this->repository->getTimeSpentByWorkerInWeekRange(
-            'test0@test',
+            'admin@test.local',
             new \DateTime("$year-01-01"),
             new \DateTime("$year-12-31"),
             'month'
@@ -151,7 +151,7 @@ class WorklogRepositoryTest extends KernelTestCase
             $this->assertArrayHasKey('totalTimeSpent', $data);
             $this->assertArrayHasKey('month', $data);
             $this->assertArrayHasKey('worker', $data);
-            $this->assertEquals('test0@test', $data['worker']);
+            $this->assertEquals('admin@test.local', $data['worker']);
         }
     }
 
@@ -161,7 +161,7 @@ class WorklogRepositoryTest extends KernelTestCase
 
         $year = (new \DateTime())->format('Y');
         $this->repository->getTimeSpentByWorkerInWeekRange(
-            'test0@test',
+            'admin@test.local',
             new \DateTime("$year-01-01"),
             new \DateTime("$year-12-31"),
             'invalid'
@@ -188,29 +188,30 @@ class WorklogRepositoryTest extends KernelTestCase
         $result = $this->repository->findBillableWorklogsByWorkerAndDateRange(
             new \DateTime("$year-01-01"),
             new \DateTime("$year-12-31"),
-            'test0@test'
+            'admin@test.local'
         );
 
         $this->assertNotEmpty($result);
         foreach ($result as $worklog) {
-            $this->assertEquals('test0@test', $worklog->getWorker());
+            $this->assertEquals('admin@test.local', $worklog->getWorker());
         }
     }
 
     public function testFindBilledWorklogsByWorkerAndDateRange(): void
     {
         $year = (new \DateTime())->format('Y');
-        // test0@test is the worker for project-0-0 (even index, so billable)
+        // admin@test.local is the worker for project-0-0 (even index, so billable)
         $result = $this->repository->findBilledWorklogsByWorkerAndDateRange(
-            'test0@test',
+            'admin@test.local',
             new \DateTime("$year-01-01"),
             new \DateTime("$year-12-31")
         );
 
         // Fixtures mark 10 worklogs as billed for project-0-0
+        $this->assertNotEmpty($result);
         foreach ($result as $worklog) {
             $this->assertTrue($worklog->isBilled());
-            $this->assertEquals('test0@test', $worklog->getWorker());
+            $this->assertEquals('admin@test.local', $worklog->getWorker());
         }
     }
 
