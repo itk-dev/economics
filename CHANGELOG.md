@@ -16,6 +16,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   flushing per-issue, hoisting per-iteration date construction out of the inner
   loops, and stashing entity references so the tail block no longer re-queries
   workers/projects/clients after a `clear()`.
+* Added controller smoke matrix and flow tests under
+  `tests/Integration/Controller/`. A shared `AbstractControllerTestCase`
+  exercises every admin index route as anonymous (redirect), as an allowed
+  role (success), and as a denied role (403). Flow tests cover invoice
+  create + edit, project-billing create, and an hour-report filter
+  submission.
+* Fixed `/admin/invoices/{id}/edit` crashing on invoice entries with no
+  account by allowing `InvoiceEntryHelper::getAccountLabel()` to accept a
+  null account and return an empty label.
+* Fixed `/admin/reports` (reports landing page) crashing on missing template
+  variables. Replaced the stub with a minimal landing page linking to each
+  report.
+* Aligned the firewall with the controllers for `/admin/reports/*`:
+  `config/packages/security.yaml` now requires `ROLE_REPORT` instead of
+  `ROLE_ADMIN`, matching each report controller's `#[IsGranted]` attribute.
 
 ## [3.3.0] - 2026-05-12
 

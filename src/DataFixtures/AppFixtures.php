@@ -15,6 +15,7 @@ use App\Entity\Project;
 use App\Entity\ProjectBilling;
 use App\Entity\ServiceAgreement;
 use App\Entity\Subscription;
+use App\Entity\User;
 use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\WorkerGroup;
@@ -82,12 +83,24 @@ class AppFixtures extends Fixture
         $workerArray = [];
         $workerEntities = [];
 
+        $workerEmails = [
+            'admin@test.local',
+            'user@test.local',
+            'invoice@test.local',
+            'project-billing@test.local',
+            'planning@test.local',
+            'report@test.local',
+            'product-manager@test.local',
+            'test7@test',
+            'test8@test',
+            'test9@test',
+        ];
         for ($i = 0; $i < 10; ++$i) {
             $worker = new Worker();
-            $worker->setEmail('test'.$i.'@test');
+            $worker->setEmail($workerEmails[$i]);
             $worker->setWorkload(37);
             $manager->persist($worker);
-            $workerArray[] = 'test'.$i.'@test';
+            $workerArray[] = $workerEmails[$i];
             $workerEntities[] = $worker;
         }
 
@@ -409,6 +422,23 @@ class AppFixtures extends Fixture
         $sub3->setFrequency(SubscriptionFrequencyEnum::FREQUENCY_MONTHLY);
         $sub3->setUrlParams(['param2' => 'value2']);
         $manager->persist($sub3);
+
+        $roleUsers = [
+            'admin@test.local' => ['ROLE_ADMIN'],
+            'user@test.local' => ['ROLE_USER'],
+            'invoice@test.local' => ['ROLE_INVOICE'],
+            'project-billing@test.local' => ['ROLE_PROJECT_BILLING'],
+            'planning@test.local' => ['ROLE_PLANNING'],
+            'report@test.local' => ['ROLE_REPORT'],
+            'product-manager@test.local' => ['ROLE_PRODUCT_MANAGER'],
+        ];
+        foreach ($roleUsers as $email => $roles) {
+            $user = new User();
+            $user->setEmail($email);
+            $user->setName($email);
+            $user->setRoles($roles);
+            $manager->persist($user);
+        }
 
         $manager->flush();
     }

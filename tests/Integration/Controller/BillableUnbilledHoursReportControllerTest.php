@@ -8,8 +8,8 @@ class BillableUnbilledHoursReportControllerTest extends AbstractControllerTestCa
     {
         $this->assertSmokeMatrix(
             '/admin/reports/billable_unbilled_hours_report/',
-            allowedRoles: ['ROLE_ADMIN'],
-            deniedRoles: ['ROLE_REPORT'],
+            allowedRoles: ['ROLE_REPORT'],
+            deniedRoles: ['ROLE_INVOICE'],
         );
     }
 }

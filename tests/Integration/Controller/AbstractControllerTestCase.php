@@ -3,22 +3,31 @@
 namespace App\Tests\Integration\Controller;
 
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 abstract class AbstractControllerTestCase extends WebTestCase
 {
-    protected function createUser(array $roles = ['ROLE_USER']): User
-    {
-        $user = new User();
-        $user->setEmail(sprintf('test-%s@test.com', uniqid('', true)));
-        $user->setName('Test User');
-        $user->setRoles($roles);
+    private const ROLE_USER_FIXTURES = [
+        'ROLE_ADMIN' => 'admin@test.local',
+        'ROLE_USER' => 'user@test.local',
+        'ROLE_INVOICE' => 'invoice@test.local',
+        'ROLE_PROJECT_BILLING' => 'project-billing@test.local',
+        'ROLE_PLANNING' => 'planning@test.local',
+        'ROLE_REPORT' => 'report@test.local',
+        'ROLE_PRODUCT_MANAGER' => 'product-manager@test.local',
+    ];
 
-        $em = static::getContainer()->get(EntityManagerInterface::class);
-        $em->persist($user);
-        $em->flush();
+    protected function getUserWithRole(string $role): User
+    {
+        $email = self::ROLE_USER_FIXTURES[$role]
+            ?? throw new \InvalidArgumentException(sprintf('No fixture user for role %s.', $role));
+
+        $user = static::getContainer()->get(UserRepository::class)->findOneBy(['email' => $email]);
+        if (null === $user) {
+            throw new \RuntimeException(sprintf('Fixture user %s not found; run `task fixtures`.', $email));
+        }
 
         return $user;
     }
@@ -27,7 +36,7 @@ abstract class AbstractControllerTestCase extends WebTestCase
     {
         self::ensureKernelShutdown();
         $client = static::createClient();
-        $client->loginUser($this->createUser($roles));
+        $client->loginUser($this->getUserWithRole($roles[0]));
 
         return $client;
     }

@@ -8,8 +8,8 @@ class InvoicingRateReportControllerTest extends AbstractControllerTestCase
     {
         $this->assertSmokeMatrix(
             '/admin/reports/invoicing_rate_report/',
-            allowedRoles: ['ROLE_ADMIN'],
-            deniedRoles: ['ROLE_REPORT'],
+            allowedRoles: ['ROLE_REPORT'],
+            deniedRoles: ['ROLE_INVOICE'],
         );
     }
 }

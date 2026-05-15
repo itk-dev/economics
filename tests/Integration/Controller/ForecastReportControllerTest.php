@@ -8,8 +8,8 @@ class ForecastReportControllerTest extends AbstractControllerTestCase
     {
         $this->assertSmokeMatrix(
             '/admin/reports/forecast_report/',
-            allowedRoles: ['ROLE_ADMIN'],
-            deniedRoles: ['ROLE_REPORT'],
+            allowedRoles: ['ROLE_REPORT'],
+            deniedRoles: ['ROLE_INVOICE'],
         );
     }
 }

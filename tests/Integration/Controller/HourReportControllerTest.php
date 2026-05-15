@@ -8,8 +8,8 @@ class HourReportControllerTest extends AbstractControllerTestCase
     {
         $this->assertSmokeMatrix(
             '/admin/reports/hour_report/',
-            allowedRoles: ['ROLE_ADMIN'],
-            deniedRoles: ['ROLE_REPORT'],
+            allowedRoles: ['ROLE_REPORT'],
+            deniedRoles: ['ROLE_INVOICE'],
         );
     }
 }
