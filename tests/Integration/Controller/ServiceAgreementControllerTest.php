@@ -2,14 +2,14 @@
 
 namespace App\Tests\Integration\Controller;
 
-class HourReportControllerTest extends AbstractControllerTestCase
+class ServiceAgreementControllerTest extends AbstractControllerTestCase
 {
     public function testIndexSmokeMatrix(): void
     {
         $this->assertSmokeMatrix(
-            '/admin/reports/hour_report/',
+            '/admin/serviceagreements',
             allowedRoles: ['ROLE_ADMIN'],
-            deniedRoles: ['ROLE_REPORT'],
+            deniedRoles: ['ROLE_USER'],
         );
     }
 }
