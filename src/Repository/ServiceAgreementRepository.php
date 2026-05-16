@@ -59,6 +59,11 @@ class ServiceAgreementRepository extends ServiceEntityRepository
                 ->setParameter('active', $serviceAgreementFilterData->active);
         }
 
+        if (!is_null($serviceAgreementFilterData->projectLead)) {
+            $qb->andWhere('service_agreement.projectLead = :projectLead')
+                ->setParameter('projectLead', $serviceAgreementFilterData->projectLead);
+        }
+
         return $this->paginator->paginate(
             $qb,
             $page,
@@ -69,6 +74,8 @@ class ServiceAgreementRepository extends ServiceEntityRepository
 
     /**
      * Retrieves a list of API service agreements along with their associated cybersecurity agreements.
+     *
+     * @return array
      */
     public function getApiServiceAgreements(): array
     {

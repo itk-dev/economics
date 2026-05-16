@@ -100,6 +100,18 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
+    public function updateProjectByIssue(Issue $issue, Project $project): int
+    {
+        return $this->createQueryBuilder('w')
+            ->update()
+            ->set('w.project', ':project')
+            ->where('w.issue = :issue')
+            ->setParameter('project', $project)
+            ->setParameter('issue', $issue)
+            ->getQuery()
+            ->execute();
+    }
+
     public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
     {
         $qb = $this->createQueryBuilder('worklog');
@@ -118,10 +130,10 @@ class WorklogRepository extends ServiceEntityRepository
     /**
      * Gets the sum of time spent grouped by week of year for a specific worker within a range of weeks.
      *
-     * @param string             $workerEmail The email of the worker
-     * @param \DateTimeInterface $from        The starting date time
-     * @param \DateTimeInterface $to          The ending date time
-     * @param string             $groupBy     The function to group by, accepts 'week', 'month' and 'year'
+     * @param string $workerEmail The email of the worker
+     * @param \DateTimeInterface $from The starting date time
+     * @param \DateTimeInterface $to The ending date time
+     * @param string $groupBy The function to group by, accepts 'week', 'month' and 'year'
      *
      * @return array An array of results containing total time spent, week number, and worker, indexed by week/month/year number
      */
@@ -169,10 +181,10 @@ class WorklogRepository extends ServiceEntityRepository
     /**
      * Finds billable worklogs within a specific date range for a given worker.
      *
-     * @param \DateTime   $dateFrom         the start date for the date range filter
-     * @param \DateTime   $dateTo           the end date for the date range filter
+     * @param \DateTime $dateFrom the start date for the date range filter
+     * @param \DateTime $dateTo the end date for the date range filter
      * @param string|null $workerIdentifier optional worker identifier to filter worklogs by worker
-     * @param mixed|null  $isBilled         optional indicator for whether the worklog has been billed or not
+     * @param mixed|null $isBilled optional indicator for whether the worklog has been billed or not
      *
      * @return array an array of worklogs matching the specified criteria
      */

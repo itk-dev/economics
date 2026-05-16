@@ -21,13 +21,11 @@ class SyncModifiedCommand extends Command
         parent::__construct($this->getName());
     }
 
-    #[\Override]
     protected function configure(): void
     {
         $this->addOption('interval', 'i', InputOption::VALUE_OPTIONAL, 'Only consider items modified within the specified interval. See https://www.php.net/manual/en/dateinterval.construct.php for format.', 'PT1H');
     }
 
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $interval = $input->getOption('interval');

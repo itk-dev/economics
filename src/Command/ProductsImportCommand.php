@@ -30,7 +30,6 @@ class ProductsImportCommand extends Command
         parent::__construct();
     }
 
-    #[\Override]
     protected function configure(): void
     {
         $this
@@ -38,7 +37,6 @@ class ProductsImportCommand extends Command
         ;
     }
 
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -49,13 +47,7 @@ class ProductsImportCommand extends Command
 
         $headerName = 'name';
 
-        $getRowAsStrings =
-        /**
-         * @return string[]
-         *
-         * @psalm-return list<string>
-         */
-        static fn (Row $row): array => array_map(
+        $getRowAsStrings = static fn (Row $row) => array_map(
             static fn ($value) => match (true) {
                 $value instanceof \DateTimeInterface,
                 $value instanceof \DateInterval => throw new RuntimeException(sprintf('Unexpected type: %s', $value::class)),

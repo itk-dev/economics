@@ -20,6 +20,9 @@ class CybersecurityAgreement
     #[ORM\Column(nullable: true)]
     private ?float $quarterlyHours = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $price = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $note = null;
 
@@ -48,6 +51,18 @@ class CybersecurityAgreement
     public function setQuarterlyHours(float $quarterlyHours): static
     {
         $this->quarterlyHours = $quarterlyHours;
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?float $price): static
+    {
+        $this->price = $price;
 
         return $this;
     }

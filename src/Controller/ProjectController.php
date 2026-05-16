@@ -70,8 +70,9 @@ class ProjectController extends AbstractController
             $projectRepository->save($project, true);
 
             return new JsonResponse([$body], 200);
+        } else {
+            throw new BadRequestHttpException('Value not set.');
         }
-        throw new BadRequestHttpException('Value not set.');
     }
 
     #[Route('/{id}/isBillable', name: 'app_project_is_billable', methods: ['POST'])]
@@ -84,8 +85,9 @@ class ProjectController extends AbstractController
             $projectRepository->save($project, true);
 
             return new JsonResponse([$body], 200);
+        } else {
+            throw new BadRequestHttpException('Value not set.');
         }
-        throw new BadRequestHttpException('Value not set.');
     }
 
     #[Route('/{id}/holidayPlanning', name: 'app_project_holiday_planning', methods: ['POST'])]
@@ -98,8 +100,9 @@ class ProjectController extends AbstractController
             $projectRepository->save($project, true);
 
             return new JsonResponse([$body], 200);
+        } else {
+            throw new BadRequestHttpException('Value not set.');
         }
-        throw new BadRequestHttpException('Value not set.');
     }
 
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]

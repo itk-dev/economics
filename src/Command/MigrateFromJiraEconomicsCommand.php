@@ -21,7 +21,6 @@ class MigrateFromJiraEconomicsCommand extends Command
         parent::__construct($this->getName());
     }
 
-    #[\Override]
     protected function configure(): void
     {
     }
@@ -29,7 +28,6 @@ class MigrateFromJiraEconomicsCommand extends Command
     /**
      * @throws Exception
      */
-    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

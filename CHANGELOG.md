@@ -10,12 +10,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-279](https://github.com/itk-dev/economics/pull/279)
   Anonymize worklogs after 5 years.
-* [PR-276](https://github.com/itk-dev/economics/pull/276)
-  Changed to use supercronic instead of woodpecker for crontabs.
-* [PR-277](https://github.com/itk-dev/economics/pull/277)
-  Updated to the latest templates.
-  Updated bundles.
-  Removed GameCenter.
+
+## [3.3.0] - 2026-05-12
+
+* [PR-292](https://github.com/itk-dev/economics/pull/292)
+  Workload report: right-align numbers and round percentages to 1 decimal.
+* [PR-290](https://github.com/itk-dev/economics/pull/290)
+  Sort reports alphabetically - unbilled projects report, hour report, invoicing rate report, workload report.
+
+## [3.1.0] - 2026-04-30
+
+* [PR-288](https://github.com/itk-dev/economics/pull/288)
+  Composer.lock cleanup.
+* [PR-286](https://github.com/itk-dev/economics/pull/286)
+  Security updates.
+* [PR-284](https://github.com/itk-dev/economics/pull/284)
+  Security updates.
+* [PR-283](https://github.com/itk-dev/economics/pull/283)
+  Revert supercronic and templates update.
+* [PR-282](https://github.com/itk-dev/economics/pull/282)
+  Fixed worklog project not updating when ticket is moved to another project in Leantime.
+* [PR-281](https://github.com/itk-dev/economics/pull/281)
+  Service agreements: Styling adjustments, index fields, QoL.
+* [PR-280](https://github.com/itk-dev/economics/pull/280)
+  Additional fields for service agreements.
 
 ## [3.0.2] - 2026-03-04
 
@@ -559,7 +577,9 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.0.1...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.3.0...HEAD
+[3.3.0]: https://github.com/itk-dev/economics/compare/3.1.0...3.3.0
+[3.1.0]: https://github.com/itk-dev/economics/compare/3.0.1...3.1.0
 [3.0.1]: https://github.com/itk-dev/economics/compare/3.0.0...3.0.1
 [3.0.0]: https://github.com/itk-dev/economics/compare/2.10.2...3.0.0
 [2.10.2]: https://github.com/itk-dev/economics/compare/2.10.1...2.10.2
