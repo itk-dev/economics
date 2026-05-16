@@ -8,11 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Fixed `ForecastReportService::getForecastReport()` crashing for any
+  worklog whose issue had one or more epics. Two bugs were stacked: the
+  code passed a Doctrine `PersistentCollection` to `array_map` (which only
+  accepts arrays), and it called the non-existent `Epic::getName()`
+  instead of `getTitle()`. Replaced with the collection's own `->map()`
+  + `->toArray()` and the correct method (matching the pattern used in
+  `HourReportService`). Both bugs surfaced via the new integration test
+  for this service.
+* Added integration tests under `tests/Integration/Service/` for
+  `HourReportService` (epic-tag aggregation, fixture-based totals, date-range
+  exclusion), `InvoicingRateReportService`, `WorkloadReportService`
+  (worker enumeration + period population),
+  `BillableUnbilledHoursReportService` (project aggregation, totals
+  invariants, quarterly restriction), and `ForecastReportService` (totals
+  consistency). `ManagementReportService` is intentionally skipped — it
+  takes pre-grouped invoices as input and produces an XLSX response with
+  no DB interaction, so a unit test covers its surface adequately.
+* Added `InvoiceEntryFlowTest` covering the `InvoiceEntryController` actions
+  not yet exercised by `InvoiceFullFlowTest`: edit (mutation +
+  `totalPrice` recalculation), delete, the three recorded-invoice guards on
+  `new`/`edit`/`delete`, and the invalid-CSRF delete fall-through.
 * Added a minimum test-coverage gate. The PR workflow now writes a clover
   report to `coverage/clover.xml` and fails if line coverage drops under
-  the threshold via `rregeer/phpunit-coverage-check`. The threshold is set to
-  a permissive **50%** as a starting placeholder — measure actual coverage
-  with `task test:coverage:check` and ratchet the value up in
+  the threshold via `rregeer/phpunit-coverage-check`. Threshold is **62%**
+  (current measured coverage is ~63%); ratchet up over time in
   `composer.json` (`tests-coverage-check`), `Taskfile.yml`
   (`test:coverage:check`), and `.github/workflows/pr.yml` (the
   "Enforce coverage threshold" step). Removed the unused Codecov upload step

@@ -60,7 +60,7 @@ tasks:
     desc: Run tests and fail if line coverage is under the configured threshold
     cmds:
       - "{{.PHP_COVERAGE}} vendor/bin/phpunit --coverage-clover=coverage/clover.xml"
-      - "{{.PHP}} vendor/bin/coverage-check coverage/clover.xml 50"
+      - "{{.PHP}} vendor/bin/coverage-check coverage/clover.xml 62"
 
   test:file:
     desc: Run a single test file — `task test:file -- tests/Service/Foo.php`

@@ -185,4 +185,4 @@ jobs:
 
             - name: Enforce coverage threshold
               run: |
-                  docker compose run --rm phpfpm vendor/bin/coverage-check coverage/clover.xml 50
+                  docker compose run --rm phpfpm vendor/bin/coverage-check coverage/clover.xml 62
