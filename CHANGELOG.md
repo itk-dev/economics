@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added a minimum test-coverage gate. `phpunit.xml.dist` now emits a clover
+  report to `coverage/clover.xml`, and CI fails if line coverage drops under
+  the threshold via `rregeer/phpunit-coverage-check`. The threshold is set to
+  a permissive **50%** as a starting placeholder — measure actual coverage
+  with `task test:coverage:check` and ratchet the value up in
+  `composer.json` (`tests-coverage-check`), `Taskfile.yml`
+  (`test:coverage:check`), and `.github/workflows/pr.yml` (the
+  "Enforce coverage threshold" step). Removed the unused Codecov upload step
+  from the PR workflow at the same time.
 * Added `Taskfile.yml` (go-task) wrapping the common dev commands so they can be
   run as `task tests`, `task fixtures`, `task prepare`, etc. Composer scripts are
   unchanged and still work for CI.
