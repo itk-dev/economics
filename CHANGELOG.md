@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   code passed a Doctrine `PersistentCollection` to `array_map` (which only
   accepts arrays), and it called the non-existent `Epic::getName()`
   instead of `getTitle()`. Replaced with the collection's own `->map()`
-  + `->toArray()` and the correct method (matching the pattern used in
+  `->toArray()` and the correct method (matching the pattern used in
   `HourReportService`). Both bugs surfaced via the new integration test
   for this service.
 * Added integration tests under `tests/Integration/Service/` for
