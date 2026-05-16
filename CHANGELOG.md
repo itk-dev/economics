@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* Added a minimum test-coverage gate. `phpunit.xml.dist` now emits a clover
-  report to `coverage/clover.xml`, and CI fails if line coverage drops under
+* Added a minimum test-coverage gate. The PR workflow now writes a clover
+  report to `coverage/clover.xml` and fails if line coverage drops under
   the threshold via `rregeer/phpunit-coverage-check`. The threshold is set to
   a permissive **50%** as a starting placeholder — measure actual coverage
   with `task test:coverage:check` and ratchet the value up in

@@ -160,7 +160,7 @@
         ],
         "tests-coverage-check": [
             "@putenv XDEBUG_MODE=coverage",
-            "vendor/bin/phpunit",
+            "vendor/bin/phpunit --coverage-clover=coverage/clover.xml",
             "vendor/bin/coverage-check coverage/clover.xml 50"
         ],
         "tests-unit": [
