@@ -150,7 +150,9 @@ class AppFixtures extends Fixture
                         $worklog->setProject($project);
                         $worklog->setWorker($workerArray[$i % 10]);
                         $worklog->setTimeSpentSeconds(60 * 15 * ($k + 1));
-                        $worklog->setStarted(\DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new \DateTimeZone('Europe/Copenhagen')));
+                        $started = \DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new \DateTimeZone('Europe/Copenhagen'));
+                        \assert($started instanceof \DateTime);
+                        $worklog->setStarted($started);
                         $worklog->setIssue($issue);
                         $worklog->setDataProvider($dataProvider);
                         $worklog->setKind($modKind);

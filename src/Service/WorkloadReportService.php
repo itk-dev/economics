@@ -110,7 +110,7 @@ class WorkloadReportService
 
                 // Calculate and set the average for this period
                 $average = round($periodSums[$period] / $periodCounts[$period], 1);
-                $workloadReportData->periodAverages->set($period, $average);
+                $workloadReportData->periodAverages->set((string) $period, $average);
             }
 
             $workloadReportWorker->average = $expectedWorkloadSum > 0 ? round($loggedHoursSum / $expectedWorkloadSum * 100, 1) : 0;

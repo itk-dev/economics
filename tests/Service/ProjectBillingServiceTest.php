@@ -34,22 +34,28 @@ class ProjectBillingServiceTest extends KernelTestCase
         $issueRepository = $container->get(IssueRepository::class);
 
         $project = $projectRepository->findOneBy([], ['id' => 'asc']);
+        \assert(null !== $project);
+
+        $periodStart = (new \DateTime())->sub(new \DateInterval('P1D'));
+        $periodEnd = (new \DateTime())->add(new \DateInterval('P1D'));
 
         $projectBilling = new ProjectBilling();
-        $projectBilling->setPeriodStart((new \DateTime())->sub(new \DateInterval('P1D')));
-        $projectBilling->setPeriodEnd((new \DateTime())->add(new \DateInterval('P1D')));
+        $projectBilling->setPeriodStart($periodStart);
+        $projectBilling->setPeriodEnd($periodEnd);
         $projectBilling->setName('Project Billing 1');
         $projectBilling->setProject($project);
         $projectBilling->setRecorded(false);
         $projectBilling->setDescription('Project billing');
 
-        $issues = $issueRepository->getClosedIssuesFromInterval($projectBilling->getProject(), $projectBilling->getPeriodStart(), $projectBilling->getPeriodEnd());
+        $issues = $issueRepository->getClosedIssuesFromInterval($project, $periodStart, $periodEnd);
         $this->assertCount(10, $issues);
 
         $entityManager->persist($projectBilling);
         $entityManager->flush();
 
-        $projectBillingService->createProjectBilling($projectBilling->getId());
+        $projectBillingId = $projectBilling->getId();
+        \assert(null !== $projectBillingId);
+        $projectBillingService->createProjectBilling($projectBillingId);
 
         $this->assertCount(2, $projectBilling->getInvoices());
 
@@ -57,11 +63,12 @@ class ProjectBillingServiceTest extends KernelTestCase
 
         $this->assertCount(4, $issues);
 
-        $ids = $projectBilling->getInvoices()->map(fn ($invoice) => $invoice->getId())->toArray();
+        $ids = array_values(array_filter(
+            $projectBilling->getInvoices()->map(fn ($invoice) => $invoice->getId())->toArray(),
+            fn (?int $id) => null !== $id
+        ));
 
         $spreadsheet = $billingService->exportInvoicesToSpreadsheet($ids);
-
-        $this->assertNotNull($spreadsheet);
 
         $spreadsheetArray = $spreadsheet->getActiveSheet()->toArray(null, false, false);
 

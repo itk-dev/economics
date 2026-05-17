@@ -52,7 +52,7 @@ class User implements UserInterface
      */
     public function getUserIdentifier(): string
     {
-        if (null === $this->email || '' === $this->email) {
+        if ('' === $this->email) {
             throw new \LogicException('User identifier requires a non-empty email.');
         }
 

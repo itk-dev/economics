@@ -104,7 +104,10 @@ class DateTimeHelper
      */
     public function getMonthName(int $monthNumber): string
     {
-        return \DateTime::createFromFormat('!m', (string) $monthNumber)->format('F');
+        $date = \DateTime::createFromFormat('!m', (string) $monthNumber);
+        \assert($date instanceof \DateTime);
+
+        return $date->format('F');
     }
 
     /**

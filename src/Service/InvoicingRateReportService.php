@@ -156,16 +156,14 @@ class InvoicingRateReportService
                 // Calculate and set the average for this period
                 $average = round($periodSums[$period] / $periodCounts[$period], 4);
 
-                $invoicingRateReportData->periodAverages->set($period, $average);
+                $invoicingRateReportData->periodAverages->set((string) $period, $average);
             }
 
             $invoicingRateReportWorker->average = $loggedHoursSum > 0 ? round($loggedBilledHoursSum / $loggedHoursSum * 100, 4) : 0;
 
             $invoicingRateReportData->workers->add($invoicingRateReportWorker);
 
-            $invoicingRateReportWorker->projectData->set('projects', [
-                $workerProjects,
-            ]);
+            $invoicingRateReportWorker->projectData->set('projects', $workerProjects);
         }
 
         // Calculate and set the total average

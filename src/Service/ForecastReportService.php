@@ -62,7 +62,7 @@ class ForecastReportService
                 }
                 // If the project isn't already in the forecast, add it
                 if (!isset($forecastReportData->projects[$projectId])) {
-                    $newForecastReportProjectData = new ForecastReportProjectData($projectId);
+                    $newForecastReportProjectData = new ForecastReportProjectData((string) $projectId);
                     $newForecastReportProjectData->projectName = $project->getName() ?? '[no project name]';
                     $forecastReportData->projects[$projectId] = $newForecastReportProjectData;
                 }
@@ -86,7 +86,7 @@ class ForecastReportService
                 $issueLink = $issue->getLinkToIssue() ?? '[no issue link]';
 
                 if ($issue->getEpics()->count() > 0) {
-                    $issueTag = implode(',', array_map(fn ($epic) => $epic->getName(), $issue->getEpics()->toArray()));
+                    $issueTag = implode(',', array_map(fn ($epic) => $epic->getTitle(), $issue->getEpics()->toArray()));
                 } else {
                     $issueTag = '[no tag]';
                 }

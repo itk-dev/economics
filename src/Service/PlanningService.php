@@ -158,7 +158,7 @@ class PlanningService
     /**
      * @param array<int, IssueEntity> $issues
      */
-    private function processIssuesForWeek(PlanningData $planning, int $week, array $issues, ?bool $holidayPlanning = false): void
+    private function processIssuesForWeek(PlanningData $planning, int|string $week, array $issues, ?bool $holidayPlanning = false): void
     {
         foreach ($issues as $issueData) {
             if (!$holidayPlanning && IssueStatusEnum::DONE === $issueData->getStatus()) {

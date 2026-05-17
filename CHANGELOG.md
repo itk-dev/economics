@@ -8,6 +8,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Cleared the long tail of PHPStan call-site bugs across services, tests,
+  and one report data flow (baseline 75 → 37). Notable fixes:
+  - `Epic::getName()` → `Epic::getTitle()` in `ForecastReportService` — the
+    method `getName()` doesn't exist on `Epic`; the report was calling the
+    wrong getter and getting an empty epic name in output.
+  - `Worklog::setTimeSpentSeconds()` in `DataProviderService` now casts the
+    `hours * SECONDS_IN_HOUR` product to `int` — `hours` is `float`, so the
+    untyped pass-through was silently losing precision before reaching the
+    `int $timeSpentSeconds` setter.
+  - `DateTimeHelper::getMonthName()`, `DashboardService::getYearData()`,
+    `AppFixtures`, and two test methods in `LeantimeApiServiceTest` now
+    assert that `\DateTime::createFromFormat()` / `mktime()` didn't return
+    `false` before using the result.
+  - `PlanningService::processIssuesForWeek()` `$week` widened from `int` to
+    `int|string` — the caller iterates over `sortIssuesByWeek()` output
+    which has the literal `'unscheduled'` bucket alongside numeric weeks.
+  - `ForecastReportService` casts `$project->getId()` (`int`) to `string`
+    when constructing `ForecastReportProjectData` (which expects `string`).
+  - `WorkloadReportService` and `InvoicingRateReportService` cast `$period`
+    (`int`) to `string` when calling `periodAverages->set()` on the
+    `ArrayCollection<string, float>`; `InvoicingRateReportService` also
+    unwraps an erroneous `[$workerProjects]` value into `$workerProjects`
+    to match `projectData`'s declared value type.
+  - `User::getUserIdentifier()` simplified the empty-email check from
+    `null === $this->email || '' === $this->email` to just `'' === $this->email`
+    now that `$email` is non-null (Pattern B).
+  - `ManagementReportController::createGroupedInvoices()` return type
+    tightened from `array<int|string, ...>` to `array<int, ...>` to match
+    the service signature.
+  - Remaining test fixes: null-asserts after `findOneBy()`/`find()` calls
+    that index by `projectTrackerId` etc. before chaining
+    `getSourceModifiedDate()`/`getSourceDeletedDate()`; lingering
+    `setProjectTrackerIssueId(int)` and `setStarted(DateTime|false)` in
+    `LeantimeApiServiceTest::testDeleted`; `ProjectBillingServiceTest`
+    extracts a non-null `$project` / `$projectBillingId` and filters nulls
+    from the invoice-id array before passing to
+    `BillingService::exportInvoicesToSpreadsheet()`, and drops the
+    redundant `assertNotNull($spreadsheet)` (the return type is non-null).
+
 * Test fixtures and controller endpoints tightened to satisfy PHPStan
   call-site checks (`argument.type`, `method.notFound`, `method.nonObject` —
   baseline 163 → 75). Highlights:
