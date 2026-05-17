@@ -115,12 +115,6 @@ parameters:
 			path: src/Entity/DataProvider.php
 
 		-
-			message: '#^Method App\\Entity\\Epic\:\:getIssues\(\) should return Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\Epic\> but returns Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\Issue\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Entity/Epic.php
-
-		-
 			message: '#^Property App\\Entity\\Epic\:\:\$title type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -415,30 +409,6 @@ parameters:
 			path: src/Entity/Worklog.php
 
 		-
-			message: '#^Constructor of class App\\Model\\Reports\\ForecastReportWorklogData has an unused parameter \$description\.$#'
-			identifier: constructor.unusedParameter
-			count: 1
-			path: src/Model/Reports/ForecastReportWorklogData.php
-
-		-
-			message: '#^Constructor of class App\\Model\\Reports\\ForecastReportWorklogData has an unused parameter \$worklogId\.$#'
-			identifier: constructor.unusedParameter
-			count: 1
-			path: src/Model/Reports/ForecastReportWorklogData.php
-
-		-
-			message: '#^Method App\\Model\\Reports\\ForecastReportWorklogData\:\:__construct\(\) has parameter \$description with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Model/Reports/ForecastReportWorklogData.php
-
-		-
-			message: '#^Method App\\Model\\Reports\\ForecastReportWorklogData\:\:__construct\(\) has parameter \$worklogId with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Model/Reports/ForecastReportWorklogData.php
-
-		-
 			message: '#^Class App\\Model\\Reports\\HourReportData has an uninitialized readonly property \$id\. Assign it in the constructor\.$#'
 			identifier: property.uninitializedReadonly
 			count: 1
@@ -493,12 +463,6 @@ parameters:
 			path: src/Model/Reports/WorkloadReportData.php
 
 		-
-			message: '#^Property App\\Repository\\SubscriptionRepository\:\:\$paginator is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Repository/SubscriptionRepository.php
-
-		-
 			message: '#^Cannot call method getLinkToIssue\(\) on App\\Entity\\Issue\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -523,8 +487,8 @@ parameters:
 			path: src/Service/BillableUnbilledHoursReportService.php
 
 		-
-			message: '#^Static property App\\Service\\DanishHolidayHelper\:\:\$instance \(App\\Service\\DanishHolidayHelper\) in empty\(\) is not falsy\.$#'
-			identifier: empty.property
+			message: '#^Static property App\\Service\\DanishHolidayHelper\:\:\$instance \(App\\Service\\DanishHolidayHelper\) in isset\(\) is not nullable\.$#'
+			identifier: isset.property
 			count: 1
 			path: src/Service/DanishHolidayHelper.php
 
@@ -825,12 +789,6 @@ parameters:
 		-
 			message: '#^Call to method App\\Repository\\VersionRepository\:\:findOneBy\(\) \- entity App\\Entity\\Version does not have a field named \$versionId\.$#'
 			identifier: doctrine.findOneByArgument
-			count: 1
-			path: src/Service/SubscriptionHandlerService.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
 			count: 1
 			path: src/Service/SubscriptionHandlerService.php
 

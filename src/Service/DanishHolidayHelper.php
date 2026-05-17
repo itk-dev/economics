@@ -19,7 +19,7 @@ final class DanishHolidayHelper
 
     public static function getInstance(): self
     {
-        if (empty(self::$instance)) {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
         }
 

@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Cleaned up small PHPStan issues: corrected `Epic::getIssues()` PHPDoc
+  return type (`Collection<int, Issue>`, was `Epic`), switched
+  `DanishHolidayHelper::getInstance()` from `empty()` to `isset()` on the
+  typed singleton property, removed unused `PaginatorInterface $paginator`
+  from `SubscriptionRepository::__construct()`, dropped the unused
+  `$worklogId`/`$description` parameters from `ForecastReportWorklogData`
+  (caller updated; properties were already set via direct assignment),
+  and removed the unreachable `break;` after a `throw` in
+  `SubscriptionHandlerService::handleSubscription()`. Baseline 268 → 261.
 * Cleared all 167 PHPStan `missingType.iterableValue` baseline entries.
   Removed redundant `@method find*` scaffold docblocks from 17 repositories
   (the parent `@extends ServiceEntityRepository<X>` already provides typed

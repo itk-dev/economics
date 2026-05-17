@@ -135,7 +135,7 @@ class ForecastReportService
 
                 // Add the worklog entry in the version if it does not exist
                 if (!isset($currentVersion->worklogs[$worklogId])) {
-                    $currentVersion->worklogs[$worklogId] = new ForecastReportWorklogData($worklogId, $description);
+                    $currentVersion->worklogs[$worklogId] = new ForecastReportWorklogData();
                     $currentVersion->worklogs[$worklogId]->worker = $workerName;
                     $currentVersion->worklogs[$worklogId]->description = $description;
                 }

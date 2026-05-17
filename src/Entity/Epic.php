@@ -44,7 +44,7 @@ class Epic
     }
 
     /**
-     * @return Collection<int, Epic>
+     * @return Collection<int, Issue>
      */
     public function getIssues(): Collection
     {

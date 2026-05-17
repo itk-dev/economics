@@ -105,7 +105,6 @@ class SubscriptionHandlerService
                 break;
             default:
                 throw new \Exception('Report type is not yet supported');
-                break;
         }
     }
 
