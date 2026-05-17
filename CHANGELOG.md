@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Upgraded Symfony from 6.4 to 7.4 LTS. Dropped `symfony/proxy-manager-bridge`
+  (removed in Symfony 7.0), removed the obsolete `enable_authenticator_manager`
+  security option, and tightened `User::eraseCredentials()` to the new
+  `: void` return type required by `UserInterface`.
 * Removed game center.
 * Applied itk-dev templates.
 * Removed `prettier-plugin-jsdoc` (not resolvable from the `jauderho/prettier`

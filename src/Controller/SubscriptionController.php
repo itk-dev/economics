@@ -111,10 +111,10 @@ class SubscriptionController extends AbstractController
                     $frequencies = $this->getFrequencies($subscriptions);
 
                     return new JsonResponse(['frequencies' => $frequencies], 200);
-                } else {
-                    return new JsonResponse([], 200);
                 }
-                // no break
+
+                return new JsonResponse([], 200);
+
             default:
                 return new JsonResponse(
                     ['error' => 'Unsupported report type'],
@@ -137,21 +137,20 @@ class SubscriptionController extends AbstractController
             $frequencies = $this->getFrequencies($subscriptions);
 
             return new JsonResponse(['action' => 'unsubscribed', 'frequencies' => $frequencies], 200);
-        } else {
-            $subscription = new Subscription();
-            $subscription->setEmail($userEmail);
-            $subject = SubscriptionSubjectEnum::tryFrom($reportType);
-            $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: '.$reportType));
-            $frequency = SubscriptionFrequencyEnum::tryFrom($subscriptionType);
-            $subscription->setFrequency($frequency ?? throw new \InvalidArgumentException('Invalid frequency type: '.$subscriptionType));
-            $subscription->setUrlParams($content);
-            $this->subscriptionRepository->save($subscription, true);
-
-            $subscriptions = $this->subscriptionRepository->findByCustom($userEmail, $content);
-            $frequencies = $this->getFrequencies($subscriptions);
-
-            return new JsonResponse(['action' => 'subscribed', 'frequencies' => $frequencies], 200);
         }
+        $subscription = new Subscription();
+        $subscription->setEmail($userEmail);
+        $subject = SubscriptionSubjectEnum::tryFrom($reportType);
+        $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: '.$reportType));
+        $frequency = SubscriptionFrequencyEnum::tryFrom($subscriptionType);
+        $subscription->setFrequency($frequency ?? throw new \InvalidArgumentException('Invalid frequency type: '.$subscriptionType));
+        $subscription->setUrlParams($content);
+        $this->subscriptionRepository->save($subscription, true);
+
+        $subscriptions = $this->subscriptionRepository->findByCustom($userEmail, $content);
+        $frequencies = $this->getFrequencies($subscriptions);
+
+        return new JsonResponse(['action' => 'subscribed', 'frequencies' => $frequencies], 200);
     }
 
     private function getFrequencies(array $subscriptions): string

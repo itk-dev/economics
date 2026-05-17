@@ -219,22 +219,21 @@ class PlanningService
                 'displayName' => 'Unassigned',
                 'weekNorm' => 37,
             ];
-        } else {
-            $assigneeKey = (string) $issue->getWorker();
-            $assigneeName = $assigneeKey;
-
-            $worker = $this->workerRepository->findOneBy(['email' => $assigneeKey]);
-
-            if (null !== $worker && null !== $worker->getName()) {
-                $assigneeName = $worker->getName();
-            }
-
-            return [
-                'key' => $assigneeKey,
-                'displayName' => $assigneeName,
-                'weekNorm' => $worker?->getWorkload() ?? 37,
-            ];
         }
+        $assigneeKey = (string) $issue->getWorker();
+        $assigneeName = $assigneeKey;
+
+        $worker = $this->workerRepository->findOneBy(['email' => $assigneeKey]);
+
+        if (null !== $worker && null !== $worker->getName()) {
+            $assigneeName = $worker->getName();
+        }
+
+        return [
+            'key' => $assigneeKey,
+            'displayName' => $assigneeName,
+            'weekNorm' => $worker?->getWorkload() ?? 37,
+        ];
     }
 
     /**
