@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added `task test:coverage:set-threshold -- <value>` to update the coverage
+  threshold in `Taskfile.yml`, `composer.json`, and
+  `.github/workflows/pr.yml` in one command.
 * Fixed `ForecastReportService::getForecastReport()` crashing for any
   worklog whose issue had one or more epics. Two bugs were stacked: the
   code passed a Doctrine `PersistentCollection` to `array_map` (which only

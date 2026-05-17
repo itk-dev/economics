@@ -62,6 +62,17 @@ tasks:
       - "{{.PHP_COVERAGE}} vendor/bin/phpunit --coverage-clover=coverage/clover.xml"
       - "{{.PHP}} vendor/bin/coverage-check coverage/clover.xml 62"
 
+  test:coverage:set-threshold:
+    desc: Update the coverage threshold across Taskfile, composer.json, and pr.yml — `task test:coverage:set-threshold -- 65`
+    cmds:
+      - |
+        if [ -z "{{.CLI_ARGS}}" ]; then
+          echo "Usage: task test:coverage:set-threshold -- <new-threshold>" >&2
+          exit 1
+        fi
+      - '{{.PHP}} php -r ''$t=intval("{{.CLI_ARGS}}"); if($t<1||$t>100){fwrite(STDERR,"Threshold must be an integer 1..100\n");exit(1);} foreach(["Taskfile.yml","composer.json",".github/workflows/pr.yml"] as $f){file_put_contents($f, preg_replace("|coverage-check coverage/clover\\.xml \\d+|", "coverage-check coverage/clover.xml $t", file_get_contents($f)));}'''
+      - echo "Coverage threshold set to {{.CLI_ARGS}}. Verify with 'task test:coverage:check'."
+
   test:file:
     desc: Run a single test file — `task test:file -- tests/Service/Foo.php`
     cmds:
