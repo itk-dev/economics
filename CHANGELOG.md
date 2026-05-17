@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Migrated static analysis from Psalm to PHPStan (level 8) with
+  `phpstan/extension-installer`, `phpstan-symfony`, `phpstan-doctrine`, and
+  `phpstan-phpunit`. The `composer code-analysis` entry point is unchanged.
+  Existing findings are captured in `phpstan-baseline.neon`. Analysis now
+  also covers `tests/`.
 * Excluded `messenger_messages` from Doctrine schema diffing via
   `doctrine.dbal.schema_filter`, so the Messenger Doctrine transport can
   manage its own table without generating noisy migrations.
