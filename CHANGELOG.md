@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Removed `prettier-plugin-jsdoc` (not resolvable from the `jauderho/prettier`
+  Docker image), which caused `task js:cs:check` / Prettier CI jobs to fail
+  with `Cannot find package 'prettier-plugin-jsdoc' imported from /work/noop.js`.
+
 ## [3.3.0] - 2026-05-12
 
 * [PR-292](https://github.com/itk-dev/economics/pull/292)
