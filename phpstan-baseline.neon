@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Parameter \#1 \$groupedInvoices of method App\\Service\\ManagementReportService\:\:generateSpreadsheetCsvResponse\(\) expects array\<int, array\<int\|string, mixed\>\>, array\<int\|string, array\<int\|string, mixed\>\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/ManagementReportController.php
-
-		-
 			message: '#^Access to an undefined property object\:\:\$description\.$#'
 			identifier: property.notFound
 			count: 1
@@ -137,9 +131,3 @@ parameters:
 			identifier: match.alwaysTrue
 			count: 1
 			path: src/Service/LeantimeApiService.php
-
-		-
-			message: '#^Cannot call method getProjectTrackerId\(\) on App\\Entity\\Project\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Service/DataProviderServiceTest.php

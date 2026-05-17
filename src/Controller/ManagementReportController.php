@@ -91,7 +91,7 @@ class ManagementReportController extends AbstractController
     /**
      * @param array<int, \App\Entity\Invoice> $invoices
      *
-     * @return array<int|string, array<int|string, mixed>>
+     * @return array<int, array<int|string, mixed>>
      */
     private function createGroupedInvoices(array $invoices): array
     {

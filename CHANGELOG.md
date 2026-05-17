@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Final pass on PHPStan call-site bugs outside the LeantimeApiService
+  dynamic-object cluster (baseline 37 → 34):
+  - `DataProviderServiceTest` adds `\assert(null !== $worklog{D,E}->getProject())`
+    before chaining `getProjectTrackerId()` on the worklogs created earlier
+    in the test (line 102/103).
+  - `ManagementReportController::createGroupedInvoices()` return type
+    tightened from `array<int|string, ...>` to `array<int, ...>` to match
+    the year-key int-cast at the build site and the
+    `ManagementReportService::generateSpreadsheetCsvResponse()` signature.
+
+  The remaining 34 baseline entries are all in `LeantimeApiService.php`:
+  22 distinct `property.notFound` reports on `$data->...` accesses where
+  `$data` is the `object` returned by `json_decode($json, null)`, plus one
+  `match.alwaysTrue` that's the price of an explicit `default => throw`
+  arm we added for safety on the `type` match in `delete()`. Clearing the
+  cluster needs a real refactor — either decode as associative array and
+  switch to `['property']` access throughout, or define per-endpoint
+  `@phpstan-type` shapes and thread them through each helper. Out of
+  scope for this incremental cleanup pass.
+
 * Cleared the long tail of PHPStan call-site bugs across services, tests,
   and one report data flow (baseline 75 → 37). Notable fixes:
   - `Epic::getName()` → `Epic::getTitle()` in `ForecastReportService` — the

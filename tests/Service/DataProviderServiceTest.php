@@ -99,6 +99,8 @@ class DataProviderServiceTest extends KernelTestCase
         $entityManager->flush();
 
         // Verify worklogs are on project A.
+        \assert(null !== $worklogD->getProject());
+        \assert(null !== $worklogE->getProject());
         $this->assertEquals('proj-a', $worklogD->getProject()->getProjectTrackerId());
         $this->assertEquals('proj-a', $worklogE->getProject()->getProjectTrackerId());
 
