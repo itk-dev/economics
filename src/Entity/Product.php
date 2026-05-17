@@ -26,6 +26,7 @@ class Product extends AbstractBaseEntity
     #[Assert\LessThan(1_000_000)]
     private ?string $price = null;
 
+    /** @var Collection<int, IssueProduct> */
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: IssueProduct::class, orphanRemoval: true)]
     private Collection $issues;
 

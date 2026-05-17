@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added `Collection<int, X>` generic typehints to OneToMany/ManyToMany
+  properties on `Client`, `Epic`, `Invoice`, `InvoiceEntry`, `Issue`,
+  `Product`, `Project`, `ProjectBilling`, and `Version` entities. Resolves
+  20 PHPStan `doctrine.associationType` mismatches (and 19 cascading
+  inference errors); baseline shrinks from 530 to 491 entries.
 * Migrated static analysis from Psalm to PHPStan (level 8) with
   `phpstan/extension-installer`, `phpstan-symfony`, `phpstan-doctrine`, and
   `phpstan-phpunit`. The `composer code-analysis` entry point is unchanged.

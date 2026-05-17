@@ -47,12 +47,15 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $epicName = null;
 
+    /** @var Collection<int, Epic> */
     #[ORM\ManyToMany(targetEntity: Epic::class, inversedBy: 'issues')]
     private Collection $epics;
 
+    /** @var Collection<int, Version> */
     #[ORM\ManyToMany(targetEntity: Version::class, inversedBy: 'issues')]
     private Collection $versions;
 
+    /** @var Collection<int, Worklog> */
     #[ORM\OneToMany(mappedBy: 'issue', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
@@ -62,6 +65,7 @@ class Issue extends AbstractBaseEntity
     #[ORM\ManyToOne(inversedBy: 'issues')]
     private ?Project $project = null;
 
+    /** @var Collection<int, IssueProduct> */
     #[ORM\OneToMany(mappedBy: 'issue', targetEntity: IssueProduct::class, orphanRemoval: true)]
     #[ORM\OrderBy(['createdAt' => Criteria::ASC])]
     private Collection $products;

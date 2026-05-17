@@ -21,6 +21,7 @@ class Project extends AbstractBaseEntity
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    /** @var Collection<int, Invoice> */
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Invoice::class)]
     private Collection $invoices;
 
@@ -33,21 +34,26 @@ class Project extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId;
 
+    /** @var Collection<int, Client> */
     #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'projects')]
     private Collection $clients;
 
+    /** @var Collection<int, Version> */
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Version::class)]
     private Collection $versions;
 
+    /** @var Collection<int, Worklog> */
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
+    /** @var Collection<int, ProjectBilling> */
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectBilling::class)]
     private Collection $projectBillings;
 
     #[ORM\Column(nullable: true)]
     private ?bool $include = null;
 
+    /** @var Collection<int, Issue> */
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Issue::class)]
     private Collection $issues;
 
@@ -57,6 +63,7 @@ class Project extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectLeadMail = null;
 
+    /** @var Collection<int, Product> */
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Product::class, orphanRemoval: true)]
     private Collection $products;
 

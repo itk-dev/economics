@@ -109,32 +109,8 @@ parameters:
 			path: src/Entity/Account.php
 
 		-
-			message: '#^Property App\\Entity\\Client\:\:\$invoices type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Invoice\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Client.php
-
-		-
-			message: '#^Property App\\Entity\\Client\:\:\$invoices with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Client.php
-
-		-
 			message: '#^Property App\\Entity\\Client\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Client.php
-
-		-
-			message: '#^Property App\\Entity\\Client\:\:\$projects type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Project\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Client.php
-
-		-
-			message: '#^Property App\\Entity\\Client\:\:\$projects with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Entity/Client.php
 
@@ -157,14 +133,8 @@ parameters:
 			path: src/Entity/DataProvider.php
 
 		-
-			message: '#^Property App\\Entity\\Epic\:\:\$issues type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Issue\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Epic.php
-
-		-
-			message: '#^Property App\\Entity\\Epic\:\:\$issues with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
+			message: '#^Method App\\Entity\\Epic\:\:getIssues\(\) should return Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\Epic\> but returns Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\Issue\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Entity/Epic.php
 
@@ -177,18 +147,6 @@ parameters:
 		-
 			message: '#^Method App\\Entity\\Invoice\:\:setInvoiceEntryIndexes\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: src/Entity/Invoice.php
-
-		-
-			message: '#^Property App\\Entity\\Invoice\:\:\$invoiceEntries type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\InvoiceEntry\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Invoice.php
-
-		-
-			message: '#^Property App\\Entity\\Invoice\:\:\$invoiceEntries with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Entity/Invoice.php
 
@@ -223,42 +181,6 @@ parameters:
 			path: src/Entity/InvoiceEntry.php
 
 		-
-			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$issueProducts type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\IssueProduct\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/InvoiceEntry.php
-
-		-
-			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$issueProducts with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/InvoiceEntry.php
-
-		-
-			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$worklogs type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Worklog\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/InvoiceEntry.php
-
-		-
-			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$worklogs with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/InvoiceEntry.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$epics type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Epic\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$epics with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
 			message: '#^Property App\\Entity\\Issue\:\:\$linkToIssue type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -271,18 +193,6 @@ parameters:
 			path: src/Entity/Issue.php
 
 		-
-			message: '#^Property App\\Entity\\Issue\:\:\$products type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\IssueProduct\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$products with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
 			message: '#^Property App\\Entity\\Issue\:\:\$projectTrackerId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -291,30 +201,6 @@ parameters:
 		-
 			message: '#^Property App\\Entity\\Issue\:\:\$projectTrackerKey type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$versions type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Version\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$versions with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$worklogs type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Worklog\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$worklogs with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Entity/Issue.php
 
@@ -337,18 +223,6 @@ parameters:
 			path: src/Entity/IssueProduct.php
 
 		-
-			message: '#^Property App\\Entity\\Product\:\:\$issues type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\IssueProduct\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Product.php
-
-		-
-			message: '#^Property App\\Entity\\Product\:\:\$issues with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Product.php
-
-		-
 			message: '#^Property App\\Entity\\Product\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -367,68 +241,8 @@ parameters:
 			path: src/Entity/Product.php
 
 		-
-			message: '#^Property App\\Entity\\Project\:\:\$clients type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Client\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$clients with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$invoices type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Invoice\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$invoices with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$issues type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Issue\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$issues with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Project.php
-
-		-
 			message: '#^Property App\\Entity\\Project\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$products type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Product\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$products with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$projectBillings type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\ProjectBilling\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$projectBillings with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Entity/Project.php
 
@@ -443,42 +257,6 @@ parameters:
 			identifier: doctrine.columnType
 			count: 1
 			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$versions type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Version\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$versions with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$worklogs type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Worklog\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$worklogs with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\ProjectBilling\:\:\$invoices type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Invoice\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/ProjectBilling.php
-
-		-
-			message: '#^Property App\\Entity\\ProjectBilling\:\:\$invoices with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Entity/ProjectBilling.php
 
 		-
 			message: '#^Property App\\Entity\\ProjectBilling\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
@@ -633,18 +411,6 @@ parameters:
 		-
 			message: '#^Property App\\Entity\\Version\:\:\$isBillable type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
 			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Version.php
-
-		-
-			message: '#^Property App\\Entity\\Version\:\:\$issues type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Issue\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Version.php
-
-		-
-			message: '#^Property App\\Entity\\Version\:\:\$issues with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Entity/Version.php
 

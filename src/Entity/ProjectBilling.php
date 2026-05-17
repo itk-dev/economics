@@ -20,6 +20,7 @@ class ProjectBilling extends AbstractBaseEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $periodEnd = null;
 
+    /** @var Collection<int, Invoice> */
     #[ORM\OneToMany(mappedBy: 'projectBilling', targetEntity: Invoice::class)]
     private Collection $invoices;
 

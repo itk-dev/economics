@@ -48,9 +48,11 @@ class InvoiceEntry extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?MaterialNumberEnum $materialNumber = null;
 
+    /** @var Collection<int, Worklog> */
     #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
+    /** @var Collection<int, IssueProduct> */
     #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: IssueProduct::class)]
     private Collection $issueProducts;
 

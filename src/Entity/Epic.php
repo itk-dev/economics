@@ -22,6 +22,7 @@ class Epic
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    /** @var Collection<int, Issue> */
     #[ORM\ManyToMany(targetEntity: Issue::class, mappedBy: 'epics')]
     private Collection $issues;
 

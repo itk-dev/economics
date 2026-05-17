@@ -28,6 +28,7 @@ class Version extends AbstractBaseEntity
     #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
 
+    /** @var Collection<int, Issue> */
     #[ORM\ManyToMany(targetEntity: Issue::class, mappedBy: 'versions')]
     private Collection $issues;
 
