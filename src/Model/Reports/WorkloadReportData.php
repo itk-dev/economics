@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class WorkloadReportData
 {
-    public readonly string $id;
     public readonly string $viewmode;
     /** @var ArrayCollection<string, string> */
     public ArrayCollection $period;

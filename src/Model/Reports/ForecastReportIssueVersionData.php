@@ -8,7 +8,7 @@ class ForecastReportIssueVersionData
     public string $issueVersionIdentifier;
     public float $invoiced = 0.0;
     public float $invoicedAndRecorded = 0.0;
-    /** @var array<string, ForecastReportWorklogData> */
+    /** @var array<int|string, ForecastReportWorklogData> */
     public array $worklogs = [];
 
     public function __construct(string $issueVersion)

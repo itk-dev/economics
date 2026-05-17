@@ -134,6 +134,7 @@ class LeantimeApiService implements DataProviderInterface
                 self::MILESTONES => Version::class,
                 self::TICKETS => Issue::class,
                 self::TIMESHEETS => Worklog::class,
+                default => throw new \InvalidArgumentException(sprintf('Unsupported type: %s', $type)),
             };
 
             foreach ($results->{$type} as $result) {
@@ -180,6 +181,7 @@ class LeantimeApiService implements DataProviderInterface
             Issue::class => self::TICKETS,
             Worklog::class => self::TIMESHEETS,
             Worker::class => self::WORKERS,
+            default => throw new \InvalidArgumentException(sprintf('Unsupported class: %s', $className)),
         };
 
         // Get data from Leantime.

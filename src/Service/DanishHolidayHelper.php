@@ -13,7 +13,7 @@ final class DanishHolidayHelper
     public const SUNDAY = 7;
 
     /**
-     * @var DanishHolidayHelper
+     * @var ?DanishHolidayHelper
      */
     private static $instance;
 

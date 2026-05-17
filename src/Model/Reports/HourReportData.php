@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class HourReportData
 {
-    public readonly string $id;
     public float $projectTotalSpent;
     public float $projectTotalEstimated;
     /** @var ArrayCollection<string, HourReportProjectTag> */

@@ -162,7 +162,11 @@ class SubscriptionController extends AbstractController
     {
         $frequencies = [];
         foreach ($subscriptions as $subscription) {
-            $frequencies[] = $subscription->getFrequency()->value;
+            $frequency = $subscription->getFrequency();
+            if (null === $frequency) {
+                continue;
+            }
+            $frequencies[] = $frequency->value;
         }
 
         // Getting the order from Enum

@@ -8,6 +8,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Fixed 16 specific PHPStan-flagged issues, mostly real bugs the type
+  surface had been hiding:
+  - `ForecastReportService` substitutes `'[no issue id]'`/`'[no issue link]'`/`''`
+    fallbacks for nullable issue/worklog fields when assigning to non-null
+    model properties; removed an always-false `!$currentProject` guard
+    that PHPStan proved unreachable.
+  - `ForecastReportIssueVersionData::$worklogs` typed `array<int|string,...>`
+    to reflect that keys come from `Worklog::getId()` (`?int`).
+  - Removed dead `readonly string $id` declarations on `HourReportData`,
+    `WorkloadReportData`, `InvoicingRateReportData` (never assigned, never read).
+  - Added `default => throw` arms to incomplete `match` expressions in
+    `DateTimeHelper::getFirstAndLastDateOfQuarter` and `LeantimeApiService`.
+  - Fixed `SubscriptionHandlerService::getVersion()` looking up
+    `VersionRepository` by non-existent `versionId` field; use
+    `find($versionId)` against the primary key instead.
+  - `User::getUserIdentifier()` now throws on empty email (Symfony's
+    `UserInterface` requires `non-empty-string`).
+  - `SubscriptionController::getFrequencies()` skips subscriptions with
+    a null `frequency` instead of dereferencing.
+  - `PlanningService` dropped extra argument to `Issue::getHoursRemaining()`
+    (method takes 0 parameters).
+  - `ProductsImportCommand` removed an unreachable `null === $row` check.
+  - `DanishHolidayHelper::$instance` `@var` corrected to `?DanishHolidayHelper`
+    to reflect that the singleton is unset before first call.
+  - `WorkloadReportServiceTest::testGetWorkloadReport` replaced redundant
+    `assertInstanceOf` calls (always-true on already-narrowed type) with
+    assertions on `$result->viewmode` that match the period type passed in.
+  Baseline 261 → 243.
 * Cleaned up small PHPStan issues: corrected `Epic::getIssues()` PHPDoc
   return type (`Collection<int, Issue>`, was `Epic`), switched
   `DanishHolidayHelper::getInstance()` from `empty()` to `isset()` on the

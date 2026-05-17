@@ -171,7 +171,7 @@ class PlanningService
             }
             $projectKey = (string) $issueProject->getProjectTrackerId();
             $projectDisplayName = $issueProject->getName() ?? self::UNNAMED_STR;
-            $hoursRemaining = $issueData->getHoursRemaining($issueData);
+            $hoursRemaining = $issueData->getHoursRemaining();
             $assigneeData = $this->getAssigneeData($issueData);
 
             $assignee = $this->getOrCreateAssignee($planning->assignees, $assigneeData);

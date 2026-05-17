@@ -4,7 +4,6 @@ namespace App\Tests\Service;
 
 use App\Entity\Worker;
 use App\Entity\Worklog;
-use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Repository\WorkerRepository;
@@ -72,13 +71,13 @@ class WorkloadReportServiceTest extends TestCase
         $workloadReportService = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $dateTimeHelperMock);
 
         $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
-        $this->assertInstanceOf(WorkloadReportData::class, $result);
+        $this->assertSame(PeriodTypeEnum::WEEK->value, $result->viewmode);
 
         $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::MONTH, ViewModeEnum::WORKLOAD);
-        $this->assertInstanceOf(WorkloadReportData::class, $result);
+        $this->assertSame(PeriodTypeEnum::MONTH->value, $result->viewmode);
 
         $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::YEAR, ViewModeEnum::WORKLOAD);
-        $this->assertInstanceOf(WorkloadReportData::class, $result);
+        $this->assertSame(PeriodTypeEnum::YEAR->value, $result->viewmode);
     }
 
     public function testExceptionIsThrownWhenWorkerIdentifierIsEmpty(): void

@@ -141,6 +141,7 @@ class DateTimeHelper
             2 => 4,
             3 => 7,
             4 => 10,
+            default => throw new \InvalidArgumentException(sprintf('Quarter must be 1-4, got %d', $quarter)),
         };
         $lastMonth = $firstMonth + 2;
 

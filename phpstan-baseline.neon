@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Strict comparison using \=\=\= between null and OpenSpout\\Common\\Entity\\Row will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Command/ProductsImportCommand.php
-
-		-
 			message: '#^Parameter \#1 \$ids of method App\\Service\\BillingService\:\:generateSpreadsheetCsvResponse\(\) expects array\<int, int\>, array\<int, int\|null\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -47,12 +41,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Controller/ProjectBillingController.php
-
-		-
-			message: '#^Cannot access property \$value on App\\Enum\\SubscriptionFrequencyEnum\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: src/Controller/SubscriptionController.php
 
 		-
 			message: '#^Parameter \#1 \$email of method App\\Repository\\SubscriptionRepository\:\:findByCustom\(\) expects string, string\|null given\.$#'
@@ -319,12 +307,6 @@ parameters:
 			path: src/Entity/Subscription.php
 
 		-
-			message: '#^Method App\\Entity\\User\:\:getUserIdentifier\(\) should return non\-empty\-string but returns string\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Entity/User.php
-
-		-
 			message: '#^Property App\\Entity\\User\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -409,12 +391,6 @@ parameters:
 			path: src/Entity/Worklog.php
 
 		-
-			message: '#^Class App\\Model\\Reports\\HourReportData has an uninitialized readonly property \$id\. Assign it in the constructor\.$#'
-			identifier: property.uninitializedReadonly
-			count: 1
-			path: src/Model/Reports/HourReportData.php
-
-		-
 			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$headline with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
@@ -451,18 +427,6 @@ parameters:
 			path: src/Model/Reports/HourReportProjectTicket.php
 
 		-
-			message: '#^Class App\\Model\\Reports\\InvoicingRateReportData has an uninitialized readonly property \$id\. Assign it in the constructor\.$#'
-			identifier: property.uninitializedReadonly
-			count: 1
-			path: src/Model/Reports/InvoicingRateReportData.php
-
-		-
-			message: '#^Class App\\Model\\Reports\\WorkloadReportData has an uninitialized readonly property \$id\. Assign it in the constructor\.$#'
-			identifier: property.uninitializedReadonly
-			count: 1
-			path: src/Model/Reports/WorkloadReportData.php
-
-		-
 			message: '#^Cannot call method getLinkToIssue\(\) on App\\Entity\\Issue\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -487,12 +451,6 @@ parameters:
 			path: src/Service/BillableUnbilledHoursReportService.php
 
 		-
-			message: '#^Static property App\\Service\\DanishHolidayHelper\:\:\$instance \(App\\Service\\DanishHolidayHelper\) in isset\(\) is not nullable\.$#'
-			identifier: isset.property
-			count: 1
-			path: src/Service/DanishHolidayHelper.php
-
-		-
 			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
 			identifier: argument.type
 			count: 1
@@ -507,12 +465,6 @@ parameters:
 		-
 			message: '#^Cannot call method format\(\) on DateTime\|false\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: src/Service/DateTimeHelper.php
-
-		-
-			message: '#^Match expression does not handle remaining values\: int\<min, 0\>\|int\<5, max\>$#'
-			identifier: match.unhandled
 			count: 1
 			path: src/Service/DateTimeHelper.php
 
@@ -553,12 +505,6 @@ parameters:
 			path: src/Service/ForecastReportService.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
 			message: '#^Parameter \#1 \$projectId of class App\\Model\\Reports\\ForecastReportProjectData constructor expects string, int\<min, \-1\>\|int\<1, max\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -567,30 +513,6 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$array of function array_map expects array, Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\Epic\> given\.$#'
 			identifier: argument.type
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Property App\\Model\\Reports\\ForecastReportIssueData\:\:\$issueId \(string\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Property App\\Model\\Reports\\ForecastReportIssueData\:\:\$issueLink \(string\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Property App\\Model\\Reports\\ForecastReportIssueVersionData\:\:\$worklogs \(array\<string, App\\Model\\Reports\\ForecastReportWorklogData\>\) does not accept array\<int\|string, App\\Model\\Reports\\ForecastReportWorklogData\>\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Property App\\Model\\Reports\\ForecastReportWorklogData\:\:\$description \(string\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: src/Service/ForecastReportService.php
 
@@ -757,8 +679,8 @@ parameters:
 			path: src/Service/LeantimeApiService.php
 
 		-
-			message: '#^Match expression does not handle remaining value\: string$#'
-			identifier: match.unhandled
+			message: '#^Match arm comparison between ''timesheets'' and ''timesheets'' is always true\.$#'
+			identifier: match.alwaysTrue
 			count: 1
 			path: src/Service/LeantimeApiService.php
 
@@ -775,22 +697,10 @@ parameters:
 			path: src/Service/LeantimeApiService.php
 
 		-
-			message: '#^Method App\\Entity\\Issue\:\:getHoursRemaining\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: src/Service/PlanningService.php
-
-		-
 			message: '#^Parameter \#2 \$week of method App\\Service\\PlanningService\:\:processIssuesForWeek\(\) expects int, int\|string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Service/PlanningService.php
-
-		-
-			message: '#^Call to method App\\Repository\\VersionRepository\:\:findOneBy\(\) \- entity App\\Entity\\Version does not have a field named \$versionId\.$#'
-			identifier: doctrine.findOneByArgument
-			count: 1
-			path: src/Service/SubscriptionHandlerService.php
 
 		-
 			message: '#^Parameter \#1 \$key of method Doctrine\\Common\\Collections\\ArrayCollection\<string,float\>\:\:set\(\) expects string, int given\.$#'
@@ -983,12 +893,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: tests/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\WorkloadReportData'' and App\\Model\\Reports\\WorkloadReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 3
-			path: tests/Service/WorkloadReportServiceTest.php
 
 		-
 			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'

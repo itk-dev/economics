@@ -135,7 +135,7 @@ class SubscriptionHandlerService
      */
     private function getVersion(?int $versionId): ?Version
     {
-        return $versionId ? $this->versionRepository->findOneBy(['versionId' => $versionId]) : null;
+        return $versionId ? $this->versionRepository->find($versionId) : null;
     }
 
     /**

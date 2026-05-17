@@ -62,10 +62,6 @@ class ForecastReportService
                 // Get current project from forecast
                 $currentProject = $forecastReportData->projects[$projectId];
 
-                if (!$currentProject) {
-                    throw new \Exception('Project instance was not found');
-                }
-
                 // Calculate worklog time in hours
                 $worklogTime = ($worklog->getTimeSpentSeconds() / 3600);
 
@@ -79,8 +75,8 @@ class ForecastReportService
                 }
 
                 // Get issue details from the worklog
-                $issueId = $worklog->getIssue()->getProjectTrackerKey();
-                $issueLink = $worklog->getIssue()->getLinkToIssue();
+                $issueId = $worklog->getIssue()->getProjectTrackerKey() ?? '[no issue id]';
+                $issueLink = $worklog->getIssue()->getLinkToIssue() ?? '[no issue link]';
 
                 if ($worklog->getIssue()->getEpics()->count() > 0) {
                     $issueTag = implode(',', array_map(fn ($epic) => $epic->getName(), $worklog->getIssue()->getEpics()));
@@ -131,7 +127,7 @@ class ForecastReportService
                 $worklogId = $worklog->getId();
                 $workerEmail = $worklog->getWorker();
                 $workerName = $workerNameMapping[$workerEmail] ?? '[no worker]';
-                $description = $worklog->getDescription();
+                $description = $worklog->getDescription() ?? '';
 
                 // Add the worklog entry in the version if it does not exist
                 if (!isset($currentVersion->worklogs[$worklogId])) {
