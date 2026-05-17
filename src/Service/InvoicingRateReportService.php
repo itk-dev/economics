@@ -101,12 +101,17 @@ class InvoicingRateReportService
                 // Tally up billable logged hours in gathered worklogs for current period
                 $loggedBillableHours = 0;
                 foreach ($billableWorklogs as $billableWorklog) {
-                    $projectName = $billableWorklog->getProject()->getName();
-                    $issueName = $billableWorklog->getIssue()->getName();
+                    $project = $billableWorklog->getProject();
+                    $issue = $billableWorklog->getIssue();
+                    if (null === $project || null === $issue) {
+                        continue;
+                    }
+                    $projectName = $project->getName();
+                    $issueName = $issue->getName();
                     $workerProjects[$projectName][$period]['loggedBillableHours'] = ($workerProjects[$projectName][$period]['loggedBillableHours'] ?? 0) + ($billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                     if ($includeIssues) {
                         $workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBillableHours'] ?? 0) + ($billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
-                        $workerProjects[$projectName][$issueName]['linkToissue'][$billableWorklog->getIssue()->getProjectTrackerId()] = $billableWorklog->getIssue()->getLinkToIssue();
+                        $workerProjects[$projectName][$issueName]['linkToissue'][$issue->getProjectTrackerId()] = $issue->getLinkToIssue();
                     }
                     $loggedBillableHours += ($billableWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                 }
@@ -114,12 +119,17 @@ class InvoicingRateReportService
                 // Tally up billed logged hours in gathered worklogs for current period
                 $loggedBilledHours = 0;
                 foreach ($billedWorklogs as $billedWorklog) {
-                    $projectName = $billedWorklog->getProject()->getName();
-                    $issueName = $billedWorklog->getIssue()->getName();
+                    $project = $billedWorklog->getProject();
+                    $issue = $billedWorklog->getIssue();
+                    if (null === $project || null === $issue) {
+                        continue;
+                    }
+                    $projectName = $project->getName();
+                    $issueName = $issue->getName();
                     $workerProjects[$projectName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                     if ($includeIssues) {
                         $workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] = ($workerProjects[$projectName][$issueName][$period]['loggedBilledHours'] ?? 0) + ($billedWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
-                        $workerProjects[$projectName][$issueName]['linkToissue'][$billedWorklog->getIssue()->getProjectTrackerId()] = $billedWorklog->getIssue()->getLinkToIssue();
+                        $workerProjects[$projectName][$issueName]['linkToissue'][$issue->getProjectTrackerId()] = $issue->getLinkToIssue();
                     }
                     $loggedBilledHours += ($billedWorklog->getTimeSpentSeconds() * self::SECONDS_TO_HOURS);
                 }

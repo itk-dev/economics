@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Report services now skip worklogs with no associated project or issue
+  rather than dereferencing nullable getters (PHPStan `method.nonObject`,
+  13 entries — baseline 184 → 165). Affected services:
+  `ForecastReportService::getForecastReport()`,
+  `BillableUnbilledHoursReportService::getReport()`,
+  `InvoicingRateReportService::getInvoicingRateReport()`. Each foreach
+  body caches `$project = $worklog->getProject()` and
+  `$issue = $worklog->getIssue()` once at the top, `continue`s when
+  either is null, and uses the narrowed references throughout — also
+  cleared 6 cascading `argument.type`/`property.notFound` follow-ons
+  that had been hiding behind the chained calls.
+
 * Typed `HourReportProjectTicket::__construct()` parameters (PHPStan
   `missingType.parameter`, 6 entries — baseline 190 → 184). The
   constructor now requires `string $id, string $projectTrackerId,

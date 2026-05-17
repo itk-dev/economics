@@ -73,30 +73,6 @@ parameters:
 			path: src/Entity/User.php
 
 		-
-			message: '#^Cannot call method getLinkToIssue\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Service/BillableUnbilledHoursReportService.php
-
-		-
-			message: '#^Cannot call method getName\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Service/BillableUnbilledHoursReportService.php
-
-		-
-			message: '#^Cannot call method getName\(\) on App\\Entity\\Project\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Service/BillableUnbilledHoursReportService.php
-
-		-
-			message: '#^Cannot call method getProjectTrackerId\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Service/BillableUnbilledHoursReportService.php
-
-		-
 			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
 			identifier: argument.type
 			count: 1
@@ -121,70 +97,10 @@ parameters:
 			path: src/Service/ForecastReportService.php
 
 		-
-			message: '#^Cannot call method getEpics\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Cannot call method getId\(\) on App\\Entity\\Project\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Cannot call method getLinkToIssue\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Cannot call method getProjectTrackerKey\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Cannot call method getVersions\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
 			message: '#^Parameter \#1 \$projectId of class App\\Model\\Reports\\ForecastReportProjectData constructor expects string, int\<min, \-1\>\|int\<1, max\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Parameter \#2 \$array of function array_map expects array, Doctrine\\Common\\Collections\\Collection\<int, App\\Entity\\Epic\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/ForecastReportService.php
-
-		-
-			message: '#^Cannot call method getLinkToIssue\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: src/Service/InvoicingRateReportService.php
-
-		-
-			message: '#^Cannot call method getName\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: src/Service/InvoicingRateReportService.php
-
-		-
-			message: '#^Cannot call method getName\(\) on App\\Entity\\Project\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: src/Service/InvoicingRateReportService.php
-
-		-
-			message: '#^Cannot call method getProjectTrackerId\(\) on App\\Entity\\Issue\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: src/Service/InvoicingRateReportService.php
 
 		-
 			message: '#^Parameter \#1 \$key of method Doctrine\\Common\\Collections\\ArrayCollection\<string,float\>\:\:set\(\) expects string, int given\.$#'

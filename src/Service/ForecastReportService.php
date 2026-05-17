@@ -48,7 +48,14 @@ class ForecastReportService
 
             foreach ($invoiceAttachedWorklogs['paginator'] as $worklog) {
                 // Loop through each worklog
-                $projectId = $worklog->getProject()->getId();
+                $project = $worklog->getProject();
+                $issue = $worklog->getIssue();
+
+                if (null === $project || null === $issue) {
+                    continue;
+                }
+
+                $projectId = $project->getId();
 
                 if (!$projectId) {
                     throw new \Exception('Project id is null');
@@ -56,7 +63,7 @@ class ForecastReportService
                 // If the project isn't already in the forecast, add it
                 if (!isset($forecastReportData->projects[$projectId])) {
                     $newForecastReportProjectData = new ForecastReportProjectData($projectId);
-                    $newForecastReportProjectData->projectName = $worklog->getProject()?->getName() ?? '[no project name]';
+                    $newForecastReportProjectData->projectName = $project->getName() ?? '[no project name]';
                     $forecastReportData->projects[$projectId] = $newForecastReportProjectData;
                 }
                 // Get current project from forecast
@@ -75,11 +82,11 @@ class ForecastReportService
                 }
 
                 // Get issue details from the worklog
-                $issueId = $worklog->getIssue()->getProjectTrackerKey() ?? '[no issue id]';
-                $issueLink = $worklog->getIssue()->getLinkToIssue() ?? '[no issue link]';
+                $issueId = $issue->getProjectTrackerKey() ?? '[no issue id]';
+                $issueLink = $issue->getLinkToIssue() ?? '[no issue link]';
 
-                if ($worklog->getIssue()->getEpics()->count() > 0) {
-                    $issueTag = implode(',', array_map(fn ($epic) => $epic->getName(), $worklog->getIssue()->getEpics()));
+                if ($issue->getEpics()->count() > 0) {
+                    $issueTag = implode(',', array_map(fn ($epic) => $epic->getName(), $issue->getEpics()->toArray()));
                 } else {
                     $issueTag = '[no tag]';
                 }
@@ -101,7 +108,7 @@ class ForecastReportService
                 }
 
                 // Get version details from the issue
-                $issueVersions = $worklog->getIssue()->getVersions();
+                $issueVersions = $issue->getVersions();
                 $issueVersion = count($issueVersions) > 0 ? implode(', ', array_map(function ($version) { return $version->getName(); }, $issueVersions->toArray())) : '[no version]';
 
                 $issueVersionIdentifier = $issueTag.$issueVersion;
