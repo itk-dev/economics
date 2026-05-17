@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 class InvoiceEntry extends AbstractBaseEntity
 {
     #[ORM\ManyToOne(inversedBy: 'invoiceEntries')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Invoice $invoice = null;
 
     #[ORM\Column(type: Types::INTEGER, name: 'entry_index')]

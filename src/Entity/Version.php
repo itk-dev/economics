@@ -25,7 +25,7 @@ class Version extends AbstractBaseEntity
     private ?string $projectTrackerId = null;
 
     #[ORM\ManyToOne(inversedBy: 'versions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
 
     /** @var Collection<int, Issue> */

@@ -10,11 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
 class IssueProduct extends AbstractBaseEntity
 {
     #[ORM\ManyToOne(inversedBy: 'products')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Issue $issue = null;
 
     #[ORM\ManyToOne(inversedBy: 'issues')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Product $product = null;
 
     #[ORM\Column]

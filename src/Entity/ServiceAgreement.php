@@ -15,11 +15,11 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class ServiceAgreement extends AbstractBaseEntity
 {
     #[ORM\ManyToOne(targetEntity: Project::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
 
     #[ORM\ManyToOne(targetEntity: Client::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Client $client = null;
 
     #[ORM\ManyToOne(targetEntity: CybersecurityAgreement::class)]
@@ -36,7 +36,7 @@ class ServiceAgreement extends AbstractBaseEntity
     private float $price = 0.0;
 
     #[ORM\ManyToOne(targetEntity: Worker::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Worker $projectLead = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

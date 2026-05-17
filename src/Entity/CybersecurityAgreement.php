@@ -14,7 +14,7 @@ class CybersecurityAgreement
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: ServiceAgreement::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?ServiceAgreement $serviceAgreement = null;
 
     #[ORM\Column(nullable: true)]

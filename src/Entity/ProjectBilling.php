@@ -25,7 +25,7 @@ class ProjectBilling extends AbstractBaseEntity
     private Collection $invoices;
 
     #[ORM\ManyToOne(inversedBy: 'projectBillings')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
 
     #[ORM\Column]

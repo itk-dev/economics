@@ -67,76 +67,10 @@ parameters:
 			path: src/DataFixtures/AppFixtures.php
 
 		-
-			message: '#^Property App\\Entity\\CybersecurityAgreement\:\:\$serviceAgreement type mapping mismatch\: property can contain App\\Entity\\ServiceAgreement\|null but database expects App\\Entity\\ServiceAgreement\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/CybersecurityAgreement.php
-
-		-
-			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$invoice type mapping mismatch\: property can contain App\\Entity\\Invoice\|null but database expects App\\Entity\\Invoice\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/InvoiceEntry.php
-
-		-
-			message: '#^Property App\\Entity\\IssueProduct\:\:\$issue type mapping mismatch\: property can contain App\\Entity\\Issue\|null but database expects App\\Entity\\Issue\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/IssueProduct.php
-
-		-
-			message: '#^Property App\\Entity\\IssueProduct\:\:\$product type mapping mismatch\: property can contain App\\Entity\\Product\|null but database expects App\\Entity\\Product\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/IssueProduct.php
-
-		-
-			message: '#^Property App\\Entity\\Product\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Product.php
-
-		-
-			message: '#^Property App\\Entity\\ProjectBilling\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/ProjectBilling.php
-
-		-
-			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$client type mapping mismatch\: property can contain App\\Entity\\Client\|null but database expects App\\Entity\\Client\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/ServiceAgreement.php
-
-		-
-			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/ServiceAgreement.php
-
-		-
-			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$projectLead type mapping mismatch\: property can contain App\\Entity\\Worker\|null but database expects App\\Entity\\Worker\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/ServiceAgreement.php
-
-		-
 			message: '#^Strict comparison using \=\=\= between null and string will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
 			path: src/Entity/User.php
-
-		-
-			message: '#^Property App\\Entity\\Version\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Version.php
-
-		-
-			message: '#^Property App\\Entity\\Worklog\:\:\$issue type mapping mismatch\: property can contain App\\Entity\\Issue\|null but database expects App\\Entity\\Issue\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Worklog.php
 
 		-
 			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$headline with no type specified\.$#'

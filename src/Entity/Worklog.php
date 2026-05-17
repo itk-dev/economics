@@ -51,7 +51,7 @@ class Worklog extends AbstractBaseEntity
     private ?int $billedSeconds = null;
 
     #[ORM\ManyToOne(inversedBy: 'worklogs')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Issue $issue = null;
 
     #[ORM\Column(length: 255, nullable: true)]

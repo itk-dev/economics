@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Migration `Version20260517151632`: relaxed 11 ManyToOne foreign keys
+  from `NOT NULL` to `NULL` to match the property types they bind to
+  (PHPStan `doctrine.associationType`, Pattern C — 11 entries cleared,
+  baseline 201 → 190). Affected: `cybersecurity_agreement.service_agreement_id`,
+  `invoice_entry.invoice_id`, `issue_product.{issue_id,product_id}`,
+  `product.project_id`, `project_billing.project_id`,
+  `service_agreement.{project_id,client_id,project_lead_id}`,
+  `version.project_id`, `worklog.issue_id`. Application-layer validation
+  (`#[Assert\NotNull]` on `Product::$project`, form validators on the
+  others) continues to enforce required-ness; the DB now reflects the
+  truthful "may be null in-memory mid-construction" state instead of a
+  constraint that PHP couldn't satisfy.
+
 * Aligned Doctrine entity property types with database column nullability
   (PHPStan `doctrine.columnType`/`doctrine.associationType`, Pattern B —
   43 entries cleared, baseline 243 → 201). Two-part change:

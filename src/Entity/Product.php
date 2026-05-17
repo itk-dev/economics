@@ -17,7 +17,7 @@ class Product extends AbstractBaseEntity
     private string $name = '';
 
     #[ORM\ManyToOne(inversedBy: 'products')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Assert\NotNull]
     private ?Project $project = null;
 
