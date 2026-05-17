@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added missing parameter and return types across controllers, services,
+  repositories, and tests (`InvoiceController::generateDescription`,
+  `ManagementReportController::getInvoicesDataFromDates`,
+  `OpenIdConnectController::logout`, `SubscriptionController::subscriptionHandler`,
+  `Invoice::setInvoiceEntryIndexes`, `InvoiceEntry::setInvoiceIndex`,
+  `ClientHelper::getStandardPrice`, `LeantimeApiService::post`,
+  `ManagementReportService::generateSpreadsheetCsvResponse`/`calculateYear`,
+  `IssueRepository::getClosedIssuesFromInterval`,
+  `ProjectRepository::getProjectTrackerIdsByDataProviders`,
+  `SubscriptionRepository::findByCustom`/`findOneByCustom`,
+  `WorklogRepository::find{,Billed}WorklogsByWorkerAndDateRange`, and
+  several PHPUnit test methods). Clears 37 PHPStan `missingType.return`
+  and `missingType.parameter` entries; baseline 491 → 454. Tightening
+  `SubscriptionController::subscriptionHandler` to require `string`
+  surfaced three pre-existing `string|null` call-site issues, now
+  recorded in the baseline for follow-up.
 * Added `Collection<int, X>` generic typehints to OneToMany/ManyToMany
   properties on `Client`, `Epic`, `Invoice`, `InvoiceEntry`, `Issue`,
   `Product`, `Project`, `ProjectBilling`, and `Version` entities. Resolves

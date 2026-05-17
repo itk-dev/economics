@@ -322,7 +322,7 @@ class LeantimeApiService implements DataProviderInterface
         return json_decode($response->getContent(), null, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function post(DataProvider $dataProvider, $path, array $body): ResponseInterface
+    private function post(DataProvider $dataProvider, string $path, array $body): ResponseInterface
     {
         return $this->httpClient->request('POST', $dataProvider->getUrl().$this::API_PATH_DATA.$path, [
             'headers' => [

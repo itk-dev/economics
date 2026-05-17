@@ -13,12 +13,6 @@ parameters:
 			path: src/Command/SubscriptionHandlerCommand.php
 
 		-
-			message: '#^Method App\\Controller\\InvoiceController\:\:generateDescription\(\) has parameter \$defaultInvoiceDescriptionTemplate with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Controller/InvoiceController.php
-
-		-
 			message: '#^Method App\\Controller\\IssueController\:\:__construct\(\) has parameter \$options with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -37,22 +31,10 @@ parameters:
 			path: src/Controller/ManagementReportController.php
 
 		-
-			message: '#^Method App\\Controller\\ManagementReportController\:\:getInvoicesDataFromDates\(\) has parameter \$dateInterval with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Controller/ManagementReportController.php
-
-		-
 			message: '#^Method App\\Controller\\ManagementReportController\:\:getInvoicesDataFromDates\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Controller/ManagementReportController.php
-
-		-
-			message: '#^Method App\\Controller\\OpenIdConnectController\:\:logout\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Controller/OpenIdConnectController.php
 
 		-
 			message: '#^Method App\\Controller\\PlanningController\:\:createResponse\(\) has parameter \$data with no value type specified in iterable type array\.$#'
@@ -73,20 +55,20 @@ parameters:
 			path: src/Controller/SubscriptionController.php
 
 		-
-			message: '#^Method App\\Controller\\SubscriptionController\:\:subscriptionHandler\(\) has parameter \$content with no type specified\.$#'
-			identifier: missingType.parameter
+			message: '#^Parameter \#1 \$email of method App\\Repository\\SubscriptionRepository\:\:findByCustom\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Controller/SubscriptionController.php
 
 		-
-			message: '#^Method App\\Controller\\SubscriptionController\:\:subscriptionHandler\(\) has parameter \$subscriptionType with no type specified\.$#'
-			identifier: missingType.parameter
+			message: '#^Parameter \#1 \$userEmail of method App\\Controller\\SubscriptionController\:\:subscriptionHandler\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Controller/SubscriptionController.php
 
 		-
-			message: '#^Method App\\Controller\\SubscriptionController\:\:subscriptionHandler\(\) has parameter \$userEmail with no type specified\.$#'
-			identifier: missingType.parameter
+			message: '#^Parameter \#1 \$value of static method App\\Enum\\SubscriptionSubjectEnum\:\:tryFrom\(\) expects int\|string, string\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Controller/SubscriptionController.php
 
@@ -145,12 +127,6 @@ parameters:
 			path: src/Entity/Epic.php
 
 		-
-			message: '#^Method App\\Entity\\Invoice\:\:setInvoiceEntryIndexes\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Entity/Invoice.php
-
-		-
 			message: '#^Property App\\Entity\\Invoice\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -161,12 +137,6 @@ parameters:
 			identifier: doctrine.columnType
 			count: 1
 			path: src/Entity/Invoice.php
-
-		-
-			message: '#^Method App\\Entity\\InvoiceEntry\:\:setInvoiceIndex\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Entity/InvoiceEntry.php
 
 		-
 			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$index type mapping mismatch\: property can contain int\|null but database expects int\.$#'
@@ -1111,12 +1081,6 @@ parameters:
 			path: src/Repository/IssueRepository.php
 
 		-
-			message: '#^Method App\\Repository\\IssueRepository\:\:getClosedIssuesFromInterval\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Repository/IssueRepository.php
-
-		-
 			message: '#^Method App\\Repository\\IssueRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1243,18 +1207,6 @@ parameters:
 			path: src/Repository/ProjectRepository.php
 
 		-
-			message: '#^Method App\\Repository\\ProjectRepository\:\:getProjectTrackerIdsByDataProviders\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Repository/ProjectRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ProjectRepository\:\:getProjectTrackerIdsByDataProviders\(\) has parameter \$dataProviders with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ProjectRepository.php
-
-		-
 			message: '#^Class App\\Repository\\ProjectVersionBudgetRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1317,42 +1269,6 @@ parameters:
 		-
 			message: '#^Class App\\Repository\\SubscriptionRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/SubscriptionRepository.php
-
-		-
-			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findByCustom\(\) has parameter \$email with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Repository/SubscriptionRepository.php
-
-		-
-			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findByCustom\(\) has parameter \$urlParams with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Repository/SubscriptionRepository.php
-
-		-
-			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findByCustom\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/SubscriptionRepository.php
-
-		-
-			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findOneByCustom\(\) has parameter \$email with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Repository/SubscriptionRepository.php
-
-		-
-			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findOneByCustom\(\) has parameter \$subscriptionType with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Repository/SubscriptionRepository.php
-
-		-
-			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findOneByCustom\(\) has parameter \$urlParams with no type specified\.$#'
-			identifier: missingType.parameter
 			count: 1
 			path: src/Repository/SubscriptionRepository.php
 
@@ -1489,20 +1405,8 @@ parameters:
 			path: src/Repository/WorklogRepository.php
 
 		-
-			message: '#^Method App\\Repository\\WorklogRepository\:\:findBilledWorklogsByWorkerAndDateRange\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Repository/WorklogRepository.php
-
-		-
 			message: '#^Method App\\Repository\\WorklogRepository\:\:findByFilterData\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/WorklogRepository.php
-
-		-
-			message: '#^Method App\\Repository\\WorklogRepository\:\:findWorklogsByWorkerAndDateRange\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: src/Repository/WorklogRepository.php
 
@@ -1545,12 +1449,6 @@ parameters:
 		-
 			message: '#^Method App\\Service\\ClientHelper\:\:__construct\(\) has parameter \$options with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/Service/ClientHelper.php
-
-		-
-			message: '#^Method App\\Service\\ClientHelper\:\:getStandardPrice\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: src/Service/ClientHelper.php
 
@@ -1909,28 +1807,10 @@ parameters:
 			path: src/Service/LeantimeApiService.php
 
 		-
-			message: '#^Method App\\Service\\LeantimeApiService\:\:post\(\) has parameter \$path with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Service/LeantimeApiService.php
-
-		-
 			message: '#^Method App\\Service\\LeantimeApiService\:\:updateAsJob\(\) has parameter \$projectTrackerProjectIds with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Service/LeantimeApiService.php
-
-		-
-			message: '#^Method App\\Service\\ManagementReportService\:\:calculateYear\(\) has parameter \$quarterValues with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Service/ManagementReportService.php
-
-		-
-			message: '#^Method App\\Service\\ManagementReportService\:\:generateSpreadsheetCsvResponse\(\) has parameter \$dateInterval with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Service/ManagementReportService.php
 
 		-
 			message: '#^Method App\\Service\\ManagementReportService\:\:generateSpreadsheetCsvResponse\(\) has parameter \$groupedInvoices with no value type specified in iterable type array\.$#'
@@ -2023,12 +1903,6 @@ parameters:
 			path: src/Service/WorkloadReportService.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\DanishHolidayHelperTest\:\:assertSameDate\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
 			message: '#^Method App\\Tests\\Service\\DanishHolidayHelperTest\:\:dataEaster\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2059,57 +1933,9 @@ parameters:
 			path: tests/Service/DanishHolidayHelperTest.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\DanishHolidayHelperTest\:\:testEaster\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\DanishHolidayHelperTest\:\:testHmm\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\DanishHolidayHelperTest\:\:testHolidayNames\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\DanishHolidayHelperTest\:\:testIsBankHoliday\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\DanishHolidayHelperTest\:\:testNextBankDay\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\DanishHolidayHelperTest\:\:testNextBankDay30\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\DanishHolidayHelperTest\:\:testNextNonHoliday\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
 			message: '#^Parameter \#1 \$expected of method App\\Tests\\Service\\DanishHolidayHelperTest\:\:assertSameDate\(\) expects DateTimeInterface, DateTimeInterface\|null given\.$#'
 			identifier: argument.type
 			count: 3
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
-			message: '#^Result of method PHPUnit\\Framework\\Assert\:\:assertEquals\(\) \(void\) is used\.$#'
-			identifier: method.void
-			count: 1
 			path: tests/Service/DanishHolidayHelperTest.php
 
 		-
@@ -2209,12 +2035,6 @@ parameters:
 			path: tests/Service/DateTimeHelperTest.php
 
 		-
-			message: '#^Method App\\Tests\\Service\\HourReportServiceTest\:\:testGetDefaultFromDate\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/HourReportServiceTest.php
-
-		-
 			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2248,30 +2068,6 @@ parameters:
 			message: '#^Call to an undefined method object\:\:persist\(\)\.$#'
 			identifier: method.notFound
 			count: 12
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\LeantimeApiServiceTest\:\:getMilestones\(\) has parameter \$modifiedYear with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\LeantimeApiServiceTest\:\:getProjects\(\) has parameter \$modifiedYear with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\LeantimeApiServiceTest\:\:getTickets\(\) has parameter \$modifiedYear with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\LeantimeApiServiceTest\:\:getTimesheets\(\) has parameter \$modifiedYear with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
 			path: tests/Service/LeantimeApiServiceTest.php
 
 		-
@@ -2380,24 +2176,6 @@ parameters:
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\WorkloadReportData'' and App\\Model\\Reports\\WorkloadReportData will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 3
-			path: tests/Service/WorkloadReportServiceTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\WorkloadReportServiceTest\:\:testExceptionIsThrownWhenWorkerIdentifierIsEmpty\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/WorkloadReportServiceTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\WorkloadReportServiceTest\:\:testExceptionIsThrownWhenWorkerWorkloadIsUnset\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Service/WorkloadReportServiceTest.php
-
-		-
-			message: '#^Method App\\Tests\\Service\\WorkloadReportServiceTest\:\:testGetWorkloadReport\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
 			path: tests/Service/WorkloadReportServiceTest.php
 
 		-

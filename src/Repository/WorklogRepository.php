@@ -112,7 +112,10 @@ class WorklogRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    /**
+     * @return array<int, Worklog>
+     */
+    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo): array
     {
         $qb = $this->createQueryBuilder('worklog');
 
@@ -239,7 +242,10 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findBilledWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    /**
+     * @return array<int, Worklog>
+     */
+    public function findBilledWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo): array
     {
         $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
         $nonBillableVersions = NonBillableVersionsEnum::getAsArray();

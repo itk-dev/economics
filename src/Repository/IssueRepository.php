@@ -87,7 +87,10 @@ class IssueRepository extends ServiceEntityRepository
         return array_combine($titles, $ids);
     }
 
-    public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
+    /**
+     * @return array<int, Issue>
+     */
+    public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd): array
     {
         $from = new \DateTime($periodStart->format('Y-m-d').' 00:00:00');
         $to = new \DateTime($periodEnd->format('Y-m-d').' 23:59:59');

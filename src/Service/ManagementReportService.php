@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Invoice;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,10 @@ class ManagementReportService
     ) {
     }
 
-    public function generateSpreadsheetCsvResponse(array $groupedInvoices, $dateInterval): Response
+    /**
+     * @param array{dateFrom: string, dateTo: string} $dateInterval
+     */
+    public function generateSpreadsheetCsvResponse(array $groupedInvoices, array $dateInterval): Response
     {
         $values = [];
         // Add header.
@@ -61,7 +65,10 @@ class ManagementReportService
         return $response;
     }
 
-    private function calculateYear($quarterValues): string
+    /**
+     * @param array<Invoice> $quarterValues
+     */
+    private function calculateYear(array $quarterValues): string
     {
         $sum = 0;
         foreach ($quarterValues as $invoice) {

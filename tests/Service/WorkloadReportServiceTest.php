@@ -19,7 +19,7 @@ class WorkloadReportServiceTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testGetWorkloadReport()
+    public function testGetWorkloadReport(): void
     {
         $workerMock1 = $this->createMock(Worker::class);
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');
@@ -81,7 +81,7 @@ class WorkloadReportServiceTest extends TestCase
         $this->assertInstanceOf(WorkloadReportData::class, $result);
     }
 
-    public function testExceptionIsThrownWhenWorkerIdentifierIsEmpty()
+    public function testExceptionIsThrownWhenWorkerIdentifierIsEmpty(): void
     {
         $workerMock1 = $this->createMock(Worker::class);
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');
@@ -140,7 +140,7 @@ class WorkloadReportServiceTest extends TestCase
         $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
     }
 
-    public function testExceptionIsThrownWhenWorkerWorkloadIsUnset()
+    public function testExceptionIsThrownWhenWorkerWorkloadIsUnset(): void
     {
         $workerMock1 = $this->createMock(Worker::class);
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');

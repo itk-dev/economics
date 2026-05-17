@@ -92,7 +92,12 @@ class ProjectRepository extends ServiceEntityRepository
         );
     }
 
-    public function getProjectTrackerIdsByDataProviders(array $dataProviders)
+    /**
+     * @param array<int, \App\Entity\DataProvider> $dataProviders
+     *
+     * @return array<int, string>
+     */
+    public function getProjectTrackerIdsByDataProviders(array $dataProviders): array
     {
         $qb = $this->createQueryBuilder('project');
 

@@ -429,7 +429,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         ', null, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function getProjects($modifiedYear = 2024): object
+    private function getProjects(int $modifiedYear = 2024): object
     {
         return json_decode('
             {
@@ -454,7 +454,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         ');
     }
 
-    private function getMilestones($modifiedYear = 2024): object
+    private function getMilestones(int $modifiedYear = 2024): object
     {
         return json_decode('
             {
@@ -481,7 +481,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         ');
     }
 
-    private function getTickets($modifiedYear = 2024): object
+    private function getTickets(int $modifiedYear = 2024): object
     {
         return json_decode('
             {
@@ -524,7 +524,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         ');
     }
 
-    private function getTimesheets($modifiedYear = 2024): object
+    private function getTimesheets(int $modifiedYear = 2024): object
     {
         return json_decode('
             {

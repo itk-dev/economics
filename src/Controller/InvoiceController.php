@@ -201,7 +201,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}/generate-description', name: 'app_invoices_generate_description', methods: ['GET'])]
-    public function generateDescription(Invoice $invoice, $defaultInvoiceDescriptionTemplate): JsonResponse
+    public function generateDescription(Invoice $invoice, string $defaultInvoiceDescriptionTemplate): JsonResponse
     {
         $projectLeadName = $invoice->getProject()?->getProjectLeadName() ?? null;
         $projectLeadMail = $invoice->getProject()?->getProjectLeadMail() ?? null;

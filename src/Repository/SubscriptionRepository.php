@@ -41,7 +41,12 @@ class SubscriptionRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByCustom($email, $urlParams): array
+    /**
+     * @param array<string, mixed> $urlParams
+     *
+     * @return array<int, Subscription>
+     */
+    public function findByCustom(string $email, array $urlParams): array
     {
         $qb = $this->createQueryBuilder('s');
 
@@ -59,9 +64,11 @@ class SubscriptionRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param array<string, mixed> $urlParams
+     *
      * @throws NonUniqueResultException
      */
-    public function findOneByCustom($email, $subscriptionType, $urlParams): ?Subscription
+    public function findOneByCustom(string $email, string $subscriptionType, array $urlParams): ?Subscription
     {
         $qb = $this->createQueryBuilder('s');
 

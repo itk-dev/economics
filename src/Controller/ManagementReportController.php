@@ -123,10 +123,12 @@ class ManagementReportController extends AbstractController
     }
 
     /**
+     * @param array{dateFrom: string, dateTo: string} $dateInterval
+     *
      * @throws \Doctrine\ORM\Exception\NotSupported
      * @throws \Exception
      */
-    private function getInvoicesDataFromDates($dateInterval, InvoiceRepository $invoiceRepository): array
+    private function getInvoicesDataFromDates(array $dateInterval, InvoiceRepository $invoiceRepository): array
     {
         return $invoiceRepository->getByRecordedDateBetween(
             new \DateTime($dateInterval['dateFrom']),

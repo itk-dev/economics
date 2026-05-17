@@ -124,9 +124,11 @@ class SubscriptionController extends AbstractController
     }
 
     /**
+     * @param array<string, mixed> $content
+     *
      * @throws NonUniqueResultException
      */
-    private function subscriptionHandler($userEmail, $subscriptionType, $content): JsonResponse
+    private function subscriptionHandler(string $userEmail, string $subscriptionType, array $content): JsonResponse
     {
         $reportType = key($content);
         $subscription = $this->subscriptionRepository->findOneByCustom($userEmail, $subscriptionType, $content);

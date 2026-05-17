@@ -260,7 +260,7 @@ class Invoice extends AbstractBaseEntity
         return $this;
     }
 
-    public function setInvoiceEntryIndexes()
+    public function setInvoiceEntryIndexes(): void
     {
         $index = 0;
         foreach ($this->getInvoiceEntries() as $entry) {

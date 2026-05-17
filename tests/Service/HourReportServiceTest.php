@@ -19,7 +19,7 @@ class HourReportServiceTest extends TestCase
         );
     }
 
-    public function testGetDefaultFromDate()
+    public function testGetDefaultFromDate(): void
     {
         $fromDate = $this->hourReportService->getDefaultFromDate();
 
