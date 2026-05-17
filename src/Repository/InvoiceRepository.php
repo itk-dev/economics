@@ -59,6 +59,9 @@ class InvoiceRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @return PaginationInterface<int, Invoice>
+     */
     public function getFilteredPagination(InvoiceFilterData $invoiceFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('invoice');

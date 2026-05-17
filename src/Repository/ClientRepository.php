@@ -42,6 +42,9 @@ class ClientRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return PaginationInterface<int, Client>
+     */
     public function getFilteredPagination(ClientFilterData $clientFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('client');

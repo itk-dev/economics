@@ -54,6 +54,9 @@ class ProjectRepository extends ServiceEntityRepository
         return $qb;
     }
 
+    /**
+     * @return PaginationInterface<int, Project>
+     */
     public function getFilteredPagination(ProjectFilterData $projectFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('project');

@@ -317,7 +317,7 @@ class PlanningService
      */
     private function sortAssigneeCollectionByDisplayName(ArrayCollection $collection): ArrayCollection
     {
-        /** @var \ArrayIterator $iterator */
+        /** @var \ArrayIterator<string, Assignee> $iterator */
         $iterator = $collection->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
@@ -335,7 +335,7 @@ class PlanningService
      */
     private function sortProjectCollectionByDisplayName(ArrayCollection $collection): ArrayCollection
     {
-        /** @var \ArrayIterator $iterator */
+        /** @var \ArrayIterator<string, Project> $iterator */
         $iterator = $collection->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);

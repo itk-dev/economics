@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Added generic-class typehints to clear all 50 PHPStan
+  `missingType.generics` entries: `@extends AbstractType<DataClass>` on 34
+  form types, `@return PaginationInterface<int, Entity>` on 9 repository
+  `getFilteredPagination()` methods, `ArrayCollection<K, V>` on 5 report
+  model properties, and `ArrayIterator<K, V>` on 3 service `@var`
+  docblocks. Baseline 454 → 394.
 * Added missing parameter and return types across controllers, services,
   repositories, and tests (`InvoiceController::generateDescription`,
   `ManagementReportController::getInvoicesDataFromDates`,

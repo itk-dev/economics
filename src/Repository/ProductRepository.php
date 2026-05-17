@@ -26,6 +26,9 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    /**
+     * @return PaginationInterface<int, Product>
+     */
     public function getFilteredPagination(ProductFilterData $productFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('product');

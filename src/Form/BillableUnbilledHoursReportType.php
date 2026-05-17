@@ -9,6 +9,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * @extends AbstractType<BillableUnbilledHoursReportFormData>
+ */
 class BillableUnbilledHoursReportType extends AbstractType
 {
     public function __construct(

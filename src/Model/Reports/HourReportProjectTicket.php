@@ -12,7 +12,9 @@ class HourReportProjectTicket
     public float $totalEstimated;
     public float $totalSpent;
     public readonly string $linkToIssue;
+    /** @var ArrayCollection<int, mixed> */
     public ArrayCollection $timesheets;
+    /** @var ArrayCollection<int, HourReportProjectTicket> */
     public ArrayCollection $projectTickets;
 
     public function __construct($id, $projectTrackerId, $headline, $totalEstimated, $totalSpent, $linkToIssue)

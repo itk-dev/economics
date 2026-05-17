@@ -13,6 +13,7 @@ class InvoicingRateReportData
     /** @var ArrayCollection<string, InvoicingRateReportWorker> */
     public ArrayCollection $workers;
     public int $currentPeriodNumeric;
+    /** @var ArrayCollection<string, float> */
     public ArrayCollection $periodAverages;
     public float $totalAverage;
     public bool $includeIssues;

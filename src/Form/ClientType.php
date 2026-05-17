@@ -16,6 +16,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatableMessage;
 
+/**
+ * @extends AbstractType<Client>
+ */
 class ClientType extends AbstractType
 {
     public function __construct(private readonly VersionRepository $versionRepository, private readonly ClientRepository $clientRepository)

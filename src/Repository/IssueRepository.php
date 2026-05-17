@@ -40,6 +40,9 @@ class IssueRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return PaginationInterface<int, Issue>
+     */
     public function getFilteredPagination(IssueFilterData $issueFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('issue');

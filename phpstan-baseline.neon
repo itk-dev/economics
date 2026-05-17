@@ -451,214 +451,10 @@ parameters:
 			path: src/Entity/Worklog.php
 
 		-
-			message: '#^Class App\\Form\\AccountType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/AccountType.php
-
-		-
-			message: '#^Class App\\Form\\BillableUnbilledHoursReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/BillableUnbilledHoursReportType.php
-
-		-
-			message: '#^Class App\\Form\\ClientFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ClientFilterType.php
-
-		-
-			message: '#^Class App\\Form\\ClientType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ClientType.php
-
-		-
 			message: '#^Method App\\Form\\ClientType\:\:getVersionOptions\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Form/ClientType.php
-
-		-
-			message: '#^Class App\\Form\\CombinedServiceAgreementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/CombinedServiceAgreementType.php
-
-		-
-			message: '#^Class App\\Form\\CybersecurityAgreementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/CybersecurityAgreementType.php
-
-		-
-			message: '#^Class App\\Form\\ForecastReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ForecastReportType.php
-
-		-
-			message: '#^Class App\\Form\\HourReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/HourReportType.php
-
-		-
-			message: '#^Class App\\Form\\InvoiceEntryType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/InvoiceEntryType.php
-
-		-
-			message: '#^Class App\\Form\\InvoiceEntryWorklogFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/InvoiceEntryWorklogFilterType.php
-
-		-
-			message: '#^Class App\\Form\\InvoiceEntryWorklogType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/InvoiceEntryWorklogType.php
-
-		-
-			message: '#^Class App\\Form\\InvoiceFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/InvoiceFilterType.php
-
-		-
-			message: '#^Class App\\Form\\InvoiceNewType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/InvoiceNewType.php
-
-		-
-			message: '#^Class App\\Form\\InvoiceRecordType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/InvoiceRecordType.php
-
-		-
-			message: '#^Class App\\Form\\InvoiceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/InvoiceType.php
-
-		-
-			message: '#^Class App\\Form\\InvoicingRateReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/InvoicingRateReportType.php
-
-		-
-			message: '#^Class App\\Form\\IssueFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/IssueFilterType.php
-
-		-
-			message: '#^Class App\\Form\\IssueProductType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/IssueProductType.php
-
-		-
-			message: '#^Class App\\Form\\ManagementReportDateIntervalType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ManagementReportDateIntervalType.php
-
-		-
-			message: '#^Class App\\Form\\NameFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/NameFilterType.php
-
-		-
-			message: '#^Class App\\Form\\PlanningType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/PlanningType.php
-
-		-
-			message: '#^Class App\\Form\\ProductFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ProductFilterType.php
-
-		-
-			message: '#^Class App\\Form\\ProductType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ProductType.php
-
-		-
-			message: '#^Class App\\Form\\ProjectBillingFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ProjectBillingFilterType.php
-
-		-
-			message: '#^Class App\\Form\\ProjectBillingRecordType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ProjectBillingRecordType.php
-
-		-
-			message: '#^Class App\\Form\\ProjectBillingType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ProjectBillingType.php
-
-		-
-			message: '#^Class App\\Form\\ProjectFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ProjectFilterType.php
-
-		-
-			message: '#^Class App\\Form\\ProjectType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ProjectType.php
-
-		-
-			message: '#^Class App\\Form\\ServiceAgreementFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ServiceAgreementFilterType.php
-
-		-
-			message: '#^Class App\\Form\\ServiceAgreementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/ServiceAgreementType.php
-
-		-
-			message: '#^Class App\\Form\\SubscriptionFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/SubscriptionFilterType.php
-
-		-
-			message: '#^Class App\\Form\\WorkerGroupType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/WorkerGroupType.php
-
-		-
-			message: '#^Class App\\Form\\WorkerType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/WorkerType.php
-
-		-
-			message: '#^Class App\\Form\\WorkloadReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Form/WorkloadReportType.php
 
 		-
 			message: '#^Method App\\Message\\LeantimeUpdateMessage\:\:__construct\(\) has parameter \$projectTrackerProjectIds with no value type specified in iterable type array\.$#'
@@ -769,32 +565,8 @@ parameters:
 			path: src/Model/Reports/HourReportProjectTicket.php
 
 		-
-			message: '#^Property App\\Model\\Reports\\HourReportProjectTicket\:\:\$projectTickets with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Model/Reports/HourReportProjectTicket.php
-
-		-
-			message: '#^Property App\\Model\\Reports\\HourReportProjectTicket\:\:\$timesheets with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Model/Reports/HourReportProjectTicket.php
-
-		-
-			message: '#^Property App\\Model\\Reports\\HourReportWorklog\:\:\$projectTicket with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Model/Reports/HourReportWorklog.php
-
-		-
 			message: '#^Class App\\Model\\Reports\\InvoicingRateReportData has an uninitialized readonly property \$id\. Assign it in the constructor\.$#'
 			identifier: property.uninitializedReadonly
-			count: 1
-			path: src/Model/Reports/InvoicingRateReportData.php
-
-		-
-			message: '#^Property App\\Model\\Reports\\InvoicingRateReportData\:\:\$periodAverages with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Model/Reports/InvoicingRateReportData.php
 
@@ -813,12 +585,6 @@ parameters:
 		-
 			message: '#^Class App\\Model\\Reports\\WorkloadReportData has an uninitialized readonly property \$id\. Assign it in the constructor\.$#'
 			identifier: property.uninitializedReadonly
-			count: 1
-			path: src/Model/Reports/WorkloadReportData.php
-
-		-
-			message: '#^Property App\\Model\\Reports\\WorkloadReportData\:\:\$periodAverages with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Model/Reports/WorkloadReportData.php
 
@@ -853,18 +619,6 @@ parameters:
 			path: src/Repository/AccountRepository.php
 
 		-
-			message: '#^Method App\\Repository\\AccountRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/AccountRepository.php
-
-		-
-			message: '#^Method App\\Repository\\AccountRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Repository/AccountRepository.php
-
-		-
 			message: '#^Class App\\Repository\\ClientRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -885,18 +639,6 @@ parameters:
 		-
 			message: '#^Class App\\Repository\\ClientRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ClientRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ClientRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ClientRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ClientRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Repository/ClientRepository.php
 
@@ -1003,18 +745,6 @@ parameters:
 			path: src/Repository/InvoiceRepository.php
 
 		-
-			message: '#^Method App\\Repository\\InvoiceRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/InvoiceRepository.php
-
-		-
-			message: '#^Method App\\Repository\\InvoiceRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Repository/InvoiceRepository.php
-
-		-
 			message: '#^Class App\\Repository\\IssueProductRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1081,18 +811,6 @@ parameters:
 			path: src/Repository/IssueRepository.php
 
 		-
-			message: '#^Method App\\Repository\\IssueRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/IssueRepository.php
-
-		-
-			message: '#^Method App\\Repository\\IssueRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Repository/IssueRepository.php
-
-		-
 			message: '#^Method App\\Repository\\IssueRepository\:\:issuesContainingVersion\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1123,18 +841,6 @@ parameters:
 			path: src/Repository/ProductRepository.php
 
 		-
-			message: '#^Method App\\Repository\\ProductRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ProductRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ProductRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Repository/ProductRepository.php
-
-		-
 			message: '#^Class App\\Repository\\ProjectBillingRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1159,18 +865,6 @@ parameters:
 			path: src/Repository/ProjectBillingRepository.php
 
 		-
-			message: '#^Method App\\Repository\\ProjectBillingRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ProjectBillingRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ProjectBillingRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Repository/ProjectBillingRepository.php
-
-		-
 			message: '#^Class App\\Repository\\ProjectRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1191,18 +885,6 @@ parameters:
 		-
 			message: '#^Class App\\Repository\\ProjectRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ProjectRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ProjectRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ProjectRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ProjectRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Repository/ProjectRepository.php
 
@@ -1233,18 +915,6 @@ parameters:
 		-
 			message: '#^Method App\\Repository\\ServiceAgreementRepository\:\:getApiServiceAgreements\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ServiceAgreementRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ServiceAgreementRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ServiceAgreementRepository.php
-
-		-
-			message: '#^Method App\\Repository\\ServiceAgreementRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Repository/ServiceAgreementRepository.php
 
@@ -1331,18 +1001,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Repository/VersionRepository.php
-
-		-
-			message: '#^Method App\\Repository\\WorkerGroupRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/WorkerGroupRepository.php
-
-		-
-			message: '#^Method App\\Repository\\WorkerGroupRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Repository/WorkerGroupRepository.php
 
 		-
 			message: '#^Class App\\Repository\\WorkerRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
@@ -1603,12 +1261,6 @@ parameters:
 			path: src/Service/HourReportService.php
 
 		-
-			message: '#^PHPDoc tag @var for variable \$tagsIterator contains generic class ArrayIterator but does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Service/HourReportService.php
-
-		-
 			message: '#^Method App\\Service\\InvoiceEntryHelper\:\:__construct\(\) has parameter \$options with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1846,12 +1498,6 @@ parameters:
 			message: '#^Method App\\Service\\PlanningService\:\:sortIssuesByWeek\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: src/Service/PlanningService.php
-
-		-
-			message: '#^PHPDoc tag @var for variable \$iterator contains generic class ArrayIterator but does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 2
 			path: src/Service/PlanningService.php
 
 		-

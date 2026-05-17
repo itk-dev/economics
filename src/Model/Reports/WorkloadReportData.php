@@ -13,6 +13,7 @@ class WorkloadReportData
     /** @var ArrayCollection<string, WorkloadReportWorker> */
     public ArrayCollection $workers;
     public int $currentPeriodNumeric;
+    /** @var ArrayCollection<string, float> */
     public ArrayCollection $periodAverages;
     public float $totalAverage;
 

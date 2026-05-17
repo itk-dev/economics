@@ -19,6 +19,9 @@ class WorkerGroupRepository extends ServiceEntityRepository
         parent::__construct($registry, WorkerGroup::class);
     }
 
+    /**
+     * @return PaginationInterface<int, WorkerGroup>
+     */
     public function getFilteredPagination(NameFilterData $nameFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('g');
