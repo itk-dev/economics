@@ -117,6 +117,7 @@ class LeantimeApiService implements DataProviderInterface
             throw new NotFoundException("DataProvider with id: $dataProviderId not found");
         }
 
+        /** @var list<self::PROJECTS|self::MILESTONES|self::TICKETS|self::TIMESHEETS> $types */
         $types = [
             self::TIMESHEETS,
             self::TICKETS,
@@ -131,11 +132,11 @@ class LeantimeApiService implements DataProviderInterface
 
         // Get data from Leantime.
         $data = $this->fetchFromLeantime($dataProvider, 'deleted', $params);
-        $results = $data->results;
+        $results = $data['results'];
 
         // Queue delete.
         foreach ($types as $type) {
-            if (!isset($results->{$type})) {
+            if (!isset($results[$type])) {
                 continue;
             }
 
@@ -144,12 +145,11 @@ class LeantimeApiService implements DataProviderInterface
                 self::MILESTONES => Version::class,
                 self::TICKETS => Issue::class,
                 self::TIMESHEETS => Worklog::class,
-                default => throw new \InvalidArgumentException(sprintf('Unsupported type: %s', $type)),
             };
 
-            foreach ($results->{$type} as $result) {
-                $projectTrackerId = $result->id;
-                $deletedDate = $this->getLeanDateTime($result->deletedDate);
+            foreach ($results[$type] as $result) {
+                $projectTrackerId = $result['id'];
+                $deletedDate = $this->getLeanDateTime($result['deletedDate']);
 
                 $this->messageBus->dispatch(
                     new EntityRemovedFromDataProviderMessage($classname, $dataProviderId, $projectTrackerId, $deletedDate),
@@ -200,9 +200,9 @@ class LeantimeApiService implements DataProviderInterface
         $fetchDate = new \DateTime();
 
         // Queue upsert.
-        foreach ($data->results as $result) {
+        foreach ($data['results'] as $result) {
             $this->dispatchUpsertMessage($className, $result, $dataProviderId, $fetchDate, $asyncJobQueue, $dataProviderUrl, $disableModifiedAtCheck);
-            $startId = $result->id;
+            $startId = $result['id'];
         }
 
         $startId = $startId + 1;
@@ -213,7 +213,7 @@ class LeantimeApiService implements DataProviderInterface
         }
 
         // Queue next page.
-        if ($data->resultsCount === $limit) {
+        if ($data['resultsCount'] === $limit) {
             $this->messageBus->dispatch(
                 new LeantimeUpdateMessage($className, $startId, $limit, $dataProviderId, $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds, $disableModifiedAtCheck),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
@@ -221,7 +221,10 @@ class LeantimeApiService implements DataProviderInterface
         }
     }
 
-    private function dispatchUpsertMessage(string $className, object $data, int $dataProviderId, \DateTimeInterface $fetchDate, bool $asyncJobQueue = false, ?string $dataProviderUrl = null, bool $disableModifiedAtCheck = false): void
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function dispatchUpsertMessage(string $className, array $data, int $dataProviderId, \DateTimeInterface $fetchDate, bool $asyncJobQueue = false, ?string $dataProviderUrl = null, bool $disableModifiedAtCheck = false): void
     {
         try {
             $message = match ($className) {
@@ -246,98 +249,115 @@ class LeantimeApiService implements DataProviderInterface
         }
     }
 
-    private function getProjectUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null, bool $disableModifiedAtCheck = false): DataProviderProjectData
+    /**
+     * @param array<string, mixed> $result
+     */
+    private function getProjectUpsertFromResult(array $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null, bool $disableModifiedAtCheck = false): DataProviderProjectData
     {
-        $projectTrackerId = (string) $result->id;
+        $projectTrackerId = (string) $result['id'];
 
         return new DataProviderProjectData(
             $dataProviderId,
-            $result->name,
+            $result['name'],
             $projectTrackerId,
             $this->linkToProject($projectTrackerId, $dataProviderUrl),
             $fetchDate,
-            $this->getLeanDateTime($result->modified),
+            $this->getLeanDateTime($result['modified']),
             $disableModifiedAtCheck,
         );
     }
 
-    private function getVersionUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, bool $disableModifiedAtCheck = false): DataProviderVersionData
+    /**
+     * @param array<string, mixed> $result
+     */
+    private function getVersionUpsertFromResult(array $result, int $dataProviderId, \DateTimeInterface $fetchDate, bool $disableModifiedAtCheck = false): DataProviderVersionData
     {
         return new DataProviderVersionData(
             $dataProviderId,
-            $result->name,
-            (string) $result->id,
-            (string) $result->projectId,
+            $result['name'],
+            (string) $result['id'],
+            (string) $result['projectId'],
             $fetchDate,
-            $this->getLeanDateTime($result->modified),
+            $this->getLeanDateTime($result['modified']),
             $disableModifiedAtCheck,
         );
     }
 
-    private function getIssueUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null, bool $disableModifiedAtCheck = false): DataProviderIssueData
+    /**
+     * @param array<string, mixed> $result
+     */
+    private function getIssueUpsertFromResult(array $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null, bool $disableModifiedAtCheck = false): DataProviderIssueData
     {
-        $projectTrackerId = (string) $result->id;
+        $projectTrackerId = (string) $result['id'];
 
         return new DataProviderIssueData(
             $projectTrackerId,
             $dataProviderId,
-            (string) $result->projectId,
-            $result->name,
-            $result->tags,
-            $result->plannedHours,
-            $result->remainingHours,
-            $result->worker,
-            $this->convertStatusToEnum($result->status),
-            $this->getLeanDateTime($result->dueDate),
-            $this->getLeanDateTime($result->resolutionDate),
+            (string) $result['projectId'],
+            $result['name'],
+            $result['tags'],
+            $result['plannedHours'],
+            $result['remainingHours'],
+            $result['worker'],
+            $this->convertStatusToEnum($result['status']),
+            $this->getLeanDateTime($result['dueDate']),
+            $this->getLeanDateTime($result['resolutionDate']),
             $fetchDate,
             $this->linkToTicket($projectTrackerId, $dataProviderUrl),
-            $this->getLeanDateTime($result->modified),
-            $result->milestoneId,
+            $this->getLeanDateTime($result['modified']),
+            $result['milestoneId'],
             $disableModifiedAtCheck,
         );
     }
 
-    private function getWorklogUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, bool $disableModifiedAtCheck = false): DataProviderWorklogData
+    /**
+     * @param array<string, mixed> $result
+     */
+    private function getWorklogUpsertFromResult(array $result, int $dataProviderId, \DateTimeInterface $fetchDate, bool $disableModifiedAtCheck = false): DataProviderWorklogData
     {
-        $startedDate = $this->getLeanDateTime($result->workDate);
+        $startedDate = $this->getLeanDateTime($result['workDate']);
 
         if (null === $startedDate) {
             throw new NotAcceptableException('Worklog upsert not acceptable: startedDate is null');
         }
 
         return new DataProviderWorklogData(
-            $result->id,
+            $result['id'],
             $dataProviderId,
-            (string) $result->ticketId,
-            $result->description,
+            (string) $result['ticketId'],
+            $result['description'],
             $startedDate,
-            $result->username,
-            $result->hours,
-            $result->kind,
+            $result['username'],
+            $result['hours'],
+            $result['kind'],
             $fetchDate,
-            $this->getLeanDateTime($result->modified),
+            $this->getLeanDateTime($result['modified']),
             $disableModifiedAtCheck,
         );
     }
 
-    private function getWorkerUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): DataProviderWorkerData
+    /**
+     * @param array<string, mixed> $result
+     */
+    private function getWorkerUpsertFromResult(array $result, int $dataProviderId, \DateTimeInterface $fetchDate): DataProviderWorkerData
     {
         return new DataProviderWorkerData(
-            $result->id,
-            $result->name,
-            $result->email,
+            $result['id'],
+            $result['name'],
+            $result['email'],
         );
     }
 
     /**
      * @param array<string, mixed> $params
+     *
+     * @return array<string, mixed>
      */
-    private function fetchFromLeantime(DataProvider $dataProvider, string $type, array $params): object
+    private function fetchFromLeantime(DataProvider $dataProvider, string $type, array $params): array
     {
         $response = $this->post($dataProvider, $type, $params);
 
-        return json_decode($response->getContent(), null, 512, JSON_THROW_ON_ERROR);
+        return json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

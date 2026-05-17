@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* `LeantimeApiService` now decodes JSON responses as associative arrays
+  (`json_decode($content, true)`) instead of objects, and all
+  `$data->property` / `$result->property` accesses across the file —
+  including `fetchFromLeantime()`'s return, the `delete()` loop, the
+  `updateAsJob()` paginator, `dispatchUpsertMessage()`, and the five
+  upsert helpers — switched to array access. `fetchFromLeantime()` and
+  the five helpers are now typed `array<string, mixed>` instead of
+  `object`. Cleared the last 33 PHPStan baseline entries (22 unique
+  `property.notFound` reports plus one `match.alwaysTrue`). To clear
+  the `match.alwaysTrue` on the `delete()` `match($type)`, the local
+  `$types` array got a `@var list<self::PROJECTS|self::MILESTONES|self::TICKETS|self::TIMESHEETS>`
+  annotation so PHPStan narrows correctly and the `default => throw` arm
+  is no longer needed. Behavior unchanged — JSON shape is identical from
+  the wire, only the in-memory representation changed.
+
+  **`phpstan-baseline.neon` is now empty (`ignoreErrors: []`).** Every
+  line in `src/` and `tests/` is clean at PHPStan level 8 with zero
+  suppressions. The file is kept in the repo so future regressions can
+  re-populate it if introduced.
+
 * Final pass on PHPStan call-site bugs outside the LeantimeApiService
   dynamic-object cluster (baseline 37 → 34):
   - `DataProviderServiceTest` adds `\assert(null !== $worklog{D,E}->getProject())`
