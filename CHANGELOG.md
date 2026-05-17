@@ -8,256 +8,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* `LeantimeApiService` now decodes JSON responses as associative arrays
-  (`json_decode($content, true)`) instead of objects, and all
-  `$data->property` / `$result->property` accesses across the file —
-  including `fetchFromLeantime()`'s return, the `delete()` loop, the
-  `updateAsJob()` paginator, `dispatchUpsertMessage()`, and the five
-  upsert helpers — switched to array access. `fetchFromLeantime()` and
-  the five helpers are now typed `array<string, mixed>` instead of
-  `object`. Cleared the last 33 PHPStan baseline entries (22 unique
-  `property.notFound` reports plus one `match.alwaysTrue`). To clear
-  the `match.alwaysTrue` on the `delete()` `match($type)`, the local
-  `$types` array got a `@var list<self::PROJECTS|self::MILESTONES|self::TICKETS|self::TIMESHEETS>`
-  annotation so PHPStan narrows correctly and the `default => throw` arm
-  is no longer needed. Behavior unchanged — JSON shape is identical from
-  the wire, only the in-memory representation changed.
-
-  **`phpstan-baseline.neon` is now empty (`ignoreErrors: []`).** Every
-  line in `src/` and `tests/` is clean at PHPStan level 8 with zero
-  suppressions. The file is kept in the repo so future regressions can
-  re-populate it if introduced.
-
-* Final pass on PHPStan call-site bugs outside the LeantimeApiService
-  dynamic-object cluster (baseline 37 → 34):
-  - `DataProviderServiceTest` adds `\assert(null !== $worklog{D,E}->getProject())`
-    before chaining `getProjectTrackerId()` on the worklogs created earlier
-    in the test (line 102/103).
-  - `ManagementReportController::createGroupedInvoices()` return type
-    tightened from `array<int|string, ...>` to `array<int, ...>` to match
-    the year-key int-cast at the build site and the
-    `ManagementReportService::generateSpreadsheetCsvResponse()` signature.
-
-  The remaining 34 baseline entries are all in `LeantimeApiService.php`:
-  22 distinct `property.notFound` reports on `$data->...` accesses where
-  `$data` is the `object` returned by `json_decode($json, null)`, plus one
-  `match.alwaysTrue` that's the price of an explicit `default => throw`
-  arm we added for safety on the `type` match in `delete()`. Clearing the
-  cluster needs a real refactor — either decode as associative array and
-  switch to `['property']` access throughout, or define per-endpoint
-  `@phpstan-type` shapes and thread them through each helper. Out of
-  scope for this incremental cleanup pass.
-
-* Cleared the long tail of PHPStan call-site bugs across services, tests,
-  and one report data flow (baseline 75 → 37). Notable fixes:
-  - `Epic::getName()` → `Epic::getTitle()` in `ForecastReportService` — the
-    method `getName()` doesn't exist on `Epic`; the report was calling the
-    wrong getter and getting an empty epic name in output.
-  - `Worklog::setTimeSpentSeconds()` in `DataProviderService` now casts the
-    `hours * SECONDS_IN_HOUR` product to `int` — `hours` is `float`, so the
-    untyped pass-through was silently losing precision before reaching the
-    `int $timeSpentSeconds` setter.
-  - `DateTimeHelper::getMonthName()`, `DashboardService::getYearData()`,
-    `AppFixtures`, and two test methods in `LeantimeApiServiceTest` now
-    assert that `\DateTime::createFromFormat()` / `mktime()` didn't return
-    `false` before using the result.
-  - `PlanningService::processIssuesForWeek()` `$week` widened from `int` to
-    `int|string` — the caller iterates over `sortIssuesByWeek()` output
-    which has the literal `'unscheduled'` bucket alongside numeric weeks.
-  - `ForecastReportService` casts `$project->getId()` (`int`) to `string`
-    when constructing `ForecastReportProjectData` (which expects `string`).
-  - `WorkloadReportService` and `InvoicingRateReportService` cast `$period`
-    (`int`) to `string` when calling `periodAverages->set()` on the
-    `ArrayCollection<string, float>`; `InvoicingRateReportService` also
-    unwraps an erroneous `[$workerProjects]` value into `$workerProjects`
-    to match `projectData`'s declared value type.
-  - `User::getUserIdentifier()` simplified the empty-email check from
-    `null === $this->email || '' === $this->email` to just `'' === $this->email`
-    now that `$email` is non-null (Pattern B).
-  - `ManagementReportController::createGroupedInvoices()` return type
-    tightened from `array<int|string, ...>` to `array<int, ...>` to match
-    the service signature.
-  - Remaining test fixes: null-asserts after `findOneBy()`/`find()` calls
-    that index by `projectTrackerId` etc. before chaining
-    `getSourceModifiedDate()`/`getSourceDeletedDate()`; lingering
-    `setProjectTrackerIssueId(int)` and `setStarted(DateTime|false)` in
-    `LeantimeApiServiceTest::testDeleted`; `ProjectBillingServiceTest`
-    extracts a non-null `$project` / `$projectBillingId` and filters nulls
-    from the invoice-id array before passing to
-    `BillingService::exportInvoicesToSpreadsheet()`, and drops the
-    redundant `assertNotNull($spreadsheet)` (the return type is non-null).
-
-* Test fixtures and controller endpoints tightened to satisfy PHPStan
-  call-site checks (`argument.type`, `method.notFound`, `method.nonObject` —
-  baseline 163 → 75). Highlights:
-  - `LeantimeApiServiceTest`, `DataProviderServiceTest`, and
-    `ProjectBillingServiceTest` now `\assert(... instanceof ...)` after each
-    `$container->get()` so PHPStan knows the concrete service type; this
-    cascaded through ~20 previously-untyped `->persist()`/`->flush()`/
-    `->findOneBy()` calls on `object`. Also fixed a `@var BillingService
-    $projectBillingService` typo in `ProjectBillingServiceTest` that mis-typed
-    `$billingService`, hiding 4 method-not-found errors.
-  - `LeantimeApiServiceTest` now passes `'64'`/`'65'`/etc. (string) instead of
-    `64`/`65` to `setProjectTrackerId()`/`setProjectTrackerKey()`/
-    `setProjectTrackerIssueId()`, and asserts non-null on `$dataProvider->getId()`
-    once after `flush()` rather than per call. Also handles
-    `\DateTime::createFromFormat()` returning `\DateTime|false`.
-  - `DanishHolidayHelperTest`: tightened `$expected` from `?\DateTimeInterface`
-    to `\DateTimeInterface` on three test methods (and the matching data
-    provider shape) since the data is never null.
-  - `WorkloadReportServiceTest`: asserts `mktime()` did not return `false`
-    before passing to `date()`.
-  - `InvoiceController` and `ProjectBillingController`: null-guard
-    `$invoice->getId()` (`?int`) before building invoice-id arrays passed to
-    `BillingService::generateSpreadsheet{Csv,Html}()`; `array_filter` to drop
-    nulls from `array_map` over invoice collections; `array_map(intval(...))`
-    on string id list from `$request->query->get('ids')`.
-  - `SubscriptionController::check()` returns a 400 when `$user->getEmail()`
-    is `null` rather than passing `?string` downstream; `subscriptionHandler()`
-    throws when `key($content)` is `null` rather than handing `null` to
-    `SubscriptionSubjectEnum::tryFrom()`.
-  - `ManagementReportController::createGroupedInvoices()` skips invoices with
-    a null `recordedDate`, and casts the `format('Y')`/`format('n')` string
-    parts to `int` so the grouped array keys match the
-    `ManagementReportService::generateSpreadsheetCsvResponse()` signature.
-
-* `LeantimeApiService::update()` and `::delete()` now skip data providers
-  with a null ID rather than passing `int|null` to the `LeantimeUpdateMessage`
-  / `LeantimeDeleteMessage` constructors (PHPStan `argument.type`, 2 entries —
-  baseline 165 → 163). Persisted entities always have an ID; the guard is
-  defensive against transient instances.
-
-* Report services now skip worklogs with no associated project or issue
-  rather than dereferencing nullable getters (PHPStan `method.nonObject`,
-  13 entries — baseline 184 → 165). Affected services:
-  `ForecastReportService::getForecastReport()`,
-  `BillableUnbilledHoursReportService::getReport()`,
-  `InvoicingRateReportService::getInvoicingRateReport()`. Each foreach
-  body caches `$project = $worklog->getProject()` and
-  `$issue = $worklog->getIssue()` once at the top, `continue`s when
-  either is null, and uses the narrowed references throughout — also
-  cleared 6 cascading `argument.type`/`property.notFound` follow-ons
-  that had been hiding behind the chained calls.
-
-* Typed `HourReportProjectTicket::__construct()` parameters (PHPStan
-  `missingType.parameter`, 6 entries — baseline 190 → 184). The
-  constructor now requires `string $id, string $projectTrackerId,
-  string $headline, float $totalEstimated, float $totalSpent,
-  string $linkToIssue` to match the property types. Caller in
-  `HourReportService::getHourReport()` coerces `Issue` getter return
-  values (`(string) $issue->getId()`, `?? ''` fallbacks for nullable
-  trackers/name/link) — same pattern as `ForecastReportService`.
-
-* Migration `Version20260517151632`: relaxed 11 ManyToOne foreign keys
-  from `NOT NULL` to `NULL` to match the property types they bind to
-  (PHPStan `doctrine.associationType`, Pattern C — 11 entries cleared,
-  baseline 201 → 190). Affected: `cybersecurity_agreement.service_agreement_id`,
-  `invoice_entry.invoice_id`, `issue_product.{issue_id,product_id}`,
-  `product.project_id`, `project_billing.project_id`,
-  `service_agreement.{project_id,client_id,project_lead_id}`,
-  `version.project_id`, `worklog.issue_id`. Application-layer validation
-  (`#[Assert\NotNull]` on `Product::$project`, form validators on the
-  others) continues to enforce required-ness; the DB now reflects the
-  truthful "may be null in-memory mid-construction" state instead of a
-  constraint that PHP couldn't satisfy.
-
-* Aligned Doctrine entity property types with database column nullability
-  (PHPStan `doctrine.columnType`/`doctrine.associationType`, Pattern B —
-  43 entries cleared, baseline 243 → 201). Two-part change:
-  - **Migration `Version20260517131038`**: made 18 columns nullable to
-    match property types on entities that legitimately allow null —
-    the four synced entities (`issue`, `project`, `version`, `worklog`)
-    where fields arrive incrementally from external trackers, plus the
-    DateTime fields `project_billing.period_{start,end}` and
-    `service_agreement.valid_from`.
-  - **Property defaults**: converted 25 `?T $prop = null` declarations to
-    `T $prop = default` on app-managed entities (`Account`, `Client`,
-    `DataProvider`, `Epic`, `Invoice`, `InvoiceEntry`, `IssueProduct`,
-    `Product`, `ProjectBilling`, `ProjectVersionBudget`,
-    `ServiceAgreement`, `Subscription`, `User`, `Worker`, `WorkerGroup`).
-    Defaults: `''` for strings, `false` for booleans, `0`/`0.0` for
-    numerics, `'0'` for the decimal-as-string `Product::$price`, and
-    `HostingProviderEnum::ADM` for `ServiceAgreement::$hostingProvider`
-    (no natural zero exists for enums; pick a default and rely on
-    callers/validators to set the intended value before persist).
-  - Switched two `__toString()` methods (`Worker`, `WorkerGroup`) from
-    `??` to `?:` to preserve the empty-string-falls-through behavior
-    now that the properties can't be `null`.
-
-* Fixed 16 specific PHPStan-flagged issues, mostly real bugs the type
-  surface had been hiding:
-  - `ForecastReportService` substitutes `'[no issue id]'`/`'[no issue link]'`/`''`
-    fallbacks for nullable issue/worklog fields when assigning to non-null
-    model properties; removed an always-false `!$currentProject` guard
-    that PHPStan proved unreachable.
-  - `ForecastReportIssueVersionData::$worklogs` typed `array<int|string,...>`
-    to reflect that keys come from `Worklog::getId()` (`?int`).
-  - Removed dead `readonly string $id` declarations on `HourReportData`,
-    `WorkloadReportData`, `InvoicingRateReportData` (never assigned, never read).
-  - Added `default => throw` arms to incomplete `match` expressions in
-    `DateTimeHelper::getFirstAndLastDateOfQuarter` and `LeantimeApiService`.
-  - Fixed `SubscriptionHandlerService::getVersion()` looking up
-    `VersionRepository` by non-existent `versionId` field; use
-    `find($versionId)` against the primary key instead.
-  - `User::getUserIdentifier()` now throws on empty email (Symfony's
-    `UserInterface` requires `non-empty-string`).
-  - `SubscriptionController::getFrequencies()` skips subscriptions with
-    a null `frequency` instead of dereferencing.
-  - `PlanningService` dropped extra argument to `Issue::getHoursRemaining()`
-    (method takes 0 parameters).
-  - `ProductsImportCommand` removed an unreachable `null === $row` check.
-  - `DanishHolidayHelper::$instance` `@var` corrected to `?DanishHolidayHelper`
-    to reflect that the singleton is unset before first call.
-  - `WorkloadReportServiceTest::testGetWorkloadReport` replaced redundant
-    `assertInstanceOf` calls (always-true on already-narrowed type) with
-    assertions on `$result->viewmode` that match the period type passed in.
-  Baseline 261 → 243.
-* Cleaned up small PHPStan issues: corrected `Epic::getIssues()` PHPDoc
-  return type (`Collection<int, Issue>`, was `Epic`), switched
-  `DanishHolidayHelper::getInstance()` from `empty()` to `isset()` on the
-  typed singleton property, removed unused `PaginatorInterface $paginator`
-  from `SubscriptionRepository::__construct()`, dropped the unused
-  `$worklogId`/`$description` parameters from `ForecastReportWorklogData`
-  (caller updated; properties were already set via direct assignment),
-  and removed the unreachable `break;` after a `throw` in
-  `SubscriptionHandlerService::handleSubscription()`. Baseline 268 → 261.
-* Cleared all 167 PHPStan `missingType.iterableValue` baseline entries.
-  Removed redundant `@method find*` scaffold docblocks from 17 repositories
-  (the parent `@extends ServiceEntityRepository<X>` already provides typed
-  signatures), and typed iterable parameters/returns/properties across
-  repositories, services, controllers, models, entities, forms, commands,
-  messages, and tests. Baseline 394 → 268. 28 latent call-site issues
-  (`argument.type`/`method.nonObject`) were surfaced by the tighter typing
-  and are now recorded in the baseline for follow-up — e.g., calls on
-  nullable repository results (`Issue|null`, `Project|null`,
-  `DateTime|false`) without null checks.
-* Added generic-class typehints to clear all 50 PHPStan
-  `missingType.generics` entries: `@extends AbstractType<DataClass>` on 34
-  form types, `@return PaginationInterface<int, Entity>` on 9 repository
-  `getFilteredPagination()` methods, `ArrayCollection<K, V>` on 5 report
-  model properties, and `ArrayIterator<K, V>` on 3 service `@var`
-  docblocks. Baseline 454 → 394.
-* Added missing parameter and return types across controllers, services,
-  repositories, and tests (`InvoiceController::generateDescription`,
-  `ManagementReportController::getInvoicesDataFromDates`,
-  `OpenIdConnectController::logout`, `SubscriptionController::subscriptionHandler`,
-  `Invoice::setInvoiceEntryIndexes`, `InvoiceEntry::setInvoiceIndex`,
-  `ClientHelper::getStandardPrice`, `LeantimeApiService::post`,
-  `ManagementReportService::generateSpreadsheetCsvResponse`/`calculateYear`,
-  `IssueRepository::getClosedIssuesFromInterval`,
-  `ProjectRepository::getProjectTrackerIdsByDataProviders`,
-  `SubscriptionRepository::findByCustom`/`findOneByCustom`,
-  `WorklogRepository::find{,Billed}WorklogsByWorkerAndDateRange`, and
-  several PHPUnit test methods). Clears 37 PHPStan `missingType.return`
-  and `missingType.parameter` entries; baseline 491 → 454. Tightening
-  `SubscriptionController::subscriptionHandler` to require `string`
-  surfaced three pre-existing `string|null` call-site issues, now
-  recorded in the baseline for follow-up.
-* Added `Collection<int, X>` generic typehints to OneToMany/ManyToMany
-  properties on `Client`, `Epic`, `Invoice`, `InvoiceEntry`, `Issue`,
-  `Product`, `Project`, `ProjectBilling`, and `Version` entities. Resolves
-  20 PHPStan `doctrine.associationType` mismatches (and 19 cascading
-  inference errors); baseline shrinks from 530 to 491 entries.
+* PHPStan baseline cleared (530 → 0). `src/` and `tests/` are now clean at
+  level 8 with zero suppressions (`phpstan-baseline.neon` is
+  `ignoreErrors: []`). The bulk of the work was PHPDoc/typehint annotations,
+  generic-class shapes, dropped scaffold `@method find*` docblocks on 17
+  repositories, and null-guards. Items below are behavior- or
+  schema-affecting and worth calling out.
+* Migration `Version20260517131038`: made 18 columns nullable on synced
+  entities (`issue`, `project`, `version`, `worklog`) and three DateTime
+  fields (`project_billing.period_{start,end}`, `service_agreement.valid_from`)
+  to match property types.
+* Migration `Version20260517151632`: relaxed 11 `NOT NULL` ManyToOne FKs to
+  `NULL` (`cybersecurity_agreement`, `invoice_entry`, `issue_product`,
+  `product`, `project_billing`, `service_agreement`, `version`, `worklog`).
+  Application-layer validation (`#[Assert\NotNull]`, form validators)
+  continues to enforce required-ness.
+* Replaced `?T $prop = null` with non-null defaults on 25 app-managed entity
+  properties to satisfy the existing `NOT NULL` columns: `''` for strings,
+  `false` for bools, `0`/`0.0` for numerics, `'0'` for `Product::$price`
+  (decimal), `HostingProviderEnum::ADM` for `ServiceAgreement::$hostingProvider`.
+  `Worker::__toString()` and `WorkerGroup::__toString()` switched from `??`
+  to `?:` to preserve empty-string-falls-through behavior.
+* Real bugs surfaced and fixed during the cleanup:
+  - `ForecastReportService` was calling non-existent `Epic::getName()` (epic
+    tags rendered empty in the forecast); now uses `Epic::getTitle()`.
+  - `SubscriptionHandlerService::getVersion()` was looking up `Version` by a
+    non-existent `versionId` field; now uses `find($versionId)`.
+  - `DataProviderService::setTimeSpentSeconds()` was passing `float` through
+    to an `int` setter (silent precision loss); explicit `(int)` cast added.
+  - Report services (`ForecastReportService`,
+    `BillableUnbilledHoursReportService`, `InvoicingRateReportService`)
+    skip worklogs with a null project or issue instead of crashing on
+    chained getters.
+  - `SubscriptionController::check()` returns HTTP 400 on null
+    `User::getEmail()` rather than passing `?string` downstream;
+    `User::getUserIdentifier()` throws on empty email
+    (Symfony's `UserInterface` requires `non-empty-string`).
+  - `LeantimeApiService` switched from `json_decode($json, null)` to
+    `json_decode($json, true)`; all `$data->property` accesses converted to
+    array access. Wire shape unchanged.
+* Misc dead code removed: `readonly string $id` on three report-data models
+  (never assigned, never read), an unreachable `break;` after `throw`, a
+  `null === $row` check on a `Row` iterator, an unused `PaginatorInterface
+  $paginator` constructor arg in `SubscriptionRepository`. Fixed an
+  `Epic::getIssues()` PHPDoc typo (`Collection<int, Epic>` →
+  `Collection<int, Issue>`).
 * Migrated static analysis from Psalm to PHPStan (level 8) with
   `phpstan/extension-installer`, `phpstan-symfony`, `phpstan-doctrine`, and
   `phpstan-phpunit`. The `composer code-analysis` entry point is unchanged.
