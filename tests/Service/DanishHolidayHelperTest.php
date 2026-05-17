@@ -10,9 +10,6 @@ final class DanishHolidayHelperTest extends TestCase
 {
     private DanishHolidayHelper $helper;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         $this->helper = DanishHolidayHelper::getInstance();
