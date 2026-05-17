@@ -11,11 +11,6 @@ use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Invoice>
- *
- * @method Invoice|null find($id, $lockMode = null, $lockVersion = null)
- * @method Invoice|null findOneBy(array $criteria, array $orderBy = null)
- * @method findAll()
- * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class InvoiceRepository extends ServiceEntityRepository
 {
@@ -42,6 +37,9 @@ class InvoiceRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return array<int, Invoice>
+     */
     public function getByRecordedDateBetween(\DateTime $from, \DateTime $to): array
     {
         $parameters = [

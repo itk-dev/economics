@@ -17,6 +17,7 @@ class ManagementReportService
     }
 
     /**
+     * @param array<int, array<int|string, mixed>>    $groupedInvoices
      * @param array{dateFrom: string, dateTo: string} $dateInterval
      */
     public function generateSpreadsheetCsvResponse(array $groupedInvoices, array $dateInterval): Response

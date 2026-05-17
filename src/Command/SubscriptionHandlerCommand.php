@@ -121,7 +121,7 @@ class SubscriptionHandlerCommand extends Command
      *
      * @param \DateTime $dateNow the current date
      *
-     * @return array an array containing the start and end dates of the last quarter
+     * @return array{fromDate: \DateTime, toDate: \DateTime} an array containing the start and end dates of the last quarter
      */
     private function getLastQuarter(\DateTime $dateNow): array
     {

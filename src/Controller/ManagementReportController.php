@@ -88,6 +88,11 @@ class ManagementReportController extends AbstractController
         return $managementReportService->generateSpreadsheetCsvResponse($this->createGroupedInvoices($invoices), $dateInterval);
     }
 
+    /**
+     * @param array<int, \App\Entity\Invoice> $invoices
+     *
+     * @return array<int|string, array<int|string, mixed>>
+     */
     private function createGroupedInvoices(array $invoices): array
     {
         $groupedInvoices = [];
@@ -124,6 +129,8 @@ class ManagementReportController extends AbstractController
 
     /**
      * @param array{dateFrom: string, dateTo: string} $dateInterval
+     *
+     * @return array<int, \App\Entity\Invoice>
      *
      * @throws \Doctrine\ORM\Exception\NotSupported
      * @throws \Exception

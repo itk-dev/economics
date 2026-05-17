@@ -155,6 +155,9 @@ class SubscriptionController extends AbstractController
         return new JsonResponse(['action' => 'subscribed', 'frequencies' => $frequencies], 200);
     }
 
+    /**
+     * @param array<int, Subscription> $subscriptions
+     */
     private function getFrequencies(array $subscriptions): string
     {
         $frequencies = [];

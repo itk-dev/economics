@@ -109,6 +109,9 @@ class ClientType extends AbstractType
             ]);
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function getVersionOptions(?Client $client): array
     {
         $versions = $this->versionRepository->findAll();

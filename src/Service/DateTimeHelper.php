@@ -14,7 +14,7 @@ class DateTimeHelper
      * @param int $weekNumber the week number for which to retrieve the dates
      * @param int $year       the year for which to retrieve the dates
      *
-     * @return array an array containing the first and last date of the week
+     * @return array{dateFrom: \DateTime, dateTo: \DateTime} an array containing the first and last date of the week
      */
     public function getFirstAndLastDateOfWeek(int $weekNumber, int $year): array
     {
@@ -33,7 +33,7 @@ class DateTimeHelper
      * @param int $monthNumber the month number (1-12)
      * @param int $year        the year
      *
-     * @return array an array containing the first and last date of the specified month and year
+     * @return array{dateFrom: \DateTime, dateTo: \DateTime} an array containing the first and last date of the specified month and year
      */
     public function getFirstAndLastDateOfMonth(int $monthNumber, int $year): array
     {
@@ -70,7 +70,7 @@ class DateTimeHelper
      *
      * @param int $year the year for which to retrieve the week numbers
      *
-     * @return array an array of week numbers
+     * @return array<int, int> an array of week numbers
      */
     public function getWeeksOfYear(int $year): array
     {
@@ -112,7 +112,7 @@ class DateTimeHelper
      *
      * @param int $year the year
      *
-     * @return array an array containing the first and last date of the specified year
+     * @return array{dateFrom: \DateTime, dateTo: \DateTime} an array containing the first and last date of the specified year
      */
     public function getFirstAndLastDateOfYear(int $year): array
     {
@@ -131,7 +131,7 @@ class DateTimeHelper
      * @param int $year    the year
      * @param int $quarter the quarter (1-4)
      *
-     * @return array an array containing the first and last date of the specified quarter
+     * @return array{dateFrom: \DateTime, dateTo: \DateTime} an array containing the first and last date of the specified quarter
      */
     public function getFirstAndLastDateOfQuarter(int $year, int $quarter): array
     {

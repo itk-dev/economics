@@ -48,6 +48,7 @@ class ServiceAgreement extends AbstractBaseEntity
     #[ORM\Column]
     private ?bool $isActive = null;
 
+    /** @var array<int, string> */
     #[ORM\Column(type: Types::JSON)]
     private array $systemOwnerNotices = [];
 

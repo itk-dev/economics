@@ -125,6 +125,9 @@ class BillingService
         $this->invoiceRepository->save($invoice, $flush);
     }
 
+    /**
+     * @return array<int, string>
+     */
     // TODO: Replace with exceptions.
     public function getInvoiceRecordableErrors(Invoice $invoice): array
     {
@@ -156,7 +159,7 @@ class BillingService
     /**
      * Create a spreadsheet response from an array of invoice ids.
      *
-     * @param array $ids array of invoice ids
+     * @param array<int, int> $ids array of invoice ids
      *
      * @throws EconomicsException
      */
@@ -192,6 +195,8 @@ class BillingService
 
     /**
      * Create spreadsheet html from an array of invoice ids.
+     *
+     * @param array<int, int> $ids
      *
      * @throws EconomicsException
      */
@@ -239,7 +244,7 @@ class BillingService
     /**
      * Export the selected invoices (by id) to csv.
      *
-     * @param array $invoiceIds array of invoice ids that should be exported
+     * @param array<int, int> $invoiceIds array of invoice ids that should be exported
      *
      * @throws EconomicsException
      */

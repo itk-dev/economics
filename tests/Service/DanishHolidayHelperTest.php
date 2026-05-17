@@ -34,6 +34,9 @@ final class DanishHolidayHelperTest extends TestCase
         );
     }
 
+    /**
+     * @return iterable<string, array{int, \DateTimeInterface}>
+     */
     public static function dataEaster(): iterable
     {
         yield '[2023]' => [
@@ -82,6 +85,9 @@ final class DanishHolidayHelperTest extends TestCase
         $this->assertSameDate($expected, $actual);
     }
 
+    /**
+     * @return iterable<string, array{\DateTimeInterface, ?\DateTimeInterface}>
+     */
     public static function dataNextNonHoliday(): iterable
     {
         yield '2024-03-31' => [
@@ -99,6 +105,9 @@ final class DanishHolidayHelperTest extends TestCase
         $this->assertSameDate($expected, $actual);
     }
 
+    /**
+     * @return iterable<string, array{\DateTimeInterface, ?\DateTimeInterface}>
+     */
     public static function dataNextBankDay(): iterable
     {
         yield '2024-03-29' => [
@@ -131,6 +140,9 @@ final class DanishHolidayHelperTest extends TestCase
         $this->assertSameDate($expected, $actual);
     }
 
+    /**
+     * @return iterable<string, array{\DateTimeInterface, ?\DateTimeInterface}>
+     */
     public static function dataNextBankDay30(): iterable
     {
         yield '2024-03-29' => [
@@ -158,6 +170,9 @@ final class DanishHolidayHelperTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
+    /**
+     * @return iterable<string, array{\DateTimeInterface, bool}>
+     */
     public static function dataIsBankHoliday(): iterable
     {
         yield '2024-12-31' => [

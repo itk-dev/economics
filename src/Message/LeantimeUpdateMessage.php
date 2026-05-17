@@ -4,6 +4,9 @@ namespace App\Message;
 
 readonly class LeantimeUpdateMessage
 {
+    /**
+     * @param array<int, string>|null $projectTrackerProjectIds
+     */
     public function __construct(
         public string $className,
         public int $start,

@@ -11,10 +11,10 @@ class InvoicingRateReportWorker
 
     public float $average;
 
-    /** @var ArrayCollection<int, array> */
+    /** @var ArrayCollection<int, array<string, mixed>> */
     public ArrayCollection $dataByPeriod;
 
-    /** @var ArrayCollection<string, array> */
+    /** @var ArrayCollection<string, array<string, mixed>> */
     public ArrayCollection $projectData;
 
     public function __construct(Worker $worker)

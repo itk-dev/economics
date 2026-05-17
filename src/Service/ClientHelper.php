@@ -6,6 +6,9 @@ use App\Entity\Client;
 
 class ClientHelper
 {
+    /**
+     * @param array<string, mixed> $options
+     */
     public function __construct(
         private readonly array $options,
     ) {

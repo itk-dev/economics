@@ -97,6 +97,9 @@ class DashboardService
         return new DashboardData($yearStatus, $year, $weekNorm, $monthStatuses, $weekStatuses);
     }
 
+    /**
+     * @return array<int, int>
+     */
     private function getWeeksToDate(): array
     {
         $currentWeek = (int) date('W');
@@ -108,6 +111,9 @@ class DashboardService
         return $weeksToDate;
     }
 
+    /**
+     * @return array<int, int>
+     */
     private function getMonthsToDate(): array
     {
         $currentMonth = (int) date('m');

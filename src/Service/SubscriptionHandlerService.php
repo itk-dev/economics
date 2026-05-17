@@ -42,7 +42,7 @@ class SubscriptionHandlerService
     /**
      * Send a notification email.
      *
-     * @param array $notification the notification data
+     * @param array<string, mixed> $notification the notification data
      *
      * @throws TransportExceptionInterface
      */
@@ -156,6 +156,9 @@ class SubscriptionHandlerService
      * @throws RuntimeError
      * @throws SyntaxError
      * @throws \Exception
+     */
+    /**
+     * @return array<string, mixed>
      */
     private function prepareMailData(Subscription $subscription, \DateTime $fromDate, \DateTime $toDate, Project $project, HourReportData $reportData, string $email): array
     {

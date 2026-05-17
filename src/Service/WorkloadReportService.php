@@ -179,7 +179,7 @@ class WorkloadReportService
      * @param int            $year     the year for the period
      * @param PeriodTypeEnum $viewMode the view mode to determine the dates of the period
      *
-     * @return array an array of dates for the given period
+     * @return array{dateFrom: \DateTime, dateTo: \DateTime} an array of dates for the given period
      */
     private function getDatesOfPeriod(int $period, int $year, PeriodTypeEnum $viewMode): array
     {
@@ -212,7 +212,7 @@ class WorkloadReportService
      * @param PeriodTypeEnum $viewMode the view mode to determine the periods
      * @param int            $year     the year containing the periods
      *
-     * @return array an array of periods
+     * @return array<int, int> an array of periods
      */
     private function getPeriods(PeriodTypeEnum $viewMode, int $year): array
     {
@@ -229,7 +229,7 @@ class WorkloadReportService
      * @param ViewModeEnum $viewMode         defines the view mode
      * @param string       $workerIdentifier the worker's identifier
      *
-     * @return array the list of workloads matching the criteria defined by the parameters
+     * @return array<int, \App\Entity\Worklog> the list of workloads matching the criteria defined by the parameters
      */
     private function getWorklogs(ViewModeEnum $viewMode, string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo): array
     {

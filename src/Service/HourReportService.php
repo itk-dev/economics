@@ -95,6 +95,11 @@ class HourReportService
         return $hourReportData;
     }
 
+    /**
+     * @param array<int, Worklog> $worklogs
+     *
+     * @return array{0: array<int, HourReportWorklog>, 1: float|int}
+     */
     private function processTimesheetsData(array $worklogs, ?\DateTimeInterface $fromDate = null, ?\DateTimeInterface $toDate = null): array
     {
         $timesheets = [];

@@ -4,6 +4,10 @@ namespace App\Model;
 
 class DashboardData
 {
+    /**
+     * @param array<int, mixed> $monthStatuses
+     * @param array<int, mixed> $weekStatuses
+     */
     public function __construct(
         public readonly float $workHours,
         public readonly int $year,

@@ -11,11 +11,6 @@ use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<ProjectBilling>
- *
- * @method ProjectBilling|null find($id, $lockMode = null, $lockVersion = null)
- * @method ProjectBilling|null findOneBy(array $criteria, array $orderBy = null)
- * @method ProjectBilling[]    findAll()
- * @method ProjectBilling[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ProjectBillingRepository extends ServiceEntityRepository
 {

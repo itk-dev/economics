@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Cleared all 167 PHPStan `missingType.iterableValue` baseline entries.
+  Removed redundant `@method find*` scaffold docblocks from 17 repositories
+  (the parent `@extends ServiceEntityRepository<X>` already provides typed
+  signatures), and typed iterable parameters/returns/properties across
+  repositories, services, controllers, models, entities, forms, commands,
+  messages, and tests. Baseline 394 → 268. 28 latent call-site issues
+  (`argument.type`/`method.nonObject`) were surfaced by the tighter typing
+  and are now recorded in the baseline for follow-up — e.g., calls on
+  nullable repository results (`Issue|null`, `Project|null`,
+  `DateTime|false`) without null checks.
 * Added generic-class typehints to clear all 50 PHPStan
   `missingType.generics` entries: `@extends AbstractType<DataClass>` on 34
   form types, `@return PaginationInterface<int, Entity>` on 9 repository

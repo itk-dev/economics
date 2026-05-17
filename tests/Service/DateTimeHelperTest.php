@@ -18,6 +18,8 @@ class DateTimeHelperTest extends TestCase
 
     /**
      * @dataProvider weekYearProvider
+     *
+     * @param array{dateFrom: \DateTime, dateTo: \DateTime} $expected
      */
     public function testGetFirstAndLastDateOfWeek(int $weekNumber, int $year, array $expected): void
     {
@@ -25,6 +27,9 @@ class DateTimeHelperTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @return array<int, array{weekNumber: int, year: int, expected: array{dateFrom: \DateTime, dateTo: \DateTime}}>
+     */
     public static function weekYearProvider(): array
     {
         return [
@@ -65,6 +70,8 @@ class DateTimeHelperTest extends TestCase
 
     /**
      * @dataProvider monthYearProvider
+     *
+     * @param array{dateFrom: \DateTime, dateTo: \DateTime} $expected
      */
     public function testGetFirstAndLastDateOfMonth(int $monthNumber, int $year, array $expected): void
     {
@@ -72,6 +79,9 @@ class DateTimeHelperTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @return array<int, array{monthNumber: int, year: int, expected: array{dateFrom: \DateTime, dateTo: \DateTime}}>
+     */
     public static function monthYearProvider(): array
     {
         return [
@@ -112,6 +122,8 @@ class DateTimeHelperTest extends TestCase
 
     /**
      * @dataProvider weeksOfYearProvider
+     *
+     * @param array<int, int> $expected
      */
     public function testGetWeeksOfYear(int $year, array $expected): void
     {
@@ -119,6 +131,9 @@ class DateTimeHelperTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @return array<int, array{year: int, expected: array<int, int>}>
+     */
     public static function weeksOfYearProvider(): array
     {
         return [
@@ -146,6 +161,9 @@ class DateTimeHelperTest extends TestCase
         $this->assertEquals($expectedMonthName, $monthName);
     }
 
+    /**
+     * @return array<int, array{0: int, 1: string}>
+     */
     public static function monthNameDataProvider(): array
     {
         return [
@@ -166,6 +184,8 @@ class DateTimeHelperTest extends TestCase
 
     /**
      * @dataProvider yearProvider
+     *
+     * @param array{dateFrom: \DateTime, dateTo: \DateTime} $expected
      */
     public function testGetFirstAndLastDateOfYear(int $year, array $expected): void
     {
@@ -173,6 +193,9 @@ class DateTimeHelperTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    /**
+     * @return array<int, array{year: int, expected: array{dateFrom: \DateTime, dateTo: \DateTime}}>
+     */
     public static function yearProvider(): array
     {
         return [

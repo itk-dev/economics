@@ -10,6 +10,7 @@ class BillableUnbilledHoursReportData
 
     /** @var ArrayCollection<string, mixed> */
     public ArrayCollection $projectData;
+    /** @var array<string, mixed> */
     public array $projectTotals;
     public int|float $totalHoursForAllProjects;
 

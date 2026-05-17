@@ -148,6 +148,9 @@ class LeantimeApiService implements DataProviderInterface
         }
     }
 
+    /**
+     * @param array<int, string>|null $projectTrackerProjectIds
+     */
     public function updateAsJob(string $className, int $startId, int $limit, int $dataProviderId, ?array $projectTrackerProjectIds = null, bool $asyncJobQueue = false, ?\DateTimeInterface $modifiedAfter = null, bool $disableModifiedAtCheck = false): void
     {
         $dataProvider = $this->dataProviderRepository->find($dataProviderId);
@@ -315,6 +318,9 @@ class LeantimeApiService implements DataProviderInterface
         );
     }
 
+    /**
+     * @param array<string, mixed> $params
+     */
     private function fetchFromLeantime(DataProvider $dataProvider, string $type, array $params): object
     {
         $response = $this->post($dataProvider, $type, $params);
@@ -322,6 +328,9 @@ class LeantimeApiService implements DataProviderInterface
         return json_decode($response->getContent(), null, 512, JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * @param array<string, mixed> $body
+     */
     private function post(DataProvider $dataProvider, string $path, array $body): ResponseInterface
     {
         return $this->httpClient->request('POST', $dataProvider->getUrl().$this::API_PATH_DATA.$path, [
@@ -354,6 +363,9 @@ class LeantimeApiService implements DataProviderInterface
         };
     }
 
+    /**
+     * @return array<int, DataProvider>
+     */
     private function getEnabledLeantimeDataProviders(): array
     {
         return $this->dataProviderRepository->findBy(['class' => LeantimeApiService::class, 'enabled' => true]);

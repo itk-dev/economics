@@ -127,9 +127,9 @@ class PlanningService
     /**
      * Sorts issues by week.
      *
-     * @param array $allIssues the array of all issues to sort
+     * @param array<int, IssueEntity> $allIssues the array of all issues to sort
      *
-     * @return array the sorted array of issues
+     * @return array<int|string, array<int, IssueEntity>> the sorted array of issues
      */
     private function sortIssuesByWeek(array $allIssues): array
     {
@@ -155,6 +155,9 @@ class PlanningService
         return $weekIssues;
     }
 
+    /**
+     * @param array<int, IssueEntity> $issues
+     */
     private function processIssuesForWeek(PlanningData $planning, int $week, array $issues, ?bool $holidayPlanning = false): void
     {
         foreach ($issues as $issueData) {
@@ -210,6 +213,8 @@ class PlanningService
 
     /**
      * Get the assignee key and display name.
+     *
+     * @return array{key: string, displayName: string, weekNorm: int|float}
      */
     private function getAssigneeData(IssueEntity $issue): array
     {
@@ -239,7 +244,8 @@ class PlanningService
     /**
      * Gets or creates an Assignee object in an ArrayCollection.
      *
-     * @param ArrayCollection<string, Assignee> $assignees the ArrayCollection containing the Assignee objects
+     * @param ArrayCollection<string, Assignee>                            $assignees    the ArrayCollection containing the Assignee objects
+     * @param array{key: string, displayName: string, weekNorm: int|float} $assigneeData
      *
      * @return Assignee the retrieved or created Assignee object
      */

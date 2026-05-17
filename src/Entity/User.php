@@ -17,6 +17,7 @@ class User implements UserInterface
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
+    /** @var array<int, string> */
     #[ORM\Column]
     private array $roles = [];
 
@@ -64,6 +65,9 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
+    /**
+     * @param array<int, string> $roles
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;

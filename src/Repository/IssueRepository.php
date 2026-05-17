@@ -16,11 +16,6 @@ use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Issue>
- *
- * @method Issue|null find($id, $lockMode = null, $lockVersion = null)
- * @method Issue|null findOneBy(array $criteria, array $orderBy = null)
- * @method Issue[]    findAll()
- * @method Issue[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class IssueRepository extends ServiceEntityRepository
 {
@@ -74,6 +69,9 @@ class IssueRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function findEpicOptionsByProject(Project $project): array
     {
         $qb = $this->createQueryBuilder('issue');
@@ -111,6 +109,9 @@ class IssueRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
+    /**
+     * @return array<int, Issue>
+     */
     public function issuesContainingVersion(Version $version): array
     {
         $qb = $this->createQueryBuilder('issue')
@@ -120,6 +121,11 @@ class IssueRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @param array<int, Project>|null $projects
+     *
+     * @return array<int, Issue>
+     */
     public function findIssuesInDateRange(string $startDate, string $endDate, ?WorkerGroup $group = null, ?array $projects = null): array
     {
         $qb = $this->createQueryBuilder('i')

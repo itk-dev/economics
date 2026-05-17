@@ -12,5 +12,6 @@ class InvoiceEntryWorklogsFilterData
     public ?string $worker = null;
     public ?Version $version = null;
     public ?bool $onlyAvailable = true;
+    /** @var array<int, mixed>|null */
     public ?array $epics = [];
 }

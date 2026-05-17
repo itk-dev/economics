@@ -112,6 +112,9 @@ class PlanningController extends AbstractController
         return new Response('Sync done.', 200);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     private function createResponse(string $mode, array $data): Response
     {
         return $this->render('planning/planning.html.twig', [
@@ -124,6 +127,8 @@ class PlanningController extends AbstractController
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws \Exception
      */
     private function preparePlanningData(Request $request, bool $holidayPlanning = false): array
