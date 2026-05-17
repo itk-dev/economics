@@ -27,8 +27,11 @@ class ProjectBillingServiceTest extends KernelTestCase
         /** @var ProjectBillingService $projectBillingService */
         $projectBillingService = $container->get(ProjectBillingService::class);
 
-        /** @var BillingService $projectBillingService */
+        /** @var BillingService $billingService */
         $billingService = $container->get(BillingService::class);
+
+        /** @var IssueRepository $issueRepository */
+        $issueRepository = $container->get(IssueRepository::class);
 
         $project = $projectRepository->findOneBy([], ['id' => 'asc']);
 
@@ -40,7 +43,7 @@ class ProjectBillingServiceTest extends KernelTestCase
         $projectBilling->setRecorded(false);
         $projectBilling->setDescription('Project billing');
 
-        $issues = $container->get(IssueRepository::class)->getClosedIssuesFromInterval($projectBilling->getProject(), $projectBilling->getPeriodStart(), $projectBilling->getPeriodEnd());
+        $issues = $issueRepository->getClosedIssuesFromInterval($projectBilling->getProject(), $projectBilling->getPeriodStart(), $projectBilling->getPeriodEnd());
         $this->assertCount(10, $issues);
 
         $entityManager->persist($projectBilling);

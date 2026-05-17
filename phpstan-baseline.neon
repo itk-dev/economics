@@ -1,64 +1,10 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Parameter \#1 \$ids of method App\\Service\\BillingService\:\:generateSpreadsheetCsvResponse\(\) expects array\<int, int\>, array\<int, int\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/InvoiceController.php
-
-		-
-			message: '#^Parameter \#1 \$ids of method App\\Service\\BillingService\:\:generateSpreadsheetCsvResponse\(\) expects array\<int, int\>, list\<string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/InvoiceController.php
-
-		-
-			message: '#^Parameter \#1 \$ids of method App\\Service\\BillingService\:\:generateSpreadsheetHtml\(\) expects array\<int, int\>, array\<int, int\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/InvoiceController.php
-
-		-
-			message: '#^Cannot call method format\(\) on DateTimeInterface\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: src/Controller/ManagementReportController.php
-
-		-
 			message: '#^Parameter \#1 \$groupedInvoices of method App\\Service\\ManagementReportService\:\:generateSpreadsheetCsvResponse\(\) expects array\<int, array\<int\|string, mixed\>\>, array\<int\|string, array\<int\|string, mixed\>\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Controller/ManagementReportController.php
-
-		-
-			message: '#^Parameter \#1 \$ids of method App\\Service\\BillingService\:\:generateSpreadsheetCsvResponse\(\) expects array\<int, int\>, array\<int, int\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/ProjectBillingController.php
-
-		-
-			message: '#^Parameter \#1 \$ids of method App\\Service\\BillingService\:\:generateSpreadsheetHtml\(\) expects array\<int, int\>, array\<int, int\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/ProjectBillingController.php
-
-		-
-			message: '#^Parameter \#1 \$email of method App\\Repository\\SubscriptionRepository\:\:findByCustom\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/SubscriptionController.php
-
-		-
-			message: '#^Parameter \#1 \$userEmail of method App\\Controller\\SubscriptionController\:\:subscriptionHandler\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/SubscriptionController.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method App\\Enum\\SubscriptionSubjectEnum\:\:tryFrom\(\) expects int\|string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/SubscriptionController.php
 
 		-
 			message: '#^Parameter \#1 \$started of method App\\Entity\\Worklog\:\:setStarted\(\) expects DateTimeInterface, DateTime\|false given\.$#'
@@ -247,18 +193,6 @@ parameters:
 			path: src/Service/LeantimeApiService.php
 
 		-
-			message: '#^Parameter \#1 \$dataProviderId of class App\\Message\\LeantimeDeleteMessage constructor expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/LeantimeApiService.php
-
-		-
-			message: '#^Parameter \#4 \$dataProviderId of class App\\Message\\LeantimeUpdateMessage constructor expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/LeantimeApiService.php
-
-		-
 			message: '#^Parameter \#2 \$week of method App\\Service\\PlanningService\:\:processIssuesForWeek\(\) expects int, int\|string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -271,193 +205,103 @@ parameters:
 			path: src/Service/WorkloadReportService.php
 
 		-
-			message: '#^Parameter \#1 \$expected of method App\\Tests\\Service\\DanishHolidayHelperTest\:\:assertSameDate\(\) expects DateTimeInterface, DateTimeInterface\|null given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Service/DanishHolidayHelperTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:flush\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:persist\(\)\.$#'
-			identifier: method.notFound
-			count: 6
-			path: tests/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:upsertIssue\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Service/DataProviderServiceTest.php
-
-		-
 			message: '#^Cannot call method getProjectTrackerId\(\) on App\\Entity\\Project\|null\.$#'
 			identifier: method.nonObject
 			count: 2
 			path: tests/Service/DataProviderServiceTest.php
 
 		-
-			message: '#^Parameter \$dataProviderId of class App\\Model\\DataProvider\\DataProviderIssueData constructor expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Cannot call method getSourceDeletedDate\(\) on App\\Entity\\Issue\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: tests/Service/LeantimeApiServiceTest.php
 
 		-
-			message: '#^Call to an undefined method object\:\:find\(\)\.$#'
-			identifier: method.notFound
-			count: 3
+			message: '#^Cannot call method getSourceDeletedDate\(\) on App\\Entity\\Project\|null\.$#'
+			identifier: method.nonObject
+			count: 1
 			path: tests/Service/LeantimeApiServiceTest.php
 
 		-
-			message: '#^Call to an undefined method object\:\:findAll\(\)\.$#'
-			identifier: method.notFound
-			count: 24
+			message: '#^Cannot call method getSourceDeletedDate\(\) on App\\Entity\\Worklog\|null\.$#'
+			identifier: method.nonObject
+			count: 1
 			path: tests/Service/LeantimeApiServiceTest.php
 
 		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Cannot call method getSourceModifiedDate\(\) on App\\Entity\\Issue\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Cannot call method getSourceModifiedDate\(\) on App\\Entity\\Project\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Cannot call method getSourceModifiedDate\(\) on App\\Entity\\Version\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Cannot call method getSourceModifiedDate\(\) on App\\Entity\\Worklog\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Cannot call method getTimestamp\(\) on DateTimeInterface\|null\.$#'
+			identifier: method.nonObject
 			count: 8
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:flush\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:persist\(\)\.$#'
-			identifier: method.notFound
-			count: 12
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$dataProviderId of method App\\Service\\LeantimeApiService\:\:deleteAsJob\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$projectTrackerId of method App\\Entity\\Issue\:\:setProjectTrackerId\(\) expects string, int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$projectTrackerId of method App\\Entity\\Project\:\:setProjectTrackerId\(\) expects string\|null, int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$projectTrackerId of method App\\Entity\\Version\:\:setProjectTrackerId\(\) expects string, int given\.$#'
-			identifier: argument.type
-			count: 2
 			path: tests/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Parameter \#1 \$projectTrackerIssueId of method App\\Entity\\Worklog\:\:setProjectTrackerIssueId\(\) expects string, int given\.$#'
 			identifier: argument.type
-			count: 2
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$projectTrackerKey of method App\\Entity\\Issue\:\:setProjectTrackerKey\(\) expects string, int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$projectTrackerKey of method App\\Entity\\Project\:\:setProjectTrackerKey\(\) expects string\|null, int given\.$#'
-			identifier: argument.type
-			count: 2
+			count: 1
 			path: tests/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Parameter \#1 \$started of method App\\Entity\\Worklog\:\:setStarted\(\) expects DateTimeInterface, DateTime\|false given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 1
 			path: tests/Service/LeantimeApiServiceTest.php
 
 		-
-			message: '#^Parameter \#2 \$messageBus of class App\\Service\\LeantimeApiService constructor expects Symfony\\Component\\Messenger\\MessageBusInterface, object given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#3 \$dataProviderRepository of class App\\Service\\LeantimeApiService constructor expects App\\Repository\\DataProviderRepository, object given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#4 \$dataProviderId of method App\\Service\\LeantimeApiService\:\:updateAsJob\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 8
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#4 \$entityManager of class App\\Service\\LeantimeApiService constructor expects Doctrine\\ORM\\EntityManagerInterface, object given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Parameter \#5 \$projectRepository of class App\\Service\\LeantimeApiService constructor expects App\\Repository\\ProjectRepository, object given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Service/LeantimeApiServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\BillingService\:\:createProjectBilling\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with PhpOffice\\PhpSpreadsheet\\Spreadsheet will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Service/ProjectBillingServiceTest.php
 
 		-
-			message: '#^Call to an undefined method App\\Service\\BillingService\:\:getIssuesNotIncludedInProjectBilling\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:exportInvoicesToSpreadsheet\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:getClosedIssuesFromInterval\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
+			message: '#^Parameter \#1 \$invoiceIds of method App\\Service\\BillingService\:\:exportInvoicesToSpreadsheet\(\) expects array\<int, int\>, array\<int, int\|null\> given\.$#'
 			identifier: argument.type
-			count: 3
-			path: tests/Service/WorkloadReportServiceTest.php
+			count: 1
+			path: tests/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$project of method App\\Repository\\IssueRepository\:\:getClosedIssuesFromInterval\(\) expects App\\Entity\\Project, App\\Entity\\Project\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$projectBillingId of method App\\Service\\ProjectBillingService\:\:createProjectBilling\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$periodStart of method App\\Repository\\IssueRepository\:\:getClosedIssuesFromInterval\(\) expects DateTimeInterface, DateTimeInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Parameter \#3 \$periodEnd of method App\\Repository\\IssueRepository\:\:getClosedIssuesFromInterval\(\) expects DateTimeInterface, DateTimeInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Service/ProjectBillingServiceTest.php

@@ -8,6 +8,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Test fixtures and controller endpoints tightened to satisfy PHPStan
+  call-site checks (`argument.type`, `method.notFound`, `method.nonObject` —
+  baseline 163 → 75). Highlights:
+  - `LeantimeApiServiceTest`, `DataProviderServiceTest`, and
+    `ProjectBillingServiceTest` now `\assert(... instanceof ...)` after each
+    `$container->get()` so PHPStan knows the concrete service type; this
+    cascaded through ~20 previously-untyped `->persist()`/`->flush()`/
+    `->findOneBy()` calls on `object`. Also fixed a `@var BillingService
+    $projectBillingService` typo in `ProjectBillingServiceTest` that mis-typed
+    `$billingService`, hiding 4 method-not-found errors.
+  - `LeantimeApiServiceTest` now passes `'64'`/`'65'`/etc. (string) instead of
+    `64`/`65` to `setProjectTrackerId()`/`setProjectTrackerKey()`/
+    `setProjectTrackerIssueId()`, and asserts non-null on `$dataProvider->getId()`
+    once after `flush()` rather than per call. Also handles
+    `\DateTime::createFromFormat()` returning `\DateTime|false`.
+  - `DanishHolidayHelperTest`: tightened `$expected` from `?\DateTimeInterface`
+    to `\DateTimeInterface` on three test methods (and the matching data
+    provider shape) since the data is never null.
+  - `WorkloadReportServiceTest`: asserts `mktime()` did not return `false`
+    before passing to `date()`.
+  - `InvoiceController` and `ProjectBillingController`: null-guard
+    `$invoice->getId()` (`?int`) before building invoice-id arrays passed to
+    `BillingService::generateSpreadsheet{Csv,Html}()`; `array_filter` to drop
+    nulls from `array_map` over invoice collections; `array_map(intval(...))`
+    on string id list from `$request->query->get('ids')`.
+  - `SubscriptionController::check()` returns a 400 when `$user->getEmail()`
+    is `null` rather than passing `?string` downstream; `subscriptionHandler()`
+    throws when `key($content)` is `null` rather than handing `null` to
+    `SubscriptionSubjectEnum::tryFrom()`.
+  - `ManagementReportController::createGroupedInvoices()` skips invoices with
+    a null `recordedDate`, and casts the `format('Y')`/`format('n')` string
+    parts to `int` so the grouped array keys match the
+    `ManagementReportService::generateSpreadsheetCsvResponse()` signature.
+
+* `LeantimeApiService::update()` and `::delete()` now skip data providers
+  with a null ID rather than passing `int|null` to the `LeantimeUpdateMessage`
+  / `LeantimeDeleteMessage` constructors (PHPStan `argument.type`, 2 entries —
+  baseline 165 → 163). Persisted entities always have an ID; the guard is
+  defensive against transient instances.
+
 * Report services now skip worklogs with no associated project or issue
   rather than dereferencing nullable getters (PHPStan `method.nonObject`,
   13 entries — baseline 184 → 165). Affected services:

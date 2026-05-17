@@ -98,10 +98,13 @@ class ManagementReportController extends AbstractController
         $groupedInvoices = [];
         foreach ($invoices as $invoice) {
             $recordedDate = $invoice->getRecordedDate();
-            $year = $recordedDate->format('Y');
-            $month = $recordedDate->format('n');
-            $yearQuarter = ceil($month / 3);
-            $groupedInvoices[$year][(int) $yearQuarter][] = $invoice;
+            if (null === $recordedDate) {
+                continue;
+            }
+            $year = (int) $recordedDate->format('Y');
+            $month = (int) $recordedDate->format('n');
+            $yearQuarter = (int) ceil($month / 3);
+            $groupedInvoices[$year][$yearQuarter][] = $invoice;
         }
 
         foreach ($groupedInvoices as $year => $quarters) {

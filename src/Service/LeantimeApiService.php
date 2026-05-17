@@ -75,13 +75,18 @@ class LeantimeApiService implements DataProviderInterface
         $dataProviders = $this->getEnabledLeantimeDataProviders();
 
         foreach ($dataProviders as $dataProvider) {
+            $dataProviderId = $dataProvider->getId();
+            if (null === $dataProviderId) {
+                continue;
+            }
+
             $projectTrackerProjectIds = match ($className) {
                 Project::class, Worker::class => null,
                 default => $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]),
             };
 
             $this->messageBus->dispatch(
-                new LeantimeUpdateMessage($className, 0, $this::LIMIT, $dataProvider->getId(), $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds, $disableModifiedAtCheck),
+                new LeantimeUpdateMessage($className, 0, $this::LIMIT, $dataProviderId, $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds, $disableModifiedAtCheck),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
             );
         }
@@ -92,8 +97,13 @@ class LeantimeApiService implements DataProviderInterface
         $dataProviders = $this->getEnabledLeantimeDataProviders();
 
         foreach ($dataProviders as $dataProvider) {
+            $dataProviderId = $dataProvider->getId();
+            if (null === $dataProviderId) {
+                continue;
+            }
+
             $this->messageBus->dispatch(
-                new LeantimeDeleteMessage($dataProvider->getId(), $asyncJobQueue, $deletedAfter),
+                new LeantimeDeleteMessage($dataProviderId, $asyncJobQueue, $deletedAfter),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
             );
         }

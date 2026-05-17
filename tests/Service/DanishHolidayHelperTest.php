@@ -79,14 +79,14 @@ final class DanishHolidayHelperTest extends TestCase
     /**
      * @dataProvider dataNextNonHoliday
      */
-    public function testNextNonHoliday(\DateTimeInterface $date, ?\DateTimeInterface $expected): void
+    public function testNextNonHoliday(\DateTimeInterface $date, \DateTimeInterface $expected): void
     {
         $actual = $this->helper->getNextNonHoliday($date);
         $this->assertSameDate($expected, $actual);
     }
 
     /**
-     * @return iterable<string, array{\DateTimeInterface, ?\DateTimeInterface}>
+     * @return iterable<string, array{\DateTimeInterface, \DateTimeInterface}>
      */
     public static function dataNextNonHoliday(): iterable
     {
@@ -99,14 +99,14 @@ final class DanishHolidayHelperTest extends TestCase
     /**
      * @dataProvider dataNextBankDay
      */
-    public function testNextBankDay(\DateTimeInterface $date, ?\DateTimeInterface $expected): void
+    public function testNextBankDay(\DateTimeInterface $date, \DateTimeInterface $expected): void
     {
         $actual = $this->helper->getNextBankDay($date);
         $this->assertSameDate($expected, $actual);
     }
 
     /**
-     * @return iterable<string, array{\DateTimeInterface, ?\DateTimeInterface}>
+     * @return iterable<string, array{\DateTimeInterface, \DateTimeInterface}>
      */
     public static function dataNextBankDay(): iterable
     {
@@ -134,14 +134,14 @@ final class DanishHolidayHelperTest extends TestCase
     /**
      * @dataProvider dataNextBankDay30
      */
-    public function testNextBankDay30(\DateTimeInterface $date, ?\DateTimeInterface $expected): void
+    public function testNextBankDay30(\DateTimeInterface $date, \DateTimeInterface $expected): void
     {
         $actual = $this->helper->getNextBankDay($date, 30);
         $this->assertSameDate($expected, $actual);
     }
 
     /**
-     * @return iterable<string, array{\DateTimeInterface, ?\DateTimeInterface}>
+     * @return iterable<string, array{\DateTimeInterface, \DateTimeInterface}>
      */
     public static function dataNextBankDay30(): iterable
     {

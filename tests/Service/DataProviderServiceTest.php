@@ -27,6 +27,10 @@ class DataProviderServiceTest extends KernelTestCase
         $worklogRepository = $container->get(WorklogRepository::class);
         $issueRepository = $container->get(IssueRepository::class);
         $service = $container->get(DataProviderService::class);
+        \assert($entityManager instanceof EntityManagerInterface);
+        \assert($worklogRepository instanceof WorklogRepository);
+        \assert($issueRepository instanceof IssueRepository);
+        \assert($service instanceof DataProviderService);
 
         // Create data provider.
         $dataProvider = new DataProvider();
@@ -99,9 +103,11 @@ class DataProviderServiceTest extends KernelTestCase
         $this->assertEquals('proj-a', $worklogE->getProject()->getProjectTrackerId());
 
         // Move issue C from project A to project B via upsertIssue.
+        $dataProviderId = $dataProvider->getId();
+        \assert(null !== $dataProviderId);
         $service->upsertIssue(new DataProviderIssueData(
             projectTrackerId: 'issue-c',
-            dataProviderId: $dataProvider->getId(),
+            dataProviderId: $dataProviderId,
             projectTrackerProjectId: 'proj-b',
             name: 'Issue C',
             epics: [],
@@ -122,12 +128,15 @@ class DataProviderServiceTest extends KernelTestCase
         $entityManager->clear();
 
         // Verify issue is now on project B.
-        $issue = $issueRepository->findOneBy(['projectTrackerId' => 'issue-c', 'dataProvider' => $dataProvider->getId()]);
+        $issue = $issueRepository->findOneBy(['projectTrackerId' => 'issue-c', 'dataProvider' => $dataProviderId]);
+        \assert(null !== $issue && null !== $issue->getProject());
         $this->assertEquals('proj-b', $issue->getProject()->getProjectTrackerId());
 
         // Verify both worklogs are now on project B.
-        $worklogD = $worklogRepository->findOneBy(['worklogId' => 100, 'dataProvider' => $dataProvider->getId()]);
-        $worklogE = $worklogRepository->findOneBy(['worklogId' => 101, 'dataProvider' => $dataProvider->getId()]);
+        $worklogD = $worklogRepository->findOneBy(['worklogId' => 100, 'dataProvider' => $dataProviderId]);
+        $worklogE = $worklogRepository->findOneBy(['worklogId' => 101, 'dataProvider' => $dataProviderId]);
+        \assert(null !== $worklogD && null !== $worklogD->getProject());
+        \assert(null !== $worklogE && null !== $worklogE->getProject());
         $this->assertEquals('proj-b', $worklogD->getProject()->getProjectTrackerId());
         $this->assertEquals('proj-b', $worklogE->getProject()->getProjectTrackerId());
     }

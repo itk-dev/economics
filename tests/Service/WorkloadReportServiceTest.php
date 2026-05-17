@@ -50,7 +50,10 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
-            return date('F', mktime(0, 0, 0, $month, 10));
+            $timestamp = mktime(0, 0, 0, $month, 10);
+            \assert(false !== $timestamp);
+
+            return date('F', $timestamp);
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
@@ -115,7 +118,10 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
-            return date('F', mktime(0, 0, 0, $month, 10));
+            $timestamp = mktime(0, 0, 0, $month, 10);
+            \assert(false !== $timestamp);
+
+            return date('F', $timestamp);
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
@@ -174,7 +180,10 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
-            return date('F', mktime(0, 0, 0, $month, 10));
+            $timestamp = mktime(0, 0, 0, $month, 10);
+            \assert(false !== $timestamp);
+
+            return date('F', $timestamp);
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),

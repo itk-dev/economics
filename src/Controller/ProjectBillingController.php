@@ -195,9 +195,10 @@ class ProjectBillingController extends AbstractController
     #[Route('/{id}/show-export', name: 'app_project_billing_show_export', methods: ['GET'])]
     public function showExport(Request $request, ProjectBilling $projectBilling, BillingService $billingService): Response
     {
-        $ids = array_map(function ($invoice) {
-            return $invoice->getId();
-        }, $projectBilling->getInvoices()->toArray());
+        $ids = array_values(array_filter(array_map(
+            fn (Invoice $invoice) => $invoice->getId(),
+            $projectBilling->getInvoices()->toArray()
+        ), fn (?int $id) => null !== $id));
 
         $html = $billingService->generateSpreadsheetHtml($ids);
 
@@ -232,9 +233,10 @@ class ProjectBillingController extends AbstractController
         $projectBilling->setExportedDate(new \DateTime());
         $projectBillingRepository->save($projectBilling, true);
 
-        $ids = array_map(function ($invoice) {
-            return $invoice->getId();
-        }, $invoices->toArray());
+        $ids = array_values(array_filter(array_map(
+            fn (Invoice $invoice) => $invoice->getId(),
+            $invoices->toArray()
+        ), fn (?int $id) => null !== $id));
 
         return $billingService->generateSpreadsheetCsvResponse($ids);
     }

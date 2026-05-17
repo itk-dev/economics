@@ -78,6 +78,9 @@ class SubscriptionController extends AbstractController
     {
         $content = $request->toArray();
         $userEmail = $user->getEmail();
+        if (null === $userEmail) {
+            return new JsonResponse(['error' => 'User email is required.'], Response::HTTP_BAD_REQUEST);
+        }
         $reportType = key($content);
         $report = &$content[$reportType];
         switch ($reportType) {
@@ -131,6 +134,9 @@ class SubscriptionController extends AbstractController
     private function subscriptionHandler(string $userEmail, string $subscriptionType, array $content): JsonResponse
     {
         $reportType = key($content);
+        if (null === $reportType) {
+            throw new \InvalidArgumentException('Content is empty.');
+        }
         $subscription = $this->subscriptionRepository->findOneByCustom($userEmail, $subscriptionType, $content);
 
         if ($subscription) {
