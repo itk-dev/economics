@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Removed game center.
 * Applied itk-dev templates.
 * Removed `prettier-plugin-jsdoc` (not resolvable from the `jauderho/prettier`
   Docker image), which caused `task js:cs:check` / Prettier CI jobs to fail
