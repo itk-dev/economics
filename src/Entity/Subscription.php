@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Subscription extends AbstractBaseEntity
 {
     #[ORM\Column(length: 180, unique: false)]
-    private ?string $email = null;
+    private string $email = '';
 
     #[ORM\Column(type: 'string', nullable: true, enumType: SubscriptionSubjectEnum::class)]
     private ?SubscriptionSubjectEnum $subject = null;

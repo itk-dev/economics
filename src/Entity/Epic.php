@@ -20,7 +20,7 @@ class Epic
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    private string $title = '';
 
     /** @var Collection<int, Issue> */
     #[ORM\ManyToMany(targetEntity: Issue::class, mappedBy: 'epics')]

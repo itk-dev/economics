@@ -27,26 +27,26 @@ class ServiceAgreement extends AbstractBaseEntity
     private ?CybersecurityAgreement $cybersecurityAgreement = null;
 
     #[ORM\Column(enumType: HostingProviderEnum::class)]
-    private ?HostingProviderEnum $hostingProvider = null;
+    private HostingProviderEnum $hostingProvider = HostingProviderEnum::ADM;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $documentUrl = null;
 
     #[ORM\Column]
-    private ?float $price = null;
+    private float $price = 0.0;
 
     #[ORM\ManyToOne(targetEntity: Worker::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Worker $projectLead = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $validFrom = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $validTo = null;
 
     #[ORM\Column]
-    private ?bool $isActive = null;
+    private bool $isActive = false;
 
     /** @var array<int, string> */
     #[ORM\Column(type: Types::JSON)]

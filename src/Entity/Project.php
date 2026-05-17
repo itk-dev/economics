@@ -18,17 +18,17 @@ class Project extends AbstractBaseEntity
     use DataProviderTrait;
     use SynchronizedEntityTrait;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
     /** @var Collection<int, Invoice> */
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: Invoice::class)]
     private Collection $invoices;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerProjectUrl;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerKey;
 
     #[ORM\Column(length: 255, nullable: true)]

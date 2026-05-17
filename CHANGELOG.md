@@ -8,6 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Aligned Doctrine entity property types with database column nullability
+  (PHPStan `doctrine.columnType`/`doctrine.associationType`, Pattern B —
+  43 entries cleared, baseline 243 → 201). Two-part change:
+  - **Migration `Version20260517131038`**: made 18 columns nullable to
+    match property types on entities that legitimately allow null —
+    the four synced entities (`issue`, `project`, `version`, `worklog`)
+    where fields arrive incrementally from external trackers, plus the
+    DateTime fields `project_billing.period_{start,end}` and
+    `service_agreement.valid_from`.
+  - **Property defaults**: converted 25 `?T $prop = null` declarations to
+    `T $prop = default` on app-managed entities (`Account`, `Client`,
+    `DataProvider`, `Epic`, `Invoice`, `InvoiceEntry`, `IssueProduct`,
+    `Product`, `ProjectBilling`, `ProjectVersionBudget`,
+    `ServiceAgreement`, `Subscription`, `User`, `Worker`, `WorkerGroup`).
+    Defaults: `''` for strings, `false` for booleans, `0`/`0.0` for
+    numerics, `'0'` for the decimal-as-string `Product::$price`, and
+    `HostingProviderEnum::ADM` for `ServiceAgreement::$hostingProvider`
+    (no natural zero exists for enums; pick a default and rely on
+    callers/validators to set the intended value before persist).
+  - Switched two `__toString()` methods (`Worker`, `WorkerGroup`) from
+    `??` to `?:` to preserve the empty-string-falls-through behavior
+    now that the properties can't be `null`.
+
 * Fixed 16 specific PHPStan-flagged issues, mostly real bugs the type
   surface had been hiding:
   - `ForecastReportService` substitutes `'[no issue id]'`/`'[no issue link]'`/`''`

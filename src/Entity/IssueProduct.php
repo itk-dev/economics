@@ -18,7 +18,7 @@ class IssueProduct extends AbstractBaseEntity
     private ?Product $product = null;
 
     #[ORM\Column]
-    private ?float $quantity;
+    private float $quantity = 0.0;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;

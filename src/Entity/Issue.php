@@ -21,7 +21,7 @@ class Issue extends AbstractBaseEntity
     use DataProviderTrait;
     use SynchronizedEntityTrait;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
     #[ORM\Column(type: 'string', nullable: true, enumType: IssueStatusEnum::class)]
@@ -33,10 +33,10 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $accountId = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerKey = null;
 
     // TODO: Deprecated. Remove in 4.0.0.
@@ -82,7 +82,7 @@ class Issue extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $worker = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $linkToIssue = null;
 
     public function __construct()

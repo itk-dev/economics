@@ -19,7 +19,7 @@ class Client extends AbstractBaseEntity
     use SoftDeleteableEntity;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $contact = null;

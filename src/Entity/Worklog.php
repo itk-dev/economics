@@ -21,7 +21,7 @@ class Worklog extends AbstractBaseEntity
     use SynchronizedEntityTrait;
 
     // TODO: Rename to projectTrackerId.
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $worklogId = null;
 
     #[ORM\ManyToOne(inversedBy: 'worklogs')]
@@ -34,13 +34,13 @@ class Worklog extends AbstractBaseEntity
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $worker = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $timeSpentSeconds = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $started = null;
 
     #[ORM\ManyToOne(inversedBy: 'worklogs')]
@@ -54,7 +54,7 @@ class Worklog extends AbstractBaseEntity
     #[ORM\JoinColumn(nullable: false)]
     private ?Issue $issue = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerIssueId = null;
 
     #[ORM\Column(type: 'string', nullable: true, enumType: BillableKindsEnum::class)]

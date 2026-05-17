@@ -67,94 +67,16 @@ parameters:
 			path: src/DataFixtures/AppFixtures.php
 
 		-
-			message: '#^Property App\\Entity\\Account\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Account.php
-
-		-
-			message: '#^Property App\\Entity\\Account\:\:\$value type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Account.php
-
-		-
-			message: '#^Property App\\Entity\\Client\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Client.php
-
-		-
 			message: '#^Property App\\Entity\\CybersecurityAgreement\:\:\$serviceAgreement type mapping mismatch\: property can contain App\\Entity\\ServiceAgreement\|null but database expects App\\Entity\\ServiceAgreement\.$#'
 			identifier: doctrine.associationType
 			count: 1
 			path: src/Entity/CybersecurityAgreement.php
 
 		-
-			message: '#^Property App\\Entity\\DataProvider\:\:\$class type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/DataProvider.php
-
-		-
-			message: '#^Property App\\Entity\\DataProvider\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/DataProvider.php
-
-		-
-			message: '#^Property App\\Entity\\Epic\:\:\$title type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Epic.php
-
-		-
-			message: '#^Property App\\Entity\\Invoice\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Invoice.php
-
-		-
-			message: '#^Property App\\Entity\\Invoice\:\:\$recorded type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Invoice.php
-
-		-
-			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$index type mapping mismatch\: property can contain int\|null but database expects int\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/InvoiceEntry.php
-
-		-
 			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$invoice type mapping mismatch\: property can contain App\\Entity\\Invoice\|null but database expects App\\Entity\\Invoice\.$#'
 			identifier: doctrine.associationType
 			count: 1
 			path: src/Entity/InvoiceEntry.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$linkToIssue type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$projectTrackerId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Issue.php
-
-		-
-			message: '#^Property App\\Entity\\Issue\:\:\$projectTrackerKey type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Issue.php
 
 		-
 			message: '#^Property App\\Entity\\IssueProduct\:\:\$issue type mapping mismatch\: property can contain App\\Entity\\Issue\|null but database expects App\\Entity\\Issue\.$#'
@@ -169,64 +91,10 @@ parameters:
 			path: src/Entity/IssueProduct.php
 
 		-
-			message: '#^Property App\\Entity\\IssueProduct\:\:\$quantity type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/IssueProduct.php
-
-		-
-			message: '#^Property App\\Entity\\Product\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Product.php
-
-		-
-			message: '#^Property App\\Entity\\Product\:\:\$price type mapping mismatch\: property can contain string\|null but database expects float\|int\|string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Product.php
-
-		-
 			message: '#^Property App\\Entity\\Product\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
 			identifier: doctrine.associationType
 			count: 1
 			path: src/Entity/Product.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$projectTrackerKey type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\Project\:\:\$projectTrackerProjectUrl type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Project.php
-
-		-
-			message: '#^Property App\\Entity\\ProjectBilling\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ProjectBilling.php
-
-		-
-			message: '#^Property App\\Entity\\ProjectBilling\:\:\$periodEnd type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ProjectBilling.php
-
-		-
-			message: '#^Property App\\Entity\\ProjectBilling\:\:\$periodStart type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ProjectBilling.php
 
 		-
 			message: '#^Property App\\Entity\\ProjectBilling\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
@@ -235,50 +103,8 @@ parameters:
 			path: src/Entity/ProjectBilling.php
 
 		-
-			message: '#^Property App\\Entity\\ProjectBilling\:\:\$recorded type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ProjectBilling.php
-
-		-
-			message: '#^Property App\\Entity\\ProjectVersionBudget\:\:\$budget type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ProjectVersionBudget.php
-
-		-
-			message: '#^Property App\\Entity\\ProjectVersionBudget\:\:\$projectId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ProjectVersionBudget.php
-
-		-
-			message: '#^Property App\\Entity\\ProjectVersionBudget\:\:\$versionId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ProjectVersionBudget.php
-
-		-
 			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$client type mapping mismatch\: property can contain App\\Entity\\Client\|null but database expects App\\Entity\\Client\.$#'
 			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/ServiceAgreement.php
-
-		-
-			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$hostingProvider type mapping mismatch\: property can contain App\\Enum\\HostingProviderEnum\|null but database expects App\\Enum\\HostingProviderEnum\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ServiceAgreement.php
-
-		-
-			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$isActive type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ServiceAgreement.php
-
-		-
-			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$price type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
-			identifier: doctrine.columnType
 			count: 1
 			path: src/Entity/ServiceAgreement.php
 
@@ -295,40 +121,10 @@ parameters:
 			path: src/Entity/ServiceAgreement.php
 
 		-
-			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$validFrom type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ServiceAgreement.php
-
-		-
-			message: '#^Property App\\Entity\\Subscription\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Subscription.php
-
-		-
-			message: '#^Property App\\Entity\\User\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
+			message: '#^Strict comparison using \=\=\= between null and string will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
 			count: 1
 			path: src/Entity/User.php
-
-		-
-			message: '#^Property App\\Entity\\User\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/User.php
-
-		-
-			message: '#^Property App\\Entity\\Version\:\:\$isBillable type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Version.php
-
-		-
-			message: '#^Property App\\Entity\\Version\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Version.php
 
 		-
 			message: '#^Property App\\Entity\\Version\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
@@ -337,56 +133,8 @@ parameters:
 			path: src/Entity/Version.php
 
 		-
-			message: '#^Property App\\Entity\\Version\:\:\$projectTrackerId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Version.php
-
-		-
-			message: '#^Property App\\Entity\\Worker\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Worker.php
-
-		-
-			message: '#^Property App\\Entity\\WorkerGroup\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/WorkerGroup.php
-
-		-
 			message: '#^Property App\\Entity\\Worklog\:\:\$issue type mapping mismatch\: property can contain App\\Entity\\Issue\|null but database expects App\\Entity\\Issue\.$#'
 			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Worklog.php
-
-		-
-			message: '#^Property App\\Entity\\Worklog\:\:\$projectTrackerIssueId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Worklog.php
-
-		-
-			message: '#^Property App\\Entity\\Worklog\:\:\$started type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Worklog.php
-
-		-
-			message: '#^Property App\\Entity\\Worklog\:\:\$timeSpentSeconds type mapping mismatch\: property can contain int\|null but database expects int\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Worklog.php
-
-		-
-			message: '#^Property App\\Entity\\Worklog\:\:\$worker type mapping mismatch\: property can contain string\|null but database expects string\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/Worklog.php
-
-		-
-			message: '#^Property App\\Entity\\Worklog\:\:\$worklogId type mapping mismatch\: property can contain int\|null but database expects int\.$#'
-			identifier: doctrine.columnType
 			count: 1
 			path: src/Entity/Worklog.php
 

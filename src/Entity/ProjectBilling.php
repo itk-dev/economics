@@ -12,12 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 class ProjectBilling extends AbstractBaseEntity
 {
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $periodStart = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $periodEnd = null;
 
     /** @var Collection<int, Invoice> */
@@ -29,7 +29,7 @@ class ProjectBilling extends AbstractBaseEntity
     private ?Project $project = null;
 
     #[ORM\Column]
-    private ?bool $recorded = null;
+    private bool $recorded = false;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;

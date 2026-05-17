@@ -14,13 +14,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Invoice extends AbstractBaseEntity
 {
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?bool $recorded = null;
+    private bool $recorded = false;
 
     #[ORM\Column(nullable: true)]
     private ?int $customerAccountId = null;

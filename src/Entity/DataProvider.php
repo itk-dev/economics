@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 class DataProvider extends AbstractBaseEntity
 {
     #[ORM\Column(length: 255, unique: true)]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $url = null;
@@ -18,7 +18,7 @@ class DataProvider extends AbstractBaseEntity
     private ?string $secret = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $class = null;
+    private string $class = '';
 
     #[ORM\Column(nullable: true)]
     private ?bool $enableClientSync = null;

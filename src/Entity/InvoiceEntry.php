@@ -19,7 +19,7 @@ class InvoiceEntry extends AbstractBaseEntity
     private ?Invoice $invoice = null;
 
     #[ORM\Column(type: Types::INTEGER, name: 'entry_index')]
-    private ?int $index = null;
+    private int $index = 0;
 
     // TODO: Remove since it is unused.
     #[ORM\Column(length: 255, nullable: true)]
