@@ -73,42 +73,6 @@ parameters:
 			path: src/Entity/User.php
 
 		-
-			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$headline with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Model/Reports/HourReportProjectTicket.php
-
-		-
-			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$id with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Model/Reports/HourReportProjectTicket.php
-
-		-
-			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$linkToIssue with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Model/Reports/HourReportProjectTicket.php
-
-		-
-			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$projectTrackerId with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Model/Reports/HourReportProjectTicket.php
-
-		-
-			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$totalEstimated with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Model/Reports/HourReportProjectTicket.php
-
-		-
-			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$totalSpent with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Model/Reports/HourReportProjectTicket.php
-
-		-
 			message: '#^Cannot call method getLinkToIssue\(\) on App\\Entity\\Issue\|null\.$#'
 			identifier: method.nonObject
 			count: 1

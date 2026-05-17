@@ -17,7 +17,7 @@ class HourReportProjectTicket
     /** @var ArrayCollection<int, HourReportProjectTicket> */
     public ArrayCollection $projectTickets;
 
-    public function __construct($id, $projectTrackerId, $headline, $totalEstimated, $totalSpent, $linkToIssue)
+    public function __construct(string $id, string $projectTrackerId, string $headline, float $totalEstimated, float $totalSpent, string $linkToIssue)
     {
         $this->id = $id;
         $this->projectTrackerId = $projectTrackerId;

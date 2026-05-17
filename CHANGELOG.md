@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Typed `HourReportProjectTicket::__construct()` parameters (PHPStan
+  `missingType.parameter`, 6 entries — baseline 190 → 184). The
+  constructor now requires `string $id, string $projectTrackerId,
+  string $headline, float $totalEstimated, float $totalSpent,
+  string $linkToIssue` to match the property types. Caller in
+  `HourReportService::getHourReport()` coerces `Issue` getter return
+  values (`(string) $issue->getId()`, `?? ''` fallbacks for nullable
+  trackers/name/link) — same pattern as `ForecastReportService`.
+
 * Migration `Version20260517151632`: relaxed 11 ManyToOne foreign keys
   from `NOT NULL` to `NULL` to match the property types they bind to
   (PHPStan `doctrine.associationType`, Pattern C — 11 entries cleared,

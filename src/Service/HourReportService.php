@@ -50,12 +50,12 @@ class HourReportService
             }
 
             $projectTicket = new HourReportProjectTicket(
-                $issue->getId(),
-                $issue->getProjectTrackerId(),
-                $issue->getName(),
+                (string) $issue->getId(),
+                $issue->getProjectTrackerId() ?? '',
+                $issue->getName() ?? '',
                 $totalTicketEstimated,
                 $totalTicketSpent,
-                $issue->getLinkToIssue()
+                $issue->getLinkToIssue() ?? ''
             );
 
             $projectTicket->timesheets->add($timesheets);
