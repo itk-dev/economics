@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
+* [PR-303](https://github.com/itk-dev/economics/pull/303)
+  Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
   and `.woodpecker/prod_itk_economics.yml`. Five staggered jobs run at
   02:00/02:10/02:20/02:30/02:40 invoking
   `app:data-providers:sync -j -d --modified="1 week ago"` for projects (`-p`),
