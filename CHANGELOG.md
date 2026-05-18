@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `postcss-loader`, `sass-loader`, `webpack-cli` with its peer requirements.
     Removed the now-redundant `markdownlint-cli` npm dep — markdownlint runs
     via the `markdownlint` docker compose service in CI.
+* [PR-304](https://github.com/itk-dev/economics/pull/304)
   * Applied itk-dev templates.
   * Removed Game Center.
   * Removed `prettier-plugin-jsdoc` (not resolvable from the `jauderho/prettier`
