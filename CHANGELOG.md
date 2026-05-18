@@ -8,64 +8,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* Excluded `messenger_messages` from Doctrine schema diffing via
-  `doctrine.dbal.schema_filter`, so the Messenger Doctrine transport can
-  manage its own table without generating noisy migrations.
-* Added `task test:coverage:set-threshold -- <value>` to update the coverage
-  threshold in `Taskfile.yml`, `composer.json`, and
-  `.github/workflows/pr.yml` in one command.
-* Fixed `ForecastReportService::getForecastReport()` crashing for any
-  worklog whose issue had one or more epics. Two bugs were stacked: the
-  code passed a Doctrine `PersistentCollection` to `array_map` (which only
-  accepts arrays), and it called the non-existent `Epic::getName()`
-  instead of `getTitle()`. Replaced with the collection's own `->map()`
-  `->toArray()` and the correct method (matching the pattern used in
-  `HourReportService`). Both bugs surfaced via the new integration test
-  for this service.
-* Added integration tests under `tests/Integration/Service/` for
-  `HourReportService` (epic-tag aggregation, fixture-based totals, date-range
-  exclusion), `InvoicingRateReportService`, `WorkloadReportService`
-  (worker enumeration + period population),
-  `BillableUnbilledHoursReportService` (project aggregation, totals
-  invariants, quarterly restriction), and `ForecastReportService` (totals
-  consistency). `ManagementReportService` is intentionally skipped — it
-  takes pre-grouped invoices as input and produces an XLSX response with
-  no DB interaction, so a unit test covers its surface adequately.
-* Added `InvoiceEntryFlowTest` covering the `InvoiceEntryController` actions
-  not yet exercised by `InvoiceFullFlowTest`: edit (mutation +
-  `totalPrice` recalculation), delete, the three recorded-invoice guards on
-  `new`/`edit`/`delete`, and the invalid-CSRF delete fall-through.
-* Added a minimum test-coverage gate. The PR workflow now writes a clover
-  report to `coverage/clover.xml` and fails if line coverage drops under
-  the threshold via `rregeer/phpunit-coverage-check`. Threshold is **62%**
-  (current measured coverage is ~63%); ratchet up over time in
-  `composer.json` (`tests-coverage-check`), `Taskfile.yml`
-  (`test:coverage:check`), and `.github/workflows/pr.yml` (the
-  "Enforce coverage threshold" step). Removed the unused Codecov upload step
-  from the PR workflow at the same time.
-* Added `Taskfile.yml` (go-task) wrapping the common dev commands so they can be
-  run as `task tests`, `task fixtures`, `task prepare`, etc. Composer scripts are
-  unchanged and still work for CI.
-* Sped up `composer fixtures:load` by disabling DBAL debug/logging middlewares
-  during the load, batching the worklog inserts in groups of 500 instead of
-  flushing per-issue, hoisting per-iteration date construction out of the inner
-  loops, and stashing entity references so the tail block no longer re-queries
-  workers/projects/clients after a `clear()`.
-* Added controller smoke matrix and flow tests under
-  `tests/Integration/Controller/`. A shared `AbstractControllerTestCase`
-  exercises every admin index route as anonymous (redirect), as an allowed
-  role (success), and as a denied role (403). Flow tests cover invoice
-  create + edit, project-billing create, and an hour-report filter
-  submission.
-* Fixed `/admin/invoices/{id}/edit` crashing on invoice entries with no
-  account by allowing `InvoiceEntryHelper::getAccountLabel()` to accept a
-  null account and return an empty label.
-* Fixed `/admin/reports` (reports landing page) crashing on missing template
-  variables. Replaced the stub with a minimal landing page linking to each
-  report.
-* Aligned the firewall with the controllers for `/admin/reports/*`:
-  `config/packages/security.yaml` now requires `ROLE_REPORT` instead of
-  `ROLE_ADMIN`, matching each report controller's `#[IsGranted]` attribute.
+* [PR-302](https://github.com/itk-dev/economics/pull/302)
+  * Excluded `messenger_messages` from Doctrine schema diffing via
+    `doctrine.dbal.schema_filter`, so the Messenger Doctrine transport can
+    manage its own table without generating noisy migrations.
+  * Added `task test:coverage:set-threshold -- <value>` to update the coverage
+    threshold in `Taskfile.yml`, `composer.json`, and
+    `.github/workflows/pr.yml` in one command.
+  * Fixed `ForecastReportService::getForecastReport()` crashing for any
+    worklog whose issue had one or more epics. Two bugs were stacked: the
+    code passed a Doctrine `PersistentCollection` to `array_map` (which only
+    accepts arrays), and it called the non-existent `Epic::getName()`
+    instead of `getTitle()`. Replaced with the collection's own `->map()`
+    `->toArray()` and the correct method (matching the pattern used in
+    `HourReportService`). Both bugs surfaced via the new integration test
+    for this service.
+  * Added integration tests under `tests/Integration/Service/` for
+    `HourReportService` (epic-tag aggregation, fixture-based totals, date-range
+    exclusion), `InvoicingRateReportService`, `WorkloadReportService`
+    (worker enumeration + period population),
+    `BillableUnbilledHoursReportService` (project aggregation, totals
+    invariants, quarterly restriction), and `ForecastReportService` (totals
+    consistency). `ManagementReportService` is intentionally skipped — it
+    takes pre-grouped invoices as input and produces an XLSX response with
+    no DB interaction, so a unit test covers its surface adequately.
+  * Added `InvoiceEntryFlowTest` covering the `InvoiceEntryController` actions
+    not yet exercised by `InvoiceFullFlowTest`: edit (mutation +
+    `totalPrice` recalculation), delete, the three recorded-invoice guards on
+    `new`/`edit`/`delete`, and the invalid-CSRF delete fall-through.
+  * Added a minimum test-coverage gate. The PR workflow now writes a clover
+    report to `coverage/clover.xml` and fails if line coverage drops under
+    the threshold via `rregeer/phpunit-coverage-check`. Threshold is **62%**
+    (current measured coverage is ~63%); ratchet up over time in
+    `composer.json` (`tests-coverage-check`), `Taskfile.yml`
+    (`test:coverage:check`), and `.github/workflows/pr.yml` (the
+    "Enforce coverage threshold" step). Removed the unused Codecov upload step
+    from the PR workflow at the same time.
+  * Added `Taskfile.yml` (go-task) wrapping the common dev commands so they can be
+    run as `task tests`, `task fixtures`, `task prepare`, etc. Composer scripts are
+    unchanged and still work for CI.
+  * Sped up `composer fixtures:load` by disabling DBAL debug/logging middlewares
+    during the load, batching the worklog inserts in groups of 500 instead of
+    flushing per-issue, hoisting per-iteration date construction out of the inner
+    loops, and stashing entity references so the tail block no longer re-queries
+    workers/projects/clients after a `clear()`.
+  * Added controller smoke matrix and flow tests under
+    `tests/Integration/Controller/`. A shared `AbstractControllerTestCase`
+    exercises every admin index route as anonymous (redirect), as an allowed
+    role (success), and as a denied role (403). Flow tests cover invoice
+    create + edit, project-billing create, and an hour-report filter
+    submission.
+  * Fixed `/admin/invoices/{id}/edit` crashing on invoice entries with no
+    account by allowing `InvoiceEntryHelper::getAccountLabel()` to accept a
+    null account and return an empty label.
+  * Fixed `/admin/reports` (reports landing page) crashing on missing template
+    variables. Replaced the stub with a minimal landing page linking to each
+    report.
+  * Aligned the firewall with the controllers for `/admin/reports/*`:
+    `config/packages/security.yaml` now requires `ROLE_REPORT` instead of
+    `ROLE_ADMIN`, matching each report controller's `#[IsGranted]` attribute.
 
 ## [3.3.0] - 2026-05-12
 

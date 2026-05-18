@@ -1,66 +1,77 @@
 # https://taskfile.dev — install with `brew install go-task` (or see docs).
-# Run `task` (or `task --list`) to see all available commands.
+# Run `task` (or `task --list-all`) to see all available commands.
 
 version: '3'
 
+# https://taskfile.dev/usage/#env-files
+dotenv: ['.env.local', '.env']
+
 vars:
-  PHP: docker compose exec phpfpm
-  PHP_COVERAGE: docker compose exec -e XDEBUG_MODE=coverage phpfpm
-  NODE: docker compose run --rm node
-  CONSOLE: docker compose exec phpfpm bin/console
+  # https://taskfile.dev/reference/templating/
+  BASE_URL: "{{.TASK_BASE_URL | default .COMPOSE_SERVER_DOMAIN | default .COMPOSE_DOMAIN }}"
+  DOCKER_COMPOSE: '{{ .TASK_DOCKER_COMPOSE | default "itkdev-docker-compose" }}'
 
 tasks:
   default:
-    desc: List available tasks
+    desc: List all tasks
     cmds:
-      - task --list
+      - task --list-all
     silent: true
 
-  # ---------------------------------------------------------------- Setup ---
+  # -------------------------------------------------------------- Wrappers ---
+
+  compose:
+    desc: 'Run a docker compose command. Example: task compose -- up --detach.'
+    cmds:
+      - "{{ .DOCKER_COMPOSE }} {{ .CLI_ARGS }}"
+
+  composer:
+    desc: 'Run a composer command. Example: task composer -- install.'
+    cmds:
+      - task phpfpm -- composer {{.CLI_ARGS}}
+    silent: true
+
+  node:
+    desc: 'Run a command in a one-off node container. Example: task node -- npm run dev.'
+    cmds:
+      - task compose -- run --rm node {{.CLI_ARGS}}
+    silent: true
+
+  phpfpm:
+    desc: 'Run a command inside the running phpfpm container. Example: task phpfpm -- bin/console cache:clear.'
+    cmds:
+      - task compose -- exec phpfpm {{.CLI_ARGS}}
+    silent: true
+
+  # ------------------------------------------------------ Stack lifecycle ---
 
   setup:
-    desc: One-time stack setup — network, pull, install deps, run migrations
+    desc: One-time stack setup — network, pull, install deps, run migrations.
     cmds:
       - docker network create frontend || true
-      - docker compose pull
-      - "{{.NODE}} npm install"
-      - docker compose up --detach
-      - "{{.PHP}} composer install"
-      - "{{.CONSOLE}} doctrine:migrations:migrate --no-interaction"
+      - task compose -- pull
+      - task node -- npm install
+      - task compose -- up -d
+      - task composer -- install
+      - task db:migrate
 
-  up:
-    desc: Start the docker stack in the background
-    cmds:
-      - docker compose up --detach
-
-  down:
-    desc: Stop the docker stack
-    cmds:
-      - docker compose down
-
-  shell:
-    desc: Open a shell inside the phpfpm container
-    interactive: true
-    cmds:
-      - docker compose exec phpfpm sh
-
-  # ------------------------------------------------------------------ PHP ---
+  # ------------------------------------------------------------ PHP tests ---
 
   test:
-    desc: Run the PHP test suite
+    desc: Run the PHP test suite.
     cmds:
-      - "{{.PHP}} composer tests"
+      - task composer -- tests
 
   test:coverage:
-    desc: Run tests and write HTML coverage to coverage/
+    desc: Run tests and write HTML coverage to coverage/.
     cmds:
-      - "{{.PHP_COVERAGE}} vendor/bin/phpunit --coverage-html coverage/"
+      - task compose -- exec -e XDEBUG_MODE=coverage phpfpm vendor/bin/phpunit --coverage-html coverage/
 
   test:coverage:check:
-    desc: Run tests and fail if line coverage is under the configured threshold
+    desc: Run tests and fail if line coverage is under the configured threshold.
     cmds:
-      - "{{.PHP_COVERAGE}} vendor/bin/phpunit --coverage-clover=coverage/clover.xml"
-      - "{{.PHP}} vendor/bin/coverage-check coverage/clover.xml 62"
+      - task compose -- exec -e XDEBUG_MODE=coverage phpfpm vendor/bin/phpunit --coverage-clover=coverage/clover.xml
+      - task compose -- exec phpfpm vendor/bin/coverage-check coverage/clover.xml 62
 
   test:coverage:set-threshold:
     desc: Update the coverage threshold across Taskfile, composer.json, and pr.yml — `task test:coverage:set-threshold -- 65`
@@ -70,72 +81,94 @@ tasks:
           echo "Usage: task test:coverage:set-threshold -- <new-threshold>" >&2
           exit 1
         fi
-      - '{{.PHP}} php -r ''$t=intval("{{.CLI_ARGS}}"); if($t<1||$t>100){fwrite(STDERR,"Threshold must be an integer 1..100\n");exit(1);} foreach(["Taskfile.yml","composer.json",".github/workflows/pr.yml"] as $f){file_put_contents($f, preg_replace("|coverage-check coverage/clover\\.xml \\d+|", "coverage-check coverage/clover.xml $t", file_get_contents($f)));}'''
+      - 'task compose -- exec phpfpm php -r ''$t=intval("{{.CLI_ARGS}}"); if($t<1||$t>100){fwrite(STDERR,"Threshold must be an integer 1..100\n");exit(1);} foreach(["Taskfile.yml","composer.json",".github/workflows/pr.yml"] as $f){file_put_contents($f, preg_replace("|coverage-check coverage/clover\\.xml \\d+|", "coverage-check coverage/clover.xml $t", file_get_contents($f)));}'''
       - echo "Coverage threshold set to {{.CLI_ARGS}}. Verify with 'task test:coverage:check'."
 
   test:file:
     desc: Run a single test file — `task test:file -- tests/Service/Foo.php`
     cmds:
-      - "{{.PHP}} vendor/bin/phpunit {{.CLI_ARGS}}"
+      - task compose -- exec phpfpm vendor/bin/phpunit {{.CLI_ARGS}}
 
-  analyse:
-    desc: Run Psalm static analysis
-    cmds:
-      - "{{.PHP}} composer code-analysis"
+  # ----------------------------------------- Static analysis & code prep ---
 
-  cs:fix:
-    desc: Auto-fix PHP + Twig coding standards
+  code-analysis:
+    desc: Run static analysis (Psalm).
     cmds:
-      - "{{.PHP}} composer coding-standards-apply"
+      - task composer -- code-analysis
 
-  cs:check:
-    desc: Check PHP + Twig coding standards (dry-run)
+  prepare-code:
+    desc: Run all PHP pre-commit checks (coding standards + analysis + tests).
     cmds:
-      - "{{.PHP}} composer coding-standards-check"
+      - task composer -- prepare-code
 
-  prepare:
-    desc: Run all PHP pre-commit checks (cs apply + psalm + tests)
-    cmds:
-      - "{{.PHP}} composer prepare-code"
+  # ----------------------------------------------------- Coding standards ---
 
-  fixtures:
-    desc: Load data fixtures
+  coding-standards:check:
+    desc: Check coding standards (PHP + Twig, JS + Markdown).
     cmds:
-      - "{{.PHP}} composer fixtures:load"
+      - task coding-standards:php:check
+      - task coding-standards:js:check
 
-  migrate:
-    desc: Apply Doctrine migrations
+  coding-standards:apply:
+    desc: Apply coding standards (PHP + Twig, JS + Markdown).
     cmds:
-      - "{{.CONSOLE}} doctrine:migrations:migrate --no-interaction"
+      - task coding-standards:php:apply
+      - task coding-standards:js:apply
+
+  coding-standards:php:check:
+    desc: Check PHP + Twig coding standards (dry-run).
+    cmds:
+      - task composer -- coding-standards-check
+
+  coding-standards:php:apply:
+    desc: Apply PHP + Twig coding standards.
+    cmds:
+      - task composer -- coding-standards-apply
+
+  coding-standards:js:check:
+    desc: Check JS + Markdown coding standards.
+    cmds:
+      - task compose -- run --rm node npm run coding-standards-check
+
+  coding-standards:js:apply:
+    desc: Apply JS + Markdown coding standards.
+    cmds:
+      - task compose -- run --rm node npm run coding-standards-apply
+
+  # -------------------------------------------------- Database & fixtures ---
+
+  db:migrate:
+    prompt: 'This will run migrations on the configured database. Continue?'
+    desc: Apply Doctrine migrations.
+    cmds:
+      - task compose -- exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
+
+  fixtures:load:
+    prompt: 'This will reset fixture data. Continue?'
+    desc: Load data fixtures.
+    cmds:
+      - task composer -- fixtures:load
+
+  # ----------------------------------------------------------- Messenger ---
 
   messenger:
-    desc: Consume async messages from the `async` transport
+    desc: Consume async messages from the `async` transport.
     cmds:
-      - "{{.CONSOLE}} messenger:consume async"
+      - task compose -- exec phpfpm bin/console messenger:consume async
 
-  # ------------------------------------------------------- JavaScript / CSS ---
+  # -------------------------------------------------------------- Assets ---
 
-  js:dev:
-    desc: Build assets for development
+  assets:dev:
+    desc: Build assets for development.
     cmds:
-      - "{{.NODE}} npm run dev"
+      - task compose -- run --rm node npm run dev
 
-  js:watch:
-    desc: Watch and rebuild assets on change
+  assets:watch:
+    desc: Watch and rebuild assets on change.
     cmds:
-      - "{{.NODE}} npm run watch"
+      - task compose -- run --rm node npm run watch
 
-  js:build:
-    desc: Production asset build
+  assets:build:
+    desc: Production asset build.
     cmds:
-      - "{{.NODE}} npm run build"
-
-  js:cs:fix:
-    desc: Auto-fix JS + Markdown coding standards
-    cmds:
-      - "{{.NODE}} npm run coding-standards-apply"
-
-  js:cs:check:
-    desc: Check JS + Markdown coding standards
-    cmds:
-      - "{{.NODE}} npm run coding-standards-check"
+      - task compose -- run --rm node npm run build
