@@ -30,21 +30,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Worker::__toString()` and `WorkerGroup::__toString()` switched from `??`
   to `?:` to preserve empty-string-falls-through behavior.
 * Real bugs surfaced and fixed during the cleanup:
-  - `ForecastReportService` was calling non-existent `Epic::getName()` (epic
+  * `ForecastReportService` was calling non-existent `Epic::getName()` (epic
     tags rendered empty in the forecast); now uses `Epic::getTitle()`.
-  - `SubscriptionHandlerService::getVersion()` was looking up `Version` by a
+  * `SubscriptionHandlerService::getVersion()` was looking up `Version` by a
     non-existent `versionId` field; now uses `find($versionId)`.
-  - `DataProviderService::setTimeSpentSeconds()` was passing `float` through
+  * `DataProviderService::setTimeSpentSeconds()` was passing `float` through
     to an `int` setter (silent precision loss); explicit `(int)` cast added.
-  - Report services (`ForecastReportService`,
+  * Report services (`ForecastReportService`,
     `BillableUnbilledHoursReportService`, `InvoicingRateReportService`)
     skip worklogs with a null project or issue instead of crashing on
     chained getters.
-  - `SubscriptionController::check()` returns HTTP 400 on null
+  * `SubscriptionController::check()` returns HTTP 400 on null
     `User::getEmail()` rather than passing `?string` downstream;
     `User::getUserIdentifier()` throws on empty email
     (Symfony's `UserInterface` requires `non-empty-string`).
-  - `LeantimeApiService` switched from `json_decode($json, null)` to
+  * `LeantimeApiService` switched from `json_decode($json, null)` to
     `json_decode($json, true)`; all `$data->property` accesses converted to
     array access. Wire shape unchanged.
 * Misc dead code removed: `readonly string $id` on three report-data models
