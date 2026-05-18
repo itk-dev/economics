@@ -8,15 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* npm audit fix: bumped `@symfony/webpack-encore` to `^6` and aligned
-  `postcss-loader`, `sass-loader`, `webpack-cli` with its peer requirements.
-  Removed the now-redundant `markdownlint-cli` npm dep — markdownlint runs
-  via the `markdownlint` docker compose service in CI.
-* Removed game center.
-* Applied itk-dev templates.
-* Removed `prettier-plugin-jsdoc` (not resolvable from the `jauderho/prettier`
-  Docker image), which caused `task js:cs:check` / Prettier CI jobs to fail
-  with `Cannot find package 'prettier-plugin-jsdoc' imported from /work/noop.js`.
+* [PR-305](https://github.com/itk-dev/economics/pull/305)
+  * npm audit fix: bumped `@symfony/webpack-encore` to `^6` and aligned
+    `postcss-loader`, `sass-loader`, `webpack-cli` with its peer requirements.
+    Removed the now-redundant `markdownlint-cli` npm dep — markdownlint runs
+    via the `markdownlint` docker compose service in CI.
+  * Applied itk-dev templates.
+  * Removed Game Center.
+  * Removed `prettier-plugin-jsdoc` (not resolvable from the `jauderho/prettier`
+    Docker image), which caused `task js:cs:check` / Prettier CI jobs to fail
+    with `Cannot find package 'prettier-plugin-jsdoc' imported from /work/noop.js`.
 
 ## [3.3.0] - 2026-05-12
 
