@@ -83,7 +83,7 @@ class ForecastReportService
                 $issueLink = $worklog->getIssue()->getLinkToIssue();
 
                 if ($worklog->getIssue()->getEpics()->count() > 0) {
-                    $issueTag = implode(',', array_map(fn ($epic) => $epic->getName(), $worklog->getIssue()->getEpics()));
+                    $issueTag = implode(',', $worklog->getIssue()->getEpics()->map(fn ($epic) => $epic->getTitle())->toArray());
                 } else {
                     $issueTag = '[no tag]';
                 }

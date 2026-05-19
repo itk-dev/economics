@@ -79,8 +79,12 @@ class InvoiceEntryHelper
     /**
      * Get account label based on configured accounts.
      */
-    public function getAccountLabel(string $account): string
+    public function getAccountLabel(?string $account): string
     {
+        if (null === $account || '' === $account) {
+            return '';
+        }
+
         $accounts = $this->getAccounts(null);
 
         return $accounts[$account]['label'] ?? $account;
