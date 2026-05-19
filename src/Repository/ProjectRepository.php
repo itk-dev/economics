@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Project;
 use App\Entity\ServiceAgreement;
 use App\Model\Invoices\ProjectFilterData;
+use App\Service\LeantimeUrlGenerator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -118,5 +119,47 @@ class ProjectRepository extends ServiceEntityRepository
             ->getScalarResult();
 
         return array_column($result, 'id');
+    }
+
+    /**
+     * Returns each project flattened to an array with a derived `leantimeUrl`,
+     * its `codeowners` (id/name/email) and its most recent `serviceAgreement`
+     * (by id) nested in. If a project has no service agreement, the key is null.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getApiProjects(LeantimeUrlGenerator $leantimeUrl): array
+    {
+        $results = $this->createQueryBuilder('p')
+            ->select('p', 'sa', 'co')
+            ->leftJoin('p.serviceAgreements', 'sa')
+            ->leftJoin('p.codeowners', 'co')
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static function (array $project) use ($leantimeUrl): array {
+            $codeowners = array_map(static fn (array $worker): array => [
+                'id' => $worker['id'] ?? null,
+                'name' => $worker['name'] ?? null,
+                'email' => $worker['email'] ?? null,
+            ], $project['codeowners'] ?? []);
+
+            $latest = null;
+            foreach ($project['serviceAgreements'] ?? [] as $sa) {
+                if (null === $latest || ($sa['id'] ?? 0) > ($latest['id'] ?? 0)) {
+                    $latest = $sa;
+                }
+            }
+
+            unset($project['codeowners'], $project['serviceAgreements']);
+
+            return [
+                ...$project,
+                'leantimeUrl' => $leantimeUrl->forProjectTrackerId($project['projectTrackerId'] ?? null),
+                'codeowners' => $codeowners,
+                'serviceAgreement' => $latest,
+            ];
+        }, $results);
     }
 }

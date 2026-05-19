@@ -6,6 +6,7 @@ use App\Entity\Project;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
+use App\Service\LeantimeUrlGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -121,5 +122,32 @@ class ProjectRepositoryTest extends KernelTestCase
         $sorted = $result;
         sort($sorted);
         $this->assertEquals($sorted, $result);
+    }
+
+    public function testGetApiProjects(): void
+    {
+        $generator = self::getContainer()->get(LeantimeUrlGenerator::class);
+        $result = $this->repository->getApiProjects($generator);
+
+        $this->assertNotEmpty($result);
+        $this->assertIsArray($result);
+
+        foreach ($result as $item) {
+            $this->assertArrayHasKey('id', $item);
+            $this->assertArrayHasKey('name', $item);
+            $this->assertArrayHasKey('githubRepos', $item);
+            $this->assertArrayHasKey('leantimeUrl', $item);
+            $this->assertArrayHasKey('codeowners', $item);
+            $this->assertArrayHasKey('serviceAgreement', $item);
+            $this->assertIsArray($item['codeowners']);
+            $this->assertTrue(null === $item['serviceAgreement'] || is_array($item['serviceAgreement']));
+        }
+
+        $withTracker = array_filter($result, fn (array $p): bool => !empty($p['projectTrackerId']));
+        $this->assertNotEmpty($withTracker, 'Fixture data must contain at least one project with projectTrackerId set.');
+        foreach ($withTracker as $project) {
+            $this->assertNotNull($project['leantimeUrl']);
+            $this->assertStringContainsString('/projects/changeCurrentProject/'.$project['projectTrackerId'], $project['leantimeUrl']);
+        }
     }
 }
