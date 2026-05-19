@@ -29,16 +29,12 @@ final class CybersecurityReportController extends AbstractController
         $reportData = null;
         $reportFormData = new CybersecurityReportFormData();
 
-        $dataProvider = null;
         $versionTitle = null;
 
         $requestData = $request->query->all('cybersecurity_report');
 
-        if (!empty($requestData['dataProvider'])) {
-            $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
-        } elseif (null !== $this->defaultDataProvider) {
-            $dataProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
-        }
+        $dataProviderId = ($requestData['dataProvider'] ?? null) ?: $this->defaultDataProvider;
+        $dataProvider = $dataProviderId ? $this->dataProviderRepository->find($dataProviderId) : null;
 
         $form = $this->createForm(CybersecurityReportType::class, $reportFormData, [
             // Since this is only a filtering form, csrf is not needed.
