@@ -3,6 +3,7 @@
 /.env.local
 /.env.local.php
 /.env.*.local
+/config/reference.php
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
@@ -36,3 +37,9 @@ yarn-error.log
 ###> vincentlanglet/twig-cs-fixer ###
 /.twig-cs-fixer.cache
 ###< vincentlanglet/twig-cs-fixer ###
+
+.claude/
+
+###> go-task/task ###
+/.task/
+###< go-task/task ###

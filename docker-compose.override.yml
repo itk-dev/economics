@@ -12,7 +12,7 @@ services:
       - "RABBITMQ_ERLANG_COOKIE=d53f319cd7376f8f840aaf9889f315ab"
 
   node:
-    image: node:20
+    image: node:24
     command: npm run watch
     networks:
       - app
