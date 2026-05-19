@@ -41,7 +41,6 @@ jobs:
 
       - name: Test suite
         run: |
-          docker network create frontend
           docker compose run --rm phpfpm composer install
           docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/clover.xml
 
