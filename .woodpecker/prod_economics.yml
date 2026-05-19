@@ -41,3 +41,10 @@ steps:
           month: "*"
           weekday: "*"
           job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-deleted"
+        anonymize-worklogs:
+          minute: "0"
+          hour: "1"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:anonymize-worklogs"

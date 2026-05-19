@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-279](https://github.com/itk-dev/economics/pull/279)
+  * Anonymize worklogs after 5 years.
 * [PR-306](https://github.com/itk-dev/economics/pull/306)
   * Excluded `messenger_messages` from Doctrine schema diffing via
     `doctrine.dbal.schema_filter`, so the Messenger Doctrine transport can
