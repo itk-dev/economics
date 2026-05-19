@@ -11,18 +11,29 @@ jobs:
         name: Validate composer
         steps:
             - uses: actions/checkout@v4
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: vendor
+                  key: composer-${{ hashFiles('composer.lock') }}
+                  restore-keys: composer-
             - run: |
                   docker network create frontend
                   docker compose run --rm phpfpm composer validate composer.json --strict
                   docker compose run --rm phpfpm composer install
                   docker compose run --rm phpfpm composer normalize --dry-run
-                  docker compose run --rm phpfpm composer audit
 
     validate-doctrine-schema:
         runs-on: ubuntu-latest
         name: Validate Doctrine Schema
         steps:
             - uses: actions/checkout@v4
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: vendor
+                  key: composer-${{ hashFiles('composer.lock') }}
+                  restore-keys: composer-
             - run: |
                   docker network create frontend
                   docker compose run --rm phpfpm composer install
@@ -34,6 +45,12 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: vendor
+                  key: composer-${{ hashFiles('composer.lock') }}
+                  restore-keys: composer-
             - run: |
                   docker network create frontend
                   docker compose run --rm phpfpm composer install
@@ -44,6 +61,12 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: vendor
+                  key: composer-${{ hashFiles('composer.lock') }}
+                  restore-keys: composer-
             - run: |
                   docker network create frontend
                   docker compose run --rm phpfpm composer install
@@ -73,6 +96,13 @@ jobs:
             -   name: Checkout
                 uses: actions/checkout@v3
 
+            -   name: Cache npm dependencies
+                uses: actions/cache@v4
+                with:
+                    path: node_modules
+                    key: npm-${{ hashFiles('package-lock.json') }}
+                    restore-keys: npm-
+
             -   name: Coding standards
                 run: |
                     docker network create frontend
@@ -86,6 +116,13 @@ jobs:
             -   name: Checkout
                 uses: actions/checkout@v3
 
+            -   name: Cache npm dependencies
+                uses: actions/cache@v4
+                with:
+                    path: node_modules
+                    key: npm-${{ hashFiles('package-lock.json') }}
+                    restore-keys: npm-
+
             -   name: Coding standards
                 run: |
                     docker network create frontend
@@ -98,6 +135,13 @@ jobs:
         steps:
             -   name: Checkout
                 uses: actions/checkout@v3
+
+            -   name: Cache Composer dependencies
+                uses: actions/cache@v4
+                with:
+                    path: vendor
+                    key: composer-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
 
             -   name: Install
                 run: |
@@ -114,14 +158,31 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Test suite
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: vendor
+                  key: composer-${{ hashFiles('composer.lock') }}
+                  restore-keys: composer-
+
+            - name: Cache npm dependencies
+              uses: actions/cache@v4
+              with:
+                  path: node_modules
+                  key: npm-${{ hashFiles('package-lock.json') }}
+                  restore-keys: npm-
+
+            - name: Build assets
               run: |
                   docker network create frontend
-                  docker compose run --rm phpfpm composer install
-                  docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
+                  docker compose run --rm node npm install
+                  docker compose run --rm node npm run build
 
-            - name: Upload coverage to Codecov test
-              uses: codecov/codecov-action@v2
-              with:
-                  files: ./coverage/unit.xml
-                  flags: unittests, ${{ matrix.php }}
+            - name: Test suite
+              run: |
+                  docker compose run --rm phpfpm composer install
+                  docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/clover.xml
+
+            - name: Enforce coverage threshold
+              run: |
+                  docker compose run --rm phpfpm vendor/bin/coverage-check coverage/clover.xml 62

@@ -51,6 +51,7 @@
         "ergebnis/composer-normalize": "^2.28",
         "friendsofphp/php-cs-fixer": "^3.13",
         "phpunit/phpunit": "^10.2",
+        "rregeer/phpunit-coverage-check": "^0.3.1",
         "symfony/browser-kit": "~6.4.0",
         "symfony/css-selector": "~6.4.0",
         "symfony/debug-bundle": "~6.4.0",
@@ -156,6 +157,14 @@
         ],
         "tests-coverage": [
             "XDEBUG_MODE=coverage vendor/bin/phpunit --stop-on-failure --coverage-html coverage/"
+        ],
+        "tests-coverage-check": [
+            "@putenv XDEBUG_MODE=coverage",
+            "vendor/bin/phpunit --coverage-clover=coverage/clover.xml",
+            "vendor/bin/coverage-check coverage/clover.xml 62"
+        ],
+        "tests-unit": [
+            "./vendor/bin/phpunit --testsuite unit --bootstrap tests/bootstrap_unit.php --stop-on-failure"
         ]
     }
 }
