@@ -37,10 +37,8 @@ jobs:
         run: |
           docker network create frontend
           docker compose run --rm phpfpm composer install
-          docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/unit.xml
+          docker compose run -e XDEBUG_MODE=coverage --rm phpfpm vendor/bin/phpunit --coverage-clover=coverage/clover.xml
 
-      - name: Upload coverage to Codecov test
-        uses: codecov/codecov-action@v2
-        with:
-          files: ./coverage/unit.xml
-          flags: unittests, ${{ matrix.php }}
+      - name: Enforce coverage threshold
+        run: |
+            docker compose run --rm phpfpm vendor/bin/coverage-check coverage/clover.xml 62
