@@ -1,10 +1,10 @@
 # https://taskfile.dev — install with `brew install go-task` (or see docs).
 # Run `task` (or `task --list-all`) to see all available commands.
 
-version: '3'
+version: "3"
 
 # https://taskfile.dev/usage/#env-files
-dotenv: ['.env.local', '.env']
+dotenv: [".env.local", ".env"]
 
 vars:
   # https://taskfile.dev/reference/templating/
@@ -21,24 +21,24 @@ tasks:
   # -------------------------------------------------------------- Wrappers ---
 
   compose:
-    desc: 'Run a docker compose command. Example: task compose -- up --detach.'
+    desc: "Run a docker compose command. Example: task compose -- up --detach."
     cmds:
       - "{{ .DOCKER_COMPOSE }} {{ .CLI_ARGS }}"
 
   composer:
-    desc: 'Run a composer command. Example: task composer -- install.'
+    desc: "Run a composer command. Example: task composer -- install."
     cmds:
       - task phpfpm -- composer {{.CLI_ARGS}}
     silent: true
 
   node:
-    desc: 'Run a command in a one-off node container. Example: task node -- npm run dev.'
+    desc: "Run a command in a one-off node container. Example: task node -- npm run dev."
     cmds:
       - task compose -- run --rm node {{.CLI_ARGS}}
     silent: true
 
   phpfpm:
-    desc: 'Run a command inside the running phpfpm container. Example: task phpfpm -- bin/console cache:clear.'
+    desc: "Run a command inside the running phpfpm container. Example: task phpfpm -- bin/console cache:clear."
     cmds:
       - task compose -- exec phpfpm {{.CLI_ARGS}}
     silent: true
@@ -138,13 +138,13 @@ tasks:
   # -------------------------------------------------- Database & fixtures ---
 
   db:migrate:
-    prompt: 'This will run migrations on the configured database. Continue?'
+    prompt: "This will run migrations on the configured database. Continue?"
     desc: Apply Doctrine migrations.
     cmds:
       - task compose -- exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
 
   fixtures:load:
-    prompt: 'This will reset fixture data. Continue?'
+    prompt: "This will reset fixture data. Continue?"
     desc: Load data fixtures.
     cmds:
       - task composer -- fixtures:load

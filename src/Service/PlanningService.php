@@ -210,10 +210,6 @@ class PlanningService
 
     /**
      * Get the assignee key and display name.
-     *
-     * @param  IssueEntity $issue
-     *
-     * @return array
      */
     private function getAssigneeData(IssueEntity $issue): array
     {
@@ -244,7 +240,6 @@ class PlanningService
      * Gets or creates an Assignee object in an ArrayCollection.
      *
      * @param ArrayCollection<string, Assignee> $assignees the ArrayCollection containing the Assignee objects
-     * @param array $assigneeData
      *
      * @return Assignee the retrieved or created Assignee object
      */
@@ -261,7 +256,7 @@ class PlanningService
      * Gets or creates a SprintSum object in an ArrayCollection.
      *
      * @param ArrayCollection<string, SprintSum> $sprintSums The ArrayCollection containing SprintSum objects
-     * @param string $week The week for which SprintSum object needs to be fetched or created
+     * @param string                             $week       The week for which SprintSum object needs to be fetched or created
      *
      * @return SprintSum The SprintSum object corresponding to the given $week
      */
@@ -277,9 +272,9 @@ class PlanningService
     /**
      * Gets or creates a Project object in an ArrayCollection.
      *
-     * @param ArrayCollection<string, Project> $projects the ArrayCollection containing the Project objects
-     * @param string $projectKey the key of the Project object
-     * @param string $projectName the name of the Project object
+     * @param ArrayCollection<string, Project> $projects    the ArrayCollection containing the Project objects
+     * @param string                           $projectKey  the key of the Project object
+     * @param string                           $projectName the name of the Project object
      *
      * @return Project the retrieved or created Project object
      */
@@ -297,9 +292,9 @@ class PlanningService
     /**
      * Gets or creates an AssigneeProject object in an ArrayCollection.
      *
-     * @param ArrayCollection<string, AssigneeProject> $projects The ArrayCollection containing AssigneeProject objects
-     * @param string $projectKey The key for the AssigneeProject object that needs to be fetched or created
-     * @param string $projectName The name for the AssigneeProject object that needs to be fetched or created
+     * @param ArrayCollection<string, AssigneeProject> $projects    The ArrayCollection containing AssigneeProject objects
+     * @param string                                   $projectKey  The key for the AssigneeProject object that needs to be fetched or created
+     * @param string                                   $projectName The name for the AssigneeProject object that needs to be fetched or created
      *
      * @return AssigneeProject The AssigneeProject object corresponding to the given $projectKey
      */

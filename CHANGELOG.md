@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-304](https://github.com/itk-dev/economics/pull/304)
+  * Applied itk-dev templates.
+  * Removed Game Center.
+  * Removed `prettier-plugin-jsdoc`.
 * [PR-302](https://github.com/itk-dev/economics/pull/302)
   * Excluded `messenger_messages` from Doctrine schema diffing via `doctrine.dbal.schema_filter`.
   * Added `task test:coverage:set-threshold -- <value>` to update the coverage threshold across `Taskfile.yml`,
@@ -325,7 +329,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * 1595: Added retryable http client decorator for handling rate limiting.
 * [PR-117](https://github.com/itk-dev/economics/pull/117)
   * 1211: Added hour report
-  * NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when releasing.
+  * NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when
+    releasing.
 * [PR-124](https://github.com/itk-dev/economics/pull/124)
   * 710: Added workload report
 * [PR-129](https://github.com/itk-dev/economics/pull/129)
