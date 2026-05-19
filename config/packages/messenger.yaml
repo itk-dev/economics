@@ -25,4 +25,4 @@ when@test:
     framework:
         messenger:
             transports:
-                async: 'doctrine://default?queue_name=async'
+                async: "doctrine://default?queue_name=async"
