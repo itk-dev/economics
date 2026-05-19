@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-306](https://github.com/itk-dev/economics/pull/306)
+  * Excluded `messenger_messages` from Doctrine schema diffing via
+    `doctrine.dbal.schema_filter`, so the Messenger Doctrine transport can
+    manage its own table without generating noisy migrations.
+  * Upgraded Symfony from 6.4 to 7.4 LTS. Dropped `symfony/proxy-manager-bridge`
+    (removed in Symfony 7.0), removed the obsolete `enable_authenticator_manager`
+    security option, and tightened `User::eraseCredentials()` to the new
+    `: void` return type required by `UserInterface`.
 * [PR-305](https://github.com/itk-dev/economics/pull/305)
   * npm audit fix: bumped `@symfony/webpack-encore` to `^6` and aligned
     `postcss-loader`, `sass-loader`, `webpack-cli` with its peer requirements.

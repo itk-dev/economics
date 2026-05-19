@@ -167,11 +167,17 @@
     </MissingOverrideAttribute>
   </file>
   <file src="src/Entity/User.php">
+    <LessSpecificReturnStatement>
+      <code><![CDATA[(string) $this->email]]></code>
+    </LessSpecificReturnStatement>
     <MissingOverrideAttribute>
-      <code><![CDATA[public function eraseCredentials()]]></code>
+      <code><![CDATA[public function eraseCredentials(): void]]></code>
       <code><![CDATA[public function getRoles(): array]]></code>
       <code><![CDATA[public function getUserIdentifier(): string]]></code>
     </MissingOverrideAttribute>
+    <MoreSpecificReturnType>
+      <code><![CDATA[string]]></code>
+    </MoreSpecificReturnType>
   </file>
   <file src="src/Form/AccountType.php">
     <MissingOverrideAttribute>
