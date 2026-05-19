@@ -39,3 +39,7 @@ yarn-error.log
 ###< vincentlanglet/twig-cs-fixer ###
 
 .claude/
+
+###> go-task/task ###
+/.task/
+###< go-task/task ###
