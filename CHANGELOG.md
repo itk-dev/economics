@@ -18,16 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-307](https://github.com/itk-dev/economics/pull/307)
   * Migrated static analysis from Psalm to PHPStan (level 8). Analysis now also covers `tests/`.
 * [PR-309](https://github.com/itk-dev/economics/pull/309)
-  * Consolidated project/service-agreement fields and added a project API endpoint.
-  * Dropped `service_agreement.leantime_url` — the Leantime link is now derived from `project.project_tracker_id`
-    via `LeantimeUrlGenerator` (env `LEANTIME_PROJECT_TRACKER_URL`) and rendered via the new
-    `leantime_url(project)` Twig function on the service agreement index page.
-  * Moved `git_repos` from `service_agreement` to `project` and renamed to `github_repos`. The column is dropped
-    on `service_agreement` without data migration — run `task db:migrate` after pulling.
-  * Added a `codeowners` many-to-many relation from `Project` to `Worker`, editable as a Choices.js multiselect
-    on the project edit form.
-  * Added `GET /api/projects` (X-Api-Key via `APP_API_KEY`) returning each project flattened with `leantimeUrl`,
-    `codeowners`, and the most recent `serviceAgreement` nested in.
+  * Consolidated project and service-agreement fields.
+  * Moved the Leantime project link from service agreement to project and rendered it via a Twig helper.
+  * Moved git repos from service agreement to project.
+  * Added codeowners on project, editable as a multiselect on the project edit form.
+  * Added a project API endpoint returning each project with its codeowners and most recent service agreement.
+  * Removed the service agreement API endpoint, superseded by the project API endpoint.
+* [PR-307](https://github.com/itk-dev/economics/pull/307)
+  * Migrated static analysis from Psalm to PHPStan (level 8). Analysis now also covers `tests/`.
 * [PR-306](https://github.com/itk-dev/economics/pull/306)
   * Excluded `messenger_messages` from Doctrine schema diffing via `doctrine.dbal.schema_filter`, so the Messenger
     Doctrine transport can manage its own table without generating noisy migrations.
