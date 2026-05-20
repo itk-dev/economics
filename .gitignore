@@ -43,3 +43,7 @@ yarn-error.log
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+###> go-task/task ###
+/.task/
+###< go-task/task ###
