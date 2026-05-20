@@ -9,13 +9,14 @@ use App\Entity\Worklog;
 use App\Message\EntityRemovedFromDataProviderMessage;
 use App\MessageHandler\EntityRemovedFromDataProviderHandler;
 use App\Service\DataProviderService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 
 class EntityRemovedFromDataProviderHandlerTest extends TestCase
 {
-    private DataProviderService $service;
+    private DataProviderService&MockObject $service;
     private EntityRemovedFromDataProviderHandler $handler;
 
     protected function setUp(): void

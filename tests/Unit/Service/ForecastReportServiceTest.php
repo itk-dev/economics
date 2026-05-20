@@ -12,13 +12,14 @@ use App\Repository\WorklogRepository;
 use App\Service\ForecastReportService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ForecastReportServiceTest extends TestCase
 {
-    private WorklogRepository $worklogRepository;
-    private WorkerRepository $workerRepository;
-    private EntityManagerInterface $entityManager;
+    private WorklogRepository&MockObject $worklogRepository;
+    private WorkerRepository&MockObject $workerRepository;
+    private EntityManagerInterface&MockObject $entityManager;
     private ForecastReportService $service;
 
     protected function setUp(): void

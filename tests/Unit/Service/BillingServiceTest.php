@@ -16,14 +16,15 @@ use App\Model\Invoices\ConfirmData;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BillingServiceTest extends TestCase
 {
-    private InvoiceRepository $invoiceRepository;
-    private InvoiceEntryRepository $invoiceEntryRepository;
-    private TranslatorInterface $translator;
+    private InvoiceRepository&MockObject $invoiceRepository;
+    private InvoiceEntryRepository&MockObject $invoiceEntryRepository;
+    private TranslatorInterface&MockObject $translator;
     private BillingService $billingService;
 
     protected function setUp(): void

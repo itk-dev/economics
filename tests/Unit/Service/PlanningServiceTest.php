@@ -12,14 +12,15 @@ use App\Repository\ProjectRepository;
 use App\Repository\WorkerRepository;
 use App\Service\DateTimeHelper;
 use App\Service\PlanningService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class PlanningServiceTest extends TestCase
 {
-    private DateTimeHelper $dateTimeHelper;
-    private IssueRepository $issueRepository;
-    private WorkerRepository $workerRepository;
-    private ProjectRepository $projectRepository;
+    private DateTimeHelper&MockObject $dateTimeHelper;
+    private IssueRepository&MockObject $issueRepository;
+    private WorkerRepository&MockObject $workerRepository;
+    private ProjectRepository&MockObject $projectRepository;
     private PlanningService $service;
 
     protected function setUp(): void

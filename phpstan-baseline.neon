@@ -739,112 +739,10 @@ parameters:
 			path: tests/Integration/Service/WorkloadReportServiceTest.php
 
 		-
-			message: '#^Call to an undefined method App\\Repository\\SubscriptionRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Unit/Command/SubscriptionHandlerCommandTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\SubscriptionHandlerService\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Unit/Command/SubscriptionHandlerCommandTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\SubscriptionHandlerService\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Command/SubscriptionHandlerCommandTest.php
-
-		-
-			message: '#^Call to an undefined method Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Command/SubscriptionHandlerCommandTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\LeantimeApiService\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/Command/SyncCommandTest.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Contracts\\HttpClient\\HttpClientInterface\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Command/SyncCommandTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\LeantimeApiService\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Command/SyncDeletedCommandTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\LeantimeApiService\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Command/SyncModifiedCommandTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\DataProviderService\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/MessageHandler/EntityRemovedFromDataProviderHandlerTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\DataProviderService\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/MessageHandler/EntityRemovedFromDataProviderHandlerTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\BillableUnbilledHoursReportData'' and App\\Model\\Reports\\BillableUnbilledHoursReportData will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 2
 			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\InvoiceEntryRepository\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/Service/BillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\InvoiceRepository\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Unit/Service/BillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\InvoiceRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 10
-			path: tests/Unit/Service/BillingServiceTest.php
 
 		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
@@ -859,94 +757,10 @@ parameters:
 			path: tests/Unit/Service/BillingServiceTest.php
 
 		-
-			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/Service/DashboardServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/Service/DashboardServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 6
-			path: tests/Unit/Service/DashboardServiceTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsFloat\(\) with float will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Unit/Service/DashboardServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\EpicRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Unit/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\ProjectRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 12
-			path: tests/Unit/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\VersionRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Unit/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 34
-			path: tests/Unit/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/Service/DataProviderServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/Service/ForecastReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/Service/ForecastReportServiceTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\ForecastReportData'' and App\\Model\\Reports\\ForecastReportData will always evaluate to true\.$#'
@@ -965,24 +779,6 @@ parameters:
 			identifier: property.nonObject
 			count: 1
 			path: tests/Unit/Service/ForecastReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/Service/HourReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 6
-			path: tests/Unit/Service/HourReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 6
-			path: tests/Unit/Service/HourReportServiceTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\HourReportData'' and App\\Model\\Reports\\HourReportData will always evaluate to true\.$#'
@@ -1015,24 +811,6 @@ parameters:
 			path: tests/Unit/Service/HourReportServiceTest.php
 
 		-
-			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\InvoicingRateReportData'' and App\\Model\\Reports\\InvoicingRateReportData will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 2
@@ -1057,30 +835,6 @@ parameters:
 			path: tests/Unit/Service/ManagementReportServiceTest.php
 
 		-
-			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Unit/Service/PlanningServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\ProjectRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Service/PlanningServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 6
-			path: tests/Unit/Service/PlanningServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Unit/Service/PlanningServiceTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Planning\\\\PlanningData'' and App\\Model\\Planning\\PlanningData will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
@@ -1093,109 +847,7 @@ parameters:
 			path: tests/Unit/Service/PlanningServiceTest.php
 
 		-
-			message: '#^Call to an undefined method App\\Repository\\ClientRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 10
-			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\ProjectBillingRepository\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\ProjectBillingRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 9
-			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\BillingService\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\BillingService\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\ClientHelper\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
 			message: '#^Strict comparison using \=\=\= between ''Widget'' and bool will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
 			path: tests/Unit/Service/ProjectBillingServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\ProjectRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 6
-			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Repository\\VersionRepository\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\HourReportService\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Service\\HourReportService\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Component\\Mailer\\MailerInterface\:\:expects\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Contracts\\Translation\\TranslatorInterface\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Twig\\Environment\:\:method\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php

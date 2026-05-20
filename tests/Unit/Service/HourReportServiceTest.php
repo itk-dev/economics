@@ -11,12 +11,13 @@ use App\Model\Reports\HourReportData;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 use App\Service\HourReportService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class HourReportServiceTest extends TestCase
 {
-    private IssueRepository $issueRepository;
-    private WorklogRepository $worklogRepository;
+    private IssueRepository&MockObject $issueRepository;
+    private WorklogRepository&MockObject $worklogRepository;
     private HourReportService $hourReportService;
 
     public function setUp(): void

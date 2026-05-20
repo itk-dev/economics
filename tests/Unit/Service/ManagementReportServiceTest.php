@@ -3,13 +3,14 @@
 namespace App\Tests\Unit\Service;
 
 use App\Service\ManagementReportService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ManagementReportServiceTest extends TestCase
 {
-    private TranslatorInterface $translator;
+    private TranslatorInterface&MockObject $translator;
     private ManagementReportService $service;
 
     protected function setUp(): void

@@ -4,13 +4,14 @@ namespace App\Tests\Unit\Command;
 
 use App\Command\SyncDeletedCommand;
 use App\Service\LeantimeApiService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class SyncDeletedCommandTest extends TestCase
 {
-    private LeantimeApiService $leantimeApiService;
+    private LeantimeApiService&MockObject $leantimeApiService;
     private CommandTester $commandTester;
 
     protected function setUp(): void

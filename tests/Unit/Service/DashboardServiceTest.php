@@ -9,13 +9,14 @@ use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\DashboardService;
 use App\Service\DateTimeHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class DashboardServiceTest extends TestCase
 {
-    private WorkerRepository $workerRepository;
-    private WorklogRepository $worklogRepository;
-    private DateTimeHelper $dateTimeHelper;
+    private WorkerRepository&MockObject $workerRepository;
+    private WorklogRepository&MockObject $worklogRepository;
+    private DateTimeHelper&MockObject $dateTimeHelper;
     private DashboardService $dashboardService;
 
     protected function setUp(): void

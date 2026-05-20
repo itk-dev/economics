@@ -9,12 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-308](https://github.com/itk-dev/economics/pull/308)
-  * PHPStan baseline cleared (530 → 0). `src/` and `tests/` are now clean at
-    level 8 with zero suppressions (`phpstan-baseline.neon` is
-    `ignoreErrors: []`). The bulk of the work was PHPDoc/typehint annotations,
-    generic-class shapes, dropped scaffold `@method find*` docblocks on 17
-    repositories, and null-guards. Items below are behavior- or
-    schema-affecting and worth calling out.
+  * PHPStan baseline reduced from 530 → 0 in `src/` and the pre-merge `tests/`,
+    then bounced to 444 when develop's new integration/unit test suites
+    arrived, and is now at 187. The first pass cleaned `src/` to zero
+    suppressions via PHPDoc/typehint annotations, generic-class shapes,
+    dropped scaffold `@method find*` docblocks on 17 repositories, and
+    null-guards. The post-merge pass intersected PHPUnit mock properties
+    with `MockObject` across 16 test files, removing 257 baseline entries.
+    Items below are behavior- or schema-affecting and worth calling out.
   * Migration `Version20260517131038`: made 18 columns nullable on synced
     entities (`issue`, `project`, `version`, `worklog`) and three DateTime
     fields (`project_billing.period_{start,end}`, `service_agreement.valid_from`)

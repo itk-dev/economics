@@ -10,15 +10,16 @@ use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillableUnbilledHoursReportService;
 use App\Service\DateTimeHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BillableUnbilledHoursReportServiceTest extends TestCase
 {
-    private WorklogRepository $worklogRepository;
-    private DateTimeHelper $dateTimeHelper;
-    private WorkerRepository $workerRepository;
-    private TranslatorInterface $translator;
+    private WorklogRepository&MockObject $worklogRepository;
+    private DateTimeHelper&MockObject $dateTimeHelper;
+    private WorkerRepository&MockObject $workerRepository;
+    private TranslatorInterface&MockObject $translator;
     private BillableUnbilledHoursReportService $service;
 
     protected function setUp(): void
