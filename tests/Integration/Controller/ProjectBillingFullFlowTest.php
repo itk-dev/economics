@@ -169,6 +169,7 @@ class ProjectBillingFullFlowTest extends AbstractControllerTestCase
         $projectBillingRepository = static::getContainer()->get(ProjectBillingRepository::class);
         \assert($projectBillingRepository instanceof ProjectBillingRepository);
         $pb = $projectBillingRepository->find($id);
+        $this->assertNotNull($pb);
         if (null !== $pb) {
             $pb->getInvoices()->count();
             foreach ($pb->getInvoices() as $invoice) {

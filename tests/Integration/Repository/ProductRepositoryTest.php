@@ -44,6 +44,7 @@ class ProductRepositoryTest extends KernelTestCase
         $projectRepo = self::getContainer()->get(ProjectRepository::class);
         \assert($projectRepo instanceof ProjectRepository);
         $project = $projectRepo->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
 
         $filterData = new ProductFilterData();
         $filterData->project = $project;

@@ -187,9 +187,11 @@ class InvoiceEntryFlowTest extends AbstractControllerTestCase
         $invoiceRepository = $container->get(InvoiceRepository::class);
         \assert($invoiceRepository instanceof InvoiceRepository);
         $invoice = $invoiceRepository->find($invoiceId);
+        $this->assertNotNull($invoice);
         $invoiceEntryRepository = $container->get(InvoiceEntryRepository::class);
         \assert($invoiceEntryRepository instanceof InvoiceEntryRepository);
         $entry = $invoiceEntryRepository->find($entryId);
+        $this->assertNotNull($entry);
         $this->assertInstanceOf(Invoice::class, $invoice);
         $this->assertInstanceOf(InvoiceEntry::class, $entry);
 

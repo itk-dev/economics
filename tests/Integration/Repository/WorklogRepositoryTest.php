@@ -33,9 +33,11 @@ class WorklogRepositoryTest extends KernelTestCase
     public function testFindByFilterDataBasic(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
         \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertNotNull($invoiceEntry);
 
         $filterData = new InvoiceEntryWorklogsFilterData();
         $filterData->onlyAvailable = false;
@@ -48,9 +50,11 @@ class WorklogRepositoryTest extends KernelTestCase
     public function testFindByFilterDataByWorker(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
         \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertNotNull($invoiceEntry);
 
         $filterData = new InvoiceEntryWorklogsFilterData();
         $filterData->onlyAvailable = false;
@@ -67,9 +71,11 @@ class WorklogRepositoryTest extends KernelTestCase
     public function testFindByFilterDataByDateRange(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
         \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertNotNull($invoiceEntry);
         $year = (new \DateTime())->format('Y');
 
         $filterData = new InvoiceEntryWorklogsFilterData();
@@ -91,9 +97,11 @@ class WorklogRepositoryTest extends KernelTestCase
     public function testFindByFilterDataByBilled(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
         \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertNotNull($invoiceEntry);
 
         $filterData = new InvoiceEntryWorklogsFilterData();
         $filterData->onlyAvailable = false;
@@ -110,9 +118,11 @@ class WorklogRepositoryTest extends KernelTestCase
     public function testFindByFilterDataOnlyAvailable(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
         \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertNotNull($invoiceEntry);
 
         $filterData = new InvoiceEntryWorklogsFilterData();
         $filterData->onlyAvailable = true;

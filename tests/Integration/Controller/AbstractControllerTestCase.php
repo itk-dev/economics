@@ -27,6 +27,7 @@ abstract class AbstractControllerTestCase extends WebTestCase
         $userRepository = static::getContainer()->get(UserRepository::class);
         \assert($userRepository instanceof UserRepository);
         $user = $userRepository->findOneBy(['email' => $email]);
+        $this->assertNotNull($user);
         if (null === $user) {
             throw new \RuntimeException(sprintf('Fixture user %s not found; run `task fixtures`.', $email));
         }

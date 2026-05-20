@@ -58,6 +58,7 @@ class IssueRepositoryTest extends KernelTestCase
     public function testGetFilteredPaginationByProject(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $filterData = new IssueFilterData();
         $filterData->project = $project;
         $result = $this->repository->getFilteredPagination($filterData);
@@ -72,6 +73,7 @@ class IssueRepositoryTest extends KernelTestCase
     {
         // project-0-0 has issue-0-0 linked to 'Epic 1'
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $result = $this->repository->findEpicOptionsByProject($project);
 
         $this->assertArrayHasKey('Epic 1', $result);
@@ -81,6 +83,7 @@ class IssueRepositoryTest extends KernelTestCase
     {
         // Even-index projects have DONE status issues with resolutionDate=today
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $periodStart = new \DateTime('-1 day');
         $periodEnd = new \DateTime('+1 day');
 
@@ -96,6 +99,7 @@ class IssueRepositoryTest extends KernelTestCase
     {
         // Odd-index projects have NEW status issues
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-1']);
+        $this->assertNotNull($project);
         $periodStart = new \DateTime('-1 day');
         $periodEnd = new \DateTime('+1 day');
 
@@ -109,6 +113,7 @@ class IssueRepositoryTest extends KernelTestCase
         $versionRepository = self::getContainer()->get(VersionRepository::class);
         \assert($versionRepository instanceof VersionRepository);
         $version = $versionRepository->findOneBy([], ['id' => 'ASC']);
+        $this->assertNotNull($version);
 
         $result = $this->repository->issuesContainingVersion($version);
 
@@ -151,6 +156,7 @@ class IssueRepositoryTest extends KernelTestCase
     public function testFindIssuesInDateRangeWithProjects(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $startDate = (new \DateTime('-1 day'))->format('Y-m-d');
         $endDate = (new \DateTime('+2 days'))->format('Y-m-d');
 
