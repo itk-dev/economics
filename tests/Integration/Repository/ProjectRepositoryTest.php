@@ -93,6 +93,19 @@ class ProjectRepositoryTest extends KernelTestCase
         }
     }
 
+    public function testGetProjectIdsWithCybersecurityAgreement(): void
+    {
+        // Fixtures attach a CybersecurityAgreement to the ServiceAgreement on
+        // project-0-0; no other project carries one.
+        $result = $this->repository->getProjectIdsWithCybersecurityAgreement();
+
+        $this->assertIsArray($result);
+        $this->assertCount(1, $result);
+
+        $project = $this->repository->findOneBy(['name' => 'project-0-0']);
+        $this->assertEquals([$project->getId()], $result);
+    }
+
     public function testGetProjectTrackerIdsByDataProviders(): void
     {
         $dpRepo = self::getContainer()->get(DataProviderRepository::class);
