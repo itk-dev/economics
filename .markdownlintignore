@@ -5,8 +5,10 @@
 vendor/
 node_modules/
 LICENSE.md
+CLAUDE.md
 # Drupal
 web/*.md
 web/core/
 web/libraries/
 web/*/contrib/
+CLAUDE.md
