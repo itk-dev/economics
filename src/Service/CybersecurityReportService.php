@@ -48,7 +48,7 @@ readonly class CybersecurityReportService
             // Sum total time spent (seconds → hours)
             $totalTicketSpent = array_reduce(
                 $worklogs,
-                fn (float $carry, Worklog $w) => $carry + ($w->getTimeSpentSeconds() * self::SECONDS_TO_HOURS),
+                fn (float $carry, Worklog $w) => $carry + $w->getTimeSpentSeconds() * self::SECONDS_TO_HOURS,
                 0
             );
 
