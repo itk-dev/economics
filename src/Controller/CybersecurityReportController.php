@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Form\CybersecurityReportType;
 use App\Model\Reports\CybersecurityReportFormData;
-use App\Repository\DataProviderRepository;
 use App\Service\CybersecurityReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,8 +16,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class CybersecurityReportController extends AbstractController
 {
     public function __construct(
-        private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ?string $defaultDataProvider,
         private readonly CybersecurityReportService $cybersecurityReportService,
     ) {
     }
@@ -31,11 +28,6 @@ final class CybersecurityReportController extends AbstractController
 
         $versionTitle = null;
 
-        $requestData = $request->query->all('cybersecurity_report');
-
-        $dataProviderId = ($requestData['dataProvider'] ?? null) ?: $this->defaultDataProvider;
-        $dataProvider = $dataProviderId ? $this->dataProviderRepository->find($dataProviderId) : null;
-
         $form = $this->createForm(CybersecurityReportType::class, $reportFormData, [
             // Since this is only a filtering form, csrf is not needed.
             'csrf_protection' => false,
@@ -44,7 +36,6 @@ final class CybersecurityReportController extends AbstractController
             'attr' => [
                 'id' => 'cybersecurity_report',
             ],
-            'data_provider' => $dataProvider,
             'versionTitle' => $versionTitle,
         ]);
 

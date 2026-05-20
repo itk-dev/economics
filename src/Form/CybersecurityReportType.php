@@ -2,11 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\DataProvider;
 use App\Model\Reports\CybersecurityReportFormData;
-use App\Repository\DataProviderRepository;
 use App\Service\CybersecurityReportService;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -20,8 +17,6 @@ class CybersecurityReportType extends AbstractType
 
     public function __construct(
         private readonly CybersecurityReportService $cybersecurityReportService,
-        private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ?string $defaultDataProvider,
     ) {
     }
 
@@ -31,27 +26,7 @@ class CybersecurityReportType extends AbstractType
     #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $dataProviders = $this->dataProviderRepository->findAll();
-        $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
-
-        if (null === $defaultProvider && count($dataProviders) > 0) {
-            $defaultProvider = $dataProviders[0];
-        }
-
         $builder
-            ->add('dataProvider', EntityType::class, [
-                'class' => DataProvider::class,
-                'required' => false,
-                'label' => 'cybersecurity_report.data_provider',
-                'label_attr' => ['class' => 'label'],
-                'placeholder' => 'cybersecurity_report.select_data_provider',
-                'attr' => [
-                    'class' => 'form-element',
-                ],
-                'help' => 'cybersecurity_report.data_provider_helptext',
-                'data' => $defaultProvider,
-                'choices' => $dataProviders,
-            ])
             ->add('versionTitle', ChoiceType::class, [
                 'choices' => [
                     self::DEFAULT_CYBERSECURITY_MILESTONE => self::DEFAULT_CYBERSECURITY_MILESTONE,
@@ -103,7 +78,6 @@ class CybersecurityReportType extends AbstractType
         $resolver->setDefaults([
             'data_class' => CybersecurityReportFormData::class,
         ])
-            ->setRequired('data_provider')
             ->setRequired('versionTitle');
     }
 }

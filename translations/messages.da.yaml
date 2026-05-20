@@ -593,9 +593,6 @@ hour_report:
 
 cybersecurity_report:
   title: "Cybersikkerhedsrapport"
-  data_provider: "Datakilde"
-  select_data_provider: "Vælg datakilde"
-  data_provider_helptext: ""
   versionTitle: "Version"
   from_date: "Fra dato"
   to_date: "Til dato"
