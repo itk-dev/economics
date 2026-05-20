@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-313](https://github.com/itk-dev/economics/pull/313)
   * Changed supervisor to php 8.4 version.
+* [PR-310](https://github.com/itk-dev/economics/pull/310)
+  * Remove dataProvider scoping.
 * [PR-264](https://github.com/itk-dev/economics/pull/264)
   Added cybersecurity report.
 * [PR-309](https://github.com/itk-dev/economics/pull/309)
