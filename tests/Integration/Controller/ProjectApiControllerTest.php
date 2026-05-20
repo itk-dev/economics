@@ -39,7 +39,7 @@ class ProjectApiControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
 
-        $payload = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        $payload = json_decode((string) $client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
         $this->assertIsArray($payload);
         $this->assertNotEmpty($payload, 'Fixtures should produce at least one project.');
 
@@ -54,7 +54,7 @@ class ProjectApiControllerTest extends WebTestCase
 
     private function assertJsonErrorMessage(KernelBrowser $client, string $expected): void
     {
-        $payload = json_decode($client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        $payload = json_decode((string) $client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
         $this->assertIsArray($payload);
         $this->assertArrayHasKey('error', $payload);
         $this->assertSame($expected, $payload['error']);

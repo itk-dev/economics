@@ -6,7 +6,6 @@ use App\Entity\Project;
 use App\Service\LeantimeUrlGenerator;
 use App\Twig\LeantimeExtension;
 use PHPUnit\Framework\TestCase;
-use Twig\TwigFunction;
 
 class LeantimeExtensionTest extends TestCase
 {
@@ -17,7 +16,6 @@ class LeantimeExtensionTest extends TestCase
         $functions = $extension->getFunctions();
 
         $this->assertCount(1, $functions);
-        $this->assertInstanceOf(TwigFunction::class, $functions[0]);
         $this->assertSame('leantime_url', $functions[0]->getName());
     }
 

@@ -126,11 +126,11 @@ class ProjectRepositoryTest extends KernelTestCase
 
     public function testGetApiProjects(): void
     {
+        /** @var LeantimeUrlGenerator $generator */
         $generator = self::getContainer()->get(LeantimeUrlGenerator::class);
         $result = $this->repository->getApiProjects($generator);
 
         $this->assertNotEmpty($result);
-        $this->assertIsArray($result);
 
         foreach ($result as $item) {
             $this->assertArrayHasKey('id', $item);
