@@ -1530,11 +1530,6 @@ parameters:
 			count: 1
 			path: src/Repository/ProjectVersionBudgetRepository.php
 
-		-
-			message: '#^Method App\\Repository\\ServiceAgreementRepository\:\:getApiServiceAgreements\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Repository/ServiceAgreementRepository.php
 
 		-
 			message: '#^Method App\\Repository\\ServiceAgreementRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
@@ -2762,12 +2757,6 @@ parameters:
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/ServiceAgreementRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with non\-empty\-array will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Integration/Repository/ServiceAgreementRepositoryTest.php
