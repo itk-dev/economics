@@ -3,7 +3,6 @@
 namespace App\Tests\Unit\Service;
 
 use App\Entity\Worker;
-use App\Model\Reports\InvoicingRateReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
@@ -39,7 +38,6 @@ class InvoicingRateReportServiceTest extends TestCase
 
         $result = $this->service->getInvoicingRateReport(2024, PeriodTypeEnum::MONTH);
 
-        $this->assertInstanceOf(InvoicingRateReportData::class, $result);
         $this->assertCount(12, $result->period);
     }
 
@@ -97,7 +95,6 @@ class InvoicingRateReportServiceTest extends TestCase
 
         $result = $this->service->getInvoicingRateReport(2024, PeriodTypeEnum::MONTH);
 
-        $this->assertInstanceOf(InvoicingRateReportData::class, $result);
         $this->assertCount(1, $result->workers);
 
         // With 0 logged hours, average should be 0

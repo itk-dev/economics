@@ -2,7 +2,6 @@
 
 namespace App\Tests\Integration\Repository;
 
-use App\Entity\Worklog;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\ProjectRepository;
@@ -37,9 +36,6 @@ class WorklogRepositoryTest extends KernelTestCase
         $result = $this->repository->findByFilterData($project, $invoiceEntry, $filterData);
 
         $this->assertNotEmpty($result);
-        foreach ($result as $worklog) {
-            $this->assertInstanceOf(Worklog::class, $worklog);
-        }
     }
 
     public function testFindByFilterDataByWorker(): void
@@ -177,9 +173,6 @@ class WorklogRepositoryTest extends KernelTestCase
         );
 
         $this->assertNotEmpty($result);
-        foreach ($result as $worklog) {
-            $this->assertInstanceOf(Worklog::class, $worklog);
-        }
     }
 
     public function testFindBillableWorklogsByWorkerAndDateRangeFilteredByWorker(): void
@@ -223,12 +216,6 @@ class WorklogRepositoryTest extends KernelTestCase
             new \DateTime("$year-12-31")
         );
 
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('total_count', $result);
-        $this->assertArrayHasKey('pages_count', $result);
-        $this->assertArrayHasKey('current_page', $result);
-        $this->assertArrayHasKey('page_size', $result);
-        $this->assertArrayHasKey('paginator', $result);
         $this->assertEquals(1, $result['current_page']);
         $this->assertEquals(50, $result['page_size']);
         $this->assertGreaterThan(0, $result['total_count']);

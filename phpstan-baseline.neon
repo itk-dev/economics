@@ -289,28 +289,10 @@ parameters:
 			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface\<int, App\\Entity\\Account\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/AccountRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, string\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/AccountRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\AccountRepositoryTest\:\:\$repository \(App\\Repository\\AccountRepository\) does not accept object\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Integration/Repository/AccountRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface\<int, App\\Entity\\Client\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/ClientRepositoryTest.php
 
 		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
@@ -325,34 +307,10 @@ parameters:
 			path: tests/Integration/Repository/ClientRepositoryTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Entity\\\\CybersecurityAgreement'' and App\\Entity\\CybersecurityAgreement will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/CybersecurityAgreementRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with non\-empty\-array\<int, App\\Entity\\CybersecurityAgreement\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/CybersecurityAgreementRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\CybersecurityAgreementRepositoryTest\:\:\$repository \(App\\Repository\\CybersecurityAgreementRepository\) does not accept object\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Integration/Repository/CybersecurityAgreementRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Entity\\\\Invoice'' and App\\Entity\\Invoice will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/InvoiceRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface\<int, App\\Entity\\Invoice\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/InvoiceRepositoryTest.php
 
 		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
@@ -370,24 +328,6 @@ parameters:
 			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
 			identifier: method.notFound
 			count: 2
-			path: tests/Integration/Repository/IssueRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Entity\\\\Issue'' and App\\Entity\\Issue will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/IssueRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface\<int, App\\Entity\\Issue\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/IssueRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, mixed\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
 			path: tests/Integration/Repository/IssueRepositoryTest.php
 
 		-
@@ -451,12 +391,6 @@ parameters:
 			path: tests/Integration/Repository/ProductRepositoryTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface\<int, App\\Entity\\Product\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/ProductRepositoryTest.php
-
-		-
 			message: '#^Cannot call method getId\(\) on App\\Entity\\Project\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -475,12 +409,6 @@ parameters:
 			path: tests/Integration/Repository/ProductRepositoryTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface\<int, App\\Entity\\ProjectBilling\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/ProjectBillingRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectBillingRepositoryTest\:\:\$repository \(App\\Repository\\ProjectBillingRepository\) does not accept object\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -489,24 +417,6 @@ parameters:
 		-
 			message: '#^Call to an undefined method object\:\:findAll\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Repository/ProjectRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Doctrine\\\\ORM\\\\QueryBuilder'' and Doctrine\\ORM\\QueryBuilder will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/ProjectRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface\<int, App\\Entity\\Project\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/ProjectRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with non\-empty\-array\<int, string\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Integration/Repository/ProjectRepositoryTest.php
 
@@ -535,28 +445,10 @@ parameters:
 			path: tests/Integration/Repository/ProjectRepositoryTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface\<int, App\\Entity\\ServiceAgreement\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/ServiceAgreementRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with non\-empty\-array\<int, array\<string, mixed\>\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/ServiceAgreementRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\ServiceAgreementRepositoryTest\:\:\$repository \(App\\Repository\\ServiceAgreementRepository\) does not accept object\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Integration/Repository/ServiceAgreementRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Entity\\\\Subscription'' and App\\Entity\\Subscription will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/SubscriptionRepositoryTest.php
 
 		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\SubscriptionRepositoryTest\:\:\$repository \(App\\Repository\\SubscriptionRepository\) does not accept object\.$#'
@@ -565,22 +457,10 @@ parameters:
 			path: tests/Integration/Repository/SubscriptionRepositoryTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface\<int, App\\Entity\\WorkerGroup\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/WorkerGroupRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\WorkerGroupRepositoryTest\:\:\$repository \(App\\Repository\\WorkerGroupRepository\) does not accept object\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Integration/Repository/WorkerGroupRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Entity\\\\Worker'' and App\\Entity\\Worker will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/WorkerRepositoryTest.php
 
 		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\WorkerRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
@@ -598,48 +478,6 @@ parameters:
 			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
 			identifier: method.notFound
 			count: 5
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with ''current_page'' and array\{total_count\: int, pages_count\: float, current_page\: int, page_size\: int, paginator\: Doctrine\\ORM\\Tools\\Pagination\\Paginator\<App\\Entity\\Worklog\>\} will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with ''page_size'' and array\{total_count\: int, pages_count\: float, current_page\: int, page_size\: int, paginator\: Doctrine\\ORM\\Tools\\Pagination\\Paginator\<App\\Entity\\Worklog\>\} will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with ''pages_count'' and array\{total_count\: int, pages_count\: float, current_page\: int, page_size\: int, paginator\: Doctrine\\ORM\\Tools\\Pagination\\Paginator\<App\\Entity\\Worklog\>\} will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with ''paginator'' and array\{total_count\: int, pages_count\: float, current_page\: int, page_size\: int, paginator\: Doctrine\\ORM\\Tools\\Pagination\\Paginator\<App\\Entity\\Worklog\>\} will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) with ''total_count'' and array\{total_count\: int, pages_count\: float, current_page\: int, page_size\: int, paginator\: Doctrine\\ORM\\Tools\\Pagination\\Paginator\<App\\Entity\\Worklog\>\} will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Entity\\\\Worklog'' and App\\Entity\\Worklog will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\{total_count\: int, pages_count\: float, current_page\: int, page_size\: int, paginator\: Doctrine\\ORM\\Tools\\Pagination\\Paginator\<App\\Entity\\Worklog\>\} will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
@@ -679,38 +517,8 @@ parameters:
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\BillableUnbilledHoursReportData'' and App\\Model\\Reports\\BillableUnbilledHoursReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Service/BillableUnbilledHoursReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\ForecastReportData'' and App\\Model\\Reports\\ForecastReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Service/ForecastReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\HourReportData'' and App\\Model\\Reports\\HourReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Service/HourReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\HourReportProjectTag'' and App\\Model\\Reports\\HourReportProjectTag will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: tests/Integration/Service/HourReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\InvoicingRateReportData'' and App\\Model\\Reports\\InvoicingRateReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Service/InvoicingRateReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\InvoicingRateReportWorker'' and App\\Model\\Reports\\InvoicingRateReportWorker will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
+			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, \$variable\-\>count\(\)\)\.$#'
+			identifier: phpunit.assertCount
 			count: 1
 			path: tests/Integration/Service/InvoicingRateReportServiceTest.php
 
@@ -718,31 +526,7 @@ parameters:
 			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, \$variable\-\>count\(\)\)\.$#'
 			identifier: phpunit.assertCount
 			count: 1
-			path: tests/Integration/Service/InvoicingRateReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\WorkloadReportData'' and App\\Model\\Reports\\WorkloadReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
 			path: tests/Integration/Service/WorkloadReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\WorkloadReportWorker'' and App\\Model\\Reports\\WorkloadReportWorker will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Integration/Service/WorkloadReportServiceTest.php
-
-		-
-			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, \$variable\-\>count\(\)\)\.$#'
-			identifier: phpunit.assertCount
-			count: 1
-			path: tests/Integration/Service/WorkloadReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\BillableUnbilledHoursReportData'' and App\\Model\\Reports\\BillableUnbilledHoursReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
 
 		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
@@ -757,18 +541,6 @@ parameters:
 			path: tests/Unit/Service/BillingServiceTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsFloat\(\) with float will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Service/DashboardServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\ForecastReportData'' and App\\Model\\Reports\\ForecastReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Service/ForecastReportServiceTest.php
-
-		-
 			message: '#^Cannot access property \$invoiced on App\\Model\\Reports\\ForecastReportProjectData\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -779,12 +551,6 @@ parameters:
 			identifier: property.nonObject
 			count: 1
 			path: tests/Unit/Service/ForecastReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\HourReportData'' and App\\Model\\Reports\\HourReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: tests/Unit/Service/HourReportServiceTest.php
 
 		-
 			message: '#^Cannot access property \$projectTickets on App\\Model\\Reports\\HourReportProjectTag\|null\.$#'
@@ -811,12 +577,6 @@ parameters:
 			path: tests/Unit/Service/HourReportServiceTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\InvoicingRateReportData'' and App\\Model\\Reports\\InvoicingRateReportData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
-
-		-
 			message: '#^Cannot access property \$average on App\\Model\\Reports\\InvoicingRateReportWorker\|false\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -833,12 +593,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: tests/Unit/Service/ManagementReportServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Planning\\\\PlanningData'' and App\\Model\\Planning\\PlanningData will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Service/PlanningServiceTest.php
 
 		-
 			message: '#^Cannot access property \$displayName on App\\Model\\Planning\\Assignee\|null\.$#'

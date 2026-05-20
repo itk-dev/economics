@@ -6,7 +6,6 @@ use App\Entity\Issue as IssueEntity;
 use App\Entity\Project as ProjectEntity;
 use App\Entity\Worker;
 use App\Enum\IssueStatusEnum;
-use App\Model\Planning\PlanningData;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\WorkerRepository;
@@ -54,7 +53,6 @@ class PlanningServiceTest extends TestCase
 
         $result = $this->service->getPlanningData(2024, null);
 
-        $this->assertInstanceOf(PlanningData::class, $result);
         // With holidayPlanning=false (default), weeks are grouped into support+sprint periods
         // 52 weeks / (1 support + 3 sprint) = 13 groups * 2 entries per group = 26
         $this->assertCount(26, $result->weeks);

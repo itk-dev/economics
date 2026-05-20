@@ -23,7 +23,6 @@ class SubscriptionRepositoryTest extends KernelTestCase
 
         $this->assertCount(2, $result);
         foreach ($result as $subscription) {
-            $this->assertInstanceOf(Subscription::class, $subscription);
             $this->assertEquals('subscriber@test.com', $subscription->getEmail());
         }
     }

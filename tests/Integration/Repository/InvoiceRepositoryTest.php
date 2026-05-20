@@ -2,10 +2,8 @@
 
 namespace App\Tests\Integration\Repository;
 
-use App\Entity\Invoice;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\InvoiceRepository;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class InvoiceRepositoryTest extends KernelTestCase
@@ -27,7 +25,6 @@ class InvoiceRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($result);
         foreach ($result as $invoice) {
-            $this->assertInstanceOf(Invoice::class, $invoice);
             $this->assertTrue($invoice->isRecorded());
             $this->assertNotNull($invoice->getRecordedDate());
         }
@@ -49,7 +46,6 @@ class InvoiceRepositoryTest extends KernelTestCase
         $filterData->recorded = true;
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThanOrEqual(2, $result->getTotalItemCount());
         foreach ($result as $invoice) {
             $this->assertTrue($invoice->isRecorded());

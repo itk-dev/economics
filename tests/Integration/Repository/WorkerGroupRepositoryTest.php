@@ -4,7 +4,6 @@ namespace App\Tests\Integration\Repository;
 
 use App\Model\Invoices\NameFilterData;
 use App\Repository\WorkerGroupRepository;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class WorkerGroupRepositoryTest extends KernelTestCase
@@ -22,7 +21,6 @@ class WorkerGroupRepositoryTest extends KernelTestCase
         $filterData = new NameFilterData();
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThanOrEqual(2, $result->getTotalItemCount());
     }
 

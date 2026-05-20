@@ -7,8 +7,6 @@ use App\Model\Invoices\ProjectFilterData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ProjectRepositoryTest extends KernelTestCase
@@ -27,8 +25,6 @@ class ProjectRepositoryTest extends KernelTestCase
     public function testGetIncluded(): void
     {
         $qb = $this->repository->getIncluded();
-
-        $this->assertInstanceOf(QueryBuilder::class, $qb);
 
         $results = $qb->getQuery()->getResult();
         $this->assertNotEmpty($results);
@@ -50,7 +46,6 @@ class ProjectRepositoryTest extends KernelTestCase
         $filterData->include = true;
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThanOrEqual(20, $result->getTotalItemCount());
     }
 
@@ -102,7 +97,6 @@ class ProjectRepositoryTest extends KernelTestCase
         $result = $this->repository->getProjectTrackerIdsByDataProviders($dataProviders);
 
         $this->assertNotEmpty($result);
-        $this->assertIsArray($result);
 
         // Verify results are sorted
         $sorted = $result;

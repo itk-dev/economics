@@ -5,7 +5,6 @@ namespace App\Tests\Integration\Repository;
 use App\Enum\HostingProviderEnum;
 use App\Model\Invoices\ServiceAgreementFilterData;
 use App\Repository\ServiceAgreementRepository;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ServiceAgreementRepositoryTest extends KernelTestCase
@@ -23,7 +22,6 @@ class ServiceAgreementRepositoryTest extends KernelTestCase
         $filterData = new ServiceAgreementFilterData();
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThanOrEqual(3, $result->getTotalItemCount());
     }
 
@@ -86,7 +84,6 @@ class ServiceAgreementRepositoryTest extends KernelTestCase
         $result = $this->repository->getApiServiceAgreements();
 
         $this->assertNotEmpty($result);
-        $this->assertIsArray($result);
 
         foreach ($result as $item) {
             $this->assertArrayHasKey('projectTrackerKey', $item);

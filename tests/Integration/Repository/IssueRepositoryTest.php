@@ -12,7 +12,6 @@ use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorkerGroupRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class IssueRepositoryTest extends KernelTestCase
@@ -35,7 +34,6 @@ class IssueRepositoryTest extends KernelTestCase
         $filterData = new IssueFilterData();
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThan(0, $result->getTotalItemCount());
     }
 
@@ -70,7 +68,6 @@ class IssueRepositoryTest extends KernelTestCase
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
         $result = $this->repository->findEpicOptionsByProject($project);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('Epic 1', $result);
     }
 
@@ -110,7 +107,6 @@ class IssueRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($result);
         foreach ($result as $issue) {
-            $this->assertInstanceOf(Issue::class, $issue);
             $versionIds = $issue->getVersions()->map(fn (Version $v) => $v->getId())->toArray();
             $this->assertContains($version->getId(), $versionIds);
         }

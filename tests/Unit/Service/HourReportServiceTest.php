@@ -7,7 +7,6 @@ use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worklog;
-use App\Model\Reports\HourReportData;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 use App\Service\HourReportService;
@@ -79,8 +78,6 @@ class HourReportServiceTest extends TestCase
             new \DateTime('2024-01-31'),
             $version,
         );
-
-        $this->assertInstanceOf(HourReportData::class, $result);
     }
 
     public function testGetHourReportWithoutVersionUsesProjectFilter(): void
@@ -100,8 +97,6 @@ class HourReportServiceTest extends TestCase
             new \DateTime('2024-01-01'),
             new \DateTime('2024-01-31'),
         );
-
-        $this->assertInstanceOf(HourReportData::class, $result);
     }
 
     public function testGetHourReportSkipsIssuesWithNoWorklogsInRange(): void

@@ -4,7 +4,6 @@ namespace App\Tests\Integration\Repository;
 
 use App\Model\Invoices\NameFilterData;
 use App\Repository\AccountRepository;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class AccountRepositoryTest extends KernelTestCase
@@ -21,7 +20,6 @@ class AccountRepositoryTest extends KernelTestCase
     {
         $result = $this->repository->getAllChoices();
 
-        $this->assertIsArray($result);
         $this->assertGreaterThanOrEqual(2, \count($result));
 
         $this->assertArrayHasKey('ACC001: Test Account 1', $result);
@@ -36,7 +34,6 @@ class AccountRepositoryTest extends KernelTestCase
         $filterData = new NameFilterData();
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThanOrEqual(2, $result->getTotalItemCount());
     }
 

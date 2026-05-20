@@ -26,10 +26,6 @@ class WorkerRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($results);
         $this->assertGreaterThanOrEqual(10, \count($results));
-
-        foreach ($results as $worker) {
-            $this->assertInstanceOf(Worker::class, $worker);
-        }
     }
 
     public function testFindAllIncludedInReportsExcludesDisabled(): void

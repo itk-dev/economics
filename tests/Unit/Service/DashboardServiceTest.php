@@ -149,6 +149,5 @@ class DashboardServiceTest extends TestCase
         $this->assertInstanceOf(DashboardData::class, $result);
         // yearStatus = (totalTimeSpent - yearNormToDate) / 3600
         // The exact value depends on how many weekdays in 2023, but it should be a number
-        $this->assertIsFloat($result->workHours);
     }
 }

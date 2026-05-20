@@ -6,7 +6,6 @@ use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worker;
 use App\Entity\Worklog;
-use App\Model\Reports\ForecastReportData;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\ForecastReportService;
@@ -65,7 +64,6 @@ class ForecastReportServiceTest extends TestCase
             new \DateTime('2024-01-31'),
         );
 
-        $this->assertInstanceOf(ForecastReportData::class, $result);
         $this->assertEqualsWithDelta(0.0, $result->totalInvoiced, 0.001);
         $this->assertEqualsWithDelta(0.0, $result->totalInvoicedAndRecorded, 0.001);
     }

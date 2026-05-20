@@ -5,7 +5,6 @@ namespace App\Tests\Unit\Service;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
-use App\Model\Reports\BillableUnbilledHoursReportData;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillableUnbilledHoursReportService;
@@ -55,8 +54,6 @@ class BillableUnbilledHoursReportServiceTest extends TestCase
             ->willReturn([]);
 
         $result = $this->service->getBillableUnbilledHoursReport(2024);
-
-        $this->assertInstanceOf(BillableUnbilledHoursReportData::class, $result);
     }
 
     public function testQuarterUsesQuarterDateRange(): void
@@ -76,8 +73,6 @@ class BillableUnbilledHoursReportServiceTest extends TestCase
             ->willReturn([]);
 
         $result = $this->service->getBillableUnbilledHoursReport(2024, 2);
-
-        $this->assertInstanceOf(BillableUnbilledHoursReportData::class, $result);
     }
 
     public function testAggregatesPerProject(): void

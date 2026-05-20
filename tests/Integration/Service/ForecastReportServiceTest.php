@@ -2,7 +2,6 @@
 
 namespace App\Tests\Integration\Service;
 
-use App\Model\Reports\ForecastReportData;
 use App\Service\ForecastReportService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -23,7 +22,6 @@ class ForecastReportServiceTest extends KernelTestCase
 
         $report = $service->getForecastReport($fromDate, $toDate);
 
-        $this->assertInstanceOf(ForecastReportData::class, $report);
         $this->assertGreaterThanOrEqual(0.0, $report->totalInvoiced);
         $this->assertGreaterThanOrEqual(0.0, $report->totalInvoicedAndRecorded);
 

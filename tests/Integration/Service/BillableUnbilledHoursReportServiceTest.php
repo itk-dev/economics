@@ -2,7 +2,6 @@
 
 namespace App\Tests\Integration\Service;
 
-use App\Model\Reports\BillableUnbilledHoursReportData;
 use App\Service\BillableUnbilledHoursReportService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -20,7 +19,6 @@ class BillableUnbilledHoursReportServiceTest extends KernelTestCase
 
         $report = $service->getBillableUnbilledHoursReport($year);
 
-        $this->assertInstanceOf(BillableUnbilledHoursReportData::class, $report);
         $this->assertGreaterThan(0, $report->totalHoursForAllProjects, 'Fixtures contain billable unbilled worklogs for the current year.');
         $this->assertCount(1, $report->projectData, 'Report wraps projectData as a single-element collection of project arrays.');
         $this->assertNotEmpty($report->projectTotals);

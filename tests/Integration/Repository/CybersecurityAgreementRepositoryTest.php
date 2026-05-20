@@ -2,7 +2,6 @@
 
 namespace App\Tests\Integration\Repository;
 
-use App\Entity\CybersecurityAgreement;
 use App\Repository\CybersecurityAgreementRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -21,10 +20,8 @@ class CybersecurityAgreementRepositoryTest extends KernelTestCase
         $result = $this->repository->findAllIndexed();
 
         $this->assertNotEmpty($result);
-        $this->assertIsArray($result);
 
         foreach ($result as $key => $entity) {
-            $this->assertInstanceOf(CybersecurityAgreement::class, $entity);
             $this->assertEquals($entity->getId(), $key);
         }
     }
