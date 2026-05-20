@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-307](https://github.com/itk-dev/economics/pull/307)
+  * Migrated static analysis from Psalm to PHPStan (level 8). Analysis now also covers `tests/`.
 * [PR-306](https://github.com/itk-dev/economics/pull/306)
-  * Excluded `messenger_messages` from Doctrine schema diffing via
-    `doctrine.dbal.schema_filter`, so the Messenger Doctrine transport can
-    manage its own table without generating noisy migrations.
+  * Excluded `messenger_messages` from Doctrine schema diffing via `doctrine.dbal.schema_filter`, so the Messenger
+    Doctrine transport can manage its own table without generating noisy migrations.
   * Upgraded Symfony from 6.4 to 7.4 LTS. Dropped `symfony/proxy-manager-bridge`
     (removed in Symfony 7.0), removed the obsolete `enable_authenticator_manager`
     security option, and tightened `User::eraseCredentials()` to the new

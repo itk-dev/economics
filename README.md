@@ -180,7 +180,7 @@ docker compose run --rm node npm run coding-standards-apply
 
 ### Code analysis
 
-We use [Psalm](https://psalm.dev/) for static code analysis:
+We use [PHPStan](https://phpstan.org/) for static code analysis:
 
 ``` shell
 docker compose exec phpfpm composer code-analysis
