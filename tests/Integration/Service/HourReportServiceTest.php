@@ -14,10 +14,10 @@ class HourReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var ProjectRepository $projectRepository */
         $projectRepository = $container->get(ProjectRepository::class);
-        /** @var HourReportService $service */
+        \assert($projectRepository instanceof ProjectRepository);
         $service = $container->get(HourReportService::class);
+        \assert($service instanceof HourReportService);
 
         // project-0-0 is the only project whose first issue is tagged with "Epic 1" in fixtures.
         $project = $projectRepository->findOneBy(['name' => 'project-0-0']);
@@ -56,10 +56,10 @@ class HourReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var ProjectRepository $projectRepository */
         $projectRepository = $container->get(ProjectRepository::class);
-        /** @var HourReportService $service */
+        \assert($projectRepository instanceof ProjectRepository);
         $service = $container->get(HourReportService::class);
+        \assert($service instanceof HourReportService);
 
         $project = $projectRepository->findOneBy(['name' => 'project-0-0']);
         $this->assertInstanceOf(Project::class, $project);

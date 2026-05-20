@@ -18,20 +18,20 @@ class ProjectBillingServiceTest extends KernelTestCase
 
         $container = self::getContainer();
 
-        /** @var EntityManagerInterface $entityManager */
         $entityManager = $container->get(EntityManagerInterface::class);
+        \assert($entityManager instanceof EntityManagerInterface);
 
-        /** @var ProjectRepository $projectRepository */
         $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
 
-        /** @var ProjectBillingService $projectBillingService */
         $projectBillingService = $container->get(ProjectBillingService::class);
+        \assert($projectBillingService instanceof ProjectBillingService);
 
-        /** @var BillingService $billingService */
         $billingService = $container->get(BillingService::class);
+        \assert($billingService instanceof BillingService);
 
-        /** @var IssueRepository $issueRepository */
         $issueRepository = $container->get(IssueRepository::class);
+        \assert($issueRepository instanceof IssueRepository);
 
         $project = $projectRepository->findOneBy([], ['id' => 'asc']);
         \assert(null !== $project);

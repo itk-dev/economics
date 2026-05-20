@@ -14,7 +14,9 @@ class SubscriptionRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(SubscriptionRepository::class);
+        $repository = self::getContainer()->get(SubscriptionRepository::class);
+        \assert($repository instanceof SubscriptionRepository);
+        $this->repository = $repository;
     }
 
     public function testFindByCustom(): void

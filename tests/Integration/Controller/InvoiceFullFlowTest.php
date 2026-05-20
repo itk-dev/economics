@@ -24,12 +24,15 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         $client = $this->createClientLoggedInAs(['ROLE_INVOICE']);
         $container = static::getContainer();
 
-        $project = $container->get(ProjectRepository::class)->getIncluded()
+        $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $project = $projectRepository->getIncluded()
             ->setMaxResults(1)->getQuery()->getOneOrNullResult();
         $this->assertNotNull($project, 'Expected an included project from fixtures.');
 
-        $internalClient = $container->get(ClientRepository::class)
-            ->findOneBy(['type' => ClientTypeEnum::INTERNAL]);
+        $clientRepository = $container->get(ClientRepository::class);
+        \assert($clientRepository instanceof ClientRepository);
+        $internalClient = $clientRepository->findOneBy(['type' => ClientTypeEnum::INTERNAL]);
         $this->assertInstanceOf(Client::class, $internalClient, 'Expected an internal client fixture.');
 
         // 1. Create invoice.
@@ -147,6 +150,7 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
 
         // 6. Attach worklogs to the WORKLOG entry.
         $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+        \assert($worklogRepository instanceof WorklogRepository);
         $unbilled = $worklogRepository->findBy(
             ['project' => $project, 'isBilled' => false],
             ['id' => 'ASC'],
@@ -212,8 +216,10 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         // Worklogs attached to the WORKLOG entry should be marked billed.
         $selectedIds = array_map(static fn (Worklog $wl) => $wl->getId(), $selected);
         $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
         $em->clear();
         $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+        \assert($worklogRepository instanceof WorklogRepository);
         foreach ($selectedIds as $wlId) {
             $wl = $worklogRepository->find($wlId);
             $this->assertNotNull($wl);
@@ -273,6 +279,7 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
 
         // MANUAL redirects back to invoice edit — fetch the most recently created entry for this invoice.
         $repository = static::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($repository instanceof InvoiceEntryRepository);
         $latest = $repository->findBy([], ['id' => 'DESC'], 1);
         $this->assertNotEmpty($latest);
 
@@ -282,16 +289,24 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
     private function reloadInvoice(int $id): ?Invoice
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
         $em->clear();
 
-        return static::getContainer()->get(InvoiceRepository::class)->find($id);
+        $invoiceRepository = static::getContainer()->get(InvoiceRepository::class);
+        \assert($invoiceRepository instanceof InvoiceRepository);
+
+        return $invoiceRepository->find($id);
     }
 
     private function reloadInvoiceEntry(int $id): ?InvoiceEntry
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
         $em->clear();
 
-        return static::getContainer()->get(InvoiceEntryRepository::class)->find($id);
+        $invoiceEntryRepository = static::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($invoiceEntryRepository instanceof InvoiceEntryRepository);
+
+        return $invoiceEntryRepository->find($id);
     }
 }

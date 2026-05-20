@@ -13,7 +13,9 @@ class AccountRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(AccountRepository::class);
+        $repository = self::getContainer()->get(AccountRepository::class);
+        \assert($repository instanceof AccountRepository);
+        $this->repository = $repository;
     }
 
     public function testGetAllChoices(): void

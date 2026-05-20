@@ -13,7 +13,9 @@ class InvoiceRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(InvoiceRepository::class);
+        $repository = self::getContainer()->get(InvoiceRepository::class);
+        \assert($repository instanceof InvoiceRepository);
+        $this->repository = $repository;
     }
 
     public function testGetByRecordedDateBetween(): void

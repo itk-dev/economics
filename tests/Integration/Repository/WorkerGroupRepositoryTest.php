@@ -13,7 +13,9 @@ class WorkerGroupRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(WorkerGroupRepository::class);
+        $repository = self::getContainer()->get(WorkerGroupRepository::class);
+        \assert($repository instanceof WorkerGroupRepository);
+        $this->repository = $repository;
     }
 
     public function testGetFilteredPaginationNoFilter(): void

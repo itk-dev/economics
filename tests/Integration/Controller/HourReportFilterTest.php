@@ -8,7 +8,9 @@ class HourReportFilterTest extends AbstractControllerTestCase
 {
     public function testFilterSubmissionRendersReportForSelectedProject(): void
     {
-        $project = static::getContainer()->get(ProjectRepository::class)->getIncluded()
+        $projectRepository = static::getContainer()->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $project = $projectRepository->getIncluded()
             ->setMaxResults(1)->getQuery()->getOneOrNullResult();
         $this->assertNotNull($project, 'Expected an included project from fixtures.');
 

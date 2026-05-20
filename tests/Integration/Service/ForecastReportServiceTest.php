@@ -12,8 +12,8 @@ class ForecastReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var ForecastReportService $service */
         $service = $container->get(ForecastReportService::class);
+        \assert($service instanceof ForecastReportService);
 
         // Cover the entire fixture year plus a year of headroom on either side.
         $year = (int) (new \DateTime())->format('Y');

@@ -15,8 +15,8 @@ class InvoicingRateReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var InvoicingRateReportService $service */
         $service = $container->get(InvoicingRateReportService::class);
+        \assert($service instanceof InvoicingRateReportService);
 
         $year = (int) (new \DateTime())->format('Y');
 

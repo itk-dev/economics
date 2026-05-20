@@ -24,7 +24,9 @@ abstract class AbstractControllerTestCase extends WebTestCase
         $email = self::ROLE_USER_FIXTURES[$role]
             ?? throw new \InvalidArgumentException(sprintf('No fixture user for role %s.', $role));
 
-        $user = static::getContainer()->get(UserRepository::class)->findOneBy(['email' => $email]);
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        \assert($userRepository instanceof UserRepository);
+        $user = $userRepository->findOneBy(['email' => $email]);
         if (null === $user) {
             throw new \RuntimeException(sprintf('Fixture user %s not found; run `task fixtures`.', $email));
         }

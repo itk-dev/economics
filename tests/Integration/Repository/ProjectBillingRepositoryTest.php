@@ -13,7 +13,9 @@ class ProjectBillingRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(ProjectBillingRepository::class);
+        $repository = self::getContainer()->get(ProjectBillingRepository::class);
+        \assert($repository instanceof ProjectBillingRepository);
+        $this->repository = $repository;
     }
 
     public function testGetFilteredPaginationRecorded(): void

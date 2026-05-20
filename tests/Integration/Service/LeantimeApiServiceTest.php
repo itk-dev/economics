@@ -33,18 +33,18 @@ class LeantimeApiServiceTest extends KernelTestCase
         $container = self::getContainer();
 
         $messageBus = $container->get(MessageBusInterface::class);
-        $dataProviderRepository = $container->get(DataProviderRepository::class);
-        $projectRepository = $container->get(ProjectRepository::class);
-        $versionRepository = $container->get(VersionRepository::class);
-        $issueRepository = $container->get(IssueRepository::class);
-        $worklogRepository = $container->get(WorklogRepository::class);
-        $entityManager = $container->get(EntityManagerInterface::class);
         \assert($messageBus instanceof MessageBusInterface);
+        $dataProviderRepository = $container->get(DataProviderRepository::class);
         \assert($dataProviderRepository instanceof DataProviderRepository);
+        $projectRepository = $container->get(ProjectRepository::class);
         \assert($projectRepository instanceof ProjectRepository);
+        $versionRepository = $container->get(VersionRepository::class);
         \assert($versionRepository instanceof VersionRepository);
+        $issueRepository = $container->get(IssueRepository::class);
         \assert($issueRepository instanceof IssueRepository);
+        $worklogRepository = $container->get(WorklogRepository::class);
         \assert($worklogRepository instanceof WorklogRepository);
+        $entityManager = $container->get(EntityManagerInterface::class);
         \assert($entityManager instanceof EntityManagerInterface);
 
         $loggerMock = $this->createMock(LoggerInterface::class);
@@ -182,18 +182,18 @@ class LeantimeApiServiceTest extends KernelTestCase
         $container = self::getContainer();
 
         $messageBus = $container->get(MessageBusInterface::class);
-        $dataProviderRepository = $container->get(DataProviderRepository::class);
-        $projectRepository = $container->get(ProjectRepository::class);
-        $versionRepository = $container->get(VersionRepository::class);
-        $issueRepository = $container->get(IssueRepository::class);
-        $worklogRepository = $container->get(WorklogRepository::class);
-        $entityManager = $container->get(EntityManagerInterface::class);
         \assert($messageBus instanceof MessageBusInterface);
+        $dataProviderRepository = $container->get(DataProviderRepository::class);
         \assert($dataProviderRepository instanceof DataProviderRepository);
+        $projectRepository = $container->get(ProjectRepository::class);
         \assert($projectRepository instanceof ProjectRepository);
+        $versionRepository = $container->get(VersionRepository::class);
         \assert($versionRepository instanceof VersionRepository);
+        $issueRepository = $container->get(IssueRepository::class);
         \assert($issueRepository instanceof IssueRepository);
+        $worklogRepository = $container->get(WorklogRepository::class);
         \assert($worklogRepository instanceof WorklogRepository);
+        $entityManager = $container->get(EntityManagerInterface::class);
         \assert($entityManager instanceof EntityManagerInterface);
 
         $loggerMock = $this->createMock(LoggerInterface::class);

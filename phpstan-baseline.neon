@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/AbstractControllerTestCase.php
-
-		-
 			message: '#^Method App\\Tests\\Integration\\Controller\\AbstractControllerTestCase\:\:assertDeniedFor\(\) has parameter \$roles with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -37,42 +31,6 @@ parameters:
 			path: tests/Integration/Controller/AbstractControllerTestCase.php
 
 		-
-			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/HourReportFilterTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:find\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:flush\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:persist\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
-
-		-
 			message: '#^Parameter \#1 \$id of method App\\Tests\\Integration\\Controller\\InvoiceEntryFlowTest\:\:reloadEntry\(\) expects int, int\|null given\.$#'
 			identifier: argument.type
 			count: 5
@@ -85,18 +43,6 @@ parameters:
 			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
 
 		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Integration/Controller/InvoiceFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/InvoiceFlowTest.php
-
-		-
 			message: '#^Cannot call method getId\(\) on App\\Entity\\Project\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -107,36 +53,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Integration/Controller/InvoiceFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Integration/Controller/InvoiceFullFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:find\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Integration/Controller/InvoiceFullFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:findBy\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Integration/Controller/InvoiceFullFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/InvoiceFullFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/InvoiceFullFlowTest.php
 
 		-
 			message: '#^Cannot call method getAmount\(\) on App\\Entity\\InvoiceEntry\|null\.$#'
@@ -199,22 +115,16 @@ parameters:
 			path: tests/Integration/Controller/InvoiceFullFlowTest.php
 
 		-
+			message: '#^Method App\\Tests\\Integration\\Controller\\InvoiceFullFlowTest\:\:submitNewEntry\(\) should return int but returns int\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
 			message: '#^Offset 1 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 2
 			path: tests/Integration/Controller/InvoiceFullFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/ProjectBillingFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/ProjectBillingFlowTest.php
 
 		-
 			message: '#^Cannot call method getId\(\) on App\\Entity\\Project\|null\.$#'
@@ -227,24 +137,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Integration/Controller/ProjectBillingFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:find\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
 
 		-
 			message: '#^Cannot call method getDescription\(\) on App\\Entity\\ProjectBilling\|null\.$#'
@@ -289,51 +181,27 @@ parameters:
 			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\AccountRepositoryTest\:\:\$repository \(App\\Repository\\AccountRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/AccountRepositoryTest.php
-
-		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 2
 			path: tests/Integration/Repository/ClientRepositoryTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\ClientRepositoryTest\:\:\$repository \(App\\Repository\\ClientRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/ClientRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\CybersecurityAgreementRepositoryTest\:\:\$repository \(App\\Repository\\CybersecurityAgreementRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/CybersecurityAgreementRepositoryTest.php
-
-		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Integration/Repository/InvoiceRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\InvoiceRepositoryTest\:\:\$repository \(App\\Repository\\InvoiceRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/InvoiceRepositoryTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Integration/Repository/IssueRepositoryTest.php
 
 		-
 			message: '#^Cannot call method getId\(\) on App\\Entity\\Project\|null\.$#'
 			identifier: method.nonObject
 			count: 4
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\Version\|null\.$#'
+			identifier: method.nonObject
+			count: 1
 			path: tests/Integration/Repository/IssueRepositoryTest.php
 
 		-
@@ -349,6 +217,12 @@ parameters:
 			path: tests/Integration/Repository/IssueRepositoryTest.php
 
 		-
+			message: '#^Parameter \#1 \$version of method App\\Repository\\IssueRepository\:\:issuesContainingVersion\(\) expects App\\Entity\\Version, App\\Entity\\Version\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
 			message: '#^Parameter \#2 \$haystack of method App\\Tests\\Integration\\Repository\\IssueRepositoryTest\:\:assertStringContains\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -361,39 +235,15 @@ parameters:
 			path: tests/Integration/Repository/IssueRepositoryTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\IssueRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/IssueRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\IssueRepositoryTest\:\:\$entityManager is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
 			path: tests/Integration/Repository/IssueRepositoryTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\IssueRepositoryTest\:\:\$projectRepository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/IssueRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\IssueRepositoryTest\:\:\$repository \(App\\Repository\\IssueRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/IssueRepositoryTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Repository/ProductRepositoryTest.php
-
-		-
 			message: '#^Cannot call method getId\(\) on App\\Entity\\Project\|null\.$#'
 			identifier: method.nonObject
-			count: 1
+			count: 2
 			path: tests/Integration/Repository/ProductRepositoryTest.php
 
 		-
@@ -401,35 +251,11 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Integration/Repository/ProductRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\ProductRepositoryTest\:\:\$repository \(App\\Repository\\ProductRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/ProductRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectBillingRepositoryTest\:\:\$repository \(App\\Repository\\ProjectBillingRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/ProjectBillingRepositoryTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:findAll\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Integration/Repository/ProjectRepositoryTest.php
 
 		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 2
-			path: tests/Integration/Repository/ProjectRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
 			path: tests/Integration/Repository/ProjectRepositoryTest.php
 
 		-
@@ -439,45 +265,9 @@ parameters:
 			path: tests/Integration/Repository/ProjectRepositoryTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$repository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
+			message: '#^Cannot call method getId\(\) on App\\Entity\\InvoiceEntry\|null\.$#'
+			identifier: method.nonObject
 			count: 1
-			path: tests/Integration/Repository/ProjectRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\ServiceAgreementRepositoryTest\:\:\$repository \(App\\Repository\\ServiceAgreementRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/ServiceAgreementRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\SubscriptionRepositoryTest\:\:\$repository \(App\\Repository\\SubscriptionRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/SubscriptionRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorkerGroupRepositoryTest\:\:\$repository \(App\\Repository\\WorkerGroupRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/WorkerGroupRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorkerRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/WorkerRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorkerRepositoryTest\:\:\$repository \(App\\Repository\\WorkerRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/WorkerRepositoryTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
-			identifier: method.notFound
-			count: 5
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
@@ -493,26 +283,14 @@ parameters:
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
+			message: '#^Parameter \#2 \$invoiceEntry of method App\\Repository\\WorklogRepository\:\:findByFilterData\(\) expects App\\Entity\\InvoiceEntry, App\\Entity\\InvoiceEntry\|null given\.$#'
+			identifier: argument.type
+			count: 5
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager is never read, only written\.$#'
 			identifier: property.onlyWritten
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$projectRepository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$repository \(App\\Repository\\WorklogRepository\) does not accept object\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 

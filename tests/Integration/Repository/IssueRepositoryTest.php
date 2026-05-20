@@ -24,9 +24,15 @@ class IssueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $this->entityManager = $container->get(EntityManagerInterface::class);
-        $this->repository = $container->get(IssueRepository::class);
-        $this->projectRepository = $container->get(ProjectRepository::class);
+        $entityManager = $container->get(EntityManagerInterface::class);
+        \assert($entityManager instanceof EntityManagerInterface);
+        $this->entityManager = $entityManager;
+        $repository = $container->get(IssueRepository::class);
+        \assert($repository instanceof IssueRepository);
+        $this->repository = $repository;
+        $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $this->projectRepository = $projectRepository;
     }
 
     public function testGetFilteredPaginationNoFilter(): void
@@ -101,6 +107,7 @@ class IssueRepositoryTest extends KernelTestCase
     public function testIssuesContainingVersion(): void
     {
         $versionRepository = self::getContainer()->get(VersionRepository::class);
+        \assert($versionRepository instanceof VersionRepository);
         $version = $versionRepository->findOneBy([], ['id' => 'ASC']);
 
         $result = $this->repository->issuesContainingVersion($version);
@@ -126,6 +133,7 @@ class IssueRepositoryTest extends KernelTestCase
     public function testFindIssuesInDateRangeWithWorkerGroup(): void
     {
         $workerGroupRepo = self::getContainer()->get(WorkerGroupRepository::class);
+        \assert($workerGroupRepo instanceof WorkerGroupRepository);
         $group = $workerGroupRepo->findOneBy(['name' => 'Group Alpha']);
         $this->assertInstanceOf(WorkerGroup::class, $group);
 

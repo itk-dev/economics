@@ -12,8 +12,8 @@ class BillableUnbilledHoursReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var BillableUnbilledHoursReportService $service */
         $service = $container->get(BillableUnbilledHoursReportService::class);
+        \assert($service instanceof BillableUnbilledHoursReportService);
 
         $year = (int) (new \DateTime())->format('Y');
 
@@ -41,8 +41,8 @@ class BillableUnbilledHoursReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var BillableUnbilledHoursReportService $service */
         $service = $container->get(BillableUnbilledHoursReportService::class);
+        \assert($service instanceof BillableUnbilledHoursReportService);
 
         $year = (int) (new \DateTime())->format('Y');
 

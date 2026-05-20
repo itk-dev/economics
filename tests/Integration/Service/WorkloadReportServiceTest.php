@@ -15,8 +15,8 @@ class WorkloadReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var WorkloadReportService $service */
         $service = $container->get(WorkloadReportService::class);
+        \assert($service instanceof WorkloadReportService);
 
         $year = (int) (new \DateTime())->format('Y');
 

@@ -14,7 +14,9 @@ class ServiceAgreementRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(ServiceAgreementRepository::class);
+        $repository = self::getContainer()->get(ServiceAgreementRepository::class);
+        \assert($repository instanceof ServiceAgreementRepository);
+        $this->repository = $repository;
     }
 
     public function testGetFilteredPaginationNoFilter(): void

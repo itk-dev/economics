@@ -14,7 +14,9 @@ class InvoiceFlowTest extends AbstractControllerTestCase
         $crawler = $client->request('GET', '/admin/invoices/new');
         $this->assertResponseIsSuccessful();
 
-        $project = static::getContainer()->get(ProjectRepository::class)->getIncluded()
+        $projectRepository = static::getContainer()->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $project = $projectRepository->getIncluded()
             ->setMaxResults(1)->getQuery()->getOneOrNullResult();
         $this->assertNotNull($project, 'Expected an included project from fixtures.');
 
@@ -27,7 +29,9 @@ class InvoiceFlowTest extends AbstractControllerTestCase
         $this->assertResponseRedirects();
         $this->assertMatchesRegularExpression('#/admin/invoices/\d+/edit$#', $client->getResponse()->headers->get('Location'));
 
-        $created = static::getContainer()->get(InvoiceRepository::class)->findOneBy(['name' => $name]);
+        $invoiceRepository = static::getContainer()->get(InvoiceRepository::class);
+        \assert($invoiceRepository instanceof InvoiceRepository);
+        $created = $invoiceRepository->findOneBy(['name' => $name]);
         $this->assertInstanceOf(Invoice::class, $created);
         $this->assertSame($project->getId(), $created->getProject()->getId());
         $this->assertFalse($created->isRecorded());
@@ -35,7 +39,9 @@ class InvoiceFlowTest extends AbstractControllerTestCase
 
     public function testEditExistingInvoiceRendersForm(): void
     {
-        $invoice = static::getContainer()->get(InvoiceRepository::class)->findOneBy([]);
+        $invoiceRepository = static::getContainer()->get(InvoiceRepository::class);
+        \assert($invoiceRepository instanceof InvoiceRepository);
+        $invoice = $invoiceRepository->findOneBy([]);
         $this->assertNotNull($invoice, 'Expected at least one invoice from fixtures.');
 
         $client = $this->createClientLoggedInAs(['ROLE_INVOICE']);

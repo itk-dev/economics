@@ -13,7 +13,9 @@ class ClientRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(ClientRepository::class);
+        $repository = self::getContainer()->get(ClientRepository::class);
+        \assert($repository instanceof ClientRepository);
+        $this->repository = $repository;
     }
 
     public function testGetFilteredPaginationNoFilter(): void

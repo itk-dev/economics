@@ -12,7 +12,9 @@ class CybersecurityAgreementRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(CybersecurityAgreementRepository::class);
+        $repository = self::getContainer()->get(CybersecurityAgreementRepository::class);
+        \assert($repository instanceof CybersecurityAgreementRepository);
+        $this->repository = $repository;
     }
 
     public function testFindAllIndexed(): void

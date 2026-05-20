@@ -20,7 +20,9 @@ class ProjectBillingFullFlowTest extends AbstractControllerTestCase
         // versions `PB-0-0`/`PB-0-1` (matching the data-provider-0 clients) and have
         // DONE-status issues with worklogs, but ProjectBillingServiceTest depends on
         // `project-0-0`'s worklogs staying unbilled, so we must not record against it.
-        $project = $container->get(ProjectRepository::class)->findOneBy(['name' => 'project-0-2']);
+        $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $project = $projectRepository->findOneBy(['name' => 'project-0-2']);
         $this->assertNotNull($project, 'Expected fixture project `project-0-2`.');
 
         $periodStart = '2020-01-01';
@@ -161,9 +163,12 @@ class ProjectBillingFullFlowTest extends AbstractControllerTestCase
     private function reload(int $id): ?ProjectBilling
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
         $em->clear();
 
-        $pb = static::getContainer()->get(ProjectBillingRepository::class)->find($id);
+        $projectBillingRepository = static::getContainer()->get(ProjectBillingRepository::class);
+        \assert($projectBillingRepository instanceof ProjectBillingRepository);
+        $pb = $projectBillingRepository->find($id);
         if (null !== $pb) {
             $pb->getInvoices()->count();
             foreach ($pb->getInvoices() as $invoice) {

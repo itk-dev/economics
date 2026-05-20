@@ -18,8 +18,12 @@ class ProjectRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $this->entityManager = $container->get(EntityManagerInterface::class);
-        $this->repository = $container->get(ProjectRepository::class);
+        $entityManager = $container->get(EntityManagerInterface::class);
+        \assert($entityManager instanceof EntityManagerInterface);
+        $this->entityManager = $entityManager;
+        $repository = $container->get(ProjectRepository::class);
+        \assert($repository instanceof ProjectRepository);
+        $this->repository = $repository;
     }
 
     public function testGetIncluded(): void
@@ -91,6 +95,7 @@ class ProjectRepositoryTest extends KernelTestCase
     public function testGetProjectTrackerIdsByDataProviders(): void
     {
         $dpRepo = self::getContainer()->get(DataProviderRepository::class);
+        \assert($dpRepo instanceof DataProviderRepository);
         $dataProviders = $dpRepo->findAll();
         $this->assertNotEmpty($dataProviders);
 

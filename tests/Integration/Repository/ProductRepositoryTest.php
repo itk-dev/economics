@@ -14,7 +14,9 @@ class ProductRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(ProductRepository::class);
+        $repository = self::getContainer()->get(ProductRepository::class);
+        \assert($repository instanceof ProductRepository);
+        $this->repository = $repository;
     }
 
     public function testGetFilteredPaginationNoFilter(): void
@@ -40,6 +42,7 @@ class ProductRepositoryTest extends KernelTestCase
     public function testGetFilteredPaginationByProject(): void
     {
         $projectRepo = self::getContainer()->get(ProjectRepository::class);
+        \assert($projectRepo instanceof ProjectRepository);
         $project = $projectRepo->findOneBy(['name' => 'project-0-0']);
 
         $filterData = new ProductFilterData();

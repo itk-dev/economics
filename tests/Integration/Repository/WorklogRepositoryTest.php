@@ -19,15 +19,22 @@ class WorklogRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $this->entityManager = $container->get(EntityManagerInterface::class);
-        $this->repository = $container->get(WorklogRepository::class);
-        $this->projectRepository = $container->get(ProjectRepository::class);
+        $entityManager = $container->get(EntityManagerInterface::class);
+        \assert($entityManager instanceof EntityManagerInterface);
+        $this->entityManager = $entityManager;
+        $repository = $container->get(WorklogRepository::class);
+        \assert($repository instanceof WorklogRepository);
+        $this->repository = $repository;
+        $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $this->projectRepository = $projectRepository;
     }
 
     public function testFindByFilterDataBasic(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
 
         $filterData = new InvoiceEntryWorklogsFilterData();
@@ -42,6 +49,7 @@ class WorklogRepositoryTest extends KernelTestCase
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
 
         $filterData = new InvoiceEntryWorklogsFilterData();
@@ -60,6 +68,7 @@ class WorklogRepositoryTest extends KernelTestCase
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
         $year = (new \DateTime())->format('Y');
 
@@ -83,6 +92,7 @@ class WorklogRepositoryTest extends KernelTestCase
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
 
         $filterData = new InvoiceEntryWorklogsFilterData();
@@ -101,6 +111,7 @@ class WorklogRepositoryTest extends KernelTestCase
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($invoiceEntryRepo instanceof InvoiceEntryRepository);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
 
         $filterData = new InvoiceEntryWorklogsFilterData();
