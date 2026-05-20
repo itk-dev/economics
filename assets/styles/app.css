@@ -370,16 +370,12 @@
         @apply dark:bg-gray-700 dark:text-white bg-gray-50 text-black;
     }
 
-<<<<<<< HEAD
-    .selections
-        .choices__item.choices__item--choice.choices__item--selectable.is-highlighted {
-=======
     .selections .choices__list--multiple .choices__item {
         @apply bg-blue-600 border-blue-600 text-white;
     }
 
-    .selections .choices__item.choices__item--choice.choices__item--selectable.is-highlighted {
->>>>>>> 8681287f (Style Project codeowners multiselect to match other form fields)
+    .selections
+        .choices__item.choices__item--choice.choices__item--selectable.is-highlighted {
         @apply dark:bg-gray-800 dark:text-white bg-gray-200 text-black;
     }
 
