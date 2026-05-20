@@ -312,10 +312,6 @@ class WorklogRepository extends ServiceEntityRepository
     /**
      * Get worklogs for a given issue, optionally restricted by period.
      *
-     * @param int $issueId
-     * @param ?\DateTimeInterface $fromDate
-     * @param ?\DateTimeInterface $toDate
-     *
      * @return Worklog[]
      */
     public function getWorklogsByIssueAndPeriod(int $issueId, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate): array
