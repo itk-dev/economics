@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260519114246 extends AbstractMigration
+final class Version20260520091548 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -25,7 +25,6 @@ final class Version20260519114246 extends AbstractMigration
         $this->addSql('ALTER TABLE project_codeowner ADD CONSTRAINT FK_B592B9716B20BA36 FOREIGN KEY (worker_id) REFERENCES worker (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE project ADD github_repos LONGTEXT DEFAULT NULL');
         $this->addSql('ALTER TABLE service_agreement DROP leantime_url, DROP git_repos');
-        $this->addSql('ALTER TABLE user DROP preferences');
     }
 
     public function down(Schema $schema): void
@@ -35,7 +34,6 @@ final class Version20260519114246 extends AbstractMigration
         $this->addSql('ALTER TABLE project_codeowner DROP FOREIGN KEY FK_B592B9716B20BA36');
         $this->addSql('DROP TABLE project_codeowner');
         $this->addSql('ALTER TABLE project DROP github_repos');
-        $this->addSql('ALTER TABLE user ADD preferences JSON DEFAULT NULL COMMENT \'(DC2Type:json)\'');
         $this->addSql('ALTER TABLE service_agreement ADD leantime_url VARCHAR(255) DEFAULT NULL, ADD git_repos LONGTEXT DEFAULT NULL');
     }
 }
