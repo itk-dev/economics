@@ -1,8 +1,7 @@
 security:
-    enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "auto"
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
@@ -35,7 +34,7 @@ security:
         - { path: ^/admin/invoices/, roles: ROLE_INVOICE }
         - { path: ^/admin/project-billing/, roles: ROLE_PROJECT_BILLING }
         - { path: ^/admin/planning/, roles: ROLE_PLANNING }
-        - { path: ^/admin/reports/, roles: ROLE_ADMIN }
+        - { path: ^/admin/reports/, roles: ROLE_REPORT }
         - { path: ^/admin/management-report/, roles: ROLE_REPORT }
         - { path: ^/admin/team-report/, roles: ROLE_REPORT }
         - { path: ^/admin/products/, roles: ROLE_PRODUCT_MANAGER }

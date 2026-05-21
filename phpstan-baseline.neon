@@ -1,0 +1,3685 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Strict comparison using \=\=\= between null and OpenSpout\\Common\\Entity\\Row will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Command/ProductsImportCommand.php
+
+		-
+			message: '#^Method App\\Command\\SubscriptionHandlerCommand\:\:getLastQuarter\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Command/SubscriptionHandlerCommand.php
+
+		-
+			message: '#^Method App\\Controller\\InvoiceController\:\:generateDescription\(\) has parameter \$defaultInvoiceDescriptionTemplate with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Controller/InvoiceController.php
+
+		-
+			message: '#^Method App\\Controller\\IssueController\:\:__construct\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/IssueController.php
+
+		-
+			message: '#^Method App\\Controller\\ManagementReportController\:\:createGroupedInvoices\(\) has parameter \$invoices with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/ManagementReportController.php
+
+		-
+			message: '#^Method App\\Controller\\ManagementReportController\:\:createGroupedInvoices\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/ManagementReportController.php
+
+		-
+			message: '#^Method App\\Controller\\ManagementReportController\:\:getInvoicesDataFromDates\(\) has parameter \$dateInterval with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Controller/ManagementReportController.php
+
+		-
+			message: '#^Method App\\Controller\\ManagementReportController\:\:getInvoicesDataFromDates\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/ManagementReportController.php
+
+		-
+			message: '#^Method App\\Controller\\OpenIdConnectController\:\:logout\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Controller/OpenIdConnectController.php
+
+		-
+			message: '#^Method App\\Controller\\PlanningController\:\:createResponse\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/PlanningController.php
+
+		-
+			message: '#^Method App\\Controller\\PlanningController\:\:preparePlanningData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/PlanningController.php
+
+		-
+			message: '#^Method App\\Controller\\SubscriptionController\:\:getFrequencies\(\) has parameter \$subscriptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/SubscriptionController.php
+
+		-
+			message: '#^Method App\\Controller\\SubscriptionController\:\:subscriptionHandler\(\) has parameter \$content with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Controller/SubscriptionController.php
+
+		-
+			message: '#^Method App\\Controller\\SubscriptionController\:\:subscriptionHandler\(\) has parameter \$subscriptionType with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Controller/SubscriptionController.php
+
+		-
+			message: '#^Method App\\Controller\\SubscriptionController\:\:subscriptionHandler\(\) has parameter \$userEmail with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Controller/SubscriptionController.php
+
+		-
+			message: '#^Cannot clone DateTime\|false\.$#'
+			identifier: clone.nonObject
+			count: 1
+			path: src/DataFixtures/AppFixtures.php
+
+		-
+			message: '#^Property App\\Entity\\Account\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Account.php
+
+		-
+			message: '#^Property App\\Entity\\Account\:\:\$value type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Account.php
+
+		-
+			message: '#^Property App\\Entity\\Client\:\:\$invoices type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Invoice\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Client.php
+
+		-
+			message: '#^Property App\\Entity\\Client\:\:\$invoices with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Client.php
+
+		-
+			message: '#^Property App\\Entity\\Client\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Client.php
+
+		-
+			message: '#^Property App\\Entity\\Client\:\:\$projects type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Project\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Client.php
+
+		-
+			message: '#^Property App\\Entity\\Client\:\:\$projects with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Client.php
+
+		-
+			message: '#^Property App\\Entity\\CybersecurityAgreement\:\:\$serviceAgreement type mapping mismatch\: property can contain App\\Entity\\ServiceAgreement\|null but database expects App\\Entity\\ServiceAgreement\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/CybersecurityAgreement.php
+
+		-
+			message: '#^Property App\\Entity\\DataProvider\:\:\$class type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/DataProvider.php
+
+		-
+			message: '#^Property App\\Entity\\DataProvider\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/DataProvider.php
+
+		-
+			message: '#^Property App\\Entity\\Epic\:\:\$issues type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Issue\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Epic.php
+
+		-
+			message: '#^Property App\\Entity\\Epic\:\:\$issues with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Epic.php
+
+		-
+			message: '#^Property App\\Entity\\Epic\:\:\$title type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Epic.php
+
+		-
+			message: '#^Method App\\Entity\\Invoice\:\:setInvoiceEntryIndexes\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Entity/Invoice.php
+
+		-
+			message: '#^Property App\\Entity\\Invoice\:\:\$invoiceEntries type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\InvoiceEntry\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Invoice.php
+
+		-
+			message: '#^Property App\\Entity\\Invoice\:\:\$invoiceEntries with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Invoice.php
+
+		-
+			message: '#^Property App\\Entity\\Invoice\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Invoice.php
+
+		-
+			message: '#^Property App\\Entity\\Invoice\:\:\$recorded type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Invoice.php
+
+		-
+			message: '#^Method App\\Entity\\InvoiceEntry\:\:setInvoiceIndex\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Entity/InvoiceEntry.php
+
+		-
+			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$index type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/InvoiceEntry.php
+
+		-
+			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$invoice type mapping mismatch\: property can contain App\\Entity\\Invoice\|null but database expects App\\Entity\\Invoice\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/InvoiceEntry.php
+
+		-
+			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$issueProducts type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\IssueProduct\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/InvoiceEntry.php
+
+		-
+			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$issueProducts with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/InvoiceEntry.php
+
+		-
+			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$worklogs type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Worklog\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/InvoiceEntry.php
+
+		-
+			message: '#^Property App\\Entity\\InvoiceEntry\:\:\$worklogs with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/InvoiceEntry.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$epics type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Epic\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$epics with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$linkToIssue type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$products type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\IssueProduct\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$products with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$projectTrackerId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$projectTrackerKey type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$versions type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Version\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$versions with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$worklogs type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Worklog\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\Issue\:\:\$worklogs with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Issue.php
+
+		-
+			message: '#^Property App\\Entity\\IssueProduct\:\:\$issue type mapping mismatch\: property can contain App\\Entity\\Issue\|null but database expects App\\Entity\\Issue\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/IssueProduct.php
+
+		-
+			message: '#^Property App\\Entity\\IssueProduct\:\:\$product type mapping mismatch\: property can contain App\\Entity\\Product\|null but database expects App\\Entity\\Product\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/IssueProduct.php
+
+		-
+			message: '#^Property App\\Entity\\IssueProduct\:\:\$quantity type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/IssueProduct.php
+
+		-
+			message: '#^Property App\\Entity\\Product\:\:\$issues type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\IssueProduct\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Product.php
+
+		-
+			message: '#^Property App\\Entity\\Product\:\:\$issues with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Product.php
+
+		-
+			message: '#^Property App\\Entity\\Product\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Product.php
+
+		-
+			message: '#^Property App\\Entity\\Product\:\:\$price type mapping mismatch\: property can contain string\|null but database expects float\|int\|string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Product.php
+
+		-
+			message: '#^Property App\\Entity\\Product\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Product.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$clients type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Client\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$clients with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$invoices type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Invoice\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$invoices with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$issues type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Issue\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$issues with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$products type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Product\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$products with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$projectBillings type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\ProjectBilling\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$projectBillings with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$projectTrackerKey type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$projectTrackerProjectUrl type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$versions type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Version\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$versions with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$worklogs type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Worklog\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\Project\:\:\$worklogs with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Project.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectBilling\:\:\$invoices type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Invoice\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ProjectBilling.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectBilling\:\:\$invoices with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/ProjectBilling.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectBilling\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ProjectBilling.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectBilling\:\:\$periodEnd type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ProjectBilling.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectBilling\:\:\$periodStart type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ProjectBilling.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectBilling\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ProjectBilling.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectBilling\:\:\$recorded type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ProjectBilling.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectVersionBudget\:\:\$budget type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ProjectVersionBudget.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectVersionBudget\:\:\$projectId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ProjectVersionBudget.php
+
+		-
+			message: '#^Property App\\Entity\\ProjectVersionBudget\:\:\$versionId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ProjectVersionBudget.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$client type mapping mismatch\: property can contain App\\Entity\\Client\|null but database expects App\\Entity\\Client\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ServiceAgreement.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$hostingProvider type mapping mismatch\: property can contain App\\Enum\\HostingProviderEnum\|null but database expects App\\Enum\\HostingProviderEnum\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ServiceAgreement.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$isActive type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ServiceAgreement.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$price type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ServiceAgreement.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ServiceAgreement.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$projectLead type mapping mismatch\: property can contain App\\Entity\\Worker\|null but database expects App\\Entity\\Worker\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ServiceAgreement.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$systemOwnerNotices type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/ServiceAgreement.php
+
+		-
+			message: '#^Property App\\Entity\\ServiceAgreement\:\:\$validFrom type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ServiceAgreement.php
+
+		-
+			message: '#^Method App\\Entity\\Subscription\:\:getUrlParams\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Subscription.php
+
+		-
+			message: '#^Method App\\Entity\\Subscription\:\:setUrlParams\(\) has parameter \$urlParams with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Subscription.php
+
+		-
+			message: '#^Property App\\Entity\\Subscription\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Subscription.php
+
+		-
+			message: '#^Property App\\Entity\\Subscription\:\:\$urlParams type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Subscription.php
+
+		-
+			message: '#^Method App\\Entity\\User\:\:getUserIdentifier\(\) should return non\-empty\-string but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Method App\\Entity\\User\:\:setRoles\(\) has parameter \$roles with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$roles type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\Version\:\:\$isBillable type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Version.php
+
+		-
+			message: '#^Property App\\Entity\\Version\:\:\$issues type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Issue\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Version.php
+
+		-
+			message: '#^Property App\\Entity\\Version\:\:\$issues with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Version.php
+
+		-
+			message: '#^Property App\\Entity\\Version\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Version.php
+
+		-
+			message: '#^Property App\\Entity\\Version\:\:\$project type mapping mismatch\: property can contain App\\Entity\\Project\|null but database expects App\\Entity\\Project\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Version.php
+
+		-
+			message: '#^Property App\\Entity\\Version\:\:\$projectTrackerId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Version.php
+
+		-
+			message: '#^Property App\\Entity\\Worker\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Worker.php
+
+		-
+			message: '#^Property App\\Entity\\WorkerGroup\:\:\$name type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/WorkerGroup.php
+
+		-
+			message: '#^Property App\\Entity\\Worklog\:\:\$issue type mapping mismatch\: property can contain App\\Entity\\Issue\|null but database expects App\\Entity\\Issue\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Worklog.php
+
+		-
+			message: '#^Property App\\Entity\\Worklog\:\:\$projectTrackerIssueId type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Worklog.php
+
+		-
+			message: '#^Property App\\Entity\\Worklog\:\:\$started type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Worklog.php
+
+		-
+			message: '#^Property App\\Entity\\Worklog\:\:\$timeSpentSeconds type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Worklog.php
+
+		-
+			message: '#^Property App\\Entity\\Worklog\:\:\$worker type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Worklog.php
+
+		-
+			message: '#^Property App\\Entity\\Worklog\:\:\$worklogId type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Worklog.php
+
+		-
+			message: '#^Class App\\Form\\AccountType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/AccountType.php
+
+		-
+			message: '#^Class App\\Form\\BillableUnbilledHoursReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/BillableUnbilledHoursReportType.php
+
+		-
+			message: '#^Class App\\Form\\ClientFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ClientFilterType.php
+
+		-
+			message: '#^Class App\\Form\\ClientType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ClientType.php
+
+		-
+			message: '#^Method App\\Form\\ClientType\:\:getVersionOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Form/ClientType.php
+
+		-
+			message: '#^Class App\\Form\\CombinedServiceAgreementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CombinedServiceAgreementType.php
+
+		-
+			message: '#^Class App\\Form\\CybersecurityAgreementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CybersecurityAgreementType.php
+
+		-
+			message: '#^Class App\\Form\\ForecastReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ForecastReportType.php
+
+		-
+			message: '#^Class App\\Form\\HourReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/HourReportType.php
+
+		-
+			message: '#^Class App\\Form\\InvoiceEntryType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InvoiceEntryType.php
+
+		-
+			message: '#^Class App\\Form\\InvoiceEntryWorklogFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InvoiceEntryWorklogFilterType.php
+
+		-
+			message: '#^Class App\\Form\\InvoiceEntryWorklogType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InvoiceEntryWorklogType.php
+
+		-
+			message: '#^Class App\\Form\\InvoiceFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InvoiceFilterType.php
+
+		-
+			message: '#^Class App\\Form\\InvoiceNewType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InvoiceNewType.php
+
+		-
+			message: '#^Class App\\Form\\InvoiceRecordType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InvoiceRecordType.php
+
+		-
+			message: '#^Class App\\Form\\InvoiceType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InvoiceType.php
+
+		-
+			message: '#^Class App\\Form\\InvoicingRateReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/InvoicingRateReportType.php
+
+		-
+			message: '#^Class App\\Form\\IssueFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/IssueFilterType.php
+
+		-
+			message: '#^Class App\\Form\\IssueProductType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/IssueProductType.php
+
+		-
+			message: '#^Class App\\Form\\ManagementReportDateIntervalType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ManagementReportDateIntervalType.php
+
+		-
+			message: '#^Class App\\Form\\NameFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/NameFilterType.php
+
+		-
+			message: '#^Class App\\Form\\PlanningType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/PlanningType.php
+
+		-
+			message: '#^Class App\\Form\\ProductFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProductFilterType.php
+
+		-
+			message: '#^Class App\\Form\\ProductType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProductType.php
+
+		-
+			message: '#^Class App\\Form\\ProjectBillingFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProjectBillingFilterType.php
+
+		-
+			message: '#^Class App\\Form\\ProjectBillingRecordType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProjectBillingRecordType.php
+
+		-
+			message: '#^Class App\\Form\\ProjectBillingType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProjectBillingType.php
+
+		-
+			message: '#^Class App\\Form\\ProjectFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProjectFilterType.php
+
+		-
+			message: '#^Class App\\Form\\ProjectType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ProjectType.php
+
+		-
+			message: '#^Class App\\Form\\ServiceAgreementFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ServiceAgreementFilterType.php
+
+		-
+			message: '#^Class App\\Form\\ServiceAgreementType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/ServiceAgreementType.php
+
+		-
+			message: '#^Class App\\Form\\SubscriptionFilterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/SubscriptionFilterType.php
+
+		-
+			message: '#^Class App\\Form\\WorkerGroupType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/WorkerGroupType.php
+
+		-
+			message: '#^Class App\\Form\\WorkerType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/WorkerType.php
+
+		-
+			message: '#^Class App\\Form\\WorkloadReportType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/WorkloadReportType.php
+
+		-
+			message: '#^Method App\\Message\\LeantimeUpdateMessage\:\:__construct\(\) has parameter \$projectTrackerProjectIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Message/LeantimeUpdateMessage.php
+
+		-
+			message: '#^Method App\\Model\\DashboardData\:\:__construct\(\) has parameter \$monthStatuses with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/DashboardData.php
+
+		-
+			message: '#^Method App\\Model\\DashboardData\:\:__construct\(\) has parameter \$weekStatuses with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/DashboardData.php
+
+		-
+			message: '#^Method App\\Model\\DataProvider\\DataProviderIssueData\:\:__construct\(\) has parameter \$epics with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/DataProvider/DataProviderIssueData.php
+
+		-
+			message: '#^Property App\\Model\\Invoices\\InvoiceEntryWorklogsFilterData\:\:\$epics type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/Invoices/InvoiceEntryWorklogsFilterData.php
+
+		-
+			message: '#^Method App\\Model\\Invoices\\PagedResult\:\:__construct\(\) has parameter \$items with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/Invoices/PagedResult.php
+
+		-
+			message: '#^Property App\\Model\\Reports\\BillableUnbilledHoursReportData\:\:\$projectTotals type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/Reports/BillableUnbilledHoursReportData.php
+
+		-
+			message: '#^Constructor of class App\\Model\\Reports\\ForecastReportWorklogData has an unused parameter \$description\.$#'
+			identifier: constructor.unusedParameter
+			count: 1
+			path: src/Model/Reports/ForecastReportWorklogData.php
+
+		-
+			message: '#^Constructor of class App\\Model\\Reports\\ForecastReportWorklogData has an unused parameter \$worklogId\.$#'
+			identifier: constructor.unusedParameter
+			count: 1
+			path: src/Model/Reports/ForecastReportWorklogData.php
+
+		-
+			message: '#^Method App\\Model\\Reports\\ForecastReportWorklogData\:\:__construct\(\) has parameter \$description with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Model/Reports/ForecastReportWorklogData.php
+
+		-
+			message: '#^Method App\\Model\\Reports\\ForecastReportWorklogData\:\:__construct\(\) has parameter \$worklogId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Model/Reports/ForecastReportWorklogData.php
+
+		-
+			message: '#^Class App\\Model\\Reports\\HourReportData has an uninitialized readonly property \$id\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/Model/Reports/HourReportData.php
+
+		-
+			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$headline with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Model/Reports/HourReportProjectTicket.php
+
+		-
+			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Model/Reports/HourReportProjectTicket.php
+
+		-
+			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$linkToIssue with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Model/Reports/HourReportProjectTicket.php
+
+		-
+			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$projectTrackerId with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Model/Reports/HourReportProjectTicket.php
+
+		-
+			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$totalEstimated with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Model/Reports/HourReportProjectTicket.php
+
+		-
+			message: '#^Method App\\Model\\Reports\\HourReportProjectTicket\:\:__construct\(\) has parameter \$totalSpent with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Model/Reports/HourReportProjectTicket.php
+
+		-
+			message: '#^Property App\\Model\\Reports\\HourReportProjectTicket\:\:\$projectTickets with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Model/Reports/HourReportProjectTicket.php
+
+		-
+			message: '#^Property App\\Model\\Reports\\HourReportProjectTicket\:\:\$timesheets with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Model/Reports/HourReportProjectTicket.php
+
+		-
+			message: '#^Property App\\Model\\Reports\\HourReportWorklog\:\:\$projectTicket with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Model/Reports/HourReportWorklog.php
+
+		-
+			message: '#^Class App\\Model\\Reports\\InvoicingRateReportData has an uninitialized readonly property \$id\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/Model/Reports/InvoicingRateReportData.php
+
+		-
+			message: '#^Property App\\Model\\Reports\\InvoicingRateReportData\:\:\$periodAverages with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Model/Reports/InvoicingRateReportData.php
+
+		-
+			message: '#^Property App\\Model\\Reports\\InvoicingRateReportWorker\:\:\$dataByPeriod type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/Reports/InvoicingRateReportWorker.php
+
+		-
+			message: '#^Property App\\Model\\Reports\\InvoicingRateReportWorker\:\:\$projectData type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Model/Reports/InvoicingRateReportWorker.php
+
+		-
+			message: '#^Class App\\Model\\Reports\\WorkloadReportData has an uninitialized readonly property \$id\. Assign it in the constructor\.$#'
+			identifier: property.uninitializedReadonly
+			count: 1
+			path: src/Model/Reports/WorkloadReportData.php
+
+		-
+			message: '#^Property App\\Model\\Reports\\WorkloadReportData\:\:\$periodAverages with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Model/Reports/WorkloadReportData.php
+
+		-
+			message: '#^Class App\\Repository\\AccountRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/AccountRepository.php
+
+		-
+			message: '#^Class App\\Repository\\AccountRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/AccountRepository.php
+
+		-
+			message: '#^Class App\\Repository\\AccountRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/AccountRepository.php
+
+		-
+			message: '#^Class App\\Repository\\AccountRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/AccountRepository.php
+
+		-
+			message: '#^Method App\\Repository\\AccountRepository\:\:getAllChoices\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/AccountRepository.php
+
+		-
+			message: '#^Method App\\Repository\\AccountRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/AccountRepository.php
+
+		-
+			message: '#^Method App\\Repository\\AccountRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/AccountRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ClientRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ClientRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ClientRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ClientRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ClientRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ClientRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ClientRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ClientRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ClientRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ClientRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ClientRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/ClientRepository.php
+
+		-
+			message: '#^Class App\\Repository\\DataProviderRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/DataProviderRepository.php
+
+		-
+			message: '#^Class App\\Repository\\DataProviderRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/DataProviderRepository.php
+
+		-
+			message: '#^Class App\\Repository\\DataProviderRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/DataProviderRepository.php
+
+		-
+			message: '#^Class App\\Repository\\DataProviderRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/DataProviderRepository.php
+
+		-
+			message: '#^Class App\\Repository\\EpicRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/EpicRepository.php
+
+		-
+			message: '#^Class App\\Repository\\EpicRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/EpicRepository.php
+
+		-
+			message: '#^Class App\\Repository\\EpicRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/EpicRepository.php
+
+		-
+			message: '#^Class App\\Repository\\EpicRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/EpicRepository.php
+
+		-
+			message: '#^Class App\\Repository\\InvoiceEntryRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceEntryRepository.php
+
+		-
+			message: '#^Class App\\Repository\\InvoiceEntryRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceEntryRepository.php
+
+		-
+			message: '#^Class App\\Repository\\InvoiceEntryRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceEntryRepository.php
+
+		-
+			message: '#^Class App\\Repository\\InvoiceEntryRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceEntryRepository.php
+
+		-
+			message: '#^Class App\\Repository\\InvoiceRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceRepository.php
+
+		-
+			message: '#^Class App\\Repository\\InvoiceRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceRepository.php
+
+		-
+			message: '#^Class App\\Repository\\InvoiceRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceRepository.php
+
+		-
+			message: '#^Class App\\Repository\\InvoiceRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceRepository.php
+
+		-
+			message: '#^Method App\\Repository\\InvoiceRepository\:\:getByRecordedDateBetween\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceRepository.php
+
+		-
+			message: '#^Method App\\Repository\\InvoiceRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/InvoiceRepository.php
+
+		-
+			message: '#^Method App\\Repository\\InvoiceRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/InvoiceRepository.php
+
+		-
+			message: '#^Class App\\Repository\\IssueProductRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueProductRepository.php
+
+		-
+			message: '#^Class App\\Repository\\IssueProductRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueProductRepository.php
+
+		-
+			message: '#^Class App\\Repository\\IssueProductRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueProductRepository.php
+
+		-
+			message: '#^Class App\\Repository\\IssueProductRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueProductRepository.php
+
+		-
+			message: '#^Class App\\Repository\\IssueRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Class App\\Repository\\IssueRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Class App\\Repository\\IssueRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Class App\\Repository\\IssueRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\IssueRepository\:\:findEpicOptionsByProject\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\IssueRepository\:\:findIssuesInDateRange\(\) has parameter \$projects with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\IssueRepository\:\:findIssuesInDateRange\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\IssueRepository\:\:getClosedIssuesFromInterval\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\IssueRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\IssueRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Method App\\Repository\\IssueRepository\:\:issuesContainingVersion\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/IssueRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProductRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProductRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProductRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProductRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProductRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProductRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProductRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProductRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ProductRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProductRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ProductRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/ProductRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectBillingRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectBillingRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectBillingRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectBillingRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectBillingRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectBillingRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectBillingRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectBillingRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ProjectBillingRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectBillingRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ProjectBillingRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/ProjectBillingRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ProjectRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ProjectRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/ProjectRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ProjectRepository\:\:getProjectTrackerIdsByDataProviders\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Repository/ProjectRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ProjectRepository\:\:getProjectTrackerIdsByDataProviders\(\) has parameter \$dataProviders with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectVersionBudgetRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectVersionBudgetRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectVersionBudgetRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectVersionBudgetRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectVersionBudgetRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectVersionBudgetRepository.php
+
+		-
+			message: '#^Class App\\Repository\\ProjectVersionBudgetRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ProjectVersionBudgetRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ServiceAgreementRepository\:\:getApiServiceAgreements\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ServiceAgreementRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ServiceAgreementRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/ServiceAgreementRepository.php
+
+		-
+			message: '#^Method App\\Repository\\ServiceAgreementRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/ServiceAgreementRepository.php
+
+		-
+			message: '#^Class App\\Repository\\SubscriptionRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Class App\\Repository\\SubscriptionRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Class App\\Repository\\SubscriptionRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Class App\\Repository\\SubscriptionRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findByCustom\(\) has parameter \$email with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findByCustom\(\) has parameter \$urlParams with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findByCustom\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findOneByCustom\(\) has parameter \$email with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findOneByCustom\(\) has parameter \$subscriptionType with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubscriptionRepository\:\:findOneByCustom\(\) has parameter \$urlParams with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\SubscriptionRepository\:\:getFilteredData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Property App\\Repository\\SubscriptionRepository\:\:\$paginator is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Repository/SubscriptionRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\VersionRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/VersionRepository.php
+
+		-
+			message: '#^Class App\\Repository\\VersionRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/VersionRepository.php
+
+		-
+			message: '#^Class App\\Repository\\VersionRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/VersionRepository.php
+
+		-
+			message: '#^Class App\\Repository\\VersionRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/VersionRepository.php
+
+		-
+			message: '#^Method App\\Repository\\WorkerGroupRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorkerGroupRepository.php
+
+		-
+			message: '#^Method App\\Repository\\WorkerGroupRepository\:\:getFilteredPagination\(\) return type with generic interface Knp\\Component\\Pager\\Pagination\\PaginationInterface does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/WorkerGroupRepository.php
+
+		-
+			message: '#^Class App\\Repository\\WorkerRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorkerRepository.php
+
+		-
+			message: '#^Class App\\Repository\\WorkerRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorkerRepository.php
+
+		-
+			message: '#^Class App\\Repository\\WorkerRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorkerRepository.php
+
+		-
+			message: '#^Class App\\Repository\\WorkerRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorkerRepository.php
+
+		-
+			message: '#^Method App\\Repository\\WorkerRepository\:\:findAllIncludedInReports\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorkerRepository.php
+
+		-
+			message: '#^Class App\\Repository\\WorklogRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Class App\\Repository\\WorklogRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Class App\\Repository\\WorklogRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Class App\\Repository\\WorklogRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Method App\\Repository\\WorklogRepository\:\:findBillableWorklogsByWorkerAndDateRange\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Method App\\Repository\\WorklogRepository\:\:findBilledWorklogsByWorkerAndDateRange\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Method App\\Repository\\WorklogRepository\:\:findByFilterData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Method App\\Repository\\WorklogRepository\:\:findWorklogsByWorkerAndDateRange\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Method App\\Repository\\WorklogRepository\:\:getTimeSpentByWorkerInWeekRange\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Method App\\Repository\\WorklogRepository\:\:getWorklogsAttachedToInvoiceInDateRange\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/WorklogRepository.php
+
+		-
+			message: '#^Method App\\Service\\BillingService\:\:exportInvoicesToSpreadsheet\(\) has parameter \$invoiceIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/BillingService.php
+
+		-
+			message: '#^Method App\\Service\\BillingService\:\:generateSpreadsheetCsvResponse\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/BillingService.php
+
+		-
+			message: '#^Method App\\Service\\BillingService\:\:generateSpreadsheetHtml\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/BillingService.php
+
+		-
+			message: '#^Method App\\Service\\BillingService\:\:getInvoiceRecordableErrors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/BillingService.php
+
+		-
+			message: '#^Method App\\Service\\ClientHelper\:\:__construct\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/ClientHelper.php
+
+		-
+			message: '#^Method App\\Service\\ClientHelper\:\:getStandardPrice\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Service/ClientHelper.php
+
+		-
+			message: '#^Method App\\Service\\DanishHolidayHelper\:\:__construct\(\) has parameter \$nonWorkdays with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Method App\\Service\\DanishHolidayHelper\:\:buildNames\(\) has parameter \$days with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Method App\\Service\\DanishHolidayHelper\:\:buildNames\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Method App\\Service\\DanishHolidayHelper\:\:getBankHolidayNames\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Method App\\Service\\DanishHolidayHelper\:\:getBankHolidays\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Method App\\Service\\DanishHolidayHelper\:\:getHolidayNames\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Property App\\Service\\DanishHolidayHelper\:\:\$bankHolidayNames type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Property App\\Service\\DanishHolidayHelper\:\:\$bankHolidays type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Property App\\Service\\DanishHolidayHelper\:\:\$holidayNames type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Property App\\Service\\DanishHolidayHelper\:\:\$holidays type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Static property App\\Service\\DanishHolidayHelper\:\:\$instance \(App\\Service\\DanishHolidayHelper\) in empty\(\) is not falsy\.$#'
+			identifier: empty.property
+			count: 1
+			path: src/Service/DanishHolidayHelper.php
+
+		-
+			message: '#^Method App\\Service\\DashboardService\:\:getMonthsToDate\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DashboardService.php
+
+		-
+			message: '#^Method App\\Service\\DashboardService\:\:getWeeksToDate\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DashboardService.php
+
+		-
+			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/DashboardService.php
+
+		-
+			message: '#^Parameter \#1 \$timeSpentSeconds of method App\\Entity\\Worklog\:\:setTimeSpentSeconds\(\) expects int, float given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Service/DataProviderService.php
+
+		-
+			message: '#^Cannot call method format\(\) on DateTime\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Service/DateTimeHelper.php
+
+		-
+			message: '#^Match expression does not handle remaining values\: int\<min, 0\>\|int\<5, max\>$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/Service/DateTimeHelper.php
+
+		-
+			message: '#^Method App\\Service\\DateTimeHelper\:\:getFirstAndLastDateOfMonth\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DateTimeHelper.php
+
+		-
+			message: '#^Method App\\Service\\DateTimeHelper\:\:getFirstAndLastDateOfQuarter\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DateTimeHelper.php
+
+		-
+			message: '#^Method App\\Service\\DateTimeHelper\:\:getFirstAndLastDateOfWeek\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DateTimeHelper.php
+
+		-
+			message: '#^Method App\\Service\\DateTimeHelper\:\:getFirstAndLastDateOfYear\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DateTimeHelper.php
+
+		-
+			message: '#^Method App\\Service\\DateTimeHelper\:\:getWeeksOfYear\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/DateTimeHelper.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/Service/ForecastReportService.php
+
+		-
+			message: '#^Method App\\Service\\HourReportService\:\:processTimesheetsData\(\) has parameter \$worklogs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/HourReportService.php
+
+		-
+			message: '#^Method App\\Service\\HourReportService\:\:processTimesheetsData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/HourReportService.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$tagsIterator contains generic class ArrayIterator but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Service/HourReportService.php
+
+		-
+			message: '#^Method App\\Service\\InvoiceEntryHelper\:\:__construct\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/InvoiceEntryHelper.php
+
+		-
+			message: '#^Method App\\Service\\InvoiceEntryHelper\:\:getAccounts\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/InvoiceEntryHelper.php
+
+		-
+			message: '#^Method App\\Service\\InvoiceEntryHelper\:\:resolveOptions\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/InvoiceEntryHelper.php
+
+		-
+			message: '#^Method App\\Service\\InvoiceEntryHelper\:\:resolveOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/InvoiceEntryHelper.php
+
+		-
+			message: '#^Property App\\Service\\InvoiceEntryHelper\:\:\$options type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/InvoiceEntryHelper.php
+
+		-
+			message: '#^Method App\\Service\\InvoicingRateReportService\:\:getDatesOfPeriod\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/InvoicingRateReportService.php
+
+		-
+			message: '#^Method App\\Service\\InvoicingRateReportService\:\:getPeriods\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/InvoicingRateReportService.php
+
+		-
+			message: '#^Method App\\Service\\InvoicingRateReportService\:\:getWorklogs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/InvoicingRateReportService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$dueDate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$hours\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 5
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$kind\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$milestoneId\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$modified\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$plannedHours\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$projectId\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$remainingHours\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$resolutionDate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$results\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$resultsCount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$tags\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$ticketId\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$username\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$workDate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$worker\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Method App\\Service\\LeantimeApiService\:\:fetchFromLeantime\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Method App\\Service\\LeantimeApiService\:\:getEnabledLeantimeDataProviders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Method App\\Service\\LeantimeApiService\:\:post\(\) has parameter \$body with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Method App\\Service\\LeantimeApiService\:\:post\(\) has parameter \$path with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Method App\\Service\\LeantimeApiService\:\:updateAsJob\(\) has parameter \$projectTrackerProjectIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/LeantimeApiService.php
+
+		-
+			message: '#^Method App\\Service\\ManagementReportService\:\:calculateYear\(\) has parameter \$quarterValues with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Service/ManagementReportService.php
+
+		-
+			message: '#^Method App\\Service\\ManagementReportService\:\:generateSpreadsheetCsvResponse\(\) has parameter \$dateInterval with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Service/ManagementReportService.php
+
+		-
+			message: '#^Method App\\Service\\ManagementReportService\:\:generateSpreadsheetCsvResponse\(\) has parameter \$groupedInvoices with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/ManagementReportService.php
+
+		-
+			message: '#^Method App\\Service\\PlanningService\:\:getAssigneeData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/PlanningService.php
+
+		-
+			message: '#^Method App\\Service\\PlanningService\:\:getOrCreateAssignee\(\) has parameter \$assigneeData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/PlanningService.php
+
+		-
+			message: '#^Method App\\Service\\PlanningService\:\:processIssuesForWeek\(\) has parameter \$issues with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/PlanningService.php
+
+		-
+			message: '#^Method App\\Service\\PlanningService\:\:sortIssuesByWeek\(\) has parameter \$allIssues with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/PlanningService.php
+
+		-
+			message: '#^Method App\\Service\\PlanningService\:\:sortIssuesByWeek\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/PlanningService.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$iterator contains generic class ArrayIterator but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 2
+			path: src/Service/PlanningService.php
+
+		-
+			message: '#^Method App\\Service\\ProjectBillingService\:\:getIssuesNotIncludedInProjectBilling\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/ProjectBillingService.php
+
+		-
+			message: '#^Call to method App\\Repository\\VersionRepository\:\:findOneBy\(\) \- entity App\\Entity\\Version does not have a field named \$versionId\.$#'
+			identifier: doctrine.findOneByArgument
+			count: 1
+			path: src/Service/SubscriptionHandlerService.php
+
+		-
+			message: '#^Method App\\Service\\SubscriptionHandlerService\:\:prepareMailData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/SubscriptionHandlerService.php
+
+		-
+			message: '#^Method App\\Service\\SubscriptionHandlerService\:\:sendNotification\(\) has parameter \$notification with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/SubscriptionHandlerService.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Service/SubscriptionHandlerService.php
+
+		-
+			message: '#^Method App\\Service\\WorkloadReportService\:\:getDatesOfPeriod\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/WorkloadReportService.php
+
+		-
+			message: '#^Method App\\Service\\WorkloadReportService\:\:getPeriods\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/WorkloadReportService.php
+
+		-
+			message: '#^Method App\\Service\\WorkloadReportService\:\:getWorklogs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/WorkloadReportService.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/AbstractControllerTestCase.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Controller\\AbstractControllerTestCase\:\:assertDeniedFor\(\) has parameter \$roles with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Integration/Controller/AbstractControllerTestCase.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Controller\\AbstractControllerTestCase\:\:assertGrantedFor\(\) has parameter \$roles with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Integration/Controller/AbstractControllerTestCase.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Controller\\AbstractControllerTestCase\:\:assertSmokeMatrix\(\) has parameter \$allowedRoles with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Integration/Controller/AbstractControllerTestCase.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Controller\\AbstractControllerTestCase\:\:assertSmokeMatrix\(\) has parameter \$deniedRoles with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Integration/Controller/AbstractControllerTestCase.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Controller\\AbstractControllerTestCase\:\:createClientLoggedInAs\(\) has parameter \$roles with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Integration/Controller/AbstractControllerTestCase.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/HourReportFilterTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:find\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:flush\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:persist\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of method App\\Tests\\Integration\\Controller\\InvoiceEntryFlowTest\:\:reloadEntry\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 5
+			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
+
+		-
+			message: '#^Parameter \#1 \$invoiceId of method App\\Tests\\Integration\\Controller\\InvoiceEntryFlowTest\:\:markInvoiceRecorded\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Controller/InvoiceEntryFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Controller/InvoiceFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/InvoiceFlowTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\Project\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFlowTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertMatchesRegularExpression\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Controller/InvoiceFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:find\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findBy\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getAmount\(\) on App\\Entity\\InvoiceEntry\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getExportedDate\(\) on App\\Entity\\Invoice\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getLockedContactName\(\) on App\\Entity\\Invoice\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getLockedCustomerKey\(\) on App\\Entity\\Invoice\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getLockedEan\(\) on App\\Entity\\Invoice\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getLockedType\(\) on App\\Entity\\Invoice\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getRecordedDate\(\) on App\\Entity\\Invoice\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getTotalPrice\(\) on App\\Entity\\InvoiceEntry\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method isNoCost\(\) on App\\Entity\\Invoice\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Cannot call method isRecorded\(\) on App\\Entity\\Invoice\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Offset 1 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getIncluded\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFlowTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\Project\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFlowTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertMatchesRegularExpression\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:find\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getDescription\(\) on App\\Entity\\ProjectBilling\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getExportedDate\(\) on App\\Entity\\ProjectBilling\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getInvoices\(\) on App\\Entity\\ProjectBilling\|null\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on App\\Entity\\ProjectBilling\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^Cannot call method isRecorded\(\) on App\\Entity\\ProjectBilling\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^Offset 1 might not exist on array\{\}\|array\{non\-falsy\-string, numeric\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, \$variable\-\>count\(\)\)\.$#'
+			identifier: phpunit.assertCount
+			count: 1
+			path: tests/Integration/Controller/ProjectBillingFullFlowTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/AccountRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/AccountRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\AccountRepositoryTest\:\:\$repository \(App\\Repository\\AccountRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/AccountRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/ClientRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\ClientRepositoryTest\:\:\$repository \(App\\Repository\\ClientRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/ClientRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Entity\\\\CybersecurityAgreement'' and App\\Entity\\CybersecurityAgreement will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/CybersecurityAgreementRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with non\-empty\-array\<int, App\\Entity\\CybersecurityAgreement\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/CybersecurityAgreementRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\CybersecurityAgreementRepositoryTest\:\:\$repository \(App\\Repository\\CybersecurityAgreementRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/CybersecurityAgreementRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/InvoiceRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\InvoiceRepositoryTest\:\:\$repository \(App\\Repository\\InvoiceRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/InvoiceRepositoryTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Entity\\Project\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$project of method App\\Repository\\IssueRepository\:\:findEpicOptionsByProject\(\) expects App\\Entity\\Project, App\\Entity\\Project\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$project of method App\\Repository\\IssueRepository\:\:getClosedIssuesFromInterval\(\) expects App\\Entity\\Project, App\\Entity\\Project\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\IssueRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\IssueRepositoryTest\:\:\$entityManager is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\IssueRepositoryTest\:\:\$projectRepository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\IssueRepositoryTest\:\:\$repository \(App\\Repository\\IssueRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/IssueRepositoryTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Repository/ProductRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/ProductRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\ProductRepositoryTest\:\:\$repository \(App\\Repository\\ProductRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/ProductRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/ProjectBillingRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectBillingRepositoryTest\:\:\$repository \(App\\Repository\\ProjectBillingRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/ProjectBillingRepositoryTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findAll\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Repository/ProjectRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Doctrine\\\\ORM\\\\QueryBuilder'' and Doctrine\\ORM\\QueryBuilder will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/ProjectRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/ProjectRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/ProjectRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$entityManager is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Integration/Repository/ProjectRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$repository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/ProjectRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/ServiceAgreementRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with non\-empty\-array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/ServiceAgreementRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\ServiceAgreementRepositoryTest\:\:\$repository \(App\\Repository\\ServiceAgreementRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/ServiceAgreementRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\SubscriptionRepositoryTest\:\:\$repository \(App\\Repository\\SubscriptionRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/SubscriptionRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Knp\\\\Component\\\\Pager\\\\Pagination\\\\PaginationInterface'' and Knp\\Component\\Pager\\Pagination\\PaginationInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/WorkerGroupRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\WorkerGroupRepositoryTest\:\:\$repository \(App\\Repository\\WorkerGroupRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/WorkerGroupRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\WorkerRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/WorkerRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\WorkerRepositoryTest\:\:\$repository \(App\\Repository\\WorkerRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/WorkerRepositoryTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$project of method App\\Repository\\WorklogRepository\:\:findByFilterData\(\) expects App\\Entity\\Project, App\\Entity\\Project\|null given\.$#'
+			identifier: argument.type
+			count: 5
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$projectRepository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
+			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$repository \(App\\Repository\\WorklogRepository\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\BillableUnbilledHoursReportData'' and App\\Model\\Reports\\BillableUnbilledHoursReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Service/BillableUnbilledHoursReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\ForecastReportData'' and App\\Model\\Reports\\ForecastReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Service/ForecastReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\HourReportData'' and App\\Model\\Reports\\HourReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\HourReportProjectTag'' and App\\Model\\Reports\\HourReportProjectTag will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Integration/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\InvoicingRateReportData'' and App\\Model\\Reports\\InvoicingRateReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Service/InvoicingRateReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\InvoicingRateReportWorker'' and App\\Model\\Reports\\InvoicingRateReportWorker will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Service/InvoicingRateReportServiceTest.php
+
+		-
+			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, \$variable\-\>count\(\)\)\.$#'
+			identifier: phpunit.assertCount
+			count: 1
+			path: tests/Integration/Service/InvoicingRateReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:clear\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:find\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findAll\(\)\.$#'
+			identifier: method.notFound
+			count: 24
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
+			identifier: method.notFound
+			count: 8
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:flush\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:persist\(\)\.$#'
+			identifier: method.notFound
+			count: 12
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Service\\LeantimeApiServiceTest\:\:getMilestones\(\) has parameter \$modifiedYear with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Service\\LeantimeApiServiceTest\:\:getProjects\(\) has parameter \$modifiedYear with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Service\\LeantimeApiServiceTest\:\:getTickets\(\) has parameter \$modifiedYear with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Integration\\Service\\LeantimeApiServiceTest\:\:getTimesheets\(\) has parameter \$modifiedYear with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$dataProviderId of method App\\Service\\LeantimeApiService\:\:deleteAsJob\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$projectTrackerId of method App\\Entity\\Issue\:\:setProjectTrackerId\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$projectTrackerId of method App\\Entity\\Project\:\:setProjectTrackerId\(\) expects string\|null, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$projectTrackerId of method App\\Entity\\Version\:\:setProjectTrackerId\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$projectTrackerIssueId of method App\\Entity\\Worklog\:\:setProjectTrackerIssueId\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$projectTrackerKey of method App\\Entity\\Issue\:\:setProjectTrackerKey\(\) expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$projectTrackerKey of method App\\Entity\\Project\:\:setProjectTrackerKey\(\) expects string\|null, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$started of method App\\Entity\\Worklog\:\:setStarted\(\) expects DateTimeInterface, DateTime\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$messageBus of class App\\Service\\LeantimeApiService constructor expects Symfony\\Component\\Messenger\\MessageBusInterface, object given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#3 \$dataProviderRepository of class App\\Service\\LeantimeApiService constructor expects App\\Repository\\DataProviderRepository, object given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#4 \$dataProviderId of method App\\Service\\LeantimeApiService\:\:updateAsJob\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 8
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#4 \$entityManager of class App\\Service\\LeantimeApiService constructor expects Doctrine\\ORM\\EntityManagerInterface, object given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Parameter \#5 \$projectRepository of class App\\Service\\LeantimeApiService constructor expects App\\Repository\\ProjectRepository, object given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Service/LeantimeApiServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\BillingService\:\:createProjectBilling\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\BillingService\:\:getIssuesNotIncludedInProjectBilling\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:exportInvoicesToSpreadsheet\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getClosedIssuesFromInterval\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\WorkloadReportData'' and App\\Model\\Reports\\WorkloadReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Service/WorkloadReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\WorkloadReportWorker'' and App\\Model\\Reports\\WorkloadReportWorker will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Service/WorkloadReportServiceTest.php
+
+		-
+			message: '#^You should use assertCount\(\$expectedCount, \$variable\) instead of assertSame\(\$expectedCount, \$variable\-\>count\(\)\)\.$#'
+			identifier: phpunit.assertCount
+			count: 1
+			path: tests/Integration/Service/WorkloadReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\SubscriptionRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 7
+			path: tests/Unit/Command/SubscriptionHandlerCommandTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\SubscriptionHandlerService\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: tests/Unit/Command/SubscriptionHandlerCommandTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\SubscriptionHandlerService\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Command/SubscriptionHandlerCommandTest.php
+
+		-
+			message: '#^Call to an undefined method Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Unit/Command/SubscriptionHandlerCommandTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\LeantimeApiService\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Unit/Command/SyncCommandTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Contracts\\HttpClient\\HttpClientInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Command/SyncCommandTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\LeantimeApiService\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Unit/Command/SyncDeletedCommandTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\LeantimeApiService\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Unit/Command/SyncModifiedCommandTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\DataProviderService\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/MessageHandler/EntityRemovedFromDataProviderHandlerTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\DataProviderService\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/MessageHandler/EntityRemovedFromDataProviderHandlerTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\BillableUnbilledHoursReportData'' and App\\Model\\Reports\\BillableUnbilledHoursReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Service/BillableUnbilledHoursReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\InvoiceEntryRepository\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Unit/Service/BillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\InvoiceRepository\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: tests/Unit/Service/BillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\InvoiceRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 10
+			path: tests/Unit/Service/BillingServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Service/BillingServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Service/BillingServiceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:assertSameDate\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:dataEaster\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:dataIsBankHoliday\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:dataNextBankDay\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:dataNextBankDay30\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:dataNextNonHoliday\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:testEaster\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:testHmm\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:testHolidayNames\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:testIsBankHoliday\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:testNextBankDay\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:testNextBankDay30\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:testNextNonHoliday\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Parameter \#1 \$expected of method App\\Tests\\Unit\\Service\\DanishHolidayHelperTest\:\:assertSameDate\(\) expects DateTimeInterface, DateTimeInterface\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Result of method PHPUnit\\Framework\\Assert\:\:assertEquals\(\) \(void\) is used\.$#'
+			identifier: method.void
+			count: 1
+			path: tests/Unit/Service/DanishHolidayHelperTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/Service/DashboardServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Unit/Service/DashboardServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: tests/Unit/Service/DashboardServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsFloat\(\) with float will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Service/DashboardServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\EpicRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Service/DataProviderServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 7
+			path: tests/Unit/Service/DataProviderServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\ProjectRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 12
+			path: tests/Unit/Service/DataProviderServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\VersionRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Unit/Service/DataProviderServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Unit/Service/DataProviderServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: tests/Unit/Service/DataProviderServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 34
+			path: tests/Unit/Service/DataProviderServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Service/DataProviderServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Unit/Service/DataProviderServiceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DateTimeHelperTest\:\:monthNameDataProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DateTimeHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DateTimeHelperTest\:\:monthYearProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DateTimeHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DateTimeHelperTest\:\:testGetFirstAndLastDateOfMonth\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DateTimeHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DateTimeHelperTest\:\:testGetFirstAndLastDateOfWeek\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DateTimeHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DateTimeHelperTest\:\:testGetFirstAndLastDateOfYear\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DateTimeHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DateTimeHelperTest\:\:testGetWeeksOfYear\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DateTimeHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DateTimeHelperTest\:\:weekYearProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DateTimeHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DateTimeHelperTest\:\:weeksOfYearProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DateTimeHelperTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\DateTimeHelperTest\:\:yearProvider\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Service/DateTimeHelperTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/Service/ForecastReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/Service/ForecastReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\ForecastReportData'' and App\\Model\\Reports\\ForecastReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Service/ForecastReportServiceTest.php
+
+		-
+			message: '#^Cannot access property \$invoiced on App\\Model\\Reports\\ForecastReportProjectData\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Unit/Service/ForecastReportServiceTest.php
+
+		-
+			message: '#^Cannot access property \$issues on App\\Model\\Reports\\ForecastReportProjectData\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Unit/Service/ForecastReportServiceTest.php
+
+		-
+			message: '#^Offset 1 does not exist on array\<string, App\\Model\\Reports\\ForecastReportWorklogData\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/Unit/Service/ForecastReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: tests/Unit/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: tests/Unit/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\HourReportData'' and App\\Model\\Reports\\HourReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Cannot access property \$projectTickets on App\\Model\\Reports\\HourReportProjectTag\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Unit/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Cannot access property \$tag on App\\Model\\Reports\\HourReportProjectTag\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Unit/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Cannot access property \$totalEstimated on App\\Model\\Reports\\HourReportProjectTag\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Unit/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Cannot access property \$totalSpent on App\\Model\\Reports\\HourReportProjectTag\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Unit/Service/HourReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 7
+			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\InvoicingRateReportData'' and App\\Model\\Reports\\InvoicingRateReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
+
+		-
+			message: '#^Cannot access property \$average on App\\Model\\Reports\\InvoicingRateReportWorker\|false\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Service/InvoicingRateReportServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Service/ManagementReportServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 7
+			path: tests/Unit/Service/PlanningServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\ProjectRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Service/PlanningServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\WorkerRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: tests/Unit/Service/PlanningServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\DateTimeHelper\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 7
+			path: tests/Unit/Service/PlanningServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Planning\\\\PlanningData'' and App\\Model\\Planning\\PlanningData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Service/PlanningServiceTest.php
+
+		-
+			message: '#^Cannot access property \$displayName on App\\Model\\Planning\\Assignee\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Unit/Service/PlanningServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\ClientRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 10
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\ProjectBillingRepository\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\ProjectBillingRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 9
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\BillingService\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\BillingService\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\ClientHelper\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between ''Widget'' and bool will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: tests/Unit/Service/ProjectBillingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\ProjectRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\VersionRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\HourReportService\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\HourReportService\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Mailer\\MailerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Contracts\\Translation\\TranslatorInterface\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Twig\\Environment\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: tests/Unit/Service/SubscriptionHandlerServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''App\\\\Model\\\\Reports\\\\WorkloadReportData'' and App\\Model\\Reports\\WorkloadReportData will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 3
+			path: tests/Unit/Service/WorkloadReportServiceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\WorkloadReportServiceTest\:\:testExceptionIsThrownWhenWorkerIdentifierIsEmpty\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/WorkloadReportServiceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\WorkloadReportServiceTest\:\:testExceptionIsThrownWhenWorkerWorkloadIsUnset\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/WorkloadReportServiceTest.php
+
+		-
+			message: '#^Method App\\Tests\\Unit\\Service\\WorkloadReportServiceTest\:\:testGetWorkloadReport\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Unit/Service/WorkloadReportServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Unit/Service/WorkloadReportServiceTest.php

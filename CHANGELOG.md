@@ -8,399 +8,445 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.4.0] - 2026-05-20
+
+* [PR-311](https://github.com/itk-dev/economics/pull/311)
+  * Updated bundles.
+* [PR-307](https://github.com/itk-dev/economics/pull/307)
+  * Migrated static analysis from Psalm to PHPStan (level 8). Analysis now also covers `tests/`.
+* [PR-306](https://github.com/itk-dev/economics/pull/306)
+  * Excluded `messenger_messages` from Doctrine schema diffing via `doctrine.dbal.schema_filter`, so the Messenger
+    Doctrine transport can manage its own table without generating noisy migrations.
+  * Upgraded Symfony from 6.4 to 7.4 LTS. Dropped `symfony/proxy-manager-bridge`
+    (removed in Symfony 7.0), removed the obsolete `enable_authenticator_manager`
+    security option, and tightened `User::eraseCredentials()` to the new
+    `: void` return type required by `UserInterface`.
+* [PR-305](https://github.com/itk-dev/economics/pull/305)
+  * npm audit fix: bumped `@symfony/webpack-encore` to `^6` and aligned
+    `postcss-loader`, `sass-loader`, `webpack-cli` with its peer requirements.
+    Removed the now-redundant `markdownlint-cli` npm dep — markdownlint runs
+    via the `markdownlint` docker compose service in CI.
+* [PR-304](https://github.com/itk-dev/economics/pull/304)
+  * Applied itk-dev templates.
+  * Removed Game Center.
+  * Removed `prettier-plugin-jsdoc`.
+* [PR-302](https://github.com/itk-dev/economics/pull/302)
+  * Excluded `messenger_messages` from Doctrine schema diffing via `doctrine.dbal.schema_filter`.
+  * Added `task test:coverage:set-threshold -- <value>` to update the coverage threshold across `Taskfile.yml`,
+    `composer.json`, and `.github/workflows/pr.yml`.
+  * Fixed `ForecastReportService::getForecastReport()` crashing on worklogs whose issue had epics
+    (`PersistentCollection` passed to `array_map`, and `Epic::getName()` → `getTitle()`).
+  * Added integration tests for `HourReportService`, `InvoicingRateReportService`, `WorkloadReportService`,
+    `BillableUnbilledHoursReportService`, and `ForecastReportService` under `tests/Integration/Service/`.
+  * Added `InvoiceEntryFlowTest` covering edit, delete, recorded-invoice guards, and invalid-CSRF fall-through for
+    `InvoiceEntryController`.
+  * Added a minimum test-coverage gate (62%) using a clover report and `rregeer/phpunit-coverage-check`;
+    removed the unused Codecov upload step.
+  * Added `Taskfile.yml` (go-task) wrapping common dev commands as `task <name>`; composer scripts unchanged.
+  * Sped up `composer fixtures:load` by disabling DBAL debug middlewares, batching worklog inserts in groups
+    of 500, and caching entity references across `clear()`.
+  * Added controller smoke-matrix and flow tests under `tests/Integration/Controller/` covering admin index
+    routes and invoice/project-billing/hour-report flows.
+  * Fixed `/admin/invoices/{id}/edit` crashing on entries with no account by letting
+    `InvoiceEntryHelper::getAccountLabel()` accept null.
+  * Fixed `/admin/reports` landing page crash by replacing the stub with a minimal page linking to each report.
+  * Aligned `config/packages/security.yaml` with the report controllers: `/admin/reports/*` now requires
+    `ROLE_REPORT` instead of `ROLE_ADMIN`.
+
 ## [3.3.0] - 2026-05-12
 
 * [PR-292](https://github.com/itk-dev/economics/pull/292)
-  Workload report: right-align numbers and round percentages to 1 decimal.
+  * Workload report: right-align numbers and round percentages to 1 decimal.
 * [PR-290](https://github.com/itk-dev/economics/pull/290)
-  Sort reports alphabetically - unbilled projects report, hour report, invoicing rate report, workload report.
+  * Sort reports alphabetically - unbilled projects report, hour report, invoicing rate report, workload report.
 
 ## [3.1.0] - 2026-04-30
 
 * [PR-288](https://github.com/itk-dev/economics/pull/288)
-  Composer.lock cleanup.
+  * Composer.lock cleanup.
 * [PR-286](https://github.com/itk-dev/economics/pull/286)
-  Security updates.
+  * Security updates.
 * [PR-284](https://github.com/itk-dev/economics/pull/284)
-  Security updates.
+  * Security updates.
 * [PR-283](https://github.com/itk-dev/economics/pull/283)
-  Revert supercronic and templates update.
+  * Revert supercronic and templates update.
 * [PR-282](https://github.com/itk-dev/economics/pull/282)
-  Fixed worklog project not updating when ticket is moved to another project in Leantime.
+  * Fixed worklog project not updating when ticket is moved to another project in Leantime.
 * [PR-281](https://github.com/itk-dev/economics/pull/281)
-  Service agreements: Styling adjustments, index fields, QoL.
+  * Service agreements: Styling adjustments, index fields, QoL.
 * [PR-280](https://github.com/itk-dev/economics/pull/280)
-  Additional fields for service agreements.
+  * Additional fields for service agreements.
 
 ## [3.0.2] - 2026-03-04
 
 * [PR-274](https://github.com/itk-dev/economics/pull/274)
-  Added cron to itk-economics woodpecker setup.
+  * Added cron to itk-economics woodpecker setup.
 
 ## [3.0.1] - 2026-02-02
 
 * [PR-266](https://github.com/itk-dev/economics/pull/266)
-  Replace symfony scheduler with cron.
-  Fixed issue version and epic synchronization.
-  Fixed issue epic use.
-  Added option to disable modifiedAt check for sync command.
-  Changed invoice epic selector to multiple.
+  * Replace symfony scheduler with cron.
+  * Fixed issue version and epic synchronization.
+  * Fixed issue epic use.
+  * Added option to disable modifiedAt check for sync command.
+  * Changed invoice epic selector to multiple.
 
 ## [3.0.0] - 2026-01-20
 
 * [PR-262](https://github.com/itk-dev/economics/pull/262)
-  Fixed includedProjects query.
+  * Fixed includedProjects query.
 * [PR-261](https://github.com/itk-dev/economics/pull/261)
-  In hourReport, get epics on issue via join.
+  * In hourReport, get epics on issue via join.
 * [PR-259](https://github.com/itk-dev/economics/pull/259)
-  Attach epics to issues during sync.
+  * Attach epics to issues during sync.
 * [PR-258](https://github.com/itk-dev/economics/pull/258)
-  Skip excluded workers from workload report.
+  * Skip excluded workers from workload report.
 
 ## [2.10.2] - 2025-12-11
 
 * [PR-265](https://github.com/itk-dev/economics/pull/256)
-  Add next year as an option for the planning overview.
+  * Add next year as an option for the planning overview.
 * [PR-252](https://github.com/itk-dev/economics/pull/252)
-  Added support for new workers endpoint.
+  * Added support for new workers endpoint.
 * [PR-253](https://github.com/itk-dev/economics/pull/253)
-  Made worker optional on issue entity.
+  * Made worker optional on issue entity.
 * [PR-242](https://github.com/itk-dev/economics/pull/242)
-  Changed Leantime data provider to use apidata plugin instead of leantime api.
+  * Changed Leantime data provider to use apidata plugin instead of leantime api.
 
 ## [2.10.1] - 2025-11-24
 
 * [PR-250](https://github.com/itk-dev/economics/pull/250)
-  hotfix dataprovider reference
+  * hotfix dataprovider reference
 
 ## [2.10.0] - 2025-11-19
 
 * [PR-246](https://github.com/itk-dev/economics/pull/246)
-  Minor api adjustments.
+  * Minor api adjustments.
 * [PR-243](https://github.com/itk-dev/economics/pull/243)
-  Added CRUD for service agreements and cyber security agreements.
-  Added JSON endpoint for retrieving agreements.
+  * Added CRUD for service agreements and cyber security agreements.
+  * Added JSON endpoint for retrieving agreements.
 * [PR-240](https://github.com/itk-dev/economics/pull/240)
-  Fixes and optimizations for app:sync command
+  * Fixes and optimizations for app:sync command
 * [PR-235](https://github.com/itk-dev/economics/pull/235)
-  Increased timeout of nginx.
-  Included archived issues in sync.
-  Template files updated.
+  * Increased timeout of nginx.
+  * Included archived issues in sync.
+  * Template files updated.
 
 ## [2.9.4] - 2025-07-10
 
 * [PR-232](https://github.com/itk-dev/economics/pull/232)
-  Leantime synchronization adjustments.
+  * Leantime synchronization adjustments.
 
 ## [2.9.3] - 2025-07-08
 
 * [PR-230](https://github.com/itk-dev/economics/pull/230)
-  Switch to amqp message broker.
+  * Switch to amqp message broker.
 
 ## [2.9.2] - 2025-06-30
 
 * [PR-226](https://github.com/itk-dev/economics/pull/226)
-  Upped memory limit for LT-sync.
-  Fixed some composer-related issues.
+  * Upped memory limit for LT-sync.
+  * Fixed some composer-related issues.
 
 ## [2.9.1] - 2025-05-19
 
 * [PR-225](https://github.com/itk-dev/economics/pull/225)
-  Ensure current week and month shown on dashboard when no time is logged.
-  Update composer dependencies, patch only.
+  * Ensure current week and month shown on dashboard when no time is logged.
+  * Update composer dependencies, patch only.
 
 ## [2.9.0] - 2025-05-07
 
 * [PR-223](https://github.com/itk-dev/economics/pull/223)
-  Adjust cron sync interval from hourly to daily at midnight.
+  * Adjust cron sync interval from hourly to daily at midnight.
 * [PR-222](https://github.com/itk-dev/economics/pull/222)
-  Add quarter picker for unbilled billable worklogs report.
+  * Add quarter picker for unbilled billable worklogs report.
 * [PR-221](https://github.com/itk-dev/economics/pull/221)
-  Remove showKanban stuff from link to leantime to make it faster.
+  * Remove showKanban stuff from link to leantime to make it faster.
 
 ## [2.8.6] - 2025-04-07
 
 * [PR-218](https://github.com/itk-dev/economics/pull/218)
-  Included Done tasks in holiday planning overview.
+  * Included Done tasks in holiday planning overview.
 
 ## [2.8.5] - 2025-04-04
 
 * [PR-216](https://github.com/itk-dev/economics/pull/216)
-  Replaced literals with query parameters in worklog repo.
+  * Replaced literals with query parameters in worklog repo.
 
 ## [2.8.4] - 2025-04-03
 
 * [PR-214](https://github.com/itk-dev/economics/pull/214)
-  Explicitly set isBilled when synchronizing worklogs.
-  Select isBilled=NULL when getting unbilled billable worklogs.
+  * Explicitly set isBilled when synchronizing worklogs.
+  * Select isBilled=NULL when getting unbilled billable worklogs.
 
 ## [2.8.3] - 2025-03-26
 
 * [PR-212](https://github.com/itk-dev/economics/pull/212)
-  Setup auto deploy (woodpecker) for both prod sites.
+  * Setup auto deploy (woodpecker) for both prod sites.
 
 ## [2.8.2] - 2025-03-21
 
 * [PR-209](https://github.com/itk-dev/economics/pull/209)
-  Refactor dashboard calculations to do SUM in database and limit to days in current year.
+  * Refactor dashboard calculations to do SUM in database and limit to days in current year.
 * [PR-210](https://github.com/itk-dev/economics/pull/210)
-  Increase php max execution time for supervisor container to allow for LeanTime API rate limit.
-  Update github actions to use docker setup.
-  Update to latest ITK docker setup.
+  * Increase php max execution time for supervisor container to allow for LeanTime API rate limit.
+  * Update github actions to use docker setup.
+  * Update to latest ITK docker setup.
 
 ## [2.8.1] - 2025-03-18
 
 * [PR-208](https://github.com/itk-dev/economics/pull/208)
-  Removed extra build.
+  * Removed extra build.
 
 ## [2.8.0] - 2025-02-24
 
 * [PR-206](https://github.com/itk-dev/economics/pull/206)
-  3947: Added create release GitHub Actions workflow.
+  * 3947: Added create release GitHub Actions workflow.
 * [PR-205](https://github.com/itk-dev/economics/pull/205)
-  3863: Added lock to synchronization job to avoid executing more than one sync at a time.
-  3863: Moved queue monitoring to handler instead of command.
+  * 3863: Added lock to synchronization job to avoid executing more than one sync at a time.
+  * 3863: Moved queue monitoring to handler instead of command.
 * [PR-202](https://github.com/itk-dev/economics/pull/202)
-  3863: Added holiday planning.
+  * 3863: Added holiday planning.
 * [PR-201](https://github.com/itk-dev/economics/pull/201)
-  2299: Added project issue sync button to planning.
+  * 2299: Added project issue sync button to planning.
 * [PR-200](https://github.com/itk-dev/economics/pull/200)
-  3660: Adds user dashboard.
+  * 3660: Adds user dashboard.
 * [PR-199](https://github.com/itk-dev/economics/pull/199)
-  2299: Fixed linting of javascript.
+  * 2299: Fixed linting of javascript.
 * [PR-202](https://github.com/itk-dev/economics/pull/202)
-  Security updates.
+  * Security updates.
 * [PR-204](https://github.com/itk-dev/economics/pull/204)
-  3907: Updating lastSent when running subscriptions.
+  * 3907: Updating lastSent when running subscriptions.
 * [PR-197](https://github.com/itk-dev/economics/pull/197)
-  2299: Upgraded to php 8.3 and node 20.
+  * 2299: Upgraded to php 8.3 and node 20.
 * [PR-191](https://github.com/itk-dev/economics/pull/191)
-  2299: Added project sync component to navigation.
+  * 2299: Added project sync component to navigation.
 * [PR-195](https://github.com/itk-dev/economics/pull/195)
-  3602: Added billable unbilled hours report.
+  * 3602: Added billable unbilled hours report.
 * [PR-196](https://github.com/itk-dev/economics/pull/196)
-  3624: Correctly handling periods when viewing past workload reports.
+  * 3624: Correctly handling periods when viewing past workload reports.
 
 ## [2.7.0] - 2025-01-14
 
 * [PR-194](https://github.com/itk-dev/economics/pull/194)
-  2299: Added amount to invoices list. Removed data provider.
+  * 2299: Added amount to invoices list. Removed data provider.
 * [PR-193](https://github.com/itk-dev/economics/pull/193)
-  2575: Added link to issue on hour report.
+  * 2575: Added link to issue on hour report.
 * [PR-188](https://github.com/itk-dev/economics/pull/188)
-  2299: Removed sprint report.
+  * 2299: Removed sprint report.
 
 ## [2.6.1] - 2025-01-02
 
 ## [2.6.0] - 2025-01-02
 
 * [PR-182](https://github.com/itk-dev/economics/pull/182)
-  2597: Added invoicing rate report.
+  * 2597: Added invoicing rate report.
 * [PR-185](https://github.com/itk-dev/economics/pull/186)
-  2597: Added epic migration command.
+  * 2597: Added epic migration command.
 * [PR-184](https://github.com/itk-dev/economics/pull/184)
-  3489: Workload report period averages.
+  * 3489: Workload report period averages.
 * [PR-183](https://github.com/itk-dev/economics/pull/183)
-  2597: Added epic relations.
+  * 2597: Added epic relations.
 * [PR-187](https://github.com/itk-dev/economics/pull/187)
-  Updated symfony bundles.
+  * Updated symfony bundles.
 * [PR-189](https://github.com/itk-dev/economics/pull/189)
-  Npm audit.
+  * Npm audit.
 * [PR-187](https://github.com/itk-dev/economics/pull/187)
-  Updated symfony bundles.
+  * Updated symfony bundles.
 * [PR-175](https://github.com/itk-dev/economics/pull/175)
-  2617: Added forecast report.
+  * 2617: Added forecast report.
 
 ## [2.5.3] - 2025-03-17
 
 * [PR-207](https://github.com/itk-dev/economics/pull/207)
-  hotfix: Setup woodpecker workflows.
+  * hotfix: Setup woodpecker workflows.
 
 ## [2.5.2] - 2025-03-17
 
 * [PR-207](https://github.com/itk-dev/economics/pull/207)
-  hotfix: Change from yarn to npm for build release
+  * hotfix: Change from yarn to npm for build release
 
 ## [2.5.1] - 2024-11-26
 
 * [PR-180](https://github.com/itk-dev/economics/pull/180)
-  hotfix: Corrected from/to date check in hour report.
+  * hotfix: Corrected from/to date check in hour report.
 
 ## [2.5.0] - 2024-10-23
 
 * [PR-173](https://github.com/itk-dev/economics/pull/173)
-  2663: Workload report loading speed improvement.
+  * 2663: Workload report loading speed improvement.
 * [PR-167](https://github.com/itk-dev/economics/pull/167)
-  2499: Added worker name in workload report.
+  * 2499: Added worker name in workload report.
 * [PR-166](https://github.com/itk-dev/economics/pull/166)
-  2545: Added total column for workload report.
-  2545: Fixed average calculation.
+  * 2545: Added total column for workload report.
+  * 2545: Fixed average calculation.
 * [PR-168](https://github.com/itk-dev/economics/pull/168)
-  Added Game center
+  * Added Game center
 * [PR-164](https://github.com/itk-dev/economics/pull/164)
-  3298: Added report notification subscription
+  * 3298: Added report notification subscription
 
 ## [2.4.3] - 2024-10-09
 
 * [PR-174](https://github.com/itk-dev/economics/pull/174)
-  Fixed status enum twig rendering.
+  * Fixed status enum twig rendering.
 
 ## [2.4.2] - 2024-09-12
 
 * [PR-163](https://github.com/itk-dev/economics/pull/163)
-  2454: Hide done tasks in planning overview.
+  * 2454: Hide done tasks in planning overview.
 * [PR-159](https://github.com/itk-dev/economics/pull/159)
-  2396: Added year select to planning overview.
+  * 2396: Added year select to planning overview.
 * [PR-158](https://github.com/itk-dev/economics/pull/158)
-  2299: Fixed isBillable filter for project list.
-  2299: Removed unused code from planning overviews.
+  * 2299: Fixed isBillable filter for project list.
+  * 2299: Removed unused code from planning overviews.
 * [PR-157](https://github.com/itk-dev/economics/pull/157)
-  2299: Npm audit fixes.
+  * 2299: Npm audit fixes.
 * [PR-156](https://github.com/itk-dev/economics/pull/156)
-  2299: Composer update.
+  * 2299: Composer update.
 * [PR-155](https://github.com/itk-dev/economics/pull/155)
-  2294: Added worker name field and added to planning overview.
+  * 2294: Added worker name field and added to planning overview.
 * [PR-154](https://github.com/itk-dev/economics/pull/154)
-  2265: Changed X column in external exported csv.
+  * 2265: Changed X column in external exported csv.
 
 ## [2.4.1] - 2024-09-04
 
 * [PR-152](https://github.com/itk-dev/economics/pull/152)
-  2244: Handling Leantime timestamps when importing.
+  * 2244: Handling Leantime timestamps when importing.
 
 ## [2.4.0] - 2024-08-20
 
 * [PR-149](https://github.com/itk-dev/economics/pull/149)
-  2096: Set default dataprovider on hourReport.
+  * 2096: Set default dataprovider on hourReport.
 * [PR-148](https://github.com/itk-dev/economics/pull/148)
-  2031: Project overview standard settings.
+  * 2031: Project overview standard settings.
 * [PR-147](https://github.com/itk-dev/economics/pull/147)
-  2033: Sync worklogs from invoice entry.
+  * 2033: Sync worklogs from invoice entry.
 * [PR-146](https://github.com/itk-dev/economics/pull/146)
-  2034: Invoice date select continuity.
+  * 2034: Invoice date select continuity.
 * [PR-145](https://github.com/itk-dev/economics/pull/145)
-  2059: Specify workload report week definition.
+  * 2059: Specify workload report week definition.
 * [PR-143](https://github.com/itk-dev/economics/pull/143)
-  2050: Hour-report issue duedate ignore.
+  * 2050: Hour-report issue duedate ignore.
 * [PR-142](https://github.com/itk-dev/economics/pull/142)
-  2041: Revise Leantime issue status sync.
+  * 2041: Revise Leantime issue status sync.
 * [PR-138](https://github.com/itk-dev/economics/pull/138)
-  1867: Issue status as enum.
+  * 1867: Issue status as enum.
 * [PR-135](https://github.com/itk-dev/economics/pull/135)
-  1772: Removed views.
+  * 1772: Removed views.
 * [PR-136](https://github.com/itk-dev/economics/pull/136)
-  1774: Planning view use service.
+  * 1774: Planning view use service.
 * [PR-137](https://github.com/itk-dev/economics/pull/137)
-  1812: Minor hour report improvements.
+  * 1812: Minor hour report improvements.
 * [PR-134](https://github.com/itk-dev/economics/pull/134)
-  1632: Remove team report.
+  * 1632: Remove team report.
 * [PR-133](https://github.com/itk-dev/economics/pull/133)
-  1742: Simplified hour report form.
+  * 1742: Simplified hour report form.
 * [PR-132](https://github.com/itk-dev/economics/pull/132)
-  1742: Fixed synchronization issues.
+  * 1742: Fixed synchronization issues.
 * [PR-128](https://github.com/itk-dev/economics/pull/128)
-  1595: Added retryable http client decorator for handling rate limiting.
+  * 1595: Added retryable http client decorator for handling rate limiting.
 * [PR-117](https://github.com/itk-dev/economics/pull/117)
-  1211: Added hour report
-  NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when releasing.
+  * 1211: Added hour report
+  * NOTE: APP_DEFAULT_PLANNING_DATA_PROVIDER has been changed to APP_DEFAULT_DATA_PROVIDER. This has to be changed when
+    releasing.
 * [PR-124](https://github.com/itk-dev/economics/pull/124)
-  710: Added workload report
+  * 710: Added workload report
 * [PR-129](https://github.com/itk-dev/economics/pull/129)
-  1632: Added invoicing rate view to workload report
+  * 1632: Added invoicing rate view to workload report
 
 ## [2.3.3] - 2024-07-10
 
 * [PR-141](https://github.com/itk-dev/economics/pull/141)
-  Data provider stuff
+  * Data provider stuff
 
 ## [2.3.2] - 2024-07-05
 
 * [PR-140](https://github.com/itk-dev/economics/pull/140)
-  1768: Added link to invoice entry that binds worklog.
+  * 1768: Added link to invoice entry that binds worklog.
 
 ## [2.3.1] - 2024-07-05
 
 * [PR-139](https://github.com/itk-dev/economics/pull/139)
-  1890: Added check that issue exists before adding worklog to database.
+  * 1890: Added check that issue exists before adding worklog to database.
 
 ## [2.3.0] - 2024-06-03
 
 * [PR-126](https://github.com/itk-dev/economics/pull/126)
-  1590: Added worklog product as prefix on product invoice entries
+  * 1590: Added worklog product as prefix on product invoice entries
 * [PR-125](https://github.com/itk-dev/economics/pull/125)
-  1547: Set account based on invoice entry type
+  * 1547: Set account based on invoice entry type
 * [PR-123](https://github.com/itk-dev/economics/pull/123)
-  1544: Allowed invoicing issues with products and no worklogs
+  * 1544: Allowed invoicing issues with products and no worklogs
 * [PR-122](https://github.com/itk-dev/economics/pull/122)
-  1547: Added invoice entry account selector
+  * 1547: Added invoice entry account selector
 * [PR-121](https://github.com/itk-dev/economics/pull/121)
-  1485: Fixed floating number issues
+  * 1485: Fixed floating number issues
 * [PR-120](https://github.com/itk-dev/economics/pull/120)
-  1484: Cleaned up worklog cleanup
+  * 1484: Cleaned up worklog cleanup
 * [PR-118](https://github.com/itk-dev/economics/pull/118)
-  1485: Made product quantity floatable
+  * 1485: Made product quantity floatable
 
 ## [2.2.0] - 2024-05-06
 
 * [PR-114](https://github.com/itk-dev/economics/pull/114)
-  1258: Clean up planning view ui and add scroll to active sprint.
+  * 1258: Clean up planning view ui and add scroll to active sprint.
 * [PR-112](https://github.com/itk-dev/economics/pull/112)
-  1280: Simplified planning form. Added default value.
+  * 1280: Simplified planning form. Added default value.
 * [PR-113](https://github.com/itk-dev/economics/pull/113)
-  Worklog period filter
+  * Worklog period filter
 * [PR-110](https://github.com/itk-dev/economics/pull/110)
-  1209: No cost invoices
+  * 1209: No cost invoices
 * [PR-111](https://github.com/itk-dev/economics/pull/111)
-  1208: Restored exported data column
+  * 1208: Restored exported data column
 * [PR-107](https://github.com/itk-dev/economics/pull/107)
-  1213: Fixed handling of filter value
+  * 1213: Fixed handling of filter value
 * [PR-109](https://github.com/itk-dev/economics/pull/109)
-  1207: Added invoice query
+  * 1207: Added invoice query
 * [PR-108](https://github.com/itk-dev/economics/pull/108)
-  1208: Changed default sorting of recorded invoices
+  * 1208: Changed default sorting of recorded invoices
 * [PR-106](https://github.com/itk-dev/economics/pull/106)
-  1202: Handled worklog deletions
+  * 1202: Handled worklog deletions
 * [PR-115](https://github.com/itk-dev/economics/pull/115)
-  1270: Planning hoursRemaining source change
+  * 1270: Planning hoursRemaining source change
 
 ## [2.1.2] - 2024-04-16
 
 * [PR-104](https://github.com/itk-dev/economics/pull/104)
-  1174: Fixed datetime format in Leantime API calls
+  * 1174: Fixed datetime format in Leantime API calls
 * [PR-103](https://github.com/itk-dev/economics/pull/103)
-  1169: Made sure that Leantime issues have at most one version (milestone)
+  * 1169: Made sure that Leantime issues have at most one version (milestone)
 * [PR-102](https://github.com/itk-dev/economics/pull/102)
-  1157: Updated external billing export
+  * 1157: Updated external billing export
 
 ## [2.1.1] - 2024-04-04
 
 * [PR-100](https://github.com/itk-dev/economics/pull/100)
-  1111: Fixed fetching timesheet data from Leantime
+  * 1111: Fixed fetching timesheet data from Leantime
 
 ## [2.1.0] - 2024-03-27
 
 * [PR-98](https://github.com/itk-dev/economics/pull/98)
-  Replaced Tom Select with Stimulus
+  * Replaced Tom Select with Stimulus
 * [PR-97](https://github.com/itk-dev/economics/pull/97)
-  Twig CS Fixer
+  * Twig CS Fixer
 * [PR-96](https://github.com/itk-dev/economics/pull/96)
-  Miscellaneous fixes
+  * Miscellaneous fixes
 * [PR-86](https://github.com/itk-dev/economics/pull/86)
-  Added products.
+  * Added products.
 * [PR-95](https://github.com/itk-dev/economics/pull/95)
-  Updated bank holiday helper
+  * Updated bank holiday helper
 * [PR-94](https://github.com/itk-dev/economics/pull/94)
-  Updated data in external invoicing
+  * Updated data in external invoicing
 * [PR-93](https://github.com/itk-dev/economics/pull/93)
-  Made price on client optional
+  * Made price on client optional
 * [PR-87](https://github.com/itk-dev/economics/pull/87)
-  Fixed Leantime API request
+  * Fixed Leantime API request
 * [PR-91](https://github.com/itk-dev/economics/pull/91)
-  Updated standard price on clients
+  * Updated standard price on clients
 * [PR-89](https://github.com/itk-dev/economics/pull/89)
-  Cleaned up Twig templates.
+  * Cleaned up Twig templates.
 * [PR-88](https://github.com/itk-dev/economics/pull/88)
-  Miscellaneous clean-ups.
+  * Miscellaneous clean-ups.
 
 ## [2.0.0]
 

@@ -4,13 +4,13 @@ framework:
         failure_transport: failed
 
         transports:
-            sync: 'sync://'
+            sync: "sync://"
             # @see https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
                 dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
             # @see https://symfony.com/doc/current/messenger.html#saving-retrying-failed-messages
             failed:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN_FAILED)%'
+                dsn: "%env(MESSENGER_TRANSPORT_DSN_FAILED)%"
 
         routing:
             # Route your messages to the transports
@@ -21,10 +21,8 @@ framework:
             'App\Message\LeantimeUpdateMessage': async
             'App\Message\LeantimeDeleteMessage': async
 
-# when@test:
-#    framework:
-#        messenger:
-#            transports:
-#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
-#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
-#                async: 'in-memory://'
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: "doctrine://default?queue_name=async"
