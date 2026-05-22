@@ -317,8 +317,8 @@ class WorklogRepository extends ServiceEntityRepository
     public function getWorklogsByIssueAndPeriod(int $issueId, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate): array
     {
         $qb = $this->createQueryBuilder('w')
-            ->andWhere('w.issue = :issue') // <-- use the entity relation
-            ->setParameter('issue', $issueId); // Doctrine can accept the ID for a ManyToOne
+            ->andWhere('w.issue = :issue')
+            ->setParameter('issue', $issueId);
 
         if ($fromDate) {
             $qb->andWhere('w.started >= :fromDate')
