@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Added codeowners on project, editable as a multiselect on the project edit form.
   * Added a project API endpoint returning each project with its codeowners and most recent service agreement.
   * Removed the service agreement API endpoint, superseded by the project API endpoint.
+  * Removed `LEANTIME_PROJECT_TRACKER_URL`; `leantimeUrl` is now resolved from each project's data provider.
 * [PR-307](https://github.com/itk-dev/economics/pull/307)
   * Migrated static analysis from Psalm to PHPStan (level 8). Analysis now also covers `tests/`.
 * [PR-306](https://github.com/itk-dev/economics/pull/306)
