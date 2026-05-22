@@ -143,11 +143,10 @@ class ProjectRepositoryTest extends KernelTestCase
             $this->assertTrue(null === $item['serviceAgreement'] || is_array($item['serviceAgreement']));
         }
 
-        $withTracker = array_filter($result, fn (array $p): bool => !empty($p['projectTrackerId']));
-        $this->assertNotEmpty($withTracker, 'Fixture data must contain at least one project with projectTrackerId set.');
-        foreach ($withTracker as $project) {
-            $this->assertNotNull($project['leantimeUrl']);
-            $this->assertStringContainsString('/projects/changeCurrentProject/'.$project['projectTrackerId'], $project['leantimeUrl']);
+        $withDataProvider = array_filter($result, fn (array $p): bool => !empty($p['leantimeUrl']));
+        $this->assertNotEmpty($withDataProvider, 'Fixture data must contain at least one project with a data provider URL set.');
+        foreach ($withDataProvider as $project) {
+            $this->assertStringEndsNotWith('/', $project['leantimeUrl']);
         }
     }
 }

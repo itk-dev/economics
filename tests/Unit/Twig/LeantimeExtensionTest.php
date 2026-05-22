@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Twig;
 
+use App\Entity\DataProvider;
 use App\Entity\Project;
 use App\Service\LeantimeUrlGenerator;
 use App\Twig\LeantimeExtension;
@@ -11,7 +12,7 @@ class LeantimeExtensionTest extends TestCase
 {
     public function testGetFunctionsExposesLeantimeUrl(): void
     {
-        $extension = new LeantimeExtension(new LeantimeUrlGenerator('https://leantime.test'));
+        $extension = new LeantimeExtension(new LeantimeUrlGenerator());
 
         $functions = $extension->getFunctions();
 
@@ -19,22 +20,22 @@ class LeantimeExtensionTest extends TestCase
         $this->assertSame('leantime_url', $functions[0]->getName());
     }
 
-    public function testLeantimeUrlDelegatesToGenerator(): void
+    public function testLeantimeUrlReturnsDataProviderBaseUrl(): void
     {
+        $dataProvider = new DataProvider();
+        $dataProvider->setUrl('https://leantime.test/');
+
         $project = new Project();
-        $project->setProjectTrackerId('proj-9');
+        $project->setDataProvider($dataProvider);
 
-        $extension = new LeantimeExtension(new LeantimeUrlGenerator('https://leantime.test'));
+        $extension = new LeantimeExtension(new LeantimeUrlGenerator());
 
-        $this->assertSame(
-            'https://leantime.test/projects/changeCurrentProject/proj-9',
-            $extension->leantimeUrl($project),
-        );
+        $this->assertSame('https://leantime.test', $extension->leantimeUrl($project));
     }
 
     public function testLeantimeUrlReturnsNullForNullProject(): void
     {
-        $extension = new LeantimeExtension(new LeantimeUrlGenerator('https://leantime.test'));
+        $extension = new LeantimeExtension(new LeantimeUrlGenerator());
 
         $this->assertNull($extension->leantimeUrl(null));
     }

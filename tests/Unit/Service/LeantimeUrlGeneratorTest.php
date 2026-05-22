@@ -2,70 +2,55 @@
 
 namespace App\Tests\Unit\Service;
 
+use App\Entity\DataProvider;
 use App\Entity\Project;
 use App\Service\LeantimeUrlGenerator;
 use PHPUnit\Framework\TestCase;
 
 class LeantimeUrlGeneratorTest extends TestCase
 {
-    public function testForProjectTrackerIdBuildsUrl(): void
+    public function testBaseUrlReturnsTrimmedUrl(): void
     {
-        $generator = new LeantimeUrlGenerator('https://leantime.test');
+        $generator = new LeantimeUrlGenerator();
 
-        $this->assertSame(
-            'https://leantime.test/projects/changeCurrentProject/42',
-            $generator->forProjectTrackerId('42'),
-        );
+        $this->assertSame('https://leantime.test', $generator->baseUrl('https://leantime.test'));
+        $this->assertSame('https://leantime.test', $generator->baseUrl('https://leantime.test/'));
     }
 
-    public function testForProjectTrackerIdTrimsTrailingSlash(): void
+    public function testBaseUrlReturnsNullForEmptyInput(): void
     {
-        $generator = new LeantimeUrlGenerator('https://leantime.test/');
+        $generator = new LeantimeUrlGenerator();
 
-        $this->assertSame(
-            'https://leantime.test/projects/changeCurrentProject/abc',
-            $generator->forProjectTrackerId('abc'),
-        );
+        $this->assertNull($generator->baseUrl(null));
+        $this->assertNull($generator->baseUrl(''));
     }
 
-    public function testForProjectTrackerIdReturnsNullWhenBaseUrlEmpty(): void
+    public function testBaseUrlForProjectResolvesFromDataProvider(): void
     {
-        $generator = new LeantimeUrlGenerator('');
+        $dataProvider = new DataProvider();
+        $dataProvider->setUrl('https://leantime.test/');
 
-        $this->assertNull($generator->forProjectTrackerId('42'));
+        $project = new Project();
+        $project->setDataProvider($dataProvider);
+
+        $generator = new LeantimeUrlGenerator();
+
+        $this->assertSame('https://leantime.test', $generator->baseUrlForProject($project));
     }
 
-    public function testForProjectTrackerIdReturnsNullWhenTrackerIdNull(): void
-    {
-        $generator = new LeantimeUrlGenerator('https://leantime.test');
-
-        $this->assertNull($generator->forProjectTrackerId(null));
-    }
-
-    public function testForProjectTrackerIdReturnsNullWhenTrackerIdEmpty(): void
-    {
-        $generator = new LeantimeUrlGenerator('https://leantime.test');
-
-        $this->assertNull($generator->forProjectTrackerId(''));
-    }
-
-    public function testForProjectDelegatesToTrackerId(): void
+    public function testBaseUrlForProjectReturnsNullWhenProjectHasNoDataProvider(): void
     {
         $project = new Project();
-        $project->setProjectTrackerId('proj-123');
 
-        $generator = new LeantimeUrlGenerator('https://leantime.test');
+        $generator = new LeantimeUrlGenerator();
 
-        $this->assertSame(
-            'https://leantime.test/projects/changeCurrentProject/proj-123',
-            $generator->forProject($project),
-        );
+        $this->assertNull($generator->baseUrlForProject($project));
     }
 
-    public function testForProjectReturnsNullForNullProject(): void
+    public function testBaseUrlForProjectReturnsNullForNullProject(): void
     {
-        $generator = new LeantimeUrlGenerator('https://leantime.test');
+        $generator = new LeantimeUrlGenerator();
 
-        $this->assertNull($generator->forProject(null));
+        $this->assertNull($generator->baseUrlForProject(null));
     }
 }
