@@ -131,7 +131,8 @@ class ProjectRepository extends ServiceEntityRepository
     public function getApiProjects(LeantimeUrlGenerator $leantimeUrl): array
     {
         $results = $this->createQueryBuilder('p')
-            ->select('p', 'sa', 'co')
+            ->select('p', 'sa', 'co', 'dp')
+            ->leftJoin('p.dataProvider', 'dp')
             ->leftJoin('p.serviceAgreements', 'sa')
             ->leftJoin('p.codeowners', 'co')
             ->orderBy('p.id', 'ASC')
@@ -152,11 +153,13 @@ class ProjectRepository extends ServiceEntityRepository
                 }
             }
 
-            unset($project['codeowners'], $project['serviceAgreements']);
+            $url = $leantimeUrl->baseUrl($project['dataProvider']['url'] ?? null);
+
+            unset($project['codeowners'], $project['serviceAgreements'], $project['dataProvider']);
 
             return [
                 ...$project,
-                'leantimeUrl' => $leantimeUrl->forProjectTrackerId($project['projectTrackerId'] ?? null),
+                'leantimeUrl' => $url,
                 'codeowners' => $codeowners,
                 'serviceAgreement' => $latest,
             ];

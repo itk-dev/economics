@@ -24,6 +24,6 @@ class LeantimeExtension extends AbstractExtension
 
     public function leantimeUrl(?Project $project): ?string
     {
-        return $this->generator->forProject($project);
+        return $this->generator->baseUrlForProject($project);
     }
 }
