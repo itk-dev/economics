@@ -22,7 +22,7 @@ services:
       NGINX_FASTCGI_READ_TIMEOUT: 300
 
   supervisor:
-    image: itkdev/supervisor-php8.3:alpine
+    image: itkdev/supervisor-php8.4:alpine
     restart: unless-stopped
     stop_grace_period: 20s
     environment:
