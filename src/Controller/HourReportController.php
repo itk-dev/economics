@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Exception\EconomicsException;
 use App\Form\HourReportType;
 use App\Model\Reports\HourReportFormData;
-use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Service\HourReportService;
@@ -20,9 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class HourReportController extends AbstractController
 {
     public function __construct(
-        private readonly DataProviderRepository $dataProviderRepository,
         private readonly HourReportService $hourReportService,
-        private readonly ?string $defaultDataProvider,
         private readonly ProjectRepository $projectRepository,
         private readonly VersionRepository $versionRepository,
     ) {
@@ -38,17 +35,10 @@ class HourReportController extends AbstractController
         $reportData = null;
         $reportFormData = new HourReportFormData();
 
-        $dataProvider = null;
         $project = null;
         $version = null;
 
         $requestData = $request->query->all('hour_report');
-
-        if (!empty($requestData['dataProvider'])) {
-            $dataProvider = $this->dataProviderRepository->find($requestData['dataProvider']);
-        } elseif (null !== $this->defaultDataProvider) {
-            $dataProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
-        }
 
         if (!empty($requestData['project'])) {
             $project = $this->projectRepository->find($requestData['project']);
@@ -66,7 +56,6 @@ class HourReportController extends AbstractController
             'attr' => [
                 'id' => 'hour_report',
             ],
-            'data_provider' => $dataProvider,
             'project' => $project,
             'version' => $version,
         ]);
