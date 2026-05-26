@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-313](https://github.com/itk-dev/economics/pull/313)
   * Changed supervisor to php 8.4 version.
+* [PR-264](https://github.com/itk-dev/economics/pull/264)
+  Added cybersecurity report.
 * [PR-309](https://github.com/itk-dev/economics/pull/309)
   * Consolidated project and service-agreement fields.
   * Moved the Leantime project link from service agreement to project and rendered it via a Twig helper.
@@ -63,8 +65,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Fixed `/admin/reports` landing page crash by replacing the stub with a minimal page linking to each report.
   * Aligned `config/packages/security.yaml` with the report controllers: `/admin/reports/*` now requires
     `ROLE_REPORT` instead of `ROLE_ADMIN`.
-* [PR-264](https://github.com/itk-dev/economics/pull/264)
-  Added cybersecurity report.
 * [PR-265](https://github.com/itk-dev/economics/pull/265)
   Add version to issue during sync.
 
