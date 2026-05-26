@@ -13,6 +13,10 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
+        {% if tidy_feedback_widget_url and tidy_feedback_api_key %}
+            <script src="{{ tidy_feedback_widget_url }}"
+                    data-api-key="{{ tidy_feedback_api_key }}"></script>
+        {% endif %}
     </head>
     <body class="body">
         {% block body %}
