@@ -12,8 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-315](https://github.com/itk-dev/economics/pull/315)
   * Add tidy-feedback collector module.
-* [PR-313](https://github.com/itk-dev/economics/pull/313)
-  * Changed supervisor to php 8.4 version.
 * [PR-310](https://github.com/itk-dev/economics/pull/310)
   * Remove dataProvider scoping.
 * [PR-264](https://github.com/itk-dev/economics/pull/264)
@@ -26,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Added a project API endpoint returning each project with its codeowners and most recent service agreement.
   * Removed the service agreement API endpoint, superseded by the project API endpoint.
   * Removed `LEANTIME_PROJECT_TRACKER_URL`; `leantimeUrl` is now resolved from each project's data provider.
+
+## [3.4.1] - 2026-05-23
+
+* [PR-313](https://github.com/itk-dev/economics/pull/313)
+  * Changed supervisor to php 8.4 version.
 
 ## [3.4.0] - 2026-05-20
 
