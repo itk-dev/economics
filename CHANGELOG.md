@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.0] - 2026-05-26
+
 * [PR-315](https://github.com/itk-dev/economics/pull/315)
   * Add tidy-feedback collector module.
 * [PR-313](https://github.com/itk-dev/economics/pull/313)
@@ -639,7 +641,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.3.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.5.0...HEAD
+[3.5.0]: https://github.com/itk-dev/economics/compare/3.3.0...3.5.0
 [3.3.0]: https://github.com/itk-dev/economics/compare/3.1.0...3.3.0
 [3.1.0]: https://github.com/itk-dev/economics/compare/3.0.1...3.1.0
 [3.0.1]: https://github.com/itk-dev/economics/compare/3.0.0...3.0.1
