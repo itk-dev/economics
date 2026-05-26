@@ -6,6 +6,7 @@ use App\Entity\Project;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
+use App\Service\LeantimeUrlGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -121,5 +122,31 @@ class ProjectRepositoryTest extends KernelTestCase
         $sorted = $result;
         sort($sorted);
         $this->assertEquals($sorted, $result);
+    }
+
+    public function testGetApiProjects(): void
+    {
+        /** @var LeantimeUrlGenerator $generator */
+        $generator = self::getContainer()->get(LeantimeUrlGenerator::class);
+        $result = $this->repository->getApiProjects($generator);
+
+        $this->assertNotEmpty($result);
+
+        foreach ($result as $item) {
+            $this->assertArrayHasKey('id', $item);
+            $this->assertArrayHasKey('name', $item);
+            $this->assertArrayHasKey('githubRepos', $item);
+            $this->assertArrayHasKey('leantimeUrl', $item);
+            $this->assertArrayHasKey('codeowners', $item);
+            $this->assertArrayHasKey('serviceAgreement', $item);
+            $this->assertIsArray($item['codeowners']);
+            $this->assertTrue(null === $item['serviceAgreement'] || is_array($item['serviceAgreement']));
+        }
+
+        $withDataProvider = array_filter($result, fn (array $p): bool => !empty($p['leantimeUrl']));
+        $this->assertNotEmpty($withDataProvider, 'Fixture data must contain at least one project with a data provider URL set.');
+        foreach ($withDataProvider as $project) {
+            $this->assertStringEndsNotWith('/', $project['leantimeUrl']);
+        }
     }
 }
