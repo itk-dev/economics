@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.0] - 2026-05-26
+
+* [PR-315](https://github.com/itk-dev/economics/pull/315)
+  * Add tidy-feedback collector module.
+* [PR-310](https://github.com/itk-dev/economics/pull/310)
+  * Remove dataProvider scoping.
+* [PR-264](https://github.com/itk-dev/economics/pull/264)
+  Added cybersecurity report.
+* [PR-309](https://github.com/itk-dev/economics/pull/309)
+  * Consolidated project and service-agreement fields.
+  * Moved the Leantime project link from service agreement to project and rendered it via a Twig helper.
+  * Moved git repos from service agreement to project.
+  * Added codeowners on project, editable as a multiselect on the project edit form.
+  * Added a project API endpoint returning each project with its codeowners and most recent service agreement.
+  * Removed the service agreement API endpoint, superseded by the project API endpoint.
+  * Removed `LEANTIME_PROJECT_TRACKER_URL`; `leantimeUrl` is now resolved from each project's data provider.
+
 ## [3.4.1] - 2026-05-23
 
 * [PR-313](https://github.com/itk-dev/economics/pull/313)
@@ -57,6 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Fixed `/admin/reports` landing page crash by replacing the stub with a minimal page linking to each report.
   * Aligned `config/packages/security.yaml` with the report controllers: `/admin/reports/*` now requires
     `ROLE_REPORT` instead of `ROLE_ADMIN`.
+* [PR-265](https://github.com/itk-dev/economics/pull/265)
+  Add version to issue during sync.
 
 ## [3.3.0] - 2026-05-12
 
@@ -625,7 +644,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.3.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.5.0...HEAD
+[3.5.0]: https://github.com/itk-dev/economics/compare/3.3.0...3.5.0
 [3.3.0]: https://github.com/itk-dev/economics/compare/3.1.0...3.3.0
 [3.1.0]: https://github.com/itk-dev/economics/compare/3.0.1...3.1.0
 [3.0.1]: https://github.com/itk-dev/economics/compare/3.0.0...3.0.1

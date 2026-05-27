@@ -16,7 +16,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -53,15 +52,6 @@ class ServiceAgreementType extends AbstractType
                     'data-eol-required-target' => 'checkbox',
                     'data-action' => 'eol-required#toggle',
                 ],
-                'required' => false,
-            ])
-            ->add('leantimeUrl', UrlType::class, [
-                'label' => 'service_agreement.leantime_url',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
-                'constraints' => new Url(),
-                'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
                 'required' => false,
             ])
             ->add('client', EntityType::class, [
@@ -176,14 +166,6 @@ class ServiceAgreementType extends AbstractType
                 'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row'],
-            ])
-            ->add('gitRepos', TextareaType::class, [
-                'label' => 'service_agreement.git_repos',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element', 'style' => 'height: 200px;'],
-                'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
-                'required' => false,
             ]);
     }
 

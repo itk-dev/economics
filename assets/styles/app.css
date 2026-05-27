@@ -148,6 +148,10 @@
         @apply grid gap-3 mb-6 md:grid-cols-6;
     }
 
+    #cybersecurity_report {
+        @apply grid gap-3 mb-6 md:grid-cols-6;
+    }
+
     .form-default {
         @apply grid gap-3 mb-6 md:grid-cols-6;
     }
@@ -339,6 +343,19 @@
         @apply text-black dark:text-white;
     }
 
+    .selections .choices__input--cloned {
+        @apply bg-transparent dark:bg-transparent text-black dark:text-white border-0 shadow-none focus:ring-0 focus:border-transparent focus:outline-none;
+    }
+
+    .selections .choices__inner {
+        @apply border border-gray-300 dark:border-gray-600 rounded-lg;
+    }
+
+    .selections .choices.is-focused .choices__inner,
+    .selections .choices.is-open .choices__inner {
+        @apply ring-1 ring-blue-500 border-blue-500 dark:ring-blue-500 dark:border-blue-500;
+    }
+
     .selections .choices__inner,
     .selections .choices__list {
         @apply dark:bg-gray-700 dark:text-white bg-gray-50 text-black;
@@ -351,6 +368,10 @@
 
     .selections .choices__item--choice {
         @apply dark:bg-gray-700 dark:text-white bg-gray-50 text-black;
+    }
+
+    .selections .choices__list--multiple .choices__item {
+        @apply bg-blue-600 border-blue-600 text-white;
     }
 
     .selections

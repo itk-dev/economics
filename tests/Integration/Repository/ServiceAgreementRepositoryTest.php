@@ -80,18 +80,4 @@ class ServiceAgreementRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThanOrEqual(2, $result->getTotalItemCount());
     }
-
-    public function testGetApiServiceAgreements(): void
-    {
-        $result = $this->repository->getApiServiceAgreements();
-
-        $this->assertNotEmpty($result);
-        $this->assertIsArray($result);
-
-        foreach ($result as $item) {
-            $this->assertArrayHasKey('projectTrackerKey', $item);
-            $this->assertArrayHasKey('projectName', $item);
-            $this->assertArrayHasKey('clientName', $item);
-        }
-    }
 }
