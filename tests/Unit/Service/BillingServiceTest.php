@@ -596,8 +596,8 @@ class BillingServiceTest extends TestCase
         $response = $this->billingService->generateSpreadsheetCsvResponse([1]);
 
         $this->assertSame('text/csv', $response->headers->get('Content-Type'));
-        $this->assertStringContainsString('attachment', $response->headers->get('Content-Disposition'));
-        $this->assertStringContainsString('.csv', $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('attachment', (string) $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('.csv', (string) $response->headers->get('Content-Disposition'));
     }
 
     public function testGenerateSpreadsheetCsvResponseUsesSemicolonDelimiter(): void
@@ -625,7 +625,7 @@ class BillingServiceTest extends TestCase
 
         $response = $this->billingService->generateSpreadsheetCsvResponse([1]);
 
-        $content = $response->getContent();
+        $content = (string) $response->getContent();
         $this->assertStringContainsString(';', $content);
     }
 

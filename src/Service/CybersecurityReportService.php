@@ -38,9 +38,23 @@ readonly class CybersecurityReportService
         $issues = $this->issueRepository->issuesContainingVersionTitle($versionTitle);
 
         foreach ($issues as $issue) {
+            $issueId = $issue->getId();
+            $issueProjectTrackerId = $issue->getProjectTrackerId();
+            $issueName = $issue->getName();
+            $issueLink = $issue->getLinkToIssue();
+            $projectEntity = $issue->getProject();
+            if (null === $issueId
+                || null === $issueProjectTrackerId
+                || null === $issueName
+                || null === $issueLink
+                || null === $projectEntity
+            ) {
+                continue;
+            }
+
             // Fetch worklogs for this issue restricted to the period
             $worklogs = $this->worklogRepository->getWorklogsByIssueAndPeriod(
-                $issue->getId(),
+                $issueId,
                 $fromDate,
                 $toDate
             );
@@ -57,9 +71,11 @@ readonly class CybersecurityReportService
                 continue;
             }
 
-            $projectEntity = $issue->getProject();
             $projectId = $projectEntity->getId();
             $projectName = $projectEntity->getName();
+            if (null === $projectName) {
+                continue;
+            }
 
             // Create project entry once
             if (!isset($report->projects[$projectName])) {
@@ -83,11 +99,11 @@ readonly class CybersecurityReportService
 
             // Create ticket DTO
             $ticket = new CybersecurityTicketData(
-                $issue->getId(),
-                $issue->getProjectTrackerId(),
-                $issue->getName(),
+                $issueId,
+                $issueProjectTrackerId,
+                $issueName,
                 $totalTicketSpent,
-                $issue->getLinkToIssue(),
+                $issueLink,
                 $worklogData
             );
 

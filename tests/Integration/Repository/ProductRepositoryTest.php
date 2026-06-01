@@ -35,7 +35,7 @@ class ProductRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThanOrEqual(1, $result->getTotalItemCount());
         foreach ($result as $product) {
-            $this->assertStringContainsString('Alpha', $product->getName());
+            $this->assertStringContainsString('Alpha', (string) $product->getName());
         }
     }
 
@@ -52,7 +52,9 @@ class ProductRepositoryTest extends KernelTestCase
 
         $this->assertEquals(2, $result->getTotalItemCount());
         foreach ($result as $product) {
-            $this->assertEquals($project->getId(), $product->getProject()->getId());
+            $productProject = $product->getProject();
+            $this->assertNotNull($productProject);
+            $this->assertEquals($project->getId(), $productProject->getId());
         }
     }
 }

@@ -27,14 +27,14 @@ abstract class AbstractControllerTestCase extends WebTestCase
         $userRepository = static::getContainer()->get(UserRepository::class);
         \assert($userRepository instanceof UserRepository);
         $user = $userRepository->findOneBy(['email' => $email]);
-        $this->assertNotNull($user);
-        if (null === $user) {
-            throw new \RuntimeException(sprintf('Fixture user %s not found; run `task fixtures`.', $email));
-        }
+        $this->assertInstanceOf(User::class, $user, sprintf('Fixture user %s not found; run `task fixtures`.', $email));
 
         return $user;
     }
 
+    /**
+     * @param string[] $roles
+     */
     protected function createClientLoggedInAs(array $roles): KernelBrowser
     {
         self::ensureKernelShutdown();
@@ -53,6 +53,9 @@ abstract class AbstractControllerTestCase extends WebTestCase
         $this->assertResponseRedirects();
     }
 
+    /**
+     * @param string[] $roles
+     */
     protected function assertGrantedFor(string $url, array $roles): void
     {
         $client = $this->createClientLoggedInAs($roles);
@@ -62,6 +65,9 @@ abstract class AbstractControllerTestCase extends WebTestCase
         $this->assertResponseIsSuccessful(sprintf('Expected 2xx at %s for roles [%s]', $url, implode(',', $roles)));
     }
 
+    /**
+     * @param string[] $roles
+     */
     protected function assertDeniedFor(string $url, array $roles): void
     {
         $client = $this->createClientLoggedInAs($roles);
@@ -72,6 +78,9 @@ abstract class AbstractControllerTestCase extends WebTestCase
 
     /**
      * Smoke matrix: anonymous redirects, an allowed role gets 200, a denied role gets 403.
+     *
+     * @param string[] $allowedRoles
+     * @param string[] $deniedRoles
      */
     protected function assertSmokeMatrix(string $url, array $allowedRoles, array $deniedRoles): void
     {

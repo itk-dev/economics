@@ -7,12 +7,10 @@ use App\Repository\InvoiceEntryRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class WorklogRepositoryTest extends KernelTestCase
 {
-    private EntityManagerInterface $entityManager;
     private WorklogRepository $repository;
     private ProjectRepository $projectRepository;
 
@@ -20,9 +18,6 @@ class WorklogRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
-        \assert($entityManager instanceof EntityManagerInterface);
-        $this->entityManager = $entityManager;
         $repository = $container->get(WorklogRepository::class);
         \assert($repository instanceof WorklogRepository);
         $this->repository = $repository;
@@ -65,7 +60,7 @@ class WorklogRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($result);
         foreach ($result as $worklog) {
-            $this->assertStringContainsString('admin@test.local', $worklog->getWorker());
+            $this->assertStringContainsString('admin@test.local', (string) $worklog->getWorker());
         }
     }
 
@@ -246,24 +241,33 @@ class WorklogRepositoryTest extends KernelTestCase
     public function testGetWorklogsByIssueAndPeriodReturnsAllWhenNoDates(): void
     {
         $issueRepository = self::getContainer()->get(IssueRepository::class);
+        \assert($issueRepository instanceof IssueRepository);
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
         $issue = $issueRepository->findOneBy(['project' => $project], ['id' => 'ASC']);
+        $this->assertNotNull($issue);
+        $issueId = $issue->getId();
+        $this->assertNotNull($issueId);
 
-        $result = $this->repository->getWorklogsByIssueAndPeriod($issue->getId(), null, null);
+        $result = $this->repository->getWorklogsByIssueAndPeriod($issueId, null, null);
 
         // Fixtures attach 100 worklogs per issue.
         $this->assertCount(100, $result);
         foreach ($result as $worklog) {
-            $this->assertInstanceOf(Worklog::class, $worklog);
-            $this->assertSame($issue->getId(), $worklog->getIssue()->getId());
+            $worklogIssue = $worklog->getIssue();
+            $this->assertNotNull($worklogIssue);
+            $this->assertSame($issue->getId(), $worklogIssue->getId());
         }
     }
 
     public function testGetWorklogsByIssueAndPeriodFiltersByPeriod(): void
     {
         $issueRepository = self::getContainer()->get(IssueRepository::class);
+        \assert($issueRepository instanceof IssueRepository);
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
         $issue = $issueRepository->findOneBy(['project' => $project], ['id' => 'ASC']);
+        $this->assertNotNull($issue);
+        $issueId = $issue->getId();
+        $this->assertNotNull($issueId);
 
         $year = (new \DateTime())->format('Y');
 
@@ -271,14 +275,16 @@ class WorklogRepositoryTest extends KernelTestCase
         // limiting to January should match worklogs where (k % 12) == 0, i.e.
         // k ∈ {0,12,24,36,48,60,72,84,96} — 9 worklogs.
         $result = $this->repository->getWorklogsByIssueAndPeriod(
-            $issue->getId(),
+            $issueId,
             new \DateTime("$year-01-01"),
             new \DateTime("$year-01-31"),
         );
 
         $this->assertCount(9, $result);
         foreach ($result as $worklog) {
-            $this->assertSame('01', $worklog->getStarted()->format('m'));
+            $started = $worklog->getStarted();
+            $this->assertNotNull($started);
+            $this->assertSame('01', $started->format('m'));
         }
     }
 
@@ -292,21 +298,27 @@ class WorklogRepositoryTest extends KernelTestCase
     public function testGetWorklogsByIssueAndPeriodReturnsOrderedByStarted(): void
     {
         $issueRepository = self::getContainer()->get(IssueRepository::class);
+        \assert($issueRepository instanceof IssueRepository);
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
         $issue = $issueRepository->findOneBy(['project' => $project], ['id' => 'ASC']);
+        $this->assertNotNull($issue);
+        $issueId = $issue->getId();
+        $this->assertNotNull($issueId);
 
-        $result = $this->repository->getWorklogsByIssueAndPeriod($issue->getId(), null, null);
+        $result = $this->repository->getWorklogsByIssueAndPeriod($issueId, null, null);
 
         $previous = null;
         foreach ($result as $worklog) {
+            $started = $worklog->getStarted();
+            $this->assertNotNull($started);
             if (null !== $previous) {
                 $this->assertGreaterThanOrEqual(
                     $previous->getTimestamp(),
-                    $worklog->getStarted()->getTimestamp(),
+                    $started->getTimestamp(),
                     'Worklogs should be returned ordered by started ASC.'
                 );
             }
-            $previous = $worklog->getStarted();
+            $previous = $started;
         }
     }
 }

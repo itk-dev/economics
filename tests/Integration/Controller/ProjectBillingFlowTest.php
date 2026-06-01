@@ -29,12 +29,16 @@ class ProjectBillingFlowTest extends AbstractControllerTestCase
         $client->submit($form);
 
         $this->assertResponseRedirects();
-        $this->assertMatchesRegularExpression('#/admin/project-billing/\d+/edit$#', $client->getResponse()->headers->get('Location'));
+        $location = $client->getResponse()->headers->get('Location');
+        $this->assertNotNull($location);
+        $this->assertMatchesRegularExpression('#/admin/project-billing/\d+/edit$#', $location);
 
         $projectBillingRepository = static::getContainer()->get(ProjectBillingRepository::class);
         \assert($projectBillingRepository instanceof ProjectBillingRepository);
         $created = $projectBillingRepository->findOneBy(['name' => $name]);
         $this->assertInstanceOf(ProjectBilling::class, $created);
-        $this->assertSame($project->getId(), $created->getProject()->getId());
+        $createdProject = $created->getProject();
+        $this->assertNotNull($createdProject);
+        $this->assertSame($project->getId(), $createdProject->getId());
     }
 }

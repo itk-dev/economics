@@ -27,13 +27,17 @@ class InvoiceFlowTest extends AbstractControllerTestCase
         $client->submit($form);
 
         $this->assertResponseRedirects();
-        $this->assertMatchesRegularExpression('#/admin/invoices/\d+/edit$#', $client->getResponse()->headers->get('Location'));
+        $location = $client->getResponse()->headers->get('Location');
+        $this->assertNotNull($location);
+        $this->assertMatchesRegularExpression('#/admin/invoices/\d+/edit$#', $location);
 
         $invoiceRepository = static::getContainer()->get(InvoiceRepository::class);
         \assert($invoiceRepository instanceof InvoiceRepository);
         $created = $invoiceRepository->findOneBy(['name' => $name]);
         $this->assertInstanceOf(Invoice::class, $created);
-        $this->assertSame($project->getId(), $created->getProject()->getId());
+        $createdProject = $created->getProject();
+        $this->assertNotNull($createdProject);
+        $this->assertSame($project->getId(), $createdProject->getId());
         $this->assertFalse($created->isRecorded());
     }
 

@@ -7,21 +7,16 @@ use App\Model\Invoices\ProjectFilterData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Service\LeantimeUrlGenerator;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ProjectRepositoryTest extends KernelTestCase
 {
-    private EntityManagerInterface $entityManager;
     private ProjectRepository $repository;
 
     protected function setUp(): void
     {
         self::bootKernel();
         $container = self::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
-        \assert($entityManager instanceof EntityManagerInterface);
-        $this->entityManager = $entityManager;
         $repository = $container->get(ProjectRepository::class);
         \assert($repository instanceof ProjectRepository);
         $this->repository = $repository;
@@ -76,7 +71,7 @@ class ProjectRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $project) {
-            $this->assertStringContainsString('project-0-0', $project->getName());
+            $this->assertStringContainsString('project-0-0', (string) $project->getName());
         }
     }
 
@@ -89,7 +84,7 @@ class ProjectRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $project) {
-            $this->assertStringContainsString('project-1-0', $project->getProjectTrackerKey());
+            $this->assertStringContainsString('project-1-0', (string) $project->getProjectTrackerKey());
         }
     }
 
@@ -99,10 +94,10 @@ class ProjectRepositoryTest extends KernelTestCase
         // project-0-0; no other project carries one.
         $result = $this->repository->getProjectIdsWithCybersecurityAgreement();
 
-        $this->assertIsArray($result);
         $this->assertCount(1, $result);
 
         $project = $this->repository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $this->assertEquals([$project->getId()], $result);
     }
 

@@ -35,7 +35,6 @@ class ProjectBillingServiceTest extends KernelTestCase
 
         $project = $projectRepository->findOneBy([], ['id' => 'asc']);
         $this->assertNotNull($project);
-        \assert(null !== $project);
 
         $periodStart = (new \DateTime())->sub(new \DateInterval('P1D'));
         $periodEnd = (new \DateTime())->add(new \DateInterval('P1D'));

@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 class ServiceAgreement extends AbstractBaseEntity
 {
     #[ORM\ManyToOne(targetEntity: Project::class, inversedBy: 'serviceAgreements')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
 
     #[ORM\ManyToOne(targetEntity: Client::class)]

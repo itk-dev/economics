@@ -420,7 +420,7 @@ class ProjectBillingServiceTest extends TestCase
 
         $this->service->createProjectBilling(1);
 
-        $productEntries = array_filter($persistedEntities, fn ($e) => $e instanceof InvoiceEntry && 'Widget' === str_contains($e->getProduct() ?? '', 'Widget'));
+        $productEntries = array_filter($persistedEntities, fn ($e) => $e instanceof InvoiceEntry && str_contains($e->getProduct() ?? '', 'Widget'));
 
         $this->assertNotEmpty($projectBilling->getInvoices());
     }

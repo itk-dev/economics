@@ -34,7 +34,7 @@ class ClientRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThanOrEqual(2, $result->getTotalItemCount());
         foreach ($result as $client) {
-            $this->assertStringContainsString('client 0', $client->getName());
+            $this->assertStringContainsString('client 0', (string) $client->getName());
         }
     }
 
@@ -46,7 +46,7 @@ class ClientRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $client) {
-            $this->assertStringContainsString('Kontakt Kontaktesen 0', $client->getContact());
+            $this->assertStringContainsString('Kontakt Kontaktesen 0', (string) $client->getContact());
         }
     }
 }

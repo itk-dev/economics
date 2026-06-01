@@ -34,7 +34,7 @@ class InvoicingRateReportServiceTest extends TestCase
     public function testMonthPeriodReturns12Periods(): void
     {
         $this->workerRepository->method('findAllIncludedInReports')->willReturn([]);
-        $this->dateTimeHelper->method('getMonthName')->willReturnCallback(fn ($m) => date('F', mktime(0, 0, 0, $m, 10)));
+        $this->dateTimeHelper->method('getMonthName')->willReturnCallback(fn ($m) => date('F', (int) mktime(0, 0, 0, $m, 10)));
 
         $result = $this->service->getInvoicingRateReport(2024, PeriodTypeEnum::MONTH);
 
@@ -87,7 +87,7 @@ class InvoicingRateReportServiceTest extends TestCase
         $this->worklogRepository->method('findBillableWorklogsByWorkerAndDateRange')->willReturn([]);
         $this->worklogRepository->method('findBilledWorklogsByWorkerAndDateRange')->willReturn([]);
 
-        $this->dateTimeHelper->method('getMonthName')->willReturnCallback(fn ($m) => date('F', mktime(0, 0, 0, $m, 10)));
+        $this->dateTimeHelper->method('getMonthName')->willReturnCallback(fn ($m) => date('F', (int) mktime(0, 0, 0, $m, 10)));
         $this->dateTimeHelper->method('getFirstAndLastDateOfMonth')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01'),
             'dateTo' => new \DateTime('2024-01-31'),
@@ -99,6 +99,7 @@ class InvoicingRateReportServiceTest extends TestCase
 
         // With 0 logged hours, average should be 0
         $workerData = $result->workers->first();
+        $this->assertNotFalse($workerData);
         $this->assertEqualsWithDelta(0.0, $workerData->average, 0.001);
     }
 

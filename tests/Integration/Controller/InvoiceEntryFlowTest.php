@@ -187,19 +187,18 @@ class InvoiceEntryFlowTest extends AbstractControllerTestCase
         $invoiceRepository = $container->get(InvoiceRepository::class);
         \assert($invoiceRepository instanceof InvoiceRepository);
         $invoice = $invoiceRepository->find($invoiceId);
-        $this->assertNotNull($invoice);
+        $this->assertInstanceOf(Invoice::class, $invoice);
         $invoiceEntryRepository = $container->get(InvoiceEntryRepository::class);
         \assert($invoiceEntryRepository instanceof InvoiceEntryRepository);
         $entry = $invoiceEntryRepository->find($entryId);
-        $this->assertNotNull($entry);
-        $this->assertInstanceOf(Invoice::class, $invoice);
         $this->assertInstanceOf(InvoiceEntry::class, $entry);
 
         return [$invoice, $entry];
     }
 
-    private function markInvoiceRecorded(int $invoiceId): void
+    private function markInvoiceRecorded(?int $invoiceId): void
     {
+        $this->assertNotNull($invoiceId);
         $em = static::getContainer()->get(EntityManagerInterface::class);
         \assert($em instanceof EntityManagerInterface);
         $invoiceRepository = static::getContainer()->get(InvoiceRepository::class);
@@ -212,8 +211,9 @@ class InvoiceEntryFlowTest extends AbstractControllerTestCase
         $em->clear();
     }
 
-    private function reloadEntry(int $id): ?InvoiceEntry
+    private function reloadEntry(?int $id): ?InvoiceEntry
     {
+        $this->assertNotNull($id);
         $em = static::getContainer()->get(EntityManagerInterface::class);
         \assert($em instanceof EntityManagerInterface);
         $em->clear();

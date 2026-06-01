@@ -75,7 +75,7 @@ class InvoiceRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThanOrEqual(1, $result->getTotalItemCount());
         foreach ($result as $invoice) {
-            $this->assertStringContainsString('Invoice Beta', $invoice->getName());
+            $this->assertStringContainsString('Invoice Beta', (string) $invoice->getName());
         }
     }
 

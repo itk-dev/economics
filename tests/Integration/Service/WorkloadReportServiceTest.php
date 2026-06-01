@@ -37,7 +37,7 @@ class WorkloadReportServiceTest extends KernelTestCase
 
         /** @var WorkloadReportWorker $worker */
         $worker = $report->workers->first();
-        $this->assertSame($report->period->count(), $worker->loggedPercentage->count());
+        $this->assertCount($report->period->count(), $worker->loggedPercentage);
         $this->assertGreaterThanOrEqual(0.0, $worker->average);
     }
 }

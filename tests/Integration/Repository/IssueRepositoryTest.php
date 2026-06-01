@@ -2,7 +2,6 @@
 
 namespace App\Tests\Integration\Repository;
 
-use App\Entity\Issue;
 use App\Entity\Version;
 use App\Entity\WorkerGroup;
 use App\Enum\IssueStatusEnum;
@@ -11,12 +10,10 @@ use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorkerGroupRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class IssueRepositoryTest extends KernelTestCase
 {
-    private EntityManagerInterface $entityManager;
     private IssueRepository $repository;
     private ProjectRepository $projectRepository;
 
@@ -24,9 +21,6 @@ class IssueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
-        \assert($entityManager instanceof EntityManagerInterface);
-        $this->entityManager = $entityManager;
         $repository = $container->get(IssueRepository::class);
         \assert($repository instanceof IssueRepository);
         $this->repository = $repository;
@@ -51,7 +45,7 @@ class IssueRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $issue) {
-            $this->assertStringContains('issue-0-0', $issue->getName());
+            $this->assertStringContains('issue-0-0', (string) $issue->getName());
         }
     }
 
@@ -65,7 +59,9 @@ class IssueRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $issue) {
-            $this->assertEquals($project->getId(), $issue->getProject()->getId());
+            $issueProject = $issue->getProject();
+            $this->assertNotNull($issueProject);
+            $this->assertEquals($project->getId(), $issueProject->getId());
         }
     }
 
@@ -132,7 +128,6 @@ class IssueRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($result);
         foreach ($result as $issue) {
-            $this->assertInstanceOf(Issue::class, $issue);
             $versionNames = $issue->getVersions()->map(fn (Version $v) => $v->getName())->toArray();
             $this->assertContains('PB-0-0', $versionNames);
         }
@@ -185,7 +180,9 @@ class IssueRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($result);
         foreach ($result as $issue) {
-            $this->assertEquals($project->getId(), $issue->getProject()->getId());
+            $issueProject = $issue->getProject();
+            $this->assertNotNull($issueProject);
+            $this->assertEquals($project->getId(), $issueProject->getId());
         }
     }
 

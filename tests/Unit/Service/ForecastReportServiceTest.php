@@ -105,7 +105,9 @@ class ForecastReportServiceTest extends TestCase
         $this->assertEqualsWithDelta(2.0, $result->totalInvoiced, 0.001);
         $this->assertEqualsWithDelta(0.0, $result->totalInvoicedAndRecorded, 0.001);
         $this->assertArrayHasKey(1, $result->projects);
-        $this->assertEqualsWithDelta(2.0, $result->projects[1]->invoiced, 0.001);
+        $projectData = $result->projects[1];
+        $this->assertNotNull($projectData);
+        $this->assertEqualsWithDelta(2.0, $projectData->invoiced, 0.001);
     }
 
     public function testBilledWorklogsCountAsRecorded(): void
@@ -185,6 +187,7 @@ class ForecastReportServiceTest extends TestCase
         );
 
         $projectData = $result->projects[1];
+        $this->assertNotNull($projectData);
         $issueData = $projectData->issues['[no tag]'];
         $versionData = $issueData->versions['[no version]'];
         $worklogData = $versionData->worklogs[1];

@@ -47,8 +47,8 @@ class ManagementReportServiceTest extends TestCase
         $response = $this->service->generateSpreadsheetCsvResponse($groupedInvoices, $dateInterval);
 
         $this->assertInstanceOf(StreamedResponse::class, $response);
-        $this->assertStringContainsString('application/vnd.ms-excel', $response->headers->get('Content-Type'));
-        $this->assertStringContainsString('management-report', $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('application/vnd.ms-excel', (string) $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('management-report', (string) $response->headers->get('Content-Disposition'));
     }
 
     public function testGenerateSpreadsheetCsvResponseCalculatesQuarterSums(): void

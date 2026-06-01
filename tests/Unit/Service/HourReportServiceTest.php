@@ -204,6 +204,7 @@ class HourReportServiceTest extends TestCase
 
         $this->assertTrue($result->projectTags->containsKey('Backend Work'));
         $tag = $result->projectTags->get('Backend Work');
+        $this->assertNotNull($tag);
         $this->assertSame('Backend Work', $tag->tag);
     }
 
@@ -332,6 +333,7 @@ class HourReportServiceTest extends TestCase
         $this->assertEqualsWithDelta(8.0, $result->projectTotalEstimated, 0.001);
 
         $tag = $result->projectTags->get('Frontend');
+        $this->assertNotNull($tag);
         $this->assertEqualsWithDelta(8.0, $tag->totalEstimated, 0.001);
         $this->assertEqualsWithDelta(3.0, $tag->totalSpent, 0.001);
         $this->assertCount(2, $tag->projectTickets);

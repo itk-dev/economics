@@ -44,6 +44,6 @@ class InvoicingRateReportServiceTest extends KernelTestCase
         $worker = $report->workers->first();
         $this->assertGreaterThanOrEqual(0.0, $worker->average);
         $this->assertLessThanOrEqual(100.0, $worker->average);
-        $this->assertSame($report->period->count(), $worker->dataByPeriod->count());
+        $this->assertCount($report->period->count(), $worker->dataByPeriod);
     }
 }

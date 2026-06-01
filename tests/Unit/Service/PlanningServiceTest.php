@@ -215,6 +215,7 @@ class PlanningServiceTest extends TestCase
 
         $this->assertTrue($result->assignees->containsKey('unassigned'));
         $assignee = $result->assignees->get('unassigned');
+        $this->assertNotNull($assignee);
         $this->assertSame('Unassigned', $assignee->displayName);
     }
 

@@ -111,6 +111,9 @@ class ProjectRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleColumnResult();
     }
 
+    /**
+     * @return int[]
+     */
     public function getProjectIdsWithCybersecurityAgreement(): array
     {
         $result = $this->_em->createQueryBuilder()
@@ -121,7 +124,7 @@ class ProjectRepository extends ServiceEntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return array_column($result, 'id');
+        return array_map('intval', array_column($result, 'id'));
     }
 
     /**
