@@ -38,7 +38,7 @@ yarn-error.log
 /.twig-cs-fixer.cache
 ###< vincentlanglet/twig-cs-fixer ###
 
-.claude/
+.claude/settings.local.json
 
 ###> phpstan/phpstan ###
 phpstan.neon
