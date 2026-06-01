@@ -9,60 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-308](https://github.com/itk-dev/economics/pull/308)
-  * PHPStan baseline reduced from 530 → 0 in `src/` and the pre-merge `tests/`,
-    then bounced to 444 when develop's new integration/unit test suites
-    arrived, and is now at 91. The first pass cleaned `src/` to zero
-    suppressions via PHPDoc/typehint annotations, generic-class shapes,
-    dropped scaffold `@method find*` docblocks on 17 repositories, and
-    null-guards. Post-merge passes intersected PHPUnit mock properties
-    with `MockObject` across 16 test files (−257 entries); dropped
-    redundant `assertInstanceOf` / `assertIsArray` / `assertIsFloat` /
-    `assertArrayHasKey` calls whose target type was already statically
-    proved across 24 test files (−46 entries); and narrowed
-    `Container::get()` results in integration tests with inline
-    `\assert($x instanceof T)` (and removed redundant `/** @var */`
-    PHPDoc lines that drift silently when the underlying types change)
-    across 28 test files (−50 entries).
-    Items below are behavior- or schema-affecting and worth calling out.
-  * Migration `Version20260517131038`: made 18 columns nullable on synced
-    entities (`issue`, `project`, `version`, `worklog`) and three DateTime
-    fields (`project_billing.period_{start,end}`, `service_agreement.valid_from`)
-    to match property types.
-  * Migration `Version20260517151632`: relaxed 11 `NOT NULL` ManyToOne FKs to
-    `NULL` (`cybersecurity_agreement`, `invoice_entry`, `issue_product`,
-    `product`, `project_billing`, `service_agreement`, `version`, `worklog`).
-    Application-layer validation (`#[Assert\NotNull]`, form validators)
-    continues to enforce required-ness.
-  * Replaced `?T $prop = null` with non-null defaults on 25 app-managed entity
-    properties to satisfy the existing `NOT NULL` columns: `''` for strings,
-    `false` for bools, `0`/`0.0` for numerics, `'0'` for `Product::$price`
-    (decimal), `HostingProviderEnum::ADM` for `ServiceAgreement::$hostingProvider`.
-    `Worker::__toString()` and `WorkerGroup::__toString()` switched from `??`
-    to `?:` to preserve empty-string-falls-through behavior.
-  * Real bugs surfaced and fixed during the cleanup:
-    * `ForecastReportService` was calling non-existent `Epic::getName()` (epic
-      tags rendered empty in the forecast); now uses `Epic::getTitle()`.
-    * `SubscriptionHandlerService::getVersion()` was looking up `Version` by a
-      non-existent `versionId` field; now uses `find($versionId)`.
-    * `DataProviderService::setTimeSpentSeconds()` was passing `float` through
-      to an `int` setter (silent precision loss); explicit `(int)` cast added.
-    * Report services (`ForecastReportService`,
-      `BillableUnbilledHoursReportService`, `InvoicingRateReportService`)
-      skip worklogs with a null project or issue instead of crashing on
-      chained getters.
-    * `SubscriptionController::check()` returns HTTP 400 on null
-      `User::getEmail()` rather than passing `?string` downstream;
-      `User::getUserIdentifier()` throws on empty email
-      (Symfony's `UserInterface` requires `non-empty-string`).
-    * `LeantimeApiService` switched from `json_decode($json, null)` to
-      `json_decode($json, true)`; all `$data->property` accesses converted to
-      array access. Wire shape unchanged.
-  * Misc dead code removed: `readonly string $id` on three report-data models
-    (never assigned, never read), an unreachable `break;` after `throw`, a
-    `null === $row` check on a `Row` iterator, an unused `PaginatorInterface
-    $paginator` constructor arg in `SubscriptionRepository`. Fixed an
-    `Epic::getIssues()` PHPDoc typo (`Collection<int, Epic>` →
-    `Collection<int, Issue>`).
+  * PHPStan baseline: 530 → 0 in `src/`, bounced to 444 after develop's test suites merged,
+    now 91. Items below are behavior- or schema-affecting and worth calling out.
+  * Migration `Version20260517131038`: 18 columns made nullable on synced entities
+    (`issue`, `project`, `version`, `worklog`) plus 3 DateTime fields, to match property types.
+  * Migration `Version20260517151632`: 11 `NOT NULL` ManyToOne FKs relaxed to `NULL`;
+    application-layer `#[Assert\NotNull]` / form validators still enforce required-ness.
+  * Replaced `?T $prop = null` with non-null defaults on 25 entity properties to satisfy
+    `NOT NULL` columns; `Worker`/`WorkerGroup` `__toString()` switched from `??` to `?:`.
+  * `ForecastReportService` rendered empty epic tags — called non-existent `Epic::getName()`;
+    now uses `Epic::getTitle()`.
+  * `SubscriptionHandlerService::getVersion()` looked up `Version` by non-existent
+    `versionId` field; now uses `find($versionId)`.
+  * `DataProviderService::setTimeSpentSeconds()` silently lost precision passing `float` to an
+    `int` setter; explicit `(int)` cast added.
+  * Report services (`ForecastReportService`, `BillableUnbilledHoursReportService`,
+    `InvoicingRateReportService`) now skip worklogs with null project/issue instead of crashing.
+  * `SubscriptionController::check()` returns HTTP 400 on null `User::getEmail()`;
+    `User::getUserIdentifier()` throws on empty email (Symfony requires `non-empty-string`).
+  * `LeantimeApiService` switched from `json_decode($json, null)` to `json_decode($json, true)`;
+    all `$data->property` accesses converted to array access. Wire shape unchanged.
+  * Removed dead code: `readonly string $id` on 3 report-data models, unreachable `break;` after
+    `throw`, null check on `Row` iterator, unused `$paginator` arg in `SubscriptionRepository`.
+  * Fixed `Epic::getIssues()` PHPDoc typo (`Collection<int, Epic>` → `Collection<int, Issue>`).
 
 ## [3.5.0] - 2026-05-26
 
