@@ -14,8 +14,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 #[ORM\Entity(repositoryClass: ServiceAgreementRepository::class)]
 class ServiceAgreement extends AbstractBaseEntity
 {
-    #[ORM\ManyToOne(targetEntity: Project::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Project::class, inversedBy: 'serviceAgreements')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
 
     #[ORM\ManyToOne(targetEntity: Client::class)]
@@ -56,9 +56,6 @@ class ServiceAgreement extends AbstractBaseEntity
     private bool $isEol = false;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $leantimeUrl = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $clientContactName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -69,9 +66,6 @@ class ServiceAgreement extends AbstractBaseEntity
 
     #[ORM\Column(enumType: ServerSizeEnum::class, nullable: true)]
     private ?ServerSizeEnum $serverSize = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $gitRepos = null;
 
     public function getProject(): ?Project
     {
@@ -229,18 +223,6 @@ class ServiceAgreement extends AbstractBaseEntity
         return $this;
     }
 
-    public function getLeantimeUrl(): ?string
-    {
-        return $this->leantimeUrl;
-    }
-
-    public function setLeantimeUrl(?string $leantimeUrl): static
-    {
-        $this->leantimeUrl = $leantimeUrl;
-
-        return $this;
-    }
-
     public function getClientContactName(): ?string
     {
         return $this->clientContactName;
@@ -285,18 +267,6 @@ class ServiceAgreement extends AbstractBaseEntity
     public function setServerSize(?ServerSizeEnum $serverSize): static
     {
         $this->serverSize = $serverSize;
-
-        return $this;
-    }
-
-    public function getGitRepos(): ?string
-    {
-        return $this->gitRepos;
-    }
-
-    public function setGitRepos(?string $gitRepos): static
-    {
-        $this->gitRepos = $gitRepos;
 
         return $this;
     }

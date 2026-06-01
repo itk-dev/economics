@@ -30,6 +30,7 @@ navigation:
   planning_holidays: "Ferieplan"
   group: "Grupper"
   serviceagreements: "Driftsaftaler"
+  cybersecurity_report: "Cybersikkerhedsrapport"
 
 planning:
   group: "Vælg gruppe"
@@ -510,6 +511,11 @@ project:
   project_lead_mail: "Project Lead email"
   project_lead_mail_helptext: ""
   project_lead: "Project Lead"
+  leantime_url: "Leantime Projekt"
+  github_repos: "GitHub Repos"
+  github_repos_helptext: "En linje per repository."
+  codeowners: "Codeowners"
+  codeowners_helptext: "Vælg en eller flere medarbejdere som ejer koden for dette projekt."
   actions: "Handlinger"
   action_edit: "Redigér"
   action_view_issues: "Vis opgaver"
@@ -574,9 +580,7 @@ invoicing_rate_report:
     Ved hover på faktureringsprocent vises [ Fakturerede timer for perioden ---- Loggede timer for perioden ]"
 
 hour_report:
-  data_provider_helptext: ""
   title: "Timerapport"
-  data_provider: "Datakilde"
   project: "Projekt"
   version: "Version"
   estimated_hours: "Estimeret"
@@ -584,11 +588,20 @@ hour_report:
   total: "Total"
   from_date: "Fra dato"
   to_date: "Til dato"
-  select_data_provider: "Vælg datakilde"
   select_project: "Vælg project"
   all_versions: "Alle versioner"
   tags: "Tags"
   sync_project_action: "Synkronisér projekt"
+
+cybersecurity_report:
+  title: "Cybersikkerhedsrapport"
+  versionTitle: "Version"
+  from_date: "Fra dato"
+  to_date: "Til dato"
+  project: "Projekt"
+  logged_hours: "Loggede timer"
+  has_cybersecurity_agreement: "Har Cybersikkerhedsaftale"
+  has_cybersecurity_agreement_true: "✅"
 
 view:
   list_title: "Views"
@@ -921,14 +934,12 @@ service_agreement:
   operations_price_short: "DA Pris"
   cybersecurity_price_short: "CS Pris"
   is_eol: "End-of-life aftale (EoL)"
-  leantime_url: "Leantime Projekt"
   client_contact_name: "Kontakt hos kunden (Navn)"
   client_contact_name_short: "Kontakt"
   client_contact_email: "Kontakt hos kunden (Email)"
   dedicated_server: "Dedikeret server"
   server_size: "Serverstørrelse"
   cybersecurity_price: "Cybersikkerhedsaftale Pris"
-  git_repos: "GIT Repos"
   created_at: "Oprettet"
   updated_at: "Opdateret"
   valid_to_required_when_eol: "Gyldig til er påkrævet når EoL er aktiveret"

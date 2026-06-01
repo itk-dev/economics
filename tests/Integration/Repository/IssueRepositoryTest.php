@@ -124,6 +124,27 @@ class IssueRepositoryTest extends KernelTestCase
         }
     }
 
+    public function testIssuesContainingVersionTitle(): void
+    {
+        // Fixture: every project for key=0 has a version named "PB-0-0", and
+        // issues with j ∈ {0,4,8} reference that version (j % 4 == 0).
+        $result = $this->repository->issuesContainingVersionTitle('PB-0-0');
+
+        $this->assertNotEmpty($result);
+        foreach ($result as $issue) {
+            $this->assertInstanceOf(Issue::class, $issue);
+            $versionNames = $issue->getVersions()->map(fn (Version $v) => $v->getName())->toArray();
+            $this->assertContains('PB-0-0', $versionNames);
+        }
+    }
+
+    public function testIssuesContainingVersionTitleUnknownReturnsEmpty(): void
+    {
+        $result = $this->repository->issuesContainingVersionTitle('does-not-exist-version-title');
+
+        $this->assertSame([], $result);
+    }
+
     public function testFindIssuesInDateRange(): void
     {
         // All fixture issues have dueDate=today

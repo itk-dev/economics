@@ -4,6 +4,7 @@ namespace App\Tests\Integration\Repository;
 
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\InvoiceEntryRepository;
+use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -240,5 +241,72 @@ class WorklogRepositoryTest extends KernelTestCase
         $this->assertEquals(1, $result['current_page']);
         $this->assertEquals(50, $result['page_size']);
         $this->assertGreaterThan(0, $result['total_count']);
+    }
+
+    public function testGetWorklogsByIssueAndPeriodReturnsAllWhenNoDates(): void
+    {
+        $issueRepository = self::getContainer()->get(IssueRepository::class);
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $issue = $issueRepository->findOneBy(['project' => $project], ['id' => 'ASC']);
+
+        $result = $this->repository->getWorklogsByIssueAndPeriod($issue->getId(), null, null);
+
+        // Fixtures attach 100 worklogs per issue.
+        $this->assertCount(100, $result);
+        foreach ($result as $worklog) {
+            $this->assertInstanceOf(Worklog::class, $worklog);
+            $this->assertSame($issue->getId(), $worklog->getIssue()->getId());
+        }
+    }
+
+    public function testGetWorklogsByIssueAndPeriodFiltersByPeriod(): void
+    {
+        $issueRepository = self::getContainer()->get(IssueRepository::class);
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $issue = $issueRepository->findOneBy(['project' => $project], ['id' => 'ASC']);
+
+        $year = (new \DateTime())->format('Y');
+
+        // Fixture worklogs use started = "$year-{(k%12)+1}-{(k%28)+1}", so
+        // limiting to January should match worklogs where (k % 12) == 0, i.e.
+        // k ∈ {0,12,24,36,48,60,72,84,96} — 9 worklogs.
+        $result = $this->repository->getWorklogsByIssueAndPeriod(
+            $issue->getId(),
+            new \DateTime("$year-01-01"),
+            new \DateTime("$year-01-31"),
+        );
+
+        $this->assertCount(9, $result);
+        foreach ($result as $worklog) {
+            $this->assertSame('01', $worklog->getStarted()->format('m'));
+        }
+    }
+
+    public function testGetWorklogsByIssueAndPeriodEmptyForUnknownIssue(): void
+    {
+        $result = $this->repository->getWorklogsByIssueAndPeriod(999999999, null, null);
+
+        $this->assertSame([], $result);
+    }
+
+    public function testGetWorklogsByIssueAndPeriodReturnsOrderedByStarted(): void
+    {
+        $issueRepository = self::getContainer()->get(IssueRepository::class);
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $issue = $issueRepository->findOneBy(['project' => $project], ['id' => 'ASC']);
+
+        $result = $this->repository->getWorklogsByIssueAndPeriod($issue->getId(), null, null);
+
+        $previous = null;
+        foreach ($result as $worklog) {
+            if (null !== $previous) {
+                $this->assertGreaterThanOrEqual(
+                    $previous->getTimestamp(),
+                    $worklog->getStarted()->getTimestamp(),
+                    'Worklogs should be returned ordered by started ASC.'
+                );
+            }
+            $previous = $worklog->getStarted();
+        }
     }
 }

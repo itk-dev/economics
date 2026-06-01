@@ -317,4 +317,30 @@ class WorklogRepository extends ServiceEntityRepository
             'paginator' => $paginator,
         ];
     }
+
+    /**
+     * Get worklogs for a given issue, optionally restricted by period.
+     *
+     * @return Worklog[]
+     */
+    public function getWorklogsByIssueAndPeriod(int $issueId, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate): array
+    {
+        $qb = $this->createQueryBuilder('w')
+            ->andWhere('w.issue = :issue')
+            ->setParameter('issue', $issueId);
+
+        if ($fromDate) {
+            $qb->andWhere('w.started >= :fromDate')
+                ->setParameter('fromDate', $fromDate->format('Y-m-d 00:00:00'));
+        }
+
+        if ($toDate) {
+            $qb->andWhere('w.started <= :toDate')
+                ->setParameter('toDate', $toDate->format('Y-m-d 23:59:59'));
+        }
+
+        $qb->orderBy('w.started', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
 }
