@@ -4,7 +4,6 @@ namespace App\Tests\Integration\Repository;
 
 use App\Model\Invoices\ClientFilterData;
 use App\Repository\ClientRepository;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ClientRepositoryTest extends KernelTestCase
@@ -14,7 +13,9 @@ class ClientRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(ClientRepository::class);
+        $repository = self::getContainer()->get(ClientRepository::class);
+        \assert($repository instanceof ClientRepository);
+        $this->repository = $repository;
     }
 
     public function testGetFilteredPaginationNoFilter(): void
@@ -22,7 +23,6 @@ class ClientRepositoryTest extends KernelTestCase
         $filterData = new ClientFilterData();
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThanOrEqual(4, $result->getTotalItemCount());
     }
 
@@ -34,7 +34,7 @@ class ClientRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThanOrEqual(2, $result->getTotalItemCount());
         foreach ($result as $client) {
-            $this->assertStringContainsString('client 0', $client->getName());
+            $this->assertStringContainsString('client 0', (string) $client->getName());
         }
     }
 
@@ -46,7 +46,7 @@ class ClientRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $client) {
-            $this->assertStringContainsString('Kontakt Kontaktesen 0', $client->getContact());
+            $this->assertStringContainsString('Kontakt Kontaktesen 0', (string) $client->getContact());
         }
     }
 }

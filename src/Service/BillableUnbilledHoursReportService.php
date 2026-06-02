@@ -37,16 +37,23 @@ class BillableUnbilledHoursReportService
         $totalHoursForAllProjects = 0;
 
         foreach ($billableWorklogs as $billableWorklog) {
-            $projectName = $billableWorklog->getProject()->getName();
-            $issueName = $billableWorklog->getIssue()->getName();
+            $project = $billableWorklog->getProject();
+            $issue = $billableWorklog->getIssue();
+
+            if (null === $project || null === $issue) {
+                continue;
+            }
+
+            $projectName = $project->getName();
+            $issueName = $issue->getName();
 
             // Initialize issue data if not already set
             if (!isset($projectData[$projectName][$issueName])) {
                 $projectData[$projectName][$issueName] = [
                     'worklogs' => [],
                     'totalHours' => 0,
-                    'id' => $billableWorklog->getIssue()->getProjectTrackerId(),
-                    'linkToIssue' => $billableWorklog->getIssue()->getLinkToIssue(),
+                    'id' => $issue->getProjectTrackerId(),
+                    'linkToIssue' => $issue->getLinkToIssue(),
                 ];
             }
 

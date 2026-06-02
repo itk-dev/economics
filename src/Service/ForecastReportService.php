@@ -48,23 +48,26 @@ class ForecastReportService
 
             foreach ($invoiceAttachedWorklogs['paginator'] as $worklog) {
                 // Loop through each worklog
-                $projectId = $worklog->getProject()->getId();
+                $project = $worklog->getProject();
+                $issue = $worklog->getIssue();
+
+                if (null === $project || null === $issue) {
+                    continue;
+                }
+
+                $projectId = $project->getId();
 
                 if (!$projectId) {
                     throw new \Exception('Project id is null');
                 }
                 // If the project isn't already in the forecast, add it
                 if (!isset($forecastReportData->projects[$projectId])) {
-                    $newForecastReportProjectData = new ForecastReportProjectData($projectId);
-                    $newForecastReportProjectData->projectName = $worklog->getProject()?->getName() ?? '[no project name]';
+                    $newForecastReportProjectData = new ForecastReportProjectData((string) $projectId);
+                    $newForecastReportProjectData->projectName = $project->getName() ?? '[no project name]';
                     $forecastReportData->projects[$projectId] = $newForecastReportProjectData;
                 }
                 // Get current project from forecast
                 $currentProject = $forecastReportData->projects[$projectId];
-
-                if (!$currentProject) {
-                    throw new \Exception('Project instance was not found');
-                }
 
                 // Calculate worklog time in hours
                 $worklogTime = ($worklog->getTimeSpentSeconds() / 3600);
@@ -79,11 +82,11 @@ class ForecastReportService
                 }
 
                 // Get issue details from the worklog
-                $issueId = $worklog->getIssue()->getProjectTrackerKey();
-                $issueLink = $worklog->getIssue()->getLinkToIssue();
+                $issueId = $issue->getProjectTrackerKey() ?? '[no issue id]';
+                $issueLink = $issue->getLinkToIssue() ?? '[no issue link]';
 
-                if ($worklog->getIssue()->getEpics()->count() > 0) {
-                    $issueTag = implode(',', $worklog->getIssue()->getEpics()->map(fn ($epic) => $epic->getTitle())->toArray());
+                if ($issue->getEpics()->count() > 0) {
+                    $issueTag = implode(',', array_map(fn ($epic) => $epic->getTitle(), $issue->getEpics()->toArray()));
                 } else {
                     $issueTag = '[no tag]';
                 }
@@ -105,7 +108,7 @@ class ForecastReportService
                 }
 
                 // Get version details from the issue
-                $issueVersions = $worklog->getIssue()->getVersions();
+                $issueVersions = $issue->getVersions();
                 $issueVersion = count($issueVersions) > 0 ? implode(', ', array_map(function ($version) { return $version->getName(); }, $issueVersions->toArray())) : '[no version]';
 
                 $issueVersionIdentifier = $issueTag.$issueVersion;
@@ -131,11 +134,11 @@ class ForecastReportService
                 $worklogId = $worklog->getId();
                 $workerEmail = $worklog->getWorker();
                 $workerName = $workerNameMapping[$workerEmail] ?? '[no worker]';
-                $description = $worklog->getDescription();
+                $description = $worklog->getDescription() ?? '';
 
                 // Add the worklog entry in the version if it does not exist
                 if (!isset($currentVersion->worklogs[$worklogId])) {
-                    $currentVersion->worklogs[$worklogId] = new ForecastReportWorklogData($worklogId, $description);
+                    $currentVersion->worklogs[$worklogId] = new ForecastReportWorklogData();
                     $currentVersion->worklogs[$worklogId]->worker = $workerName;
                     $currentVersion->worklogs[$worklogId]->description = $description;
                 }

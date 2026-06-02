@@ -6,19 +6,13 @@ use App\Entity\Subscription;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
-use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Subscription>
- *
- * @method Subscription|null find($id, $lockMode = null, $lockVersion = null)
- * @method Subscription|null findOneBy(array $criteria, array $orderBy = null)
- * @method Subscription[]    findAll()
- * @method Subscription[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- * */
+ */
 class SubscriptionRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, private readonly PaginatorInterface $paginator)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Subscription::class);
     }
@@ -41,7 +35,12 @@ class SubscriptionRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByCustom($email, $urlParams): array
+    /**
+     * @param array<string, mixed> $urlParams
+     *
+     * @return array<int, Subscription>
+     */
+    public function findByCustom(string $email, array $urlParams): array
     {
         $qb = $this->createQueryBuilder('s');
 
@@ -59,9 +58,11 @@ class SubscriptionRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param array<string, mixed> $urlParams
+     *
      * @throws NonUniqueResultException
      */
-    public function findOneByCustom($email, $subscriptionType, $urlParams): ?Subscription
+    public function findOneByCustom(string $email, string $subscriptionType, array $urlParams): ?Subscription
     {
         $qb = $this->createQueryBuilder('s');
 
@@ -84,6 +85,9 @@ class SubscriptionRepository extends ServiceEntityRepository
     /*
      * Due to the way searching is implemented in the controller,
      * the repository does not return a paginated element.
+     */
+    /**
+     * @return array<int, Subscription>
      */
     public function getFilteredData(string $email): array
     {

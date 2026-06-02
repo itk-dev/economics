@@ -20,7 +20,9 @@ class ProjectBillingFullFlowTest extends AbstractControllerTestCase
         // versions `PB-0-0`/`PB-0-1` (matching the data-provider-0 clients) and have
         // DONE-status issues with worklogs, but ProjectBillingServiceTest depends on
         // `project-0-0`'s worklogs staying unbilled, so we must not record against it.
-        $project = $container->get(ProjectRepository::class)->findOneBy(['name' => 'project-0-2']);
+        $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $project = $projectRepository->findOneBy(['name' => 'project-0-2']);
         $this->assertNotNull($project, 'Expected fixture project `project-0-2`.');
 
         $periodStart = '2020-01-01';
@@ -44,12 +46,12 @@ class ProjectBillingFullFlowTest extends AbstractControllerTestCase
         $location = (string) $client->getResponse()->headers->get('Location');
         $this->assertMatchesRegularExpression('#/admin/project-billing/(\d+)/edit$#', $location);
         preg_match('#/admin/project-billing/(\d+)/edit$#', $location, $matches);
+        \assert(isset($matches[1]));
         $projectBillingId = (int) $matches[1];
 
         // The CreateProjectBillingMessage handler runs synchronously (no async routing in test env)
         // and should have generated invoices from the project's PB-* version issues.
         $projectBilling = $this->reload($projectBillingId);
-        $this->assertInstanceOf(ProjectBilling::class, $projectBilling);
         $this->assertSame($initialName, $projectBilling->getName());
         $this->assertFalse((bool) $projectBilling->isRecorded());
         $this->assertSame($initialDescription, $projectBilling->getDescription());
@@ -93,9 +95,9 @@ class ProjectBillingFullFlowTest extends AbstractControllerTestCase
         $projectBilling = $this->reload($projectBillingId);
         $this->assertSame($updatedName, $projectBilling->getName());
         $this->assertSame($updatedDescription, $projectBilling->getDescription());
-        $this->assertSame(
+        $this->assertCount(
             $initialInvoiceCount,
-            $projectBilling->getInvoices()->count(),
+            $projectBilling->getInvoices(),
             'Update should regenerate the same set of invoices for unchanged fixture data.',
         );
         foreach ($projectBilling->getInvoices() as $invoice) {
@@ -158,17 +160,19 @@ class ProjectBillingFullFlowTest extends AbstractControllerTestCase
         $client->submit($form);
     }
 
-    private function reload(int $id): ?ProjectBilling
+    private function reload(int $id): ProjectBilling
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
         $em->clear();
 
-        $pb = static::getContainer()->get(ProjectBillingRepository::class)->find($id);
-        if (null !== $pb) {
-            $pb->getInvoices()->count();
-            foreach ($pb->getInvoices() as $invoice) {
-                $invoice->getInvoiceEntries()->count();
-            }
+        $projectBillingRepository = static::getContainer()->get(ProjectBillingRepository::class);
+        \assert($projectBillingRepository instanceof ProjectBillingRepository);
+        $pb = $projectBillingRepository->find($id);
+        $this->assertInstanceOf(ProjectBilling::class, $pb);
+        $pb->getInvoices()->count();
+        foreach ($pb->getInvoices() as $invoice) {
+            $invoice->getInvoiceEntries()->count();
         }
 
         return $pb;

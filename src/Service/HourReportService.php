@@ -50,12 +50,12 @@ class HourReportService
             }
 
             $projectTicket = new HourReportProjectTicket(
-                $issue->getId(),
-                $issue->getProjectTrackerId(),
-                $issue->getName(),
+                (string) $issue->getId(),
+                $issue->getProjectTrackerId() ?? '',
+                $issue->getName() ?? '',
                 $totalTicketEstimated,
                 $totalTicketSpent,
-                $issue->getLinkToIssue()
+                $issue->getLinkToIssue() ?? ''
             );
 
             $projectTicket->timesheets->add($timesheets);
@@ -86,7 +86,7 @@ class HourReportService
             $hourReportData->projectTotalSpent += $totalTicketSpent;
         }
 
-        /** @var \ArrayIterator $tagsIterator */
+        /** @var \ArrayIterator<string, HourReportProjectTag> $tagsIterator */
         $tagsIterator = $hourReportData->projectTags->getIterator();
         // Sort tags by display name (uasort: keys are epic names, sort by the value's `tag` so 'noTag' lands in alphabetical position).
         $tagsIterator->uasort(fn ($a, $b) => mb_strtolower($a->tag) <=> mb_strtolower($b->tag));
@@ -95,6 +95,11 @@ class HourReportService
         return $hourReportData;
     }
 
+    /**
+     * @param array<int, Worklog> $worklogs
+     *
+     * @return array{0: array<int, HourReportWorklog>, 1: float|int}
+     */
     private function processTimesheetsData(array $worklogs, ?\DateTimeInterface $fromDate = null, ?\DateTimeInterface $toDate = null): array
     {
         $timesheets = [];

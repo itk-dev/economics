@@ -9,8 +9,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class InvoiceEntryHelper
 {
+    /** @var array<string, mixed> */
     private readonly array $options;
 
+    /**
+     * @param array<string, mixed> $options
+     */
     public function __construct(
         array $options,
     ) {
@@ -99,6 +103,9 @@ class InvoiceEntryHelper
             || count($this->getAccountOptions(null)) > 1;
     }
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
     private function getAccounts(?string $account): array
     {
         $accounts = $this->options['accounts'] ?? [];
@@ -113,6 +120,11 @@ class InvoiceEntryHelper
         return $accounts;
     }
 
+    /**
+     * @param array<string, mixed> $options
+     *
+     * @return array<string, mixed>
+     */
     private function resolveOptions(array $options): array
     {
         return (new OptionsResolver())

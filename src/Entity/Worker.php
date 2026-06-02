@@ -17,7 +17,7 @@ class Worker
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    private ?string $email = null;
+    private string $email = '';
 
     #[ORM\Column(length: 180, nullable: true)]
     private ?float $workload = null;
@@ -41,7 +41,7 @@ class Worker
 
     public function __toString(): string
     {
-        return (string) ($this->name ?? $this->email ?? $this->id);
+        return (string) ($this->name ?: $this->email ?: $this->id);
     }
 
     public function getId(): ?int

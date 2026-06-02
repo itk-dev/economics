@@ -5,7 +5,6 @@ namespace App\Tests\Integration\Repository;
 use App\Model\Invoices\ProductFilterData;
 use App\Repository\ProductRepository;
 use App\Repository\ProjectRepository;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ProductRepositoryTest extends KernelTestCase
@@ -15,7 +14,9 @@ class ProductRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(ProductRepository::class);
+        $repository = self::getContainer()->get(ProductRepository::class);
+        \assert($repository instanceof ProductRepository);
+        $this->repository = $repository;
     }
 
     public function testGetFilteredPaginationNoFilter(): void
@@ -23,7 +24,6 @@ class ProductRepositoryTest extends KernelTestCase
         $filterData = new ProductFilterData();
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThanOrEqual(3, $result->getTotalItemCount());
     }
 
@@ -35,14 +35,16 @@ class ProductRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThanOrEqual(1, $result->getTotalItemCount());
         foreach ($result as $product) {
-            $this->assertStringContainsString('Alpha', $product->getName());
+            $this->assertStringContainsString('Alpha', (string) $product->getName());
         }
     }
 
     public function testGetFilteredPaginationByProject(): void
     {
         $projectRepo = self::getContainer()->get(ProjectRepository::class);
+        \assert($projectRepo instanceof ProjectRepository);
         $project = $projectRepo->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
 
         $filterData = new ProductFilterData();
         $filterData->project = $project;
@@ -50,7 +52,9 @@ class ProductRepositoryTest extends KernelTestCase
 
         $this->assertEquals(2, $result->getTotalItemCount());
         foreach ($result as $product) {
-            $this->assertEquals($project->getId(), $product->getProject()->getId());
+            $productProject = $product->getProject();
+            $this->assertNotNull($productProject);
+            $this->assertEquals($project->getId(), $productProject->getId());
         }
     }
 }

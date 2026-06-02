@@ -11,11 +11,6 @@ use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Product>
- *
- * @method Product|null find($id, $lockMode = null, $lockVersion = null)
- * @method Product|null findOneBy(array $criteria, array $orderBy = null)
- * @method Product[]    findAll()
- * @method Product[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ProductRepository extends ServiceEntityRepository
 {
@@ -26,6 +21,9 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    /**
+     * @return PaginationInterface<int, Product>
+     */
     public function getFilteredPagination(ProductFilterData $productFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('product');

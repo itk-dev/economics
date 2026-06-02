@@ -25,22 +25,23 @@ use App\Repository\WorklogRepository;
 use App\Service\DataProviderService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
 class DataProviderServiceTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ProjectRepository $projectRepository;
-    private IssueRepository $issueRepository;
-    private WorklogRepository $worklogRepository;
-    private DataProviderRepository $dataProviderRepository;
-    private VersionRepository $versionRepository;
-    private WorkerRepository $workerRepository;
-    private EpicRepository $epicRepository;
-    private ContainerInterface $transportLocator;
-    private LoggerInterface $logger;
+    private EntityManagerInterface&MockObject $entityManager;
+    private ProjectRepository&MockObject $projectRepository;
+    private IssueRepository&MockObject $issueRepository;
+    private WorklogRepository&MockObject $worklogRepository;
+    private DataProviderRepository&MockObject $dataProviderRepository;
+    private VersionRepository&MockObject $versionRepository;
+    private WorkerRepository&MockObject $workerRepository;
+    private EpicRepository&MockObject $epicRepository;
+    private ContainerInterface&MockObject $transportLocator;
+    private LoggerInterface&MockObject $logger;
     private DataProviderService $service;
     private DataProvider $dataProvider;
 

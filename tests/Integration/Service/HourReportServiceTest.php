@@ -3,8 +3,6 @@
 namespace App\Tests\Integration\Service;
 
 use App\Entity\Project;
-use App\Model\Reports\HourReportData;
-use App\Model\Reports\HourReportProjectTag;
 use App\Repository\ProjectRepository;
 use App\Service\HourReportService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -16,18 +14,16 @@ class HourReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var ProjectRepository $projectRepository */
         $projectRepository = $container->get(ProjectRepository::class);
-        /** @var HourReportService $service */
+        \assert($projectRepository instanceof ProjectRepository);
         $service = $container->get(HourReportService::class);
+        \assert($service instanceof HourReportService);
 
         // project-0-0 is the only project whose first issue is tagged with "Epic 1" in fixtures.
         $project = $projectRepository->findOneBy(['name' => 'project-0-0']);
         $this->assertInstanceOf(Project::class, $project);
 
         $report = $service->getHourReport($project, null, null);
-
-        $this->assertInstanceOf(HourReportData::class, $report);
 
         // Each project has 10 issues × 100 worklogs; worklog k contributes (k+1)*15 minutes.
         // Total = 10 issues × 900s × Σ(1..100) = 10 × 900 × 5050 = 45,450,000s = 12_625h.
@@ -48,12 +44,10 @@ class HourReportServiceTest extends KernelTestCase
         $this->assertArrayHasKey('noTag', $tagsByLabel);
 
         $epicTag = $tagsByLabel['Epic 1'];
-        $this->assertInstanceOf(HourReportProjectTag::class, $epicTag);
         $this->assertCount(1, $epicTag->projectTickets);
         $this->assertEqualsWithDelta(1262.5, $epicTag->totalSpent, 0.001);
 
         $noTag = $tagsByLabel['noTag'];
-        $this->assertInstanceOf(HourReportProjectTag::class, $noTag);
         $this->assertCount(9, $noTag->projectTickets);
     }
 
@@ -62,10 +56,10 @@ class HourReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var ProjectRepository $projectRepository */
         $projectRepository = $container->get(ProjectRepository::class);
-        /** @var HourReportService $service */
+        \assert($projectRepository instanceof ProjectRepository);
         $service = $container->get(HourReportService::class);
+        \assert($service instanceof HourReportService);
 
         $project = $projectRepository->findOneBy(['name' => 'project-0-0']);
         $this->assertInstanceOf(Project::class, $project);

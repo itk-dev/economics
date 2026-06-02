@@ -24,12 +24,15 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         $client = $this->createClientLoggedInAs(['ROLE_INVOICE']);
         $container = static::getContainer();
 
-        $project = $container->get(ProjectRepository::class)->getIncluded()
+        $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $project = $projectRepository->getIncluded()
             ->setMaxResults(1)->getQuery()->getOneOrNullResult();
         $this->assertNotNull($project, 'Expected an included project from fixtures.');
 
-        $internalClient = $container->get(ClientRepository::class)
-            ->findOneBy(['type' => ClientTypeEnum::INTERNAL]);
+        $clientRepository = $container->get(ClientRepository::class);
+        \assert($clientRepository instanceof ClientRepository);
+        $internalClient = $clientRepository->findOneBy(['type' => ClientTypeEnum::INTERNAL]);
         $this->assertInstanceOf(Client::class, $internalClient, 'Expected an internal client fixture.');
 
         // 1. Create invoice.
@@ -47,6 +50,7 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         $this->assertNotNull($location);
         $this->assertMatchesRegularExpression('#/admin/invoices/(\d+)/edit$#', $location, 'Expected redirect to invoice edit.');
         preg_match('#/admin/invoices/(\d+)/edit$#', $location, $matches);
+        \assert(isset($matches[1]));
         $invoiceId = (int) $matches[1];
 
         // 2. Edit invoice and set all fields.
@@ -72,7 +76,6 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         $this->assertResponseIsSuccessful();
 
         $invoice = $this->reloadInvoice($invoiceId);
-        $this->assertInstanceOf(Invoice::class, $invoice);
         $this->assertSame($finalName, $invoice->getName());
         $this->assertSame($description, $invoice->getDescription());
         $this->assertNotNull($invoice->getClient());
@@ -99,7 +102,6 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         );
 
         $manualEntry = $this->reloadInvoiceEntry($manualEntryId);
-        $this->assertInstanceOf(InvoiceEntry::class, $manualEntry);
         $this->assertSame(InvoiceEntryTypeEnum::MANUAL, $manualEntry->getEntryType());
         $this->assertSame($manualProduct, $manualEntry->getProduct());
         $this->assertEqualsWithDelta(750.0, $manualEntry->getPrice(), 0.001);
@@ -122,7 +124,6 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         );
 
         $productEntry = $this->reloadInvoiceEntry($productEntryId);
-        $this->assertInstanceOf(InvoiceEntry::class, $productEntry);
         $this->assertSame(InvoiceEntryTypeEnum::PRODUCT, $productEntry->getEntryType());
         $this->assertEqualsWithDelta(1200.0, $productEntry->getTotalPrice(), 0.001);
 
@@ -141,12 +142,12 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         );
 
         $worklogEntry = $this->reloadInvoiceEntry($worklogEntryId);
-        $this->assertInstanceOf(InvoiceEntry::class, $worklogEntry);
         $this->assertSame(InvoiceEntryTypeEnum::WORKLOG, $worklogEntry->getEntryType());
         $this->assertSame(0.0, (float) $worklogEntry->getAmount());
 
         // 6. Attach worklogs to the WORKLOG entry.
         $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+        \assert($worklogRepository instanceof WorklogRepository);
         $unbilled = $worklogRepository->findBy(
             ['project' => $project, 'isBilled' => false],
             ['id' => 'ASC'],
@@ -212,8 +213,10 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         // Worklogs attached to the WORKLOG entry should be marked billed.
         $selectedIds = array_map(static fn (Worklog $wl) => $wl->getId(), $selected);
         $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
         $em->clear();
         $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+        \assert($worklogRepository instanceof WorklogRepository);
         foreach ($selectedIds as $wlId) {
             $wl = $worklogRepository->find($wlId);
             $this->assertNotNull($wl);
@@ -267,31 +270,50 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
 
         if (str_contains($expectedRedirectPattern, '/entries/\d+/edit')) {
             preg_match('#/entries/(\d+)/edit$#', $location, $matches);
+            \assert(isset($matches[1]));
 
             return (int) $matches[1];
         }
 
         // MANUAL redirects back to invoice edit — fetch the most recently created entry for this invoice.
         $repository = static::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($repository instanceof InvoiceEntryRepository);
         $latest = $repository->findBy([], ['id' => 'DESC'], 1);
         $this->assertNotEmpty($latest);
 
-        return $latest[0]->getId();
+        $id = $latest[0]->getId();
+        $this->assertNotNull($id);
+
+        return $id;
     }
 
-    private function reloadInvoice(int $id): ?Invoice
+    private function reloadInvoice(int $id): Invoice
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
         $em->clear();
 
-        return static::getContainer()->get(InvoiceRepository::class)->find($id);
+        $invoiceRepository = static::getContainer()->get(InvoiceRepository::class);
+        \assert($invoiceRepository instanceof InvoiceRepository);
+
+        $invoice = $invoiceRepository->find($id);
+        $this->assertInstanceOf(Invoice::class, $invoice);
+
+        return $invoice;
     }
 
-    private function reloadInvoiceEntry(int $id): ?InvoiceEntry
+    private function reloadInvoiceEntry(int $id): InvoiceEntry
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
         $em->clear();
 
-        return static::getContainer()->get(InvoiceEntryRepository::class)->find($id);
+        $invoiceEntryRepository = static::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($invoiceEntryRepository instanceof InvoiceEntryRepository);
+
+        $entry = $invoiceEntryRepository->find($id);
+        $this->assertInstanceOf(InvoiceEntry::class, $entry);
+
+        return $entry;
     }
 }

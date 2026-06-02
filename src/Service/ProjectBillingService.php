@@ -40,6 +40,9 @@ class ProjectBillingService
      * @throws EconomicsException
      * @throws \Exception
      */
+    /**
+     * @return array<int, Issue>
+     */
     public function getIssuesNotIncludedInProjectBilling(ProjectBilling $projectBilling): array
     {
         $project = $projectBilling->getProject();

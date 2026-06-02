@@ -88,15 +88,23 @@ class ManagementReportController extends AbstractController
         return $managementReportService->generateSpreadsheetCsvResponse($this->createGroupedInvoices($invoices), $dateInterval);
     }
 
+    /**
+     * @param array<int, \App\Entity\Invoice> $invoices
+     *
+     * @return array<int, array<int|string, mixed>>
+     */
     private function createGroupedInvoices(array $invoices): array
     {
         $groupedInvoices = [];
         foreach ($invoices as $invoice) {
             $recordedDate = $invoice->getRecordedDate();
-            $year = $recordedDate->format('Y');
-            $month = $recordedDate->format('n');
-            $yearQuarter = ceil($month / 3);
-            $groupedInvoices[$year][(int) $yearQuarter][] = $invoice;
+            if (null === $recordedDate) {
+                continue;
+            }
+            $year = (int) $recordedDate->format('Y');
+            $month = (int) $recordedDate->format('n');
+            $yearQuarter = (int) ceil($month / 3);
+            $groupedInvoices[$year][$yearQuarter][] = $invoice;
         }
 
         foreach ($groupedInvoices as $year => $quarters) {
@@ -123,10 +131,14 @@ class ManagementReportController extends AbstractController
     }
 
     /**
+     * @param array{dateFrom: string, dateTo: string} $dateInterval
+     *
+     * @return array<int, \App\Entity\Invoice>
+     *
      * @throws \Doctrine\ORM\Exception\NotSupported
      * @throws \Exception
      */
-    private function getInvoicesDataFromDates($dateInterval, InvoiceRepository $invoiceRepository): array
+    private function getInvoicesDataFromDates(array $dateInterval, InvoiceRepository $invoiceRepository): array
     {
         return $invoiceRepository->getByRecordedDateBetween(
             new \DateTime($dateInterval['dateFrom']),

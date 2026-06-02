@@ -2,7 +2,6 @@
 
 namespace App\Tests\Integration\Repository;
 
-use App\Entity\Issue;
 use App\Entity\Version;
 use App\Entity\WorkerGroup;
 use App\Enum\IssueStatusEnum;
@@ -11,13 +10,10 @@ use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorkerGroupRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class IssueRepositoryTest extends KernelTestCase
 {
-    private EntityManagerInterface $entityManager;
     private IssueRepository $repository;
     private ProjectRepository $projectRepository;
 
@@ -25,9 +21,12 @@ class IssueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $this->entityManager = $container->get(EntityManagerInterface::class);
-        $this->repository = $container->get(IssueRepository::class);
-        $this->projectRepository = $container->get(ProjectRepository::class);
+        $repository = $container->get(IssueRepository::class);
+        \assert($repository instanceof IssueRepository);
+        $this->repository = $repository;
+        $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $this->projectRepository = $projectRepository;
     }
 
     public function testGetFilteredPaginationNoFilter(): void
@@ -35,7 +34,6 @@ class IssueRepositoryTest extends KernelTestCase
         $filterData = new IssueFilterData();
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThan(0, $result->getTotalItemCount());
     }
 
@@ -47,20 +45,23 @@ class IssueRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $issue) {
-            $this->assertStringContains('issue-0-0', $issue->getName());
+            $this->assertStringContains('issue-0-0', (string) $issue->getName());
         }
     }
 
     public function testGetFilteredPaginationByProject(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $filterData = new IssueFilterData();
         $filterData->project = $project;
         $result = $this->repository->getFilteredPagination($filterData);
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $issue) {
-            $this->assertEquals($project->getId(), $issue->getProject()->getId());
+            $issueProject = $issue->getProject();
+            $this->assertNotNull($issueProject);
+            $this->assertEquals($project->getId(), $issueProject->getId());
         }
     }
 
@@ -68,9 +69,9 @@ class IssueRepositoryTest extends KernelTestCase
     {
         // project-0-0 has issue-0-0 linked to 'Epic 1'
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $result = $this->repository->findEpicOptionsByProject($project);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('Epic 1', $result);
     }
 
@@ -78,6 +79,7 @@ class IssueRepositoryTest extends KernelTestCase
     {
         // Even-index projects have DONE status issues with resolutionDate=today
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $periodStart = new \DateTime('-1 day');
         $periodEnd = new \DateTime('+1 day');
 
@@ -93,6 +95,7 @@ class IssueRepositoryTest extends KernelTestCase
     {
         // Odd-index projects have NEW status issues
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-1']);
+        $this->assertNotNull($project);
         $periodStart = new \DateTime('-1 day');
         $periodEnd = new \DateTime('+1 day');
 
@@ -104,13 +107,14 @@ class IssueRepositoryTest extends KernelTestCase
     public function testIssuesContainingVersion(): void
     {
         $versionRepository = self::getContainer()->get(VersionRepository::class);
+        \assert($versionRepository instanceof VersionRepository);
         $version = $versionRepository->findOneBy([], ['id' => 'ASC']);
+        $this->assertNotNull($version);
 
         $result = $this->repository->issuesContainingVersion($version);
 
         $this->assertNotEmpty($result);
         foreach ($result as $issue) {
-            $this->assertInstanceOf(Issue::class, $issue);
             $versionIds = $issue->getVersions()->map(fn (Version $v) => $v->getId())->toArray();
             $this->assertContains($version->getId(), $versionIds);
         }
@@ -124,7 +128,6 @@ class IssueRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($result);
         foreach ($result as $issue) {
-            $this->assertInstanceOf(Issue::class, $issue);
             $versionNames = $issue->getVersions()->map(fn (Version $v) => $v->getName())->toArray();
             $this->assertContains('PB-0-0', $versionNames);
         }
@@ -151,6 +154,7 @@ class IssueRepositoryTest extends KernelTestCase
     public function testFindIssuesInDateRangeWithWorkerGroup(): void
     {
         $workerGroupRepo = self::getContainer()->get(WorkerGroupRepository::class);
+        \assert($workerGroupRepo instanceof WorkerGroupRepository);
         $group = $workerGroupRepo->findOneBy(['name' => 'Group Alpha']);
         $this->assertInstanceOf(WorkerGroup::class, $group);
 
@@ -168,6 +172,7 @@ class IssueRepositoryTest extends KernelTestCase
     public function testFindIssuesInDateRangeWithProjects(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $startDate = (new \DateTime('-1 day'))->format('Y-m-d');
         $endDate = (new \DateTime('+2 days'))->format('Y-m-d');
 
@@ -175,7 +180,9 @@ class IssueRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($result);
         foreach ($result as $issue) {
-            $this->assertEquals($project->getId(), $issue->getProject()->getId());
+            $issueProject = $issue->getProject();
+            $this->assertNotNull($issueProject);
+            $this->assertEquals($project->getId(), $issueProject->getId());
         }
     }
 

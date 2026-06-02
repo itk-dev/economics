@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-308](https://github.com/itk-dev/economics/pull/308)
+  * PHPStan baseline cleanup in src/ (530 → 0); behavior- and schema-affecting items below.
+  * Migrations Version20260517131038 and Version20260517151632: relaxed 18 columns and
+    11 ManyToOne FKs on synced entities (issue, project, version, worklog) to nullable
+    to match property types; application-layer asserts/form validators still enforce required-ness.
+  * Fixed report services crashing on worklogs with null project/issue and rendering empty epic
+    tags (Epic::getName() → getTitle()); fixed SubscriptionHandlerService::getVersion()
+    lookup by non-existent field.
+  * LeantimeApiService switched from object to array json_decode; wire shape unchanged.
+
 ## [3.5.0] - 2026-05-26
 
 * [PR-315](https://github.com/itk-dev/economics/pull/315)
@@ -15,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-310](https://github.com/itk-dev/economics/pull/310)
   * Remove dataProvider scoping.
 * [PR-264](https://github.com/itk-dev/economics/pull/264)
-  Added cybersecurity report.
+  * Added cybersecurity report.
 * [PR-309](https://github.com/itk-dev/economics/pull/309)
   * Consolidated project and service-agreement fields.
   * Moved the Leantime project link from service agreement to project and rendered it via a Twig helper.

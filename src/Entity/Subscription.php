@@ -12,11 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
 class Subscription extends AbstractBaseEntity
 {
     #[ORM\Column(length: 180, unique: false)]
-    private ?string $email = null;
+    private string $email = '';
 
     #[ORM\Column(type: 'string', nullable: true, enumType: SubscriptionSubjectEnum::class)]
     private ?SubscriptionSubjectEnum $subject = null;
 
+    /** @var array<string, mixed>|null */
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $urlParams = null;
 
@@ -55,11 +56,17 @@ class Subscription extends AbstractBaseEntity
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getUrlParams(): ?array
     {
         return $this->urlParams;
     }
 
+    /**
+     * @param array<string, mixed>|null $urlParams
+     */
     public function setUrlParams(?array $urlParams): self
     {
         $this->urlParams = $urlParams;

@@ -3,7 +3,6 @@
 namespace App\Tests\Integration\Service;
 
 use App\Model\Reports\CybersecurityProjectData;
-use App\Model\Reports\CybersecurityReportData;
 use App\Service\CybersecurityReportService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -14,7 +13,9 @@ class CybersecurityReportServiceTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->service = self::getContainer()->get(CybersecurityReportService::class);
+        $service = self::getContainer()->get(CybersecurityReportService::class);
+        \assert($service instanceof CybersecurityReportService);
+        $this->service = $service;
     }
 
     public function testGetDefaultFromDateIsFirstOfCurrentMonth(): void
@@ -33,7 +34,6 @@ class CybersecurityReportServiceTest extends KernelTestCase
     {
         $report = $this->service->getCybersecurityReport(null, null, 'no-such-version');
 
-        $this->assertInstanceOf(CybersecurityReportData::class, $report);
         $this->assertSame([], $report->projects);
         $this->assertSame(0.0, $report->totalSpent);
     }

@@ -2,7 +2,6 @@
 
 namespace App\Tests\Integration\Service;
 
-use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Model\Reports\WorkloadReportWorker;
@@ -16,8 +15,8 @@ class WorkloadReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var WorkloadReportService $service */
         $service = $container->get(WorkloadReportService::class);
+        \assert($service instanceof WorkloadReportService);
 
         $year = (int) (new \DateTime())->format('Y');
 
@@ -26,8 +25,6 @@ class WorkloadReportServiceTest extends KernelTestCase
             PeriodTypeEnum::WEEK,
             ViewModeEnum::WORKLOAD,
         );
-
-        $this->assertInstanceOf(WorkloadReportData::class, $report);
 
         // 10 fixture workers, all included in reports.
         $this->assertCount(10, $report->workers);
@@ -40,8 +37,7 @@ class WorkloadReportServiceTest extends KernelTestCase
 
         /** @var WorkloadReportWorker $worker */
         $worker = $report->workers->first();
-        $this->assertInstanceOf(WorkloadReportWorker::class, $worker);
-        $this->assertSame($report->period->count(), $worker->loggedPercentage->count());
+        $this->assertCount($report->period->count(), $worker->loggedPercentage);
         $this->assertGreaterThanOrEqual(0.0, $worker->average);
     }
 }

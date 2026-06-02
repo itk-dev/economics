@@ -8,11 +8,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Epic>
- *
- * @method Epic|null find($id, $lockMode = null, $lockVersion = null)
- * @method Epic|null findOneBy(array $criteria, array $orderBy = null)
- * @method Epic[]    findAll()
- * @method Epic[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class EpicRepository extends ServiceEntityRepository
 {

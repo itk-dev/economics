@@ -16,11 +16,6 @@ use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Issue>
- *
- * @method Issue|null find($id, $lockMode = null, $lockVersion = null)
- * @method Issue|null findOneBy(array $criteria, array $orderBy = null)
- * @method Issue[]    findAll()
- * @method Issue[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class IssueRepository extends ServiceEntityRepository
 {
@@ -40,6 +35,9 @@ class IssueRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return PaginationInterface<int, Issue>
+     */
     public function getFilteredPagination(IssueFilterData $issueFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('issue');
@@ -71,6 +69,9 @@ class IssueRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function findEpicOptionsByProject(Project $project): array
     {
         $qb = $this->createQueryBuilder('issue');
@@ -87,7 +88,10 @@ class IssueRepository extends ServiceEntityRepository
         return array_combine($titles, $ids);
     }
 
-    public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd)
+    /**
+     * @return array<int, Issue>
+     */
+    public function getClosedIssuesFromInterval(Project $project, \DateTimeInterface $periodStart, \DateTimeInterface $periodEnd): array
     {
         $from = new \DateTime($periodStart->format('Y-m-d').' 00:00:00');
         $to = new \DateTime($periodEnd->format('Y-m-d').' 23:59:59');
@@ -105,6 +109,9 @@ class IssueRepository extends ServiceEntityRepository
         return $qb->getQuery()->execute();
     }
 
+    /**
+     * @return array<int, Issue>
+     */
     public function issuesContainingVersion(Version $version): array
     {
         $qb = $this->createQueryBuilder('issue')
@@ -114,6 +121,11 @@ class IssueRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @param array<int, Project>|null $projects
+     *
+     * @return array<int, Issue>
+     */
     public function findIssuesInDateRange(string $startDate, string $endDate, ?WorkerGroup $group = null, ?array $projects = null): array
     {
         $qb = $this->createQueryBuilder('i')
@@ -135,14 +147,20 @@ class IssueRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
+    /**
+     * @return Issue[]
+     */
     public function issuesContainingVersionTitle(string $versionTitle): array
     {
-        return $this->createQueryBuilder('issue')
+        /** @var Issue[] $result */
+        $result = $this->createQueryBuilder('issue')
             ->select('DISTINCT issue')
             ->innerJoin('issue.versions', 'version')
             ->andWhere('version.name = :versionTitle')
             ->setParameter('versionTitle', $versionTitle)
             ->getQuery()
             ->getResult();
+
+        return $result;
     }
 }

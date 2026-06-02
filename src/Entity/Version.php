@@ -18,20 +18,21 @@ class Version extends AbstractBaseEntity
     use DataProviderTrait;
     use SynchronizedEntityTrait;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;
 
     #[ORM\ManyToOne(inversedBy: 'versions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
 
+    /** @var Collection<int, Issue> */
     #[ORM\ManyToMany(targetEntity: Issue::class, mappedBy: 'versions')]
     private Collection $issues;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?bool $isBillable = true;
 
     public function __construct()

@@ -13,6 +13,7 @@ use App\Repository\VersionRepository;
 use App\Service\HourReportService;
 use App\Service\SubscriptionHandlerService;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -21,14 +22,14 @@ use Twig\Environment;
 
 class SubscriptionHandlerServiceTest extends TestCase
 {
-    private ProjectRepository $projectRepository;
-    private VersionRepository $versionRepository;
-    private HourReportService $hourReportService;
-    private Environment $twig;
-    private LoggerInterface $logger;
-    private MailerInterface $mailer;
-    private TranslatorInterface $translator;
-    private EntityManagerInterface $entityManager;
+    private ProjectRepository&MockObject $projectRepository;
+    private VersionRepository&MockObject $versionRepository;
+    private HourReportService&MockObject $hourReportService;
+    private Environment&MockObject $twig;
+    private LoggerInterface&MockObject $logger;
+    private MailerInterface&MockObject $mailer;
+    private TranslatorInterface&MockObject $translator;
+    private EntityManagerInterface&MockObject $entityManager;
 
     protected function setUp(): void
     {
@@ -119,7 +120,7 @@ class SubscriptionHandlerServiceTest extends TestCase
         $version = new Version();
 
         $this->projectRepository->method('find')->with(1)->willReturn($project);
-        $this->versionRepository->method('findOneBy')->with(['versionId' => 42])->willReturn($version);
+        $this->versionRepository->method('find')->with(42)->willReturn($version);
         $this->hourReportService->expects($this->once())
             ->method('getHourReport')
             ->with($project, $this->anything(), $this->anything(), $version)

@@ -57,7 +57,9 @@ class AppFixtures extends Fixture
         for ($k = 0; $k < 100; ++$k) {
             $modMonth = str_pad((string) ($k % 12 + 1), 2, '0', STR_PAD_LEFT);
             $modDay = str_pad((string) ($k % 28 + 1), 2, '0', STR_PAD_LEFT);
-            $startedByK[$k] = \DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new \DateTimeZone('Europe/Copenhagen'));
+            $started = \DateTime::createFromFormat('U', (string) strtotime("$year-$modMonth-$modDay"), new \DateTimeZone('Europe/Copenhagen'));
+            \assert($started instanceof \DateTime);
+            $startedByK[$k] = $started;
         }
 
         $dataProviders = [];

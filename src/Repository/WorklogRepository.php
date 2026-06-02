@@ -15,11 +15,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Worklog>
- *
- * @method Worklog|null find($id, $lockMode = null, $lockVersion = null)
- * @method Worklog|null findOneBy(array $criteria, array $orderBy = null)
- * @method findAll()
- * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class WorklogRepository extends ServiceEntityRepository
 {
@@ -46,6 +41,9 @@ class WorklogRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return iterable<Worklog>
+     */
     public function findByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): iterable
     {
         $qb = $this->createQueryBuilder('worklog');
@@ -112,7 +110,10 @@ class WorklogRepository extends ServiceEntityRepository
             ->execute();
     }
 
-    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    /**
+     * @return array<int, Worklog>
+     */
+    public function findWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo): array
     {
         $qb = $this->createQueryBuilder('worklog');
 
@@ -135,7 +136,7 @@ class WorklogRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $to          The ending date time
      * @param string             $groupBy     The function to group by, accepts 'week', 'month' and 'year'
      *
-     * @return array An array of results containing total time spent, week number, and worker, indexed by week/month/year number
+     * @return array<int|string, array<string, mixed>> An array of results containing total time spent, week number, and worker, indexed by week/month/year number
      */
     public function getTimeSpentByWorkerInWeekRange(
         string $workerEmail,
@@ -188,6 +189,9 @@ class WorklogRepository extends ServiceEntityRepository
      *
      * @return array an array of worklogs matching the specified criteria
      */
+    /**
+     * @return array<int, Worklog>
+     */
     public function findBillableWorklogsByWorkerAndDateRange(\DateTime $dateFrom, \DateTime $dateTo, ?string $workerIdentifier = null, mixed $isBilled = null): array
     {
         $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
@@ -239,7 +243,10 @@ class WorklogRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findBilledWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo)
+    /**
+     * @return array<int, Worklog>
+     */
+    public function findBilledWorklogsByWorkerAndDateRange(string $workerIdentifier, \DateTime $dateFrom, \DateTime $dateTo): array
     {
         $nonBillableEpics = NonBillableEpicsEnum::getAsArray();
         $nonBillableVersions = NonBillableVersionsEnum::getAsArray();
@@ -277,6 +284,8 @@ class WorklogRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return array{total_count: int, pages_count: float, current_page: int, page_size: int, paginator: Paginator<Worklog>}
+     *
      * @throws \Exception
      */
     public function getWorklogsAttachedToInvoiceInDateRange(\DateTimeInterface $periodStart, \DateTimeInterface $periodEnd, int $page = 1, int $pageSize = 50): array

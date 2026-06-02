@@ -15,13 +15,14 @@ class User implements UserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    private ?string $email = null;
+    private string $email = '';
 
+    /** @var array<int, string> */
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
     public function __construct()
     {
@@ -51,7 +52,11 @@ class User implements UserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        if ('' === $this->email) {
+            throw new \LogicException('User identifier requires a non-empty email.');
+        }
+
+        return $this->email;
     }
 
     /**
@@ -64,6 +69,9 @@ class User implements UserInterface
         return array_unique($roles);
     }
 
+    /**
+     * @param array<int, string> $roles
+     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;

@@ -16,8 +16,12 @@ class WorkerRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $this->entityManager = $container->get(EntityManagerInterface::class);
-        $this->repository = $container->get(WorkerRepository::class);
+        $entityManager = $container->get(EntityManagerInterface::class);
+        \assert($entityManager instanceof EntityManagerInterface);
+        $this->entityManager = $entityManager;
+        $repository = $container->get(WorkerRepository::class);
+        \assert($repository instanceof WorkerRepository);
+        $this->repository = $repository;
     }
 
     public function testFindAllIncludedInReports(): void
@@ -26,10 +30,6 @@ class WorkerRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($results);
         $this->assertGreaterThanOrEqual(10, \count($results));
-
-        foreach ($results as $worker) {
-            $this->assertInstanceOf(Worker::class, $worker);
-        }
     }
 
     public function testFindAllIncludedInReportsExcludesDisabled(): void

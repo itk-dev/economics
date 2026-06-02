@@ -127,9 +127,9 @@ class PlanningService
     /**
      * Sorts issues by week.
      *
-     * @param array $allIssues the array of all issues to sort
+     * @param array<int, IssueEntity> $allIssues the array of all issues to sort
      *
-     * @return array the sorted array of issues
+     * @return array<int|string, array<int, IssueEntity>> the sorted array of issues
      */
     private function sortIssuesByWeek(array $allIssues): array
     {
@@ -155,7 +155,10 @@ class PlanningService
         return $weekIssues;
     }
 
-    private function processIssuesForWeek(PlanningData $planning, int $week, array $issues, ?bool $holidayPlanning = false): void
+    /**
+     * @param array<int, IssueEntity> $issues
+     */
+    private function processIssuesForWeek(PlanningData $planning, int|string $week, array $issues, ?bool $holidayPlanning = false): void
     {
         foreach ($issues as $issueData) {
             if (!$holidayPlanning && IssueStatusEnum::DONE === $issueData->getStatus()) {
@@ -168,7 +171,7 @@ class PlanningService
             }
             $projectKey = (string) $issueProject->getProjectTrackerId();
             $projectDisplayName = $issueProject->getName() ?? self::UNNAMED_STR;
-            $hoursRemaining = $issueData->getHoursRemaining($issueData);
+            $hoursRemaining = $issueData->getHoursRemaining();
             $assigneeData = $this->getAssigneeData($issueData);
 
             $assignee = $this->getOrCreateAssignee($planning->assignees, $assigneeData);
@@ -210,6 +213,8 @@ class PlanningService
 
     /**
      * Get the assignee key and display name.
+     *
+     * @return array{key: string, displayName: string, weekNorm: int|float}
      */
     private function getAssigneeData(IssueEntity $issue): array
     {
@@ -239,7 +244,8 @@ class PlanningService
     /**
      * Gets or creates an Assignee object in an ArrayCollection.
      *
-     * @param ArrayCollection<string, Assignee> $assignees the ArrayCollection containing the Assignee objects
+     * @param ArrayCollection<string, Assignee>                            $assignees    the ArrayCollection containing the Assignee objects
+     * @param array{key: string, displayName: string, weekNorm: int|float} $assigneeData
      *
      * @return Assignee the retrieved or created Assignee object
      */
@@ -317,7 +323,7 @@ class PlanningService
      */
     private function sortAssigneeCollectionByDisplayName(ArrayCollection $collection): ArrayCollection
     {
-        /** @var \ArrayIterator $iterator */
+        /** @var \ArrayIterator<string, Assignee> $iterator */
         $iterator = $collection->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);
@@ -335,7 +341,7 @@ class PlanningService
      */
     private function sortProjectCollectionByDisplayName(ArrayCollection $collection): ArrayCollection
     {
-        /** @var \ArrayIterator $iterator */
+        /** @var \ArrayIterator<string, Project> $iterator */
         $iterator = $collection->getIterator();
         $iterator->uasort(function ($a, $b) {
             return mb_strtolower($a->displayName) <=> mb_strtolower($b->displayName);

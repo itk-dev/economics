@@ -2,10 +2,8 @@
 
 namespace App\Tests\Integration\Repository;
 
-use App\Entity\Invoice;
 use App\Model\Invoices\InvoiceFilterData;
 use App\Repository\InvoiceRepository;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class InvoiceRepositoryTest extends KernelTestCase
@@ -15,7 +13,9 @@ class InvoiceRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(InvoiceRepository::class);
+        $repository = self::getContainer()->get(InvoiceRepository::class);
+        \assert($repository instanceof InvoiceRepository);
+        $this->repository = $repository;
     }
 
     public function testGetByRecordedDateBetween(): void
@@ -27,7 +27,6 @@ class InvoiceRepositoryTest extends KernelTestCase
 
         $this->assertNotEmpty($result);
         foreach ($result as $invoice) {
-            $this->assertInstanceOf(Invoice::class, $invoice);
             $this->assertTrue($invoice->isRecorded());
             $this->assertNotNull($invoice->getRecordedDate());
         }
@@ -49,7 +48,6 @@ class InvoiceRepositoryTest extends KernelTestCase
         $filterData->recorded = true;
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThanOrEqual(2, $result->getTotalItemCount());
         foreach ($result as $invoice) {
             $this->assertTrue($invoice->isRecorded());
@@ -77,7 +75,7 @@ class InvoiceRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThanOrEqual(1, $result->getTotalItemCount());
         foreach ($result as $invoice) {
-            $this->assertStringContainsString('Invoice Beta', $invoice->getName());
+            $this->assertStringContainsString('Invoice Beta', (string) $invoice->getName());
         }
     }
 

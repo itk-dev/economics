@@ -14,7 +14,9 @@ class ProjectBillingFlowTest extends AbstractControllerTestCase
         $crawler = $client->request('GET', '/admin/project-billing/new');
         $this->assertResponseIsSuccessful();
 
-        $project = static::getContainer()->get(ProjectRepository::class)->getIncluded()
+        $projectRepository = static::getContainer()->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $project = $projectRepository->getIncluded()
             ->setMaxResults(1)->getQuery()->getOneOrNullResult();
         $this->assertNotNull($project, 'Expected an included project from fixtures.');
 
@@ -27,10 +29,16 @@ class ProjectBillingFlowTest extends AbstractControllerTestCase
         $client->submit($form);
 
         $this->assertResponseRedirects();
-        $this->assertMatchesRegularExpression('#/admin/project-billing/\d+/edit$#', $client->getResponse()->headers->get('Location'));
+        $location = $client->getResponse()->headers->get('Location');
+        $this->assertNotNull($location);
+        $this->assertMatchesRegularExpression('#/admin/project-billing/\d+/edit$#', $location);
 
-        $created = static::getContainer()->get(ProjectBillingRepository::class)->findOneBy(['name' => $name]);
+        $projectBillingRepository = static::getContainer()->get(ProjectBillingRepository::class);
+        \assert($projectBillingRepository instanceof ProjectBillingRepository);
+        $created = $projectBillingRepository->findOneBy(['name' => $name]);
         $this->assertInstanceOf(ProjectBilling::class, $created);
-        $this->assertSame($project->getId(), $created->getProject()->getId());
+        $createdProject = $created->getProject();
+        $this->assertNotNull($createdProject);
+        $this->assertSame($project->getId(), $createdProject->getId());
     }
 }

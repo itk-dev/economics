@@ -19,6 +19,9 @@ class ServiceAgreementRepository extends ServiceEntityRepository
         parent::__construct($registry, ServiceAgreement::class);
     }
 
+    /**
+     * @return PaginationInterface<int, ServiceAgreement>
+     */
     public function getFilteredPagination(ServiceAgreementFilterData $serviceAgreementFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('service_agreement');

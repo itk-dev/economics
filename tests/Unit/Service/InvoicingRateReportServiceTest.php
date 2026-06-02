@@ -3,19 +3,19 @@
 namespace App\Tests\Unit\Service;
 
 use App\Entity\Worker;
-use App\Model\Reports\InvoicingRateReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\DateTimeHelper;
 use App\Service\InvoicingRateReportService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class InvoicingRateReportServiceTest extends TestCase
 {
-    private WorkerRepository $workerRepository;
-    private WorklogRepository $worklogRepository;
-    private DateTimeHelper $dateTimeHelper;
+    private WorkerRepository&MockObject $workerRepository;
+    private WorklogRepository&MockObject $worklogRepository;
+    private DateTimeHelper&MockObject $dateTimeHelper;
     private InvoicingRateReportService $service;
 
     protected function setUp(): void
@@ -34,11 +34,10 @@ class InvoicingRateReportServiceTest extends TestCase
     public function testMonthPeriodReturns12Periods(): void
     {
         $this->workerRepository->method('findAllIncludedInReports')->willReturn([]);
-        $this->dateTimeHelper->method('getMonthName')->willReturnCallback(fn ($m) => date('F', mktime(0, 0, 0, $m, 10)));
+        $this->dateTimeHelper->method('getMonthName')->willReturnCallback(fn ($m) => date('F', (int) mktime(0, 0, 0, $m, 10)));
 
         $result = $this->service->getInvoicingRateReport(2024, PeriodTypeEnum::MONTH);
 
-        $this->assertInstanceOf(InvoicingRateReportData::class, $result);
         $this->assertCount(12, $result->period);
     }
 
@@ -88,7 +87,7 @@ class InvoicingRateReportServiceTest extends TestCase
         $this->worklogRepository->method('findBillableWorklogsByWorkerAndDateRange')->willReturn([]);
         $this->worklogRepository->method('findBilledWorklogsByWorkerAndDateRange')->willReturn([]);
 
-        $this->dateTimeHelper->method('getMonthName')->willReturnCallback(fn ($m) => date('F', mktime(0, 0, 0, $m, 10)));
+        $this->dateTimeHelper->method('getMonthName')->willReturnCallback(fn ($m) => date('F', (int) mktime(0, 0, 0, $m, 10)));
         $this->dateTimeHelper->method('getFirstAndLastDateOfMonth')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01'),
             'dateTo' => new \DateTime('2024-01-31'),
@@ -96,11 +95,11 @@ class InvoicingRateReportServiceTest extends TestCase
 
         $result = $this->service->getInvoicingRateReport(2024, PeriodTypeEnum::MONTH);
 
-        $this->assertInstanceOf(InvoicingRateReportData::class, $result);
         $this->assertCount(1, $result->workers);
 
         // With 0 logged hours, average should be 0
         $workerData = $result->workers->first();
+        $this->assertNotFalse($workerData);
         $this->assertEqualsWithDelta(0.0, $workerData->average, 0.001);
     }
 

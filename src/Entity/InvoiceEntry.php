@@ -15,11 +15,11 @@ use Doctrine\ORM\Mapping as ORM;
 class InvoiceEntry extends AbstractBaseEntity
 {
     #[ORM\ManyToOne(inversedBy: 'invoiceEntries')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Invoice $invoice = null;
 
     #[ORM\Column(type: Types::INTEGER, name: 'entry_index')]
-    private ?int $index = null;
+    private int $index = 0;
 
     // TODO: Remove since it is unused.
     #[ORM\Column(length: 255, nullable: true)]
@@ -48,9 +48,11 @@ class InvoiceEntry extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?MaterialNumberEnum $materialNumber = null;
 
+    /** @var Collection<int, Worklog> */
     #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: Worklog::class)]
     private Collection $worklogs;
 
+    /** @var Collection<int, IssueProduct> */
     #[ORM\OneToMany(mappedBy: 'invoiceEntry', targetEntity: IssueProduct::class)]
     private Collection $issueProducts;
 
@@ -242,7 +244,7 @@ class InvoiceEntry extends AbstractBaseEntity
 
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
-    public function setInvoiceIndex()
+    public function setInvoiceIndex(): void
     {
         $this->getInvoice()?->setInvoiceEntryIndexes();
     }

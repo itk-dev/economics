@@ -9,13 +9,14 @@ use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\DashboardService;
 use App\Service\DateTimeHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class DashboardServiceTest extends TestCase
 {
-    private WorkerRepository $workerRepository;
-    private WorklogRepository $worklogRepository;
-    private DateTimeHelper $dateTimeHelper;
+    private WorkerRepository&MockObject $workerRepository;
+    private WorklogRepository&MockObject $worklogRepository;
+    private DateTimeHelper&MockObject $dateTimeHelper;
     private DashboardService $dashboardService;
 
     protected function setUp(): void
@@ -148,6 +149,5 @@ class DashboardServiceTest extends TestCase
         $this->assertInstanceOf(DashboardData::class, $result);
         // yearStatus = (totalTimeSpent - yearNormToDate) / 3600
         // The exact value depends on how many weekdays in 2023, but it should be a number
-        $this->assertIsFloat($result->workHours);
     }
 }

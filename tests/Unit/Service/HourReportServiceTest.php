@@ -7,16 +7,16 @@ use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worklog;
-use App\Model\Reports\HourReportData;
 use App\Repository\IssueRepository;
 use App\Repository\WorklogRepository;
 use App\Service\HourReportService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class HourReportServiceTest extends TestCase
 {
-    private IssueRepository $issueRepository;
-    private WorklogRepository $worklogRepository;
+    private IssueRepository&MockObject $issueRepository;
+    private WorklogRepository&MockObject $worklogRepository;
     private HourReportService $hourReportService;
 
     public function setUp(): void
@@ -78,8 +78,6 @@ class HourReportServiceTest extends TestCase
             new \DateTime('2024-01-31'),
             $version,
         );
-
-        $this->assertInstanceOf(HourReportData::class, $result);
     }
 
     public function testGetHourReportWithoutVersionUsesProjectFilter(): void
@@ -99,8 +97,6 @@ class HourReportServiceTest extends TestCase
             new \DateTime('2024-01-01'),
             new \DateTime('2024-01-31'),
         );
-
-        $this->assertInstanceOf(HourReportData::class, $result);
     }
 
     public function testGetHourReportSkipsIssuesWithNoWorklogsInRange(): void
@@ -208,6 +204,7 @@ class HourReportServiceTest extends TestCase
 
         $this->assertTrue($result->projectTags->containsKey('Backend Work'));
         $tag = $result->projectTags->get('Backend Work');
+        $this->assertNotNull($tag);
         $this->assertSame('Backend Work', $tag->tag);
     }
 
@@ -336,6 +333,7 @@ class HourReportServiceTest extends TestCase
         $this->assertEqualsWithDelta(8.0, $result->projectTotalEstimated, 0.001);
 
         $tag = $result->projectTags->get('Frontend');
+        $this->assertNotNull($tag);
         $this->assertEqualsWithDelta(8.0, $tag->totalEstimated, 0.001);
         $this->assertEqualsWithDelta(3.0, $tag->totalSpent, 0.001);
         $this->assertCount(2, $tag->projectTickets);

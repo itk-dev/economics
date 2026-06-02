@@ -14,7 +14,9 @@ class SubscriptionRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(SubscriptionRepository::class);
+        $repository = self::getContainer()->get(SubscriptionRepository::class);
+        \assert($repository instanceof SubscriptionRepository);
+        $this->repository = $repository;
     }
 
     public function testFindByCustom(): void
@@ -23,7 +25,6 @@ class SubscriptionRepositoryTest extends KernelTestCase
 
         $this->assertCount(2, $result);
         foreach ($result as $subscription) {
-            $this->assertInstanceOf(Subscription::class, $subscription);
             $this->assertEquals('subscriber@test.com', $subscription->getEmail());
         }
     }
@@ -39,7 +40,7 @@ class SubscriptionRepositoryTest extends KernelTestCase
     {
         $result = $this->repository->findOneByCustom(
             'subscriber@test.com',
-            SubscriptionFrequencyEnum::FREQUENCY_MONTHLY,
+            SubscriptionFrequencyEnum::FREQUENCY_MONTHLY->value,
             ['param1' => 'value1']
         );
 
@@ -52,7 +53,7 @@ class SubscriptionRepositoryTest extends KernelTestCase
     {
         $result = $this->repository->findOneByCustom(
             'nonexistent@test.com',
-            SubscriptionFrequencyEnum::FREQUENCY_MONTHLY,
+            SubscriptionFrequencyEnum::FREQUENCY_MONTHLY->value,
             ['param1' => 'value1']
         );
 

@@ -14,11 +14,6 @@ use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Project>
- *
- * @method Project|null find($id, $lockMode = null, $lockVersion = null)
- * @method Project|null findOneBy(array $criteria, array $orderBy = null)
- * @method findAll()
- * @method findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ProjectRepository extends ServiceEntityRepository
 {
@@ -56,6 +51,9 @@ class ProjectRepository extends ServiceEntityRepository
         return $qb;
     }
 
+    /**
+     * @return PaginationInterface<int, Project>
+     */
     public function getFilteredPagination(ProjectFilterData $projectFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('project');
@@ -94,7 +92,12 @@ class ProjectRepository extends ServiceEntityRepository
         );
     }
 
-    public function getProjectTrackerIdsByDataProviders(array $dataProviders)
+    /**
+     * @param array<int, \App\Entity\DataProvider> $dataProviders
+     *
+     * @return array<int, string>
+     */
+    public function getProjectTrackerIdsByDataProviders(array $dataProviders): array
     {
         $qb = $this->createQueryBuilder('project');
 
@@ -108,6 +111,9 @@ class ProjectRepository extends ServiceEntityRepository
         return $qb->getQuery()->getSingleColumnResult();
     }
 
+    /**
+     * @return int[]
+     */
     public function getProjectIdsWithCybersecurityAgreement(): array
     {
         $result = $this->_em->createQueryBuilder()
@@ -118,7 +124,7 @@ class ProjectRepository extends ServiceEntityRepository
             ->getQuery()
             ->getScalarResult();
 
-        return array_column($result, 'id');
+        return array_map('intval', array_column($result, 'id'));
     }
 
     /**

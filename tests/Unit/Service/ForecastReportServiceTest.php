@@ -6,19 +6,19 @@ use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worker;
 use App\Entity\Worklog;
-use App\Model\Reports\ForecastReportData;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\ForecastReportService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ForecastReportServiceTest extends TestCase
 {
-    private WorklogRepository $worklogRepository;
-    private WorkerRepository $workerRepository;
-    private EntityManagerInterface $entityManager;
+    private WorklogRepository&MockObject $worklogRepository;
+    private WorkerRepository&MockObject $workerRepository;
+    private EntityManagerInterface&MockObject $entityManager;
     private ForecastReportService $service;
 
     protected function setUp(): void
@@ -64,7 +64,6 @@ class ForecastReportServiceTest extends TestCase
             new \DateTime('2024-01-31'),
         );
 
-        $this->assertInstanceOf(ForecastReportData::class, $result);
         $this->assertEqualsWithDelta(0.0, $result->totalInvoiced, 0.001);
         $this->assertEqualsWithDelta(0.0, $result->totalInvoicedAndRecorded, 0.001);
     }
@@ -106,7 +105,9 @@ class ForecastReportServiceTest extends TestCase
         $this->assertEqualsWithDelta(2.0, $result->totalInvoiced, 0.001);
         $this->assertEqualsWithDelta(0.0, $result->totalInvoicedAndRecorded, 0.001);
         $this->assertArrayHasKey(1, $result->projects);
-        $this->assertEqualsWithDelta(2.0, $result->projects[1]->invoiced, 0.001);
+        $projectData = $result->projects[1];
+        $this->assertNotNull($projectData);
+        $this->assertEqualsWithDelta(2.0, $projectData->invoiced, 0.001);
     }
 
     public function testBilledWorklogsCountAsRecorded(): void
@@ -186,6 +187,7 @@ class ForecastReportServiceTest extends TestCase
         );
 
         $projectData = $result->projects[1];
+        $this->assertNotNull($projectData);
         $issueData = $projectData->issues['[no tag]'];
         $versionData = $issueData->versions['[no version]'];
         $worklogData = $versionData->worklogs[1];

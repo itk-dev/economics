@@ -19,7 +19,7 @@ class Client extends AbstractBaseEntity
     use SoftDeleteableEntity;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $contact = null;
@@ -36,9 +36,11 @@ class Client extends AbstractBaseEntity
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ean = null;
 
+    /** @var Collection<int, Invoice> */
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Invoice::class)]
     private Collection $invoices;
 
+    /** @var Collection<int, Project> */
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'clients')]
     private Collection $projects;
 

@@ -76,6 +76,9 @@ class SubscriptionController extends AbstractController
     {
         $content = $request->toArray();
         $userEmail = $user->getEmail();
+        if (null === $userEmail) {
+            return new JsonResponse(['error' => 'User email is required.'], Response::HTTP_BAD_REQUEST);
+        }
         $reportType = key($content);
         $report = &$content[$reportType];
         switch ($reportType) {
@@ -122,11 +125,16 @@ class SubscriptionController extends AbstractController
     }
 
     /**
+     * @param array<string, mixed> $content
+     *
      * @throws NonUniqueResultException
      */
-    private function subscriptionHandler($userEmail, $subscriptionType, $content): JsonResponse
+    private function subscriptionHandler(string $userEmail, string $subscriptionType, array $content): JsonResponse
     {
         $reportType = key($content);
+        if (null === $reportType) {
+            throw new \InvalidArgumentException('Content is empty.');
+        }
         $subscription = $this->subscriptionRepository->findOneByCustom($userEmail, $subscriptionType, $content);
 
         if ($subscription) {
@@ -151,11 +159,18 @@ class SubscriptionController extends AbstractController
         return new JsonResponse(['action' => 'subscribed', 'frequencies' => $frequencies], 200);
     }
 
+    /**
+     * @param array<int, Subscription> $subscriptions
+     */
     private function getFrequencies(array $subscriptions): string
     {
         $frequencies = [];
         foreach ($subscriptions as $subscription) {
-            $frequencies[] = $subscription->getFrequency()->value;
+            $frequency = $subscription->getFrequency();
+            if (null === $frequency) {
+                continue;
+            }
+            $frequencies[] = $frequency->value;
         }
 
         // Getting the order from Enum

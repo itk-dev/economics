@@ -13,27 +13,34 @@ final class DanishHolidayHelper
     public const SUNDAY = 7;
 
     /**
-     * @var DanishHolidayHelper
+     * @var ?DanishHolidayHelper
      */
     private static $instance;
 
     public static function getInstance(): self
     {
-        if (empty(self::$instance)) {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
         }
 
         return self::$instance;
     }
 
+    /**
+     * @param array<int, int> $nonWorkdays
+     */
     private function __construct(
         private readonly array $nonWorkdays = [self::SATURDAY, self::SUNDAY])
     {
     }
 
+    /** @var array<int, array<string, \DateTimeImmutable>> */
     private array $holidays = [];
+    /** @var array<int, array<string, string>> */
     private array $holidayNames = [];
+    /** @var array<int, array<string, \DateTimeImmutable>> */
     private array $bankHolidays = [];
+    /** @var array<int, array<string, string>> */
     private array $bankHolidayNames = [];
 
     /**
@@ -67,6 +74,8 @@ final class DanishHolidayHelper
 
     /**
      * Get holiday names indexed by formatted date.
+     *
+     * @return array<string, string>
      */
     public function getHolidayNames(int $year): array
     {
@@ -81,6 +90,8 @@ final class DanishHolidayHelper
      * Get bank holidays.
      *
      * @see https://www.nationalbanken.dk/da/vores-arbejde/stabile-priser-pengepolitik-og-dansk-oekonomi/banklukkedage
+     *
+     * @return array<string, \DateTimeImmutable>
      */
     public function getBankHolidays(int $year): array
     {
@@ -98,6 +109,9 @@ final class DanishHolidayHelper
         return $this->bankHolidays[$year];
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getBankHolidayNames(int $year): array
     {
         if (!isset($this->bankHolidayNames[$year])) {
@@ -177,6 +191,11 @@ final class DanishHolidayHelper
         return (int) $date->format('Y');
     }
 
+    /**
+     * @param array<string, \DateTimeImmutable> $days
+     *
+     * @return array<string, string>
+     */
     private function buildNames(array $days): array
     {
         $names = [];

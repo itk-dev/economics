@@ -15,7 +15,7 @@ final class DanishHolidayHelperTest extends TestCase
         $this->helper = DanishHolidayHelper::getInstance();
     }
 
-    public function testHmm()
+    public function testHmm(): void
     {
         $this->assertNotEquals(
             $this->helper->getHolidays(2024),
@@ -26,7 +26,7 @@ final class DanishHolidayHelperTest extends TestCase
     /**
      * @dataProvider dataEaster
      */
-    public function testEaster(int $year, \DateTimeInterface $expected)
+    public function testEaster(int $year, \DateTimeInterface $expected): void
     {
         $this->assertSameDate(
             $expected,
@@ -34,6 +34,9 @@ final class DanishHolidayHelperTest extends TestCase
         );
     }
 
+    /**
+     * @return iterable<string, array{int, \DateTimeInterface}>
+     */
     public static function dataEaster(): iterable
     {
         yield '[2023]' => [
@@ -52,7 +55,7 @@ final class DanishHolidayHelperTest extends TestCase
         ];
     }
 
-    public function testHolidayNames()
+    public function testHolidayNames(): void
     {
         $year = 2024;
         $expected = [
@@ -76,12 +79,15 @@ final class DanishHolidayHelperTest extends TestCase
     /**
      * @dataProvider dataNextNonHoliday
      */
-    public function testNextNonHoliday(\DateTimeInterface $date, ?\DateTimeInterface $expected)
+    public function testNextNonHoliday(\DateTimeInterface $date, \DateTimeInterface $expected): void
     {
         $actual = $this->helper->getNextNonHoliday($date);
         $this->assertSameDate($expected, $actual);
     }
 
+    /**
+     * @return iterable<string, array{\DateTimeInterface, \DateTimeInterface}>
+     */
     public static function dataNextNonHoliday(): iterable
     {
         yield '2024-03-31' => [
@@ -93,12 +99,15 @@ final class DanishHolidayHelperTest extends TestCase
     /**
      * @dataProvider dataNextBankDay
      */
-    public function testNextBankDay(\DateTimeInterface $date, ?\DateTimeInterface $expected)
+    public function testNextBankDay(\DateTimeInterface $date, \DateTimeInterface $expected): void
     {
         $actual = $this->helper->getNextBankDay($date);
         $this->assertSameDate($expected, $actual);
     }
 
+    /**
+     * @return iterable<string, array{\DateTimeInterface, \DateTimeInterface}>
+     */
     public static function dataNextBankDay(): iterable
     {
         yield '2024-03-29' => [
@@ -125,12 +134,15 @@ final class DanishHolidayHelperTest extends TestCase
     /**
      * @dataProvider dataNextBankDay30
      */
-    public function testNextBankDay30(\DateTimeInterface $date, ?\DateTimeInterface $expected)
+    public function testNextBankDay30(\DateTimeInterface $date, \DateTimeInterface $expected): void
     {
         $actual = $this->helper->getNextBankDay($date, 30);
         $this->assertSameDate($expected, $actual);
     }
 
+    /**
+     * @return iterable<string, array{\DateTimeInterface, \DateTimeInterface}>
+     */
     public static function dataNextBankDay30(): iterable
     {
         yield '2024-03-29' => [
@@ -152,12 +164,15 @@ final class DanishHolidayHelperTest extends TestCase
     /**
      * @dataProvider dataIsBankHoliday
      */
-    public function testIsBankHoliday(\DateTimeInterface $date, bool $expected)
+    public function testIsBankHoliday(\DateTimeInterface $date, bool $expected): void
     {
         $actual = $this->helper->isBankHoliday($date);
         $this->assertSame($expected, $actual);
     }
 
+    /**
+     * @return iterable<string, array{\DateTimeInterface, bool}>
+     */
     public static function dataIsBankHoliday(): iterable
     {
         yield '2024-12-31' => [
@@ -196,10 +211,10 @@ final class DanishHolidayHelperTest extends TestCase
         ];
     }
 
-    private function assertSameDate(\DateTimeInterface $expected, \DateTimeInterface $actual, string $message = '')
+    private function assertSameDate(\DateTimeInterface $expected, \DateTimeInterface $actual, string $message = ''): void
     {
         try {
-            return $this->assertEquals($expected->getTimestamp(), $actual->getTimestamp(), $message);
+            $this->assertEquals($expected->getTimestamp(), $actual->getTimestamp(), $message);
         } catch (ExpectationFailedException $exception) {
             throw new ExpectationFailedException(sprintf('Failed asserting that %s matches expected %s.', $expected->format(\DateTimeInterface::ATOM), $actual->format(\DateTimeInterface::ATOM)), $exception->getComparisonFailure(), $exception);
         }

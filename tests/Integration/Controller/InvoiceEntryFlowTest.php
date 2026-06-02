@@ -152,8 +152,11 @@ class InvoiceEntryFlowTest extends AbstractControllerTestCase
     {
         $container = static::getContainer();
         $em = $container->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
 
-        $project = $container->get(ProjectRepository::class)->getIncluded()
+        $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
+        $project = $projectRepository->getIncluded()
             ->setMaxResults(1)->getQuery()->getOneOrNullResult();
         $this->assertNotNull($project, 'Expected an included project from fixtures.');
 
@@ -181,18 +184,26 @@ class InvoiceEntryFlowTest extends AbstractControllerTestCase
         $entryId = $entry->getId();
         $em->clear();
 
-        $invoice = $container->get(InvoiceRepository::class)->find($invoiceId);
-        $entry = $container->get(InvoiceEntryRepository::class)->find($entryId);
+        $invoiceRepository = $container->get(InvoiceRepository::class);
+        \assert($invoiceRepository instanceof InvoiceRepository);
+        $invoice = $invoiceRepository->find($invoiceId);
         $this->assertInstanceOf(Invoice::class, $invoice);
+        $invoiceEntryRepository = $container->get(InvoiceEntryRepository::class);
+        \assert($invoiceEntryRepository instanceof InvoiceEntryRepository);
+        $entry = $invoiceEntryRepository->find($entryId);
         $this->assertInstanceOf(InvoiceEntry::class, $entry);
 
         return [$invoice, $entry];
     }
 
-    private function markInvoiceRecorded(int $invoiceId): void
+    private function markInvoiceRecorded(?int $invoiceId): void
     {
+        $this->assertNotNull($invoiceId);
         $em = static::getContainer()->get(EntityManagerInterface::class);
-        $invoice = static::getContainer()->get(InvoiceRepository::class)->find($invoiceId);
+        \assert($em instanceof EntityManagerInterface);
+        $invoiceRepository = static::getContainer()->get(InvoiceRepository::class);
+        \assert($invoiceRepository instanceof InvoiceRepository);
+        $invoice = $invoiceRepository->find($invoiceId);
         $this->assertInstanceOf(Invoice::class, $invoice);
         $invoice->setRecorded(true);
         $invoice->setRecordedDate(new \DateTime());
@@ -200,11 +211,16 @@ class InvoiceEntryFlowTest extends AbstractControllerTestCase
         $em->clear();
     }
 
-    private function reloadEntry(int $id): ?InvoiceEntry
+    private function reloadEntry(?int $id): ?InvoiceEntry
     {
+        $this->assertNotNull($id);
         $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
         $em->clear();
 
-        return static::getContainer()->get(InvoiceEntryRepository::class)->find($id);
+        $invoiceEntryRepository = static::getContainer()->get(InvoiceEntryRepository::class);
+        \assert($invoiceEntryRepository instanceof InvoiceEntryRepository);
+
+        return $invoiceEntryRepository->find($id);
     }
 }

@@ -60,9 +60,6 @@ class ProductsImportCommand extends Command
         foreach ($reader->getSheetIterator() as $sheet) {
             $headers = null;
             foreach ($sheet->getRowIterator() as $row) {
-                if (null === $row) {
-                    continue;
-                }
                 if (null === $headers) {
                     $headers = $getRowAsStrings($row);
                     if (!in_array($headerName, $headers)) {

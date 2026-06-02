@@ -5,6 +5,7 @@ namespace App\Tests\Unit\Command;
 use App\Command\SyncCommand;
 use App\Entity\Project;
 use App\Service\LeantimeApiService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -13,9 +14,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SyncCommandTest extends TestCase
 {
-    private LeantimeApiService $leantimeApiService;
-    private HttpClientInterface $httpClient;
-    private LoggerInterface $logger;
+    private LeantimeApiService&MockObject $leantimeApiService;
+    private HttpClientInterface&MockObject $httpClient;
+    private LoggerInterface&MockObject $logger;
     private CommandTester $commandTester;
 
     protected function setUp(): void

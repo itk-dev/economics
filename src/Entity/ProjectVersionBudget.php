@@ -9,13 +9,13 @@ use Doctrine\ORM\Mapping as ORM;
 class ProjectVersionBudget extends AbstractBaseEntity
 {
     #[ORM\Column(length: 255)]
-    private ?string $projectId = null;
+    private string $projectId = '';
 
     #[ORM\Column(length: 255)]
-    private ?string $versionId = null;
+    private string $versionId = '';
 
     #[ORM\Column]
-    private ?float $budget = null;
+    private float $budget = 0.0;
 
     public function getProjectId(): ?string
     {

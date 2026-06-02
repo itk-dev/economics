@@ -201,7 +201,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}/generate-description', name: 'app_invoices_generate_description', methods: ['GET'])]
-    public function generateDescription(Invoice $invoice, $defaultInvoiceDescriptionTemplate): JsonResponse
+    public function generateDescription(Invoice $invoice, string $defaultInvoiceDescriptionTemplate): JsonResponse
     {
         $projectLeadName = $invoice->getProject()?->getProjectLeadName() ?? null;
         $projectLeadMail = $invoice->getProject()?->getProjectLeadMail() ?? null;
@@ -289,7 +289,9 @@ class InvoiceController extends AbstractController
     #[Route('/{id}/show-export', name: 'app_invoices_show_export', methods: ['GET'])]
     public function showExport(Request $request, Invoice $invoice): Response
     {
-        $html = $this->billingService->generateSpreadsheetHtml([$invoice->getId()]);
+        $invoiceId = $invoice->getId();
+        \assert(null !== $invoiceId);
+        $html = $this->billingService->generateSpreadsheetHtml([$invoiceId]);
 
         return $this->render('invoices/export_show.html.twig', [
             'invoice' => $invoice,
@@ -317,7 +319,10 @@ class InvoiceController extends AbstractController
         $invoice->setExportedDate(new \DateTime());
         $invoiceRepository->save($invoice, true);
 
-        return $this->billingService->generateSpreadsheetCsvResponse([$invoice->getId()]);
+        $invoiceId = $invoice->getId();
+        \assert(null !== $invoiceId);
+
+        return $this->billingService->generateSpreadsheetCsvResponse([$invoiceId]);
     }
 
     /**
@@ -358,6 +363,6 @@ class InvoiceController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->billingService->generateSpreadsheetCsvResponse($ids);
+        return $this->billingService->generateSpreadsheetCsvResponse(array_map(intval(...), $ids));
     }
 }

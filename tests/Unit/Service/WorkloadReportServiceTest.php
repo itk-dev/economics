@@ -4,7 +4,6 @@ namespace App\Tests\Unit\Service;
 
 use App\Entity\Worker;
 use App\Entity\Worklog;
-use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Repository\WorkerRepository;
@@ -19,7 +18,7 @@ class WorkloadReportServiceTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testGetWorkloadReport()
+    public function testGetWorkloadReport(): void
     {
         $workerMock1 = $this->createMock(Worker::class);
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');
@@ -51,7 +50,10 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
-            return date('F', mktime(0, 0, 0, $month, 10));
+            $timestamp = mktime(0, 0, 0, $month, 10);
+            \assert(false !== $timestamp);
+
+            return date('F', $timestamp);
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
@@ -72,16 +74,16 @@ class WorkloadReportServiceTest extends TestCase
         $workloadReportService = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $dateTimeHelperMock);
 
         $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
-        $this->assertInstanceOf(WorkloadReportData::class, $result);
+        $this->assertSame(PeriodTypeEnum::WEEK->value, $result->viewmode);
 
         $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::MONTH, ViewModeEnum::WORKLOAD);
-        $this->assertInstanceOf(WorkloadReportData::class, $result);
+        $this->assertSame(PeriodTypeEnum::MONTH->value, $result->viewmode);
 
         $result = $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::YEAR, ViewModeEnum::WORKLOAD);
-        $this->assertInstanceOf(WorkloadReportData::class, $result);
+        $this->assertSame(PeriodTypeEnum::YEAR->value, $result->viewmode);
     }
 
-    public function testExceptionIsThrownWhenWorkerIdentifierIsEmpty()
+    public function testExceptionIsThrownWhenWorkerIdentifierIsEmpty(): void
     {
         $workerMock1 = $this->createMock(Worker::class);
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');
@@ -116,7 +118,10 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
-            return date('F', mktime(0, 0, 0, $month, 10));
+            $timestamp = mktime(0, 0, 0, $month, 10);
+            \assert(false !== $timestamp);
+
+            return date('F', $timestamp);
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
@@ -140,7 +145,7 @@ class WorkloadReportServiceTest extends TestCase
         $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
     }
 
-    public function testExceptionIsThrownWhenWorkerWorkloadIsUnset()
+    public function testExceptionIsThrownWhenWorkerWorkloadIsUnset(): void
     {
         $workerMock1 = $this->createMock(Worker::class);
         $workerMock1->method('getUserIdentifier')->willReturn('test0@test');
@@ -175,7 +180,10 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
-            return date('F', mktime(0, 0, 0, $month, 10));
+            $timestamp = mktime(0, 0, 0, $month, 10);
+            \assert(false !== $timestamp);
+
+            return date('F', $timestamp);
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),

@@ -8,6 +8,7 @@ use App\Enum\SubscriptionFrequencyEnum;
 use App\Enum\SubscriptionSubjectEnum;
 use App\Repository\SubscriptionRepository;
 use App\Service\SubscriptionHandlerService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -15,9 +16,9 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class SubscriptionHandlerCommandTest extends TestCase
 {
-    private SubscriptionRepository $subscriptionRepository;
-    private SubscriptionHandlerService $subscriptionHandlerService;
-    private LoggerInterface $logger;
+    private SubscriptionRepository&MockObject $subscriptionRepository;
+    private SubscriptionHandlerService&MockObject $subscriptionHandlerService;
+    private LoggerInterface&MockObject $logger;
 
     protected function setUp(): void
     {

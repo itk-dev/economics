@@ -6,13 +6,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class WorkloadReportData
 {
-    public readonly string $id;
     public readonly string $viewmode;
     /** @var ArrayCollection<string, string> */
     public ArrayCollection $period;
     /** @var ArrayCollection<string, WorkloadReportWorker> */
     public ArrayCollection $workers;
     public int $currentPeriodNumeric;
+    /** @var ArrayCollection<string, float> */
     public ArrayCollection $periodAverages;
     public float $totalAverage;
 

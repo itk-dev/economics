@@ -4,6 +4,9 @@ namespace App\Model\Invoices;
 
 class PagedResult
 {
+    /**
+     * @param array<int, mixed> $items
+     */
     public function __construct(
         public readonly array $items,
         public readonly int $startAt,

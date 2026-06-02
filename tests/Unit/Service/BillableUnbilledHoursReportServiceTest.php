@@ -5,20 +5,20 @@ namespace App\Tests\Unit\Service;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
-use App\Model\Reports\BillableUnbilledHoursReportData;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\BillableUnbilledHoursReportService;
 use App\Service\DateTimeHelper;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BillableUnbilledHoursReportServiceTest extends TestCase
 {
-    private WorklogRepository $worklogRepository;
-    private DateTimeHelper $dateTimeHelper;
-    private WorkerRepository $workerRepository;
-    private TranslatorInterface $translator;
+    private WorklogRepository&MockObject $worklogRepository;
+    private DateTimeHelper&MockObject $dateTimeHelper;
+    private WorkerRepository&MockObject $workerRepository;
+    private TranslatorInterface&MockObject $translator;
     private BillableUnbilledHoursReportService $service;
 
     protected function setUp(): void
@@ -54,8 +54,6 @@ class BillableUnbilledHoursReportServiceTest extends TestCase
             ->willReturn([]);
 
         $result = $this->service->getBillableUnbilledHoursReport(2024);
-
-        $this->assertInstanceOf(BillableUnbilledHoursReportData::class, $result);
     }
 
     public function testQuarterUsesQuarterDateRange(): void
@@ -75,8 +73,6 @@ class BillableUnbilledHoursReportServiceTest extends TestCase
             ->willReturn([]);
 
         $result = $this->service->getBillableUnbilledHoursReport(2024, 2);
-
-        $this->assertInstanceOf(BillableUnbilledHoursReportData::class, $result);
     }
 
     public function testAggregatesPerProject(): void

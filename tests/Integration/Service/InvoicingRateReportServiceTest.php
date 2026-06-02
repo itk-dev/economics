@@ -2,7 +2,6 @@
 
 namespace App\Tests\Integration\Service;
 
-use App\Model\Reports\InvoicingRateReportData;
 use App\Model\Reports\InvoicingRateReportViewModeEnum;
 use App\Model\Reports\InvoicingRateReportWorker;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
@@ -16,8 +15,8 @@ class InvoicingRateReportServiceTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        /** @var InvoicingRateReportService $service */
         $service = $container->get(InvoicingRateReportService::class);
+        \assert($service instanceof InvoicingRateReportService);
 
         $year = (int) (new \DateTime())->format('Y');
 
@@ -26,8 +25,6 @@ class InvoicingRateReportServiceTest extends KernelTestCase
             PeriodTypeEnum::WEEK,
             InvoicingRateReportViewModeEnum::SUMMARY,
         );
-
-        $this->assertInstanceOf(InvoicingRateReportData::class, $report);
 
         // Fixtures create 10 workers all included in reports.
         $this->assertCount(10, $report->workers);
@@ -45,9 +42,8 @@ class InvoicingRateReportServiceTest extends KernelTestCase
 
         /** @var InvoicingRateReportWorker $worker */
         $worker = $report->workers->first();
-        $this->assertInstanceOf(InvoicingRateReportWorker::class, $worker);
         $this->assertGreaterThanOrEqual(0.0, $worker->average);
         $this->assertLessThanOrEqual(100.0, $worker->average);
-        $this->assertSame($report->period->count(), $worker->dataByPeriod->count());
+        $this->assertCount($report->period->count(), $worker->dataByPeriod);
     }
 }

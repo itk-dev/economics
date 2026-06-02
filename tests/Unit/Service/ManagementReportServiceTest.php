@@ -3,13 +3,14 @@
 namespace App\Tests\Unit\Service;
 
 use App\Service\ManagementReportService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ManagementReportServiceTest extends TestCase
 {
-    private TranslatorInterface $translator;
+    private TranslatorInterface&MockObject $translator;
     private ManagementReportService $service;
 
     protected function setUp(): void
@@ -46,8 +47,8 @@ class ManagementReportServiceTest extends TestCase
         $response = $this->service->generateSpreadsheetCsvResponse($groupedInvoices, $dateInterval);
 
         $this->assertInstanceOf(StreamedResponse::class, $response);
-        $this->assertStringContainsString('application/vnd.ms-excel', $response->headers->get('Content-Type'));
-        $this->assertStringContainsString('management-report', $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('application/vnd.ms-excel', (string) $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('management-report', (string) $response->headers->get('Content-Disposition'));
     }
 
     public function testGenerateSpreadsheetCsvResponseCalculatesQuarterSums(): void

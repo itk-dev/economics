@@ -11,11 +11,6 @@ use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Client>
- *
- * @method Client|null find($id, $lockMode = null, $lockVersion = null)
- * @method Client|null findOneBy(array $criteria, array $orderBy = null)
- * @method Client[]    findAll()
- * @method Client[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ClientRepository extends ServiceEntityRepository
 {
@@ -42,6 +37,9 @@ class ClientRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return PaginationInterface<int, Client>
+     */
     public function getFilteredPagination(ClientFilterData $clientFilterData, int $page = 1): PaginationInterface
     {
         $qb = $this->createQueryBuilder('client');

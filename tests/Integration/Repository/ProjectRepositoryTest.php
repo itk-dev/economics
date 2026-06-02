@@ -7,29 +7,24 @@ use App\Model\Invoices\ProjectFilterData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Service\LeantimeUrlGenerator;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ProjectRepositoryTest extends KernelTestCase
 {
-    private EntityManagerInterface $entityManager;
     private ProjectRepository $repository;
 
     protected function setUp(): void
     {
         self::bootKernel();
         $container = self::getContainer();
-        $this->entityManager = $container->get(EntityManagerInterface::class);
-        $this->repository = $container->get(ProjectRepository::class);
+        $repository = $container->get(ProjectRepository::class);
+        \assert($repository instanceof ProjectRepository);
+        $this->repository = $repository;
     }
 
     public function testGetIncluded(): void
     {
         $qb = $this->repository->getIncluded();
-
-        $this->assertInstanceOf(QueryBuilder::class, $qb);
 
         $results = $qb->getQuery()->getResult();
         $this->assertNotEmpty($results);
@@ -51,7 +46,6 @@ class ProjectRepositoryTest extends KernelTestCase
         $filterData->include = true;
         $result = $this->repository->getFilteredPagination($filterData);
 
-        $this->assertInstanceOf(PaginationInterface::class, $result);
         $this->assertGreaterThanOrEqual(20, $result->getTotalItemCount());
     }
 
@@ -77,7 +71,7 @@ class ProjectRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $project) {
-            $this->assertStringContainsString('project-0-0', $project->getName());
+            $this->assertStringContainsString('project-0-0', (string) $project->getName());
         }
     }
 
@@ -90,7 +84,7 @@ class ProjectRepositoryTest extends KernelTestCase
 
         $this->assertGreaterThan(0, $result->getTotalItemCount());
         foreach ($result as $project) {
-            $this->assertStringContainsString('project-1-0', $project->getProjectTrackerKey());
+            $this->assertStringContainsString('project-1-0', (string) $project->getProjectTrackerKey());
         }
     }
 
@@ -100,23 +94,23 @@ class ProjectRepositoryTest extends KernelTestCase
         // project-0-0; no other project carries one.
         $result = $this->repository->getProjectIdsWithCybersecurityAgreement();
 
-        $this->assertIsArray($result);
         $this->assertCount(1, $result);
 
         $project = $this->repository->findOneBy(['name' => 'project-0-0']);
+        $this->assertNotNull($project);
         $this->assertEquals([$project->getId()], $result);
     }
 
     public function testGetProjectTrackerIdsByDataProviders(): void
     {
         $dpRepo = self::getContainer()->get(DataProviderRepository::class);
+        \assert($dpRepo instanceof DataProviderRepository);
         $dataProviders = $dpRepo->findAll();
         $this->assertNotEmpty($dataProviders);
 
         $result = $this->repository->getProjectTrackerIdsByDataProviders($dataProviders);
 
         $this->assertNotEmpty($result);
-        $this->assertIsArray($result);
 
         // Verify results are sorted
         $sorted = $result;

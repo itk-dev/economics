@@ -17,7 +17,7 @@ class WorkerGroup
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    private ?string $name = null;
+    private string $name = '';
 
     /**
      * @var Collection<int, Worker>
@@ -49,7 +49,7 @@ class WorkerGroup
 
     public function __toString(): string
     {
-        return (string) ($this->name ?? $this->id);
+        return (string) ($this->name ?: $this->id);
     }
 
     /**

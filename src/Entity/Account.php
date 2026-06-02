@@ -12,10 +12,10 @@ class Account extends AbstractBaseEntity
     use DataProviderTrait;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column(length: 255)]
-    private ?string $value = null;
+    private string $value = '';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projectTrackerId = null;

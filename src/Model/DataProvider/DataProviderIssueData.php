@@ -6,6 +6,9 @@ use App\Enum\IssueStatusEnum;
 
 class DataProviderIssueData
 {
+    /**
+     * @param array<int, string> $epics
+     */
     public function __construct(
         public string $projectTrackerId,
         public int $dataProviderId,

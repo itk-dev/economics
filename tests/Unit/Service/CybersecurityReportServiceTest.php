@@ -5,18 +5,18 @@ namespace App\Tests\Unit\Service;
 use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Worklog;
-use App\Model\Reports\CybersecurityReportData;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
 use App\Service\CybersecurityReportService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CybersecurityReportServiceTest extends TestCase
 {
-    private IssueRepository $issueRepository;
-    private WorklogRepository $worklogRepository;
-    private ProjectRepository $projectRepository;
+    private IssueRepository&MockObject $issueRepository;
+    private WorklogRepository&MockObject $worklogRepository;
+    private ProjectRepository&MockObject $projectRepository;
     private CybersecurityReportService $service;
 
     protected function setUp(): void
@@ -109,7 +109,6 @@ class CybersecurityReportServiceTest extends TestCase
 
         $result = $this->service->getCybersecurityReport(null, null, 'Cybersikkerhedsaftale');
 
-        $this->assertInstanceOf(CybersecurityReportData::class, $result);
         $this->assertSame([], $result->projects);
         $this->assertSame(0.0, $result->totalSpent);
     }

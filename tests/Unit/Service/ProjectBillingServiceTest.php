@@ -23,19 +23,20 @@ use App\Service\ClientHelper;
 use App\Service\InvoiceEntryHelper;
 use App\Service\ProjectBillingService;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProjectBillingServiceTest extends TestCase
 {
-    private ProjectBillingRepository $projectBillingRepository;
-    private BillingService $billingService;
-    private IssueRepository $issueRepository;
-    private ClientRepository $clientRepository;
-    private ClientHelper $clientHelper;
-    private EntityManagerInterface $entityManager;
-    private TranslatorInterface $translator;
-    private InvoiceEntryHelper $invoiceEntryHelper;
+    private ProjectBillingRepository&MockObject $projectBillingRepository;
+    private BillingService&MockObject $billingService;
+    private IssueRepository&MockObject $issueRepository;
+    private ClientRepository&MockObject $clientRepository;
+    private ClientHelper&MockObject $clientHelper;
+    private EntityManagerInterface&MockObject $entityManager;
+    private TranslatorInterface&MockObject $translator;
+    private InvoiceEntryHelper&MockObject $invoiceEntryHelper;
     private ProjectBillingService $service;
 
     protected function setUp(): void
@@ -419,7 +420,7 @@ class ProjectBillingServiceTest extends TestCase
 
         $this->service->createProjectBilling(1);
 
-        $productEntries = array_filter($persistedEntities, fn ($e) => $e instanceof InvoiceEntry && 'Widget' === str_contains($e->getProduct() ?? '', 'Widget'));
+        $productEntries = array_filter($persistedEntities, fn ($e) => $e instanceof InvoiceEntry && str_contains($e->getProduct() ?? '', 'Widget'));
 
         $this->assertNotEmpty($projectBilling->getInvoices());
     }

@@ -14,13 +14,13 @@ use Doctrine\ORM\Mapping as ORM;
 class Invoice extends AbstractBaseEntity
 {
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column]
-    private ?bool $recorded = null;
+    private bool $recorded = false;
 
     #[ORM\Column(nullable: true)]
     private ?int $customerAccountId = null;
@@ -61,6 +61,7 @@ class Invoice extends AbstractBaseEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $periodTo = null;
 
+    /** @var Collection<int, InvoiceEntry> */
     #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceEntry::class, cascade: ['remove'])]
     #[ORM\OrderBy(['index' => Criteria::ASC])]
     private Collection $invoiceEntries;
@@ -259,7 +260,7 @@ class Invoice extends AbstractBaseEntity
         return $this;
     }
 
-    public function setInvoiceEntryIndexes()
+    public function setInvoiceEntryIndexes(): void
     {
         $index = 0;
         foreach ($this->getInvoiceEntries() as $entry) {

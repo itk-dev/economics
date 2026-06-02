@@ -9,7 +9,7 @@ class ForecastReportWorklogData
     public float $invoiced = 0.0;
     public float $invoicedAndRecorded = 0.0;
 
-    public function __construct($worklogId, $description)
+    public function __construct()
     {
     }
 }

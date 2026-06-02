@@ -16,14 +16,15 @@ use App\Model\Invoices\ConfirmData;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\BillingService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BillingServiceTest extends TestCase
 {
-    private InvoiceRepository $invoiceRepository;
-    private InvoiceEntryRepository $invoiceEntryRepository;
-    private TranslatorInterface $translator;
+    private InvoiceRepository&MockObject $invoiceRepository;
+    private InvoiceEntryRepository&MockObject $invoiceEntryRepository;
+    private TranslatorInterface&MockObject $translator;
     private BillingService $billingService;
 
     protected function setUp(): void
@@ -595,8 +596,8 @@ class BillingServiceTest extends TestCase
         $response = $this->billingService->generateSpreadsheetCsvResponse([1]);
 
         $this->assertSame('text/csv', $response->headers->get('Content-Type'));
-        $this->assertStringContainsString('attachment', $response->headers->get('Content-Disposition'));
-        $this->assertStringContainsString('.csv', $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('attachment', (string) $response->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('.csv', (string) $response->headers->get('Content-Disposition'));
     }
 
     public function testGenerateSpreadsheetCsvResponseUsesSemicolonDelimiter(): void
@@ -624,7 +625,7 @@ class BillingServiceTest extends TestCase
 
         $response = $this->billingService->generateSpreadsheetCsvResponse([1]);
 
-        $content = $response->getContent();
+        $content = (string) $response->getContent();
         $this->assertStringContainsString(';', $content);
     }
 

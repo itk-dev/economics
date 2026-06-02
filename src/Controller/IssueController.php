@@ -21,6 +21,9 @@ use Symfony\Component\Translation\TranslatableMessage;
 #[IsGranted('ROLE_PRODUCT_MANAGER')]
 class IssueController extends AbstractController
 {
+    /**
+     * @param array<string, mixed> $options
+     */
     public function __construct(
         private readonly array $options,
     ) {

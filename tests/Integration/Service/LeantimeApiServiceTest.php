@@ -33,12 +33,19 @@ class LeantimeApiServiceTest extends KernelTestCase
         $container = self::getContainer();
 
         $messageBus = $container->get(MessageBusInterface::class);
+        \assert($messageBus instanceof MessageBusInterface);
         $dataProviderRepository = $container->get(DataProviderRepository::class);
+        \assert($dataProviderRepository instanceof DataProviderRepository);
         $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
         $versionRepository = $container->get(VersionRepository::class);
+        \assert($versionRepository instanceof VersionRepository);
         $issueRepository = $container->get(IssueRepository::class);
+        \assert($issueRepository instanceof IssueRepository);
         $worklogRepository = $container->get(WorklogRepository::class);
+        \assert($worklogRepository instanceof WorklogRepository);
         $entityManager = $container->get(EntityManagerInterface::class);
+        \assert($entityManager instanceof EntityManagerInterface);
 
         $loggerMock = $this->createMock(LoggerInterface::class);
 
@@ -97,65 +104,83 @@ class LeantimeApiServiceTest extends KernelTestCase
         $dataProvider->setSecret('Not so secret');
         $entityManager->persist($dataProvider);
         $entityManager->flush();
+        $dataProviderId = $dataProvider->getId();
+        \assert(null !== $dataProviderId);
 
         // Projects
 
         $before = count($projectRepository->findAll());
-        $service->updateAsJob(Project::class, 0, 100, $dataProvider->getId());
+        $service->updateAsJob(Project::class, 0, 100, $dataProviderId);
         $after = count($projectRepository->findAll());
         $this->assertEquals($before + 2, $after);
         $project = $projectRepository->findOneBy(['projectTrackerId' => 50]);
+        $this->assertNotNull($project);
+        \assert(null !== $project->getSourceModifiedDate());
         $this->assertEquals((new \DateTime('2024-10-03T13:47:30.000000Z'))->getTimestamp(), $project->getSourceModifiedDate()->getTimestamp());
         // Repeat process to test that no extra entries are added and test modifiedAfter
-        $service->updateAsJob(Project::class, 0, 100, $dataProvider->getId(), [], false, new \DateTime('2025-01-01'));
+        $service->updateAsJob(Project::class, 0, 100, $dataProviderId, [], false, new \DateTime('2025-01-01'));
         $after = count($projectRepository->findAll());
         $this->assertEquals($before + 2, $after);
         $project = $projectRepository->findOneBy(['projectTrackerId' => 50]);
+        $this->assertNotNull($project);
+        \assert(null !== $project->getSourceModifiedDate());
         $this->assertEquals((new \DateTime('2025-10-03T13:47:30.000000Z'))->getTimestamp(), $project->getSourceModifiedDate()->getTimestamp());
 
         // Milestones
 
         $before = count($versionRepository->findAll());
-        $service->updateAsJob(Version::class, 0, 100, $dataProvider->getId());
+        $service->updateAsJob(Version::class, 0, 100, $dataProviderId);
         $after = count($versionRepository->findAll());
         $this->assertEquals($before + 2, $after);
         $version = $versionRepository->findOneBy(['projectTrackerId' => 10, 'dataProvider' => $dataProvider]);
+        $this->assertNotNull($version);
+        \assert(null !== $version->getSourceModifiedDate());
         $this->assertEquals((new \DateTime('2024-10-03T13:47:30.000000Z'))->getTimestamp(), $version->getSourceModifiedDate()->getTimestamp());
         // Repeat process to test that no extra entries are added and test modifiedAfter
-        $service->updateAsJob(Version::class, 0, 100, $dataProvider->getId(), [], false, new \DateTime('2025-01-01'));
+        $service->updateAsJob(Version::class, 0, 100, $dataProviderId, [], false, new \DateTime('2025-01-01'));
         $after = count($versionRepository->findAll());
         $this->assertEquals($before + 2, $after);
         $version = $versionRepository->findOneBy(['projectTrackerId' => 10, 'dataProvider' => $dataProvider]);
+        $this->assertNotNull($version);
+        \assert(null !== $version->getSourceModifiedDate());
         $this->assertEquals((new \DateTime('2025-10-03T13:47:30.000000Z'))->getTimestamp(), $version->getSourceModifiedDate()->getTimestamp());
 
         // Tickets
 
         $before = count($issueRepository->findAll());
-        $service->updateAsJob(Issue::class, 0, 100, $dataProvider->getId());
+        $service->updateAsJob(Issue::class, 0, 100, $dataProviderId);
         $after = count($issueRepository->findAll());
         $this->assertEquals($before + 2, $after);
         $issue = $issueRepository->findOneBy(['projectTrackerId' => 10, 'dataProvider' => $dataProvider]);
+        $this->assertNotNull($issue);
+        \assert(null !== $issue->getSourceModifiedDate());
         $this->assertEquals((new \DateTime('2024-10-03T13:47:30.000000Z'))->getTimestamp(), $issue->getSourceModifiedDate()->getTimestamp());
         // Repeat process to test that no extra entries are added and test modifiedAfter
-        $service->updateAsJob(Issue::class, 0, 100, $dataProvider->getId(), [], false, new \DateTime('2025-01-01'));
+        $service->updateAsJob(Issue::class, 0, 100, $dataProviderId, [], false, new \DateTime('2025-01-01'));
         $after = count($issueRepository->findAll());
         $this->assertEquals($before + 2, $after);
         $issue = $issueRepository->findOneBy(['projectTrackerId' => 10, 'dataProvider' => $dataProvider]);
+        $this->assertNotNull($issue);
+        \assert(null !== $issue->getSourceModifiedDate());
         $this->assertEquals((new \DateTime('2025-10-03T13:47:30.000000Z'))->getTimestamp(), $issue->getSourceModifiedDate()->getTimestamp());
 
         // Timesheets
 
         $before = count($worklogRepository->findAll());
-        $service->updateAsJob(Worklog::class, 0, 100, $dataProvider->getId());
+        $service->updateAsJob(Worklog::class, 0, 100, $dataProviderId);
         $after = count($worklogRepository->findAll());
         $this->assertEquals($before + 2, $after);
         $worklog = $worklogRepository->findOneBy(['worklogId' => 1, 'dataProvider' => $dataProvider]);
+        $this->assertNotNull($worklog);
+        \assert(null !== $worklog->getSourceModifiedDate());
         $this->assertEquals((new \DateTime('2024-10-03T13:47:30.000000Z'))->getTimestamp(), $worklog->getSourceModifiedDate()->getTimestamp());
         // Repeat process to test that no extra entries are added and test modifiedAfter
-        $service->updateAsJob(Worklog::class, 0, 100, $dataProvider->getId(), [], false, new \DateTime('2025-01-01'));
+        $service->updateAsJob(Worklog::class, 0, 100, $dataProviderId, [], false, new \DateTime('2025-01-01'));
         $after = count($worklogRepository->findAll());
         $this->assertEquals($before + 2, $after);
         $worklog = $worklogRepository->findOneBy(['worklogId' => 1, 'dataProvider' => $dataProvider]);
+        $this->assertNotNull($worklog);
+        \assert(null !== $worklog->getSourceModifiedDate());
         $this->assertEquals((new \DateTime('2025-10-03T13:47:30.000000Z'))->getTimestamp(), $worklog->getSourceModifiedDate()->getTimestamp());
     }
 
@@ -165,12 +190,19 @@ class LeantimeApiServiceTest extends KernelTestCase
         $container = self::getContainer();
 
         $messageBus = $container->get(MessageBusInterface::class);
+        \assert($messageBus instanceof MessageBusInterface);
         $dataProviderRepository = $container->get(DataProviderRepository::class);
+        \assert($dataProviderRepository instanceof DataProviderRepository);
         $projectRepository = $container->get(ProjectRepository::class);
+        \assert($projectRepository instanceof ProjectRepository);
         $versionRepository = $container->get(VersionRepository::class);
+        \assert($versionRepository instanceof VersionRepository);
         $issueRepository = $container->get(IssueRepository::class);
+        \assert($issueRepository instanceof IssueRepository);
         $worklogRepository = $container->get(WorklogRepository::class);
+        \assert($worklogRepository instanceof WorklogRepository);
         $entityManager = $container->get(EntityManagerInterface::class);
+        \assert($entityManager instanceof EntityManagerInterface);
 
         $loggerMock = $this->createMock(LoggerInterface::class);
 
@@ -206,9 +238,9 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         $project1 = new Project();
         $project1->setDataProvider($dataProvider);
-        $project1->setProjectTrackerId(64);
+        $project1->setProjectTrackerId('64');
         $project1->setName('Project to delete - protected');
-        $project1->setProjectTrackerKey(64);
+        $project1->setProjectTrackerKey('64');
         $project1->setProjectTrackerProjectUrl('http://localhost/');
         $project1->setInclude(true);
         $project1->setProjectLeadMail('test@economics.local.itkdev.dk');
@@ -218,9 +250,9 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         $project2 = new Project();
         $project2->setDataProvider($dataProvider);
-        $project2->setProjectTrackerId(65);
+        $project2->setProjectTrackerId('65');
         $project2->setName('Project to delete');
-        $project2->setProjectTrackerKey(65);
+        $project2->setProjectTrackerKey('65');
         $project2->setProjectTrackerProjectUrl('http://localhost/');
         $project2->setInclude(true);
         $project2->setProjectLeadMail('test@economics.local.itkdev.dk');
@@ -232,21 +264,21 @@ class LeantimeApiServiceTest extends KernelTestCase
         $version1->setDataProvider($dataProvider);
         $version1->setName('Version 1');
         $version1->setProject($project1);
-        $version1->setProjectTrackerId(6724);
+        $version1->setProjectTrackerId('6724');
         $entityManager->persist($version1);
 
         $version2 = new Version();
         $version2->setDataProvider($dataProvider);
         $version2->setName('Version 2');
         $version2->setProject($project2);
-        $version2->setProjectTrackerId(6725);
+        $version2->setProjectTrackerId('6725');
         $entityManager->persist($version2);
 
         $issue1 = new Issue();
         $issue1->setDataProvider($dataProvider);
         $issue1->setProject($project1);
-        $issue1->setProjectTrackerId(6723);
-        $issue1->setProjectTrackerKey(6723);
+        $issue1->setProjectTrackerId('6723');
+        $issue1->setProjectTrackerKey('6723');
         $issue1->setName('issue 1 - protected');
         $issue1->setAccountId('Account 1');
         $issue1->setAccountKey('Account 1');
@@ -264,8 +296,8 @@ class LeantimeApiServiceTest extends KernelTestCase
         $issue2 = new Issue();
         $issue2->setDataProvider($dataProvider);
         $issue2->setProject($project1);
-        $issue2->setProjectTrackerId(6726);
-        $issue2->setProjectTrackerKey(6726);
+        $issue2->setProjectTrackerId('6726');
+        $issue2->setProjectTrackerKey('6726');
         $issue2->setName('issue 2');
         $issue2->setAccountId('Account 1');
         $issue2->setAccountKey('Account 1');
@@ -283,13 +315,15 @@ class LeantimeApiServiceTest extends KernelTestCase
         $worklog1 = new Worklog();
         $worklog1->setProject($project1);
         $worklog1->setDataProvider($dataProvider);
-        $worklog1->setProjectTrackerIssueId(6723);
+        $worklog1->setProjectTrackerIssueId('6723');
         $worklog1->setWorklogId(66937);
         $worklog1->setDescription('Beskrivelse af worklog - protected');
         $worklog1->setIsBilled(false);
         $worklog1->setWorker('admin@example.com');
         $worklog1->setTimeSpentSeconds(60 * 15);
-        $worklog1->setStarted(\DateTime::createFromFormat('U', (string) strtotime('2024-01-01'), new \DateTimeZone('Europe/Copenhagen')));
+        $worklog1Started = \DateTime::createFromFormat('U', (string) strtotime('2024-01-01'), new \DateTimeZone('Europe/Copenhagen'));
+        \assert($worklog1Started instanceof \DateTime);
+        $worklog1->setStarted($worklog1Started);
         $worklog1->setIssue($issue1);
         $worklog1->setDataProvider($dataProvider);
         $worklog1->setKind(BillableKindsEnum::GENERAL_BILLABLE);
@@ -298,13 +332,15 @@ class LeantimeApiServiceTest extends KernelTestCase
         $worklog2 = new Worklog();
         $worklog2->setProject($project1);
         $worklog2->setDataProvider($dataProvider);
-        $worklog2->setProjectTrackerIssueId(6726);
+        $worklog2->setProjectTrackerIssueId('6726');
         $worklog2->setWorklogId(66938);
         $worklog2->setDescription('Beskrivelse af worklog');
         $worklog2->setIsBilled(false);
         $worklog2->setWorker('admin@example.com');
         $worklog2->setTimeSpentSeconds(60 * 15);
-        $worklog2->setStarted(\DateTime::createFromFormat('U', (string) strtotime('2024-01-01'), new \DateTimeZone('Europe/Copenhagen')));
+        $worklog2Started = \DateTime::createFromFormat('U', (string) strtotime('2024-01-01'), new \DateTimeZone('Europe/Copenhagen'));
+        \assert($worklog2Started instanceof \DateTime);
+        $worklog2->setStarted($worklog2Started);
         $worklog2->setIssue($issue2);
         $worklog2->setDataProvider($dataProvider);
         $worklog2->setKind(BillableKindsEnum::GENERAL_BILLABLE);
@@ -344,6 +380,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         $entityManager->flush();
 
         $id = $dataProvider->getId();
+        \assert(null !== $id);
 
         $entityManager->clear();
 
@@ -361,12 +398,15 @@ class LeantimeApiServiceTest extends KernelTestCase
         $this->assertEquals($countProjectsBeforeCreate + 1, $countProjectsAfterDelete);
 
         $project1 = $projectRepository->find($projectId1);
+        $this->assertNotNull($project1);
         $this->assertEquals(new \DateTime('2025-10-24T11:36:08.000000Z'), $project1->getSourceDeletedDate());
 
         $issue1 = $issueRepository->find($issueId1);
+        $this->assertNotNull($issue1);
         $this->assertEquals(new \DateTime('2025-10-24T11:36:08.000000Z'), $issue1->getSourceDeletedDate());
 
         $worklog1 = $worklogRepository->find($worklogId1);
+        $this->assertNotNull($worklog1);
         $this->assertEquals(new \DateTime('2025-10-24T11:36:08.000000Z'), $worklog1->getSourceDeletedDate());
     }
 
@@ -429,7 +469,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         ', null, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function getProjects($modifiedYear = 2024): object
+    private function getProjects(int $modifiedYear = 2024): object
     {
         return json_decode('
             {
@@ -454,7 +494,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         ');
     }
 
-    private function getMilestones($modifiedYear = 2024): object
+    private function getMilestones(int $modifiedYear = 2024): object
     {
         return json_decode('
             {
@@ -481,7 +521,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         ');
     }
 
-    private function getTickets($modifiedYear = 2024): object
+    private function getTickets(int $modifiedYear = 2024): object
     {
         return json_decode('
             {
@@ -524,7 +564,7 @@ class LeantimeApiServiceTest extends KernelTestCase
         ');
     }
 
-    private function getTimesheets($modifiedYear = 2024): object
+    private function getTimesheets(int $modifiedYear = 2024): object
     {
         return json_decode('
             {

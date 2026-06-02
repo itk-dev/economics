@@ -6,20 +6,20 @@ use App\Entity\Issue as IssueEntity;
 use App\Entity\Project as ProjectEntity;
 use App\Entity\Worker;
 use App\Enum\IssueStatusEnum;
-use App\Model\Planning\PlanningData;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\WorkerRepository;
 use App\Service\DateTimeHelper;
 use App\Service\PlanningService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class PlanningServiceTest extends TestCase
 {
-    private DateTimeHelper $dateTimeHelper;
-    private IssueRepository $issueRepository;
-    private WorkerRepository $workerRepository;
-    private ProjectRepository $projectRepository;
+    private DateTimeHelper&MockObject $dateTimeHelper;
+    private IssueRepository&MockObject $issueRepository;
+    private WorkerRepository&MockObject $workerRepository;
+    private ProjectRepository&MockObject $projectRepository;
     private PlanningService $service;
 
     protected function setUp(): void
@@ -53,7 +53,6 @@ class PlanningServiceTest extends TestCase
 
         $result = $this->service->getPlanningData(2024, null);
 
-        $this->assertInstanceOf(PlanningData::class, $result);
         // With holidayPlanning=false (default), weeks are grouped into support+sprint periods
         // 52 weeks / (1 support + 3 sprint) = 13 groups * 2 entries per group = 26
         $this->assertCount(26, $result->weeks);
@@ -216,6 +215,7 @@ class PlanningServiceTest extends TestCase
 
         $this->assertTrue($result->assignees->containsKey('unassigned'));
         $assignee = $result->assignees->get('unassigned');
+        $this->assertNotNull($assignee);
         $this->assertSame('Unassigned', $assignee->displayName);
     }
 

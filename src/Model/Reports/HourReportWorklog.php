@@ -8,6 +8,7 @@ class HourReportWorklog
 {
     public readonly ?int $id;
     public readonly float $hours;
+    /** @var ArrayCollection<int, mixed> */
     public ArrayCollection $projectTicket;
 
     public function __construct(?int $id, float $hours)

@@ -42,7 +42,7 @@ class SubscriptionHandlerService
     /**
      * Send a notification email.
      *
-     * @param array $notification the notification data
+     * @param array<string, mixed> $notification the notification data
      *
      * @throws TransportExceptionInterface
      */
@@ -105,7 +105,6 @@ class SubscriptionHandlerService
                 break;
             default:
                 throw new \Exception('Report type is not yet supported');
-                break;
         }
     }
 
@@ -136,7 +135,7 @@ class SubscriptionHandlerService
      */
     private function getVersion(?int $versionId): ?Version
     {
-        return $versionId ? $this->versionRepository->findOneBy(['versionId' => $versionId]) : null;
+        return $versionId ? $this->versionRepository->find($versionId) : null;
     }
 
     /**
@@ -156,6 +155,9 @@ class SubscriptionHandlerService
      * @throws RuntimeError
      * @throws SyntaxError
      * @throws \Exception
+     */
+    /**
+     * @return array<string, mixed>
      */
     private function prepareMailData(Subscription $subscription, \DateTime $fromDate, \DateTime $toDate, Project $project, HourReportData $reportData, string $email): array
     {

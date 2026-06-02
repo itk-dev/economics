@@ -47,7 +47,9 @@ class DashboardService
         $today->setTime(23, 59, 59);
 
         for ($month = 1; $month <= 12; ++$month) {
-            $daysInMonth = date('t', mktime(0, 0, 0, $month, 1, $year));
+            $monthStart = mktime(0, 0, 0, $month, 1, $year);
+            \assert(false !== $monthStart);
+            $daysInMonth = date('t', $monthStart);
 
             for ($day = 1; $day <= $daysInMonth; ++$day) {
                 $dayDate = new \DateTime();
@@ -97,6 +99,9 @@ class DashboardService
         return new DashboardData($yearStatus, $year, $weekNorm, $monthStatuses, $weekStatuses);
     }
 
+    /**
+     * @return array<int, int>
+     */
     private function getWeeksToDate(): array
     {
         $currentWeek = (int) date('W');
@@ -108,6 +113,9 @@ class DashboardService
         return $weeksToDate;
     }
 
+    /**
+     * @return array<int, int>
+     */
     private function getMonthsToDate(): array
     {
         $currentMonth = (int) date('m');

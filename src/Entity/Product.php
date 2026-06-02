@@ -14,18 +14,19 @@ class Product extends AbstractBaseEntity
 {
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    private ?string $name = null;
+    private string $name = '';
 
     #[ORM\ManyToOne(inversedBy: 'products')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Assert\NotNull]
     private ?Project $project = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\GreaterThanOrEqual(0)]
     #[Assert\LessThan(1_000_000)]
-    private ?string $price = null;
+    private string $price = '0';
 
+    /** @var Collection<int, IssueProduct> */
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: IssueProduct::class, orphanRemoval: true)]
     private Collection $issues;
 

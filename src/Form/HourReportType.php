@@ -14,6 +14,9 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * @extends AbstractType<HourReportFormData>
+ */
 class HourReportType extends AbstractType
 {
     public function __construct(

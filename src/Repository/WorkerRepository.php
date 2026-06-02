@@ -8,11 +8,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Worker>
- *
- * @method Worker|null find($id, $lockMode = null, $lockVersion = null)
- * @method Worker|null findOneBy(array $criteria, array $orderBy = null)
- * @method Worker[]    findAll()
- * @method Worker[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class WorkerRepository extends ServiceEntityRepository
 {
@@ -39,6 +34,9 @@ class WorkerRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return array<int, Worker>
+     */
     public function findAllIncludedInReports(): array
     {
         return $this->createQueryBuilder('w')
