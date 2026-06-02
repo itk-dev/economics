@@ -9,29 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-308](https://github.com/itk-dev/economics/pull/308)
-  * PHPStan baseline: 530 → 0 in `src/`, bounced to 444 after develop's test suites merged,
-    now 91. Items below are behavior- or schema-affecting and worth calling out.
-  * Migration `Version20260517131038`: 18 columns made nullable on synced entities
-    (`issue`, `project`, `version`, `worklog`) plus 3 DateTime fields, to match property types.
-  * Migration `Version20260517151632`: 11 `NOT NULL` ManyToOne FKs relaxed to `NULL`;
-    application-layer `#[Assert\NotNull]` / form validators still enforce required-ness.
-  * Replaced `?T $prop = null` with non-null defaults on 25 entity properties to satisfy
-    `NOT NULL` columns; `Worker`/`WorkerGroup` `__toString()` switched from `??` to `?:`.
-  * `ForecastReportService` rendered empty epic tags — called non-existent `Epic::getName()`;
-    now uses `Epic::getTitle()`.
-  * `SubscriptionHandlerService::getVersion()` looked up `Version` by non-existent
-    `versionId` field; now uses `find($versionId)`.
-  * `DataProviderService::setTimeSpentSeconds()` silently lost precision passing `float` to an
-    `int` setter; explicit `(int)` cast added.
-  * Report services (`ForecastReportService`, `BillableUnbilledHoursReportService`,
-    `InvoicingRateReportService`) now skip worklogs with null project/issue instead of crashing.
-  * `SubscriptionController::check()` returns HTTP 400 on null `User::getEmail()`;
-    `User::getUserIdentifier()` throws on empty email (Symfony requires `non-empty-string`).
-  * `LeantimeApiService` switched from `json_decode($json, null)` to `json_decode($json, true)`;
-    all `$data->property` accesses converted to array access. Wire shape unchanged.
-  * Removed dead code: `readonly string $id` on 3 report-data models, unreachable `break;` after
-    `throw`, null check on `Row` iterator, unused `$paginator` arg in `SubscriptionRepository`.
-  * Fixed `Epic::getIssues()` PHPDoc typo (`Collection<int, Epic>` → `Collection<int, Issue>`).
+  * PHPStan baseline cleanup in src/ (530 → 0); behavior- and schema-affecting items below.
+  * Migrations Version20260517131038 and Version20260517151632: relaxed 18 columns and
+    11 ManyToOne FKs on synced entities (issue, project, version, worklog) to nullable
+    to match property types; application-layer asserts/form validators still enforce required-ness.
+  * Fixed report services crashing on worklogs with null project/issue and rendering empty epic
+    tags (Epic::getName() → getTitle()); fixed SubscriptionHandlerService::getVersion()
+    lookup by non-existent field.
+  * LeantimeApiService switched from object to array json_decode; wire shape unchanged.
 
 ## [3.5.0] - 2026-05-26
 
