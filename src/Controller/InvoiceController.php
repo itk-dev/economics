@@ -166,7 +166,8 @@ class InvoiceController extends AbstractController
         // autofill the material number when a client is selected.
         $clientMaterialNumbers = [];
         foreach ($clientChoices as $clientChoice) {
-            $clientMaterialNumbers[$clientChoice->getId()] = $clientChoice->getType()?->toMaterialNumber()->value ?? '';
+            $type = $clientChoice->getType();
+            $clientMaterialNumbers[$clientChoice->getId()] = null !== $type ? $type->toMaterialNumber()->value : '';
         }
 
         $form->handleRequest($request);
