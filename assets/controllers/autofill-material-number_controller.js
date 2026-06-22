@@ -7,12 +7,10 @@ export default class extends Controller {
     static values = { map: Object };
 
     update() {
-        const materialNumber = this.mapValue[this.clientTarget.value];
-
-        if (!materialNumber) {
-            return;
-        }
-
-        this.materialTarget.value = materialNumber;
+        // Reflect the selected client's implied material number. Clients with no
+        // type (and the empty "no client" option) map to "", which resets the
+        // field to the empty NONE option rather than leaving a stale value.
+        this.materialTarget.value =
+            this.mapValue[this.clientTarget.value] ?? "";
     }
 }
