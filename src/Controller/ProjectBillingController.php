@@ -228,7 +228,7 @@ class ProjectBillingController extends AbstractController
 
                 return match ($type) {
                     ClientTypeEnum::INTERNAL->value => ClientTypeEnum::INTERNAL === $clientType,
-                    ClientTypeEnum::EXTERNAL->value => (bool) $clientType?->isExternal(),
+                    ClientTypeEnum::EXTERNAL->value => true === $clientType?->isExternal(),
                     default => $clientType?->value === $type,
                 };
             });
