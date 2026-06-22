@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-318](https://github.com/itk-dev/economics/pull/318)
+  * Quality-of-life improvements for external invoices.
+
 ## [3.5.0] - 2026-05-26
 
 * [PR-315](https://github.com/itk-dev/economics/pull/315)
