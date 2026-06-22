@@ -8,4 +8,12 @@ enum MaterialNumberEnum: string
     case INTERNAL = '103361';
     case EXTERNAL_WITH_MOMS = '100006';
     case EXTERNAL_WITHOUT_MOMS = '100008';
+
+    public function isExternal(): bool
+    {
+        return match ($this) {
+            self::EXTERNAL_WITH_MOMS, self::EXTERNAL_WITHOUT_MOMS => true,
+            default => false,
+        };
+    }
 }
