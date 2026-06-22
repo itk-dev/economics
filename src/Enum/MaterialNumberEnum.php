@@ -13,7 +13,7 @@ enum MaterialNumberEnum: string
     {
         return match ($this) {
             self::EXTERNAL_WITH_MOMS, self::EXTERNAL_WITHOUT_MOMS => true,
-            default => false,
+            self::NONE, self::INTERNAL => false,
         };
     }
 }
