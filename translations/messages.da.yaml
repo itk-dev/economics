@@ -358,6 +358,9 @@ invoice_recordable:
   error_no_contact: "Ingen kontakt"
   error_no_type: "Ingen type"
   error_empty_invoice_entry: "Fakturaindgangen med id: %invoiceEntryId% har et tomt antal"
+  error_external_receiver_account: "Til-kontoen skal være skiftet til ITK Dev Ekstern på eksterne fakturaer"
+  error_external_missing_period: "Der skal være sat både fra- og til-dato på eksterne fakturaer"
+  error_external_description_missing_project_name: "Beskrivelsen skal indeholde projektets navn på eksterne fakturaer"
 
 title: "Economics"
 
