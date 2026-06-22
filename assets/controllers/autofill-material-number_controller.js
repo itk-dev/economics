@@ -14,8 +14,5 @@ export default class extends Controller {
         }
 
         this.materialTarget.value = materialNumber;
-        this.materialTarget.dispatchEvent(
-            new Event("change", { bubbles: true }),
-        );
     }
 }
