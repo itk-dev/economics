@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatableMessage;
 
@@ -52,25 +54,11 @@ class ClientType extends AbstractType
                 'required' => false,
                 'row_attr' => ['class' => 'form-row'],
                 'html5' => true,
-            ])
-            ->add('type', EnumType::class, [
-                'class' => ClientTypeEnum::class,
-                'choices' => $this->getTypeOptions($builder->getData()),
-                'label' => 'create_client_form.type.label',
-                'label_attr' => ['class' => 'label'],
-                'choice_label' => fn ($choice) => match ($choice) {
-                    ClientTypeEnum::INTERNAL => 'client_type_enum.internal',
-                    ClientTypeEnum::EXTERNAL => 'client_type_enum.external',
-                    ClientTypeEnum::EXTERNAL_WITH_MOMS => 'client_type_enum.external_with_moms',
-                    ClientTypeEnum::EXTERNAL_WITHOUT_MOMS => 'client_type_enum.external_without_moms',
-                    default => null,
-                },
-                'attr' => ['class' => 'form-element'],
-                'help_attr' => ['class' => 'form-help'],
-                'help' => 'create_client_form.type.help',
-                'required' => true,
-                'row_attr' => ['class' => 'form-row'],
-            ])
+            ]);
+
+        $builder->add('type', EnumType::class, $this->typeFieldOptions($builder->getData()));
+
+        $builder
             ->add('customerKey', TextType::class, [
                 'label' => 'create_client_form.customer_key.label',
                 'label_attr' => ['class' => 'label'],
@@ -107,6 +95,39 @@ class ClientType extends AbstractType
                 'required' => false,
                 'choices' => $this->getVersionOptions($builder->getData()),
             ]);
+
+        // The available type choices depend on the bound client (the legacy
+        // "external" value stays selectable only while a client still uses it),
+        // so rebuild the field from the actual data once it is set on the form.
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
+            $client = $event->getData();
+            $event->getForm()->add('type', EnumType::class, $this->typeFieldOptions($client instanceof Client ? $client : null));
+        });
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function typeFieldOptions(?Client $client): array
+    {
+        return [
+            'class' => ClientTypeEnum::class,
+            'choices' => $this->getTypeOptions($client),
+            'label' => 'create_client_form.type.label',
+            'label_attr' => ['class' => 'label'],
+            'choice_label' => fn ($choice) => match ($choice) {
+                ClientTypeEnum::INTERNAL => 'client_type_enum.internal',
+                ClientTypeEnum::EXTERNAL => 'client_type_enum.external',
+                ClientTypeEnum::EXTERNAL_WITH_MOMS => 'client_type_enum.external_with_moms',
+                ClientTypeEnum::EXTERNAL_WITHOUT_MOMS => 'client_type_enum.external_without_moms',
+                default => null,
+            },
+            'attr' => ['class' => 'form-element'],
+            'help_attr' => ['class' => 'form-help'],
+            'help' => 'create_client_form.type.help',
+            'required' => true,
+            'row_attr' => ['class' => 'form-row'],
+        ];
     }
 
     /**
