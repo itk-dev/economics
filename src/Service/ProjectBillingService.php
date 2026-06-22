@@ -8,7 +8,6 @@ use App\Entity\InvoiceEntry;
 use App\Entity\Issue;
 use App\Entity\ProjectBilling;
 use App\Entity\Worklog;
-use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\MaterialNumberEnum;
 use App\Exception\EconomicsException;
@@ -194,10 +193,8 @@ class ProjectBillingService
             $invoice->setPeriodTo($periodEnd);
             $invoice->setClient($client);
 
-            $internal = ClientTypeEnum::INTERNAL == $client->getType();
-
-            // TODO: MaterialNumberEnum::EXTERNAL_WITH_MOMS or MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS?
-            $invoice->setDefaultMaterialNumber($internal ? MaterialNumberEnum::INTERNAL : MaterialNumberEnum::EXTERNAL_WITH_MOMS);
+            // A client without a type is treated as external with moms (the previous default).
+            $invoice->setDefaultMaterialNumber($client->getType()?->toMaterialNumber() ?? MaterialNumberEnum::EXTERNAL_WITH_MOMS);
             $invoice->setDefaultReceiverAccount($this->invoiceEntryHelper->getDefaultAccount());
 
             /** @var Issue $issue */

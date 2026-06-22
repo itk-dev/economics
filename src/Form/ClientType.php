@@ -55,11 +55,14 @@ class ClientType extends AbstractType
             ])
             ->add('type', EnumType::class, [
                 'class' => ClientTypeEnum::class,
+                'choices' => $this->getTypeOptions($builder->getData()),
                 'label' => 'create_client_form.type.label',
                 'label_attr' => ['class' => 'label'],
                 'choice_label' => fn ($choice) => match ($choice) {
                     ClientTypeEnum::INTERNAL => 'client_type_enum.internal',
                     ClientTypeEnum::EXTERNAL => 'client_type_enum.external',
+                    ClientTypeEnum::EXTERNAL_WITH_MOMS => 'client_type_enum.external_with_moms',
+                    ClientTypeEnum::EXTERNAL_WITHOUT_MOMS => 'client_type_enum.external_without_moms',
                     default => null,
                 },
                 'attr' => ['class' => 'form-element'],
@@ -104,6 +107,25 @@ class ClientType extends AbstractType
                 'required' => false,
                 'choices' => $this->getVersionOptions($builder->getData()),
             ]);
+    }
+
+    /**
+     * @return ClientTypeEnum[]
+     */
+    private function getTypeOptions(?Client $client): array
+    {
+        $choices = [
+            ClientTypeEnum::INTERNAL,
+            ClientTypeEnum::EXTERNAL_WITH_MOMS,
+            ClientTypeEnum::EXTERNAL_WITHOUT_MOMS,
+        ];
+
+        // Keep the legacy "external" option available only for clients still using it.
+        if (ClientTypeEnum::EXTERNAL === $client?->getType()) {
+            $choices[] = ClientTypeEnum::EXTERNAL;
+        }
+
+        return $choices;
     }
 
     private function getVersionOptions(?Client $client): array
