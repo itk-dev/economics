@@ -1,4 +1,9 @@
 services:
+  phpfpm:
+    depends_on:
+      rabbit:
+        condition: service_healthy
+
   rabbit:
     image: rabbitmq:4-management-alpine
     restart: unless-stopped
