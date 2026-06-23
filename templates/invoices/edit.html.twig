@@ -8,7 +8,7 @@
     }) }}
 
     {{ form_start(form) }}
-    <div class="grid-split selections" {{ stimulus_controller('choices') }}>
+    <div class="grid-split selections" {{ stimulus_controller('choices')|stimulus_controller('autofill-material-number', {map: clientMaterialNumbers}) }}>
         <div>
             {{ form_row(form.name) }}
             <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {id: invoice.id}) }}">
@@ -49,8 +49,7 @@
                     <li class="list-group-item border-bottom">
                         {{ 'invoices.client_type'|trans }}:
                         {% if invoice.client.type is not null %}
-                            {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
-                            {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
+                            {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : 'invoices.client_type_external'|trans }}
                         {% else %}
                             {{ 'invoices.client_type_is_null'|trans }}
                         {% endif %}

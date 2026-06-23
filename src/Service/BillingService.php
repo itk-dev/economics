@@ -28,6 +28,7 @@ class BillingService
         private readonly InvoiceEntryRepository $invoiceEntryRepository,
         private readonly TranslatorInterface $translator,
         private readonly string $invoiceSupplierAccount,
+        private readonly string $invoiceExternalReceiverAccount = '',
     ) {
     }
 
@@ -150,7 +151,48 @@ class BillingService
             }
         }
 
+        // These extra checks target manually created external invoices. Project billing
+        // generates its external invoices automatically (with the default receiver account),
+        // so they are exempt; individual project billing invoices cannot be recorded here anyway.
+        if (null === $invoice->getProjectBilling() && $this->isExternalInvoice($invoice)) {
+            // Receiver account must be the dedicated external account ("ITK Dev Ekstern").
+            // Skip when no external account is configured; we cannot validate against an unknown account.
+            if ('' !== $this->invoiceExternalReceiverAccount
+                && $invoice->getDefaultReceiverAccount() !== $this->invoiceExternalReceiverAccount) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_external_receiver_account');
+            }
+
+            if (is_null($invoice->getPeriodFrom()) || is_null($invoice->getPeriodTo())) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_external_missing_period');
+            }
+
+            $projectName = $invoice->getProject()?->getName();
+            if (!empty($projectName)
+                && !str_contains(mb_strtolower($invoice->getDescription() ?? ''), mb_strtolower($projectName))) {
+                $errors[] = $this->translator->trans('invoice_recordable.error_external_description_missing_project_name');
+            }
+        }
+
         return $errors;
+    }
+
+    /**
+     * An invoice is external when its default material number, or any of its
+     * entries' material numbers, is an external one.
+     */
+    private function isExternalInvoice(Invoice $invoice): bool
+    {
+        if ($invoice->getDefaultMaterialNumber()?->isExternal()) {
+            return true;
+        }
+
+        foreach ($invoice->getInvoiceEntries() as $invoiceEntry) {
+            if ($invoiceEntry->getMaterialNumber()?->isExternal()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

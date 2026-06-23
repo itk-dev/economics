@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Exception\EconomicsException;
@@ -153,10 +154,21 @@ class InvoiceController extends AbstractController
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
+                'data-autofill-material-number-target' => 'client',
+                'data-action' => 'change->autofill-material-number#update',
             ],
             'help' => 'invoices.client_helptext',
             'choices' => $clientChoices,
+            'choice_value' => fn (?Client $client) => $client?->getId(),
         ]);
+
+        // Map each client to the material number its type implies, so the form can
+        // autofill the material number when a client is selected.
+        $clientMaterialNumbers = [];
+        foreach ($clientChoices as $clientChoice) {
+            $type = $clientChoice->getType();
+            $clientMaterialNumbers[$clientChoice->getId()] = null !== $type ? $type->toMaterialNumber()->value : '';
+        }
 
         $form->handleRequest($request);
 
@@ -197,6 +209,7 @@ class InvoiceController extends AbstractController
                 return $carry;
             }, 0.0),
             'clientHelper' => $clientHelper,
+            'clientMaterialNumbers' => $clientMaterialNumbers,
         ]);
     }
 

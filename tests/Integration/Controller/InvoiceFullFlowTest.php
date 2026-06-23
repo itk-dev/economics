@@ -53,6 +53,13 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         $crawler = $client->request('GET', '/admin/invoices/'.$invoiceId.'/edit');
         $this->assertResponseIsSuccessful();
 
+        // The client select autofills the material number via a Stimulus controller.
+        $editHtml = (string) $client->getResponse()->getContent();
+        $this->assertStringContainsString('data-autofill-material-number-map-value', $editHtml);
+        $this->assertStringContainsString('data-autofill-material-number-target="client"', $editHtml);
+        $this->assertStringContainsString('data-autofill-material-number-target="material"', $editHtml);
+        $this->assertStringContainsString('autofill-material-number#update', $editHtml);
+
         $finalName = 'FullFlow-edit-'.uniqid();
         $description = 'Full flow invoice description.';
         $periodFrom = '2025-01-01';
