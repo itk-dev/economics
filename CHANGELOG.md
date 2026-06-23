@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.6.0] - 2026-06-23
 
+* [PR-321](https://github.com/itk-dev/economics/pull/321)
+  * Removed the invoice description project name check.
 * [PR-318](https://github.com/itk-dev/economics/pull/318)
   * Quality-of-life improvements for external invoices.
 

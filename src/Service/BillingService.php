@@ -165,12 +165,6 @@ class BillingService
             if (is_null($invoice->getPeriodFrom()) || is_null($invoice->getPeriodTo())) {
                 $errors[] = $this->translator->trans('invoice_recordable.error_external_missing_period');
             }
-
-            $projectName = $invoice->getProject()?->getName();
-            if (!empty($projectName)
-                && !str_contains(mb_strtolower($invoice->getDescription() ?? ''), mb_strtolower($projectName))) {
-                $errors[] = $this->translator->trans('invoice_recordable.error_external_description_missing_project_name');
-            }
         }
 
         return $errors;
