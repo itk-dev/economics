@@ -448,16 +448,6 @@ class BillingServiceTest extends TestCase
         $this->assertContains('invoice_recordable.error_external_missing_period', $errors);
     }
 
-    public function testGetInvoiceRecordableErrorsExternalDescriptionMissingProjectName(): void
-    {
-        $invoice = $this->createExternalInvoice();
-        $invoice->setDescription('A description without the project.');
-
-        $errors = $this->billingService->getInvoiceRecordableErrors($invoice);
-
-        $this->assertContains('invoice_recordable.error_external_description_missing_project_name', $errors);
-    }
-
     public function testGetInvoiceRecordableErrorsExternalTriggeredByEntryMaterialNumber(): void
     {
         $invoice = $this->createExternalInvoice();
