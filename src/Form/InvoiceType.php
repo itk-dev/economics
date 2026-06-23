@@ -67,7 +67,7 @@ class InvoiceType extends AbstractType
                 'label' => 'invoices.default_material_number',
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => ['class' => 'form-element', 'data-autofill-material-number-target' => 'material'],
                 'help' => 'invoices.default_material_number_helptext',
                 'choice_label' => fn ($choice) => match ($choice) {
                     MaterialNumberEnum::NONE => '',

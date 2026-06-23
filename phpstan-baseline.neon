@@ -3640,13 +3640,13 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Repository\\ClientRepository\:\:method\(\)\.$#'
 			identifier: method.notFound
-			count: 3
+			count: 4
 			path: tests/Unit/Service/ProjectBillingServiceTest.php
 
 		-
 			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
 			identifier: method.notFound
-			count: 10
+			count: 11
 			path: tests/Unit/Service/ProjectBillingServiceTest.php
 
 		-
@@ -3658,7 +3658,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Repository\\ProjectBillingRepository\:\:method\(\)\.$#'
 			identifier: method.notFound
-			count: 9
+			count: 10
 			path: tests/Unit/Service/ProjectBillingServiceTest.php
 
 		-
@@ -3676,7 +3676,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Service\\ClientHelper\:\:method\(\)\.$#'
 			identifier: method.notFound
-			count: 2
+			count: 3
 			path: tests/Unit/Service/ProjectBillingServiceTest.php
 
 		-
@@ -3688,7 +3688,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:method\(\)\.$#'
 			identifier: method.notFound
-			count: 2
+			count: 3
 			path: tests/Unit/Service/ProjectBillingServiceTest.php
 
 		-

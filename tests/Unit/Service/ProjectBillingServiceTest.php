@@ -13,6 +13,7 @@ use App\Entity\ProjectBilling;
 use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
+use App\Enum\MaterialNumberEnum;
 use App\Exception\EconomicsException;
 use App\Exception\InvoiceAlreadyOnRecordException;
 use App\Repository\ClientRepository;
@@ -370,6 +371,38 @@ class ProjectBillingServiceTest extends TestCase
         $this->assertNotEmpty($invoiceEntries);
         $this->assertNotEmpty($invoices);
         $this->assertCount(1, $projectBilling->getInvoices());
+    }
+
+    public function testCreateProjectBillingUsesClientTypeMaterialNumber(): void
+    {
+        $project = new Project();
+        $project->setName('Test');
+        $projectBilling = $this->createProjectBillingEntity($project);
+        $this->setEntityId($projectBilling, 1);
+
+        $client = new Client();
+        $client->setName('External without moms');
+        $client->setType(ClientTypeEnum::EXTERNAL_WITHOUT_MOMS);
+        $this->setEntityId($client, 11);
+
+        $issue = $this->createIssueWithWorklog();
+        $version = new Version();
+        $version->setName('PB-ClientA');
+        $version->setProjectTrackerId('v1');
+        $issue->addVersion($version);
+
+        $this->projectBillingRepository->method('find')->willReturn($projectBilling);
+        $this->issueRepository->method('getClosedIssuesFromInterval')->willReturn([$issue]);
+        $this->clientRepository->method('findOneBy')->with(['versionName' => 'PB-ClientA'])->willReturn($client);
+        $this->clientHelper->method('getStandardPrice')->willReturn(500.0);
+
+        $this->entityManager->method('persist');
+
+        $this->service->createProjectBilling(1);
+
+        $invoice = $projectBilling->getInvoices()->first();
+        $this->assertInstanceOf(Invoice::class, $invoice);
+        $this->assertSame(MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS, $invoice->getDefaultMaterialNumber());
     }
 
     public function testCreateProjectBillingCreatesProductInvoiceEntries(): void

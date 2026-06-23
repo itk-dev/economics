@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Entity\IssueProduct;
+use App\Entity\Project;
 use App\Entity\Worklog;
 use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
@@ -38,7 +39,37 @@ class BillingServiceTest extends TestCase
             $this->invoiceEntryRepository,
             $this->translator,
             '1234567890',
+            'EXTERNAL-PSP',
         );
+    }
+
+    private function createExternalInvoice(): Invoice
+    {
+        $client = new Client();
+        $client->setName('External Client');
+        $client->setContact('Jane Doe');
+        $client->setType(ClientTypeEnum::EXTERNAL);
+
+        $project = new Project();
+        $project->setName('Acme project');
+
+        $entry = new InvoiceEntry();
+        $entry->setEntryType(InvoiceEntryTypeEnum::MANUAL);
+        $entry->setAmount(5.0);
+
+        $invoice = new Invoice();
+        $invoice->setName('Test');
+        $invoice->setRecorded(false);
+        $invoice->setClient($client);
+        $invoice->setProject($project);
+        $invoice->setDefaultMaterialNumber(MaterialNumberEnum::EXTERNAL_WITH_MOMS);
+        $invoice->setDefaultReceiverAccount('EXTERNAL-PSP');
+        $invoice->setPeriodFrom(new \DateTime('2024-01-01'));
+        $invoice->setPeriodTo(new \DateTime('2024-01-31'));
+        $invoice->setDescription('Invoice for Acme project, January.');
+        $invoice->addInvoiceEntry($entry);
+
+        return $invoice;
     }
 
     public function testUpdateInvoiceEntryTotalPriceWorklogType(): void
@@ -384,6 +415,65 @@ class BillingServiceTest extends TestCase
         $invoice->setRecorded(false);
         $invoice->setClient($client);
         $invoice->addInvoiceEntry($entry);
+
+        $errors = $this->billingService->getInvoiceRecordableErrors($invoice);
+
+        $this->assertEmpty($errors);
+    }
+
+    public function testGetInvoiceRecordableErrorsValidExternalInvoice(): void
+    {
+        $errors = $this->billingService->getInvoiceRecordableErrors($this->createExternalInvoice());
+
+        $this->assertEmpty($errors);
+    }
+
+    public function testGetInvoiceRecordableErrorsExternalWrongReceiverAccount(): void
+    {
+        $invoice = $this->createExternalInvoice();
+        $invoice->setDefaultReceiverAccount('SOME-OTHER-ACCOUNT');
+
+        $errors = $this->billingService->getInvoiceRecordableErrors($invoice);
+
+        $this->assertContains('invoice_recordable.error_external_receiver_account', $errors);
+    }
+
+    public function testGetInvoiceRecordableErrorsExternalMissingPeriod(): void
+    {
+        $invoice = $this->createExternalInvoice();
+        $invoice->setPeriodFrom(null);
+
+        $errors = $this->billingService->getInvoiceRecordableErrors($invoice);
+
+        $this->assertContains('invoice_recordable.error_external_missing_period', $errors);
+    }
+
+    public function testGetInvoiceRecordableErrorsExternalTriggeredByEntryMaterialNumber(): void
+    {
+        $invoice = $this->createExternalInvoice();
+        // Clear the invoice-level material number; an entry alone makes it external.
+        $invoice->setDefaultMaterialNumber(MaterialNumberEnum::NONE);
+        $externalEntry = new InvoiceEntry();
+        $externalEntry->setEntryType(InvoiceEntryTypeEnum::MANUAL);
+        $externalEntry->setAmount(2.0);
+        $externalEntry->setMaterialNumber(MaterialNumberEnum::EXTERNAL_WITHOUT_MOMS);
+        $invoice->addInvoiceEntry($externalEntry);
+        $invoice->setDefaultReceiverAccount('SOME-OTHER-ACCOUNT');
+
+        $errors = $this->billingService->getInvoiceRecordableErrors($invoice);
+
+        $this->assertContains('invoice_recordable.error_external_receiver_account', $errors);
+    }
+
+    public function testGetInvoiceRecordableErrorsInternalInvoiceSkipsExternalChecks(): void
+    {
+        $invoice = $this->createExternalInvoice();
+        $invoice->setDefaultMaterialNumber(MaterialNumberEnum::INTERNAL);
+        // These would all fail the external checks, but must be ignored for internal invoices.
+        $invoice->setDefaultReceiverAccount('SOME-OTHER-ACCOUNT');
+        $invoice->setPeriodFrom(null);
+        $invoice->setPeriodTo(null);
+        $invoice->setDescription(null);
 
         $errors = $this->billingService->getInvoiceRecordableErrors($invoice);
 

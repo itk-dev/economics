@@ -17,6 +17,7 @@ services:
         bind:
             $defaultInvoiceDescriptionTemplate: "%env(APP_INVOICE_DESCRIPTION_TEMPLATE)%"
             $invoiceSupplierAccount: "%env(string:APP_INVOICE_SUPPLIER_ACCOUNT)%"
+            $invoiceExternalReceiverAccount: "%env(string:APP_INVOICE_EXTERNAL_RECEIVER_ACCOUNT)%"
             $projectBillingDefaultDescription: "%env(string:APP_PROJECT_BILLING_DEFAULT_DESCRIPTION)%"
 
     # makes classes in src/ available to be used as services
