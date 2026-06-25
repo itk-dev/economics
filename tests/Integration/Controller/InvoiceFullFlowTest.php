@@ -32,6 +32,10 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
             ->findOneBy(['type' => ClientTypeEnum::INTERNAL]);
         $this->assertInstanceOf(Client::class, $internalClient, 'Expected an internal client fixture.');
 
+        $externalClient = $container->get(ClientRepository::class)
+            ->findOneBy(['type' => ClientTypeEnum::EXTERNAL]);
+        $this->assertInstanceOf(Client::class, $externalClient, 'Expected an external client fixture.');
+
         // 1. Create invoice.
         $crawler = $client->request('GET', '/admin/invoices/new');
         $this->assertResponseIsSuccessful();
@@ -59,6 +63,21 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         $this->assertStringContainsString('data-autofill-material-number-target="client"', $editHtml);
         $this->assertStringContainsString('data-autofill-material-number-target="material"', $editHtml);
         $this->assertStringContainsString('autofill-material-number#update', $editHtml);
+
+        // The same client select also autoselects the receiver account.
+        $this->assertStringContainsString('data-autofill-receiver-account-map-value', $editHtml);
+        $this->assertStringContainsString('data-autofill-receiver-account-target="client"', $editHtml);
+        $this->assertStringContainsString('data-autofill-receiver-account-target="receiver"', $editHtml);
+        $this->assertStringContainsString('autofill-receiver-account#update', $editHtml);
+
+        // External clients map to the configured external receiver account, while
+        // internal clients map to the default account.
+        $receiverMapJson = $crawler->filter('[data-autofill-receiver-account-map-value]')
+            ->attr('data-autofill-receiver-account-map-value');
+        $this->assertNotNull($receiverMapJson);
+        $receiverMap = json_decode($receiverMapJson, true);
+        $this->assertSame('ACC002', $receiverMap[$externalClient->getId()] ?? null);
+        $this->assertSame('test', $receiverMap[$internalClient->getId()] ?? null);
 
         $finalName = 'FullFlow-edit-'.uniqid();
         $description = 'Full flow invoice description.';
