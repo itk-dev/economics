@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-322](https://github.com/itk-dev/economics/pull/322)
+  * Autoselect external receiver account from client.
+
 ## [3.6.1] - 2026-06-23
 
 * DevOps: Added docker compose dependency between phpfpm and rabbit.
