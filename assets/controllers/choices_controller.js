@@ -8,11 +8,13 @@ export default class extends Controller {
 
     connect() {
         this.choicesTargets.forEach((target) => {
-            const notDisabled = !target.disabled;
+            const theTarget = target;
+            const notDisabled = !theTarget.disabled;
 
             if (notDisabled) {
-                /* eslint-disable-next-line no-new */
-                new Choices(target, {
+                // Keep the instance on the element so other controllers can drive
+                // the widget (e.g. autofill-receiver-account#update).
+                theTarget.choices = new Choices(theTarget, {
                     allowHTML: true,
                     itemSelectText: "",
                     removeItems: true,
