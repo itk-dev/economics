@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.7.0] - 2026-06-26
+
 * [PR-322](https://github.com/itk-dev/economics/pull/322)
   * Autoselect external receiver account from client.
 
@@ -658,7 +660,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.6.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.7.0...HEAD
+[3.7.0]: https://github.com/itk-dev/economics/compare/3.6.0...3.7.0
 [3.6.0]: https://github.com/itk-dev/economics/compare/3.5.0...3.6.0
 [3.5.0]: https://github.com/itk-dev/economics/compare/3.3.0...3.5.0
 [3.3.0]: https://github.com/itk-dev/economics/compare/3.1.0...3.3.0
