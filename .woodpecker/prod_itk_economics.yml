@@ -36,53 +36,53 @@ steps:
           weekday: "*"
           job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-modified"
         sync-deleted:
-          minute: '*/25'
-          hour: '*'
-          day: '*'
-          month: '*'
-          weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-deleted'
+          minute: "*/25"
+          hour: "*"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-deleted"
         # Nightly sync deleted for the last week
         sync-deleted-week:
-          minute: '50'
-          hour: '2'
-          day: '*'
-          month: '*'
-          weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-deleted --interval=P1W'
+          minute: "50"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-deleted --interval=P1W"
         # Nightly full syncs
         full-sync-projects:
-          minute: '0'
-          hour: '2'
-          day: '*'
-          month: '*'
-          weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -p -d'
+          minute: "0"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -p -d"
         full-sync-workers:
-          minute: '10'
-          hour: '2'
-          day: '*'
-          month: '*'
-          weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -r -d'
+          minute: "10"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -r -d"
         full-sync-versions:
-          minute: '20'
-          hour: '2'
-          day: '*'
-          month: '*'
-          weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -s -d'
+          minute: "20"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -s -d"
         full-sync-issues:
-          minute: '30'
-          hour: '2'
-          day: '*'
-          month: '*'
-          weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -i -d'
+          minute: "30"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -i -d"
         full-sync-worklogs:
-          minute: '40'
-          hour: '2'
-          day: '*'
-          month: '*'
-          weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -w -d'
+          minute: "40"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -w -d"
