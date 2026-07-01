@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
   and `.woodpecker/prod_itk_economics.yml`. Five staggered jobs run at
   02:00/02:10/02:20/02:30/02:40 invoking
-  `app:data-providers:sync -j -d --modified="1 week ago"` for projects (`-p`),
+  `app:data-providers:sync -j -d` for projects (`-p`),
   workers (`-r`), versions (`-s`), issues (`-i`), and worklogs (`-w`) —
   re-syncing everything touched within the past week and bypassing the local
   `modifiedAt` short-circuit (`-d`), since the upstream source isn't fully
