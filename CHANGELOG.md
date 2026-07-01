@@ -10,6 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.7.0] - 2026-06-26
 
+* [PR-303](https://github.com/itk-dev/economics/pull/303)
+  * Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
+    and `.woodpecker/prod_itk_economics.yml`. Five staggered jobs run at
+    02:00/02:10/02:20/02:30/02:40 invoking
+    `app:data-providers:sync -j -d` for projects (`-p`),
+    workers (`-r`), versions (`-s`), issues (`-i`), and worklogs (`-w`) —
+    re-syncing everything touched within the past week and bypassing the local
+    `modifiedAt` short-circuit (`-d`), since the upstream source isn't fully
+    trusted to update `modifiedAt` on every change. A sixth job at 02:50 runs
+    `app:data-providers:sync-deleted --interval=P1W` to widen the deletion
+    window to the past week (vs. the default `PT1H` used by the 25-minute
+    cron).
 * [PR-322](https://github.com/itk-dev/economics/pull/322)
   * Autoselect external receiver account from client.
 
