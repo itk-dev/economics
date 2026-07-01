@@ -2,11 +2,9 @@
 
 namespace App\Form;
 
-use App\Entity\DataProvider;
 use App\Entity\Project;
 use App\Entity\Version;
 use App\Model\Reports\HourReportFormData;
-use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Service\HourReportService;
@@ -20,47 +18,16 @@ class HourReportType extends AbstractType
 {
     public function __construct(
         private readonly HourReportService $hourReportService,
-        private readonly DataProviderRepository $dataProviderRepository,
-        private readonly ?string $defaultDataProvider,
     ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $dataProviders = $this->dataProviderRepository->findAll();
-        $defaultProvider = $this->dataProviderRepository->find($this->defaultDataProvider);
-
-        if (null === $defaultProvider && count($dataProviders) > 0) {
-            $defaultProvider = $dataProviders[0];
-        }
-
         $builder
-            ->add('dataProvider', EntityType::class, [
-                'class' => DataProvider::class,
-                'required' => false,
-                'label' => 'hour_report.data_provider',
-                'label_attr' => ['class' => 'label'],
-                'placeholder' => 'hour_report.select_data_provider',
-                'attr' => [
-                    'onchange' => 'this.form.submit()',
-                    'class' => 'form-element',
-                ],
-                'help' => 'hour_report.data_provider_helptext',
-                'data' => $defaultProvider,
-                'choices' => $dataProviders,
-            ])
             ->add('project', EntityType::class, [
                 'class' => Project::class,
                 'required' => false,
-                'query_builder' => function (ProjectRepository $projectRepository) use ($options) {
-                    $query = $projectRepository->getIncluded();
-
-                    if (null !== $options['data_provider']) {
-                        $query->where('project.dataProvider = :dataProvider')->setParameter('dataProvider', $options['data_provider']);
-                    }
-
-                    return $query;
-                },
+                'query_builder' => fn (ProjectRepository $projectRepository) => $projectRepository->getIncluded(),
                 'placeholder' => 'hour_report.select_project',
                 'choice_label' => function (Project $project) {
                     return $project->getName();
@@ -71,7 +38,6 @@ class HourReportType extends AbstractType
                 ],
                 'label' => 'hour_report.project',
                 'label_attr' => ['class' => 'label'],
-                'disabled' => empty($options['data_provider']),
             ])
             ->add('version', EntityType::class, [
                 'class' => Version::class,
@@ -130,7 +96,6 @@ class HourReportType extends AbstractType
         $resolver->setDefaults([
             'data_class' => HourReportFormData::class,
         ])
-            ->setRequired('data_provider')
             ->setRequired('project')
             ->setRequired('version')
         ;

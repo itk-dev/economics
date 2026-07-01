@@ -52,6 +52,8 @@ class ProjectController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $projectRepository->save($project, true);
+
+            return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('project/edit.html.twig', [
@@ -70,9 +72,8 @@ class ProjectController extends AbstractController
             $projectRepository->save($project, true);
 
             return new JsonResponse([$body], 200);
-        } else {
-            throw new BadRequestHttpException('Value not set.');
         }
+        throw new BadRequestHttpException('Value not set.');
     }
 
     #[Route('/{id}/isBillable', name: 'app_project_is_billable', methods: ['POST'])]
@@ -85,9 +86,8 @@ class ProjectController extends AbstractController
             $projectRepository->save($project, true);
 
             return new JsonResponse([$body], 200);
-        } else {
-            throw new BadRequestHttpException('Value not set.');
         }
+        throw new BadRequestHttpException('Value not set.');
     }
 
     #[Route('/{id}/holidayPlanning', name: 'app_project_holiday_planning', methods: ['POST'])]
@@ -100,9 +100,8 @@ class ProjectController extends AbstractController
             $projectRepository->save($project, true);
 
             return new JsonResponse([$body], 200);
-        } else {
-            throw new BadRequestHttpException('Value not set.');
         }
+        throw new BadRequestHttpException('Value not set.');
     }
 
     #[Route('/{id}/sync', name: 'app_project_sync', methods: ['POST'])]

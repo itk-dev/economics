@@ -130,10 +130,10 @@ class WorklogRepository extends ServiceEntityRepository
     /**
      * Gets the sum of time spent grouped by week of year for a specific worker within a range of weeks.
      *
-     * @param string $workerEmail The email of the worker
-     * @param \DateTimeInterface $from The starting date time
-     * @param \DateTimeInterface $to The ending date time
-     * @param string $groupBy The function to group by, accepts 'week', 'month' and 'year'
+     * @param string             $workerEmail The email of the worker
+     * @param \DateTimeInterface $from        The starting date time
+     * @param \DateTimeInterface $to          The ending date time
+     * @param string             $groupBy     The function to group by, accepts 'week', 'month' and 'year'
      *
      * @return array An array of results containing total time spent, week number, and worker, indexed by week/month/year number
      */
@@ -181,10 +181,10 @@ class WorklogRepository extends ServiceEntityRepository
     /**
      * Finds billable worklogs within a specific date range for a given worker.
      *
-     * @param \DateTime $dateFrom the start date for the date range filter
-     * @param \DateTime $dateTo the end date for the date range filter
+     * @param \DateTime   $dateFrom         the start date for the date range filter
+     * @param \DateTime   $dateTo           the end date for the date range filter
      * @param string|null $workerIdentifier optional worker identifier to filter worklogs by worker
-     * @param mixed|null $isBilled optional indicator for whether the worklog has been billed or not
+     * @param mixed|null  $isBilled         optional indicator for whether the worklog has been billed or not
      *
      * @return array an array of worklogs matching the specified criteria
      */
@@ -307,5 +307,31 @@ class WorklogRepository extends ServiceEntityRepository
             'page_size' => $pageSize,
             'paginator' => $paginator,
         ];
+    }
+
+    /**
+     * Get worklogs for a given issue, optionally restricted by period.
+     *
+     * @return Worklog[]
+     */
+    public function getWorklogsByIssueAndPeriod(int $issueId, ?\DateTimeInterface $fromDate, ?\DateTimeInterface $toDate): array
+    {
+        $qb = $this->createQueryBuilder('w')
+            ->andWhere('w.issue = :issue')
+            ->setParameter('issue', $issueId);
+
+        if ($fromDate) {
+            $qb->andWhere('w.started >= :fromDate')
+                ->setParameter('fromDate', $fromDate->format('Y-m-d 00:00:00'));
+        }
+
+        if ($toDate) {
+            $qb->andWhere('w.started <= :toDate')
+                ->setParameter('toDate', $toDate->format('Y-m-d 23:59:59'));
+        }
+
+        $qb->orderBy('w.started', 'ASC');
+
+        return $qb->getQuery()->getResult();
     }
 }

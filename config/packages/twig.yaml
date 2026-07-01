@@ -1,9 +1,11 @@
 twig:
-    default_path: '%kernel.project_dir%/templates'
+    default_path: "%kernel.project_dir%/templates"
     date:
-        format: 'd.m.Y'
+        format: "d.m.Y"
     globals:
         invoice_entry_helper: '@App\Service\InvoiceEntryHelper'
+        tidy_feedback_widget_url: "%env(string:TIDY_FEEDBACK_WIDGET_URL)%"
+        tidy_feedback_api_key: "%env(string:TIDY_FEEDBACK_API_KEY)%"
 
 when@test:
     twig:

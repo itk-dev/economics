@@ -21,19 +21,19 @@ steps:
         from_secret: prod_economics_path
       user:
         from_secret: user
-      playbook: 'release'
+      playbook: "release"
       pre_up:
         - itkdev-docker-compose-server run --rm phpfpm bin/console doctrine:migrations:migrate --no-interaction
         - itkdev-docker-compose-server run --rm phpfpm bin/console messenger:setup-transports
         - itkdev-docker-compose-server run --rm phpfpm bin/console cache:clear
       cron:
         sync-modified:
-          minute: '*/15'
-          hour: '*'
-          day: '*'
-          month: '*'
-          weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-modified'
+          minute: "*/15"
+          hour: "*"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-modified"
         sync-deleted:
           minute: '*/25'
           hour: '*'
@@ -41,42 +41,42 @@ steps:
           month: '*'
           weekday: '*'
           job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-deleted'
-        sync-projects:
+        full-sync-projects:
           minute: '0'
           hour: '2'
           day: '*'
           month: '*'
           weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -p -d --modified="1 week ago"'
-        sync-workers:
+          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -p -d'
+        full-sync-workers:
           minute: '10'
           hour: '2'
           day: '*'
           month: '*'
           weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -r -d --modified="1 week ago"'
-        sync-versions:
+          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -r -d'
+        full-sync-versions:
           minute: '20'
           hour: '2'
           day: '*'
           month: '*'
           weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -s -d --modified="1 week ago"'
-        sync-issues:
+          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -s -d'
+        full-sync-issues:
           minute: '30'
           hour: '2'
           day: '*'
           month: '*'
           weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -i -d --modified="1 week ago"'
-        sync-worklogs:
+          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -i -d'
+        full-sync-worklogs:
           minute: '40'
           hour: '2'
           day: '*'
           month: '*'
           weekday: '*'
-          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -w -d --modified="1 week ago"'
-        sync-deleted-weekly:
+          job: 'itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -w -d'
+        full-sync-deleted-weekly:
           minute: '50'
           hour: '2'
           day: '*'

@@ -8,7 +8,6 @@ use App\Enum\SubscriptionFrequencyEnum;
 use App\Enum\SubscriptionSubjectEnum;
 use App\Form\SubscriptionFilterType;
 use App\Model\Invoices\SubscriptionFilterData;
-use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\SubscriptionRepository;
 use App\Repository\VersionRepository;
@@ -28,7 +27,6 @@ class SubscriptionController extends AbstractController
 {
     public function __construct(
         private readonly SubscriptionRepository $subscriptionRepository,
-        private readonly DataProviderRepository $dataProviderRepository,
         private readonly ProjectRepository $projectRepository,
         private readonly VersionRepository $versionRepository,
     ) {
@@ -82,7 +80,7 @@ class SubscriptionController extends AbstractController
         $report = &$content[$reportType];
         switch ($reportType) {
             case 'hour_report':
-                if (empty($report['dataProvider']) || empty($report['project'])) {
+                if (empty($report['project'])) {
                     return new JsonResponse([], 404);
                 }
                 // If version is unset, remove it from data
@@ -111,10 +109,10 @@ class SubscriptionController extends AbstractController
                     $frequencies = $this->getFrequencies($subscriptions);
 
                     return new JsonResponse(['frequencies' => $frequencies], 200);
-                } else {
-                    return new JsonResponse([], 200);
                 }
-                // no break
+
+                return new JsonResponse([], 200);
+
             default:
                 return new JsonResponse(
                     ['error' => 'Unsupported report type'],
@@ -137,21 +135,20 @@ class SubscriptionController extends AbstractController
             $frequencies = $this->getFrequencies($subscriptions);
 
             return new JsonResponse(['action' => 'unsubscribed', 'frequencies' => $frequencies], 200);
-        } else {
-            $subscription = new Subscription();
-            $subscription->setEmail($userEmail);
-            $subject = SubscriptionSubjectEnum::tryFrom($reportType);
-            $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: '.$reportType));
-            $frequency = SubscriptionFrequencyEnum::tryFrom($subscriptionType);
-            $subscription->setFrequency($frequency ?? throw new \InvalidArgumentException('Invalid frequency type: '.$subscriptionType));
-            $subscription->setUrlParams($content);
-            $this->subscriptionRepository->save($subscription, true);
-
-            $subscriptions = $this->subscriptionRepository->findByCustom($userEmail, $content);
-            $frequencies = $this->getFrequencies($subscriptions);
-
-            return new JsonResponse(['action' => 'subscribed', 'frequencies' => $frequencies], 200);
         }
+        $subscription = new Subscription();
+        $subscription->setEmail($userEmail);
+        $subject = SubscriptionSubjectEnum::tryFrom($reportType);
+        $subscription->setSubject($subject ?? throw new \InvalidArgumentException('Invalid subject type: '.$reportType));
+        $frequency = SubscriptionFrequencyEnum::tryFrom($subscriptionType);
+        $subscription->setFrequency($frequency ?? throw new \InvalidArgumentException('Invalid frequency type: '.$subscriptionType));
+        $subscription->setUrlParams($content);
+        $this->subscriptionRepository->save($subscription, true);
+
+        $subscriptions = $this->subscriptionRepository->findByCustom($userEmail, $content);
+        $frequencies = $this->getFrequencies($subscriptions);
+
+        return new JsonResponse(['action' => 'subscribed', 'frequencies' => $frequencies], 200);
     }
 
     private function getFrequencies(array $subscriptions): string
@@ -176,16 +173,13 @@ class SubscriptionController extends AbstractController
     private function subscriptionFilterHandler(Subscription $subscription, SubscriptionFilterData $subscriptionFilterData): bool
     {
         $urlParamsArray = $subscription->getUrlParams() ?? [];
-        $dataProviderId = $urlParamsArray['hour_report']['dataProvider'];
         $projectId = $urlParamsArray['hour_report']['project'];
         $versionId = $urlParamsArray['hour_report']['version'] ?? null;
 
-        $dataProvider = $this->dataProviderRepository->find($dataProviderId);
         $project = $this->projectRepository->find($projectId);
         $version = $versionId ? $this->versionRepository->find($versionId) : null;
 
         $urlParams = [
-            'dataProvider' => $dataProvider?->getName() ?? '',
             'project' => $project?->getName() ?? '',
             'version' => $version?->getName() ?? '',
         ];

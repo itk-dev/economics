@@ -40,7 +40,7 @@
     }
 
     .button.form-element {
-        @apply w-28 text-white bg-blue-700 border-blue-700 hover:bg-blue-800 hover:border-blue-800  dark:bg-blue-600 dark:hover:bg-blue-700 dark:border-blue-600 dark:hover:border-blue-700 focus:outline-none dark:focus:ring-blue-800
+        @apply w-28 text-white bg-blue-700 border-blue-700 hover:bg-blue-800 hover:border-blue-800  dark:bg-blue-600 dark:hover:bg-blue-700 dark:border-blue-600 dark:hover:border-blue-700 focus:outline-none dark:focus:ring-blue-800;
     }
 
     .bottom-actions {
@@ -148,6 +148,10 @@
         @apply grid gap-3 mb-6 md:grid-cols-6;
     }
 
+    #cybersecurity_report {
+        @apply grid gap-3 mb-6 md:grid-cols-6;
+    }
+
     .form-default {
         @apply grid gap-3 mb-6 md:grid-cols-6;
     }
@@ -156,7 +160,8 @@
         @apply flex flex-col justify-end;
     }
 
-    #report > div, #hour_report > div {
+    #report > div,
+    #hour_report > div {
         @apply flex flex-col;
     }
 
@@ -166,7 +171,7 @@
     .action-button > span:not(.hidden) > svg,
     .subscribe-button > span:not(.hidden) > svg {
         margin: auto;
-        animation: spin 2s linear infinite
+        animation: spin 2s linear infinite;
     }
 
     @keyframes spin {
@@ -189,7 +194,7 @@
         @apply mt-6;
     }
     .label.required::after {
-        content: '*';
+        content: "*";
         @apply text-red-500 ml-1;
     }
     /*
@@ -212,7 +217,8 @@
     ** Tables
     */
 
-    .table-export td, .table-export tr {
+    .table-export td,
+    .table-export tr {
         border: 1px solid gray;
         padding: 5px;
     }
@@ -230,7 +236,7 @@
     }
 
     .table-tr {
-        @apply  border-b border-gray-300 dark:border-gray-600;
+        @apply border-b border-gray-300 dark:border-gray-600;
     }
 
     .table-tr-alt {
@@ -298,7 +304,7 @@
     }
 
     .form-choices .choices__inner {
-        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-1
+        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-1;
     }
 
     .form-choices .choices__list--single {
@@ -313,7 +319,7 @@
         @apply text-white bg-gray-50 border border-gray-300 text-gray-900 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white;
     }
 
-    .form-choices .choices[data-type*=select-one]::after {
+    .form-choices .choices[data-type*="select-one"]::after {
         @apply dark:border-t-gray-500;
     }
 
@@ -337,6 +343,19 @@
         @apply text-black dark:text-white;
     }
 
+    .selections .choices__input--cloned {
+        @apply bg-transparent dark:bg-transparent text-black dark:text-white border-0 shadow-none focus:ring-0 focus:border-transparent focus:outline-none;
+    }
+
+    .selections .choices__inner {
+        @apply border border-gray-300 dark:border-gray-600 rounded-lg;
+    }
+
+    .selections .choices.is-focused .choices__inner,
+    .selections .choices.is-open .choices__inner {
+        @apply ring-1 ring-blue-500 border-blue-500 dark:ring-blue-500 dark:border-blue-500;
+    }
+
     .selections .choices__inner,
     .selections .choices__list {
         @apply dark:bg-gray-700 dark:text-white bg-gray-50 text-black;
@@ -351,7 +370,12 @@
         @apply dark:bg-gray-700 dark:text-white bg-gray-50 text-black;
     }
 
-    .selections .choices__item.choices__item--choice.choices__item--selectable.is-highlighted {
+    .selections .choices__list--multiple .choices__item {
+        @apply bg-blue-600 border-blue-600 text-white;
+    }
+
+    .selections
+        .choices__item.choices__item--choice.choices__item--selectable.is-highlighted {
         @apply dark:bg-gray-800 dark:text-white bg-gray-200 text-black;
     }
 
@@ -374,11 +398,11 @@
     }
 
     .comma-list span:after {
-        content: ","
+        content: ",";
     }
 
     .comma-list span:last-child:after {
-        content: ""
+        content: "";
     }
 
     /*
@@ -390,7 +414,7 @@
     }
 
     .navigation-item.current {
-        @apply  bg-gray-100 dark:bg-gray-500 text-gray-600 dark:text-gray-900;
+        @apply bg-gray-100 dark:bg-gray-500 text-gray-600 dark:text-gray-900;
     }
 
     .navigation-item + .navigation-item-submenu {
@@ -402,35 +426,35 @@
     }
 
     .collapsible:has(+ .navigation-item-submenu):after {
-        content: '▲';
+        content: "▲";
         @apply pr-4 text-xs;
     }
 
     .collapsible:has(+ .navigation-item-submenu.shown):after {
-        content: '▼';
+        content: "▼";
         @apply pr-4 text-xs;
     }
     .loading {
         position: relative;
     }
     .loading::before {
-        content: '';
+        content: "";
         z-index: 999;
         @apply bg-white dark:bg-gray-900 absolute w-full h-full top-0 left-0;
     }
     .loading::after {
-        content: 'Loading...';
+        content: "Loading...";
         @apply text-white absolute top-0 left-0;
         z-index: 9999;
         left: 0;
     }
     .subscribe-button:not([data-frequencies]):before,
-    .subscribe-button[data-frequencies='']:before {
+    .subscribe-button[data-frequencies=""]:before {
         display: none;
     }
     .subscribe-button:before {
         @apply absolute left-0 w-full text-sm text-right pointer-events-none dark:text-white;
-        content: 'Subscribed ' attr(data-frequencies);
+        content: "Subscribed " attr(data-frequencies);
         top: -20px;
     }
     .subscribe-button svg {
@@ -454,12 +478,17 @@
             cursor: help;
         }
     }
-    .highlight-column, .highlight-row {
+    .highlight-column,
+    .highlight-row {
         border: 1px solid #fff !important;
     }
 
-    tr[data-toggle-parent-child-target="child"]:not(.hidden) + tr[data-toggle-parent-child-target="parent"] > td,
-    tr[data-toggle-parent-child-target="child"]:not(.hidden) + tr[data-toggle-parent-child-target="parent"] > th {
+    tr[data-toggle-parent-child-target="child"]:not(.hidden)
+        + tr[data-toggle-parent-child-target="parent"]
+        > td,
+    tr[data-toggle-parent-child-target="child"]:not(.hidden)
+        + tr[data-toggle-parent-child-target="parent"]
+        > th {
         border-top: 1px solid #fff;
     }
 

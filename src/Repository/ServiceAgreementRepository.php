@@ -29,15 +29,13 @@ class ServiceAgreementRepository extends ServiceEntityRepository
 
         if (!is_null($serviceAgreementFilterData->project)) {
             $project = $serviceAgreementFilterData->project;
-            $qb->leftJoin('service_agreement.project', 'project')
-                ->andWhere('project.name LIKE :project')
+            $qb->andWhere('project.name LIKE :project')
                 ->setParameter('project', "%$project%");
         }
 
         if (!is_null($serviceAgreementFilterData->client)) {
             $client = $serviceAgreementFilterData->client;
-            $qb->leftJoin('service_agreement.client', 'client')
-                ->andWhere('client.name LIKE :client')
+            $qb->andWhere('client.name LIKE :client')
                 ->setParameter('client', "%$client%");
         }
 
@@ -70,30 +68,5 @@ class ServiceAgreementRepository extends ServiceEntityRepository
             10,
             ['defaultSortFieldName' => 'service_agreement.id', 'defaultSortDirection' => 'asc']
         );
-    }
-
-    /**
-     * Retrieves a list of API service agreements along with their associated cybersecurity agreements.
-     *
-     * @return array
-     */
-    public function getApiServiceAgreements(): array
-    {
-        $results = $this->createQueryBuilder('sa')
-            ->select('sa', 'ca', 'p.projectTrackerKey as projectTrackerKey', 'p.name as projectName', 'c.name as clientName')
-            ->leftJoin('sa.cybersecurityAgreement', 'ca')
-            ->leftJoin('sa.project', 'p')
-            ->leftJoin('sa.client', 'c')
-            ->getQuery()
-            ->getArrayResult();
-
-        return array_map(function ($result) {
-            return [
-                ...$result[0],
-                'projectTrackerKey' => $result['projectTrackerKey'],
-                'projectName' => $result['projectName'],
-                'clientName' => $result['clientName'],
-            ];
-        }, $results);
     }
 }

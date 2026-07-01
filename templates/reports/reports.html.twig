@@ -35,9 +35,6 @@
     {% endembed %}
 
     {{ form_start(form) }}
-    {% if form.dataProvider is defined %}
-        {{ form_row(form.dataProvider) }}
-    {% endif %}
     {{ form_end(form) }}
 
     {% if data is not empty %}

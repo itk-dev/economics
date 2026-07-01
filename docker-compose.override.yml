@@ -10,9 +10,14 @@ services:
       - "RABBITMQ_DEFAULT_USER=user"
       - "RABBITMQ_DEFAULT_PASS=password"
       - "RABBITMQ_ERLANG_COOKIE=d53f319cd7376f8f840aaf9889f315ab"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 1s
+      timeout: 3s
+      retries: 30
 
   node:
-    image: node:20
+    image: node:24
     command: npm run watch
     networks:
       - app
@@ -31,6 +36,9 @@ services:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
   phpfpm:
+    depends_on:
+      rabbit:
+        condition: service_healthy
     networks:
       - app
       - frontend
