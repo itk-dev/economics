@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-324](https://github.com/itk-dev/economics/pull/324)
+  Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
   Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
   and `.woodpecker/prod_itk_economics.yml`. Five staggered jobs run at

@@ -10,6 +10,9 @@ $finder->in(__DIR__);
 // … that are not ignored by VCS
 $finder->ignoreVCSIgnored(true);
 
+// Generated files.
+$finder->notPath('#game_center/.+/#');
+
 $config = new TwigCsFixer\Config\Config();
 $config->setFinder($finder);
 
