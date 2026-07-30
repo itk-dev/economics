@@ -22,7 +22,7 @@ readonly class UpsertProjectHandler
         try {
             $this->logger->info('Upserting project: '.$message->projectData->name);
             $this->dataProviderService->upsertProject($message->projectData);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

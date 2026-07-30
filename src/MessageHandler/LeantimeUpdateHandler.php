@@ -32,7 +32,7 @@ readonly class LeantimeUpdateHandler
                 $message->modifiedAfter,
                 $message->disableModifiedAtCheck,
             );
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

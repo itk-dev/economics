@@ -22,7 +22,7 @@ readonly class UpsertWorkerHandler
         try {
             $this->logger->info('Upserting worker: '.$message->workerData->email);
             $this->dataProviderService->upsertWorker($message->workerData);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

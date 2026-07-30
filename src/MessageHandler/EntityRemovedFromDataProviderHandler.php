@@ -34,7 +34,7 @@ readonly class EntityRemovedFromDataProviderHandler
                 Worklog::class => $this->dataProviderService->worklogRemovedFromDataProvider($message->dataProviderId, (int) $message->projectTrackerId, $message->deletedDate),
                 default => throw new NotSupportedException('classname not supported'),
             };
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

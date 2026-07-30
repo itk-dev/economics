@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-325](https://github.com/itk-dev/economics/pull/325)
+  Fixed the Leantime sync halting silently on a single bad row. `LeantimeApiService`
+  and the sync message handlers now catch `\Throwable` rather than `\Exception`, so a
+  `TypeError` from a nullable source field no longer escapes uncaught. The upsert
+  dispatch moved inside the same `try`, because on the `sync` transport the handler
+  runs inline and its failure previously escaped the row loop in `updateAsJob()`
+  before the next page was queued. A skipped row now logs
+  `Skipping <class> id <id>: <reason>` and the sync continues.
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
   Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)

@@ -22,7 +22,7 @@ readonly class UpsertWorklogHandler
         try {
             $this->logger->info('Upserting worklog: '.$message->worklogData->projectTrackerId);
             $this->dataProviderService->upsertWorklog($message->worklogData);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

@@ -208,6 +208,11 @@ class LeantimeApiService implements DataProviderInterface
 
     private function dispatchUpsertMessage(string $className, object $data, int $dataProviderId, \DateTimeInterface $fetchDate, bool $asyncJobQueue = false, ?string $dataProviderUrl = null, bool $disableModifiedAtCheck = false): void
     {
+        // Catch \Throwable, not \Exception: a nullable source field mapped onto a non-nullable
+        // constructor argument raises a TypeError, which extends Error. Uncaught, it escapes the
+        // row loop in updateAsJob() before the next page is queued, halting the sync silently.
+        // The dispatch belongs inside the try for the same reason: on the sync transport the
+        // handler runs inline here, so its failures surface as part of this call.
         try {
             $message = match ($className) {
                 Project::class => new UpsertProjectMessage($this->getProjectUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl, $disableModifiedAtCheck)),
@@ -217,17 +222,15 @@ class LeantimeApiService implements DataProviderInterface
                 Worker::class => new UpsertWorkerMessage($this->getWorkerUpsertFromResult($data, $dataProviderId, $fetchDate)),
                 default => null,
             };
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
 
-            return;
-        }
-
-        if (null !== $message) {
-            $this->messageBus->dispatch(
-                $message,
-                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
-            );
+            if (null !== $message) {
+                $this->messageBus->dispatch(
+                    $message,
+                    [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->logger->error(sprintf('Skipping %s id %s: %s', $className, $data->id ?? '?', $e->getMessage()));
         }
     }
 

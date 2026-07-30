@@ -22,7 +22,7 @@ readonly class UpsertVersionHandler
         try {
             $this->logger->info('Upserting version: '.$message->versionData->name);
             $this->dataProviderService->upsertVersion($message->versionData);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

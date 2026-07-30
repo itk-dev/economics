@@ -27,7 +27,7 @@ readonly class LeantimeDeleteHandler
                 $message->asyncJobQueue,
                 $message->deletedAfter,
             );
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

@@ -22,7 +22,7 @@ readonly class UpsertIssueHandler
         try {
             $this->logger->info('Upserting issue: '.$message->issueData->name);
             $this->dataProviderService->upsertIssue($message->issueData);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }
