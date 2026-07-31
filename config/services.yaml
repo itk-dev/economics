@@ -7,10 +7,6 @@ imports:
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    # Retry budget for the Leantime data API. Defaults live here rather than in .env so the sync
-    # works out of the box; override per environment if Leantime's rate limit changes.
-    env(APP_HTTP_CLIENT_RETRY_DELAY_MS): 2000
-    env(APP_HTTP_CLIENT_MAX_RETRIES): 3
 
 services:
     # default configuration for services in *this* file
