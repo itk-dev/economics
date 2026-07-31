@@ -197,12 +197,19 @@ class LeantimeApiService implements DataProviderInterface
         $fetchDate = new \DateTime();
 
         // Queue upsert.
+        $maxId = null;
+
         foreach ($data->results as $result) {
             $this->dispatchUpsertMessage($className, $result, $dataProviderId, $fetchDate, $asyncJobQueue, $dataProviderUrl, $disableModifiedAtCheck);
-            $startId = $result->id;
-        }
 
-        $startId = $startId + 1;
+            // Track the highest id rather than the last one seen: a null id left $startId null,
+            // and null + 1 is 1, so the next page restarted the sync from the beginning and
+            // re-queued itself forever. Out-of-order ids moved the cursor backwards the same way.
+            if (is_numeric($result->id ?? null)) {
+                $id = (int) $result->id;
+                $maxId = null === $maxId ? $id : max($maxId, $id);
+            }
+        }
 
         // Clear the entity manager in sync handling, to avoid memory issues.
         if (!$asyncJobQueue) {
@@ -211,8 +218,16 @@ class LeantimeApiService implements DataProviderInterface
 
         // Queue next page.
         if ($data->resultsCount === $limit) {
+            // A full page with nothing to advance on cannot be paged past. Stopping is visible in
+            // the log; continuing would re-read the same page until the queue starves.
+            if (null === $maxId || $maxId < $startId) {
+                $this->logger->error(sprintf('Stopping %s sync at start %d: no usable id on a full page, cursor cannot advance.', $className, $startId));
+
+                return;
+            }
+
             $this->messageBus->dispatch(
-                new LeantimeUpdateMessage($className, $startId, $limit, $dataProviderId, $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds, $disableModifiedAtCheck),
+                new LeantimeUpdateMessage($className, $maxId + 1, $limit, $dataProviderId, $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds, $disableModifiedAtCheck),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
             );
         }

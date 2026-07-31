@@ -29,10 +29,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     plugin ignores — it reads `deleted`. Every delete-sync was pulling the entire deletion
     history, on an endpoint the plugin does not paginate. Deletion entries with no id are
     now skipped and logged rather than aborting the remaining types.
+  * Fixed the pagination cursor in `updateAsJob()` restarting the sync from the beginning.
+    The cursor took the id of the last row on the page, so a null id left it null and
+    `null + 1` queued the next page at `start: 1` — the sync looped over the same rows
+    forever, starving the single worker of every other job. Out-of-order ids moved the
+    cursor backwards the same way. It now follows the highest usable id on the page, and a
+    full page with no usable id stops with an error rather than looping invisibly.
   * Added `LeantimeApiServiceTest::testUpdateWithNullValues()`, covering the nullable payload
     from data-api#18 plus two probes that a single unmappable row is logged and skipped
     rather than stopping the sync: a `TypeError` and a failure raised inside the upsert
     handler. The `/deleted` fixture gained an entry with no id.
+  * Added `tests/Unit/Service/LeantimeApiServiceTest.php` covering the pagination cursor:
+    a null trailing id, descending ids, a page with no usable id, and the partial-page
+    termination condition. The existing integration tests never reached the next-page
+    branch, since their fixtures are all partial pages.
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
   Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
