@@ -12,7 +12,7 @@ class DataProviderWorklogData
         public \DateTimeInterface $startedDate,
         public string $username,
         public float $hours,
-        public string $kind,
+        public ?string $kind,
         public ?\DateTimeInterface $fetchTime,
         public ?\DateTimeInterface $sourceModifiedDate,
         public bool $disableModifiedAtCheck = false,

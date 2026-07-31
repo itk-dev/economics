@@ -251,7 +251,7 @@ class DataProviderService
         $worklog->setStarted($upsertWorklogData->startedDate);
         $worklog->setProjectTrackerIssueId($upsertWorklogData->projectTrackerIssueId);
         $worklog->setTimeSpentSeconds($upsertWorklogData->hours * $this::SECONDS_IN_HOUR);
-        $worklog->setKind(BillableKindsEnum::tryFrom($upsertWorklogData->kind));
+        $worklog->setKind(null !== $upsertWorklogData->kind ? BillableKindsEnum::tryFrom($upsertWorklogData->kind) : null);
         $worklog->setProject($issue->getProject());
         $worklog->setIssue($issue);
         $worklog->setFetchDate($upsertWorklogData->fetchTime);

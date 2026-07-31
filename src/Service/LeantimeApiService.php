@@ -43,6 +43,9 @@ class LeantimeApiService implements DataProviderInterface
     public const TIMESHEETS = 'timesheets';
     public const WORKERS = 'workers';
     private const LIMIT = 100;
+    // Placeholder for a null name; the name columns are not nullable, and dropping the row would
+    // lose real data — for issues it would make their worklogs unstorable.
+    private const NAME_MISSING = '(no name)';
     private const QUEUE_ASYNC = 'async';
     private const QUEUE_SYNC = 'sync';
 
@@ -116,7 +119,9 @@ class LeantimeApiService implements DataProviderInterface
 
         $params = [
             'types' => $types,
-            'deletedAfter' => $deletedAfter?->getTimestamp(),
+            // The plugin reads 'deleted'; anything else is discarded and the whole deletion
+            // history is returned, which /deleted does not paginate.
+            'deleted' => $deletedAfter?->getTimestamp(),
         ];
 
         // Get data from Leantime.
@@ -137,6 +142,13 @@ class LeantimeApiService implements DataProviderInterface
             };
 
             foreach ($results->{$type} as $result) {
+                // Nothing identifies the entity to remove, and this loop has no other guard.
+                if (null === $result->id) {
+                    $this->logger->warning(sprintf('Skipping deleted %s entry with no id', $type));
+
+                    continue;
+                }
+
                 $projectTrackerId = $result->id;
                 $deletedDate = $this->getLeanDateTime($result->deletedDate);
 
@@ -240,7 +252,7 @@ class LeantimeApiService implements DataProviderInterface
 
         return new DataProviderProjectData(
             $dataProviderId,
-            $result->name,
+            $result->name ?? self::NAME_MISSING,
             $projectTrackerId,
             $this->linkToProject($projectTrackerId, $dataProviderUrl),
             $fetchDate,
@@ -251,9 +263,14 @@ class LeantimeApiService implements DataProviderInterface
 
     private function getVersionUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, bool $disableModifiedAtCheck = false): DataProviderVersionData
     {
+        // A version cannot exist without a project; Version::$project is not nullable.
+        if (null === $result->projectId) {
+            throw new NotAcceptableException('Version upsert not acceptable: projectId is null');
+        }
+
         return new DataProviderVersionData(
             $dataProviderId,
-            $result->name,
+            $result->name ?? self::NAME_MISSING,
             (string) $result->id,
             (string) $result->projectId,
             $fetchDate,
@@ -270,7 +287,7 @@ class LeantimeApiService implements DataProviderInterface
             $projectTrackerId,
             $dataProviderId,
             (string) $result->projectId,
-            $result->name,
+            $result->name ?? self::NAME_MISSING,
             $result->tags,
             $result->plannedHours,
             $result->remainingHours,
@@ -294,13 +311,20 @@ class LeantimeApiService implements DataProviderInterface
             throw new NotAcceptableException('Worklog upsert not acceptable: startedDate is null');
         }
 
+        // A worklog cannot exist without an issue; Worklog::$issue is not nullable.
+        if (null === $result->ticketId) {
+            throw new NotAcceptableException('Worklog upsert not acceptable: ticketId is null');
+        }
+
         return new DataProviderWorklogData(
             $result->id,
             $dataProviderId,
             (string) $result->ticketId,
             $result->description,
             $startedDate,
-            $result->username,
+            // A null username means the join found no user row, as Leantime never stores a null
+            // one. The hours are still real, so keep the worklog and name the departed user.
+            $result->username ?? 'deleted-user-'.($result->userId ?? 'unknown'),
             $result->hours,
             $result->kind,
             $fetchDate,
@@ -346,7 +370,7 @@ class LeantimeApiService implements DataProviderInterface
         return new \DateTime($dateString, new \DateTimeZone('UTC'));
     }
 
-    private function convertStatusToEnum(string $statusString): IssueStatusEnum
+    private function convertStatusToEnum(?string $statusString): IssueStatusEnum
     {
         return match ($statusString) {
             'NEW' => IssueStatusEnum::NEW,
