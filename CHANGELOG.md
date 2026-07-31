@@ -29,6 +29,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     plugin ignores — it reads `deleted`. Every delete-sync was pulling the entire deletion
     history, on an endpoint the plugin does not paginate. Deletion entries with no id are
     now skipped and logged rather than aborting the remaining types.
+  * Restored retrying of rate-limited Leantime requests. `RetryableHttpClient` with a
+    429 retry strategy was added in `b64773db` ("1595: Added retryable http client to
+    handle rate limiting") and lost in `b27ba16e` when the Jira stack was removed, leaving
+    `docker-compose.server.override.yml` still commenting that the sync is rate limited by
+    the Leantime API. A 429 surfaces inside `updateAsJob()` before the next page is
+    queued, so a single one ended the whole pagination chain. `LeantimeApiService` now
+    gets a retrying client via `app.leantime.http_client`, tunable with
+    `APP_HTTP_CLIENT_RETRY_DELAY_MS` and `APP_HTTP_CLIENT_MAX_RETRIES`. The retried
+    status codes are a flat list, because `GenericRetryStrategy`'s defaults restrict
+    transport errors and 5xx to idempotent methods — which excludes the POSTs the
+    Leantime data API uses even for reads.
+  * Added `timeout: 30` and `max_duration: 300` to `framework.http_client.default_options`.
+    Symfony caps neither by default, so a Leantime instance that accepted a connection and
+    then stalled held the messenger worker indefinitely — `--time-limit` is only checked
+    between messages, never during one. `max_duration` has to clear the unpaginated
+    `/deleted` endpoint, which returns a week of history in one response for
+    `sync-deleted --interval=P1W`.
   * Added `LeantimeApiServiceTest::testUpdateWithNullValues()`, covering the nullable payload
     from data-api#18 plus two probes that a single unmappable row is logged and skipped
     rather than stopping the sync: a `TypeError` and a failure raised inside the upsert

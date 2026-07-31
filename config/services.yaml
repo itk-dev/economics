@@ -7,6 +7,10 @@ imports:
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    # Retry budget for the Leantime data API. Defaults live here rather than in .env so the sync
+    # works out of the box; override per environment if Leantime's rate limit changes.
+    env(APP_HTTP_CLIENT_RETRY_DELAY_MS): 2000
+    env(APP_HTTP_CLIENT_MAX_RETRIES): 3
 
 services:
     # default configuration for services in *this* file
@@ -64,3 +68,35 @@ services:
     App\Command\SyncCommand:
         arguments:
             $monitoringUrl: "%env(string:SYNC_MONITORING_URL)%"
+
+    # Leantime rate-limits its data API, and a full sync makes hundreds of paged requests. A 429
+    # surfaces inside updateAsJob() before the next page is queued, so without retrying, one of them
+    # ends the whole pagination chain. Restores the RetryableHttpClient that was dropped along with
+    # the old Jira stack, while the deploy comment still assumes rate limiting is handled.
+    Symfony\Component\HttpClient\Retry\RetryStrategyInterface:
+        class: Symfony\Component\HttpClient\Retry\GenericRetryStrategy
+        # Fetched directly by LeantimeApiServiceRetryTest, which drives the configured strategy
+        # against mock responses rather than asserting on a copy of the numbers below.
+        public: true
+        arguments:
+            # A flat list retries on any HTTP method. GenericRetryStrategy's own defaults restrict
+            # transport errors (0) and 500/504/507/510 to idempotent methods, which excludes the
+            # POSTs the Leantime data API uses even for reads — every one of these calls is a read.
+            $statusCodes: [0, 423, 425, 429, 500, 502, 503, 504, 507, 510]
+            $delayMs: "%env(int:APP_HTTP_CLIENT_RETRY_DELAY_MS)%"
+            $multiplier: 2.0
+            # RetryableHttpClient prefers the response's Retry-After header over this backoff, so the
+            # cap only bounds the cases where Leantime sends no hint.
+            $maxDelayMs: 60000
+
+    app.leantime.http_client:
+        class: Symfony\Component\HttpClient\RetryableHttpClient
+        arguments:
+            $client: "@http_client"
+            $strategy: '@Symfony\Component\HttpClient\Retry\RetryStrategyInterface'
+            $maxRetries: "%env(int:APP_HTTP_CLIENT_MAX_RETRIES)%"
+            $logger: "@logger"
+
+    App\Service\LeantimeApiService:
+        arguments:
+            $httpClient: "@app.leantime.http_client"

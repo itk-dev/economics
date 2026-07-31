@@ -17,6 +17,18 @@ framework:
     php_errors:
         log: true
 
+    http_client:
+        default_options:
+            # Symfony caps neither by default, so a Leantime instance that accepts the connection and
+            # then stalls holds the messenger worker indefinitely: --time-limit is only checked
+            # between messages, never during one.
+            #
+            # timeout is the idle gap between chunks; max_duration is the whole request. The latter
+            # has to clear the /deleted endpoint, which the Leantime plugin does not paginate, so
+            # `sync-deleted --interval=P1W` pulls a week of history in one response.
+            timeout: 30
+            max_duration: 300
+
     # see https://symfony.com/doc/current/deployment/proxies.html
     trusted_headers:
         [
