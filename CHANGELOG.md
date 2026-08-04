@@ -9,40 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-325](https://github.com/itk-dev/economics/pull/325)
-  * Fixed the Leantime sync halting silently on a single bad row. `LeantimeApiService`
-    and the sync message handlers now catch `\Throwable` rather than `\Exception`, so a
-    `TypeError` from a nullable source field no longer escapes uncaught. The upsert
-    dispatch moved inside the same `try`, because on the `sync` transport the handler
-    runs inline and its failure previously escaped the row loop in `updateAsJob()`
-    before the next page was queued. A skipped row now logs
+  * Fixed the Leantime sync halting silently on a single bad row: `LeantimeApiService` and the sync message
+    handlers now catch `\Throwable`, and the upsert dispatch moved inside the same `try`. A skipped row logs
     `Skipping <class> id <id>: <reason>` and the sync continues.
-  * Made the Leantime result mappers null-safe, ahead of
-    [data-api#18](https://github.com/ITK-Leantime/data-api/pull/18) which makes
-    `username`, `kind`, `ticketId`, `projectId` and `name` nullable and adds `userId`.
-    A worklog whose Leantime user was deleted keeps its hours and is attributed to
-    `deleted-user-<userId>`; a missing project, version or issue name becomes
-    `(no name)` rather than failing to store; a null ticket status maps to
-    `IssueStatusEnum::OTHER`; and null `plannedHours`/`remainingHours` are allowed
-    through. Timesheets with no `ticketId` and milestones with no `projectId` are
-    skipped and logged, since `Worklog::$issue` and `Version::$project` cannot be null.
-  * Fixed the `/deleted` request sending its timestamp as `deletedAfter`, which the Leantime
-    plugin ignores — it reads `deleted`. Every delete-sync was pulling the entire deletion
-    history, on an endpoint the plugin does not paginate. Deletion entries with no id are
-    now skipped and logged rather than aborting the remaining types.
-  * Fixed the pagination cursor in `updateAsJob()` restarting the sync from the beginning.
-    The cursor took the id of the last row on the page, so a null id left it null and
-    `null + 1` queued the next page at `start: 1` — the sync looped over the same rows
-    forever, starving the single worker of every other job. Out-of-order ids moved the
-    cursor backwards the same way. It now follows the highest usable id on the page, and a
-    full page with no usable id stops with an error rather than looping invisibly.
-  * Added `LeantimeApiServiceTest::testUpdateWithNullValues()`, covering the nullable payload
-    from data-api#18 plus two probes that a single unmappable row is logged and skipped
-    rather than stopping the sync: a `TypeError` and a failure raised inside the upsert
-    handler. The `/deleted` fixture gained an entry with no id.
-  * Added `tests/Unit/Service/LeantimeApiServiceTest.php` covering the pagination cursor:
-    a null trailing id, descending ids, a page with no usable id, and the partial-page
-    termination condition. The existing integration tests never reached the next-page
-    branch, since their fixtures are all partial pages.
+  * Made the Leantime result mappers null-safe ahead of
+    [data-api#18](https://github.com/ITK-Leantime/data-api/pull/18): a deleted user is attributed to
+    `deleted-user-<userId>`, a missing name becomes `(no name)`, and rows with no `ticketId`/`projectId` are skipped.
+  * Fixed the `/deleted` request sending its timestamp as `deletedAfter` rather than `deleted`, which made every
+    delete-sync pull the entire unpaginated deletion history. Deletion entries with no id are now skipped and logged.
+  * Fixed the pagination cursor in `updateAsJob()` restarting the sync from the beginning: it took the id of the
+    last row on the page, so a null or out-of-order id rewound the cursor and the sync looped over the same rows
+    forever, starving the single worker. It now follows the highest usable id on the page, and a full page with
+    no usable id stops with an error.
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
   Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
