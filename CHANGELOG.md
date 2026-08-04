@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-326](https://github.com/itk-dev/economics/pull/326)
+  * Fixed the pagination cursor in `updateAsJob()` restarting the sync from the beginning: it took the id of the
+    last row on the page, so a null or out-of-order id rewound the cursor and the sync looped over the same rows
+    forever, starving the single worker. It now follows the highest usable id on the page, and a full page with
+    no usable id stops with an error.
 * [PR-325](https://github.com/itk-dev/economics/pull/325)
   * Fixed the Leantime sync halting silently on a single bad row: `LeantimeApiService` and the sync message
     handlers now catch `\Throwable`, and the upsert dispatch moved inside the same `try`. A skipped row logs
@@ -17,10 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `deleted-user-<userId>`, a missing name becomes `(no name)`, and rows with no `ticketId`/`projectId` are skipped.
   * Fixed the `/deleted` request sending its timestamp as `deletedAfter` rather than `deleted`, which made every
     delete-sync pull the entire unpaginated deletion history. Deletion entries with no id are now skipped and logged.
-  * Fixed the pagination cursor in `updateAsJob()` restarting the sync from the beginning: it took the id of the
-    last row on the page, so a null or out-of-order id rewound the cursor and the sync looped over the same rows
-    forever, starving the single worker. It now follows the highest usable id on the page, and a full page with
-    no usable id stops with an error.
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
   Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
