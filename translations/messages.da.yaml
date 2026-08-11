@@ -326,6 +326,8 @@ worklog:
   worker: "Arbejder"
   time_spent: "Timer"
   date: "Dato"
+  total_hours: "Timer i alt"
+  selected_hours: "Valgte timer"
   is_billed_true: "Ja"
   is_billed_false: "Nej"
   period_from: "Periode fra"
