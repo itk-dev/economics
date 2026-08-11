@@ -10,6 +10,7 @@ use App\Enum\NonBillableEpicsEnum;
 use App\Enum\NonBillableVersionsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -47,6 +48,27 @@ class WorklogRepository extends ServiceEntityRepository
     }
 
     public function findByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): iterable
+    {
+        return $this->createFilterDataQueryBuilder($project, $invoiceEntry, $filterData)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Sum the time spent on the worklogs matching the given filter.
+     */
+    public function sumTimeSpentSecondsByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): int
+    {
+        $sum = $this->createFilterDataQueryBuilder($project, $invoiceEntry, $filterData)
+            ->select('SUM(worklog.timeSpentSeconds)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // SUM returns null when no worklogs match the filter.
+        return (int) $sum;
+    }
+
+    private function createFilterDataQueryBuilder(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): QueryBuilder
     {
         $qb = $this->createQueryBuilder('worklog');
 
@@ -97,7 +119,7 @@ class WorklogRepository extends ServiceEntityRepository
             ))->setParameter('invoiceEntry', $invoiceEntry);
         }
 
-        return $qb->getQuery()->execute();
+        return $qb;
     }
 
     public function updateProjectByIssue(Issue $issue, Project $project): int
