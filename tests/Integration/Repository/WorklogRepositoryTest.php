@@ -2,6 +2,9 @@
 
 namespace App\Tests\Integration\Repository;
 
+use App\Entity\InvoiceEntry;
+use App\Entity\Project;
+use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\InvoiceEntryRepository;
@@ -120,6 +123,71 @@ class WorklogRepositoryTest extends KernelTestCase
                 'Worklog should have no invoice entry or match the provided entry'
             );
         }
+    }
+
+    public function testSumTimeSpentSecondsByFilterDataMatchesFilteredWorklogs(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntry = $this->entityManager->getRepository(InvoiceEntry::class)->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->worker = 'admin@test.local';
+
+        $expected = 0;
+        foreach ($this->repository->findByFilterData($project, $invoiceEntry, $filterData) as $worklog) {
+            $this->assertInstanceOf(Worklog::class, $worklog);
+            $expected += (int) $worklog->getTimeSpentSeconds();
+        }
+
+        $this->assertGreaterThan(0, $expected);
+        $this->assertSame(
+            $expected,
+            $this->repository->sumTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumTimeSpentSecondsByFilterDataWithVersionFilter(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntry = $this->entityManager->getRepository(InvoiceEntry::class)->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $version = $project->getVersions()->first();
+        $this->assertInstanceOf(Version::class, $version);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->version = $version;
+
+        $expected = 0;
+        foreach ($this->repository->findByFilterData($project, $invoiceEntry, $filterData) as $worklog) {
+            $this->assertInstanceOf(Worklog::class, $worklog);
+            $expected += (int) $worklog->getTimeSpentSeconds();
+        }
+
+        $this->assertGreaterThan(0, $expected);
+        $this->assertSame(
+            $expected,
+            $this->repository->sumTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumTimeSpentSecondsByFilterDataIsZeroWhenNothingMatches(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntry = $this->entityManager->getRepository(InvoiceEntry::class)->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->worker = 'no-such-worker@test.local';
+
+        $this->assertSame(0, $this->repository->sumTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData));
     }
 
     public function testFindWorklogsByWorkerAndDateRange(): void

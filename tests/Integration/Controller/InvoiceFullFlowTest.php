@@ -172,6 +172,17 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         $this->assertSame(0.0, (float) $worklogEntry->getAmount());
 
         // 6. Attach worklogs to the WORKLOG entry.
+        $worklogsCrawler = $client->request('GET', '/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/worklogs');
+        $this->assertResponseIsSuccessful();
+
+        // The sums bar reports the total hours of the filtered list, and each
+        // checkbox carries the time the Stimulus controller sums for the selection.
+        $sums = $worklogsCrawler->filter('.sticky-actions-sums');
+        $this->assertCount(1, $sums);
+        $this->assertSame('0', trim($sums->filter('[data-entry-select-target="selectedHours"]')->text()));
+        $this->assertGreaterThan(0, (float) trim($sums->filter('span.font-bold')->last()->text()));
+        $this->assertGreaterThan(0, $worklogsCrawler->filter('input[data-time-spent-seconds]')->count());
+
         $worklogRepository = static::getContainer()->get(WorklogRepository::class);
         $unbilled = $worklogRepository->findBy(
             ['project' => $project, 'isBilled' => false],
