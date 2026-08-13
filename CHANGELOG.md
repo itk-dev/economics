@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-328](https://github.com/itk-dev/economics/pull/328)
+  Added selected and total hours to the worklog selection list.
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
   Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)

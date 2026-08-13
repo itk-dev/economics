@@ -2,18 +2,19 @@
 
 namespace App\Tests\Integration\Repository;
 
+use App\Entity\InvoiceEntry;
+use App\Entity\Project;
+use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class WorklogRepositoryTest extends KernelTestCase
 {
-    private EntityManagerInterface $entityManager;
     private WorklogRepository $repository;
     private ProjectRepository $projectRepository;
 
@@ -21,7 +22,6 @@ class WorklogRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = self::getContainer();
-        $this->entityManager = $container->get(EntityManagerInterface::class);
         $this->repository = $container->get(WorklogRepository::class);
         $this->projectRepository = $container->get(ProjectRepository::class);
     }
@@ -120,6 +120,160 @@ class WorklogRepositoryTest extends KernelTestCase
                 'Worklog should have no invoice entry or match the provided entry'
             );
         }
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataMatchesSelectableWorklogs(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->worker = 'admin@test.local';
+
+        $expected = $this->sumSelectable($project, $invoiceEntry, $filterData);
+
+        $this->assertGreaterThan(0, $expected);
+        $this->assertSame(
+            $expected,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataWithVersionFilter(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $version = $project->getVersions()->first();
+        $this->assertInstanceOf(Version::class, $version);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->version = $version;
+
+        $expected = $this->sumSelectable($project, $invoiceEntry, $filterData);
+
+        $this->assertGreaterThan(0, $expected);
+        $this->assertSame(
+            $expected,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataExcludesBilledWorklogs(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+
+        $listed = 0;
+        $billed = 0;
+        foreach ($this->repository->findByFilterData($project, $invoiceEntry, $filterData) as $worklog) {
+            $this->assertInstanceOf(Worklog::class, $worklog);
+            $listed += (int) $worklog->getTimeSpentSeconds();
+
+            if ($worklog->isBilled()) {
+                $billed += (int) $worklog->getTimeSpentSeconds();
+            }
+        }
+
+        // The default filter lists billed worklogs, which the picker renders
+        // without a checkbox, so the total must not include them.
+        $this->assertGreaterThan(0, $billed);
+        $this->assertSame(
+            $listed - $billed,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataExcludesWorklogsHeldByAnotherEntry(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        [$otherEntry, $invoiceEntry] = $invoiceEntryRepo->findBy([], ['id' => 'ASC'], 2);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $otherEntry);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+
+        $listed = 0;
+        $notSelectable = 0;
+        $unbilledHeldByOther = 0;
+        foreach ($this->repository->findByFilterData($project, $invoiceEntry, $filterData) as $worklog) {
+            $this->assertInstanceOf(Worklog::class, $worklog);
+            $seconds = (int) $worklog->getTimeSpentSeconds();
+            $listed += $seconds;
+
+            $owner = $worklog->getInvoiceEntry();
+            $heldByOther = null !== $owner && $owner->getId() !== $invoiceEntry->getId();
+
+            if ($worklog->isBilled() || $heldByOther) {
+                $notSelectable += $seconds;
+            }
+
+            if (!$worklog->isBilled() && $owner?->getId() === $otherEntry->getId()) {
+                $unbilledHeldByOther += $seconds;
+            }
+        }
+
+        // Guard the point of the test: without unbilled worklogs on another
+        // entry, the held-by-another-entry exclusion would pass untested.
+        $this->assertGreaterThan(0, $unbilledHeldByOther, 'Expected unbilled worklogs held by another invoice entry in fixtures.');
+        $this->assertSame(
+            $listed - $notSelectable,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataIsZeroWhenNothingMatches(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->worker = 'no-such-worker@test.local';
+
+        $this->assertSame(0, $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData));
+    }
+
+    /**
+     * Sum the listed worklogs the picker offers a checkbox for, mirroring the
+     * disabled condition in invoice_entry/worklogs.html.twig.
+     */
+    private function sumSelectable(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): int
+    {
+        $sum = 0;
+
+        foreach ($this->repository->findByFilterData($project, $invoiceEntry, $filterData) as $worklog) {
+            $this->assertInstanceOf(Worklog::class, $worklog);
+
+            $owner = $worklog->getInvoiceEntry();
+
+            if ($worklog->isBilled() || (null !== $owner && $owner->getId() !== $invoiceEntry->getId())) {
+                continue;
+            }
+
+            $sum += (int) $worklog->getTimeSpentSeconds();
+        }
+
+        return $sum;
     }
 
     public function testFindWorklogsByWorkerAndDateRange(): void

@@ -10,6 +10,7 @@ use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\MaterialNumberEnum;
 use App\Model\Invoices\ConfirmData;
+use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
@@ -172,7 +173,32 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         $this->assertSame(0.0, (float) $worklogEntry->getAmount());
 
         // 6. Attach worklogs to the WORKLOG entry.
+        $worklogsCrawler = $client->request('GET', '/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/worklogs');
+        $this->assertResponseIsSuccessful();
+
         $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+
+        // The sums bar reports the hours that can be selected in the filtered
+        // list, and each checkbox carries the time the Stimulus controller sums
+        // for the selection. The controller renders the page with the filter
+        // defaults, since an unsubmitted GET form leaves the filter untouched.
+        $expectedTotalHours = round($worklogRepository->sumSelectableTimeSpentSecondsByFilterData(
+            $project,
+            $worklogEntry,
+            new InvoiceEntryWorklogsFilterData()
+        ) / 3600, 2);
+        $this->assertGreaterThan(0, $expectedTotalHours);
+
+        $sums = $worklogsCrawler->filter('.sticky-actions-sums');
+        $this->assertCount(1, $sums);
+        $this->assertSame('0', trim($sums->filter('[data-entry-select-target="selectedHours"]')->text()));
+        $this->assertEqualsWithDelta(
+            $expectedTotalHours,
+            (float) $sums->filter('[data-total-hours]')->attr('data-total-hours'),
+            0.001
+        );
+        $this->assertGreaterThan(0, $worklogsCrawler->filter('input[data-time-spent-seconds]')->count());
+
         $unbilled = $worklogRepository->findBy(
             ['project' => $project, 'isBilled' => false],
             ['id' => 'ASC'],

@@ -86,12 +86,14 @@ class InvoiceEntryWorklogController extends AbstractController
         $form->handleRequest($request);
 
         $worklogs = $worklogRepository->findByFilterData($project, $invoiceEntry, $filterData);
+        $totalTimeSpentSeconds = $worklogRepository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData);
 
         return $this->render('invoice_entry/worklogs.html.twig', [
             'form' => $form->createView(),
             'invoice' => $invoice,
             'invoiceEntry' => $invoiceEntry,
             'worklogs' => $worklogs,
+            'totalHours' => round($totalTimeSpentSeconds / 3600, 2),
             'submitEndpoint' => $this->generateUrl('app_invoice_entry_select_worklogs', ['invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()]),
         ]);
     }
