@@ -55,12 +55,25 @@ class WorklogRepository extends ServiceEntityRepository
     }
 
     /**
-     * Sum the time spent on the worklogs matching the given filter.
+     * Sum the time spent on the worklogs matching the given filter that can be
+     * added to the invoice entry.
+     *
+     * Already billed worklogs and worklogs held by another invoice entry are
+     * listed without a checkbox, so their time can never become part of the
+     * selection and must not be part of the total either.
      */
-    public function sumTimeSpentSecondsByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): int
+    public function sumSelectableTimeSpentSecondsByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): int
     {
-        $sum = $this->createFilterDataQueryBuilder($project, $invoiceEntry, $filterData)
+        $qb = $this->createFilterDataQueryBuilder($project, $invoiceEntry, $filterData);
+
+        $sum = $qb
             ->select('SUM(worklog.timeSpentSeconds)')
+            ->andWhere('worklog.isBilled = FALSE OR worklog.isBilled is NULL')
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('worklog.invoiceEntry'),
+                $qb->expr()->eq('worklog.invoiceEntry', ':selectableInvoiceEntry')
+            ))
+            ->setParameter('selectableInvoiceEntry', $invoiceEntry)
             ->getQuery()
             ->getSingleScalarResult();
 
