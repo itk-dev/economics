@@ -108,8 +108,8 @@
                 <span class="hidden" data-entry-select-target="spinner">loading...</span>
                 <span class="hidden" data-entry-select-target="result"></span>
                 <div class="sticky-actions-sums">
-                    <span>{{ 'worklog.selected_hours'|trans }}: <span class="font-bold" data-entry-select-target="selectedHours">0</span></span>
-                    <span>{{ 'worklog.total_hours'|trans }}: <span class="font-bold">{{ totalHours }}</span></span>
+                    <span>{{ 'worklog.selected_hours'|trans }}: <span class="font-bold" aria-live="polite" data-entry-select-target="selectedHours">0</span></span>
+                    <span>{{ 'worklog.total_hours'|trans }}: <span class="font-bold" data-total-hours="{{ totalHours }}">{{ totalHours }}</span></span>
                 </div>
             </div>
         </form>
