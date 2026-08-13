@@ -2408,6 +2408,12 @@ parameters:
 			path: tests/Integration/Controller/InvoiceFullFlowTest.php
 
 		-
+			message: '#^Call to an undefined method object\:\:sumSelectableTimeSpentSecondsByFilterData\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
 			message: '#^Cannot call method getAmount\(\) on App\\Entity\\InvoiceEntry\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -2798,9 +2804,15 @@ parameters:
 			path: tests/Integration/Repository/WorkerRepositoryTest.php
 
 		-
+			message: '#^Call to an undefined method object\:\:findBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
 			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
 			identifier: method.notFound
-			count: 8
+			count: 12
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
@@ -2837,12 +2849,6 @@ parameters:
 			message: '#^Parameter \#1 \$project of method App\\Repository\\WorklogRepository\:\:findByFilterData\(\) expects App\\Entity\\Project, App\\Entity\\Project\|null given\.$#'
 			identifier: argument.type
 			count: 5
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
-			identifier: assign.propertyType
-			count: 1
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
