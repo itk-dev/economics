@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-329](https://github.com/itk-dev/economics/pull/329)
+  Blocked worklog selection on recorded invoices.
 * [PR-328](https://github.com/itk-dev/economics/pull/328)
   Added selected and total hours to the worklog selection list.
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
