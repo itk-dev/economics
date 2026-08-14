@@ -8,13 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* Raised test coverage from 64% to 90% and lifted the enforced threshold from
-  62 to 85. Added tests for all form types, entities, the remaining enums and
-  DBAL date types, five previously untested console commands, the Leantime
-  sync fan-out, the worklog filter query, and CRUD/API flows for the issue,
-  subscription, invoice, invoice-entry worklog, planning, project, service
-  agreement, client, product, account, worker, worker group, user, management
-  report, game center and error controllers.
+* [PR-331](https://github.com/itk-dev/economics/pull/331)
+  Raised test coverage from 64% to 90% and the threshold from 62 to 85
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
   Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
