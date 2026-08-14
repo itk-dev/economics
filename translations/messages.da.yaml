@@ -342,6 +342,7 @@ worklog:
   action_save: "Gem valgte worklogs"
   error_already_billed: "Fejl: Indeholder worklog der allerede er faktureret. Prøv at genindlæse siden..."
   error_added_to_other_invoice_entry: "Fejl: Indeholder worklog der er bundet til anden fakturaindgang. Prøv at genindlæse siden..."
+  error_invoice_recorded: "Fejl: Fakturaen er bogført og fakturalinjens worklogs kan derfor ikke ændres."
   only_available_false: "Nej. Vis alle."
   only_available_true: "Ja"
   only_available: 'Kun "frie" worklogs'

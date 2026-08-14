@@ -41,6 +41,10 @@ class InvoiceEntryWorklogController extends AbstractController
             throw new EconomicsException($this->translator->trans('exception.invoice_entry_not_worklog_type'), 400);
         }
 
+        if ($invoice->isRecorded()) {
+            return $this->redirectToRoute('app_invoice_entry_worklogs_show', ['invoice' => $invoice->getId(), 'invoiceEntry' => $invoiceEntry->getId()], Response::HTTP_SEE_OTHER);
+        }
+
         $project = $invoice->getProject();
 
         if (is_null($project)) {
@@ -123,6 +127,10 @@ class InvoiceEntryWorklogController extends AbstractController
     #[Route('/{invoiceEntry}/select_worklogs', name: 'app_invoice_entry_select_worklogs', methods: ['POST'])]
     public function selectWorklogs(Request $request, InvoiceEntry $invoiceEntry, WorklogRepository $worklogRepository, BillingService $billingService): Response
     {
+        if ($invoiceEntry->getInvoice()?->isRecorded()) {
+            return new JsonResponse(['message' => $this->translator->trans('worklog.error_invoice_recorded')], 400);
+        }
+
         $worklogSelections = $request->toArray();
 
         foreach ($worklogSelections as $worklogSelection) {
