@@ -290,6 +290,51 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         // 10. HTML export preview still works after record.
         $client->request('GET', '/admin/invoices/'.$invoiceId.'/show-export');
         $this->assertResponseIsSuccessful();
+
+        // 11. The worklog selection is closed once the invoice is recorded.
+        $client->request('GET', '/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/worklogs');
+        $this->assertResponseRedirects('/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/worklogs-show');
+
+        $client->request('GET', '/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/worklogs-show');
+        $this->assertResponseIsSuccessful();
+
+        $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+        $this->assertInstanceOf(WorklogRepository::class, $worklogRepository);
+
+        $unassigned = null;
+        foreach ($worklogRepository->findBy(['project' => $project, 'isBilled' => false], ['id' => 'ASC'], 50) as $wl) {
+            if (null === $wl->getInvoiceEntry()) {
+                $unassigned = $wl;
+                break;
+            }
+        }
+        $this->assertInstanceOf(Worklog::class, $unassigned, 'Expected a spare unassigned worklog in fixtures.');
+        $unassignedId = $unassigned->getId();
+
+        $worklogEntry = $this->reloadInvoiceEntry($worklogEntryId);
+        $this->assertInstanceOf(InvoiceEntry::class, $worklogEntry);
+        $amountBefore = $worklogEntry->getAmount();
+
+        $client->request(
+            'POST',
+            '/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/select_worklogs',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            (string) json_encode([['id' => $unassignedId, 'checked' => true]]),
+        );
+        $this->assertResponseStatusCodeSame(400);
+
+        $worklogEntry = $this->reloadInvoiceEntry($worklogEntryId);
+        $this->assertInstanceOf(InvoiceEntry::class, $worklogEntry);
+        $this->assertEqualsWithDelta($amountBefore, $worklogEntry->getAmount(), 0.0001);
+
+        $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+        $this->assertInstanceOf(WorklogRepository::class, $worklogRepository);
+        $this->assertNull(
+            $worklogRepository->find($unassignedId)?->getInvoiceEntry(),
+            'Expected the worklog to stay unassigned when the invoice is recorded.'
+        );
     }
 
     /**
