@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* CI: Stopped every workflow job starting RabbitMQ. `phpfpm` depends on `rabbit` being healthy, and
+  `docker compose` loads `docker-compose.override.yml` automatically, so all eight jobs that run
+  `phpfpm` booted a broker none of them use — `when@test` in `config/packages/messenger.yaml` routes
+  the only AMQP transport to Doctrine. The jobs now pass `--no-deps` and start `mariadb` explicitly
+  where they need it, which removes the intermittent `dependency failed to start: container
+  economics_v2-rabbit-1 exited (1)` failures and cuts a container off every job.
+  Also gave the `rabbit` healthcheck a `start_period`: `rabbitmq-diagnostics` boots an Erlang VM per
+  invocation, so probing every second spawned a dozen of them alongside the broker's own ~12s boot,
+  and without a start period each failure counted against the retry budget.
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
   Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
