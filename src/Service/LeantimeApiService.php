@@ -29,6 +29,8 @@ use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
+use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -44,7 +46,9 @@ class LeantimeApiService implements DataProviderInterface
     public const WORKERS = 'workers';
     private const LIMIT = 100;
     // Placeholder for a null name; the name columns are not nullable, and dropping the row would
-    // lose real data — for issues it would make their worklogs unstorable.
+    // lose real data — for issues it would make their worklogs unstorable. The tracker id is
+    // appended so two unnamed entities stay distinguishable: names are used as lookup keys
+    // elsewhere, e.g. ProjectBillingService resolves a client by version name.
     private const NAME_MISSING = '(no name)';
     private const QUEUE_ASYNC = 'async';
     private const QUEUE_SYNC = 'sync';
@@ -142,20 +146,32 @@ class LeantimeApiService implements DataProviderInterface
             };
 
             foreach ($results->{$type} as $result) {
-                // Nothing identifies the entity to remove, and this loop has no other guard.
+                // Nothing identifies the entity to remove.
                 if (null === $result->id) {
-                    $this->logger->warning(sprintf('Skipping deleted %s entry with no id', $type));
+                    $this->logger->error(sprintf('Skipping deleted %s entry with no id', $type));
 
                     continue;
                 }
 
                 $projectTrackerId = $result->id;
-                $deletedDate = $this->getLeanDateTime($result->deletedDate);
 
-                $this->messageBus->dispatch(
-                    new EntityRemovedFromDataProviderMessage($classname, $dataProviderId, $projectTrackerId, $deletedDate),
-                    [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
-                );
+                // Now that the request actually filters by timestamp, an entry dropped here is
+                // dropped for good; before, every run re-read the full history and healed itself.
+                // So one bad entry must not take the rest of the run with it.
+                try {
+                    $deletedDate = $this->getLeanDateTime($result->deletedDate);
+
+                    $this->messageBus->dispatch(
+                        new EntityRemovedFromDataProviderMessage($classname, $dataProviderId, $projectTrackerId, $deletedDate),
+                        [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+                    );
+                } catch (HandlerFailedException|\DateMalformedStringException|\TypeError $e) {
+                    if ($e instanceof HandlerFailedException) {
+                        $this->rethrowUnlessRowLevel($e);
+                    }
+
+                    $this->logger->error(sprintf('Skipping deleted %s id %s: %s', $type, $projectTrackerId, $e->getMessage()));
+                }
             }
         }
     }
@@ -202,9 +218,10 @@ class LeantimeApiService implements DataProviderInterface
         foreach ($data->results as $result) {
             $this->dispatchUpsertMessage($className, $result, $dataProviderId, $fetchDate, $asyncJobQueue, $dataProviderUrl, $disableModifiedAtCheck);
 
-            // Track the highest id rather than the last one seen: a null id left $startId null,
-            // and null + 1 is 1, so the next page restarted the sync from the beginning and
-            // re-queued itself forever. Out-of-order ids moved the cursor backwards the same way.
+            // The endpoint returns rows with id >= start in ascending order, so the highest usable
+            // id on the page is where the next one begins. Tracking it separately from $startId
+            // keeps the input cursor intact for the guard below, and skips ids that cannot be
+            // paged on: null + 1 is 1, which restarted the sync from the beginning.
             if (is_numeric($result->id ?? null)) {
                 $id = (int) $result->id;
                 $maxId = null === $maxId ? $id : max($maxId, $id);
@@ -235,11 +252,9 @@ class LeantimeApiService implements DataProviderInterface
 
     private function dispatchUpsertMessage(string $className, object $data, int $dataProviderId, \DateTimeInterface $fetchDate, bool $asyncJobQueue = false, ?string $dataProviderUrl = null, bool $disableModifiedAtCheck = false): void
     {
-        // Catch \Throwable, not \Exception: a nullable source field mapped onto a non-nullable
-        // constructor argument raises a TypeError, which extends Error. Uncaught, it escapes the
-        // row loop in updateAsJob() before the next page is queued, halting the sync silently.
-        // The dispatch belongs inside the try for the same reason: on the sync transport the
-        // handler runs inline here, so its failures surface as part of this call.
+        // A TypeError, not an Exception, is what a null source field mapped onto a non-nullable
+        // constructor argument raises. Uncaught it escapes the row loop in updateAsJob() before the
+        // next page is queued, which is how one bad row used to halt the whole sync silently.
         try {
             $message = match ($className) {
                 Project::class => new UpsertProjectMessage($this->getProjectUpsertFromResult($data, $dataProviderId, $fetchDate, $dataProviderUrl, $disableModifiedAtCheck)),
@@ -249,15 +264,49 @@ class LeantimeApiService implements DataProviderInterface
                 Worker::class => new UpsertWorkerMessage($this->getWorkerUpsertFromResult($data, $dataProviderId, $fetchDate)),
                 default => null,
             };
-
-            if (null !== $message) {
-                $this->messageBus->dispatch(
-                    $message,
-                    [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
-                );
-            }
-        } catch (\Throwable $e) {
+        } catch (NotAcceptableException|\TypeError $e) {
             $this->logger->error(sprintf('Skipping %s id %s: %s', $className, $data->id ?? '?', $e->getMessage()));
+
+            return;
+        }
+
+        if (null === $message) {
+            return;
+        }
+
+        // The dispatch needs guarding too: on the sync transport the handler runs inline here, so a
+        // row the handler rejects surfaces as part of this call. Only that case is skippable —
+        // rethrowUnlessRowLevel() keeps a dead database or an unreachable Leantime loud.
+        try {
+            $this->messageBus->dispatch(
+                $message,
+                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+            );
+        } catch (HandlerFailedException $e) {
+            $this->rethrowUnlessRowLevel($e);
+
+            $this->logger->error(sprintf('Skipping %s id %s: %s', $className, $data->id ?? '?', $e->getMessage()));
+        }
+    }
+
+    /**
+     * Rethrow a handler failure unless every wrapped cause describes a single unusable row.
+     *
+     * The handlers mark a row they cannot process as unrecoverable and let everything else through,
+     * so an exception that is not unrecoverable means the failure was not about this row.
+     */
+    private function rethrowUnlessRowLevel(HandlerFailedException $exception): void
+    {
+        $causes = $exception->getWrappedExceptions(recursive: true);
+
+        if ([] === $causes) {
+            throw $exception;
+        }
+
+        foreach ($causes as $cause) {
+            if (!$cause instanceof UnrecoverableMessageHandlingException) {
+                throw $exception;
+            }
         }
     }
 
@@ -267,7 +316,7 @@ class LeantimeApiService implements DataProviderInterface
 
         return new DataProviderProjectData(
             $dataProviderId,
-            $result->name ?? self::NAME_MISSING,
+            $result->name ?? $this->missingName($projectTrackerId),
             $projectTrackerId,
             $this->linkToProject($projectTrackerId, $dataProviderUrl),
             $fetchDate,
@@ -285,7 +334,7 @@ class LeantimeApiService implements DataProviderInterface
 
         return new DataProviderVersionData(
             $dataProviderId,
-            $result->name ?? self::NAME_MISSING,
+            $result->name ?? $this->missingName((string) $result->id),
             (string) $result->id,
             (string) $result->projectId,
             $fetchDate,
@@ -296,13 +345,20 @@ class LeantimeApiService implements DataProviderInterface
 
     private function getIssueUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate, ?string $dataProviderUrl = null, bool $disableModifiedAtCheck = false): DataProviderIssueData
     {
+        // An issue cannot exist without a project; casting a null projectId to '' would look up no
+        // project and silently clear the association an existing issue already has, taking its
+        // worklogs' project with it.
+        if (null === $result->projectId) {
+            throw new NotAcceptableException('Issue upsert not acceptable: projectId is null');
+        }
+
         $projectTrackerId = (string) $result->id;
 
         return new DataProviderIssueData(
             $projectTrackerId,
             $dataProviderId,
             (string) $result->projectId,
-            $result->name ?? self::NAME_MISSING,
+            $result->name ?? $this->missingName($projectTrackerId),
             $result->tags,
             $result->plannedHours,
             $result->remainingHours,
@@ -331,30 +387,50 @@ class LeantimeApiService implements DataProviderInterface
             throw new NotAcceptableException('Worklog upsert not acceptable: ticketId is null');
         }
 
+        // The id is the key the worklog is stored and looked up under.
+        if (null === $result->id) {
+            throw new NotAcceptableException('Worklog upsert not acceptable: id is null');
+        }
+
+        // A null username means the join found no user row, as Leantime never stores a null one.
+        // The hours are still real, so keep the worklog and name the departed user.
+        $username = $result->username ?? null;
+        $usernameIsPlaceholder = null === $username;
+        $username ??= 'deleted-user-'.($result->userId ?? 'unknown');
+
         return new DataProviderWorklogData(
             $result->id,
             $dataProviderId,
             (string) $result->ticketId,
             $result->description,
             $startedDate,
-            // A null username means the join found no user row, as Leantime never stores a null
-            // one. The hours are still real, so keep the worklog and name the departed user.
-            $result->username ?? 'deleted-user-'.($result->userId ?? 'unknown'),
+            $username,
             $result->hours,
             $result->kind,
             $fetchDate,
             $this->getLeanDateTime($result->modified),
             $disableModifiedAtCheck,
+            $usernameIsPlaceholder,
         );
     }
 
     private function getWorkerUpsertFromResult(object $result, int $dataProviderId, \DateTimeInterface $fetchDate): DataProviderWorkerData
     {
+        // The email is the key workers are matched on, and the name column is not nullable.
+        if (null === $result->email) {
+            throw new NotAcceptableException('Worker upsert not acceptable: email is null');
+        }
+
         return new DataProviderWorkerData(
             $result->id,
-            $result->name,
+            $result->name ?? $this->missingName((string) $result->id),
             $result->email,
         );
+    }
+
+    private function missingName(string $projectTrackerId): string
+    {
+        return sprintf('%s %s', self::NAME_MISSING, $projectTrackerId);
     }
 
     private function fetchFromLeantime(DataProvider $dataProvider, string $type, array $params): object

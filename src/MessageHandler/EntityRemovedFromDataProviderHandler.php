@@ -6,6 +6,7 @@ use App\Entity\Issue;
 use App\Entity\Project;
 use App\Entity\Version;
 use App\Entity\Worklog;
+use App\Exception\NotFoundException;
 use App\Exception\NotSupportedException;
 use App\Message\EntityRemovedFromDataProviderMessage;
 use App\Service\DataProviderService;
@@ -34,7 +35,8 @@ readonly class EntityRemovedFromDataProviderHandler
                 Worklog::class => $this->dataProviderService->worklogRemovedFromDataProvider($message->dataProviderId, (int) $message->projectTrackerId, $message->deletedDate),
                 default => throw new NotSupportedException('classname not supported'),
             };
-        } catch (\Throwable $e) {
+        } catch (NotFoundException|NotSupportedException|\TypeError $e) {
+            // Narrow on purpose: see UpsertIssueHandler. Infrastructure failures must propagate.
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

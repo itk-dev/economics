@@ -2,6 +2,7 @@
 
 namespace App\MessageHandler;
 
+use App\Exception\NotFoundException;
 use App\Message\UpsertVersionMessage;
 use App\Service\DataProviderService;
 use Psr\Log\LoggerInterface;
@@ -22,7 +23,8 @@ readonly class UpsertVersionHandler
         try {
             $this->logger->info('Upserting version: '.$message->versionData->name);
             $this->dataProviderService->upsertVersion($message->versionData);
-        } catch (\Throwable $e) {
+        } catch (NotFoundException|\TypeError $e) {
+            // Narrow on purpose: see UpsertIssueHandler. Infrastructure failures must propagate.
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }
