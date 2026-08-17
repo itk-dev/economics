@@ -186,7 +186,9 @@ class ProductsImportCommandTest extends TestCase
 
     private function csv(string $contents): string
     {
-        $file = tempnam(sys_get_temp_dir(), 'products').'.csv';
+        $file = tempnam(sys_get_temp_dir(), 'products');
+        $this->assertIsString($file, 'Could not create a temporary import file.');
+
         file_put_contents($file, $contents);
         $this->tempFiles[] = $file;
 
