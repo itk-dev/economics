@@ -54,7 +54,7 @@ class IssueControllerTest extends AbstractTransactionalFlowTestCase
 
     public function testIndexIsDeniedForOtherRoles(): void
     {
-        $this->assertDeniedFor($this->indexUrl(), ['ROLE_INVOICE']);
+        $this->assertDeniedForRole($this->indexUrl(), 'ROLE_INVOICE');
     }
 
     public function testIndexFilterKeepsMatchingIssues(): void

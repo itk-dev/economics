@@ -20,8 +20,11 @@ abstract class AbstractTransactionalFlowTestCase extends AbstractControllerTestC
     protected KernelBrowser $client;
     protected EntityManagerInterface $entityManager;
 
+    private string $bootedRole;
+
     protected function bootTransactionalClient(string $role): void
     {
+        $this->bootedRole = $role;
         $this->client = $this->createClientLoggedInAs([$role]);
         $this->client->disableReboot();
 
@@ -42,6 +45,23 @@ abstract class AbstractTransactionalFlowTestCase extends AbstractControllerTestC
         }
 
         parent::tearDown();
+    }
+
+    /**
+     * Asserts that $role is denied access to $url.
+     *
+     * The inherited assertDeniedFor() boots a fresh client, which would shut down
+     * the kernel holding this test's open transaction. Switching user on the live
+     * client keeps that transaction intact.
+     */
+    protected function assertDeniedForRole(string $url, string $role): void
+    {
+        $this->client->loginUser($this->getUserWithRole($role));
+        $this->client->request('GET', $url);
+
+        $this->assertResponseStatusCodeSame(403, sprintf('Expected 403 at %s for role %s', $url, $role));
+
+        $this->client->loginUser($this->getUserWithRole($this->bootedRole));
     }
 
     /**

@@ -86,7 +86,7 @@ class ManagementReportFlowTest extends AbstractTransactionalFlowTestCase
 
     public function testReportIsDeniedForOtherRoles(): void
     {
-        $this->assertDeniedFor('/admin/management-report', ['ROLE_INVOICE']);
+        $this->assertDeniedForRole('/admin/management-report', 'ROLE_INVOICE');
     }
 
     private function persistRecordedInvoice(string $name, \DateTime $recordedDate, float $totalPrice): void

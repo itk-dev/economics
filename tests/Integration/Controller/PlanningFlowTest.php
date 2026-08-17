@@ -44,7 +44,7 @@ class PlanningFlowTest extends AbstractTransactionalFlowTestCase
 
     public function testPlanningIsDeniedForOtherRoles(): void
     {
-        $this->assertDeniedFor('/admin/planning/users', ['ROLE_INVOICE']);
+        $this->assertDeniedForRole('/admin/planning/users', 'ROLE_INVOICE');
     }
 
     public function testPlanningDefaultsToTheCurrentYear(): void
