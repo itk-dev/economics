@@ -32,9 +32,11 @@ abstract class AbstractFormTestCase extends KernelTestCase
 
     protected function tearDown(): void
     {
-        $connection = $this->entityManager->getConnection();
-        if ($connection->isTransactionActive()) {
-            $connection->rollBack();
+        if (isset($this->entityManager)) {
+            $connection = $this->entityManager->getConnection();
+            if ($connection->isTransactionActive()) {
+                $connection->rollBack();
+            }
         }
 
         parent::tearDown();
