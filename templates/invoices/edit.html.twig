@@ -8,7 +8,7 @@
     }) }}
 
     {{ form_start(form) }}
-    <div class="grid-split selections" {{ stimulus_controller('choices')|stimulus_controller('autofill-material-number', {map: clientMaterialNumbers}) }}>
+    <div class="grid-split selections" {{ stimulus_controller('choices')|stimulus_controller('autofill-material-number', {map: clientMaterialNumbers})|stimulus_controller('autofill-receiver-account', {map: clientReceiverAccounts}) }}>
         <div>
             {{ form_row(form.name) }}
             <div {{ stimulus_controller('generate-description') }} data-endpoint="{{ path('app_invoices_generate_description', {id: invoice.id}) }}">
