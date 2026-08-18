@@ -2,6 +2,7 @@
 
 namespace App\MessageHandler;
 
+use App\Exception\NotFoundException;
 use App\Message\LeantimeDeleteMessage;
 use App\Service\LeantimeApiService;
 use Psr\Log\LoggerInterface;
@@ -27,7 +28,8 @@ readonly class LeantimeDeleteHandler
                 $message->asyncJobQueue,
                 $message->deletedAfter,
             );
-        } catch (\Exception $e) {
+        } catch (NotFoundException|\TypeError $e) {
+            // Narrow on purpose: see UpsertIssueHandler. Infrastructure failures must propagate.
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

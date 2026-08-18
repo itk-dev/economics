@@ -247,11 +247,17 @@ class DataProviderService
 
         $worklog->setWorklogId($upsertWorklogData->projectTrackerId);
         $worklog->setDescription($upsertWorklogData->description);
-        $worklog->setWorker($upsertWorklogData->username);
+
+        // A stand-in username describes a user the data provider could no longer resolve. It is
+        // better than losing the worklog, but not better than the name already on record.
+        if (!$upsertWorklogData->usernameIsPlaceholder || null === $worklog->getWorker()) {
+            $worklog->setWorker($upsertWorklogData->username);
+        }
+
         $worklog->setStarted($upsertWorklogData->startedDate);
         $worklog->setProjectTrackerIssueId($upsertWorklogData->projectTrackerIssueId);
         $worklog->setTimeSpentSeconds($upsertWorklogData->hours * $this::SECONDS_IN_HOUR);
-        $worklog->setKind(BillableKindsEnum::tryFrom($upsertWorklogData->kind));
+        $worklog->setKind(null !== $upsertWorklogData->kind ? BillableKindsEnum::tryFrom($upsertWorklogData->kind) : null);
         $worklog->setProject($issue->getProject());
         $worklog->setIssue($issue);
         $worklog->setFetchDate($upsertWorklogData->fetchTime);
