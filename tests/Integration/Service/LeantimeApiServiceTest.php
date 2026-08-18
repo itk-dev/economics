@@ -159,6 +159,208 @@ class LeantimeApiServiceTest extends KernelTestCase
         $this->assertEquals((new \DateTime('2025-10-03T13:47:30.000000Z'))->getTimestamp(), $worklog->getSourceModifiedDate()->getTimestamp());
     }
 
+    /**
+     * Nullable fields from data-api#18 must not halt the sync.
+     *
+     * A row that cannot be mapped is logged and skipped; every other row still imports.
+     */
+    public function testUpdateWithNullValues(): void
+    {
+        self::bootKernel();
+        $container = self::getContainer();
+
+        $messageBus = $container->get(MessageBusInterface::class);
+        $dataProviderRepository = $container->get(DataProviderRepository::class);
+        $projectRepository = $container->get(ProjectRepository::class);
+        $versionRepository = $container->get(VersionRepository::class);
+        $issueRepository = $container->get(IssueRepository::class);
+        $worklogRepository = $container->get(WorklogRepository::class);
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Collect the skip messages instead of asserting call counts, so the log stays readable
+        // when a new skip is added.
+        $loggedErrors = [];
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $loggerMock->method('error')->willReturnCallback(
+            function (string $message, array $context = []) use (&$loggedErrors) {
+                $loggedErrors[] = $message;
+            }
+        );
+
+        $httpClientMock = $this->createMock(HttpClientInterface::class);
+        $responses = [];
+
+        foreach ([$this->getNullValueProjects(), $this->getNullValueMilestones(), $this->getNullValueTickets(), $this->getNullValueTimesheets()] as $payload) {
+            $responseMock = $this->createMock(ResponseInterface::class);
+            $responseMock->method('getStatusCode')->willReturn(200);
+            $responseMock->method('getContent')->willReturn(json_encode($payload));
+            $responses[] = $responseMock;
+        }
+
+        $httpClientMock->method('request')->willReturn(...$responses);
+
+        $service = new LeantimeApiService(
+            $httpClientMock,
+            $messageBus,
+            $dataProviderRepository,
+            $entityManager,
+            $projectRepository,
+            $loggerMock,
+        );
+
+        $dataProvider = new DataProvider();
+        $dataProvider->setName('Data Provider 5 - null values');
+        $dataProvider->setEnabled(true);
+        $dataProvider->setClass(LeantimeApiService::class);
+        $dataProvider->setUrl('http://localhost/');
+        $dataProvider->setSecret('Not so secret');
+        $entityManager->persist($dataProvider);
+        $entityManager->flush();
+
+        // A project with no name is kept under a placeholder; dropping it would orphan its issues.
+        // The tracker id is part of the placeholder so two unnamed entities stay distinguishable.
+        $before = count($projectRepository->findAll());
+        $service->updateAsJob(Project::class, 0, 100, $dataProvider->getId());
+        $this->assertEquals($before + 2, count($projectRepository->findAll()));
+        $this->assertEquals('(no name) 70', $projectRepository->findOneBy(['projectTrackerId' => 70, 'dataProvider' => $dataProvider])->getName());
+
+        // The nameless milestone is kept, the one without a project is skipped: Version::$project
+        // is not nullable.
+        $before = count($versionRepository->findAll());
+        $service->updateAsJob(Version::class, 0, 100, $dataProvider->getId());
+        $this->assertEquals($before + 1, count($versionRepository->findAll()));
+        $this->assertEquals('(no name) 20', $versionRepository->findOneBy(['projectTrackerId' => 20, 'dataProvider' => $dataProvider])->getName());
+        $this->assertNull($versionRepository->findOneBy(['projectTrackerId' => 21, 'dataProvider' => $dataProvider]));
+
+        // A null status maps to OTHER, and null hours are stored as null rather than raising. The
+        // ticket without a project is skipped rather than stored against no project at all, which
+        // would also clear the association on any issue that already had one.
+        $before = count($issueRepository->findAll());
+        $service->updateAsJob(Issue::class, 0, 100, $dataProvider->getId());
+        $this->assertEquals($before + 2, count($issueRepository->findAll()));
+        $issue = $issueRepository->findOneBy(['projectTrackerId' => 30, 'dataProvider' => $dataProvider]);
+        $this->assertEquals('(no name) 30', $issue->getName());
+        $this->assertEquals(IssueStatusEnum::OTHER, $issue->getStatus());
+        $this->assertNull($issue->getPlanHours());
+        $this->assertNull($issueRepository->findOneBy(['projectTrackerId' => 32, 'dataProvider' => $dataProvider]));
+
+        // Hours worked by a deleted user are real billable data, so the worklog is kept and
+        // attributed via the userId that data-api#18 added. The one with no ticket cannot be
+        // stored at all, as Worklog::$issue is not nullable.
+        $before = count($worklogRepository->findAll());
+        $service->updateAsJob(Worklog::class, 0, 100, $dataProvider->getId());
+        $this->assertEquals($before + 2, count($worklogRepository->findAll()));
+
+        $deletedUserWorklog = $worklogRepository->findOneBy(['worklogId' => 100, 'dataProvider' => $dataProvider]);
+        $this->assertEquals('deleted-user-42', $deletedUserWorklog->getWorker());
+        $this->assertNull($deletedUserWorklog->getKind());
+
+        $this->assertNull($worklogRepository->findOneBy(['worklogId' => 101, 'dataProvider' => $dataProvider]));
+
+        $unknownUserWorklog = $worklogRepository->findOneBy(['worklogId' => 102, 'dataProvider' => $dataProvider]);
+        $this->assertEquals('deleted-user-unknown', $unknownUserWorklog->getWorker());
+
+        // Rows 103 and 104 are the regression probes for the two ways a single row used to stop
+        // the sync: a TypeError, which catch (\Exception) could not see, and a handler failure,
+        // which happened outside the try because the dispatch sat there.
+        $this->assertNull($worklogRepository->findOneBy(['worklogId' => 103, 'dataProvider' => $dataProvider]));
+        $this->assertNull($worklogRepository->findOneBy(['worklogId' => 104, 'dataProvider' => $dataProvider]));
+
+        // Each skipped row is reported once, so a halt could never be silent.
+        $this->assertCount(5, $loggedErrors);
+        $this->assertStringContainsString('Version upsert not acceptable: projectId is null', $loggedErrors[0]);
+        $this->assertStringContainsString('Issue upsert not acceptable: projectId is null', $loggedErrors[1]);
+        $this->assertStringContainsString('ticketId is null', $loggedErrors[2]);
+        $this->assertStringContainsString('Skipping App\Entity\Worklog id 103', $loggedErrors[3]);
+        $this->assertStringContainsString('999', $loggedErrors[4]);
+    }
+
+    /**
+     * A stand-in username must not replace a worker name already on record.
+     *
+     * Keeping the worklog is worth a placeholder; overwriting a name an earlier sync stored is not.
+     */
+    public function testDeletedUserFallbackKeepsStoredWorker(): void
+    {
+        self::bootKernel();
+        $container = self::getContainer();
+
+        $messageBus = $container->get(MessageBusInterface::class);
+        $dataProviderRepository = $container->get(DataProviderRepository::class);
+        $projectRepository = $container->get(ProjectRepository::class);
+        $worklogRepository = $container->get(WorklogRepository::class);
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        $loggerMock = $this->createMock(LoggerInterface::class);
+
+        $responseMock = $this->createMock(ResponseInterface::class);
+        $responseMock->method('getStatusCode')->willReturn(200);
+        $responseMock->method('getContent')->willReturn(json_encode($this->getDeletedUserTimesheets()));
+
+        $httpClientMock = $this->createMock(HttpClientInterface::class);
+        $httpClientMock->method('request')->willReturn($responseMock);
+
+        $service = new LeantimeApiService(
+            $httpClientMock,
+            $messageBus,
+            $dataProviderRepository,
+            $entityManager,
+            $projectRepository,
+            $loggerMock,
+        );
+
+        $dataProvider = new DataProvider();
+        $dataProvider->setName('Data Provider 6 - deleted user');
+        $dataProvider->setEnabled(true);
+        $dataProvider->setClass(LeantimeApiService::class);
+        $dataProvider->setUrl('http://localhost/');
+        $dataProvider->setSecret('Not so secret');
+        $entityManager->persist($dataProvider);
+
+        $project = new Project();
+        $project->setDataProvider($dataProvider);
+        $project->setProjectTrackerId(80);
+        $project->setProjectTrackerKey(80);
+        $project->setName('Project for a departed user');
+        $project->setProjectTrackerProjectUrl('http://localhost/');
+        $project->setInclude(true);
+        $project->setIsBillable(true);
+        $entityManager->persist($project);
+
+        $issue = new Issue();
+        $issue->setDataProvider($dataProvider);
+        $issue->setProject($project);
+        $issue->setProjectTrackerId(40);
+        $issue->setProjectTrackerKey(40);
+        $issue->setName('Issue for a departed user');
+        $issue->setStatus(IssueStatusEnum::DONE);
+        $issue->setLinkToIssue('www.example.com');
+        $entityManager->persist($issue);
+
+        $worklog = new Worklog();
+        $worklog->setDataProvider($dataProvider);
+        $worklog->setProject($project);
+        $worklog->setIssue($issue);
+        $worklog->setProjectTrackerIssueId(40);
+        $worklog->setWorklogId(200);
+        $worklog->setDescription('Recorded while the user still existed');
+        $worklog->setIsBilled(false);
+        $worklog->setWorker('real.person@example.com');
+        $worklog->setTimeSpentSeconds(60 * 60);
+        $worklog->setStarted(new \DateTime('2026-01-04T22:00:00.000000Z'));
+        $worklog->setKind(BillableKindsEnum::GENERAL_BILLABLE);
+        $entityManager->persist($worklog);
+        $entityManager->flush();
+
+        $service->updateAsJob(Worklog::class, 0, 100, $dataProvider->getId());
+
+        $stored = $worklogRepository->findOneBy(['worklogId' => 200, 'dataProvider' => $dataProvider]);
+
+        // The rest of the row was upserted, so the sync did run over it — only the worker was left.
+        $this->assertEquals(60 * 60 * 3, $stored->getTimeSpentSeconds());
+        $this->assertEquals('real.person@example.com', $stored->getWorker());
+    }
+
     public function testDeleted(): void
     {
         self::bootKernel();
@@ -180,7 +382,15 @@ class LeantimeApiServiceTest extends KernelTestCase
         $responseMock->method('getStatusCode')->willReturn(200);
         $responseMock->method('getContent')->willReturn(json_encode($this->getDeletedData()));
 
-        $httpClientMock->method('request')->willReturn($responseMock);
+        // Capture what was actually sent, so the request body can be asserted after the call.
+        $requestJson = null;
+        $httpClientMock->expects($this->once())
+            ->method('request')
+            ->willReturnCallback(function (string $method, string $url, array $options) use ($responseMock, &$requestJson): ResponseInterface {
+                $requestJson = $options['json'] ?? null;
+
+                return $responseMock;
+            });
 
         $service = new LeantimeApiService(
             $httpClientMock,
@@ -347,13 +557,27 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         $entityManager->clear();
 
-        $service->deleteAsJob($id, false, new \DateTime('2025-10-06T11:36:08.000000Z'));
+        $deletedAfter = new \DateTime('2025-10-06T11:36:08.000000Z');
+
+        $service->deleteAsJob($id, false, $deletedAfter);
+
+        // The plugin only reads 'deleted'. Under any other key the timestamp is silently discarded
+        // and every run pulls the entire deletion history, which /deleted does not paginate.
+        $this->assertSame(
+            [
+                'types' => ['timesheets', 'tickets', 'milestones', 'projects'],
+                'deleted' => $deletedAfter->getTimestamp(),
+            ],
+            $requestJson
+        );
 
         $countProjectsAfterDelete = count($projectRepository->findAll());
         $countVersionsAfterDelete = count($versionRepository->findAll());
         $countIssuesAfterDelete = count($issueRepository->findAll());
         $countWorklogsAfterDelete = count($worklogRepository->findAll());
 
+        // The two worklogs sit behind an entry with an unparsable date. If that entry escaped the
+        // loop instead of being skipped, neither would ever be reached.
         $this->assertEquals($countWorklogsBeforeCreate + 1, $countWorklogsAfterDelete);
         $this->assertEquals($countIssuesBeforeCreate + 1, $countIssuesAfterDelete);
         // Versions can always be removed.
@@ -368,6 +592,217 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         $worklog1 = $worklogRepository->find($worklogId1);
         $this->assertEquals(new \DateTime('2025-10-24T11:36:08.000000Z'), $worklog1->getSourceDeletedDate());
+    }
+
+    private function getNullValueProjects(): object
+    {
+        return json_decode('
+            {
+              "parameters": {
+                "start": 0,
+                "limit": 100
+              },
+              "resultsCount": 2,
+              "results": [
+                {
+                  "id": 70,
+                  "name": null,
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                },
+                {
+                  "id": 71,
+                  "name": "Project with a name",
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                }
+              ]
+            }
+        ', null, 512, JSON_THROW_ON_ERROR);
+    }
+
+    private function getNullValueMilestones(): object
+    {
+        return json_decode('
+            {
+              "parameters": {
+                "start": 0,
+                "limit": 100
+              },
+              "resultsCount": 2,
+              "results": [
+                {
+                  "id": 20,
+                  "projectId": 70,
+                  "name": null,
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                },
+                {
+                  "id": 21,
+                  "projectId": null,
+                  "name": "Milestone without a project",
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                }
+              ]
+            }
+        ', null, 512, JSON_THROW_ON_ERROR);
+    }
+
+    private function getNullValueTickets(): object
+    {
+        return json_decode('
+            {
+              "parameters": {
+                "start": 0,
+                "limit": 100
+              },
+              "resultsCount": 3,
+              "results": [
+                {
+                  "id": 30,
+                  "projectId": 70,
+                  "name": null,
+                  "status": null,
+                  "milestoneId": null,
+                  "tags": [],
+                  "worker": null,
+                  "plannedHours": null,
+                  "remainingHours": null,
+                  "dueDate": null,
+                  "resolutionDate": null,
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                },
+                {
+                  "id": 31,
+                  "projectId": 70,
+                  "name": "Ticket with a name",
+                  "status": "DONE",
+                  "milestoneId": null,
+                  "tags": [],
+                  "worker": "admin@example.com",
+                  "plannedHours": 4,
+                  "remainingHours": 2,
+                  "dueDate": null,
+                  "resolutionDate": null,
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                },
+                {
+                  "id": 32,
+                  "projectId": null,
+                  "name": "Ticket without a project",
+                  "status": "NEW",
+                  "milestoneId": null,
+                  "tags": [],
+                  "worker": null,
+                  "plannedHours": null,
+                  "remainingHours": null,
+                  "dueDate": null,
+                  "resolutionDate": null,
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                }
+              ]
+            }
+        ', null, 512, JSON_THROW_ON_ERROR);
+    }
+
+    private function getNullValueTimesheets(): object
+    {
+        return json_decode('
+            {
+              "parameters": {
+                "start": 0,
+                "limit": 100
+              },
+              "resultsCount": 5,
+              "results": [
+                {
+                  "id": 100,
+                  "ticketId": 30,
+                  "projectId": 70,
+                  "description": "Hours worked by a since deleted user",
+                  "hours": 2.5,
+                  "userId": 42,
+                  "username": null,
+                  "kind": null,
+                  "workDate": "2026-01-04T22:00:00.000000Z",
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                },
+                {
+                  "id": 101,
+                  "ticketId": null,
+                  "projectId": null,
+                  "description": "Timesheet with no ticket",
+                  "hours": 1,
+                  "userId": 1,
+                  "username": "admin@example.com",
+                  "kind": "GENERAL_BILLABLE",
+                  "workDate": "2026-01-04T22:00:00.000000Z",
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                },
+                {
+                  "id": 102,
+                  "ticketId": 31,
+                  "projectId": 70,
+                  "description": "Deleted user without a userId",
+                  "hours": 3,
+                  "userId": null,
+                  "username": null,
+                  "kind": "TESTING",
+                  "workDate": "2026-01-04T22:00:00.000000Z",
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                },
+                {
+                  "id": 103,
+                  "ticketId": 31,
+                  "projectId": 70,
+                  "description": "Null in a field the API declares non-nullable",
+                  "hours": null,
+                  "userId": 1,
+                  "username": "admin@example.com",
+                  "kind": "GENERAL_BILLABLE",
+                  "workDate": "2026-01-04T22:00:00.000000Z",
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                },
+                {
+                  "id": 104,
+                  "ticketId": 999,
+                  "projectId": 70,
+                  "description": "References a ticket that was never synced",
+                  "hours": 1,
+                  "userId": 1,
+                  "username": "admin@example.com",
+                  "kind": "GENERAL_BILLABLE",
+                  "workDate": "2026-01-04T22:00:00.000000Z",
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                }
+              ]
+            }
+        ', null, 512, JSON_THROW_ON_ERROR);
+    }
+
+    private function getDeletedUserTimesheets(): object
+    {
+        return json_decode('
+            {
+              "parameters": {
+                "start": 0,
+                "limit": 100
+              },
+              "resultsCount": 1,
+              "results": [
+                {
+                  "id": 200,
+                  "ticketId": 40,
+                  "projectId": 80,
+                  "description": "Recorded while the user still existed",
+                  "hours": 3,
+                  "userId": 42,
+                  "username": null,
+                  "kind": "GENERAL_BILLABLE",
+                  "workDate": "2026-01-04T22:00:00.000000Z",
+                  "modified": "2026-01-06T09:00:00.000000Z"
+                }
+              ]
+            }
+        ', null, 512, JSON_THROW_ON_ERROR);
     }
 
     private function getDeletedData(): object
@@ -415,6 +850,14 @@ class LeantimeApiServiceTest extends KernelTestCase
               }
             ],
             "timesheets": [
+              {
+                "id": null,
+                "deletedDate": "2025-10-24T11:36:08.000000Z"
+              },
+              {
+                "id": 66939,
+                "deletedDate": "not a date"
+              },
               {
                 "id": 66937,
                 "deletedDate": "2025-10-24T11:36:08.000000Z"
@@ -540,6 +983,7 @@ class LeantimeApiServiceTest extends KernelTestCase
                   "projectId": 50,
                   "description": "Fisk",
                   "hours": 5.5,
+                  "userId": 1,
                   "kind": "GENERAL_BILLABLE",
                   "username": "admin@example.com",
                   "workDate": "2024-09-23T22:00:00.000000Z",
@@ -551,6 +995,7 @@ class LeantimeApiServiceTest extends KernelTestCase
                   "projectId": 51,
                   "description": "add",
                   "hours": 1,
+                  "userId": 1,
                   "kind": "GENERAL_BILLABLE",
                   "username": "admin@example.com",
                   "workDate": "2024-09-24T22:00:00.000000Z",

@@ -2,6 +2,7 @@
 
 namespace App\MessageHandler;
 
+use App\Exception\NotFoundException;
 use App\Message\UpsertWorklogMessage;
 use App\Service\DataProviderService;
 use Psr\Log\LoggerInterface;
@@ -22,7 +23,8 @@ readonly class UpsertWorklogHandler
         try {
             $this->logger->info('Upserting worklog: '.$message->worklogData->projectTrackerId);
             $this->dataProviderService->upsertWorklog($message->worklogData);
-        } catch (\Exception $e) {
+        } catch (NotFoundException|\TypeError $e) {
+            // Narrow on purpose: see UpsertIssueHandler. Infrastructure failures must propagate.
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

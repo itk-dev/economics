@@ -18,6 +18,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Also gave the `rabbit` healthcheck a `start_period`: `rabbitmq-diagnostics` boots an Erlang VM per
     invocation, so probing every second spawned a dozen of them alongside the broker's own ~12s boot,
     and without a start period each failure counted against the retry budget.
+* [PR-325](https://github.com/itk-dev/economics/pull/325)
+  * Fixed the Leantime sync halting silently on a single bad row. A row that cannot be mapped, or that a handler
+    rejects, logs `Skipping <class> id <id>: <reason>` and the sync moves on. The catches are deliberately narrow —
+    a `TypeError` from a null field and a handler's `UnrecoverableMessageHandlingException` are skippable, while a
+    dead database or an unreachable Leantime still halts the run loudly instead of being logged away as a bad row.
+  * Made the Leantime result mappers null-safe ahead of
+    [data-api#18](https://github.com/ITK-Leantime/data-api/pull/18): a deleted user is attributed to
+    `deleted-user-<userId>`, a missing name becomes `(no name) <id>`, and rows with no `ticketId`/`projectId`/`id`
+    are skipped. The tracker id is part of the name placeholder because names are used as lookup keys elsewhere —
+    `ProjectBillingService` resolves a client by version name.
+  * A `deleted-user-<userId>` attribution no longer overwrites a worker name an earlier sync already stored.
+  * Fixed the `/deleted` request sending its timestamp as `deletedAfter` rather than `deleted`, which made every
+    delete-sync pull the entire unpaginated deletion history. Deletion entries with no id are now skipped and logged,
+    and a single failing entry no longer drops every deletion after it — with the timestamp now applied, a dropped
+    entry would never come round again.
+  * Added `LeantimeApiServiceTest::testUpdateWithNullValues()` and `::testDeletedUserFallbackKeepsStoredWorker()`,
+    and pinned the `/deleted` request body so the parameter name cannot regress.
 
 ## [3.7.0] - 2026-06-26
 
