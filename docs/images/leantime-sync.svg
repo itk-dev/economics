@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1480 930" width="1480" height="930" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#54626f"/>
+    </marker>
+    <marker id="arrowDashed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8a7ba8"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1480" height="930" fill="#ffffff"/>
+
+  <text x="36" y="50" font-size="26" font-weight="700" fill="#16212b">How Economics syncs from Leantime</text>
+  <text x="36" y="78" font-size="14" fill="#5f6f7e">Cron-driven, paged pull through Symfony Messenger. Leantime never pushes — Economics asks, one page of 100 rows at a time.</text>
+
+  <!-- Groups -->
+  <rect x="36" y="104" width="228" height="266" rx="10" fill="#f5f7f9" stroke="#dde3e9"/>
+  <text x="52" y="126" font-size="11" font-weight="700" letter-spacing="1.2" fill="#78889a">CRON · PRODUCTION HOST</text>
+
+  <rect x="296" y="104" width="250" height="266" rx="10" fill="#f5f7f9" stroke="#dde3e9"/>
+  <text x="312" y="126" font-size="11" font-weight="700" letter-spacing="1.2" fill="#78889a">ECONOMICS</text>
+
+  <rect x="1104" y="104" width="358" height="510" rx="10" fill="#fdf7ee" stroke="#e7d5b8"/>
+  <text x="1120" y="126" font-size="11" font-weight="700" letter-spacing="1.2" fill="#a8813f">LEANTIME + DATA-API PLUGIN</text>
+
+  <!-- Cron jobs -->
+  <rect x="52" y="138" width="196" height="62" rx="8" fill="#ffffff" stroke="#5b6b7c" stroke-width="1.5"/>
+  <text x="150" y="162" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">*/15 · sync-modified</text>
+  <text x="150" y="182" font-size="11.5" fill="#4d5b69" text-anchor="middle">changed within PT1H, async</text>
+
+  <rect x="52" y="212" width="196" height="62" rx="8" fill="#ffffff" stroke="#5b6b7c" stroke-width="1.5"/>
+  <text x="150" y="236" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">*/25 + 02:50 · sync-deleted</text>
+  <text x="150" y="256" font-size="11.5" fill="#4d5b69" text-anchor="middle">deletions, handled inline</text>
+
+  <rect x="52" y="286" width="196" height="66" rx="8" fill="#ffffff" stroke="#5b6b7c" stroke-width="1.5"/>
+  <text x="150" y="310" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">02:00–02:40 · full sync</text>
+  <text x="150" y="329" font-size="11.5" fill="#4d5b69" text-anchor="middle">one entity type per job,</text>
+  <text x="150" y="345" font-size="11.5" fill="#4d5b69" text-anchor="middle">-j (async) -d (write every row)</text>
+
+  <!-- Economics -->
+  <rect x="312" y="138" width="218" height="62" rx="8" fill="#ffffff" stroke="#5b6b7c" stroke-width="1.5"/>
+  <text x="421" y="162" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">Sync commands</text>
+  <text x="421" y="182" font-size="11.5" fill="#4d5b69" text-anchor="middle">app:data-providers:sync…</text>
+
+  <rect x="312" y="222" width="218" height="130" rx="8" fill="#ffffff" stroke="#5b6b7c" stroke-width="1.5"/>
+  <text x="421" y="246" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">LeantimeApiService</text>
+  <text x="421" y="268" font-size="11.5" fill="#4d5b69" text-anchor="middle">per enabled DataProvider</text>
+  <text x="421" y="284" font-size="11.5" fill="#4d5b69" text-anchor="middle">(base url + x-api-key)</text>
+  <text x="421" y="306" font-size="11.5" fill="#4d5b69" text-anchor="middle">dispatch LeantimeUpdateMessage</text>
+  <text x="421" y="322" font-size="11.5" fill="#4d5b69" text-anchor="middle">or LeantimeDeleteMessage,</text>
+  <text x="421" y="338" font-size="11.5" fill="#4d5b69" text-anchor="middle">start 0 · limit 100</text>
+
+  <!-- Queue -->
+  <rect x="586" y="104" width="196" height="380" rx="10" fill="#eaf1fb" stroke="#4a76ad" stroke-width="1.5"/>
+  <text x="684" y="134" font-size="14" font-weight="700" fill="#1d3a5f" text-anchor="middle">Symfony Messenger</text>
+  <text x="684" y="158" font-size="12" fill="#345a86" text-anchor="middle">async transport</text>
+  <text x="684" y="180" font-size="11.5" fill="#345a86" text-anchor="middle">consumed by supervisor:</text>
+  <text x="684" y="198" font-size="11.5" fill="#345a86" text-anchor="middle">messenger:consume async</text>
+  <text x="684" y="216" font-size="11.5" fill="#345a86" text-anchor="middle">1 worker, time-limit 900</text>
+  <line x1="606" y1="238" x2="762" y2="238" stroke="#b9cee6"/>
+  <text x="684" y="262" font-size="11.5" fill="#345a86" text-anchor="middle">Without -j the same</text>
+  <text x="684" y="278" font-size="11.5" fill="#345a86" text-anchor="middle">messages run inline</text>
+  <text x="684" y="294" font-size="11.5" fill="#345a86" text-anchor="middle">through sync://</text>
+  <line x1="606" y1="316" x2="762" y2="316" stroke="#b9cee6"/>
+  <text x="684" y="340" font-size="11.5" fill="#345a86" text-anchor="middle">A handler that throws is</text>
+  <text x="684" y="356" font-size="11.5" fill="#345a86" text-anchor="middle">not retried — the message</text>
+  <text x="684" y="372" font-size="11.5" fill="#345a86" text-anchor="middle">goes to the failed transport</text>
+
+  <!-- Handlers -->
+  <rect x="830" y="126" width="230" height="118" rx="8" fill="#ffffff" stroke="#5b6b7c" stroke-width="1.5"/>
+  <text x="945" y="150" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">LeantimeUpdateHandler</text>
+  <text x="945" y="172" font-size="11.5" fill="#4d5b69" text-anchor="middle">updateAsJob()</text>
+  <text x="945" y="192" font-size="11.5" fill="#4d5b69" text-anchor="middle">sends start · limit ·</text>
+  <text x="945" y="208" font-size="11.5" fill="#4d5b69" text-anchor="middle">modifiedAfter · projectIds</text>
+  <text x="945" y="228" font-size="11.5" fill="#4d5b69" text-anchor="middle">reads results + resultsCount</text>
+
+  <rect x="830" y="316" width="230" height="110" rx="8" fill="#ffffff" stroke="#5b6b7c" stroke-width="1.5"/>
+  <text x="945" y="340" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">LeantimeDeleteHandler</text>
+  <text x="945" y="362" font-size="11.5" fill="#4d5b69" text-anchor="middle">deleteAsJob()</text>
+  <text x="945" y="382" font-size="11.5" fill="#4d5b69" text-anchor="middle">sends the four types</text>
+  <text x="945" y="398" font-size="11.5" fill="#4d5b69" text-anchor="middle">reads the deleted ids</text>
+
+  <!-- data-api endpoints -->
+  <rect x="1120" y="126" width="290" height="118" rx="8" fill="#ffffff" stroke="#c08a3e" stroke-width="1.5"/>
+  <text x="1265" y="150" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">POST /APIData/API/{type}</text>
+  <text x="1265" y="172" font-size="11.5" fill="#4d5b69" text-anchor="middle">projects · milestones · tickets ·</text>
+  <text x="1265" y="188" font-size="11.5" fill="#4d5b69" text-anchor="middle">timesheets · workers</text>
+  <text x="1265" y="210" font-size="11.5" fill="#4d5b69" text-anchor="middle">start is an id cursor; modifiedAfter</text>
+  <text x="1265" y="226" font-size="11.5" fill="#4d5b69" text-anchor="middle">filters on itk_data_api_modified</text>
+
+  <rect x="1120" y="316" width="290" height="110" rx="8" fill="#ffffff" stroke="#c08a3e" stroke-width="1.5"/>
+  <text x="1265" y="340" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">POST /APIData/API/deleted</text>
+  <text x="1265" y="362" font-size="11.5" fill="#4d5b69" text-anchor="middle">reads itk_projects_deleted,</text>
+  <text x="1265" y="378" font-size="11.5" fill="#4d5b69" text-anchor="middle">itk_tickets_deleted and</text>
+  <text x="1265" y="394" font-size="11.5" fill="#4d5b69" text-anchor="middle">itk_timesheets_deleted</text>
+
+  <!-- Leantime DB -->
+  <path d="M 1120 486 a 145 16 0 0 1 290 0 v 88 a 145 16 0 0 1 -290 0 z" fill="#eef1f4" stroke="#6b7a89" stroke-width="1.5"/>
+  <ellipse cx="1265" cy="486" rx="145" ry="16" fill="#f7f9fa" stroke="#6b7a89" stroke-width="1.5"/>
+  <text x="1265" y="516" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">Leantime DB</text>
+  <text x="1265" y="536" font-size="11.5" fill="#4d5b69" text-anchor="middle">zp_projects · zp_tickets · zp_timesheets · zp_user</text>
+  <text x="1265" y="554" font-size="11.5" fill="#4d5b69" text-anchor="middle">modified column and delete tables</text>
+  <text x="1265" y="570" font-size="11.5" fill="#4d5b69" text-anchor="middle">kept current by database triggers</text>
+
+  <!-- Write path -->
+  <rect x="586" y="660" width="230" height="120" rx="8" fill="#ffffff" stroke="#5b6b7c" stroke-width="1.5"/>
+  <text x="701" y="686" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">Upsert*Handler</text>
+  <text x="701" y="706" font-size="11.5" fill="#4d5b69" text-anchor="middle">one message per row:</text>
+  <text x="701" y="722" font-size="11.5" fill="#4d5b69" text-anchor="middle">project · version · issue ·</text>
+  <text x="701" y="738" font-size="11.5" fill="#4d5b69" text-anchor="middle">worklog · worker</text>
+  <text x="701" y="762" font-size="11.5" fill="#4d5b69" text-anchor="middle">EntityRemoved…Handler</text>
+
+  <rect x="866" y="660" width="270" height="120" rx="8" fill="#ffffff" stroke="#5b6b7c" stroke-width="1.5"/>
+  <text x="1001" y="686" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">DataProviderService</text>
+  <text x="1001" y="708" font-size="11.5" fill="#4d5b69" text-anchor="middle">creates or updates the entity,</text>
+  <text x="1001" y="724" font-size="11.5" fill="#4d5b69" text-anchor="middle">or marks it removed</text>
+  <text x="1001" y="746" font-size="11.5" fill="#4d5b69" text-anchor="middle">skips the row when its modified</text>
+  <text x="1001" y="762" font-size="11.5" fill="#4d5b69" text-anchor="middle">date is unchanged (-d disables)</text>
+
+  <path d="M 1186 670 a 125 16 0 0 1 250 0 v 88 a 125 16 0 0 1 -250 0 z" fill="#eef1f4" stroke="#6b7a89" stroke-width="1.5"/>
+  <ellipse cx="1311" cy="670" rx="125" ry="16" fill="#f7f9fa" stroke="#6b7a89" stroke-width="1.5"/>
+  <text x="1311" y="702" font-size="13" font-weight="600" fill="#16212b" text-anchor="middle">Economics DB</text>
+  <text x="1311" y="724" font-size="11.5" fill="#4d5b69" text-anchor="middle">Project · Version · Issue</text>
+  <text x="1311" y="740" font-size="11.5" fill="#4d5b69" text-anchor="middle">Worklog · Worker</text>
+
+  <!-- Arrows -->
+  <g stroke="#54626f" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+    <line x1="268" y1="169" x2="290" y2="169"/>
+    <line x1="421" y1="200" x2="421" y2="218"/>
+    <line x1="550" y1="287" x2="582" y2="287"/>
+    <line x1="782" y1="169" x2="826" y2="169"/>
+    <line x1="782" y1="360" x2="826" y2="360"/>
+    <line x1="1060" y1="169" x2="1116" y2="169"/>
+    <line x1="1060" y1="360" x2="1116" y2="360"/>
+    <path d="M 1410 190 H 1436 V 528 H 1414"/>
+    <path d="M 1410 360 H 1436"/>
+    <line x1="684" y1="484" x2="684" y2="656"/>
+    <line x1="816" y1="720" x2="862" y2="720"/>
+    <line x1="1136" y1="720" x2="1182" y2="720"/>
+  </g>
+
+  <!-- Returned data and re-queued messages -->
+  <g stroke="#8a7ba8" stroke-width="1.6" fill="none" stroke-dasharray="6 4" marker-end="url(#arrowDashed)">
+    <line x1="1116" y1="214" x2="1064" y2="214"/>
+    <line x1="1116" y1="404" x2="1064" y2="404"/>
+    <path d="M 846 244 V 268 H 790"/>
+    <path d="M 846 426 V 452 H 790"/>
+  </g>
+
+  <text x="858" y="264" font-size="11.5" font-weight="600" fill="#6b5c8c">Upsert*Message — one per row</text>
+  <text x="858" y="282" font-size="11.5" font-weight="600" fill="#6b5c8c">next page when resultsCount == limit,</text>
+  <text x="858" y="298" font-size="11.5" fill="#6b5c8c">start = last returned id + 1</text>
+  <text x="858" y="448" font-size="11.5" font-weight="600" fill="#6b5c8c">EntityRemovedFromDataProviderMessage</text>
+  <text x="1064" y="204" font-size="11" fill="#6b5c8c" text-anchor="end">results</text>
+  <text x="1064" y="394" font-size="11" fill="#6b5c8c" text-anchor="end">deleted ids</text>
+
+  <!-- Legend -->
+  <line x1="36" y1="856" x2="72" y2="856" stroke="#54626f" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="82" y="860" font-size="12" fill="#5f6f7e">message dispatched or request sent</text>
+  <line x1="330" y1="856" x2="366" y2="856" stroke="#8a7ba8" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arrowDashed)"/>
+  <text x="376" y="860" font-size="12" fill="#5f6f7e">data coming back, and what it queues next</text>
+  <text x="36" y="886" font-size="12" fill="#8a97a5">Milestones become Version, tickets become Issue, timesheets become Worklog, users become Worker. Details: docs/leantime-sync.md</text>
+</svg>

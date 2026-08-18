@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* Documented how Economics synchronizes from the Leantime data-api plugin in
+  `docs/leantime-sync.md`, with a diagram in `docs/images/leantime-sync.svg`,
+  and rewrote the outdated `Synchronization` section in `README.md`.
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
   Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
