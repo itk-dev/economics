@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-326](https://github.com/itk-dev/economics/pull/326)
+  * Stopped the pagination cursor in `updateAsJob()` looping on a page it cannot advance past. Skipping null ids
+    left the cursor where it started, so a full page of them re-queued the same page forever and starved the
+    single worker of every other sync. Such a page now stops with an error instead. Ids that are not numeric are
+    skipped for the same reason, and the cursor follows the highest usable id on the page rather than the last.
+  * Added `Unit\Service\LeantimeApiServiceTest`, covering the cursor directly — the integration tests only ever
+    use partial pages, so no next page was queued and the cursor was never exercised.
 * [PR-332](https://github.com/itk-dev/economics/pull/332)
   * CI: Stopped every workflow job starting RabbitMQ. `phpfpm` depends on `rabbit` being healthy, and
     `docker compose` loads `docker-compose.override.yml` automatically, so all eight jobs that run

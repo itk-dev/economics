@@ -213,16 +213,20 @@ class LeantimeApiService implements DataProviderInterface
         $fetchDate = new \DateTime();
 
         // Queue upsert.
+        $maxId = null;
+
         foreach ($data->results as $result) {
             $this->dispatchUpsertMessage($className, $result, $dataProviderId, $fetchDate, $asyncJobQueue, $dataProviderUrl, $disableModifiedAtCheck);
 
-            // Pagination walks forward by id; a null would rewind the next page to the start.
-            if (null !== $result->id) {
-                $startId = $result->id;
+            // The endpoint returns rows with id >= start in ascending order, so the highest usable
+            // id on the page is where the next one begins. Tracking it separately from $startId
+            // keeps the input cursor intact for the guard below, and skips ids that cannot be
+            // paged on: null + 1 is 1, which restarted the sync from the beginning.
+            if (is_numeric($result->id ?? null)) {
+                $id = (int) $result->id;
+                $maxId = null === $maxId ? $id : max($maxId, $id);
             }
         }
-
-        $startId = $startId + 1;
 
         // Clear the entity manager in sync handling, to avoid memory issues.
         if (!$asyncJobQueue) {
@@ -231,8 +235,16 @@ class LeantimeApiService implements DataProviderInterface
 
         // Queue next page.
         if ($data->resultsCount === $limit) {
+            // A full page with nothing to advance on cannot be paged past. Stopping is visible in
+            // the log; continuing would re-read the same page until the queue starves.
+            if (null === $maxId || $maxId < $startId) {
+                $this->logger->error(sprintf('Stopping %s sync at start %d: no usable id on a full page, cursor cannot advance.', $className, $startId));
+
+                return;
+            }
+
             $this->messageBus->dispatch(
-                new LeantimeUpdateMessage($className, $startId, $limit, $dataProviderId, $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds, $disableModifiedAtCheck),
+                new LeantimeUpdateMessage($className, $maxId + 1, $limit, $dataProviderId, $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds, $disableModifiedAtCheck),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
             );
         }
