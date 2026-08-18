@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     skipped for the same reason, and the cursor follows the highest usable id on the page rather than the last.
   * Added `Unit\Service\LeantimeApiServiceTest`, covering the cursor directly — the integration tests only ever
     use partial pages, so no next page was queued and the cursor was never exercised.
+* [PR-332](https://github.com/itk-dev/economics/pull/332)
+  * CI: Stopped every workflow job starting RabbitMQ. `phpfpm` depends on `rabbit` being healthy, and
+    `docker compose` loads `docker-compose.override.yml` automatically, so all eight jobs that run
+    `phpfpm` booted a broker none of them use — `when@test` in `config/packages/messenger.yaml` routes
+    the only AMQP transport to Doctrine. The jobs now pass `--no-deps` and start `mariadb` explicitly
+    where they need it, which removes the intermittent `dependency failed to start: container
+    economics_v2-rabbit-1 exited (1)` failures and cuts a container off every job.
+    Also gave the `rabbit` healthcheck a `start_period`: `rabbitmq-diagnostics` boots an Erlang VM per
+    invocation, so probing every second spawned a dozen of them alongside the broker's own ~12s boot,
+    and without a start period each failure counted against the retry budget.
 * [PR-325](https://github.com/itk-dev/economics/pull/325)
   * Fixed the Leantime sync halting silently on a single bad row. A row that cannot be mapped, or that a handler
     rejects, logs `Skipping <class> id <id>: <reason>` and the sync moves on. The catches are deliberately narrow —
@@ -32,20 +42,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     entry would never come round again.
   * Added `LeantimeApiServiceTest::testUpdateWithNullValues()` and `::testDeletedUserFallbackKeepsStoredWorker()`,
     and pinned the `/deleted` request body so the parameter name cannot regress.
+
+## [3.7.0] - 2026-06-26
+
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
-  Added game center with snake
+  * Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
-  Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
-  and `.woodpecker/prod_itk_economics.yml`. Five staggered jobs run at
-  02:00/02:10/02:20/02:30/02:40 invoking
-  `app:data-providers:sync -j -d` for projects (`-p`),
-  workers (`-r`), versions (`-s`), issues (`-i`), and worklogs (`-w`) —
-  re-syncing everything touched within the past week and bypassing the local
-  `modifiedAt` short-circuit (`-d`), since the upstream source isn't fully
-  trusted to update `modifiedAt` on every change. A sixth job at 02:50 runs
-  `app:data-providers:sync-deleted --interval=P1W` to widen the deletion
-  window to the past week (vs. the default `PT1H` used by the 25-minute
-  cron).
+  * Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
+    and `.woodpecker/prod_itk_economics.yml`. Five staggered jobs run at
+    02:00/02:10/02:20/02:30/02:40 invoking
+    `app:data-providers:sync -j -d` for projects (`-p`),
+    workers (`-r`), versions (`-s`), issues (`-i`), and worklogs (`-w`) —
+    re-syncing everything touched within the past week and bypassing the local
+    `modifiedAt` short-circuit (`-d`), since the upstream source isn't fully
+    trusted to update `modifiedAt` on every change. A sixth job at 02:50 runs
+    `app:data-providers:sync-deleted --interval=P1W` to widen the deletion
+    window to the past week (vs. the default `PT1H` used by the 25-minute
+    cron).
 * [PR-322](https://github.com/itk-dev/economics/pull/322)
   * Autoselect external receiver account from client.
 
