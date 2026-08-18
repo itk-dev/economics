@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-332](https://github.com/itk-dev/economics/pull/332)
+  * CI: Stopped every workflow job starting RabbitMQ. `phpfpm` depends on `rabbit` being healthy, and
+    `docker compose` loads `docker-compose.override.yml` automatically, so all eight jobs that run
+    `phpfpm` booted a broker none of them use — `when@test` in `config/packages/messenger.yaml` routes
+    the only AMQP transport to Doctrine. The jobs now pass `--no-deps` and start `mariadb` explicitly
+    where they need it, which removes the intermittent `dependency failed to start: container
+    economics_v2-rabbit-1 exited (1)` failures and cuts a container off every job.
+    Also gave the `rabbit` healthcheck a `start_period`: `rabbitmq-diagnostics` boots an Erlang VM per
+    invocation, so probing every second spawned a dozen of them alongside the broker's own ~12s boot,
+    and without a start period each failure counted against the retry budget.
 * [PR-325](https://github.com/itk-dev/economics/pull/325)
   * Fixed the Leantime sync halting silently on a single bad row. A row that cannot be mapped, or that a handler
     rejects, logs `Skipping <class> id <id>: <reason>` and the sync moves on. The catches are deliberately narrow —
@@ -29,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.7.0] - 2026-06-26
 
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
-  Added game center with snake
+  * Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
   * Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
     and `.woodpecker/prod_itk_economics.yml`. Five staggered jobs run at
