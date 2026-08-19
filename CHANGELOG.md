@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-333](https://github.com/itk-dev/economics/pull/333)
+  * Paginated the Leantime delete sync, following [data-api#21](https://github.com/ITK-Leantime/data-api/pull/21):
+    `/deleted` now serves one type per request with `start`/`limit`, so `delete()` queues a message per type and
+    `deleteAsJob()` pages through them the way `updateAsJob()` already does. The whole deletion history no longer
+    has to arrive in a single response — which is what the 300s `max_duration` in `config/packages/framework.yaml`
+    was sized for, though it stays as it is for the entity endpoints.
+  * The delete cursor is the endpoint's new `deletionId`, not the deleted entity's `id`: deletions are ordered by
+    when they happened. It advances past a deletion that names no entity, since a skipped row still has to be paged
+    past, and a full page with no usable `deletionId` stops with an error rather than re-queueing itself.
 * [PR-326](https://github.com/itk-dev/economics/pull/326)
   * Stopped the pagination cursor in `updateAsJob()` looping on a page it cannot advance past. Skipping null ids
     left the cursor where it started, so a full page of them re-queued the same page forever and starved the

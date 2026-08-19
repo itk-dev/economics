@@ -378,18 +378,25 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         $httpClientMock = $this->createMock(HttpClientInterface::class);
 
-        $responseMock = $this->createMock(ResponseInterface::class);
-        $responseMock->method('getStatusCode')->willReturn(200);
-        $responseMock->method('getContent')->willReturn(json_encode($this->getDeletedData()));
+        // One response per type: the endpoint serves a single type's page per request.
+        $responseMocks = [];
 
-        // Capture what was actually sent, so the request body can be asserted after the call.
-        $requestJson = null;
-        $httpClientMock->expects($this->once())
+        foreach ($this->getDeletedData() as $type => $payload) {
+            $responseMock = $this->createMock(ResponseInterface::class);
+            $responseMock->method('getStatusCode')->willReturn(200);
+            $responseMock->method('getContent')->willReturn(json_encode($payload));
+
+            $responseMocks[$type] = $responseMock;
+        }
+
+        // Capture what was actually sent, so the request bodies can be asserted after the calls.
+        $requestJson = [];
+        $httpClientMock->expects($this->exactly(count($responseMocks)))
             ->method('request')
-            ->willReturnCallback(function (string $method, string $url, array $options) use ($responseMock, &$requestJson): ResponseInterface {
-                $requestJson = $options['json'] ?? null;
+            ->willReturnCallback(function (string $method, string $url, array $options) use ($responseMocks, &$requestJson): ResponseInterface {
+                $requestJson[] = $options['json'] ?? null;
 
-                return $responseMock;
+                return $responseMocks[$options['json']['type']];
             });
 
         $service = new LeantimeApiService(
@@ -559,14 +566,19 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         $deletedAfter = new \DateTime('2025-10-06T11:36:08.000000Z');
 
-        $service->deleteAsJob($id, false, $deletedAfter);
+        // Children before the parents they hang off, one request per type.
+        foreach ([LeantimeApiService::TIMESHEETS, LeantimeApiService::TICKETS, LeantimeApiService::MILESTONES, LeantimeApiService::PROJECTS] as $type) {
+            $service->deleteAsJob($type, 0, 100, $id, false, $deletedAfter);
+        }
 
         // The plugin only reads 'deleted'. Under any other key the timestamp is silently discarded
-        // and every run pulls the entire deletion history, which /deleted does not paginate.
+        // and every run pages through the entire deletion history.
         $this->assertSame(
             [
-                'types' => ['timesheets', 'tickets', 'milestones', 'projects'],
-                'deleted' => $deletedAfter->getTimestamp(),
+                ['type' => 'timesheets', 'start' => 0, 'limit' => 100, 'deleted' => $deletedAfter->getTimestamp()],
+                ['type' => 'tickets', 'start' => 0, 'limit' => 100, 'deleted' => $deletedAfter->getTimestamp()],
+                ['type' => 'milestones', 'start' => 0, 'limit' => 100, 'deleted' => $deletedAfter->getTimestamp()],
+                ['type' => 'projects', 'start' => 0, 'limit' => 100, 'deleted' => $deletedAfter->getTimestamp()],
             ],
             $requestJson
         );
@@ -805,71 +817,98 @@ class LeantimeApiServiceTest extends KernelTestCase
         ', null, 512, JSON_THROW_ON_ERROR);
     }
 
-    private function getDeletedData(): object
+    /**
+     * One response per type, keyed by the type it answers. `deletionId` is the deletion's own id,
+     * which the results are ordered and paged on; `id` is the entity that was deleted.
+     *
+     * @return array<string, object>
+     */
+    private function getDeletedData(): array
     {
-        return json_decode('
-        {
-          "parameters": {
-            "types": [
-              "projects",
-              "milestones",
-              "tickets",
-              "timesheets"
-            ]
-          },
-          "resultsCount": 6,
-          "results": {
-            "projects": [
-              {
-                "id": 64,
-                "deletedDate": "2025-10-24T11:36:08.000000Z"
-              },
-              {
-                "id": 65,
-                "deletedDate": "2025-10-24T11:36:08.000000Z"
-              }
-            ],
-            "milestones": [
-              {
-                "id": 6724,
-                "deletedDate": "2025-10-24T11:36:08.000000Z"
-              },
-              {
-                "id": 6725,
-                "deletedDate": "2025-10-24T11:36:08.000000Z"
-              }
-            ],
-            "tickets": [
-              {
-                "id": 6723,
-                "deletedDate": "2025-10-24T11:36:08.000000Z"
-              },
-              {
-                "id": 6726,
-                "deletedDate": "2025-10-24T11:36:08.000000Z"
-              }
-            ],
-            "timesheets": [
-              {
-                "id": null,
-                "deletedDate": "2025-10-24T11:36:08.000000Z"
-              },
-              {
-                "id": 66939,
-                "deletedDate": "not a date"
-              },
-              {
-                "id": 66937,
-                "deletedDate": "2025-10-24T11:36:08.000000Z"
-              },
-              {
-                "id": 66938,
-                "deletedDate": "2025-10-24T11:36:08.000000Z"
-              }
-            ]
-          }
-        }
-        ', null, 512, JSON_THROW_ON_ERROR);
+        return [
+            'projects' => json_decode('
+            {
+              "parameters": {"type": "projects", "start": 0, "limit": 100},
+              "resultsCount": 2,
+              "results": [
+                {
+                  "deletionId": 1,
+                  "id": 64,
+                  "deletedDate": "2025-10-24T11:36:08.000000Z"
+                },
+                {
+                  "deletionId": 2,
+                  "id": 65,
+                  "deletedDate": "2025-10-24T11:36:08.000000Z"
+                }
+              ]
+            }
+            ', null, 512, JSON_THROW_ON_ERROR),
+            'milestones' => json_decode('
+            {
+              "parameters": {"type": "milestones", "start": 0, "limit": 100},
+              "resultsCount": 2,
+              "results": [
+                {
+                  "deletionId": 1,
+                  "id": 6724,
+                  "deletedDate": "2025-10-24T11:36:08.000000Z"
+                },
+                {
+                  "deletionId": 3,
+                  "id": 6725,
+                  "deletedDate": "2025-10-24T11:36:08.000000Z"
+                }
+              ]
+            }
+            ', null, 512, JSON_THROW_ON_ERROR),
+            'tickets' => json_decode('
+            {
+              "parameters": {"type": "tickets", "start": 0, "limit": 100},
+              "resultsCount": 2,
+              "results": [
+                {
+                  "deletionId": 2,
+                  "id": 6723,
+                  "deletedDate": "2025-10-24T11:36:08.000000Z"
+                },
+                {
+                  "deletionId": 4,
+                  "id": 6726,
+                  "deletedDate": "2025-10-24T11:36:08.000000Z"
+                }
+              ]
+            }
+            ', null, 512, JSON_THROW_ON_ERROR),
+            'timesheets' => json_decode('
+            {
+              "parameters": {"type": "timesheets", "start": 0, "limit": 100},
+              "resultsCount": 4,
+              "results": [
+                {
+                  "deletionId": 1,
+                  "id": null,
+                  "deletedDate": "2025-10-24T11:36:08.000000Z"
+                },
+                {
+                  "deletionId": 2,
+                  "id": 66939,
+                  "deletedDate": "not a date"
+                },
+                {
+                  "deletionId": 3,
+                  "id": 66937,
+                  "deletedDate": "2025-10-24T11:36:08.000000Z"
+                },
+                {
+                  "deletionId": 4,
+                  "id": 66938,
+                  "deletedDate": "2025-10-24T11:36:08.000000Z"
+                }
+              ]
+            }
+            ', null, 512, JSON_THROW_ON_ERROR),
+        ];
     }
 
     private function getProjects($modifiedYear = 2024): object
