@@ -2,6 +2,7 @@
 
 namespace App\MessageHandler;
 
+use App\Exception\NotFoundException;
 use App\Message\LeantimeUpdateMessage;
 use App\Service\LeantimeApiService;
 use Psr\Log\LoggerInterface;
@@ -32,7 +33,9 @@ readonly class LeantimeUpdateHandler
                 $message->modifiedAfter,
                 $message->disableModifiedAtCheck,
             );
-        } catch (\Throwable $e) {
+        } catch (NotFoundException|\TypeError $e) {
+            // Narrow on purpose: see UpsertIssueHandler. A page that fails because Leantime or the
+            // database is unavailable must be retried, not dropped along with the pages after it.
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

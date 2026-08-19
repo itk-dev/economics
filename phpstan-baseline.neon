@@ -1530,7 +1530,6 @@ parameters:
 			count: 1
 			path: src/Repository/ProjectVersionBudgetRepository.php
 
-
 		-
 			message: '#^Method App\\Repository\\ServiceAgreementRepository\:\:getFilteredPagination\(\) return type has no value type specified in iterable type Knp\\Component\\Pager\\Pagination\\PaginationInterface\.$#'
 			identifier: missingType.iterableValue
@@ -2032,7 +2031,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property object\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 5
+			count: 7
 			path: src/Service/LeantimeApiService.php
 
 		-
@@ -2051,12 +2050,6 @@ parameters:
 			message: '#^Access to an undefined property object\:\:\$modified\.$#'
 			identifier: property.notFound
 			count: 4
-			path: src/Service/LeantimeApiService.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
 			path: src/Service/LeantimeApiService.php
 
 		-
@@ -2092,7 +2085,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property object\:\:\$resultsCount\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 2
 			path: src/Service/LeantimeApiService.php
 
 		-
@@ -2128,7 +2121,7 @@ parameters:
 		-
 			message: '#^Match expression does not handle remaining value\: string$#'
 			identifier: match.unhandled
-			count: 1
+			count: 2
 			path: src/Service/LeantimeApiService.php
 
 		-
@@ -2932,19 +2925,19 @@ parameters:
 		-
 			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
 			identifier: method.notFound
-			count: 17
+			count: 19
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Call to an undefined method object\:\:flush\(\)\.$#'
 			identifier: method.notFound
-			count: 4
+			count: 5
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Call to an undefined method object\:\:persist\(\)\.$#'
 			identifier: method.notFound
-			count: 13
+			count: 17
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
@@ -2972,7 +2965,7 @@ parameters:
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
-			message: '#^Parameter \#1 \$dataProviderId of method App\\Service\\LeantimeApiService\:\:deleteAsJob\(\) expects int, int\|null given\.$#'
+			message: '#^Parameter \#4 \$dataProviderId of method App\\Service\\LeantimeApiService\:\:deleteAsJob\(\) expects int, int\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
@@ -2980,13 +2973,13 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$projectTrackerId of method App\\Entity\\Issue\:\:setProjectTrackerId\(\) expects string, int given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 3
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Parameter \#1 \$projectTrackerId of method App\\Entity\\Project\:\:setProjectTrackerId\(\) expects string\|null, int given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 3
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
@@ -2998,19 +2991,19 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$projectTrackerIssueId of method App\\Entity\\Worklog\:\:setProjectTrackerIssueId\(\) expects string, int given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 3
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Parameter \#1 \$projectTrackerKey of method App\\Entity\\Issue\:\:setProjectTrackerKey\(\) expects string, int given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 3
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Parameter \#1 \$projectTrackerKey of method App\\Entity\\Project\:\:setProjectTrackerKey\(\) expects string\|null, int given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 3
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
@@ -3022,31 +3015,31 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$messageBus of class App\\Service\\LeantimeApiService constructor expects Symfony\\Component\\Messenger\\MessageBusInterface, object given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 4
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Parameter \#3 \$dataProviderRepository of class App\\Service\\LeantimeApiService constructor expects App\\Repository\\DataProviderRepository, object given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 4
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Parameter \#4 \$dataProviderId of method App\\Service\\LeantimeApiService\:\:updateAsJob\(\) expects int, int\|null given\.$#'
 			identifier: argument.type
-			count: 12
+			count: 13
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Parameter \#4 \$entityManager of class App\\Service\\LeantimeApiService constructor expects Doctrine\\ORM\\EntityManagerInterface, object given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 4
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
 			message: '#^Parameter \#5 \$projectRepository of class App\\Service\\LeantimeApiService constructor expects App\\Repository\\ProjectRepository, object given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 4
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
@@ -3148,7 +3141,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Service\\DataProviderService\:\:method\(\)\.$#'
 			identifier: method.notFound
-			count: 1
+			count: 2
 			path: tests/Unit/MessageHandler/EntityRemovedFromDataProviderHandlerTest.php
 
 		-

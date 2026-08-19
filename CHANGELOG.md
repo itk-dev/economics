@@ -8,38 +8,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* [PR-327](https://github.com/itk-dev/economics/pull/327)
-  * Restored retrying of rate-limited Leantime requests, lost in `b27ba16e` with the Jira stack: a
-    `RetryableHttpClient` reaches `LeantimeApiService` via `app.leantime.http_client`, tunable with
-    `APP_HTTP_CLIENT_RETRY_DELAY_MS` and `APP_HTTP_CLIENT_MAX_RETRIES`. One 429 previously ended the whole sync.
-  * Added `timeout: 30` and `max_duration: 300` to `framework.http_client.default_options` — Symfony
-    caps neither, so a stalled Leantime connection held the messenger worker indefinitely.
-    `max_duration` is sized to clear the unpaginated `/deleted` response for `sync-deleted --interval=P1W`.
+* [PR-334](https://github.com/itk-dev/economics/pull/334)
+  * Paginated the Leantime delete sync, following [data-api#21](https://github.com/ITK-Leantime/data-api/pull/21):
+    `/deleted` now serves one type per request with `start`/`limit`, so `delete()` queues a message per type and
+    `deleteAsJob()` pages through them the way `updateAsJob()` already does. The whole deletion history no longer
+    has to arrive in a single response — which is what the 300s `max_duration` in `config/packages/framework.yaml`
+    was sized for, though it stays as it is for the entity endpoints.
+  * The delete request now sends its timestamp as `deletedAfter`, the endpoint's new name for it, matching
+    `modifiedAfter` on the entity endpoints. The old `deleted` answers 400 rather than being ignored, so the key
+    cannot go missing unnoticed again.
+  * The delete cursor is the endpoint's new `deletionId`, not the deleted entity's `id`: deletions are ordered by
+    when they happened. It advances past a deletion that names no entity, since a skipped row still has to be paged
+    past, and a full page with no usable `deletionId` stops with an error rather than re-queueing itself.
+* [PR-326](https://github.com/itk-dev/economics/pull/326)
+  * Stopped the pagination cursor in `updateAsJob()` looping on a page it cannot advance past. Skipping null ids
+    left the cursor where it started, so a full page of them re-queued the same page forever and starved the
+    single worker of every other sync. Such a page now stops with an error instead. Ids that are not numeric are
+    skipped for the same reason, and the cursor follows the highest usable id on the page rather than the last.
+  * Added `Unit\Service\LeantimeApiServiceTest`, covering the cursor directly — the integration tests only ever
+    use partial pages, so no next page was queued and the cursor was never exercised.
+* [PR-332](https://github.com/itk-dev/economics/pull/332)
+  * CI: Stopped every workflow job starting RabbitMQ. `phpfpm` depends on `rabbit` being healthy, and
+    `docker compose` loads `docker-compose.override.yml` automatically, so all eight jobs that run
+    `phpfpm` booted a broker none of them use — `when@test` in `config/packages/messenger.yaml` routes
+    the only AMQP transport to Doctrine. The jobs now pass `--no-deps` and start `mariadb` explicitly
+    where they need it, which removes the intermittent `dependency failed to start: container
+    economics_v2-rabbit-1 exited (1)` failures and cuts a container off every job.
+    Also gave the `rabbit` healthcheck a `start_period`: `rabbitmq-diagnostics` boots an Erlang VM per
+    invocation, so probing every second spawned a dozen of them alongside the broker's own ~12s boot,
+    and without a start period each failure counted against the retry budget.
 * [PR-325](https://github.com/itk-dev/economics/pull/325)
-  * Fixed the Leantime sync halting silently on a single bad row: `LeantimeApiService` and the sync message
-    handlers now catch `\Throwable`, and the upsert dispatch moved inside the same `try`. A skipped row logs
-    `Skipping <class> id <id>: <reason>` and the sync continues.
+  * Fixed the Leantime sync halting silently on a single bad row. A row that cannot be mapped, or that a handler
+    rejects, logs `Skipping <class> id <id>: <reason>` and the sync moves on. The catches are deliberately narrow —
+    a `TypeError` from a null field and a handler's `UnrecoverableMessageHandlingException` are skippable, while a
+    dead database or an unreachable Leantime still halts the run loudly instead of being logged away as a bad row.
   * Made the Leantime result mappers null-safe ahead of
     [data-api#18](https://github.com/ITK-Leantime/data-api/pull/18): a deleted user is attributed to
-    `deleted-user-<userId>`, a missing name becomes `(no name)`, and rows with no `ticketId`/`projectId` are skipped.
+    `deleted-user-<userId>`, a missing name becomes `(no name) <id>`, and rows with no `ticketId`/`projectId`/`id`
+    are skipped. The tracker id is part of the name placeholder because names are used as lookup keys elsewhere —
+    `ProjectBillingService` resolves a client by version name.
+  * A `deleted-user-<userId>` attribution no longer overwrites a worker name an earlier sync already stored.
   * Fixed the `/deleted` request sending its timestamp as `deletedAfter` rather than `deleted`, which made every
-    delete-sync pull the entire unpaginated deletion history. Deletion entries with no id are now skipped and logged.
-  * Added `LeantimeApiServiceTest::testUpdateWithNullValues()`, covering the nullable payload plus probes that a
-    single unmappable row is logged and skipped rather than stopping the sync.
+    delete-sync pull the entire unpaginated deletion history. Deletion entries with no id are now skipped and logged,
+    and a single failing entry no longer drops every deletion after it — with the timestamp now applied, a dropped
+    entry would never come round again.
+  * Added `LeantimeApiServiceTest::testUpdateWithNullValues()` and `::testDeletedUserFallbackKeepsStoredWorker()`,
+    and pinned the `/deleted` request body so the parameter name cannot regress.
+
+## [3.7.0] - 2026-06-26
+
 * [PR-324](https://github.com/itk-dev/economics/pull/324)
-  Added game center with snake
+  * Added game center with snake
 * [PR-303](https://github.com/itk-dev/economics/pull/303)
-  Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
-  and `.woodpecker/prod_itk_economics.yml`. Five staggered jobs run at
-  02:00/02:10/02:20/02:30/02:40 invoking
-  `app:data-providers:sync -j -d` for projects (`-p`),
-  workers (`-r`), versions (`-s`), issues (`-i`), and worklogs (`-w`) —
-  re-syncing everything touched within the past week and bypassing the local
-  `modifiedAt` short-circuit (`-d`), since the upstream source isn't fully
-  trusted to update `modifiedAt` on every change. A sixth job at 02:50 runs
-  `app:data-providers:sync-deleted --interval=P1W` to widen the deletion
-  window to the past week (vs. the default `PT1H` used by the 25-minute
-  cron).
+  * Added nightly safety-net sync cron jobs to `.woodpecker/prod_economics.yml`
+    and `.woodpecker/prod_itk_economics.yml`. Five staggered jobs run at
+    02:00/02:10/02:20/02:30/02:40 invoking
+    `app:data-providers:sync -j -d` for projects (`-p`),
+    workers (`-r`), versions (`-s`), issues (`-i`), and worklogs (`-w`) —
+    re-syncing everything touched within the past week and bypassing the local
+    `modifiedAt` short-circuit (`-d`), since the upstream source isn't fully
+    trusted to update `modifiedAt` on every change. A sixth job at 02:50 runs
+    `app:data-providers:sync-deleted --interval=P1W` to widen the deletion
+    window to the past week (vs. the default `PT1H` used by the 25-minute
+    cron).
 * [PR-322](https://github.com/itk-dev/economics/pull/322)
   * Autoselect external receiver account from client.
 
