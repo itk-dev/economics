@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `deleteAsJob()` pages through them the way `updateAsJob()` already does. The whole deletion history no longer
     has to arrive in a single response — which is what the 300s `max_duration` in `config/packages/framework.yaml`
     was sized for, though it stays as it is for the entity endpoints.
+  * The delete request now sends its timestamp as `deletedAfter`, the endpoint's new name for it, matching
+    `modifiedAfter` on the entity endpoints. The old `deleted` answers 400 rather than being ignored, so the key
+    cannot go missing unnoticed again.
   * The delete cursor is the endpoint's new `deletionId`, not the deleted entity's `id`: deletions are ordered by
     when they happened. It advances past a deletion that names no entity, since a skipped row still has to be paged
     past, and a full page with no usable `deletionId` stops with an error rather than re-queueing itself.

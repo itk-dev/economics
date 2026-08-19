@@ -131,9 +131,10 @@ class LeantimeApiService implements DataProviderInterface
             'type' => $type,
             'start' => $startId,
             'limit' => $limit,
-            // The plugin reads 'deleted'; anything else is discarded and every deletion ever
-            // recorded is paged through.
-            'deleted' => $deletedAfter?->getTimestamp(),
+            // The plugin reads 'deletedAfter'; under the old 'deleted' it answers 400, and under
+            // any other key the timestamp is discarded and every deletion ever recorded is paged
+            // through.
+            'deletedAfter' => $deletedAfter?->getTimestamp(),
         ];
 
         // Get data from Leantime.

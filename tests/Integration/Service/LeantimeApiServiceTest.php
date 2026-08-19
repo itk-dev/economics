@@ -571,14 +571,14 @@ class LeantimeApiServiceTest extends KernelTestCase
             $service->deleteAsJob($type, 0, 100, $id, false, $deletedAfter);
         }
 
-        // The plugin only reads 'deleted'. Under any other key the timestamp is silently discarded
-        // and every run pages through the entire deletion history.
+        // The plugin only reads 'deletedAfter'. Under any other key the timestamp is silently
+        // discarded and every run pages through the entire deletion history.
         $this->assertSame(
             [
-                ['type' => 'timesheets', 'start' => 0, 'limit' => 100, 'deleted' => $deletedAfter->getTimestamp()],
-                ['type' => 'tickets', 'start' => 0, 'limit' => 100, 'deleted' => $deletedAfter->getTimestamp()],
-                ['type' => 'milestones', 'start' => 0, 'limit' => 100, 'deleted' => $deletedAfter->getTimestamp()],
-                ['type' => 'projects', 'start' => 0, 'limit' => 100, 'deleted' => $deletedAfter->getTimestamp()],
+                ['type' => 'timesheets', 'start' => 0, 'limit' => 100, 'deletedAfter' => $deletedAfter->getTimestamp()],
+                ['type' => 'tickets', 'start' => 0, 'limit' => 100, 'deletedAfter' => $deletedAfter->getTimestamp()],
+                ['type' => 'milestones', 'start' => 0, 'limit' => 100, 'deletedAfter' => $deletedAfter->getTimestamp()],
+                ['type' => 'projects', 'start' => 0, 'limit' => 100, 'deletedAfter' => $deletedAfter->getTimestamp()],
             ],
             $requestJson
         );
