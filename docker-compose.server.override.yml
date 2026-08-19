@@ -34,7 +34,8 @@ services:
       - APP_SUPERVISOR_COMMAND=/app/bin/console messenger:consume --env=prod --no-debug --time-limit=900 --failure-limit=1 async
       - APP_SUPERVISOR_WORKERS=1
       - APP_SUPERVISOR_USER=deploy
-      # Sync job is rate limited by LeanTime API so it will take some time to complete.
+      # A backstop only: --time-limit above ends the process first, and the Leantime client caps a
+      # single request at max_duration: 30s, so nothing inside one message runs anywhere near this.
       - PHP_MAX_EXECUTION_TIME=1800
       - PHP_MEMORY_LIMIT=512M
       - PHP_TIMEZONE=UTC

@@ -1,0 +1,15 @@
+# @see https://symfony.com/doc/current/rate_limiter.html
+framework:
+    rate_limiter:
+        # Throttles outgoing calls to the Leantime data API, see app.leantime.http_client.
+        #
+        # A sliding window rather than a token bucket: the limit we are respecting is "no more than
+        # n requests in the last interval", and a bucket would let a full sync spend a whole refilled
+        # burst at once, which is exactly the shape that draws a 429.
+        #
+        # framework.lock is configured, so the limiter takes a lock and the window is shared across
+        # every worker and cron process rather than counted per process.
+        leantime_api:
+            policy: sliding_window
+            limit: "%env(int:APP_LEANTIME_RATE_LIMIT)%"
+            interval: "%env(string:APP_LEANTIME_RATE_INTERVAL)%"

@@ -8,6 +8,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-327](https://github.com/itk-dev/economics/pull/327)
+  * Gave the `async` transport its own `retry_strategy` instead of leaving it on Symfony's 1s/2s/4s defaults,
+    which are shorter than any rate-limit window — a page that drew a 429 spent all three attempts inside the
+    window that produced it. Retrying rate-limited Leantime requests is the transport's job: PR-325 and PR-326
+    already narrowed the handlers so only a failure describing the message itself is unrecoverable, which is
+    what lets a 429 reach the queue at all.
+  * Throttled the Leantime data API rather than reacting to its 429s. `app.leantime.http_client` is a
+    `ThrottlingHttpClient` over a `sliding_window` limiter, so the sync spends the budget before the request.
+    `APP_LEANTIME_RATE_LIMIT` and `APP_LEANTIME_RATE_INTERVAL` are provisional — nothing in Leantime or the
+    data-api plugin documents a published limit, and no `Retry-After` header has been observed, so the values
+    are a conservative guess until the real ceiling is measured.
+  * Bounded Leantime requests with `timeout: 5` and `max_duration: 30` on a client of their own rather than on
+    `framework.http_client.default_options`, so nothing else inherits them. Symfony caps neither by default and
+    an uncapped request holds the worker forever, since `messenger:consume` only checks `--time-limit` between
+    messages. A scoped client cannot express this: scopes key on `base_uri`, and the Leantime one comes from the
+    `DataProvider` entity at runtime.
+  * A 4xx other than 408/423/425/429 now fails the message immediately instead of being retried five times to
+    arrive at the same answer — the endpoint returns 400 for a missing `type` or the retired `deleted`
+    parameter, and the retry budget cannot rewrite the request.
 * [PR-334](https://github.com/itk-dev/economics/pull/334)
   * Paginated the Leantime delete sync, following [data-api#21](https://github.com/ITK-Leantime/data-api/pull/21):
     `/deleted` now serves one type per request with `start`/`limit`, so `delete()` queues a message per type and

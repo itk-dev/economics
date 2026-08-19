@@ -65,33 +65,41 @@ services:
         arguments:
             $monitoringUrl: "%env(string:SYNC_MONITORING_URL)%"
 
-    # Leantime rate-limits its data API, and a full sync makes hundreds of paged requests. A 429
-    # surfaces inside updateAsJob() before the next page is queued, so without retrying, one of them
-    # ends the whole pagination chain. Restores the RetryableHttpClient that was dropped along with
-    # the old Jira stack, while the deploy comment still assumes rate limiting is handled.
-    Symfony\Component\HttpClient\Retry\RetryStrategyInterface:
-        class: Symfony\Component\HttpClient\Retry\GenericRetryStrategy
-        # Fetched directly by LeantimeApiServiceRetryTest, which drives the configured strategy
-        # against mock responses rather than asserting on a copy of the numbers below.
-        public: true
-        arguments:
-            # A flat list retries on any HTTP method. GenericRetryStrategy's own defaults restrict
-            # transport errors (0) and 500/504/507/510 to idempotent methods, which excludes the
-            # POSTs the Leantime data API uses even for reads — every one of these calls is a read.
-            $statusCodes: [0, 423, 425, 429, 500, 502, 503, 504, 507, 510]
-            $delayMs: "%env(int:APP_HTTP_CLIENT_RETRY_DELAY_MS)%"
-            $multiplier: 2.0
-            # RetryableHttpClient prefers the response's Retry-After header over this backoff, so the
-            # cap only bounds the cases where Leantime sends no hint.
-            $maxDelayMs: 60000
+    # Leantime rate-limits its data API and a full sync makes hundreds of paged requests, so the
+    # sync spends its time waiting on one host. Everything below configures that one caller;
+    # framework.http_client.default_options stays untouched so nothing else inherits these numbers.
+    #
+    # A scoped client cannot express this: scopes key on base_uri, and the Leantime base URI comes
+    # from the DataProvider entity at runtime, not from config.
+    app.leantime.rate_limiter:
+        class: Symfony\Component\RateLimiter\LimiterInterface
+        # Spending the budget before the request rather than reacting to a 429 afterwards. Shared
+        # by every Leantime call, since they all compete for the same limit.
+        factory: ["@limiter.leantime_api", create]
 
-    app.leantime.http_client:
-        class: Symfony\Component\HttpClient\RetryableHttpClient
+    app.leantime.http_client.options:
+        class: Symfony\Contracts\HttpClient\HttpClientInterface
+        factory: ["@http_client", withOptions]
         arguments:
-            $client: "@http_client"
-            $strategy: '@Symfony\Component\HttpClient\Retry\RetryStrategyInterface'
-            $maxRetries: "%env(int:APP_HTTP_CLIENT_MAX_RETRIES)%"
-            $logger: "@logger"
+            # timeout is the idle gap between chunks, not the whole request, so 5s is generous for an
+            # API that answers in milliseconds. max_duration bounds one page; if a page ever needs
+            # longer, lower LeantimeApiService::LIMIT rather than raising this. Symfony caps neither
+            # by default, and an uncapped request holds the worker forever: messenger:consume only
+            # checks --time-limit between messages, never during one.
+            - { timeout: 5, max_duration: 30 }
+
+    # Deliberately not a RetryableHttpClient. Every Leantime fetch is driven by a message the async
+    # transport already retries, and retrying underneath the queue only hides the failure from it.
+    app.leantime.http_client:
+        class: Symfony\Component\HttpClient\ThrottlingHttpClient
+        # Not autoconfigured, which would tag it kernel.reset: ThrottlingHttpClient::reset() resets
+        # the limiter with it, and the worker resets services between messages — the window would be
+        # wiped after every single request, for every process sharing it. Symfony registers its own
+        # scoped-client throttling the same untagged way.
+        autoconfigure: false
+        arguments:
+            $client: "@app.leantime.http_client.options"
+            $rateLimiter: "@app.leantime.rate_limiter"
 
     App\Service\LeantimeApiService:
         arguments:

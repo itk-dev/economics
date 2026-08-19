@@ -8,6 +8,17 @@ framework:
             # @see https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
                 dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
+                # Spelled out rather than left to Symfony's 1s/2s/4s defaults, which are shorter than
+                # any rate-limit window: a sync page that draws a 429 would spend all three attempts
+                # inside the window that produced it. This is where retrying belongs — the handlers
+                # only mark a failure unrecoverable when it describes the message itself, so anything
+                # transient reaches the transport.
+                retry_strategy:
+                    max_retries: 5
+                    delay: 10000
+                    multiplier: 3
+                    # 10s, 30s, 90s, 270s, 600s — a little under 17 minutes in total.
+                    max_delay: 600000
             # @see https://symfony.com/doc/current/messenger.html#saving-retrying-failed-messages
             failed:
                 dsn: "%env(MESSENGER_TRANSPORT_DSN_FAILED)%"
