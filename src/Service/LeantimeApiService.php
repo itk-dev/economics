@@ -44,7 +44,10 @@ class LeantimeApiService implements DataProviderInterface
     public const TICKETS = 'tickets';
     public const TIMESHEETS = 'timesheets';
     public const WORKERS = 'workers';
-    /** The types the deleted endpoint tracks, children before the parents they hang off. */
+    // The types the deleted endpoint tracks, children before the parents they hang off. A parent is
+    // only hard-removable once its children are gone: DataProviderService refuses to remove a project
+    // or issue that still has any, and marks it with sourceDeletedDate instead. Nothing revisits that
+    // mark, so a parent reached too early stays half-deleted for good.
     private const DELETED_TYPES = [self::TIMESHEETS, self::TICKETS, self::MILESTONES, self::PROJECTS];
     private const LIMIT = 100;
     // Placeholder for a null name; the name columns are not nullable, and dropping the row would
@@ -102,7 +105,13 @@ class LeantimeApiService implements DataProviderInterface
 
         foreach ($dataProviders as $dataProvider) {
             // One message per type, since the endpoint answers with a single type's page.
-            // The order is kept: children are removed before the parents they hang off.
+            // What keeps DELETED_TYPES in order is the sync transport, not the dispatch order:
+            // deleteAll() passes asyncJobQueue false, so each handler — the removals and the
+            // next-page dispatch alike — runs inline, and a type's every page is done before the
+            // next type is dispatched. Fanning all four out up front is only safe under that.
+            // On the async queue they would interleave, and a project could be reached while its
+            // timesheets sat a page behind; that path would have to chain the types instead,
+            // dispatching the next one only once the current is exhausted.
             foreach ($this::DELETED_TYPES as $type) {
                 $this->messageBus->dispatch(
                     new LeantimeDeleteMessage($type, 0, $this::LIMIT, $dataProvider->getId(), $asyncJobQueue, $deletedAfter),
