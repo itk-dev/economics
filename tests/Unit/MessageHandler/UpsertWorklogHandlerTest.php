@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\MessageHandler;
 
+use App\Exception\NotFoundException;
 use App\Message\UpsertWorklogMessage;
 use App\MessageHandler\UpsertWorklogHandler;
 use App\Model\DataProvider\DataProviderWorklogData;
@@ -31,16 +32,35 @@ class UpsertWorklogHandlerTest extends TestCase
         $handler($message);
     }
 
-    public function testInvokeOnExceptionThrowsUnrecoverable(): void
+    public function testInvokeOnRowLevelFailureThrowsUnrecoverable(): void
     {
         $message = new UpsertWorklogMessage($this->createWorklogData());
 
         $service = $this->createMock(DataProviderService::class);
-        $service->method('upsertWorklog')->willThrowException(new \RuntimeException('fail'));
+        $service->method('upsertWorklog')->willThrowException(new NotFoundException('fail'));
 
         $handler = new UpsertWorklogHandler($this->createMock(LoggerInterface::class), $service);
 
         $this->expectException(UnrecoverableMessageHandlingException::class);
         $handler($message);
+    }
+
+    public function testInvokeOnInfrastructureFailurePropagates(): void
+    {
+        $message = new UpsertWorklogMessage($this->createWorklogData());
+
+        $service = $this->createMock(DataProviderService::class);
+        $service->method('upsertWorklog')->willThrowException(new \RuntimeException('the database went away'));
+
+        $handler = new UpsertWorklogHandler($this->createMock(LoggerInterface::class), $service);
+
+        // Unrecoverable is what LeantimeApiService reads as "bad row, carry on". This is not that.
+        try {
+            $handler($message);
+            $this->fail('Expected the failure to propagate.');
+        } catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(UnrecoverableMessageHandlingException::class, $e);
+            $this->assertSame('the database went away', $e->getMessage());
+        }
     }
 }

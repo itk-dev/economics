@@ -51,7 +51,7 @@ jobs:
           docker network create frontend
 
       - run: |
-          docker compose run --rm phpfpm composer validate --strict
+          docker compose run --rm --no-deps phpfpm composer validate --strict
 
   composer-normalized:
     runs-on: ubuntu-latest
@@ -63,5 +63,5 @@ jobs:
           docker network create frontend
 
       - run: |
-          docker compose run --rm phpfpm composer install
-          docker compose run --rm phpfpm composer normalize --dry-run
+          docker compose run --rm --no-deps phpfpm composer install
+          docker compose run --rm --no-deps phpfpm composer normalize --dry-run
