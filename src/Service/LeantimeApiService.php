@@ -44,6 +44,11 @@ class LeantimeApiService implements DataProviderInterface
     public const TICKETS = 'tickets';
     public const TIMESHEETS = 'timesheets';
     public const WORKERS = 'workers';
+    // The types the deleted endpoint tracks, children before the parents they hang off. A parent is
+    // only hard-removable once its children are gone: DataProviderService refuses to remove a project
+    // or issue that still has any, and marks it with sourceDeletedDate instead. Nothing revisits that
+    // mark, so a parent reached too early stays half-deleted for good.
+    private const DELETED_TYPES = [self::TIMESHEETS, self::TICKETS, self::MILESTONES, self::PROJECTS];
     private const LIMIT = 100;
     // Placeholder for a null name; the name columns are not nullable, and dropping the row would
     // lose real data — for issues it would make their worklogs unstorable. The tracker id is
@@ -99,14 +104,24 @@ class LeantimeApiService implements DataProviderInterface
         $dataProviders = $this->getEnabledLeantimeDataProviders();
 
         foreach ($dataProviders as $dataProvider) {
-            $this->messageBus->dispatch(
-                new LeantimeDeleteMessage($dataProvider->getId(), $asyncJobQueue, $deletedAfter),
-                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
-            );
+            // One message per type, since the endpoint answers with a single type's page.
+            // What keeps DELETED_TYPES in order is the sync transport, not the dispatch order:
+            // deleteAll() passes asyncJobQueue false, so each handler — the removals and the
+            // next-page dispatch alike — runs inline, and a type's every page is done before the
+            // next type is dispatched. Fanning all four out up front is only safe under that.
+            // On the async queue they would interleave, and a project could be reached while its
+            // timesheets sat a page behind; that path would have to chain the types instead,
+            // dispatching the next one only once the current is exhausted.
+            foreach ($this::DELETED_TYPES as $type) {
+                $this->messageBus->dispatch(
+                    new LeantimeDeleteMessage($type, 0, $this::LIMIT, $dataProvider->getId(), $asyncJobQueue, $deletedAfter),
+                    [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+                );
+            }
         }
     }
 
-    public function deleteAsJob(int $dataProviderId, bool $asyncJobQueue = false, ?\DateTimeInterface $deletedAfter = null): void
+    public function deleteAsJob(string $type, int $startId, int $limit, int $dataProviderId, bool $asyncJobQueue = false, ?\DateTimeInterface $deletedAfter = null): void
     {
         $dataProvider = $this->dataProviderRepository->find($dataProviderId);
 
@@ -114,65 +129,80 @@ class LeantimeApiService implements DataProviderInterface
             throw new NotFoundException("DataProvider with id: $dataProviderId not found");
         }
 
-        $types = [
-            self::TIMESHEETS,
-            self::TICKETS,
-            self::MILESTONES,
-            self::PROJECTS,
-        ];
+        $classname = match ($type) {
+            self::PROJECTS => Project::class,
+            self::MILESTONES => Version::class,
+            self::TICKETS => Issue::class,
+            self::TIMESHEETS => Worklog::class,
+        };
 
         $params = [
-            'types' => $types,
-            // The plugin reads 'deleted'; anything else is discarded and the whole deletion
-            // history is returned, which /deleted does not paginate.
-            'deleted' => $deletedAfter?->getTimestamp(),
+            'type' => $type,
+            'start' => $startId,
+            'limit' => $limit,
+            // The plugin reads 'deletedAfter'; under the old 'deleted' it answers 400, and under
+            // any other key the timestamp is discarded and every deletion ever recorded is paged
+            // through.
+            'deletedAfter' => $deletedAfter?->getTimestamp(),
         ];
 
         // Get data from Leantime.
         $data = $this->fetchFromLeantime($dataProvider, 'deleted', $params);
-        $results = $data->results;
 
         // Queue delete.
-        foreach ($types as $type) {
-            if (!isset($results->{$type})) {
+        $maxDeletionId = null;
+
+        foreach ($data->results as $result) {
+            // Tracked before anything below can skip the row: a deletion that cannot be acted
+            // on still has to be paged past. The cursor is deletionId, not id — the endpoint
+            // orders deletions by when they happened, not by the entity they refer to.
+            if (is_numeric($result->deletionId ?? null)) {
+                $deletionId = (int) $result->deletionId;
+                $maxDeletionId = null === $maxDeletionId ? $deletionId : max($maxDeletionId, $deletionId);
+            }
+
+            // Nothing identifies the entity to remove.
+            if (null === $result->id) {
+                $this->logger->error(sprintf('Skipping deleted %s entry with no id', $type));
+
                 continue;
             }
 
-            $classname = match ($type) {
-                self::PROJECTS => Project::class,
-                self::MILESTONES => Version::class,
-                self::TICKETS => Issue::class,
-                self::TIMESHEETS => Worklog::class,
-            };
+            $projectTrackerId = $result->id;
 
-            foreach ($results->{$type} as $result) {
-                // Nothing identifies the entity to remove.
-                if (null === $result->id) {
-                    $this->logger->error(sprintf('Skipping deleted %s entry with no id', $type));
+            // Now that the request actually filters by timestamp, an entry dropped here is
+            // dropped for good; before, every run re-read the full history and healed itself.
+            // So one bad entry must not take the rest of the run with it.
+            try {
+                $deletedDate = $this->getLeanDateTime($result->deletedDate);
 
-                    continue;
+                $this->messageBus->dispatch(
+                    new EntityRemovedFromDataProviderMessage($classname, $dataProviderId, $projectTrackerId, $deletedDate),
+                    [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+                );
+            } catch (HandlerFailedException|\DateMalformedStringException|\TypeError $e) {
+                if ($e instanceof HandlerFailedException) {
+                    $this->rethrowUnlessRowLevel($e);
                 }
 
-                $projectTrackerId = $result->id;
-
-                // Now that the request actually filters by timestamp, an entry dropped here is
-                // dropped for good; before, every run re-read the full history and healed itself.
-                // So one bad entry must not take the rest of the run with it.
-                try {
-                    $deletedDate = $this->getLeanDateTime($result->deletedDate);
-
-                    $this->messageBus->dispatch(
-                        new EntityRemovedFromDataProviderMessage($classname, $dataProviderId, $projectTrackerId, $deletedDate),
-                        [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
-                    );
-                } catch (HandlerFailedException|\DateMalformedStringException|\TypeError $e) {
-                    if ($e instanceof HandlerFailedException) {
-                        $this->rethrowUnlessRowLevel($e);
-                    }
-
-                    $this->logger->error(sprintf('Skipping deleted %s id %s: %s', $type, $projectTrackerId, $e->getMessage()));
-                }
+                $this->logger->error(sprintf('Skipping deleted %s id %s: %s', $type, $projectTrackerId, $e->getMessage()));
             }
+        }
+
+        // Queue next page.
+        if ($data->resultsCount === $limit) {
+            // A full page with nothing to advance on cannot be paged past. Stopping is visible in
+            // the log; continuing would re-read the same page until the queue starves.
+            if (null === $maxDeletionId || $maxDeletionId < $startId) {
+                $this->logger->error(sprintf('Stopping deleted %s sync at start %d: no usable deletionId on a full page, cursor cannot advance.', $type, $startId));
+
+                return;
+            }
+
+            $this->messageBus->dispatch(
+                new LeantimeDeleteMessage($type, $maxDeletionId + 1, $limit, $dataProviderId, $asyncJobQueue, $deletedAfter),
+                [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],
+            );
         }
     }
 

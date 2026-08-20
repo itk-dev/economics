@@ -15,12 +15,12 @@ class LeantimeDeleteHandlerTest extends TestCase
     public function testInvokeCallsDeleteAsJob(): void
     {
         $deletedAfter = new \DateTime('2024-01-01');
-        $message = new LeantimeDeleteMessage(1, false, $deletedAfter);
+        $message = new LeantimeDeleteMessage(LeantimeApiService::TICKETS, 82, 100, 1, false, $deletedAfter);
 
         $service = $this->createMock(LeantimeApiService::class);
         $service->expects($this->once())
             ->method('deleteAsJob')
-            ->with(1, false, $deletedAfter);
+            ->with(LeantimeApiService::TICKETS, 82, 100, 1, false, $deletedAfter);
 
         $handler = new LeantimeDeleteHandler($this->createMock(LoggerInterface::class), $service);
         $handler($message);
@@ -28,7 +28,7 @@ class LeantimeDeleteHandlerTest extends TestCase
 
     public function testInvokeOnRowLevelFailureThrowsUnrecoverable(): void
     {
-        $message = new LeantimeDeleteMessage(1, false, null);
+        $message = new LeantimeDeleteMessage(LeantimeApiService::TICKETS, 0, 100, 1, false, null);
 
         $service = $this->createMock(LeantimeApiService::class);
         $service->method('deleteAsJob')->willThrowException(new NotFoundException('fail'));
@@ -41,7 +41,7 @@ class LeantimeDeleteHandlerTest extends TestCase
 
     public function testInvokeOnInfrastructureFailurePropagates(): void
     {
-        $message = new LeantimeDeleteMessage(1, false, null);
+        $message = new LeantimeDeleteMessage(LeantimeApiService::TICKETS, 0, 100, 1, false, null);
 
         $service = $this->createMock(LeantimeApiService::class);
         $service->method('deleteAsJob')->willThrowException(new \RuntimeException('the database went away'));
