@@ -158,7 +158,9 @@ derive `modifiedAfter` / `deletedAfter` from it.
   `modified` column on every write path.
 * **Deletions.** Leantime rows are gone by the time Economics asks, so the plugin records them in
   `itk_projects_deleted`, `itk_tickets_deleted` and `itk_timesheets_deleted` via triggers, and the
-  `deleted` endpoint reads those tables. It serves one type per request: `deleteAsJob()` sends `type`,
+  `deleted` endpoint reads those tables. Three tables cover the four types because Leantime keeps
+  milestones and tickets in the same `zp_tickets` table, so both their deletions land in
+  `itk_tickets_deleted`. The endpoint serves one type per request: `deleteAsJob()` sends `type`,
   `start`, `limit` and `deletedAfter`, and pages the way the entity endpoints do. The cursor advances
   past a deletion that names no entity, because a skipped row still occupies a page position; a full
   page with no usable `deletionId` stops the run with a logged error rather than re-queueing itself,
