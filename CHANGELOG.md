@@ -16,13 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     lowercases the URI and prefix-matches `/api`. It is disabled outright when `app.debug` is true, which is
     why development never saw it. **What resolved the 429s was raising `LEAN_RATELIMIT_API` to 10000 on the
     Leantime side**, not anything in this repository — a full sync cannot approach that.
-  * Gave the `async` transport its own `retry_strategy` instead of leaving it on Symfony's 1s/2s/4s defaults,
-    which are over before anything transient has had time to end: a Leantime restart, a database failover or a
-    rate-limit window all outlast three attempts inside seven seconds. Now 10s, 30s, 90s, 270s, 600s. This
-    applies to every message on the transport, not only the Leantime ones. PR-325 and PR-326 already narrowed
-    the handlers so only a failure describing the message itself is unrecoverable, which is what lets a
-    transient failure reach the queue at all.
-  * A 4xx other than 408/423/425/429 now fails the message immediately instead of being retried five times to
+  * Respaced the `async` transport's `retry_strategy`. Three attempts was never the problem; 1s/2s/4s was, being
+    over before anything transient has had time to end. Now 10s, 30s, 90s, so the last attempt lands 130s after
+    the first failure — past a Leantime restart, a database failover, or a 60s rate-limit window. No wider than
+    that, because a page only queues its successor once it succeeds: a page waiting to be retried is the whole
+    entity type's sync waiting with it, against an hourly cron. This applies to every message on the transport,
+    not only the Leantime ones. PR-325 and PR-326 already narrowed the handlers so only a failure describing the
+    message itself is unrecoverable, which is what lets a transient failure reach the queue at all.
+  * A 4xx other than 408/423/425/429 now fails the message immediately instead of being retried three times to
     arrive at the same answer — the endpoint returns 400 for a missing `type` or the retired `deleted`
     parameter, and the retry budget cannot rewrite the request. This is the delete sync's only cover:
     `sync-deleted` dispatches on the `sync` transport, which has no retry strategy, and it has to stay there —
