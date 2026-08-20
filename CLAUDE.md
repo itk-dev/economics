@@ -26,7 +26,8 @@ task compose -- <args>            # raw docker compose, e.g. task compose -- log
 | Coverage gate | `task test:coverage:check` (threshold **62**) |
 | Static analysis | `task code-analysis` |
 | PHP + Twig standards | `task coding-standards:php:check` / `:php:apply` |
-| JS + Markdown standards | `task coding-standards:js:check` / `:js:apply` |
+| JS standards, `assets/` only | `task coding-standards:js:check` / `:js:apply` |
+| Markdown lint | `task compose -- run --rm markdownlint markdownlint '**/*.md'` |
 | Migrations | `task db:migrate` |
 | Fixtures | `task fixtures:load` |
 | Consume the queue | `task messenger` |
@@ -132,9 +133,7 @@ Authentication is Azure OIDC — `src/Security/AzureOIDCAuthenticator.php` plus
 `app:products:import`, `app:calc-sums`, `app:handle-subscriptions`, `app:user:set-roles`,
 `app:migrate-from-jira-economics`.
 
-Note that `README.md` still documents several commands that no longer exist (`app:sync-projects`,
-`app:sync-issues`, `app:sync`, `app:queue-sync`). Trust `task phpfpm -- bin/console list app` over
-the README.
+`task phpfpm -- bin/console list app` is the authority if this list falls behind.
 
 ## Gotchas
 
@@ -200,9 +199,8 @@ Two things surprise people:
 
 * **`tests/bootstrap.php` rebuilds the database itself** on every run — clear cache, drop, create,
   migrate, load `AppFixtures`. Nothing else sets the test database up.
-* **There is no DAMADoctrineTestBundle**, despite what `README.md` says. Tests are not wrapped in
-  transactions and are not isolated from each other, so a test that writes must clean up after
-  itself.
+* **There is no DAMADoctrineTestBundle.** Tests are not wrapped in transactions and are not isolated
+  from each other, so a test that writes must clean up after itself.
 
 `tests/bootstrap_unit.php` is the database-free bootstrap used by `composer tests-unit`. Fixture users
 for each role (`admin@test.local` and friends) and the login helpers live in
