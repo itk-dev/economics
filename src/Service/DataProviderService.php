@@ -385,7 +385,11 @@ class DataProviderService
 
     public function projectRemovedFromDataProvider(int $dataProviderId, string $projectTrackerId, ?\DateTimeInterface $sourceDeletedDate): void
     {
-        // A project can be removed if no worklogs are bound to any invoices.
+        // A project can be removed once nothing hangs off it. Every relation checked below points
+        // back with a non-nullable, non-cascading foreign key, so removing the project while one
+        // still exists is a database error rather than a soft delete. Clients, codeowners and
+        // products are not checked: the first two are owning-side many-to-many relations whose join
+        // rows Doctrine deletes, and products are mapped with orphanRemoval.
 
         $dataProvider = $this->getDataProvider($dataProviderId);
 
@@ -413,6 +417,24 @@ class DataProviderService
 
         if (!$project->getWorklogs()->isEmpty()) {
             $this->logger->warning('Cannot remove project since project worklogs exist');
+
+            $removable = false;
+        }
+
+        if (!$project->getVersions()->isEmpty()) {
+            $this->logger->warning('Cannot remove project since project versions exist');
+
+            $removable = false;
+        }
+
+        if (!$project->getProjectBillings()->isEmpty()) {
+            $this->logger->warning('Cannot remove project since project billings exist');
+
+            $removable = false;
+        }
+
+        if (!$project->getServiceAgreements()->isEmpty()) {
+            $this->logger->warning('Cannot remove project since project service agreements exist');
 
             $removable = false;
         }
