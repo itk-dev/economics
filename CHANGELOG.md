@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-333](https://github.com/itk-dev/economics/pull/333)
+  * Documented how Economics synchronizes from the Leantime data-api plugin in `docs/leantime-sync.md`: the
+    scheduled jobs, the command options, and the paging, incrementality and deletion behaviour that is not
+    obvious from the code.
+  * Three flowcharts carry the structure — fetching a page, turning a page into rows, and the plugin side — and
+    a sequence diagram carries one update run end to end. Each owns ground the others do not, so a change lands
+    in one diagram rather than several.
+  * Rewrote the `Synchronization` section in `README.md`, which described a `QueueSyncCommand` and an
+    `app:queue-sync` that do not exist, credited the Symfony Scheduler for work cron does, and named
+    `DataProviderServiceInterface` instead of `DataProviderInterface`.
 * [PR-335](https://github.com/itk-dev/economics/pull/335)
   * Stopped `projectRemovedFromDataProvider()` hard-deleting a project that a version, a project billing or a
     service agreement still points at. Each of those points back with a non-nullable, non-cascading foreign key,
