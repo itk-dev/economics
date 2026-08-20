@@ -566,7 +566,10 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         $deletedAfter = new \DateTime('2025-10-06T11:36:08.000000Z');
 
-        // Children before the parents they hang off, one request per type.
+        // Stands in for delete()'s dispatch: one request per type, children before the parents they
+        // hang off. Calling it in a loop is what the sync transport does anyway — asyncJobQueue is
+        // false below, so every removal is handled inline before the next type starts, which is the
+        // ordering the assertions further down rely on.
         foreach ([LeantimeApiService::TIMESHEETS, LeantimeApiService::TICKETS, LeantimeApiService::MILESTONES, LeantimeApiService::PROJECTS] as $type) {
             $service->deleteAsJob($type, 0, 100, $id, false, $deletedAfter);
         }
