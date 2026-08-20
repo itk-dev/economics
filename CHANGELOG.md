@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-335](https://github.com/itk-dev/economics/pull/335)
+  * Stopped `projectRemovedFromDataProvider()` hard-deleting a project that a version, a project billing or a
+    service agreement still points at. Each of those points back with a non-nullable, non-cascading foreign key,
+    so `remove()` raised a database error instead of the soft delete the invoice, issue and worklog checks give.
+    Only the delete sync's type ordering — milestones before projects — kept it out of reach, and any milestone
+    deletion the source never reported exposed it.
 * [PR-334](https://github.com/itk-dev/economics/pull/334)
   * Paginated the Leantime delete sync, following [data-api#21](https://github.com/ITK-Leantime/data-api/pull/21):
     `/deleted` now serves one type per request with `start`/`limit`, so `delete()` queues a message per type and
