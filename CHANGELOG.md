@@ -9,24 +9,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-327](https://github.com/itk-dev/economics/pull/327)
+  * Recorded where the 429s came from, since nothing here did and the answer is not in the data-api plugin.
+    Leantime core rate-limits every request in `app/Core/Middleware/RequestRateLimiter.php` (v3.9.7): the API
+    bucket defaults to **100 requests per 60 seconds, keyed on client IP**, and the 429 carries `Retry-After`
+    plus three `X-RateLimit-*` headers. It reaches `/APIData/API/…` because `IncomingRequest::isApiRequest()`
+    lowercases the URI and prefix-matches `/api`. It is disabled outright when `app.debug` is true, which is
+    why development never saw it. **What resolved the 429s was raising `LEAN_RATELIMIT_API` to 10000 on the
+    Leantime side**, not anything in this repository — a full sync cannot approach that.
   * Gave the `async` transport its own `retry_strategy` instead of leaving it on Symfony's 1s/2s/4s defaults,
-    which are shorter than any rate-limit window — a page that drew a 429 spent all three attempts inside the
-    window that produced it. Retrying rate-limited Leantime requests is the transport's job: PR-325 and PR-326
-    already narrowed the handlers so only a failure describing the message itself is unrecoverable, which is
-    what lets a 429 reach the queue at all.
-  * Throttled the Leantime data API rather than reacting to its 429s. `app.leantime.http_client` is a
-    `ThrottlingHttpClient` over a `sliding_window` limiter, so the sync spends the budget before the request.
-    `APP_LEANTIME_RATE_LIMIT` and `APP_LEANTIME_RATE_INTERVAL` are provisional — nothing in Leantime or the
-    data-api plugin documents a published limit, and no `Retry-After` header has been observed, so the values
-    are a conservative guess until the real ceiling is measured.
+    which are over before anything transient has had time to end: a Leantime restart, a database failover or a
+    rate-limit window all outlast three attempts inside seven seconds. Now 10s, 30s, 90s, 270s, 600s. This
+    applies to every message on the transport, not only the Leantime ones. PR-325 and PR-326 already narrowed
+    the handlers so only a failure describing the message itself is unrecoverable, which is what lets a
+    transient failure reach the queue at all.
+  * A 4xx other than 408/423/425/429 now fails the message immediately instead of being retried five times to
+    arrive at the same answer — the endpoint returns 400 for a missing `type` or the retired `deleted`
+    parameter, and the retry budget cannot rewrite the request. This is the delete sync's only cover:
+    `sync-deleted` dispatches on the `sync` transport, which has no retry strategy, and it has to stay there —
+    what keeps `DELETED_TYPES` in child-before-parent order is the handlers running inline.
   * Bounded Leantime requests with `timeout: 5` and `max_duration: 30` on a client of their own rather than on
     `framework.http_client.default_options`, so nothing else inherits them. Symfony caps neither by default and
     an uncapped request holds the worker forever, since `messenger:consume` only checks `--time-limit` between
     messages. A scoped client cannot express this: scopes key on `base_uri`, and the Leantime one comes from the
     `DataProvider` entity at runtime.
-  * A 4xx other than 408/423/425/429 now fails the message immediately instead of being retried five times to
-    arrive at the same answer — the endpoint returns 400 for a missing `type` or the retired `deleted`
-    parameter, and the retry budget cannot rewrite the request.
+  * Dropped `--failure-limit=1` from the supervisor's `messenger:consume`. `StopWorkerOnFailureLimitListener`
+    counts every `WorkerMessageFailedEvent`, which the worker dispatches for retryable failures too, so with one
+    worker configured the first transient error stopped it — now that a retry ladder exists, that is the wrong
+    thing to count.
+  * Considered and rejected throttling the client with a `ThrottlingHttpClient` over a rate limiter. Against the
+    configured 10000/min it would guard nothing, and it pauses inside the message handler, so the single worker
+    stops draining the queue while it waits. Retrying is also the layer that cannot read the `Retry-After`
+    Leantime sends — a transport retry strategy never sees the response — but the ladder above outlasts a 60s
+    window by its third attempt, so the header would not change the outcome.
 * [PR-334](https://github.com/itk-dev/economics/pull/334)
   * Paginated the Leantime delete sync, following [data-api#21](https://github.com/ITK-Leantime/data-api/pull/21):
     `/deleted` now serves one type per request with `start`/`limit`, so `delete()` queues a message per type and

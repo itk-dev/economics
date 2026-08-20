@@ -8,11 +8,12 @@ framework:
             # @see https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
                 dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
-                # Spelled out rather than left to Symfony's 1s/2s/4s defaults, which are shorter than
-                # any rate-limit window: a sync page that draws a 429 would spend all three attempts
-                # inside the window that produced it. This is where retrying belongs — the handlers
-                # only mark a failure unrecoverable when it describes the message itself, so anything
-                # transient reaches the transport.
+                # Spelled out rather than left to Symfony's 1s/2s/4s defaults, which are over before
+                # anything transient has had time to end: a Leantime restart, a database failover or
+                # a rate-limit window all outlast three attempts inside seven seconds. This applies
+                # to every message on the transport, not only the Leantime ones — the handlers mark a
+                # failure unrecoverable only when it describes the message itself, so anything
+                # transient reaches the transport and now waits long enough to be worth waiting for.
                 retry_strategy:
                     max_retries: 5
                     delay: 10000

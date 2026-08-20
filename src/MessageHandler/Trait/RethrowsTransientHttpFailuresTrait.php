@@ -1,6 +1,6 @@
 <?php
 
-namespace App\MessageHandler;
+namespace App\MessageHandler\Trait;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;

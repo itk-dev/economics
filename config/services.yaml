@@ -65,19 +65,15 @@ services:
         arguments:
             $monitoringUrl: "%env(string:SYNC_MONITORING_URL)%"
 
-    # Leantime rate-limits its data API and a full sync makes hundreds of paged requests, so the
-    # sync spends its time waiting on one host. Everything below configures that one caller;
-    # framework.http_client.default_options stays untouched so nothing else inherits these numbers.
+    # A full sync makes hundreds of paged requests to one host, so the Leantime caller gets bounds of
+    # its own; framework.http_client.default_options stays untouched so nothing else inherits them.
     #
     # A scoped client cannot express this: scopes key on base_uri, and the Leantime base URI comes
     # from the DataProvider entity at runtime, not from config.
-    app.leantime.rate_limiter:
-        class: Symfony\Component\RateLimiter\LimiterInterface
-        # Spending the budget before the request rather than reacting to a 429 afterwards. Shared
-        # by every Leantime call, since they all compete for the same limit.
-        factory: ["@limiter.leantime_api", create]
-
-    app.leantime.http_client.options:
+    #
+    # Deliberately not a RetryableHttpClient. Every Leantime fetch is driven by a message the async
+    # transport already retries, and retrying underneath the queue only hides the failure from it.
+    app.leantime.http_client:
         class: Symfony\Contracts\HttpClient\HttpClientInterface
         factory: ["@http_client", withOptions]
         arguments:
@@ -87,19 +83,6 @@ services:
             # by default, and an uncapped request holds the worker forever: messenger:consume only
             # checks --time-limit between messages, never during one.
             - { timeout: 5, max_duration: 30 }
-
-    # Deliberately not a RetryableHttpClient. Every Leantime fetch is driven by a message the async
-    # transport already retries, and retrying underneath the queue only hides the failure from it.
-    app.leantime.http_client:
-        class: Symfony\Component\HttpClient\ThrottlingHttpClient
-        # Not autoconfigured, which would tag it kernel.reset: ThrottlingHttpClient::reset() resets
-        # the limiter with it, and the worker resets services between messages — the window would be
-        # wiped after every single request, for every process sharing it. Symfony registers its own
-        # scoped-client throttling the same untagged way.
-        autoconfigure: false
-        arguments:
-            $client: "@app.leantime.http_client.options"
-            $rateLimiter: "@app.leantime.rate_limiter"
 
     App\Service\LeantimeApiService:
         arguments:

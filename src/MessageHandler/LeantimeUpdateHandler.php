@@ -4,6 +4,7 @@ namespace App\MessageHandler;
 
 use App\Exception\NotFoundException;
 use App\Message\LeantimeUpdateMessage;
+use App\MessageHandler\Trait\RethrowsTransientHttpFailuresTrait;
 use App\Service\LeantimeApiService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
