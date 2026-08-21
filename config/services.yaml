@@ -64,3 +64,26 @@ services:
     App\Command\SyncCommand:
         arguments:
             $monitoringUrl: "%env(string:SYNC_MONITORING_URL)%"
+
+    # A full sync makes hundreds of paged requests to one host, so the Leantime caller gets bounds of
+    # its own; framework.http_client.default_options stays untouched so nothing else inherits them.
+    #
+    # A scoped client cannot express this: scopes key on base_uri, and the Leantime base URI comes
+    # from the DataProvider entity at runtime, not from config.
+    #
+    # Deliberately not a RetryableHttpClient. Every Leantime fetch is driven by a message the async
+    # transport already retries, and retrying underneath the queue only hides the failure from it.
+    app.leantime.http_client:
+        class: Symfony\Contracts\HttpClient\HttpClientInterface
+        factory: ["@http_client", withOptions]
+        arguments:
+            # timeout is the idle gap between chunks, not the whole request, so 5s is generous for an
+            # API that answers in milliseconds. max_duration bounds one page; if a page ever needs
+            # longer, lower LeantimeApiService::LIMIT rather than raising this. Symfony caps neither
+            # by default, and an uncapped request holds the worker forever: messenger:consume only
+            # checks --time-limit between messages, never during one.
+            - { timeout: 5, max_duration: 30 }
+
+    App\Service\LeantimeApiService:
+        arguments:
+            $httpClient: "@app.leantime.http_client"

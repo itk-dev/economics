@@ -27,7 +27,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `hautelook/alice-bundle` installed, so `task fixtures:load` could only ever fail. It now calls
     `doctrine:fixtures:load`.
   * Corrected the `code-analysis` task description, which advertised Psalm while running PHPStan.
-
+  * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
+    host `php`, and does not have to rediscover the decisions it would otherwise undo — the split
+    retry policy, the hand-built Leantime HTTP client, soft-delete-by-source, ORM 2.
+  * Recorded that `coding-standards:js:check` covers `assets/` only, since its name reads as though it
+    covers Markdown too, and gave the Markdown lint its own entry.
+* [PR-327](https://github.com/itk-dev/economics/pull/327)
+  * Recorded where the 429s came from, since nothing here did and the answer is not in the data-api plugin.
+    Leantime core rate-limits every request in `app/Core/Middleware/RequestRateLimiter.php` (v3.9.7): the API
+    bucket defaults to **100 requests per 60 seconds, keyed on client IP**, and the 429 carries `Retry-After`
+    plus three `X-RateLimit-*` headers. It reaches `/APIData/API/…` because `IncomingRequest::isApiRequest()`
+    lowercases the URI and prefix-matches `/api`. It is disabled outright when `app.debug` is true, which is
+    why development never saw it. **What resolved the 429s was raising `LEAN_RATELIMIT_API` to 10000 on the
+    Leantime side**, not anything in this repository — a full sync cannot approach that.
+  * Respaced the `async` transport's `retry_strategy`. Three attempts was never the problem; 1s/2s/4s was, being
+    over before anything transient has had time to end. Now 10s, 30s, 90s, so the last attempt lands 130s after
+    the first failure — past a Leantime restart, a database failover, or a 60s rate-limit window. No wider than
+    that, because a page only queues its successor once it succeeds: a page waiting to be retried is the whole
+    entity type's sync waiting with it, against an hourly cron. This applies to every message on the transport,
+    not only the Leantime ones. PR-325 and PR-326 already narrowed the handlers so only a failure describing the
+    message itself is unrecoverable, which is what lets a transient failure reach the queue at all.
+  * A 4xx other than 408/423/425/429 now fails the message immediately instead of being retried three times to
+    arrive at the same answer — the endpoint returns 400 for a missing `type` or the retired `deleted`
+    parameter, and the retry budget cannot rewrite the request. This is the delete sync's only cover:
+    `sync-deleted` dispatches on the `sync` transport, which has no retry strategy, and it has to stay there —
+    what keeps `DELETED_TYPES` in child-before-parent order is the handlers running inline.
+  * Bounded Leantime requests with `timeout: 5` and `max_duration: 30` on a client of their own rather than on
+    `framework.http_client.default_options`, so nothing else inherits them. Symfony caps neither by default and
+    an uncapped request holds the worker forever, since `messenger:consume` only checks `--time-limit` between
+    messages. A scoped client cannot express this: scopes key on `base_uri`, and the Leantime one comes from the
+    `DataProvider` entity at runtime.
+  * Dropped `--failure-limit=1` from the supervisor's `messenger:consume`. `StopWorkerOnFailureLimitListener`
+    counts every `WorkerMessageFailedEvent`, which the worker dispatches for retryable failures too, so with one
+    worker configured the first transient error stopped it — now that a retry ladder exists, that is the wrong
+    thing to count.
+  * Considered and rejected throttling the client with a `ThrottlingHttpClient` over a rate limiter. Against the
+    configured 10000/min it would guard nothing, and it pauses inside the message handler, so the single worker
+    stops draining the queue while it waits. Retrying is also the layer that cannot read the `Retry-After`
+    Leantime sends — a transport retry strategy never sees the response — but the ladder above outlasts a 60s
+    window by its third attempt, so the header would not change the outcome.
 * [PR-335](https://github.com/itk-dev/economics/pull/335)
   * Stopped `projectRemovedFromDataProvider()` hard-deleting a project that a version, a project billing or a
     service agreement still points at. Each of those points back with a non-nullable, non-cascading foreign key,
