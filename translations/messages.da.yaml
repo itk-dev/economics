@@ -43,6 +43,7 @@ planning:
   assignees: "Brugere"
   projects: "Projekter"
   hidden-entries: "Skjulte brugere"
+  hidden-projects: "Skjulte projekter"
   data_provider_helptext: ""
   data_provider: "Vælg datakilde"
   search: "Vis"
