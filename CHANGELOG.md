@@ -8,13 +8,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-339](https://github.com/itk-dev/economics/pull/339)
+  * Recorded why dropping `--failure-limit=1` in PR-327 does not reopen what it was originally there for. The
+    flag guarded a real failure mode: a Doctrine error closes the `EntityManager`, and a worker holding a closed
+    one fails every message after it, which is where the pile of failed jobs came from. It cannot span two
+    messages here. `framework.messenger.reset_on_message` defaulted to false until Symfony 6.0 and has been
+    true-only since 6.1, and on this stack `messenger:consume` registers `ResetServicesListener` itself unless
+    `--no-reset` is passed, which the supervisor does not. That resets the `doctrine` registry after every
+    message, and `Registry::resetOrClearManager()` branches on `isOpen()` — an open manager is cleared, a closed
+    one is replaced outright. The handlers cooperate by catching narrowly: none of them catches `\Throwable`, so
+    a Doctrine error leaves the handler, the message reaches the retry ladder, and the next attempt runs against
+    a manager that was rebuilt in between. What the flag was needed for in 2025 the framework now does per
+    message, and unlike the flag it does not cost the queue a worker to do it.
+  * Added the `doctrine_ping_connection` middleware, covering the one thing that reset genuinely cannot: it
+    replaces a *closed* manager, but a manager sitting over a dead socket still looks open, and only issuing a
+    query tells the two apart. A worker that lives longer than its connection is the normal case rather than the
+    exceptional one — an idle reap, a database restart, a failover and a proxy discarding an idle socket all end
+    the same way — so the handling is written to survive a dead connection outright rather than to fit whatever
+    the server is configured for. Deliberately so, because that configuration is not knowable from here: the
+    local `itkdev/mariadb` image sets `wait_timeout` to 300s, MySQL and MariaDB both document 28800s, and
+    production runs a database this repository does not describe. Without the ping the first message after the
+    connection dies fails with "server has gone away" and is recovered by the retry ladder — nothing is lost,
+    but it costs a failed job and a delay for a fault a single query would have caught. Cheap to avoid:
+    `DoctrinePingConnectionMiddleware` pings only when the envelope carries a `ConsumedByWorkerStamp`, and
+    `SyncTransport` adds only a `ReceivedStamp`, so this is one dummy `SELECT` per consumed message and nothing
+    at all on the `sync` transport or the inline billing dispatches. `doctrine_transaction` was not added with
+    it — the handlers each flush once, and wrapping every message in a transaction is a change of behaviour, not
+    a fix.
 * [PR-337](https://github.com/itk-dev/economics/pull/337)
   * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
     host `php`, and does not have to rediscover the decisions it would otherwise undo — the split
     retry policy, the hand-built Leantime HTTP client, soft-delete-by-source, ORM 2.
   * Recorded that `coding-standards:js:check` covers `assets/` only, since its name reads as though it
     covers Markdown too, and gave the Markdown lint its own entry.
-
 * [PR-327](https://github.com/itk-dev/economics/pull/327)
   * Recorded where the 429s came from, since nothing here did and the answer is not in the data-api plugin.
     Leantime core rate-limits every request in `app/Core/Middleware/RequestRateLimiter.php` (v3.9.7): the API
