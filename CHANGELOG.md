@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-337](https://github.com/itk-dev/economics/pull/337)
+  * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
+    host `php`, and does not have to rediscover the decisions it would otherwise undo — the split
+    retry policy, the hand-built Leantime HTTP client, soft-delete-by-source, ORM 2.
+  * Recorded that `coding-standards:js:check` covers `assets/` only, since its name reads as though it
+    covers Markdown too, and gave the Markdown lint its own entry.
+
 * [PR-327](https://github.com/itk-dev/economics/pull/327)
   * Recorded where the 429s came from, since nothing here did and the answer is not in the data-api plugin.
     Leantime core rate-limits every request in `app/Core/Middleware/RequestRateLimiter.php` (v3.9.7): the API
