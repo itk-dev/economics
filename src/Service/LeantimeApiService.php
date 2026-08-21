@@ -65,6 +65,7 @@ class LeantimeApiService implements DataProviderInterface
         private readonly EntityManagerInterface $entityManager,
         private readonly ProjectRepository $projectRepository,
         private readonly LoggerInterface $logger,
+        private readonly LeantimeUrlGenerator $urlGenerator,
     ) {
     }
 
@@ -472,7 +473,10 @@ class LeantimeApiService implements DataProviderInterface
 
     private function post(DataProvider $dataProvider, $path, array $body): ResponseInterface
     {
-        return $this->httpClient->request('POST', $dataProvider->getUrl().$this::API_PATH_DATA.$path, [
+        // API_PATH_DATA carries its own leading slash, so a provider url ending in one would give //APIData.
+        $baseUrl = $this->urlGenerator->baseUrl($dataProvider->getUrl());
+
+        return $this->httpClient->request('POST', $baseUrl.$this::API_PATH_DATA.$path, [
             'headers' => [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
@@ -514,7 +518,7 @@ class LeantimeApiService implements DataProviderInterface
         }
 
         // Error page is the fastest to load.
-        return $dataProviderUrl.'/errorpage/#/tickets/showTicket/'.$ticketId;
+        return $this->urlGenerator->baseUrl($dataProviderUrl).'/errorpage/#/tickets/showTicket/'.$ticketId;
     }
 
     private function linkToProject(string $projectTrackerId, ?string $dataProviderUrl): ?string
@@ -523,6 +527,6 @@ class LeantimeApiService implements DataProviderInterface
             return null;
         }
 
-        return $dataProviderUrl.'/projects/showProject/'.$projectTrackerId;
+        return $this->urlGenerator->baseUrl($dataProviderUrl).'/projects/showProject/'.$projectTrackerId;
     }
 }

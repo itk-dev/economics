@@ -18,6 +18,7 @@ use App\Repository\ProjectRepository;
 use App\Repository\VersionRepository;
 use App\Repository\WorklogRepository;
 use App\Service\LeantimeApiService;
+use App\Service\LeantimeUrlGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -87,6 +88,7 @@ class LeantimeApiServiceTest extends KernelTestCase
             $entityManager,
             $projectRepository,
             $loggerMock,
+            new LeantimeUrlGenerator(),
         );
 
         $dataProvider = new DataProvider();
@@ -206,6 +208,7 @@ class LeantimeApiServiceTest extends KernelTestCase
             $entityManager,
             $projectRepository,
             $loggerMock,
+            new LeantimeUrlGenerator(),
         );
 
         $dataProvider = new DataProvider();
@@ -307,6 +310,7 @@ class LeantimeApiServiceTest extends KernelTestCase
             $entityManager,
             $projectRepository,
             $loggerMock,
+            new LeantimeUrlGenerator(),
         );
 
         $dataProvider = new DataProvider();
@@ -406,6 +410,7 @@ class LeantimeApiServiceTest extends KernelTestCase
             $entityManager,
             $projectRepository,
             $loggerMock,
+            new LeantimeUrlGenerator(),
         );
 
         $dataProvider = new DataProvider();
