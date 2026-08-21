@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-339](https://github.com/itk-dev/economics/pull/339)
+  * Recorded why dropping `--failure-limit=1` in PR-327 does not reopen what it was originally there for. The
+    flag guarded a real failure mode: a Doctrine error closes the `EntityManager`, and a worker holding a closed
+    one fails every message after it, which is where the pile of failed jobs came from. It cannot span two
+    messages here. `framework.messenger.reset_on_message` defaulted to false until Symfony 6.0 and has been
+    true-only since 6.1, and on this stack `messenger:consume` registers `ResetServicesListener` itself unless
+    `--no-reset` is passed, which the supervisor does not. That resets the `doctrine` registry after every
+    message, and `Registry::resetOrClearManager()` branches on `isOpen()` — an open manager is cleared, a closed
+    one is replaced outright. The handlers cooperate by catching narrowly: none of them catches `\Throwable`, so
+    a Doctrine error leaves the handler, the message reaches the retry ladder, and the next attempt runs against
+    a manager that was rebuilt in between. What the flag was needed for in 2025 the framework now does per
+    message, and unlike the flag it does not cost the queue a worker to do it.
+  * Added the `doctrine_ping_connection` middleware, which is the part of this the per-message reset genuinely
+    does not cover: it rebuilds a *closed* manager but cannot see a dead connection underneath an open one. The
+    worker is long-lived and the sync cron hourly, so the connection can sit idle past MySQL's `wait_timeout`
+    and the first message afterwards fails with "server has gone away" — recovered by the retry ladder, but a
+    failed job and a 10s delay for nothing. `DoctrinePingConnectionMiddleware` pings only when the envelope
+    carries a `ConsumedByWorkerStamp`, and `SyncTransport` adds only a `ReceivedStamp`, so this costs one dummy
+    `SELECT` per consumed message and nothing at all on the `sync` transport or the inline billing dispatches.
+    `doctrine_transaction` was not added with it — the handlers each flush once, and wrapping every message in a
+    transaction is a change of behaviour, not a fix.
+
 * [PR-327](https://github.com/itk-dev/economics/pull/327)
   * Recorded where the 429s came from, since nothing here did and the answer is not in the data-api plugin.
     Leantime core rate-limits every request in `app/Core/Middleware/RequestRateLimiter.php` (v3.9.7): the API

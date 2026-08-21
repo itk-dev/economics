@@ -3,6 +3,16 @@ framework:
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         failure_transport: failed
 
+        # The worker is long-lived and the sync cron hourly, so its connection can sit idle past
+        # MySQL's wait_timeout. The per-message services reset re-creates a closed EntityManager but
+        # cannot see a dead connection under an open one, which otherwise costs one "server has gone
+        # away" and a retry per idle stretch. Only messages carrying a ConsumedByWorkerStamp are
+        # pinged, so the sync transport and the inline dispatches pay nothing for this.
+        buses:
+            messenger.bus.default:
+                middleware:
+                    - doctrine_ping_connection
+
         transports:
             sync: "sync://"
             # @see https://symfony.com/doc/current/messenger.html#transport-configuration
