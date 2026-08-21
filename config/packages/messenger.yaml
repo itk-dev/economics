@@ -3,11 +3,13 @@ framework:
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         failure_transport: failed
 
-        # The worker is long-lived and the sync cron hourly, so its connection can sit idle past
-        # MySQL's wait_timeout. The per-message services reset re-creates a closed EntityManager but
-        # cannot see a dead connection under an open one, which otherwise costs one "server has gone
-        # away" and a retry per idle stretch. Only messages carrying a ConsumedByWorkerStamp are
-        # pinged, so the sync transport and the inline dispatches pay nothing for this.
+        # The worker outlives its database connection, and not on a schedule it can predict: an idle
+        # reap at whatever wait_timeout the server carries, a restart, a failover and a proxy dropping
+        # an idle socket all leave the same dead connection behind. The per-message services reset
+        # replaces a closed EntityManager but cannot tell one sitting over a dead socket from a healthy
+        # one — only a query can, which is what this does. Deliberately not conditioned on any timeout
+        # value: the point is to hold whatever the server is configured for. Only messages carrying a
+        # ConsumedByWorkerStamp are pinged, so the sync transport and the inline dispatches pay nothing.
         buses:
             messenger.bus.default:
                 middleware:

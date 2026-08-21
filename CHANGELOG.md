@@ -20,15 +20,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     a Doctrine error leaves the handler, the message reaches the retry ladder, and the next attempt runs against
     a manager that was rebuilt in between. What the flag was needed for in 2025 the framework now does per
     message, and unlike the flag it does not cost the queue a worker to do it.
-  * Added the `doctrine_ping_connection` middleware, which is the part of this the per-message reset genuinely
-    does not cover: it rebuilds a *closed* manager but cannot see a dead connection underneath an open one. The
-    worker is long-lived and the sync cron hourly, so the connection can sit idle past MySQL's `wait_timeout`
-    and the first message afterwards fails with "server has gone away" — recovered by the retry ladder, but a
-    failed job and a 10s delay for nothing. `DoctrinePingConnectionMiddleware` pings only when the envelope
-    carries a `ConsumedByWorkerStamp`, and `SyncTransport` adds only a `ReceivedStamp`, so this costs one dummy
-    `SELECT` per consumed message and nothing at all on the `sync` transport or the inline billing dispatches.
-    `doctrine_transaction` was not added with it — the handlers each flush once, and wrapping every message in a
-    transaction is a change of behaviour, not a fix.
+  * Added the `doctrine_ping_connection` middleware, covering the one thing that reset genuinely cannot: it
+    replaces a *closed* manager, but a manager sitting over a dead socket still looks open, and only issuing a
+    query tells the two apart. A worker that lives longer than its connection is the normal case rather than the
+    exceptional one — an idle reap, a database restart, a failover and a proxy discarding an idle socket all end
+    the same way — so the handling is written to survive a dead connection outright rather than to fit whatever
+    the server is configured for. Deliberately so, because that configuration is not knowable from here: the
+    local `itkdev/mariadb` image sets `wait_timeout` to 300s, MySQL and MariaDB both document 28800s, and
+    production runs a database this repository does not describe. Without the ping the first message after the
+    connection dies fails with "server has gone away" and is recovered by the retry ladder — nothing is lost,
+    but it costs a failed job and a delay for a fault a single query would have caught. Cheap to avoid:
+    `DoctrinePingConnectionMiddleware` pings only when the envelope carries a `ConsumedByWorkerStamp`, and
+    `SyncTransport` adds only a `ReceivedStamp`, so this is one dummy `SELECT` per consumed message and nothing
+    at all on the `sync` transport or the inline billing dispatches. `doctrine_transaction` was not added with
+    it — the handlers each flush once, and wrapping every message in a transaction is a change of behaviour, not
+    a fix.
 * [PR-337](https://github.com/itk-dev/economics/pull/337)
   * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
     host `php`, and does not have to rediscover the decisions it would otherwise undo — the split
