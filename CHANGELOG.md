@@ -8,10 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-* [PR-341](https://github.com/itk-dev/economics/pull/341)
+## [3.8.0] - 2026-08-21
+
+* [PR-343](https://github.com/itk-dev/economics/pull/343)
   * Skipped a worklog whose hours exceed what the signed `INT` `time_spent_seconds` can hold, rather than letting
     the insert fail — which on the sync transport stopped the whole worklog sync for that run.
-
+* [PR-341](https://github.com/itk-dev/economics/pull/341)
+  * Stopped doubling the slash when a data provider's url ends in one. `LeantimeApiService::API_PATH_DATA`
+    carries its own leading slash, so a provider stored as `https://leantime.example.com/` was asked for
+    `//APIData/API/projects`, and the deep links written onto issues and projects came out as
+    `//errorpage/…` and `//projects/showProject/…`. The url is normalized where it is read rather than
+    where it is written: `LeantimeUrlGenerator::baseUrl()` — already used by the `leantime_url` Twig
+    function and `ProjectRepository` — is now injected into `LeantimeApiService` and applied at the three
+    places it concatenates. Normalizing on read also covers the rows already stored with a trailing
+    slash, which a setter or a form constraint would not, since Doctrine hydrates properties directly.
 * [PR-339](https://github.com/itk-dev/economics/pull/339)
   * Recorded why dropping `--failure-limit=1` in PR-327 does not reopen what it was originally there for. The
     flag guarded a real failure mode: a Doctrine error closes the `EntityManager`, and a worker holding a closed
@@ -798,7 +808,9 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.6.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.8.0...HEAD
+[3.8.0]: https://github.com/itk-dev/economics/compare/3.7.0...3.8.0
+[3.7.0]: https://github.com/itk-dev/economics/compare/3.6.0...3.7.0
 [3.6.0]: https://github.com/itk-dev/economics/compare/3.5.0...3.6.0
 [3.5.0]: https://github.com/itk-dev/economics/compare/3.3.0...3.5.0
 [3.3.0]: https://github.com/itk-dev/economics/compare/3.1.0...3.3.0
