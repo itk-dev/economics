@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-341](https://github.com/itk-dev/economics/pull/341)
+  * Skipped a worklog whose hours exceed what the signed `INT` `time_spent_seconds` can hold, rather than letting
+    the insert fail — which on the sync transport stopped the whole worklog sync for that run.
+
 * [PR-339](https://github.com/itk-dev/economics/pull/339)
   * Recorded why dropping `--failure-limit=1` in PR-327 does not reopen what it was originally there for. The
     flag guarded a real failure mode: a Doctrine error closes the `EntityManager`, and a worker holding a closed

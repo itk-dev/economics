@@ -262,17 +262,21 @@ class LeantimeApiServiceTest extends KernelTestCase
 
         // Rows 103 and 104 are the regression probes for the two ways a single row used to stop
         // the sync: a TypeError, which catch (\Exception) could not see, and a handler failure,
-        // which happened outside the try because the dispatch sat there.
+        // which happened outside the try because the dispatch sat there. Row 105 is the third: an
+        // hour count past what time_spent_seconds can hold, which used to reach MySQL and abort the
+        // insert — a failure that is row-level to nobody once it has left the handler.
         $this->assertNull($worklogRepository->findOneBy(['worklogId' => 103, 'dataProvider' => $dataProvider]));
         $this->assertNull($worklogRepository->findOneBy(['worklogId' => 104, 'dataProvider' => $dataProvider]));
+        $this->assertNull($worklogRepository->findOneBy(['worklogId' => 105, 'dataProvider' => $dataProvider]));
 
         // Each skipped row is reported once, so a halt could never be silent.
-        $this->assertCount(5, $loggedErrors);
+        $this->assertCount(6, $loggedErrors);
         $this->assertStringContainsString('Version upsert not acceptable: projectId is null', $loggedErrors[0]);
         $this->assertStringContainsString('Issue upsert not acceptable: projectId is null', $loggedErrors[1]);
         $this->assertStringContainsString('ticketId is null', $loggedErrors[2]);
         $this->assertStringContainsString('Skipping App\Entity\Worklog id 103', $loggedErrors[3]);
         $this->assertStringContainsString('999', $loggedErrors[4]);
+        $this->assertStringContainsString('hours 1000000 is out of range', $loggedErrors[5]);
     }
 
     /**
@@ -726,7 +730,7 @@ class LeantimeApiServiceTest extends KernelTestCase
                 "start": 0,
                 "limit": 100
               },
-              "resultsCount": 5,
+              "resultsCount": 6,
               "results": [
                 {
                   "id": 100,
@@ -782,6 +786,18 @@ class LeantimeApiServiceTest extends KernelTestCase
                   "projectId": 70,
                   "description": "References a ticket that was never synced",
                   "hours": 1,
+                  "userId": 1,
+                  "username": "admin@example.com",
+                  "kind": "GENERAL_BILLABLE",
+                  "workDate": "2026-01-04T22:00:00.000000Z",
+                  "modified": "2026-01-05T09:00:00.000000Z"
+                },
+                {
+                  "id": 105,
+                  "ticketId": 31,
+                  "projectId": 70,
+                  "description": "More hours than time_spent_seconds can hold",
+                  "hours": 1000000,
                   "userId": 1,
                   "username": "admin@example.com",
                   "kind": "GENERAL_BILLABLE",
