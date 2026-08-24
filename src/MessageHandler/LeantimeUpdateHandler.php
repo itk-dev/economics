@@ -2,15 +2,20 @@
 
 namespace App\MessageHandler;
 
+use App\Exception\NotFoundException;
 use App\Message\LeantimeUpdateMessage;
+use App\MessageHandler\Trait\RethrowsTransientHttpFailuresTrait;
 use App\Service\LeantimeApiService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 
 #[AsMessageHandler]
 readonly class LeantimeUpdateHandler
 {
+    use RethrowsTransientHttpFailuresTrait;
+
     public function __construct(
         private LoggerInterface $logger,
         private LeantimeApiService $leantimeApiService,
@@ -32,7 +37,11 @@ readonly class LeantimeUpdateHandler
                 $message->modifiedAfter,
                 $message->disableModifiedAtCheck,
             );
-        } catch (\Exception $e) {
+        } catch (ClientExceptionInterface $e) {
+            $this->rethrowUnlessPermanent($e, $this->logger);
+        } catch (NotFoundException|\TypeError $e) {
+            // Narrow on purpose: see UpsertIssueHandler. A page that fails because Leantime or the
+            // database is unavailable must be retried, not dropped along with the pages after it.
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

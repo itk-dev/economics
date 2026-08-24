@@ -2,6 +2,7 @@
 
 namespace App\MessageHandler;
 
+use App\Exception\NotFoundException;
 use App\Message\UpsertProjectMessage;
 use App\Service\DataProviderService;
 use Psr\Log\LoggerInterface;
@@ -22,7 +23,8 @@ readonly class UpsertProjectHandler
         try {
             $this->logger->info('Upserting project: '.$message->projectData->name);
             $this->dataProviderService->upsertProject($message->projectData);
-        } catch (\Exception $e) {
+        } catch (NotFoundException|\TypeError $e) {
+            // Narrow on purpose: see UpsertIssueHandler. Infrastructure failures must propagate.
             $this->logger->error($e->getMessage());
             throw new UnrecoverableMessageHandlingException($e->getMessage());
         }

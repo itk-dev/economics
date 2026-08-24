@@ -11,10 +11,15 @@ services:
       - "RABBITMQ_DEFAULT_PASS=password"
       - "RABBITMQ_ERLANG_COOKIE=d53f319cd7376f8f840aaf9889f315ab"
     healthcheck:
-      test: rabbitmq-diagnostics check_port_connectivity
-      interval: 1s
-      timeout: 3s
-      retries: 30
+      # rabbitmq-diagnostics boots an Erlang VM per invocation, so a 1s interval spawns a dozen of
+      # them alongside the broker's own ~12s boot and starves it. start_period polls cheaply while
+      # booting without counting failures against retries.
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      start_period: 60s
+      start_interval: 2s
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   node:
     image: node:24

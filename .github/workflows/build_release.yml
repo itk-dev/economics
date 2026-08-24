@@ -21,8 +21,8 @@ jobs:
       - name: Composer install
         run: |
           docker network create frontend
-          docker compose run --rm -e APP_ENV=prod phpfpm composer install --no-dev --optimize-autoloader
-          docker compose run --rm -e APP_ENV=prod phpfpm composer clear-cache
+          docker compose run --rm --no-deps -e APP_ENV=prod phpfpm composer install --no-dev --optimize-autoloader
+          docker compose run --rm --no-deps -e APP_ENV=prod phpfpm composer clear-cache
           docker compose run --rm node npm install
           docker compose run --rm node npm run build
 
