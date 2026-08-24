@@ -36,6 +36,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     it — the handlers each flush once, and wrapping every message in a transaction is a change of behaviour, not
     a fix.
 * [PR-337](https://github.com/itk-dev/economics/pull/337)
+  * Corrected the parts of `README.md` that documented commands which no longer exist:
+    `app:sync-projects`, `app:sync-accounts`, `app:sync-issues` and `app:sync-worklogs` are all
+    `app:data-providers:sync` with per-entity flags, `app:sync` is the same command, and the product
+    import is `app:products:import`, not `app:product:import`.
+  * Dropped the `.env.local` project-tracker block. `JIRA_PROJECT_TRACKER_*` and
+    `LEANTIME_PROJECT_TRACKER_TOKEN` are read nowhere in `config/` or `src/` — a data provider carries
+    its own URL and token — so following the README produced a setup that could not sync. The invoice
+    variables were named wrong too: the real ones are `APP_INVOICE_SUPPLIER_ACCOUNT`,
+    `APP_INVOICE_EXTERNAL_RECEIVER_ACCOUNT` and `APP_INVOICE_DESCRIPTION_TEMPLATE`.
+  * Removed the claim that DAMADoctrineTestBundle restores the database between tests. It is not
+    installed, and has not been; `tests/bootstrap.php` rebuilds the database once per run and nothing
+    isolates one test from the next, which is the opposite of what a test author was being told.
+  * Pointed the development, coding-standards, analysis, testing and asset commands at their `task`
+    equivalents, since `Taskfile.yml` is the entrypoint and was unmentioned.
+  * Fixed `composer fixtures:load`, which called `hautelook:fixtures:load` without
+    `hautelook/alice-bundle` installed, so `task fixtures:load` could only ever fail. It now calls
+    `doctrine:fixtures:load`.
+  * Corrected the `code-analysis` task description, which advertised Psalm while running PHPStan.
   * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
     host `php`, and does not have to rediscover the decisions it would otherwise undo — the split
     retry policy, the hand-built Leantime HTTP client, soft-delete-by-source, ORM 2.
