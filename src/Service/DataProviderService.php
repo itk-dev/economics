@@ -247,11 +247,17 @@ class DataProviderService
 
         $worklog->setWorklogId($upsertWorklogData->projectTrackerId);
         $worklog->setDescription($upsertWorklogData->description);
-        $worklog->setWorker($upsertWorklogData->username);
+
+        // A stand-in username describes a user the data provider could no longer resolve. It is
+        // better than losing the worklog, but not better than the name already on record.
+        if (!$upsertWorklogData->usernameIsPlaceholder || null === $worklog->getWorker()) {
+            $worklog->setWorker($upsertWorklogData->username);
+        }
+
         $worklog->setStarted($upsertWorklogData->startedDate);
         $worklog->setProjectTrackerIssueId($upsertWorklogData->projectTrackerIssueId);
         $worklog->setTimeSpentSeconds($upsertWorklogData->hours * $this::SECONDS_IN_HOUR);
-        $worklog->setKind(BillableKindsEnum::tryFrom($upsertWorklogData->kind));
+        $worklog->setKind(null !== $upsertWorklogData->kind ? BillableKindsEnum::tryFrom($upsertWorklogData->kind) : null);
         $worklog->setProject($issue->getProject());
         $worklog->setIssue($issue);
         $worklog->setFetchDate($upsertWorklogData->fetchTime);
@@ -379,7 +385,11 @@ class DataProviderService
 
     public function projectRemovedFromDataProvider(int $dataProviderId, string $projectTrackerId, ?\DateTimeInterface $sourceDeletedDate): void
     {
-        // A project can be removed if no worklogs are bound to any invoices.
+        // A project can be removed once nothing hangs off it. Every relation checked below points
+        // back with a non-nullable, non-cascading foreign key, so removing the project while one
+        // still exists is a database error rather than a soft delete. Clients, codeowners and
+        // products are not checked: the first two are owning-side many-to-many relations whose join
+        // rows Doctrine deletes, and products are mapped with orphanRemoval.
 
         $dataProvider = $this->getDataProvider($dataProviderId);
 
@@ -407,6 +417,24 @@ class DataProviderService
 
         if (!$project->getWorklogs()->isEmpty()) {
             $this->logger->warning('Cannot remove project since project worklogs exist');
+
+            $removable = false;
+        }
+
+        if (!$project->getVersions()->isEmpty()) {
+            $this->logger->warning('Cannot remove project since project versions exist');
+
+            $removable = false;
+        }
+
+        if (!$project->getProjectBillings()->isEmpty()) {
+            $this->logger->warning('Cannot remove project since project billings exist');
+
+            $removable = false;
+        }
+
+        if (!$project->getServiceAgreements()->isEmpty()) {
+            $this->logger->warning('Cannot remove project since project service agreements exist');
 
             $removable = false;
         }
