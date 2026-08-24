@@ -103,8 +103,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Paginated the Leantime delete sync, following [data-api#21](https://github.com/ITK-Leantime/data-api/pull/21):
     `/deleted` now serves one type per request with `start`/`limit`, so `delete()` queues a message per type and
     `deleteAsJob()` pages through them the way `updateAsJob()` already does. The whole deletion history no longer
-    has to arrive in a single response — which is what the 300s `max_duration` in `config/packages/framework.yaml`
-    was sized for, though it stays as it is for the entity endpoints.
+    has to arrive in a single response — a request nothing here bounded, since `framework.yaml` configures no
+    `http_client` at all and Symfony leaves `max_duration` unlimited by default.
   * The delete request now sends its timestamp as `deletedAfter`, the endpoint's new name for it, matching
     `modifiedAfter` on the entity endpoints. The old `deleted` answers 400 rather than being ignored, so the key
     cannot go missing unnoticed again.
