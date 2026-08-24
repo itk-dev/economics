@@ -423,6 +423,18 @@ class LeantimeApiService implements DataProviderInterface
             throw new NotAcceptableException('Worklog upsert not acceptable: id is null');
         }
 
+        // Nothing between here and the insert bounds the hour count, and time_spent_seconds is a
+        // signed INT. Dropping the row here costs one worklog; letting it through costs the insert,
+        // which on the sync transport is the rest of the worklog sync. Only a value that is a number
+        // is inspected: a null one stays the DTO constructor's TypeError, reported the same way.
+        if (is_numeric($result->hours)) {
+            $seconds = (float) $result->hours * DataProviderService::SECONDS_IN_HOUR;
+
+            if (!is_finite($seconds) || abs($seconds) > DataProviderService::MAX_TIME_SPENT_SECONDS) {
+                throw new NotAcceptableException(sprintf('Worklog upsert not acceptable: hours %s is out of range', var_export($result->hours, true)));
+            }
+        }
+
         // A null username means the join found no user row, as Leantime never stores a null one.
         // The hours are still real, so keep the worklog and name the departed user.
         $username = $result->username ?? null;
