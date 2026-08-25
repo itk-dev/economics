@@ -9,6 +9,7 @@ use App\Entity\Version;
 use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Enum\IssueStatusEnum;
+use App\Exception\NotAcceptableException;
 use App\Exception\NotFoundException;
 use App\Model\DataProvider\DataProviderIssueData;
 use App\Model\DataProvider\DataProviderProjectData;
@@ -366,6 +367,116 @@ class DataProviderServiceTest extends TestCase
         $this->assertNotNull($capturedWorklog);
         // 1.5 hours * 3600 = 5400 seconds
         $this->assertSame(5400, $capturedWorklog->getTimeSpentSeconds());
+    }
+
+    /**
+     * time_spent_seconds is a signed INT. A value it cannot hold has to be refused here, because
+     * MySQL refusing the insert instead is not a row-level failure to anything upstream: on the sync
+     * transport it escapes updateAsJob() before the next page is queued.
+     */
+    public function testUpsertWorklogRejectsHoursBeyondTheColumn(): void
+    {
+        $this->issueRepository->method('findOneBy')->willReturn($this->worklogIssue());
+        $this->worklogRepository->method('findOneBy')->willReturn(null);
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->expectException(NotAcceptableException::class);
+
+        $this->service->upsertWorklog($this->worklogData(1 + DataProviderService::MAX_TIME_SPENT_SECONDS / DataProviderService::SECONDS_IN_HOUR));
+    }
+
+    /**
+     * The bound is the column's, not a guess at a plausible working day, so a value just inside it
+     * must still store.
+     */
+    public function testUpsertWorklogAcceptsHoursAtTheColumnLimit(): void
+    {
+        $this->issueRepository->method('findOneBy')->willReturn($this->worklogIssue());
+        $this->worklogRepository->method('findOneBy')->willReturn(null);
+
+        $capturedWorklog = null;
+        $this->entityManager->method('persist')->willReturnCallback(function ($entity) use (&$capturedWorklog) {
+            if ($entity instanceof Worklog) {
+                $capturedWorklog = $entity;
+            }
+        });
+
+        $this->service->upsertWorklog($this->worklogData(DataProviderService::MAX_TIME_SPENT_SECONDS / DataProviderService::SECONDS_IN_HOUR));
+
+        $this->assertNotNull($capturedWorklog);
+        $this->assertSame(DataProviderService::MAX_TIME_SPENT_SECONDS, $capturedWorklog->getTimeSpentSeconds());
+    }
+
+    /**
+     * A negative hour count is a correction at the source, not a broken row, and the column is
+     * signed, so only the magnitude is bounded.
+     */
+    public function testUpsertWorklogKeepsNegativeHours(): void
+    {
+        $this->issueRepository->method('findOneBy')->willReturn($this->worklogIssue());
+        $this->worklogRepository->method('findOneBy')->willReturn(null);
+
+        $capturedWorklog = null;
+        $this->entityManager->method('persist')->willReturnCallback(function ($entity) use (&$capturedWorklog) {
+            if ($entity instanceof Worklog) {
+                $capturedWorklog = $entity;
+            }
+        });
+
+        $this->service->upsertWorklog($this->worklogData(-1.5));
+
+        $this->assertNotNull($capturedWorklog);
+        $this->assertSame(-5400, $capturedWorklog->getTimeSpentSeconds());
+    }
+
+    /**
+     * An implicit float-to-int conversion truncates, and is deprecated for any hour count that is
+     * not an exact multiple of 1/3600.
+     */
+    public function testUpsertWorklogRoundsFractionalSeconds(): void
+    {
+        $this->issueRepository->method('findOneBy')->willReturn($this->worklogIssue());
+        $this->worklogRepository->method('findOneBy')->willReturn(null);
+
+        $capturedWorklog = null;
+        $this->entityManager->method('persist')->willReturnCallback(function ($entity) use (&$capturedWorklog) {
+            if ($entity instanceof Worklog) {
+                $capturedWorklog = $entity;
+            }
+        });
+
+        // 1.00025 hours is 3600.9 seconds, which truncates to 3600.
+        $this->service->upsertWorklog($this->worklogData(1.00025));
+
+        $this->assertNotNull($capturedWorklog);
+        $this->assertSame(3601, $capturedWorklog->getTimeSpentSeconds());
+    }
+
+    private function worklogIssue(): Issue
+    {
+        $issue = new Issue();
+        $issue->setName('Test Issue');
+        $issue->setProjectTrackerId('ISS-1');
+        $issue->setProjectTrackerKey('ISS-1');
+        $issue->setLinkToIssue('http://test');
+
+        return $issue;
+    }
+
+    private function worklogData(float $hours): DataProviderWorklogData
+    {
+        return new DataProviderWorklogData(
+            projectTrackerId: 100,
+            dataProviderId: 1,
+            projectTrackerIssueId: 'ISS-1',
+            description: 'Work',
+            startedDate: new \DateTime(),
+            username: 'worker@test',
+            hours: $hours,
+            kind: '',
+            fetchTime: new \DateTime(),
+            sourceModifiedDate: new \DateTime(),
+        );
     }
 
     public function testUpsertWorklogThrowsWhenIssueNotFound(): void
