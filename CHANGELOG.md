@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-345](https://github.com/itk-dev/economics/pull/345)
+  * Updated dependencies.  
+
 ## [3.8.0] - 2026-08-21
 
 * [PR-343](https://github.com/itk-dev/economics/pull/343)
