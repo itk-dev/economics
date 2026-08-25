@@ -17,7 +17,7 @@ message dispatched or a request sent, and a dashed arrow is a response.
 
 ```mermaid
 flowchart TB
-    CRON["Cron on the Economics host<br>*/15 · */25 · 02:00–02:40"]
+    CRON["Cron on the Economics host<br>*/15 · */25 · 02:00–02:50"]
     CMD["Sync commands<br>app:data-providers:sync…"]
     SVC["LeantimeApiService<br>one message per entity type,<br>per enabled DataProvider"]
     Q(["Messenger async transport<br>messenger:consume async"])
@@ -80,6 +80,7 @@ sequenceDiagram
     participant Queue as async transport
     participant Worker as LeantimeUpdateHandler
     participant API as data-api plugin
+    participant Upsert as UpsertIssueHandler
     participant DPS as DataProviderService
 
     Cron->>Service: updateAll(async, modifiedAfter)
@@ -93,13 +94,16 @@ sequenceDiagram
         Worker->>Queue: UpsertIssueMessage(DataProviderIssueData)
     end
     alt resultsCount == limit
-        Worker->>Queue: LeantimeUpdateMessage(start = highest id + 1)
-    else resultsCount == limit, no usable id
-        Note over Worker: run stops, error logged
+        alt no usable id on the page
+            Note over Worker: run stops, error logged
+        else
+            Worker->>Queue: LeantimeUpdateMessage(start = highest id + 1)
+        end
     else short page
         Note over Worker: run ends
     end
-    Queue->>DPS: UpsertIssueMessage
+    Queue->>Upsert: UpsertIssueMessage
+    Upsert->>DPS: upsertIssue(DataProviderIssueData)
     alt sourceModifiedDate unchanged and check enabled
         Note over DPS: row skipped, nothing written
     else
@@ -145,9 +149,8 @@ derive `modifiedAfter` / `deletedAfter` from it.
 * **Entity mapping.** Leantime milestones become Economics `Version`, tickets become `Issue`,
   timesheets become `Worklog`, users become `Worker`.
 * **Project scoping.** Milestones, tickets and timesheets are requested only for the project ids
-  Economics already knows and includes (`ProjectRepository::getProjectTrackerIdsByDataProviders()`).
-  Projects and workers are fetched unscoped, so a new project has to be synced before its content
-  can follow.
+  Economics already knows (`ProjectRepository::getProjectTrackerIdsByDataProviders()`). Projects and
+  workers are fetched unscoped, so a new project has to be synced before its content can follow.
 * **Paging.** On the entity endpoints `start` is an id cursor, not an offset: the next page starts at
   the highest usable id on the page plus one. The delete endpoint pages on `deletionId` instead — the
   deletion's own row id, not the deleted entity's. Deletions are ordered by when they happened while
@@ -176,15 +179,18 @@ derive `modifiedAfter` / `deletedAfter` from it.
   it. A project is kept if it still has invoices, issues, worklogs, versions, project billings or
   service agreements; an issue is kept if it still has worklogs. Each of those points back with a
   non-nullable, non-cascading foreign key, so removing anyway would be a database error rather than a
-  soft delete. Versions are always removable.
+  soft delete. A worklog is kept on different grounds: one bound to an invoice entry is what an
+  invoice was billed from, so it is marked rather than dropped. Versions are always removable.
 * **First sync after a plugin install returns everything**, because installing stamps every existing
   row with the install time.
 * **Failures.** A handler that fails with 408, 423, 425 or 429 rethrows, so the `async` transport
   retries the message: three attempts spaced 10s, 30s and 90s, the last landing 130s after the first
   failure. Any other 4xx describes the request itself, which no retry can change, so it becomes an
-  `UnrecoverableMessageHandlingException`, lands in the `failed` transport and is logged. Requests to
-  Leantime are capped at `timeout: 5` and `max_duration: 30` by `app.leantime.http_client`, so no
-  single page can hold the worker indefinitely.
+  `UnrecoverableMessageHandlingException`, lands in the `failed` transport and is logged. Only 4xx is
+  sorted this way: a 5xx, a timeout or a connection failure matches neither `catch` in the handler and
+  propagates untouched, which puts it on the same three attempts. Requests to Leantime are capped at
+  `timeout: 5` and `max_duration: 30` by `app.leantime.http_client`, so no single page can hold the
+  worker indefinitely.
 * **Retries are an `async` transport feature only.** `sync://` has no retry strategy, so the inline
   `sync-deleted` run gets none: a failure there propagates out to the command.
 * **Authentication.** Each `DataProvider` row holds the Leantime base url and the API key sent as
