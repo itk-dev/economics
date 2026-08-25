@@ -18,6 +18,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Rewrote the `Synchronization` section in `README.md`, which described a `QueueSyncCommand` and an
     `app:queue-sync` that do not exist, credited the Symfony Scheduler for work cron does, and named
     `DataProviderServiceInterface` instead of `DataProviderInterface`.
+* [PR-339](https://github.com/itk-dev/economics/pull/339)
+  * Recorded why dropping `--failure-limit=1` in PR-327 does not reopen what it was originally there for. The
+    flag guarded a real failure mode: a Doctrine error closes the `EntityManager`, and a worker holding a closed
+    one fails every message after it, which is where the pile of failed jobs came from. It cannot span two
+    messages here. `framework.messenger.reset_on_message` defaulted to false until Symfony 6.0 and has been
+    true-only since 6.1, and on this stack `messenger:consume` registers `ResetServicesListener` itself unless
+    `--no-reset` is passed, which the supervisor does not. That resets the `doctrine` registry after every
+    message, and `Registry::resetOrClearManager()` branches on `isOpen()` — an open manager is cleared, a closed
+    one is replaced outright. The handlers cooperate by catching narrowly: none of them catches `\Throwable`, so
+    a Doctrine error leaves the handler, the message reaches the retry ladder, and the next attempt runs against
+    a manager that was rebuilt in between. What the flag was needed for in 2025 the framework now does per
+    message, and unlike the flag it does not cost the queue a worker to do it.
+  * Added the `doctrine_ping_connection` middleware, covering the one thing that reset genuinely cannot: it
+    replaces a *closed* manager, but a manager sitting over a dead socket still looks open, and only issuing a
+    query tells the two apart. A worker that lives longer than its connection is the normal case rather than the
+    exceptional one — an idle reap, a database restart, a failover and a proxy discarding an idle socket all end
+    the same way — so the handling is written to survive a dead connection outright rather than to fit whatever
+    the server is configured for. Deliberately so, because that configuration is not knowable from here: the
+    local `itkdev/mariadb` image sets `wait_timeout` to 300s, MySQL and MariaDB both document 28800s, and
+    production runs a database this repository does not describe. Without the ping the first message after the
+    connection dies fails with "server has gone away" and is recovered by the retry ladder — nothing is lost,
+    but it costs a failed job and a delay for a fault a single query would have caught. Cheap to avoid:
+    `DoctrinePingConnectionMiddleware` pings only when the envelope carries a `ConsumedByWorkerStamp`, and
+    `SyncTransport` adds only a `ReceivedStamp`, so this is one dummy `SELECT` per consumed message and nothing
+    at all on the `sync` transport or the inline billing dispatches. `doctrine_transaction` was not added with
+    it — the handlers each flush once, and wrapping every message in a transaction is a change of behaviour, not
+    a fix.
+* [PR-337](https://github.com/itk-dev/economics/pull/337)
+  * Corrected the parts of `README.md` that documented commands which no longer exist:
+    `app:sync-projects`, `app:sync-accounts`, `app:sync-issues` and `app:sync-worklogs` are all
+    `app:data-providers:sync` with per-entity flags, `app:sync` is the same command, and the product
+    import is `app:products:import`, not `app:product:import`.
+  * Dropped the `.env.local` project-tracker block. `JIRA_PROJECT_TRACKER_*` and
+    `LEANTIME_PROJECT_TRACKER_TOKEN` are read nowhere in `config/` or `src/` — a data provider carries
+    its own URL and token — so following the README produced a setup that could not sync. The invoice
+    variables were named wrong too: the real ones are `APP_INVOICE_SUPPLIER_ACCOUNT`,
+    `APP_INVOICE_EXTERNAL_RECEIVER_ACCOUNT` and `APP_INVOICE_DESCRIPTION_TEMPLATE`.
+  * Removed the claim that DAMADoctrineTestBundle restores the database between tests. It is not
+    installed, and has not been; `tests/bootstrap.php` rebuilds the database once per run and nothing
+    isolates one test from the next, which is the opposite of what a test author was being told.
+  * Pointed the development, coding-standards, analysis, testing and asset commands at their `task`
+    equivalents, since `Taskfile.yml` is the entrypoint and was unmentioned.
+  * Fixed `composer fixtures:load`, which called `hautelook:fixtures:load` without
+    `hautelook/alice-bundle` installed, so `task fixtures:load` could only ever fail. It now calls
+    `doctrine:fixtures:load`.
+  * Corrected the `code-analysis` task description, which advertised Psalm while running PHPStan.
+  * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
+    host `php`, and does not have to rediscover the decisions it would otherwise undo — the split
+    retry policy, the hand-built Leantime HTTP client, soft-delete-by-source, ORM 2.
+  * Recorded that `coding-standards:js:check` covers `assets/` only, since its name reads as though it
+    covers Markdown too, and gave the Markdown lint its own entry.
+* [PR-327](https://github.com/itk-dev/economics/pull/327)
+  * Recorded where the 429s came from, since nothing here did and the answer is not in the data-api plugin.
+    Leantime core rate-limits every request in `app/Core/Middleware/RequestRateLimiter.php` (v3.9.7): the API
+    bucket defaults to **100 requests per 60 seconds, keyed on client IP**, and the 429 carries `Retry-After`
+    plus three `X-RateLimit-*` headers. It reaches `/APIData/API/…` because `IncomingRequest::isApiRequest()`
+    lowercases the URI and prefix-matches `/api`. It is disabled outright when `app.debug` is true, which is
+    why development never saw it. **What resolved the 429s was raising `LEAN_RATELIMIT_API` to 10000 on the
+    Leantime side**, not anything in this repository — a full sync cannot approach that.
+  * Respaced the `async` transport's `retry_strategy`. Three attempts was never the problem; 1s/2s/4s was, being
+    over before anything transient has had time to end. Now 10s, 30s, 90s, so the last attempt lands 130s after
+    the first failure — past a Leantime restart, a database failover, or a 60s rate-limit window. No wider than
+    that, because a page only queues its successor once it succeeds: a page waiting to be retried is the whole
+    entity type's sync waiting with it, against an hourly cron. This applies to every message on the transport,
+    not only the Leantime ones. PR-325 and PR-326 already narrowed the handlers so only a failure describing the
+    message itself is unrecoverable, which is what lets a transient failure reach the queue at all.
+  * A 4xx other than 408/423/425/429 now fails the message immediately instead of being retried three times to
+    arrive at the same answer — the endpoint returns 400 for a missing `type` or the retired `deleted`
+    parameter, and the retry budget cannot rewrite the request. This is the delete sync's only cover:
+    `sync-deleted` dispatches on the `sync` transport, which has no retry strategy, and it has to stay there —
+    what keeps `DELETED_TYPES` in child-before-parent order is the handlers running inline.
+  * Bounded Leantime requests with `timeout: 5` and `max_duration: 30` on a client of their own rather than on
+    `framework.http_client.default_options`, so nothing else inherits them. Symfony caps neither by default and
+    an uncapped request holds the worker forever, since `messenger:consume` only checks `--time-limit` between
+    messages. A scoped client cannot express this: scopes key on `base_uri`, and the Leantime one comes from the
+    `DataProvider` entity at runtime.
+  * Dropped `--failure-limit=1` from the supervisor's `messenger:consume`. `StopWorkerOnFailureLimitListener`
+    counts every `WorkerMessageFailedEvent`, which the worker dispatches for retryable failures too, so with one
+    worker configured the first transient error stopped it — now that a retry ladder exists, that is the wrong
+    thing to count.
+  * Considered and rejected throttling the client with a `ThrottlingHttpClient` over a rate limiter. Against the
+    configured 10000/min it would guard nothing, and it pauses inside the message handler, so the single worker
+    stops draining the queue while it waits. Retrying is also the layer that cannot read the `Retry-After`
+    Leantime sends — a transport retry strategy never sees the response — but the ladder above outlasts a 60s
+    window by its third attempt, so the header would not change the outcome.
 * [PR-335](https://github.com/itk-dev/economics/pull/335)
   * Stopped `projectRemovedFromDataProvider()` hard-deleting a project that a version, a project billing or a
     service agreement still points at. Each of those points back with a non-nullable, non-cascading foreign key,
@@ -28,8 +113,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Paginated the Leantime delete sync, following [data-api#21](https://github.com/ITK-Leantime/data-api/pull/21):
     `/deleted` now serves one type per request with `start`/`limit`, so `delete()` queues a message per type and
     `deleteAsJob()` pages through them the way `updateAsJob()` already does. The whole deletion history no longer
-    has to arrive in a single response — which is what the 300s `max_duration` in `config/packages/framework.yaml`
-    was sized for, though it stays as it is for the entity endpoints.
+    has to arrive in a single response — a request nothing here bounded, since `framework.yaml` configures no
+    `http_client` at all and Symfony leaves `max_duration` unlimited by default.
   * The delete request now sends its timestamp as `deletedAfter`, the endpoint's new name for it, matching
     `modifiedAfter` on the entity endpoints. The old `deleted` answers 400 rather than being ignored, so the key
     cannot go missing unnoticed again.
