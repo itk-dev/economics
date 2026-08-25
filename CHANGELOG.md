@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-345](https://github.com/itk-dev/economics/pull/345)
   * Updated dependencies.  
+  * Removed `webpack-notifier` and `.enableBuildNotifications()`, clearing the `uuid` advisory —
+    build notifications never reached the desktop from the `node` container anyway.
 
 ## [3.8.0] - 2026-08-21
 
