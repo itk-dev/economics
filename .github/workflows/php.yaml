@@ -61,7 +61,7 @@ jobs:
           docker network create frontend
 
       - run: |
-          docker compose run --rm phpfpm composer install
+          docker compose run --rm --no-deps phpfpm composer install
           # https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/blob/master/doc/usage.rst#the-check-command
           # TODO: When PHP CS Fixer PHP 8.4 support is added, remove the `PHP_CS_FIXER_IGNORE_ENV=true`
-          docker compose run --rm -e PHP_CS_FIXER_IGNORE_ENV=true phpfpm vendor/bin/php-cs-fixer fix --dry-run --diff
+          docker compose run --rm --no-deps -e PHP_CS_FIXER_IGNORE_ENV=true phpfpm vendor/bin/php-cs-fixer fix --dry-run --diff
