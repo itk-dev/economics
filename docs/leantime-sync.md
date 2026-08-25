@@ -1,7 +1,7 @@
 # Synchronization from Leantime
 
 Economics does not talk to Leantime directly. Leantime runs the
-[data-api plugin](https://github.com/itk-dev/data-api), which exposes read-only endpoints under
+[data-api plugin](https://github.com/itk-leantime/data-api), which exposes read-only endpoints under
 `/APIData/API/`, and Economics pulls from those endpoints on a schedule. Nothing is pushed from
 Leantime; every sync starts as a cron job on the Economics host.
 
