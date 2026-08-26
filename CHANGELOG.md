@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-344](https://github.com/itk-dev/economics/pull/344)
+  * Restored the `include` filter on the project ids that scope the sync — a second `->where()` was discarding
+    it, so issues, milestones and worklogs were synced for every known project, included or not.
 * [PR-345](https://github.com/itk-dev/economics/pull/345)
   * Updated dependencies.  
   * Removed `webpack-notifier` and `.enableBuildNotifications()`, clearing the `uuid` advisory —
