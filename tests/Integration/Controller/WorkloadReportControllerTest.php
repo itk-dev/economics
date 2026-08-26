@@ -41,6 +41,16 @@ class WorkloadReportControllerTest extends AbstractControllerTestCase
         $this->assertStringContainsString('periodType=week', (string) $buttons->first()->attr('data-url'));
         $this->assertStringContainsString('year='.$year, (string) $buttons->first()->attr('data-url'));
         $this->assertCount(1, $crawler->filter('dialog'));
+
+        // The markup being present is not enough — Stimulus has to be wired to it. Asserting the
+        // attributes catches a template helper that silently renders nothing.
+        $controllers = (string) $crawler->filter('#scrollContainer')->attr('data-controller');
+        $this->assertStringContainsString('show-hide', $controllers);
+        $this->assertStringContainsString('worklog-details', $controllers);
+        $this->assertNotNull($crawler->filter('#scrollContainer')->attr('data-worklog-details-loading-text-value'));
+        $this->assertStringContainsString('worklog-details#open', (string) $buttons->first()->attr('data-action'));
+        $this->assertCount(1, $crawler->filter('dialog[data-worklog-details-target="dialog"]'));
+        $this->assertCount(1, $crawler->filter('[data-worklog-details-target="content"]'));
     }
 
     public function testWorklogsSmokeMatrix(): void

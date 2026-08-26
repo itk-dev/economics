@@ -1,8 +1,13 @@
+{# addController() mutates and returns void, so it cannot be chained inside the output tag.
+   Printing the variable needs |raw: StimulusAttributes escapes its own values, but assigning it
+   to a variable loses the is_safe marking the stimulus_controller() function carries. #}
+{% set scrollContainerAttributes = stimulus_controller('show-hide') %}
+{% do scrollContainerAttributes.addController('worklog-details', {
+    loadingText: 'workload_report.worklogs_loading'|trans,
+    errorText: 'workload_report.worklogs_error'|trans,
+}) %}
 <div id="scrollContainer" class="overflow-x-auto w-full"
-     {{ stimulus_controller('show-hide').addController('worklog-details', {
-         loadingText: 'workload_report.worklogs_loading'|trans,
-         errorText: 'workload_report.worklogs_error'|trans,
-     }) }}
+     {{ scrollContainerAttributes|raw }}
      data-storage-key="hidePlanningAssignees">
     <table
         class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
