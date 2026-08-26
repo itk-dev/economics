@@ -12,6 +12,7 @@ use App\Entity\Worklog;
 use App\Enum\BillableKindsEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\IssueStatusEnum;
+use App\Message\LeantimeUpdateMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
@@ -22,6 +23,7 @@ use App\Service\LeantimeUrlGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -159,6 +161,77 @@ class LeantimeApiServiceTest extends KernelTestCase
         $this->assertEquals($before + 2, $after);
         $worklog = $worklogRepository->findOneBy(['worklogId' => 1, 'dataProvider' => $dataProvider]);
         $this->assertEquals((new \DateTime('2025-10-03T13:47:30.000000Z'))->getTimestamp(), $worklog->getSourceModifiedDate()->getTimestamp());
+    }
+
+    /**
+     * A provider with no included projects has nothing to sync, and must not be dispatched for.
+     *
+     * The id list scopes the request; empty, it would go out as projectIds: [] and leave the
+     * endpoint to decide whether that means no projects or every project.
+     */
+    public function testUpdateSkipsDataProviderWithoutIncludedProjects(): void
+    {
+        self::bootKernel();
+        $container = self::getContainer();
+
+        /** @var DataProviderRepository $dataProviderRepository */
+        $dataProviderRepository = $container->get(DataProviderRepository::class);
+        /** @var ProjectRepository $projectRepository */
+        $projectRepository = $container->get(ProjectRepository::class);
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        $dataProvider = new DataProvider();
+        $dataProvider->setName('Data Provider 7 - nothing included');
+        $dataProvider->setEnabled(true);
+        $dataProvider->setClass(LeantimeApiService::class);
+        $dataProvider->setUrl('http://localhost/');
+        $dataProvider->setSecret('Not so secret');
+        $entityManager->persist($dataProvider);
+
+        $project = new Project();
+        $project->setDataProvider($dataProvider);
+        $project->setName('Project nobody included');
+        $project->setProjectTrackerId('90');
+        $project->setProjectTrackerKey('90');
+        $project->setProjectTrackerProjectUrl('http://localhost/');
+        $project->setInclude(false);
+        $project->setIsBillable(true);
+        $entityManager->persist($project);
+        $entityManager->flush();
+
+        $dispatchedProviderIds = [];
+        $messageBusMock = $this->createMock(MessageBusInterface::class);
+        $messageBusMock->method('dispatch')->willReturnCallback(function (object $message) use (&$dispatchedProviderIds): Envelope {
+            if ($message instanceof LeantimeUpdateMessage) {
+                $dispatchedProviderIds[] = $message->dataProviderId;
+            }
+
+            return new Envelope($message);
+        });
+
+        $service = new LeantimeApiService(
+            $this->createMock(HttpClientInterface::class),
+            $messageBusMock,
+            $dataProviderRepository,
+            $entityManager,
+            $projectRepository,
+            $this->createMock(LoggerInterface::class),
+            new LeantimeUrlGenerator(),
+        );
+
+        try {
+            $service->update(Issue::class);
+
+            $this->assertNotContains($dataProvider->getId(), $dispatchedProviderIds);
+            // The fixture providers do have included projects, so the sync itself still ran.
+            $this->assertNotEmpty($dispatchedProviderIds);
+        } finally {
+            // Tests share a database and are not wrapped in transactions.
+            $entityManager->remove($project);
+            $entityManager->remove($dataProvider);
+            $entityManager->flush();
+        }
     }
 
     /**
