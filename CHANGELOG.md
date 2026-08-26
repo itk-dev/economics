@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-297](https://github.com/itk-dev/economics/pull/297)
   * Added group filter to workload report and invoicing rate report.
+* [PR-329](https://github.com/itk-dev/economics/pull/329)
+  Blocked worklog selection on recorded invoices.
+* [PR-328](https://github.com/itk-dev/economics/pull/328)
+  * Added selected and total hours to the worklog selection list.
 * [PR-279](https://github.com/itk-dev/economics/pull/279)
   * Anonymize worklogs after 5 years.
   * `app:anonymize-worklogs` now reports how many worklogs it anonymized, and the fixtures
@@ -66,6 +70,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     it — the handlers each flush once, and wrapping every message in a transaction is a change of behaviour, not
     a fix.
 * [PR-337](https://github.com/itk-dev/economics/pull/337)
+  * Corrected the parts of `README.md` that documented commands which no longer exist:
+    `app:sync-projects`, `app:sync-accounts`, `app:sync-issues` and `app:sync-worklogs` are all
+    `app:data-providers:sync` with per-entity flags, `app:sync` is the same command, and the product
+    import is `app:products:import`, not `app:product:import`.
+  * Dropped the `.env.local` project-tracker block. `JIRA_PROJECT_TRACKER_*` and
+    `LEANTIME_PROJECT_TRACKER_TOKEN` are read nowhere in `config/` or `src/` — a data provider carries
+    its own URL and token — so following the README produced a setup that could not sync. The invoice
+    variables were named wrong too: the real ones are `APP_INVOICE_SUPPLIER_ACCOUNT`,
+    `APP_INVOICE_EXTERNAL_RECEIVER_ACCOUNT` and `APP_INVOICE_DESCRIPTION_TEMPLATE`.
+  * Removed the claim that DAMADoctrineTestBundle restores the database between tests. It is not
+    installed, and has not been; `tests/bootstrap.php` rebuilds the database once per run and nothing
+    isolates one test from the next, which is the opposite of what a test author was being told.
+  * Pointed the development, coding-standards, analysis, testing and asset commands at their `task`
+    equivalents, since `Taskfile.yml` is the entrypoint and was unmentioned.
+  * Corrected the `code-analysis` task description, which advertised Psalm while running PHPStan.
   * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
     host `php`, and does not have to rediscover the decisions it would otherwise undo — the split
     retry policy, the hand-built Leantime HTTP client, soft-delete-by-source, ORM 2.
@@ -115,8 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Paginated the Leantime delete sync, following [data-api#21](https://github.com/ITK-Leantime/data-api/pull/21):
     `/deleted` now serves one type per request with `start`/`limit`, so `delete()` queues a message per type and
     `deleteAsJob()` pages through them the way `updateAsJob()` already does. The whole deletion history no longer
-    has to arrive in a single response — which is what the 300s `max_duration` in `config/packages/framework.yaml`
-    was sized for, though it stays as it is for the entity endpoints.
+    has to arrive in a single response — a request nothing here bounded, since `framework.yaml` configures no
+    `http_client` at all and Symfony leaves `max_duration` unlimited by default.
   * The delete request now sends its timestamp as `deletedAfter`, the endpoint's new name for it, matching
     `modifiedAfter` on the entity endpoints. The old `deleted` answers 400 rather than being ignored, so the key
     cannot go missing unnoticed again.
