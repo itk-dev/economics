@@ -6,9 +6,11 @@ use App\Entity\DataProvider;
 use App\Entity\Project;
 use App\Message\LeantimeDeleteMessage;
 use App\Message\LeantimeUpdateMessage;
+use App\Message\UpsertProjectMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Service\LeantimeApiService;
+use App\Service\LeantimeUrlGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -18,7 +20,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 /**
- * Pagination cursor behaviour of updateAsJob() and deleteAsJob().
+ * Pagination cursor behaviour of updateAsJob() and deleteAsJob(), plus the urls they build.
  *
  * The cursor is what keeps the sync moving: both queue the next page as their last action, using
  * the ids of the rows they just saw. A cursor that fails to advance re-queues the same page forever
@@ -38,6 +40,9 @@ class LeantimeApiServiceTest extends TestCase
 
     /** @var list<string> */
     private array $loggedErrors = [];
+
+    /** @var list<string> */
+    private array $requestedUrls = [];
 
     public function testNextPageStartsAfterHighestId(): void
     {
@@ -167,6 +172,42 @@ class LeantimeApiServiceTest extends TestCase
     }
 
     /**
+     * The api path already begins with a slash, so a provider url ending in one asked Leantime for
+     * //APIData/API/… — a path it does not serve.
+     */
+    public function testTrailingSlashOnTheProviderUrlIsNotDoubled(): void
+    {
+        $service = $this->createService($this->page(range(1, 10)), 'http://localhost/');
+
+        $service->updateAsJob(Project::class, 0, self::LIMIT, 1);
+
+        $this->assertSame(['http://localhost/APIData/API/projects'], $this->requestedUrls);
+    }
+
+    public function testProviderUrlWithoutTrailingSlashIsUnchanged(): void
+    {
+        $service = $this->createService($this->page(range(1, 10)), 'http://localhost');
+
+        $service->updateAsJob(Project::class, 0, self::LIMIT, 1);
+
+        $this->assertSame(['http://localhost/APIData/API/projects'], $this->requestedUrls);
+    }
+
+    /**
+     * The deep links are stored on the entities, so a doubled slash outlives the sync that wrote it.
+     */
+    public function testTrailingSlashOnTheProviderUrlIsNotDoubledInStoredLinks(): void
+    {
+        $service = $this->createService($this->page([1]), 'http://localhost/');
+
+        $service->updateAsJob(Project::class, 0, self::LIMIT, 1);
+
+        $upsert = $this->dispatched[0];
+        $this->assertInstanceOf(UpsertProjectMessage::class, $upsert);
+        $this->assertSame('http://localhost/projects/showProject/1', $upsert->projectData->url);
+    }
+
+    /**
      * A page of project rows with the given ids. Only the cursor matters here, so every other
      * field is fixed and valid.
      *
@@ -210,14 +251,21 @@ class LeantimeApiServiceTest extends TestCase
         ];
     }
 
-    private function createService(object $page): LeantimeApiService
+    private function createService(object $page, string $dataProviderUrl = 'http://localhost/'): LeantimeApiService
     {
         $response = $this->createMock(ResponseInterface::class);
         $response->method('getStatusCode')->willReturn(200);
         $response->method('getContent')->willReturn(json_encode($page));
 
+        $this->requestedUrls = [];
         $httpClient = $this->createMock(HttpClientInterface::class);
-        $httpClient->method('request')->willReturn($response);
+        $httpClient->method('request')->willReturnCallback(
+            function (string $method, string $url) use ($response): ResponseInterface {
+                $this->requestedUrls[] = $url;
+
+                return $response;
+            }
+        );
 
         $this->dispatched = [];
         $messageBus = $this->createMock(MessageBusInterface::class);
@@ -233,7 +281,7 @@ class LeantimeApiServiceTest extends TestCase
         $dataProvider->setName('Test provider');
         $dataProvider->setEnabled(true);
         $dataProvider->setClass(LeantimeApiService::class);
-        $dataProvider->setUrl('http://localhost/');
+        $dataProvider->setUrl($dataProviderUrl);
         $dataProvider->setSecret('Not so secret');
 
         $dataProviderRepository = $this->createMock(DataProviderRepository::class);
@@ -254,6 +302,7 @@ class LeantimeApiServiceTest extends TestCase
             $this->createMock(EntityManagerInterface::class),
             $this->createMock(ProjectRepository::class),
             $this->logger,
+            new LeantimeUrlGenerator(),
         );
     }
 

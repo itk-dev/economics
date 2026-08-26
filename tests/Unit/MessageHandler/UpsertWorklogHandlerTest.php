@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\MessageHandler;
 
+use App\Exception\NotAcceptableException;
 use App\Exception\NotFoundException;
 use App\Message\UpsertWorklogMessage;
 use App\MessageHandler\UpsertWorklogHandler;
@@ -38,6 +39,23 @@ class UpsertWorklogHandlerTest extends TestCase
 
         $service = $this->createMock(DataProviderService::class);
         $service->method('upsertWorklog')->willThrowException(new NotFoundException('fail'));
+
+        $handler = new UpsertWorklogHandler($this->createMock(LoggerInterface::class), $service);
+
+        $this->expectException(UnrecoverableMessageHandlingException::class);
+        $handler($message);
+    }
+
+    /**
+     * An hour count the column cannot hold describes this one row, so it has to reach the transport
+     * as unrecoverable — that is what lets the sync transport skip it and keep paging.
+     */
+    public function testInvokeOnUnacceptableValueThrowsUnrecoverable(): void
+    {
+        $message = new UpsertWorklogMessage($this->createWorklogData());
+
+        $service = $this->createMock(DataProviderService::class);
+        $service->method('upsertWorklog')->willThrowException(new NotAcceptableException('hours out of range'));
 
         $handler = new UpsertWorklogHandler($this->createMock(LoggerInterface::class), $service);
 
