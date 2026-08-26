@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Anonymize worklogs after 5 years.
   * `app:anonymize-worklogs` now reports how many worklogs it anonymized, and the fixtures
     include a few worklogs old enough for it to act on.
+  * Fixed `composer fixtures:load`, which called the uninstalled `hautelook:fixtures:load`
+    instead of `doctrine:fixtures:load`.
 * [PR-345](https://github.com/itk-dev/economics/pull/345)
   * Updated dependencies.
   * Removed `webpack-notifier` and `.enableBuildNotifications()`, clearing the `uuid` advisory —
