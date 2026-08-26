@@ -401,8 +401,12 @@
         @apply flex gap-3 mb-3;
     }
 
-    .sticky-row {
-        @apply sticky bg-white text-black dark:bg-gray-900 dark:text-white border-0 bottom-0;
+    .sticky-actions {
+        @apply sticky bottom-0 flex flex-wrap items-center gap-5 px-6 py-4 bg-white text-black dark:bg-gray-900 dark:text-white border-t border-gray-300 dark:border-gray-600;
+    }
+
+    .sticky-actions-sums {
+        @apply flex flex-wrap items-center gap-5 ml-auto;
     }
 
     .comma-list span:after {
