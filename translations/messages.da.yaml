@@ -558,6 +558,15 @@ workload_report:
   submit: "Hent"
   average: "Gennemsnit"
   average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
+  worklogs_show: "Vis registreringer bag tallet"
+  worklogs_close: "Luk"
+  worklogs_loading: "Henter registreringer …"
+  worklogs_error: "Registreringerne kunne ikke hentes."
+  worklogs_empty: "Ingen registreringer i perioden"
+  worklogs_total: "I alt"
+  worklogs_project: "Projekt"
+  worklogs_hours_short: "t"
+  worklogs_deleted_note: "Registreringer slettet i kilden tælles stadig med i rapportens tal."
 
 invoicing_rate_report:
   title: "Udfaktureringsrapport"

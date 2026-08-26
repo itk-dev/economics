@@ -2,8 +2,10 @@
 
 namespace App\Service;
 
+use App\Entity\Worker;
 use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
+use App\Model\Reports\WorkloadReportPeriodWorklogsData;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Model\Reports\WorkloadReportWorker;
 use App\Repository\WorkerRepository;
@@ -36,10 +38,10 @@ class WorkloadReportService
      */
     public function getWorkloadReport(int $year, PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
     {
-        $workloadReportData = new WorkloadReportData($viewPeriodType->value);
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
         }
+        $workloadReportData = new WorkloadReportData($viewPeriodType->value, $year, $viewMode);
         $workers = $this->workerRepository->findBy(['includeInReports' => true]);
         // Sort workers alphabetically by name (usort: list of objects, no keys to preserve).
         usort($workers, fn ($a, $b) => mb_strtolower((string) $a->getName()) <=> mb_strtolower((string) $b->getName()));
@@ -132,6 +134,53 @@ class WorkloadReportService
         }
 
         return $workloadReportData;
+    }
+
+    /**
+     * Returns the worklogs behind a single cell of the workload report.
+     *
+     * Deliberately built from the same private helpers as getWorkloadReport(), so the hours and
+     * percentage reported here cannot drift from the cell this was opened from.
+     *
+     * @throws \Exception if the worker identifier is empty or the workload of the worker is null
+     */
+    public function getPeriodWorklogs(Worker $worker, int $year, PeriodTypeEnum $viewPeriodType, ViewModeEnum $viewMode, int $period): WorkloadReportPeriodWorklogsData
+    {
+        $workerIdentifier = $worker->getUserIdentifier();
+
+        if (empty($workerIdentifier)) {
+            throw new \Exception('Worker identifier cannot be empty');
+        }
+
+        $workerWorkload = $worker->getWorkload();
+        if (!$workerWorkload) {
+            throw new \Exception("Workload of worker: $workerIdentifier cannot be null when generating workload report.");
+        }
+
+        ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $this->getDatesOfPeriod($period, $year, $viewPeriodType);
+
+        $worklogs = $this->getWorklogs($viewMode, $workerIdentifier, $dateFrom, $dateTo);
+        // The repository methods do not order; sort so the modal reads chronologically.
+        usort($worklogs, fn ($a, $b) => $a->getStarted() <=> $b->getStarted());
+
+        $loggedHours = 0;
+        foreach ($worklogs as $worklog) {
+            $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
+        }
+
+        $expectedWorkload = $this->getExpectedWorkHours($workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
+
+        return new WorkloadReportPeriodWorklogsData(
+            $worker->getName() ?? $workerIdentifier,
+            $this->getReadablePeriod($period, $viewPeriodType),
+            $year,
+            $viewPeriodType,
+            $viewMode,
+            $expectedWorkload,
+            round($loggedHours, 2),
+            round($loggedHours / $expectedWorkload * 100, 1),
+            $worklogs,
+        );
     }
 
     private function getExpectedWorkHours(float $workloadWeekBase, PeriodTypeEnum $viewPeriodType, \DateTime $dateFrom, \DateTime $dateTo): float

@@ -6,8 +6,8 @@ use App\Entity\Worker;
 use App\Entity\Worklog;
 use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
-use App\Model\Reports\WorkloadReportPeriodWorklogsData;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
+use App\Model\Reports\WorkloadReportWorker;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\DateTimeHelper;
@@ -204,7 +204,7 @@ class WorkloadReportServiceTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testGetPeriodWorklogsSumsAndSortsTheWorklogsBehindACell()
+    public function testGetPeriodWorklogsSumsAndSortsTheWorklogsBehindACell(): void
     {
         $worker = $this->createMock(Worker::class);
         $worker->method('getUserIdentifier')->willReturn('test0@test');
@@ -231,7 +231,6 @@ class WorkloadReportServiceTest extends TestCase
 
         $result = $service->getPeriodWorklogs($worker, 2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD, 1);
 
-        $this->assertInstanceOf(WorkloadReportPeriodWorklogsData::class, $result);
         $this->assertSame('Test Zero', $result->workerName);
         $this->assertSame('1', $result->readablePeriod);
         $this->assertSame(40.0, $result->expectedWorkload);
@@ -246,7 +245,7 @@ class WorkloadReportServiceTest extends TestCase
      *
      * @throws Exception
      */
-    public function testGetPeriodWorklogsPercentageMatchesTheReportCell()
+    public function testGetPeriodWorklogsPercentageMatchesTheReportCell(): void
     {
         $worker = $this->createMock(Worker::class);
         $worker->method('getUserIdentifier')->willReturn('test0@test');
@@ -265,7 +264,9 @@ class WorkloadReportServiceTest extends TestCase
         $service = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $this->getDateTimeHelperMock());
 
         $report = $service->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
-        $cell = $report->workers->first()->loggedPercentage->get(1);
+        $reportWorker = $report->workers->first();
+        $this->assertInstanceOf(WorkloadReportWorker::class, $reportWorker);
+        $cell = $reportWorker->loggedPercentage->get(1);
 
         $result = $service->getPeriodWorklogs($worker, 2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD, 1);
 
@@ -275,7 +276,7 @@ class WorkloadReportServiceTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testGetPeriodWorklogsUsesTheRepositoryMethodMatchingTheViewMode()
+    public function testGetPeriodWorklogsUsesTheRepositoryMethodMatchingTheViewMode(): void
     {
         $worker = $this->createMock(Worker::class);
         $worker->method('getUserIdentifier')->willReturn('test0@test');
@@ -299,7 +300,7 @@ class WorkloadReportServiceTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testGetPeriodWorklogsThrowsWhenWorkerWorkloadIsUnset()
+    public function testGetPeriodWorklogsThrowsWhenWorkerWorkloadIsUnset(): void
     {
         $worker = $this->createMock(Worker::class);
         $worker->method('getUserIdentifier')->willReturn('test2@test');
@@ -323,7 +324,7 @@ class WorkloadReportServiceTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testGetPeriodWorklogsThrowsWhenWorkerIdentifierIsEmpty()
+    public function testGetPeriodWorklogsThrowsWhenWorkerIdentifierIsEmpty(): void
     {
         $worker = $this->createMock(Worker::class);
         $worker->method('getUserIdentifier')->willReturn('');
@@ -349,7 +350,7 @@ class WorkloadReportServiceTest extends TestCase
         $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
         $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
         $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
-            return date('F', mktime(0, 0, 0, $month, 10));
+            return date('F', (int) mktime(0, 0, 0, $month, 10));
         });
         $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
             'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
