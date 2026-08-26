@@ -1,4 +1,9 @@
 services:
+  phpfpm:
+    depends_on:
+      rabbit:
+        condition: service_healthy
+
   rabbit:
     image: rabbitmq:4-management-alpine
     restart: unless-stopped
@@ -22,14 +27,19 @@ services:
       NGINX_FASTCGI_READ_TIMEOUT: 300
 
   supervisor:
-    image: itkdev/supervisor-php8.3:alpine
+    image: itkdev/supervisor-php8.4:alpine
     restart: unless-stopped
     stop_grace_period: 20s
     environment:
-      - APP_SUPERVISOR_COMMAND=/app/bin/console messenger:consume --env=prod --no-debug --time-limit=900 --failure-limit=1 async
+      # No --failure-limit: StopWorkerOnFailureLimitListener counts every WorkerMessageFailedEvent,
+      # which the worker dispatches for retryable failures too, so a limit of 1 stopped the only
+      # worker on the first transient error rather than on anything final. --time-limit still recycles
+      # the process, and a message that genuinely fails ends up in the failed transport either way.
+      - APP_SUPERVISOR_COMMAND=/app/bin/console messenger:consume --env=prod --no-debug --time-limit=900 async
       - APP_SUPERVISOR_WORKERS=1
       - APP_SUPERVISOR_USER=deploy
-      # Sync job is rate limited by LeanTime API so it will take some time to complete.
+      # A backstop only: --time-limit above ends the process first, and the Leantime client caps a
+      # single request at max_duration: 30s, so nothing inside one message runs anywhere near this.
       - PHP_MAX_EXECUTION_TIME=1800
       - PHP_MEMORY_LIMIT=512M
       - PHP_TIMEZONE=UTC

@@ -10,6 +10,16 @@ services:
       - "RABBITMQ_DEFAULT_USER=user"
       - "RABBITMQ_DEFAULT_PASS=password"
       - "RABBITMQ_ERLANG_COOKIE=d53f319cd7376f8f840aaf9889f315ab"
+    healthcheck:
+      # rabbitmq-diagnostics boots an Erlang VM per invocation, so a 1s interval spawns a dozen of
+      # them alongside the broker's own ~12s boot and starves it. start_period polls cheaply while
+      # booting without counting failures against retries.
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      start_period: 60s
+      start_interval: 2s
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   node:
     image: node:24
@@ -31,6 +41,9 @@ services:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
   phpfpm:
+    depends_on:
+      rabbit:
+        condition: service_healthy
     networks:
       - app
       - frontend

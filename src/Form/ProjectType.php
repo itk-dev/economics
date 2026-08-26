@@ -3,8 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Project;
+use App\Entity\Worker;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -36,6 +39,26 @@ class ProjectType extends AbstractType
                 'label_attr' => ['class' => 'label'],
                 'row_attr' => ['class' => 'form-row'],
                 'help' => 'project.holiday_planning_helptext',
+            ])
+            ->add('githubRepos', TextareaType::class, [
+                'required' => false,
+                'attr' => ['class' => 'form-element', 'style' => 'height: 200px;'],
+                'label' => 'project.github_repos',
+                'label_attr' => ['class' => 'label'],
+                'help_attr' => ['class' => 'form-help'],
+                'help' => 'project.github_repos_helptext',
+                'row_attr' => ['class' => 'form-row'],
+            ])
+            ->add('codeowners', EntityType::class, [
+                'class' => Worker::class,
+                'multiple' => true,
+                'required' => false,
+                'label' => 'project.codeowners',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],
+                'help_attr' => ['class' => 'form-help'],
+                'help' => 'project.codeowners_helptext',
+                'row_attr' => ['class' => 'form-row'],
             ])
         ;
     }

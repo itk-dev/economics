@@ -49,6 +49,11 @@
         "doctrine/doctrine-fixtures-bundle": "^3.5",
         "ergebnis/composer-normalize": "^2.28",
         "friendsofphp/php-cs-fixer": "^3.13",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-doctrine": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-symfony": "^2.0",
         "phpunit/phpunit": "^10.2",
         "rregeer/phpunit-coverage-check": "^0.3.1",
         "symfony/browser-kit": "~7.4.0",
@@ -58,7 +63,6 @@
         "symfony/phpunit-bridge": "~7.4.0",
         "symfony/stopwatch": "~7.4.0",
         "symfony/web-profiler-bundle": "~7.4.0",
-        "vimeo/psalm": "^6.0",
         "vincentlanglet/twig-cs-fixer": "^3.5.1"
     },
     "replace": {
@@ -90,6 +94,7 @@
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "ergebnis/composer-normalize": true,
+            "phpstan/extension-installer": true,
             "symfony/flex": true,
             "symfony/runtime": true
         },
@@ -117,10 +122,10 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "code-analysis": [
-            "@code-analysis/psalm"
+            "@code-analysis/phpstan"
         ],
-        "code-analysis/psalm": [
-            "psalm --no-cache"
+        "code-analysis/phpstan": [
+            "phpstan analyse --memory-limit=1G --no-progress"
         ],
         "coding-standards-apply": [
             "@coding-standards-apply/php-cs-fixer",
@@ -148,7 +153,7 @@
         "prepare-code": [
             "composer normalize",
             "@coding-standards-apply",
-            "@code-analysis/psalm",
+            "@code-analysis/phpstan",
             "@tests"
         ],
         "tests": [

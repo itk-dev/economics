@@ -40,6 +40,10 @@ yarn-error.log
 
 .claude/
 
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
+
 ###> go-task/task ###
 /.task/
 ###< go-task/task ###

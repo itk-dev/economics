@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Client;
 use App\Entity\Invoice;
 use App\Entity\InvoiceEntry;
 use App\Exception\EconomicsException;
@@ -38,6 +39,7 @@ class InvoiceController extends AbstractController
         private readonly BillingService $billingService,
         private readonly TranslatorInterface $translator,
         private readonly InvoiceEntryHelper $invoiceEntryHelper,
+        private readonly string $invoiceExternalReceiverAccount = '',
     ) {
     }
 
@@ -119,6 +121,13 @@ class InvoiceController extends AbstractController
             }
         }
 
+        // Make sure the external receiver account is selectable, so the client
+        // autofill can pick it even if it is not among the synced accounts.
+        if ('' !== $this->invoiceExternalReceiverAccount
+            && !in_array($this->invoiceExternalReceiverAccount, $defaultReceiverAccountChoices)) {
+            $defaultReceiverAccountChoices[$this->invoiceExternalReceiverAccount] = $this->invoiceExternalReceiverAccount;
+        }
+
         $form->add('paidByAccount', ChoiceType::class, [
             'required' => false,
             'label' => 'invoices.paid_by_account',
@@ -140,6 +149,7 @@ class InvoiceController extends AbstractController
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
+                'data-autofill-receiver-account-target' => 'receiver',
             ],
             'choices' => $defaultReceiverAccountChoices,
             'help' => 'invoices.default_receiver_account_helptext',
@@ -153,10 +163,34 @@ class InvoiceController extends AbstractController
             'attr' => [
                 'class' => 'form-element',
                 'data-choices-target' => 'choices',
+                'data-autofill-material-number-target' => 'client',
+                'data-autofill-receiver-account-target' => 'client',
+                'data-action' => 'change->autofill-material-number#update change->autofill-receiver-account#update',
             ],
             'help' => 'invoices.client_helptext',
             'choices' => $clientChoices,
+            'choice_value' => fn (?Client $client) => $client?->getId(),
         ]);
+
+        // Map each client to the material number its type implies, so the form can
+        // autofill the material number when a client is selected.
+        $clientMaterialNumbers = [];
+        foreach ($clientChoices as $clientChoice) {
+            $type = $clientChoice->getType();
+            $clientMaterialNumbers[$clientChoice->getId()] = null !== $type ? $type->toMaterialNumber()->value : '';
+        }
+
+        // Map each client to the receiver account it implies. External clients use
+        // the dedicated external receiver account (when configured); everyone else
+        // uses the default account, so the field stays consistent with the client.
+        $defaultReceiverAccount = $this->invoiceEntryHelper->getDefaultAccount() ?? '';
+        $clientReceiverAccounts = [];
+        foreach ($clientChoices as $clientChoice) {
+            $isExternal = $clientChoice->getType()?->isExternal() ?? false;
+            $clientReceiverAccounts[$clientChoice->getId()] = ($isExternal && '' !== $this->invoiceExternalReceiverAccount)
+                ? $this->invoiceExternalReceiverAccount
+                : $defaultReceiverAccount;
+        }
 
         $form->handleRequest($request);
 
@@ -197,6 +231,8 @@ class InvoiceController extends AbstractController
                 return $carry;
             }, 0.0),
             'clientHelper' => $clientHelper,
+            'clientMaterialNumbers' => $clientMaterialNumbers,
+            'clientReceiverAccounts' => $clientReceiverAccounts,
         ]);
     }
 

@@ -103,7 +103,6 @@ Set create `.env.local` with the following values set
 JIRA_PROJECT_TRACKER_URL=<VALUE>
 JIRA_PROJECT_TRACKER_USER=<VALUE>
 JIRA_PROJECT_TRACKER_TOKEN=<VALUE>
-LEANTIME_PROJECT_TRACKER_URL=<VALUE>
 LEANTIME_PROJECT_TRACKER_TOKEN=<VALUE>
 ###< Project tracker connection ###
 
@@ -180,7 +179,7 @@ docker compose run --rm node npm run coding-standards-apply
 
 ### Code analysis
 
-We use [Psalm](https://psalm.dev/) for static code analysis:
+We use [PHPStan](https://phpstan.org/) for static code analysis:
 
 ``` shell
 docker compose exec phpfpm composer code-analysis

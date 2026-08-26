@@ -48,8 +48,7 @@
                 <td class="table-td">{{ invoice.name }}</td>
                 <td class="table-td">
                     {% if invoice.client.type != null %}
-                        {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : '' }}
-                        {{ invoice.client.type.value == 'external' ? 'invoices.client_type_external'|trans : '' }}
+                        {{ invoice.client.type.value == 'internal' ? 'invoices.client_type_internal'|trans : 'invoices.client_type_external'|trans }}
                     {% endif %}
                 </td>
                 <td class="table-td">{{ invoice.totalPrice }}</td>

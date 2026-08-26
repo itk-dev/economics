@@ -27,6 +27,7 @@ steps:
         - itkdev-docker-compose-server run --rm phpfpm bin/console messenger:setup-transports
         - itkdev-docker-compose-server run --rm phpfpm bin/console cache:clear
       cron:
+        # Modified syncs
         sync-modified:
           minute: "*/15"
           hour: "*"
@@ -48,3 +49,47 @@ steps:
           month: "*"
           weekday: "*"
           job: "itkdev-docker-compose-server exec phpfpm bin/console app:anonymize-worklogs"
+        # Nightly sync deleted for the last week
+        sync-deleted-week:
+          minute: "50"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync-deleted --interval=P1W"
+        # Nightly full syncs
+        full-sync-projects:
+          minute: "0"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -p -d"
+        full-sync-workers:
+          minute: "10"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -r -d"
+        full-sync-versions:
+          minute: "20"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -s -d"
+        full-sync-issues:
+          minute: "30"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -i -d"
+        full-sync-worklogs:
+          minute: "40"
+          hour: "2"
+          day: "*"
+          month: "*"
+          weekday: "*"
+          job: "itkdev-docker-compose-server exec phpfpm bin/console app:data-providers:sync -j -w -d"

@@ -7,6 +7,7 @@ use App\Entity\Trait\SynchronizedEntityTrait;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -66,6 +67,22 @@ class Project extends AbstractBaseEntity
     #[ORM\Column(nullable: true)]
     private ?bool $holidayPlanning = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $githubRepos = null;
+
+    /**
+     * @var Collection<int, Worker>
+     */
+    #[ORM\ManyToMany(targetEntity: Worker::class)]
+    #[ORM\JoinTable(name: 'project_codeowner')]
+    private Collection $codeowners;
+
+    /**
+     * @var Collection<int, ServiceAgreement>
+     */
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: ServiceAgreement::class, fetch: 'EXTRA_LAZY')]
+    private Collection $serviceAgreements;
+
     public function __construct()
     {
         $this->invoices = new ArrayCollection();
@@ -75,6 +92,8 @@ class Project extends AbstractBaseEntity
         $this->projectBillings = new ArrayCollection();
         $this->issues = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->codeowners = new ArrayCollection();
+        $this->serviceAgreements = new ArrayCollection();
     }
 
     public function getName(): ?string
@@ -383,5 +402,49 @@ class Project extends AbstractBaseEntity
         $this->holidayPlanning = $holidayPlanning;
 
         return $this;
+    }
+
+    public function getGithubRepos(): ?string
+    {
+        return $this->githubRepos;
+    }
+
+    public function setGithubRepos(?string $githubRepos): static
+    {
+        $this->githubRepos = $githubRepos;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Worker>
+     */
+    public function getCodeowners(): Collection
+    {
+        return $this->codeowners;
+    }
+
+    public function addCodeowner(Worker $codeowner): self
+    {
+        if (!$this->codeowners->contains($codeowner)) {
+            $this->codeowners->add($codeowner);
+        }
+
+        return $this;
+    }
+
+    public function removeCodeowner(Worker $codeowner): self
+    {
+        $this->codeowners->removeElement($codeowner);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ServiceAgreement>
+     */
+    public function getServiceAgreements(): Collection
+    {
+        return $this->serviceAgreements;
     }
 }

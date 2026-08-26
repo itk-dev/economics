@@ -51,5 +51,5 @@ jobs:
           docker network create frontend
 
       - run: |
-          docker compose run --rm phpfpm composer install
-          docker compose run --rm phpfpm vendor/bin/twig-cs-fixer lint
+          docker compose run --rm --no-deps phpfpm composer install
+          docker compose run --rm --no-deps phpfpm vendor/bin/twig-cs-fixer lint

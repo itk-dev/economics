@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Invoice;
 use App\Entity\ProjectBilling;
+use App\Enum\ClientTypeEnum;
 use App\Exception\EconomicsException;
 use App\Form\ProjectBillingFilterType;
 use App\Form\ProjectBillingRecordType;
@@ -218,9 +219,19 @@ class ProjectBillingController extends AbstractController
         $invoices = $projectBilling->getInvoices();
 
         // Filter invoices by client.type if type query parameter is set.
+        // "external" matches every external variant (e.g. with/without moms),
+        // since they are all external clients.
         $type = $request->query->get('type');
         if (null !== $type) {
-            $invoices = $invoices->filter(fn (Invoice $invoice) => $invoice->getClient()?->getType()?->value == $type);
+            $invoices = $invoices->filter(function (Invoice $invoice) use ($type) {
+                $clientType = $invoice->getClient()?->getType();
+
+                return match ($type) {
+                    ClientTypeEnum::INTERNAL->value => ClientTypeEnum::INTERNAL === $clientType,
+                    ClientTypeEnum::EXTERNAL->value => true === $clientType?->isExternal(),
+                    default => $clientType?->value === $type,
+                };
+            });
         }
 
         // Mark invoice as exported.
