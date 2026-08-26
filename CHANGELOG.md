@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-298](https://github.com/itk-dev/economics/pull/298)
+  * Save hidden rows per report instead of sharing one list across planning and reports.
+  * Added hidden projects to planning projects view.
+* [PR-297](https://github.com/itk-dev/economics/pull/297)
+  * Added group filter to workload report and invoicing rate report.
 * [PR-329](https://github.com/itk-dev/economics/pull/329)
   Blocked worklog selection on recorded invoices.
 * [PR-328](https://github.com/itk-dev/economics/pull/328)

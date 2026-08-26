@@ -43,6 +43,7 @@ planning:
   assignees: "Brugere"
   projects: "Projekter"
   hidden-entries: "Skjulte brugere"
+  hidden-projects: "Skjulte projekter"
   data_provider_helptext: ""
   data_provider: "Vælg datakilde"
   search: "Vis"
@@ -561,6 +562,8 @@ workload_report:
   submit: "Hent"
   average: "Gennemsnit"
   average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
+  group: "Gruppe"
+  select_group: "Alle medarbejdere"
 
 invoicing_rate_report:
   title: "Udfaktureringsrapport"
@@ -569,6 +572,8 @@ invoicing_rate_report:
   include_issues: "Inkludér to-dos (+10s load)"
   reading-guide-header: "Læsevejledning"
   submit: "Hent udfaktureringsrapport"
+  group: "Gruppe"
+  select_group: "Alle medarbejdere"
   reading-guide: "
     Aflæsning af todelt celle (medarbejder):
     [ Fakturerbare timer for perioden ---- Procent af totalt loggede timer faktureret for perioden ].
