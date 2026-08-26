@@ -17,7 +17,7 @@ class AnonymizeWorklogsCommand extends Command
     public function __construct(
         private readonly AnonymizeService $anonymizeService,
     ) {
-        parent::__construct($this->getName());
+        parent::__construct();
     }
 
     #[\Override]
@@ -25,7 +25,10 @@ class AnonymizeWorklogsCommand extends Command
     {
         $anonymizeBefore = (new \DateTime())->sub(new \DateInterval('P5Y'));
 
-        $this->anonymizeService->anonymizeWorklogs($anonymizeBefore);
+        $count = $this->anonymizeService->anonymizeWorklogs($anonymizeBefore);
+
+        // The command only ever runs from cron, so the count is the whole record of what it did.
+        $output->writeln(sprintf('Anonymized %d worklogs started before %s.', $count, $anonymizeBefore->format('Y-m-d')));
 
         return Command::SUCCESS;
     }

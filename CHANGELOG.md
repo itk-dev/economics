@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-279](https://github.com/itk-dev/economics/pull/279)
   * Anonymize worklogs after 5 years.
+  * `app:anonymize-worklogs` now reports how many worklogs it anonymized, and the fixtures
+    include a few worklogs old enough for it to act on.
 * [PR-345](https://github.com/itk-dev/economics/pull/345)
   * Updated dependencies.
   * Removed `webpack-notifier` and `.enableBuildNotifications()`, clearing the `uuid` advisory —

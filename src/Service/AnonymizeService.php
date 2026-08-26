@@ -10,8 +10,8 @@ class AnonymizeService
     {
     }
 
-    public function anonymizeWorklogs(\DateTime $anonymizeBefore)
+    public function anonymizeWorklogs(\DateTimeInterface $anonymizeBefore): int
     {
-        $this->worklogRepository->anonymizeWorklogs($anonymizeBefore);
+        return $this->worklogRepository->anonymizeWorklogs($anonymizeBefore);
     }
 }
