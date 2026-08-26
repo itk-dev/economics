@@ -9,10 +9,9 @@
     <p class="text-gray-800/75 dark:text-gray-200/75">
         {{ 'workload_report.workload'|trans }} {{ data.expectedWorkload|round(2) }} {{ 'workload_report.worklogs_hours_short'|trans }}
         &middot;
-        {{ 'workload_report.logged_hours'|trans }} {{ data.loggedHours }} {{ 'workload_report.worklogs_hours_short'|trans }}
+        {# The view mode names what was counted — "Loggede timer", "Fakturerbare timer", "Fakturerede timer". #}
+        {{ data.viewMode|trans }} {{ data.loggedHours }} {{ 'workload_report.worklogs_hours_short'|trans }}
         ({{ data.loggedPercentage }}%)
-        &middot;
-        {{ data.viewMode|trans }}
     </p>
 </div>
 
