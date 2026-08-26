@@ -10,6 +10,7 @@ use App\Enum\NonBillableEpicsEnum;
 use App\Enum\NonBillableVersionsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -47,6 +48,40 @@ class WorklogRepository extends ServiceEntityRepository
     }
 
     public function findByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): iterable
+    {
+        return $this->createFilterDataQueryBuilder($project, $invoiceEntry, $filterData)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Sum the time spent on the worklogs matching the given filter that can be
+     * added to the invoice entry.
+     *
+     * Already billed worklogs and worklogs held by another invoice entry are
+     * listed without a checkbox, so their time can never become part of the
+     * selection and must not be part of the total either.
+     */
+    public function sumSelectableTimeSpentSecondsByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): int
+    {
+        $qb = $this->createFilterDataQueryBuilder($project, $invoiceEntry, $filterData);
+
+        $sum = $qb
+            ->select('SUM(worklog.timeSpentSeconds)')
+            ->andWhere('worklog.isBilled = FALSE OR worklog.isBilled is NULL')
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('worklog.invoiceEntry'),
+                $qb->expr()->eq('worklog.invoiceEntry', ':selectableInvoiceEntry')
+            ))
+            ->setParameter('selectableInvoiceEntry', $invoiceEntry)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // SUM returns null when no worklogs match the filter.
+        return (int) $sum;
+    }
+
+    private function createFilterDataQueryBuilder(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): QueryBuilder
     {
         $qb = $this->createQueryBuilder('worklog');
 
@@ -97,7 +132,7 @@ class WorklogRepository extends ServiceEntityRepository
             ))->setParameter('invoiceEntry', $invoiceEntry);
         }
 
-        return $qb->getQuery()->execute();
+        return $qb;
     }
 
     public function updateProjectByIssue(Issue $issue, Project $project): int

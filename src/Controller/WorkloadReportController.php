@@ -54,9 +54,10 @@ class WorkloadReportController extends AbstractController
             $viewPeriodType = $form->get('viewPeriodType')->getData() ?? PeriodTypeEnum::WEEK;
             $viewMode = $form->get('viewMode')->getData() ?? ViewModeEnum::WORKLOAD;
             $year = $form->get('year')->getData();
+            $group = $reportFormData->group;
 
             try {
-                $reportData = $this->workloadReportService->getWorkloadReport($year, $viewPeriodType, $viewMode);
+                $reportData = $this->workloadReportService->getWorkloadReport($year, $viewPeriodType, $viewMode, $group);
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }

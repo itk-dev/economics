@@ -10,6 +10,7 @@ use App\Enum\ClientTypeEnum;
 use App\Enum\InvoiceEntryTypeEnum;
 use App\Enum\MaterialNumberEnum;
 use App\Model\Invoices\ConfirmData;
+use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\ClientRepository;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\InvoiceRepository;
@@ -172,7 +173,32 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         $this->assertSame(0.0, (float) $worklogEntry->getAmount());
 
         // 6. Attach worklogs to the WORKLOG entry.
+        $worklogsCrawler = $client->request('GET', '/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/worklogs');
+        $this->assertResponseIsSuccessful();
+
         $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+
+        // The sums bar reports the hours that can be selected in the filtered
+        // list, and each checkbox carries the time the Stimulus controller sums
+        // for the selection. The controller renders the page with the filter
+        // defaults, since an unsubmitted GET form leaves the filter untouched.
+        $expectedTotalHours = round($worklogRepository->sumSelectableTimeSpentSecondsByFilterData(
+            $project,
+            $worklogEntry,
+            new InvoiceEntryWorklogsFilterData()
+        ) / 3600, 2);
+        $this->assertGreaterThan(0, $expectedTotalHours);
+
+        $sums = $worklogsCrawler->filter('.sticky-actions-sums');
+        $this->assertCount(1, $sums);
+        $this->assertSame('0', trim($sums->filter('[data-entry-select-target="selectedHours"]')->text()));
+        $this->assertEqualsWithDelta(
+            $expectedTotalHours,
+            (float) $sums->filter('[data-total-hours]')->attr('data-total-hours'),
+            0.001
+        );
+        $this->assertGreaterThan(0, $worklogsCrawler->filter('input[data-time-spent-seconds]')->count());
+
         $unbilled = $worklogRepository->findBy(
             ['project' => $project, 'isBilled' => false],
             ['id' => 'ASC'],
@@ -264,6 +290,51 @@ class InvoiceFullFlowTest extends AbstractControllerTestCase
         // 10. HTML export preview still works after record.
         $client->request('GET', '/admin/invoices/'.$invoiceId.'/show-export');
         $this->assertResponseIsSuccessful();
+
+        // 11. The worklog selection is closed once the invoice is recorded.
+        $client->request('GET', '/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/worklogs');
+        $this->assertResponseRedirects('/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/worklogs-show');
+
+        $client->request('GET', '/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/worklogs-show');
+        $this->assertResponseIsSuccessful();
+
+        $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+        $this->assertInstanceOf(WorklogRepository::class, $worklogRepository);
+
+        $unassigned = null;
+        foreach ($worklogRepository->findBy(['project' => $project, 'isBilled' => false], ['id' => 'ASC'], 50) as $wl) {
+            if (null === $wl->getInvoiceEntry()) {
+                $unassigned = $wl;
+                break;
+            }
+        }
+        $this->assertInstanceOf(Worklog::class, $unassigned, 'Expected a spare unassigned worklog in fixtures.');
+        $unassignedId = $unassigned->getId();
+
+        $worklogEntry = $this->reloadInvoiceEntry($worklogEntryId);
+        $this->assertInstanceOf(InvoiceEntry::class, $worklogEntry);
+        $amountBefore = $worklogEntry->getAmount();
+
+        $client->request(
+            'POST',
+            '/admin/invoices/'.$invoiceId.'/entries/'.$worklogEntryId.'/select_worklogs',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            (string) json_encode([['id' => $unassignedId, 'checked' => true]]),
+        );
+        $this->assertResponseStatusCodeSame(400);
+
+        $worklogEntry = $this->reloadInvoiceEntry($worklogEntryId);
+        $this->assertInstanceOf(InvoiceEntry::class, $worklogEntry);
+        $this->assertEqualsWithDelta($amountBefore, $worklogEntry->getAmount(), 0.0001);
+
+        $worklogRepository = static::getContainer()->get(WorklogRepository::class);
+        $this->assertInstanceOf(WorklogRepository::class, $worklogRepository);
+        $this->assertNull(
+            $worklogRepository->find($unassignedId)?->getInvoiceEntry(),
+            'Expected the worklog to stay unassigned when the invoice is recorded.'
+        );
     }
 
     /**

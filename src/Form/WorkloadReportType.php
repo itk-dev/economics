@@ -2,9 +2,11 @@
 
 namespace App\Form;
 
+use App\Entity\WorkerGroup;
 use App\Model\Reports\WorkloadReportFormData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -25,6 +27,16 @@ class WorkloadReportType extends AbstractType
             $yearChoices[$year] = $year;
         }
         $builder
+            ->add('group', EntityType::class, [
+                'class' => WorkerGroup::class,
+                'label' => 'workload_report.group',
+                'label_attr' => ['class' => 'label'],
+                'attr' => ['class' => 'form-element '],
+                'help_attr' => ['class' => 'form-help'],
+                'row_attr' => ['class' => 'form-row'],
+                'required' => false,
+                'placeholder' => 'workload_report.select_group',
+            ])
             ->add('year', ChoiceType::class, [
                 'label' => 'invoicing_rate_report.year',
                 'label_attr' => ['class' => 'label'],
