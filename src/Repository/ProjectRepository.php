@@ -101,7 +101,7 @@ class ProjectRepository extends ServiceEntityRepository
         $qb
             ->select('project.projectTrackerId')
             ->where($qb->expr()->eq('project.include', true))
-            ->where($qb->expr()->in('project.dataProvider', ':dataProviders'))
+            ->andWhere($qb->expr()->in('project.dataProvider', ':dataProviders'))
             ->setParameter('dataProviders', $dataProviders)
             ->orderBy('project.projectTrackerId', 'ASC');
 

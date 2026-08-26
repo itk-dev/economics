@@ -2725,12 +2725,6 @@ parameters:
 			path: tests/Integration/Repository/ProjectRepositoryTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$entityManager is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: tests/Integration/Repository/ProjectRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$repository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -2823,12 +2817,6 @@ parameters:
 		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
 			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager is never read, only written\.$#'
-			identifier: property.onlyWritten
 			count: 1
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
