@@ -10,8 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-328](https://github.com/itk-dev/economics/pull/328)
   * Added selected and total hours to the worklog selection list.
+* [PR-279](https://github.com/itk-dev/economics/pull/279)
+  * Anonymize worklogs after 5 years.
+  * `app:anonymize-worklogs` now reports how many worklogs it anonymized, and the fixtures
+    include a few worklogs old enough for it to act on.
+  * Fixed `composer fixtures:load`, which called the uninstalled `hautelook:fixtures:load`
+    instead of `doctrine:fixtures:load`.
+* [PR-344](https://github.com/itk-dev/economics/pull/344)
+  * Restored the `include` filter on the project ids that scope the sync — a second `->where()` was discarding
+    it, so issues, milestones and worklogs were synced for every known project, included or not.
 * [PR-345](https://github.com/itk-dev/economics/pull/345)
-  * Updated dependencies.  
+  * Updated dependencies.
   * Removed `webpack-notifier` and `.enableBuildNotifications()`, clearing the `uuid` advisory —
     build notifications never reached the desktop from the `node` container anyway.
 
@@ -71,9 +80,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     isolates one test from the next, which is the opposite of what a test author was being told.
   * Pointed the development, coding-standards, analysis, testing and asset commands at their `task`
     equivalents, since `Taskfile.yml` is the entrypoint and was unmentioned.
-  * Fixed `composer fixtures:load`, which called `hautelook:fixtures:load` without
-    `hautelook/alice-bundle` installed, so `task fixtures:load` could only ever fail. It now calls
-    `doctrine:fixtures:load`.
   * Corrected the `code-analysis` task description, which advertised Psalm while running PHPStan.
   * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
     host `php`, and does not have to rediscover the decisions it would otherwise undo — the split

@@ -344,6 +344,22 @@ class WorklogRepository extends ServiceEntityRepository
         ];
     }
 
+    public function anonymizeWorklogs(\DateTimeInterface $anonymizeBefore): int
+    {
+        $qb = $this->createQueryBuilder('w');
+
+        $qb->update()
+            ->set('w.description', 'CONCAT(:prefix, w.id)')
+            ->set('w.anonymizedDate', ':now')
+            ->where('w.started < :anonymizeBefore')
+            ->andWhere('w.anonymizedDate IS NULL')
+            ->setParameter('prefix', 'worklog ')
+            ->setParameter('now', new \DateTime())
+            ->setParameter('anonymizeBefore', $anonymizeBefore);
+
+        return $qb->getQuery()->execute();
+    }
+
     /**
      * Get worklogs for a given issue, optionally restricted by period.
      *
