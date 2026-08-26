@@ -2821,12 +2821,6 @@ parameters:
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$projectRepository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
 			identifier: assign.propertyType
 			count: 1

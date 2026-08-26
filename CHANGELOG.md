@@ -8,11 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-279](https://github.com/itk-dev/economics/pull/279)
+  * Anonymize worklogs after 5 years.
+  * `app:anonymize-worklogs` now reports how many worklogs it anonymized, and the fixtures
+    include a few worklogs old enough for it to act on.
+  * Fixed `composer fixtures:load`, which called the uninstalled `hautelook:fixtures:load`
+    instead of `doctrine:fixtures:load`.
 * [PR-344](https://github.com/itk-dev/economics/pull/344)
   * Restored the `include` filter on the project ids that scope the sync — a second `->where()` was discarding
     it, so issues, milestones and worklogs were synced for every known project, included or not.
 * [PR-345](https://github.com/itk-dev/economics/pull/345)
-  * Updated dependencies.  
+  * Updated dependencies.
   * Removed `webpack-notifier` and `.enableBuildNotifications()`, clearing the `uuid` advisory —
     build notifications never reached the desktop from the `node` container anyway.
 
