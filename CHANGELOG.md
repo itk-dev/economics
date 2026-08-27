@@ -13,6 +13,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     paging, incrementality and deletion behaviour that is not obvious from the code.
   * Rewrote `README.md`'s `Synchronization` section, which named a `QueueSyncCommand`, an `app:queue-sync` and
     a `DataProviderServiceInterface` that do not exist, and credited the Symfony Scheduler for work cron does.
+* [PR-346](https://github.com/itk-dev/economics/pull/346)
+  * Clicking a cell in the workload report now opens the worklogs behind the number, marking any
+    that were deleted in the source but still counted.
+* [PR-298](https://github.com/itk-dev/economics/pull/298)
+  * Save hidden rows per report instead of sharing one list across planning and reports.
+  * Added hidden projects to planning projects view.
+* [PR-297](https://github.com/itk-dev/economics/pull/297)
+  * Added group filter to workload report and invoicing rate report.
+* [PR-329](https://github.com/itk-dev/economics/pull/329)
+  Blocked worklog selection on recorded invoices.
+* [PR-328](https://github.com/itk-dev/economics/pull/328)
+  * Added selected and total hours to the worklog selection list.
+* [PR-279](https://github.com/itk-dev/economics/pull/279)
+  * Anonymize worklogs after 5 years.
+  * `app:anonymize-worklogs` now reports how many worklogs it anonymized, and the fixtures
+    include a few worklogs old enough for it to act on.
+  * Fixed `composer fixtures:load`, which called the uninstalled `hautelook:fixtures:load`
+    instead of `doctrine:fixtures:load`.
+* [PR-344](https://github.com/itk-dev/economics/pull/344)
+  * Restored the `include` filter on the project ids that scope the sync — a second `->where()` was discarding
+    it, so issues, milestones and worklogs were synced for every known project, included or not.
+* [PR-345](https://github.com/itk-dev/economics/pull/345)
+  * Updated dependencies.
+  * Removed `webpack-notifier` and `.enableBuildNotifications()`, clearing the `uuid` advisory —
+    build notifications never reached the desktop from the `node` container anyway.
 
 ## [3.8.0] - 2026-08-21
 

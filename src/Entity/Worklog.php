@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\AnonymizedTrait;
 use App\Entity\Trait\DataProviderTrait;
 use App\Entity\Trait\SynchronizedEntityTrait;
 use App\Enum\BillableKindsEnum;
@@ -19,6 +20,7 @@ class Worklog extends AbstractBaseEntity
 {
     use DataProviderTrait;
     use SynchronizedEntityTrait;
+    use AnonymizedTrait;
 
     // TODO: Rename to projectTrackerId.
     #[ORM\Column]

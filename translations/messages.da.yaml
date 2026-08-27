@@ -43,6 +43,7 @@ planning:
   assignees: "Brugere"
   projects: "Projekter"
   hidden-entries: "Skjulte brugere"
+  hidden-projects: "Skjulte projekter"
   data_provider_helptext: ""
   data_provider: "Vælg datakilde"
   search: "Vis"
@@ -326,6 +327,8 @@ worklog:
   worker: "Arbejder"
   time_spent: "Timer"
   date: "Dato"
+  total_hours: "Timer i alt"
+  selected_hours: "Valgte timer"
   is_billed_true: "Ja"
   is_billed_false: "Nej"
   period_from: "Periode fra"
@@ -340,6 +343,7 @@ worklog:
   action_save: "Gem valgte worklogs"
   error_already_billed: "Fejl: Indeholder worklog der allerede er faktureret. Prøv at genindlæse siden..."
   error_added_to_other_invoice_entry: "Fejl: Indeholder worklog der er bundet til anden fakturaindgang. Prøv at genindlæse siden..."
+  error_invoice_recorded: "Fejl: Fakturaen er bogført og fakturalinjens worklogs kan derfor ikke ændres."
   only_available_false: "Nej. Vis alle."
   only_available_true: "Ja"
   only_available: 'Kun "frie" worklogs'
@@ -558,6 +562,17 @@ workload_report:
   submit: "Hent"
   average: "Gennemsnit"
   average_describe: "Gennemsnit beregnet til og med forrige uge/måned"
+  worklogs_show: "Vis registreringer bag tallet"
+  worklogs_close: "Luk"
+  worklogs_loading: "Henter registreringer …"
+  worklogs_error: "Registreringerne kunne ikke hentes."
+  worklogs_empty: "Ingen registreringer i perioden"
+  worklogs_total: "I alt"
+  worklogs_project: "Projekt"
+  worklogs_hours_short: "t"
+  worklogs_deleted_note: "Registreringer slettet i kilden tælles stadig med i rapportens tal."
+  group: "Gruppe"
+  select_group: "Alle medarbejdere"
 
 invoicing_rate_report:
   title: "Udfaktureringsrapport"
@@ -566,6 +581,8 @@ invoicing_rate_report:
   include_issues: "Inkludér to-dos (+10s load)"
   reading-guide-header: "Læsevejledning"
   submit: "Hent udfaktureringsrapport"
+  group: "Gruppe"
+  select_group: "Alle medarbejdere"
   reading-guide: "
     Aflæsning af todelt celle (medarbejder):
     [ Fakturerbare timer for perioden ---- Procent af totalt loggede timer faktureret for perioden ].
