@@ -1,7 +1,7 @@
 # 005: Soft-delete-by-source, tracked separately from the entity's own deletion
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | **Created By** | Troels Ugilt Jensen |
 | **Date** | 2026-08-25 |
 | **Decision Maker** | ITK Dev Economics team |

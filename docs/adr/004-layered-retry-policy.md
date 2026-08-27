@@ -1,7 +1,7 @@
 # 004: Retry policy is split across three layers on purpose
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | **Created By** | Troels Ugilt Jensen |
 | **Date** | 2026-08-25 |
 | **Decision Maker** | ITK Dev Economics team |

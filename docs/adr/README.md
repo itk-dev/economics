@@ -6,7 +6,7 @@ the consequences the project now lives with. See [adr.github.io](https://adr.git
 background on the practice.
 
 | Number | Title | Status | Date |
-|--------|-------|--------|------|
+| --- | --- | --- | --- |
 | [001](001-single-data-provider-abstraction.md) | One data provider abstraction, Leantime as the only implementation | Accepted | 2026-08-25 |
 | [002](002-data-provider-credentials-in-database.md) | Data provider credentials live in the database | Accepted | 2026-08-25 |
 | [003](003-messenger-paged-synchronization.md) | Synchronisation is Messenger-paged, and the transport choice is semantic | Accepted | 2026-08-25 |
@@ -32,7 +32,7 @@ A decision that replaces an earlier one does not edit that record: the new ADR s
 ## Status values
 
 | Status | Meaning |
-|--------|---------|
+| --- | --- |
 | `Draft` | Under discussion, not yet binding |
 | `Accepted` | Approved and to be followed |
 | `Rejected` | Considered and not adopted |

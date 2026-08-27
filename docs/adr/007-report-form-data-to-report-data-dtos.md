@@ -1,7 +1,7 @@
 # 007: Reports go form data in, report data out, through typed DTOs
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | **Created By** | Troels Ugilt Jensen |
 | **Date** | 2026-08-25 |
 | **Decision Maker** | ITK Dev Economics team |

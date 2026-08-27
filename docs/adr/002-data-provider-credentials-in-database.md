@@ -1,7 +1,7 @@
 # 002: Data provider credentials live in the database
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | **Created By** | Troels Ugilt Jensen |
 | **Date** | 2026-08-25 |
 | **Decision Maker** | ITK Dev Economics team |

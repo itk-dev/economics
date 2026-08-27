@@ -1,7 +1,7 @@
 # 006: Doctrine ORM 2, Copenhagen-local datetimes, and a global soft-delete filter
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | **Created By** | Troels Ugilt Jensen |
 | **Date** | 2026-08-25 |
 | **Decision Maker** | ITK Dev Economics team |

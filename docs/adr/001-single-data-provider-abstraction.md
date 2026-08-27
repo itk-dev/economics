@@ -1,7 +1,7 @@
 # 001: One data provider abstraction, Leantime as the only implementation
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | **Created By** | Troels Ugilt Jensen |
 | **Date** | 2026-08-25 |
 | **Decision Maker** | ITK Dev Economics team |

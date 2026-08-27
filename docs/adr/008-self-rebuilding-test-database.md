@@ -1,7 +1,7 @@
 # 008: The test bootstrap rebuilds the database; no DAMADoctrineTestBundle
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | **Created By** | Troels Ugilt Jensen |
 | **Date** | 2026-08-25 |
 | **Decision Maker** | ITK Dev Economics team |

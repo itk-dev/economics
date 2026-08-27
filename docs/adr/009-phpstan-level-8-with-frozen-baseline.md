@@ -1,7 +1,7 @@
 # 009: PHPStan level 8, with a baseline that is never regenerated
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | **Created By** | Troels Ugilt Jensen |
 | **Date** | 2026-08-25 |
 | **Decision Maker** | ITK Dev Economics team |

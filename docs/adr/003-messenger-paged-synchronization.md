@@ -1,7 +1,7 @@
 # 003: Synchronisation is Messenger-paged, and the transport choice is semantic
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | **Created By** | Troels Ugilt Jensen |
 | **Date** | 2026-08-25 |
 | **Decision Maker** | ITK Dev Economics team |
