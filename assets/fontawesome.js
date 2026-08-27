@@ -8,7 +8,15 @@ import {
     faMinimize,
     faCaretRight,
     faCaretDown,
+    faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faMaximize, faEyeSlash, faMinimize, faCaretRight, faCaretDown);
+library.add(
+    faMaximize,
+    faEyeSlash,
+    faMinimize,
+    faCaretRight,
+    faCaretDown,
+    faXmark,
+);
 dom.i2svg();

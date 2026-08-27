@@ -6,10 +6,12 @@ use App\Form\WorkloadReportType;
 use App\Model\Reports\WorkloadReportFormData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
+use App\Repository\WorkerRepository;
 use App\Service\WorkloadReportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -67,6 +69,38 @@ class WorkloadReportController extends AbstractController
             'error' => $error,
             'data' => $reportData,
             'mode' => $mode,
+        ]);
+    }
+
+    /**
+     * Renders the worklogs behind a single report cell, as the body of the drill-down modal.
+     *
+     * Returns a fragment rather than a page: it is fetched into a <dialog> on the report itself,
+     * so the table keeps its horizontal scroll position.
+     */
+    #[Route('/worklogs', name: 'app_workload_report_worklogs', methods: ['GET'])]
+    public function worklogs(Request $request, WorkerRepository $workerRepository): Response
+    {
+        $year = $request->query->get('year');
+        $period = $request->query->get('period');
+        $viewPeriodType = PeriodTypeEnum::tryFrom((string) $request->query->get('periodType'));
+        $viewMode = ViewModeEnum::tryFrom((string) $request->query->get('viewMode'));
+
+        if (null === $viewPeriodType || null === $viewMode || !is_numeric($year) || !is_numeric($period)) {
+            throw new BadRequestHttpException('Invalid workload report cell.');
+        }
+
+        $worker = $workerRepository->findOneBy([
+            'email' => (string) $request->query->get('worker'),
+            'includeInReports' => true,
+        ]);
+
+        if (null === $worker) {
+            throw $this->createNotFoundException('Worker not found.');
+        }
+
+        return $this->render('reports/workload_report_worklogs.html.twig', [
+            'data' => $this->workloadReportService->getPeriodWorklogs($worker, (int) $year, $viewPeriodType, $viewMode, (int) $period),
         ]);
     }
 }
