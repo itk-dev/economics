@@ -286,6 +286,123 @@ class WorklogRepositoryTest extends KernelTestCase
         $this->assertSame(0, $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData));
     }
 
+    public function testFindByFilterDataDoesNotMutatePeriodTo(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $year = (new \DateTime())->format('Y');
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->periodTo = new \DateTime("$year-01-15");
+
+        $this->repository->findByFilterData($project, $invoiceEntry, $filterData);
+
+        $this->assertEquals(new \DateTime("$year-01-15"), $filterData->periodTo);
+    }
+
+    /**
+     * The picker renders the list and the total from two separate calls, so a period boundary
+     * that moves between them shows a total covering a day the list does not.
+     *
+     * @see InvoiceEntryWorklogController::worklogs()
+     */
+    public function testSumSelectableTimeSpentSecondsCoversTheSameDaysAsTheListedWorklogs(): void
+    {
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $year = (new \DateTime())->format('Y');
+        // Fixture worklogs never land on two consecutive days, so the day after periodTo has to
+        // be populated here for a shifted boundary to have anything to pick up.
+        $project = $this->persistProjectWithWorklogs('period-to', [
+            "$year-06-10" => 3600,
+            "$year-06-11" => 7200,
+        ]);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->periodFrom = new \DateTime("$year-06-10");
+        $filterData->periodTo = new \DateTime("$year-06-10");
+
+        $expected = $this->sumSelectable($project, $invoiceEntry, $filterData);
+
+        $this->assertSame(3600, $expected);
+        $this->assertSame(
+            $expected,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    /**
+     * Persists a data provider → project → issue chain carrying one worklog per given
+     * start date, and returns the project.
+     *
+     * @param array<string, int> $startedToSeconds date string => timeSpentSeconds
+     */
+    private function persistProjectWithWorklogs(string $suffix, array $startedToSeconds): Project
+    {
+        $dataProvider = new DataProvider();
+        $dataProvider->setName('filter-provider-'.$suffix);
+        $dataProvider->setUrl('https://test.example.com');
+        $dataProvider->setClass('TestClass');
+        $this->entityManager->persist($dataProvider);
+
+        $project = new Project();
+        $project->setName('filter-project-'.$suffix);
+        $project->setProjectTrackerId('filter-'.$suffix);
+        $project->setProjectTrackerKey('filter-'.$suffix);
+        $project->setProjectTrackerProjectUrl('https://test.example.com/project/'.$suffix);
+        $project->setDataProvider($dataProvider);
+        $this->entityManager->persist($project);
+
+        $issue = new Issue();
+        $issue->setName('filter-issue-'.$suffix);
+        $issue->setProjectTrackerId('filter-issue-'.$suffix);
+        $issue->setProjectTrackerKey('filter-issue-'.$suffix);
+        $issue->setLinkToIssue('https://test.example.com/issue/'.$suffix);
+        $issue->setProject($project);
+        $issue->setDataProvider($dataProvider);
+        $this->entityManager->persist($issue);
+
+        $worklogId = 1;
+        $worklogs = [];
+
+        foreach ($startedToSeconds as $started => $timeSpentSeconds) {
+            $worklog = new Worklog();
+            $worklog->setWorklogId($worklogId++);
+            $worklog->setDescription('Worklog '.$started);
+            $worklog->setWorker('admin@test.local');
+            $worklog->setTimeSpentSeconds($timeSpentSeconds);
+            $worklog->setStarted(new \DateTime($started));
+            $worklog->setIsBilled(false);
+            $worklog->setProject($project);
+            $worklog->setIssue($issue);
+            $worklog->setProjectTrackerIssueId('filter-issue-'.$suffix);
+            $worklog->setDataProvider($dataProvider);
+            $this->entityManager->persist($worklog);
+
+            $worklogs[] = $worklog;
+        }
+
+        $this->entityManager->flush();
+
+        $this->createdDataProviderIds[] = $this->idOf($dataProvider->getId());
+        $this->createdProjectIds[] = $this->idOf($project->getId());
+        $this->createdIssueIds[] = $this->idOf($issue->getId());
+
+        foreach ($worklogs as $worklog) {
+            $this->createdWorklogIds[] = $this->idOf($worklog->getId());
+        }
+
+        return $project;
+    }
+
     /**
      * Sum the listed worklogs the picker offers a checkbox for, mirroring the
      * disabled condition in invoice_entry/worklogs.html.twig.
