@@ -119,8 +119,7 @@ Three families, and new code should follow the matching one rather than invent a
 
 Leantime is the only data provider. `src/Service/LeantimeApiService.php` implements
 `src/Interface/DataProviderInterface.php`, and `DataProviderService::IMPLEMENTATIONS`
-(`src/Service/DataProviderService.php:34`) is the registry. Jira is gone; only
-`src/Command/MigrateFromJiraEconomicsCommand.php` remains.
+(`src/Service/DataProviderService.php:34`) is the registry.
 
 Authentication is Azure OIDC — `src/Security/AzureOIDCAuthenticator.php` plus
 `itk-dev/openid-connect-bundle`, with the role hierarchy in `config/packages/security.yaml` and
@@ -130,8 +129,8 @@ Authentication is Azure OIDC — `src/Security/AzureOIDCAuthenticator.php` plus
 
 `app:data-providers:sync`, `app:data-providers:sync-modified`, `app:data-providers:sync-deleted`,
 `app:data-provider:create`, `app:data-provider:list`, `app:data-provider:set-enable`,
-`app:products:import`, `app:calc-sums`, `app:handle-subscriptions`, `app:user:set-roles`,
-`app:migrate-from-jira-economics`.
+`app:products:import`, `app:calc-sums`, `app:handle-subscriptions`, `app:anonymize-worklogs`,
+`app:user:set-roles`.
 
 `task phpfpm -- bin/console list app` is the authority if this list falls behind.
 
