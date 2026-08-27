@@ -52,8 +52,9 @@ class WorklogControllerTest extends AbstractControllerTestCase
     public function testFilterByDataProvider(): void
     {
         $client = $this->createClientLoggedInAs(['ROLE_ADMIN']);
-        $dataProvider = static::getContainer()->get(DataProviderRepository::class)
-            ->findOneBy(['name' => 'Data Provider 2 - Leantime 2']);
+        /** @var DataProviderRepository $repository */
+        $repository = static::getContainer()->get(DataProviderRepository::class);
+        $dataProvider = $repository->findOneBy(['name' => 'Data Provider 2 - Leantime 2']);
         $this->assertNotNull($dataProvider);
 
         $crawler = $this->filter($client, ['dataProvider' => (string) $dataProvider->getId()]);
@@ -70,8 +71,9 @@ class WorklogControllerTest extends AbstractControllerTestCase
     public function testFilterByProject(): void
     {
         $client = $this->createClientLoggedInAs(['ROLE_ADMIN']);
-        $project = static::getContainer()->get(ProjectRepository::class)
-            ->findOneBy(['name' => 'project-0-3']);
+        /** @var ProjectRepository $repository */
+        $repository = static::getContainer()->get(ProjectRepository::class);
+        $project = $repository->findOneBy(['name' => 'project-0-3']);
         $this->assertNotNull($project);
 
         $crawler = $this->filter($client, ['project' => (string) $project->getId()]);
@@ -87,8 +89,9 @@ class WorklogControllerTest extends AbstractControllerTestCase
     {
         $client = $this->createClientLoggedInAs(['ROLE_ADMIN']);
         // AppFixtures assigns every worklog of project-{provider}-3 to the fourth fixture worker.
-        $worker = static::getContainer()->get(WorkerRepository::class)
-            ->findOneBy(['email' => 'project-billing@test.local']);
+        /** @var WorkerRepository $repository */
+        $repository = static::getContainer()->get(WorkerRepository::class);
+        $worker = $repository->findOneBy(['email' => 'project-billing@test.local']);
         $this->assertNotNull($worker);
 
         $crawler = $this->filter($client, ['worker' => (string) $worker->getId()]);
@@ -104,12 +107,21 @@ class WorklogControllerTest extends AbstractControllerTestCase
     {
         $client = $this->createClientLoggedInAs(['ROLE_ADMIN']);
 
-        // AppFixtures bills exactly ten worklogs; everything else is false, never null.
+        // Assert on the rendered flag rather than a row count: nothing wraps these tests in a
+        // transaction, so an earlier test billing a worklog would move any fixture total.
         $crawler = $this->filter($client, ['isBilled' => '1']);
-        $this->assertCount(10, $crawler->filter('tbody tr[data-worklog-id]'));
+        $billed = $crawler->filter('tbody tr[data-worklog-id] td:nth-child(6)');
+        $this->assertGreaterThan(0, $billed->count());
+        foreach ($billed as $cell) {
+            $this->assertSame('Ja', trim((new Crawler($cell))->text()));
+        }
 
-        $crawler = $this->filter($client, ['isBilled' => '0', 'search' => self::UNIQUE_WORKLOG]);
-        $this->assertCount(1, $crawler->filter('tbody tr[data-worklog-id]'));
+        $crawler = $this->filter($client, ['isBilled' => '0']);
+        $unbilled = $crawler->filter('tbody tr[data-worklog-id] td:nth-child(6)');
+        $this->assertGreaterThan(0, $unbilled->count());
+        foreach ($unbilled as $cell) {
+            $this->assertSame('Nej', trim((new Crawler($cell))->text()));
+        }
     }
 
     public function testPeriodToIncludesTheSelectedDay(): void
@@ -138,6 +150,7 @@ class WorklogControllerTest extends AbstractControllerTestCase
     public function testWorklogDeletedInTheSourceIsMarked(): void
     {
         $client = $this->createClientLoggedInAs(['ROLE_ADMIN']);
+        /** @var EntityManagerInterface $em */
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $worklog = $this->uniqueWorklog();
 
@@ -178,8 +191,9 @@ class WorklogControllerTest extends AbstractControllerTestCase
 
     private function uniqueWorklog(): Worklog
     {
-        $worklog = static::getContainer()->get(WorklogRepository::class)
-            ->findOneBy(['projectTrackerIssueId' => self::UNIQUE_WORKLOG]);
+        /** @var WorklogRepository $repository */
+        $repository = static::getContainer()->get(WorklogRepository::class);
+        $worklog = $repository->findOneBy(['projectTrackerIssueId' => self::UNIQUE_WORKLOG]);
         $this->assertNotNull($worklog);
 
         return $worklog;
