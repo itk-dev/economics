@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-350](https://github.com/itk-dev/economics/pull/350)
+  * Fixed the worklog picker's total hours covering a day more than the list below it, because
+    the period filter shifted itself each time the query was built.
 * [PR-346](https://github.com/itk-dev/economics/pull/346)
   * Clicking a cell in the workload report now opens the worklogs behind the number, marking any
     that were deleted in the source but still counted.
