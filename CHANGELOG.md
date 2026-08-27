@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-348](https://github.com/itk-dev/economics/pull/348)
+  * Removed the `app:migrate-from-jira-economics` command and its migration doc — the JiraEconomics
+    cutover is done and the doc referenced five commands that no longer exist.
 * [PR-346](https://github.com/itk-dev/economics/pull/346)
   * Clicking a cell in the workload report now opens the worklogs behind the number, marking any
     that were deleted in the source but still counted.
