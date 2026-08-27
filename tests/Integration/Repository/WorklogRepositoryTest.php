@@ -2,20 +2,43 @@
 
 namespace App\Tests\Integration\Repository;
 
+use App\Entity\DataProvider;
+use App\Entity\InvoiceEntry;
+use App\Entity\Issue;
+use App\Entity\Project;
+use App\Entity\Version;
 use App\Entity\Worklog;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Repository\InvoiceEntryRepository;
 use App\Repository\IssueRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\WorklogRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class WorklogRepositoryTest extends KernelTestCase
 {
+    /**
+     * The anonymization tests assert exact affected-row counts, so they work in a window well
+     * below the worklogs AppFixtures ages for app:anonymize-worklogs. Nothing but the rows a test
+     * creates itself starts before self::CUTOFF.
+     */
+    private const OLD_ENOUGH = '-30 years';
+    private const CUTOFF = '-20 years';
+
     private EntityManagerInterface $entityManager;
     private WorklogRepository $repository;
     private ProjectRepository $projectRepository;
+
+    /** @var list<int> */
+    private array $createdWorklogIds = [];
+    /** @var list<int> */
+    private array $createdIssueIds = [];
+    /** @var list<int> */
+    private array $createdProjectIds = [];
+    /** @var list<int> */
+    private array $createdDataProviderIds = [];
 
     protected function setUp(): void
     {
@@ -24,6 +47,16 @@ class WorklogRepositoryTest extends KernelTestCase
         $this->entityManager = $container->get(EntityManagerInterface::class);
         $this->repository = $container->get(WorklogRepository::class);
         $this->projectRepository = $container->get(ProjectRepository::class);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->removeCreated(Worklog::class, $this->createdWorklogIds);
+        $this->removeCreated(Issue::class, $this->createdIssueIds);
+        $this->removeCreated(Project::class, $this->createdProjectIds);
+        $this->removeCreated(DataProvider::class, $this->createdDataProviderIds);
+
+        parent::tearDown();
     }
 
     public function testFindByFilterDataBasic(): void
@@ -120,6 +153,160 @@ class WorklogRepositoryTest extends KernelTestCase
                 'Worklog should have no invoice entry or match the provided entry'
             );
         }
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataMatchesSelectableWorklogs(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->worker = 'admin@test.local';
+
+        $expected = $this->sumSelectable($project, $invoiceEntry, $filterData);
+
+        $this->assertGreaterThan(0, $expected);
+        $this->assertSame(
+            $expected,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataWithVersionFilter(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $version = $project->getVersions()->first();
+        $this->assertInstanceOf(Version::class, $version);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->version = $version;
+
+        $expected = $this->sumSelectable($project, $invoiceEntry, $filterData);
+
+        $this->assertGreaterThan(0, $expected);
+        $this->assertSame(
+            $expected,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataExcludesBilledWorklogs(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+
+        $listed = 0;
+        $billed = 0;
+        foreach ($this->repository->findByFilterData($project, $invoiceEntry, $filterData) as $worklog) {
+            $this->assertInstanceOf(Worklog::class, $worklog);
+            $listed += (int) $worklog->getTimeSpentSeconds();
+
+            if ($worklog->isBilled()) {
+                $billed += (int) $worklog->getTimeSpentSeconds();
+            }
+        }
+
+        // The default filter lists billed worklogs, which the picker renders
+        // without a checkbox, so the total must not include them.
+        $this->assertGreaterThan(0, $billed);
+        $this->assertSame(
+            $listed - $billed,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataExcludesWorklogsHeldByAnotherEntry(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        [$otherEntry, $invoiceEntry] = $invoiceEntryRepo->findBy([], ['id' => 'ASC'], 2);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $otherEntry);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+
+        $listed = 0;
+        $notSelectable = 0;
+        $unbilledHeldByOther = 0;
+        foreach ($this->repository->findByFilterData($project, $invoiceEntry, $filterData) as $worklog) {
+            $this->assertInstanceOf(Worklog::class, $worklog);
+            $seconds = (int) $worklog->getTimeSpentSeconds();
+            $listed += $seconds;
+
+            $owner = $worklog->getInvoiceEntry();
+            $heldByOther = null !== $owner && $owner->getId() !== $invoiceEntry->getId();
+
+            if ($worklog->isBilled() || $heldByOther) {
+                $notSelectable += $seconds;
+            }
+
+            if (!$worklog->isBilled() && $owner?->getId() === $otherEntry->getId()) {
+                $unbilledHeldByOther += $seconds;
+            }
+        }
+
+        // Guard the point of the test: without unbilled worklogs on another
+        // entry, the held-by-another-entry exclusion would pass untested.
+        $this->assertGreaterThan(0, $unbilledHeldByOther, 'Expected unbilled worklogs held by another invoice entry in fixtures.');
+        $this->assertSame(
+            $listed - $notSelectable,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData)
+        );
+    }
+
+    public function testSumSelectableTimeSpentSecondsByFilterDataIsZeroWhenNothingMatches(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+        $filterData->worker = 'no-such-worker@test.local';
+
+        $this->assertSame(0, $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData));
+    }
+
+    /**
+     * Sum the listed worklogs the picker offers a checkbox for, mirroring the
+     * disabled condition in invoice_entry/worklogs.html.twig.
+     */
+    private function sumSelectable(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): int
+    {
+        $sum = 0;
+
+        foreach ($this->repository->findByFilterData($project, $invoiceEntry, $filterData) as $worklog) {
+            $this->assertInstanceOf(Worklog::class, $worklog);
+
+            $owner = $worklog->getInvoiceEntry();
+
+            if ($worklog->isBilled() || (null !== $owner && $owner->getId() !== $invoiceEntry->getId())) {
+                continue;
+            }
+
+            $sum += (int) $worklog->getTimeSpentSeconds();
+        }
+
+        return $sum;
     }
 
     public function testFindWorklogsByWorkerAndDateRange(): void
@@ -300,5 +487,174 @@ class WorklogRepositoryTest extends KernelTestCase
             }
             $previous = $worklog->getStarted();
         }
+    }
+
+    public function testFixturesIncludeWorklogsTheAnonymizeCommandCanActOn(): void
+    {
+        // AppFixtures stamps every worklog with the current year except a handful on project-1-9,
+        // which it ages past the command's five year window on purpose.
+        $anonymizable = $this->repository->matching(
+            Criteria::create()
+                ->where(Criteria::expr()->lt('started', new \DateTime('-5 years')))
+                ->andWhere(Criteria::expr()->isNull('anonymizedDate'))
+        );
+
+        $this->assertCount(3, $anonymizable);
+    }
+
+    public function testAnonymizeWorklogsBeforeDate(): void
+    {
+        $oldId = $this->persistWorklog('before-old', new \DateTime(self::OLD_ENOUGH));
+        $recentId = $this->persistWorklog('before-recent', new \DateTime('-1 year'));
+
+        $affectedRows = $this->repository->anonymizeWorklogs(new \DateTime(self::CUTOFF));
+
+        $this->assertSame(1, $affectedRows);
+
+        $this->entityManager->clear();
+
+        $old = $this->findWorklog($oldId);
+        $this->assertSame('worklog '.$oldId, $old->getDescription());
+        $this->assertNotNull($old->getAnonymizedDate());
+
+        $recent = $this->findWorklog($recentId);
+        $this->assertSame('Description of worklog before-recent', $recent->getDescription());
+        $this->assertNull($recent->getAnonymizedDate());
+    }
+
+    public function testAnonymizeWorklogsWithNoMatchingRecords(): void
+    {
+        // No fixture worklog, aged or not, starts anywhere near this.
+        $affectedRows = $this->repository->anonymizeWorklogs(new \DateTime('1900-01-01'));
+
+        $this->assertSame(0, $affectedRows);
+    }
+
+    public function testAnonymizeWorklogsSetsAnonymizedDateToNow(): void
+    {
+        $worklogId = $this->persistWorklog('sets-date', new \DateTime(self::OLD_ENOUGH));
+
+        $before = new \DateTime();
+        $this->repository->anonymizeWorklogs(new \DateTime(self::CUTOFF));
+        $after = new \DateTime();
+
+        $this->entityManager->clear();
+
+        $anonymizedDate = $this->findWorklog($worklogId)->getAnonymizedDate();
+        $this->assertNotNull($anonymizedDate);
+        $this->assertGreaterThanOrEqual($before->getTimestamp(), $anonymizedDate->getTimestamp());
+        $this->assertLessThanOrEqual($after->getTimestamp(), $anonymizedDate->getTimestamp());
+    }
+
+    public function testAnonymizeWorklogsIgnoresAlreadyAnonymized(): void
+    {
+        $alreadyAnonymizedDate = new \DateTime('-2 years');
+        $alreadyAnonymizedId = $this->persistWorklog('already', new \DateTime(self::OLD_ENOUGH), $alreadyAnonymizedDate);
+        $notYetAnonymizedId = $this->persistWorklog('not-yet', new \DateTime(self::OLD_ENOUGH));
+
+        $affectedRows = $this->repository->anonymizeWorklogs(new \DateTime(self::CUTOFF));
+
+        $this->assertSame(1, $affectedRows);
+
+        $this->entityManager->clear();
+
+        // The anonymizedDate IS NULL guard leaves the description and the original date alone,
+        // so a second run cannot renumber a worklog that was already anonymized.
+        $alreadyAnonymized = $this->findWorklog($alreadyAnonymizedId);
+        $this->assertSame('Description of worklog already', $alreadyAnonymized->getDescription());
+        $storedDate = $alreadyAnonymized->getAnonymizedDate();
+        $this->assertNotNull($storedDate);
+        $this->assertSame($alreadyAnonymizedDate->getTimestamp(), $storedDate->getTimestamp());
+
+        $notYetAnonymized = $this->findWorklog($notYetAnonymizedId);
+        $this->assertSame('worklog '.$notYetAnonymizedId, $notYetAnonymized->getDescription());
+        $this->assertNotNull($notYetAnonymized->getAnonymizedDate());
+    }
+
+    /**
+     * Persists a data provider → project → issue → worklog chain and returns the worklog id.
+     *
+     * Each call gets its own data provider, so the unique (data_provider_id, worklog_id) pair
+     * cannot collide with a fixture row or another call.
+     */
+    private function persistWorklog(string $suffix, \DateTimeInterface $started, ?\DateTimeInterface $anonymizedDate = null): int
+    {
+        $dataProvider = new DataProvider();
+        $dataProvider->setName('anonymize-provider-'.$suffix);
+        $dataProvider->setUrl('https://test.example.com');
+        $dataProvider->setClass('TestClass');
+        $this->entityManager->persist($dataProvider);
+
+        $project = new Project();
+        $project->setName('anonymize-project-'.$suffix);
+        $project->setProjectTrackerId('anonymize-'.$suffix);
+        $project->setProjectTrackerKey('anonymize-'.$suffix);
+        $project->setProjectTrackerProjectUrl('https://test.example.com/project/'.$suffix);
+        $project->setDataProvider($dataProvider);
+        $this->entityManager->persist($project);
+
+        $issue = new Issue();
+        $issue->setName('anonymize-issue-'.$suffix);
+        $issue->setProjectTrackerId('anonymize-issue-'.$suffix);
+        $issue->setProjectTrackerKey('anonymize-issue-'.$suffix);
+        $issue->setLinkToIssue('https://test.example.com/issue/'.$suffix);
+        $issue->setProject($project);
+        $issue->setDataProvider($dataProvider);
+        $this->entityManager->persist($issue);
+
+        $worklog = new Worklog();
+        $worklog->setWorklogId(1);
+        $worklog->setDescription('Description of worklog '.$suffix);
+        $worklog->setWorker('admin@test.local');
+        $worklog->setTimeSpentSeconds(3600);
+        $worklog->setStarted($started);
+        $worklog->setAnonymizedDate($anonymizedDate);
+        $worklog->setProject($project);
+        $worklog->setIssue($issue);
+        $worklog->setProjectTrackerIssueId('anonymize-issue-'.$suffix);
+        $worklog->setDataProvider($dataProvider);
+        $this->entityManager->persist($worklog);
+
+        $this->entityManager->flush();
+
+        $this->createdDataProviderIds[] = $this->idOf($dataProvider->getId());
+        $this->createdProjectIds[] = $this->idOf($project->getId());
+        $this->createdIssueIds[] = $this->idOf($issue->getId());
+
+        return $this->createdWorklogIds[] = $this->idOf($worklog->getId());
+    }
+
+    private function findWorklog(int $id): Worklog
+    {
+        $worklog = $this->repository->find($id);
+        $this->assertInstanceOf(Worklog::class, $worklog);
+
+        return $worklog;
+    }
+
+    private function idOf(?int $id): int
+    {
+        $this->assertNotNull($id);
+
+        return $id;
+    }
+
+    /**
+     * Removes rows a test wrote. Nothing rolls back between tests in this suite, and
+     * anonymizeWorklogs() is a bulk update over the whole table, so a worklog left behind
+     * changes the affected-row count the next test asserts.
+     *
+     * @param class-string $entityClass
+     * @param list<int>    $ids
+     */
+    private function removeCreated(string $entityClass, array $ids): void
+    {
+        if ([] === $ids) {
+            return;
+        }
+
+        $this->entityManager->createQuery(sprintf('DELETE FROM %s e WHERE e.id IN (:ids)', $entityClass))
+            ->setParameter('ids', $ids)
+            ->execute();
     }
 }
