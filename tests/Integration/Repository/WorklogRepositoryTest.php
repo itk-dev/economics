@@ -289,6 +289,7 @@ class WorklogRepositoryTest extends KernelTestCase
     public function testFindByFilterDataDoesNotMutatePeriodTo(): void
     {
         $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        /** @var InvoiceEntryRepository $invoiceEntryRepo */
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
         $this->assertInstanceOf(Project::class, $project);
@@ -313,6 +314,7 @@ class WorklogRepositoryTest extends KernelTestCase
      */
     public function testSumSelectableTimeSpentSecondsCoversTheSameDaysAsTheListedWorklogs(): void
     {
+        /** @var InvoiceEntryRepository $invoiceEntryRepo */
         $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
         $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
         $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);

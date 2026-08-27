@@ -104,8 +104,11 @@ class WorklogRepository extends ServiceEntityRepository
         }
 
         if (!empty($filterData->periodTo)) {
-            // Period to must include the selected day.
-            $periodTo = $filterData->periodTo->modify('tomorrow');
+            // Period to must include the selected day. Clone first: \DateTime::modify() mutates
+            // the receiver, and the picker builds the list and the total from two calls against
+            // the same filter object, so shifting it here moved the second call's boundary a
+            // further day out.
+            $periodTo = (clone $filterData->periodTo)->modify('tomorrow');
             $qb->andWhere('worklog.started < :periodTo')->setParameter('periodTo', $periodTo);
         }
 
