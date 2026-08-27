@@ -58,6 +58,22 @@ early when the timestamps match, logging the skip. Passing `$disableModifiedAtCh
 through — used when the local shape has changed and a re-read is needed even though the source has
 not moved. New entities never take this path; only updates do.
 
+### The source's own timestamp is not fully trusted
+
+The skip above is only correct if the source bumps its modification timestamp on every change, and the
+tracker is not trusted to. A missed bump would otherwise be permanent: every subsequent sync compares
+equal timestamps and skips the row for good.
+
+So a nightly safety net re-reads recent data with the check disabled. Five staggered jobs in
+`.woodpecker/prod_economics.yml` and `.woodpecker/prod_itk_economics.yml` run
+`app:data-providers:sync -j -d` per entity type, covering everything touched in the past week, and a
+sixth runs `app:data-providers:sync-deleted --interval=P1W` to widen the deletion window from the
+25-minute cron's default `PT1H` to the same week.
+
+This is the standing reason `$disableModifiedAtCheck` exists as an argument rather than as a one-off
+migration flag, and why the interface drift around it noted in
+[001](001-single-data-provider-abstraction.md) matters.
+
 ### Deletion is attempted, then recorded
 
 On a source deletion, `DataProviderService` tries a hard delete and falls back to the mark:
@@ -92,6 +108,8 @@ good.
   another part of the system.
 - Two soft-delete mechanisms coexist on the same entities: these columns and Gedmo's global
   `softdeleteable` filter. They mean different things and are easily confused.
+- The safety net that makes the `sourceModifiedDate` skip safe lives in two Woodpecker files rather
+  than in the application, so a new deployment target inherits the skip without inheriting the net.
 
 ### Follow-up Actions
 

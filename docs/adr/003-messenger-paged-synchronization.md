@@ -67,6 +67,31 @@ before their parents are touched.
 and a project could be reached while its timesheets were still a page behind. That path is not a
 matter of being slower; it is wrong.
 
+### A bad row is skipped and logged; a bad page still stops the chain
+
+The rule above is about pages. There is a second, opposite rule about the rows inside one, and the two
+are easy to confuse: a page that cannot advance stops the chain, but a single row that cannot be
+mapped does not. It logs `Skipping <class> id <id>: <reason>` and the sync moves on. One malformed row
+out of a hundred thousand should not cost the run.
+
+The catches that allow this are deliberately narrow. A `TypeError` from a null field, and a handler's
+`UnrecoverableMessageHandlingException`, are skippable. Nothing catches `\Throwable`, so a dead
+database or an unreachable tracker still halts the run loudly rather than being logged away as a bad
+row — the failure reaches the retry ladder in [004](004-layered-retry-policy.md) instead.
+
+The mappers are null-safe to match, and the placeholders they substitute are chosen rather than
+incidental:
+
+- a deleted user is attributed to `deleted-user-<userId>`;
+- a missing name becomes `(no name) <id>` (`LeantimeApiService::NAME_MISSING`);
+- a row with no `ticketId`, `projectId` or `id` is skipped, since there is nothing to key it on.
+
+**The tracker id is part of the placeholder because names are used as lookup keys elsewhere** —
+`ProjectBillingService` resolves a client by version name — so a bare `(no name)` would collide two
+unrelated rows into one. For the same reason a `deleted-user-<userId>` attribution never overwrites a
+worker name an earlier sync already stored: the placeholder is a fallback for missing data, not a
+correction of good data.
+
 ## Consequences
 
 ### Positive
@@ -87,6 +112,11 @@ matter of being slower; it is wrong.
   the dispatch site as well as recorded here.
 - A page that fails past its retry budget silently ends that type's sync for the run; the next hourly
   run is what heals it.
+- A skipped row is visible only in the log. Nothing counts skips, and a run that dropped rows still
+  reports success.
+- A persistent mapping fault — a field the tracker started sending differently — drops the same rows
+  on every run without ever failing, so it is discoverable only by reading the log or noticing the
+  missing data downstream.
 
 ### Follow-up Actions
 

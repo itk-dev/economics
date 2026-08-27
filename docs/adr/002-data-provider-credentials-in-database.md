@@ -67,6 +67,22 @@ page; Symfony caps neither by default, and an uncapped request holds a worker fo
 cap.** The cap is what guarantees a worker comes back; the page size is the adjustable part. See
 [003](003-messenger-paged-synchronization.md).
 
+### The stored URL is normalized where it is read
+
+Because the URL is data rather than configuration, nothing validates its shape on the way in, and a
+provider stored as `https://leantime.example.com/` is as legitimate a row as one stored without the
+trailing slash. `LeantimeApiService::API_PATH_DATA` carries its own leading slash, so that row was
+asked for `//APIData/API/projects`, and the deep links written onto issues and projects came out as
+`//errorpage/…` and `//projects/showProject/…`.
+
+The slash is stripped where the URL is **read**, not where it is written. `LeantimeUrlGenerator::baseUrl()`
+— already used by the `leantime_url` Twig function and by `ProjectRepository` — is injected into
+`LeantimeApiService` and applied at each of the three places it concatenates the URL.
+
+Normalizing on read is what covers the rows already stored with a trailing slash. A setter or a form
+constraint would only cover rows written after it, because Doctrine hydrates properties directly and
+never calls the setter when loading an entity.
+
 ## Consequences
 
 ### Positive
@@ -86,6 +102,8 @@ cap.** The cap is what guarantees a worker comes back; the page size is the adju
   and framework-level retry configuration must all be handled in `LeantimeApiService` instead.
 - The definition looks unmotivated in `config/services.yaml` without the comment that sits above it —
   which is why this ADR exists.
+- URL normalization is applied per call site rather than once at the boundary, so a fourth place that
+  concatenates a provider URL can silently forget it and reintroduce the double slash.
 
 ### Follow-up Actions
 
