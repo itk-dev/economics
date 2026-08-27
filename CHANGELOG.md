@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-351](https://github.com/itk-dev/economics/pull/351)
+  * Pinned the selectable-hours total to its own project, covering the unbilled-as-NULL worklog
+    that no fixture row has.
 * [PR-346](https://github.com/itk-dev/economics/pull/346)
   * Clicking a cell in the workload report now opens the worklogs behind the number, marking any
     that were deleted in the source but still counted.

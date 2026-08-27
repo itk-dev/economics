@@ -287,6 +287,42 @@ class WorklogRepositoryTest extends KernelTestCase
     }
 
     /**
+     * The selectable-hours total drives a number people invoice from, so it must never reach
+     * outside its own project.
+     *
+     * The case worth pinning is a worklog whose isBilled is NULL rather than FALSE. Nothing
+     * sets isBilled during sync — only BillingService, when an invoice is recorded — so NULL is
+     * what an unbilled worklog normally looks like in production, while AppFixtures gives all
+     * ~20.000 of its worklogs an explicit FALSE (and ten a TRUE). No fixture row has the shape
+     * this asserts on, which is why it has to be built here.
+     */
+    public function testSumSelectableTimeSpentSecondsIsScopedToItsProject(): void
+    {
+        $project = $this->projectRepository->findOneBy(['name' => 'project-0-0']);
+        /** @var InvoiceEntryRepository $invoiceEntryRepo */
+        $invoiceEntryRepo = self::getContainer()->get(InvoiceEntryRepository::class);
+        $invoiceEntry = $invoiceEntryRepo->findOneBy([], ['id' => 'ASC']);
+        $this->assertInstanceOf(Project::class, $project);
+        $this->assertInstanceOf(InvoiceEntry::class, $invoiceEntry);
+
+        $filterData = new InvoiceEntryWorklogsFilterData();
+        $filterData->onlyAvailable = false;
+
+        $before = $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData);
+        $this->assertGreaterThan(0, $before);
+
+        // persistWorklog() gives the worklog a project of its own, leaves isBilled NULL and
+        // attaches no invoice entry — a row this total has no business counting.
+        $this->persistWorklog('project-scope', new \DateTime());
+
+        $this->assertSame(
+            $before,
+            $this->repository->sumSelectableTimeSpentSecondsByFilterData($project, $invoiceEntry, $filterData),
+            'A worklog in another project must not count towards this project total'
+        );
+    }
+
+    /**
      * Sum the listed worklogs the picker offers a checkbox for, mirroring the
      * disabled condition in invoice_entry/worklogs.html.twig.
      */
