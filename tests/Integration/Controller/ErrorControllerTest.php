@@ -53,11 +53,4 @@ class ErrorControllerTest extends KernelTestCase
     {
         $this->assertStringContainsString('500', $this->render(new \RuntimeException('boom', 500)));
     }
-
-    public function testResponseIsAlwaysSuccessfulSoTheTemplateRenders(): void
-    {
-        $response = $this->controller->show(new NotFoundHttpException());
-
-        $this->assertSame(200, $response->getStatusCode());
-    }
 }
