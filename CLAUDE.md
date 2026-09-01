@@ -23,7 +23,7 @@ task compose -- <args>            # raw docker compose, e.g. task compose -- log
 | Full test suite | `task test` |
 | One test file | `task test:file -- tests/Unit/Service/FooTest.php` |
 | Coverage, HTML | `task test:coverage` |
-| Coverage gate | `task test:coverage:check` (threshold **62**) |
+| Coverage gate | `task test:coverage:check` |
 | Static analysis | `task code-analysis` |
 | PHP + Twig standards | `task coding-standards:php:check` / `:php:apply` |
 | JS standards, `assets/` only | `task coding-standards:js:check` / `:js:apply` |
@@ -53,7 +53,10 @@ on change. Use `task compose -- logs --tail 0 --follow node` to see compilation 
 ## CI
 
 `.github/workflows/pr.yml` runs on every PR: Doctrine schema validation, `composer code-analysis`,
-and the test suite with `coverage-check coverage/clover.xml 62`.
+and the test suite behind a `coverage-check` line-coverage gate. The threshold is deliberately not
+repeated here — it lives in `Taskfile.yml`, `composer.json` and `.github/workflows/pr.yml`, and
+`task test:coverage:set-threshold -- <n>` rewrites exactly those three. Read it off
+`task test:coverage:check`.
 
 The other workflows (`php.yaml`, `twig.yaml`, `composer.yaml`, `javascript.yaml`, `styles.yaml`,
 `yaml.yaml`, `markdown.yaml`, `changelog.yaml`) are **copied from
@@ -119,8 +122,8 @@ Three families, and new code should follow the matching one rather than invent a
 
 Leantime is the only data provider. `src/Service/LeantimeApiService.php` implements
 `src/Interface/DataProviderInterface.php`, and `DataProviderService::IMPLEMENTATIONS`
-(`src/Service/DataProviderService.php:34`) is the registry. Jira is gone; only
-`src/Command/MigrateFromJiraEconomicsCommand.php` remains.
+(`src/Service/DataProviderService.php:34`) is the registry. Jira is gone — the last remnant,
+`app:migrate-from-jira-economics`, was removed along with its migration guide.
 
 Authentication is Azure OIDC — `src/Security/AzureOIDCAuthenticator.php` plus
 `itk-dev/openid-connect-bundle`, with the role hierarchy in `config/packages/security.yaml` and
@@ -130,8 +133,7 @@ Authentication is Azure OIDC — `src/Security/AzureOIDCAuthenticator.php` plus
 
 `app:data-providers:sync`, `app:data-providers:sync-modified`, `app:data-providers:sync-deleted`,
 `app:data-provider:create`, `app:data-provider:list`, `app:data-provider:set-enable`,
-`app:products:import`, `app:calc-sums`, `app:handle-subscriptions`, `app:user:set-roles`,
-`app:migrate-from-jira-economics`.
+`app:products:import`, `app:calc-sums`, `app:handle-subscriptions`, `app:user:set-roles`.
 
 `task phpfpm -- bin/console list app` is the authority if this list falls behind.
 
@@ -195,12 +197,21 @@ Authentication is Azure OIDC — `src/Security/AzureOIDCAuthenticator.php` plus
 `MessageHandler`, `Service`, `Twig`) and `integration` over `tests/Integration` (`Controller`,
 `Repository`, `Service`).
 
-Two things surprise people:
+Three things surprise people:
 
 * **`tests/bootstrap.php` rebuilds the database itself** on every run — clear cache, drop, create,
   migrate, load `AppFixtures`. Nothing else sets the test database up.
-* **There is no DAMADoctrineTestBundle.** Tests are not wrapped in transactions and are not isolated
-  from each other, so a test that writes must clean up after itself.
+* **Isolation is per-class, and the suite runs two regimes.** There is no DAMADoctrineTestBundle;
+  the transactions are hand-rolled. Tests extending `AbstractTransactionalFlowTestCase` or
+  `AbstractFormTestCase`, plus `WorklogRepositoryFilterTest`, open a connection-level transaction in
+  setup and roll it back in teardown — a test that writes there must **not** clean up after itself,
+  it must let the rollback do it. Everything still on `AbstractControllerTestCase` writes for real
+  and **must** clean up after itself. Match whichever base you extend.
+* **The rollback rests on `use_savepoints: true`** (`config/packages/doctrine.yaml`, under
+  `when@test`). A hand-rolled transaction nests with the ones `flush()` opens, and without savepoints
+  a nested `rollBack()` marks the outer transaction rollback-only — every later operation in that
+  test then dies with "the transaction has been marked for rollback only" rather than failing on what
+  it actually asserts. Don't prune that line as unused recipe config.
 
 `tests/bootstrap_unit.php` is the database-free bootstrap used by `composer tests-unit`. Fixture users
 for each role (`admin@test.local` and friends) and the login helpers live in

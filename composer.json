@@ -165,7 +165,7 @@
         "tests-coverage-check": [
             "@putenv XDEBUG_MODE=coverage",
             "vendor/bin/phpunit --coverage-clover=coverage/clover.xml",
-            "vendor/bin/coverage-check coverage/clover.xml 62"
+            "vendor/bin/coverage-check coverage/clover.xml 85"
         ],
         "tests-unit": [
             "./vendor/bin/phpunit --testsuite unit --bootstrap tests/bootstrap_unit.php --stop-on-failure"
