@@ -128,9 +128,13 @@ abstract class AbstractFormTestCase extends KernelTestCase
             $this->assertTrue($form->has($field), sprintf('Form %s is missing field "%s".', $type, $field));
         }
 
+        $actualFields = array_keys($form->all());
+        sort($expectedFields);
+        sort($actualFields);
+
         $this->assertSame(
             $expectedFields,
-            array_keys($form->all()),
+            $actualFields,
             sprintf('Form %s does not expose exactly the expected fields.', $type)
         );
     }
