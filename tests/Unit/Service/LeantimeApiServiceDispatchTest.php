@@ -214,18 +214,43 @@ class LeantimeApiServiceDispatchTest extends TestCase
         );
     }
 
-    public function testDeleteQueuesOneDeleteMessagePerProvider(): void
+    public function testDeleteQueuesEveryDeletedTypePerProvider(): void
     {
         $this->givenProviders(1, 2);
         $deletedAfter = new \DateTime('2026-02-01');
 
         $this->service->delete(false, $deletedAfter);
 
-        $this->assertCount(2, $this->dispatched);
+        $this->assertCount(8, $this->dispatched);
+        $this->assertSame(
+            [1, 1, 1, 1, 2, 2, 2, 2],
+            array_map(fn (array $entry) => $this->asDeleteMessage($entry['message'])->dataProviderId, $this->dispatched)
+        );
 
         $message = $this->firstDeleteMessage();
-        $this->assertSame(1, $message->dataProviderId);
+        $this->assertSame(0, $message->start);
+        $this->assertSame(100, $message->limit);
         $this->assertSame($deletedAfter, $message->deletedAfter);
+    }
+
+    /**
+     * A parent is only hard-removable once its children are gone.
+     */
+    public function testDeleteDispatchesChildrenBeforeParents(): void
+    {
+        $this->givenProviders(1);
+
+        $this->service->delete();
+
+        $this->assertSame(
+            [
+                LeantimeApiService::TIMESHEETS,
+                LeantimeApiService::TICKETS,
+                LeantimeApiService::MILESTONES,
+                LeantimeApiService::PROJECTS,
+            ],
+            array_map(fn (array $entry) => $this->asDeleteMessage($entry['message'])->type, $this->dispatched)
+        );
     }
 
     public function testDeleteAllDelegatesToDelete(): void
@@ -234,9 +259,18 @@ class LeantimeApiServiceDispatchTest extends TestCase
 
         $this->service->deleteAll(true);
 
-        $this->assertCount(1, $this->dispatched);
+        $this->assertCount(4, $this->dispatched);
         $this->firstDeleteMessage();
         $this->assertSame(['async'], $this->firstStamp()->getTransportNames());
+    }
+
+    public function testDeleteAllDefaultsToTheSyncTransport(): void
+    {
+        $this->givenProviders(1);
+
+        $this->service->deleteAll();
+
+        $this->assertSame(['sync'], $this->firstStamp()->getTransportNames());
     }
 
     public function testUpdateAsJobRejectsAnUnknownDataProvider(): void
@@ -256,7 +290,7 @@ class LeantimeApiServiceDispatchTest extends TestCase
         $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage('DataProvider with id: 404 not found');
 
-        $this->service->deleteAsJob(404);
+        $this->service->deleteAsJob(LeantimeApiService::PROJECTS, 0, 100, 404);
     }
 
     private function givenProviders(int ...$ids): void
@@ -282,7 +316,11 @@ class LeantimeApiServiceDispatchTest extends TestCase
 
     private function firstDeleteMessage(): LeantimeDeleteMessage
     {
-        $message = $this->firstMessage();
+        return $this->asDeleteMessage($this->firstMessage());
+    }
+
+    private function asDeleteMessage(object $message): LeantimeDeleteMessage
+    {
         $this->assertInstanceOf(LeantimeDeleteMessage::class, $message);
 
         return $message;
