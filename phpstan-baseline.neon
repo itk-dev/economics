@@ -1885,12 +1885,6 @@ parameters:
 			path: src/Service/DashboardService.php
 
 		-
-			message: '#^Parameter \#1 \$timeSpentSeconds of method App\\Entity\\Worklog\:\:setTimeSpentSeconds\(\) expects int, float given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Service/DataProviderService.php
-
-		-
 			message: '#^Cannot call method format\(\) on DateTime\|false\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -2395,6 +2389,12 @@ parameters:
 			path: tests/Integration/Controller/InvoiceFullFlowTest.php
 
 		-
+			message: '#^Call to an undefined method object\:\:sumSelectableTimeSpentSecondsByFilterData\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
 			message: '#^Cannot call method getAmount\(\) on App\\Entity\\InvoiceEntry\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -2731,12 +2731,6 @@ parameters:
 			path: tests/Integration/Repository/ProjectRepositoryTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$entityManager is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: tests/Integration/Repository/ProjectRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$repository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -2785,9 +2779,15 @@ parameters:
 			path: tests/Integration/Repository/WorkerRepositoryTest.php
 
 		-
+			message: '#^Call to an undefined method object\:\:findBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
 			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
 			identifier: method.notFound
-			count: 8
+			count: 12
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
@@ -2829,12 +2829,6 @@ parameters:
 		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
 			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager is never read, only written\.$#'
-			identifier: property.onlyWritten
 			count: 1
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
@@ -2925,7 +2919,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
 			identifier: method.notFound
-			count: 19
+			count: 20
 			path: tests/Integration/Service/LeantimeApiServiceTest.php
 
 		-
@@ -3363,7 +3357,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Repository\\IssueRepository\:\:method\(\)\.$#'
 			identifier: method.notFound
-			count: 7
+			count: 11
 			path: tests/Unit/Service/DataProviderServiceTest.php
 
 		-
@@ -3387,19 +3381,19 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Repository\\WorklogRepository\:\:method\(\)\.$#'
 			identifier: method.notFound
-			count: 5
+			count: 9
 			path: tests/Unit/Service/DataProviderServiceTest.php
 
 		-
 			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:expects\(\)\.$#'
 			identifier: method.notFound
-			count: 37
+			count: 38
 			path: tests/Unit/Service/DataProviderServiceTest.php
 
 		-
 			message: '#^Call to an undefined method Doctrine\\ORM\\EntityManagerInterface\:\:method\(\)\.$#'
 			identifier: method.notFound
-			count: 1
+			count: 4
 			path: tests/Unit/Service/DataProviderServiceTest.php
 
 		-

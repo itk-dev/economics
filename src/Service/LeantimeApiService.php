@@ -65,6 +65,7 @@ class LeantimeApiService implements DataProviderInterface
         private readonly EntityManagerInterface $entityManager,
         private readonly ProjectRepository $projectRepository,
         private readonly LoggerInterface $logger,
+        private readonly LeantimeUrlGenerator $urlGenerator,
     ) {
     }
 
@@ -91,6 +92,15 @@ class LeantimeApiService implements DataProviderInterface
                 Project::class, Worker::class => null,
                 default => $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]),
             };
+
+            // An empty list is not the same as no filter. With no included projects there is
+            // nothing to sync for this provider, and dispatching would send projectIds: [], leaving
+            // the endpoint to decide whether that means no projects or every project.
+            if ([] === $projectTrackerProjectIds) {
+                $this->logger->info(sprintf('Skipping %s sync for data provider %d: no included projects.', $className, $dataProvider->getId()));
+
+                continue;
+            }
 
             $this->messageBus->dispatch(
                 new LeantimeUpdateMessage($className, 0, $this::LIMIT, $dataProvider->getId(), $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds, $disableModifiedAtCheck),
@@ -422,6 +432,18 @@ class LeantimeApiService implements DataProviderInterface
             throw new NotAcceptableException('Worklog upsert not acceptable: id is null');
         }
 
+        // Nothing between here and the insert bounds the hour count, and time_spent_seconds is a
+        // signed INT. Dropping the row here costs one worklog; letting it through costs the insert,
+        // which on the sync transport is the rest of the worklog sync. Only a value that is a number
+        // is inspected: a null one stays the DTO constructor's TypeError, reported the same way.
+        if (is_numeric($result->hours)) {
+            $seconds = (float) $result->hours * DataProviderService::SECONDS_IN_HOUR;
+
+            if (!is_finite($seconds) || abs($seconds) > DataProviderService::MAX_TIME_SPENT_SECONDS) {
+                throw new NotAcceptableException(sprintf('Worklog upsert not acceptable: hours %s is out of range', var_export($result->hours, true)));
+            }
+        }
+
         // A null username means the join found no user row, as Leantime never stores a null one.
         // The hours are still real, so keep the worklog and name the departed user.
         $username = $result->username ?? null;
@@ -472,7 +494,10 @@ class LeantimeApiService implements DataProviderInterface
 
     private function post(DataProvider $dataProvider, $path, array $body): ResponseInterface
     {
-        return $this->httpClient->request('POST', $dataProvider->getUrl().$this::API_PATH_DATA.$path, [
+        // API_PATH_DATA carries its own leading slash, so a provider url ending in one would give //APIData.
+        $baseUrl = $this->urlGenerator->baseUrl($dataProvider->getUrl());
+
+        return $this->httpClient->request('POST', $baseUrl.$this::API_PATH_DATA.$path, [
             'headers' => [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
@@ -514,7 +539,7 @@ class LeantimeApiService implements DataProviderInterface
         }
 
         // Error page is the fastest to load.
-        return $dataProviderUrl.'/errorpage/#/tickets/showTicket/'.$ticketId;
+        return $this->urlGenerator->baseUrl($dataProviderUrl).'/errorpage/#/tickets/showTicket/'.$ticketId;
     }
 
     private function linkToProject(string $projectTrackerId, ?string $dataProviderUrl): ?string
@@ -523,6 +548,6 @@ class LeantimeApiService implements DataProviderInterface
             return null;
         }
 
-        return $dataProviderUrl.'/projects/showProject/'.$projectTrackerId;
+        return $this->urlGenerator->baseUrl($dataProviderUrl).'/projects/showProject/'.$projectTrackerId;
     }
 }

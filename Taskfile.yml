@@ -92,7 +92,7 @@ tasks:
   # ----------------------------------------- Static analysis & code prep ---
 
   code-analysis:
-    desc: Run static analysis (Psalm).
+    desc: Run static analysis (PHPStan).
     cmds:
       - task composer -- code-analysis
 

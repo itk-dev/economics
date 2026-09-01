@@ -14,6 +14,7 @@ use App\Message\LeantimeUpdateMessage;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
 use App\Service\LeantimeApiService;
+use App\Service\LeantimeUrlGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -58,6 +59,7 @@ class LeantimeApiServiceDispatchTest extends TestCase
             $this->createMock(EntityManagerInterface::class),
             $this->projectRepository,
             $this->createMock(LoggerInterface::class),
+            $this->createMock(LeantimeUrlGenerator::class),
         );
     }
 
@@ -204,12 +206,25 @@ class LeantimeApiServiceDispatchTest extends TestCase
     public function testUpdateAllCoversEverySynchronisedType(): void
     {
         $this->dataProviderRepository->method('findBy')->willReturn([$this->provider(1)]);
-        $this->projectRepository->method('getProjectTrackerIdsByDataProviders')->willReturn([]);
+        $this->projectRepository->method('getProjectTrackerIdsByDataProviders')->willReturn(['PROJ-1']);
 
         $this->service->updateAll();
 
         $this->assertSame(
             [Project::class, Version::class, Issue::class, Worklog::class, Worker::class],
+            array_map(fn (array $entry) => $this->asUpdateMessage($entry['message'])->className, $this->dispatched)
+        );
+    }
+
+    public function testScopedTypesAreSkippedWhenNoProjectsAreIncluded(): void
+    {
+        $this->givenProviders(1);
+        $this->projectRepository->method('getProjectTrackerIdsByDataProviders')->willReturn([]);
+
+        $this->service->updateAll();
+
+        $this->assertSame(
+            [Project::class, Worker::class],
             array_map(fn (array $entry) => $this->asUpdateMessage($entry['message'])->className, $this->dispatched)
         );
     }

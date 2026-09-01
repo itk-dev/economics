@@ -7,7 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 class WorkloadReportData
 {
     public readonly string $id;
+    /** The period type — 'week', 'month' or 'year'. */
     public readonly string $viewmode;
+    public readonly int $year;
+    public readonly WorkloadReportViewModeEnum $reportViewMode;
     /** @var ArrayCollection<string, string> */
     public ArrayCollection $period;
     /** @var ArrayCollection<string, WorkloadReportWorker> */
@@ -16,9 +19,11 @@ class WorkloadReportData
     public ArrayCollection $periodAverages;
     public float $totalAverage;
 
-    public function __construct(string $viewmode)
+    public function __construct(string $viewmode, int $year, WorkloadReportViewModeEnum $reportViewMode)
     {
         $this->viewmode = $viewmode;
+        $this->year = $year;
+        $this->reportViewMode = $reportViewMode;
         $this->period = new ArrayCollection();
         $this->workers = new ArrayCollection();
         $this->periodAverages = new ArrayCollection();
