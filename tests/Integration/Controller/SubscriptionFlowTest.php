@@ -22,6 +22,8 @@ class SubscriptionFlowTest extends AbstractTransactionalFlowTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->bootTransactionalClient('ROLE_REPORT');
 
         $this->userId = $this->requireId($this->findOne(User::class, ['email' => self::EMAIL])->getId());

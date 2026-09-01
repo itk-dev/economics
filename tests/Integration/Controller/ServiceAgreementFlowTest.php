@@ -17,6 +17,8 @@ class ServiceAgreementFlowTest extends AbstractTransactionalFlowTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->bootTransactionalClient('ROLE_ADMIN');
 
         $this->projectId = $this->requireId($this->findOne(Project::class)->getId());

@@ -17,6 +17,8 @@ class InvoiceEntryWorklogFlowTest extends AbstractTransactionalFlowTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->bootTransactionalClient('ROLE_INVOICE');
 
         $worklog = $this->findOne(Worklog::class, ['isBilled' => false, 'invoiceEntry' => null]);

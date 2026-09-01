@@ -12,6 +12,8 @@ use App\Enum\InvoiceEntryTypeEnum;
 /**
  * Covers the guards around deleting and exporting invoices — recorded invoices
  * and invoices belonging to a project billing must stay put.
+ *
+ * The 500s pin current behaviour, not desired: the guards throw uncaught.
  */
 class InvoiceExportFlowTest extends AbstractTransactionalFlowTestCase
 {
@@ -19,9 +21,16 @@ class InvoiceExportFlowTest extends AbstractTransactionalFlowTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->bootTransactionalClient('ROLE_INVOICE');
 
-        $this->projectId = $this->requireId($this->findOne(Project::class)->getId());
+        // Pinned by lead, which testGenerateDescriptionFillsInTheProjectLead asserts on.
+        $project = $this->findOne(Project::class, [
+            'projectLeadName' => 'Test Testesen',
+            'projectLeadMail' => 'test@economics.local.itkdev.dk',
+        ]);
+        $this->projectId = $this->requireId($project->getId());
     }
 
     public function testDeleteRemovesAnOpenInvoice(): void

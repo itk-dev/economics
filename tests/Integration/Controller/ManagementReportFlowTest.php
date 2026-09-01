@@ -9,6 +9,8 @@ class ManagementReportFlowTest extends AbstractTransactionalFlowTestCase
 {
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->bootTransactionalClient('ROLE_REPORT');
     }
 
