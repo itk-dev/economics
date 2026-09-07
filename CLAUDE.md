@@ -132,7 +132,8 @@ Authentication is Azure OIDC — `src/Security/AzureOIDCAuthenticator.php` plus
 
 `app:data-providers:sync`, `app:data-providers:sync-modified`, `app:data-providers:sync-deleted`,
 `app:data-provider:create`, `app:data-provider:list`, `app:data-provider:set-enable`,
-`app:products:import`, `app:calc-sums`, `app:handle-subscriptions`, `app:user:set-roles`.
+`app:products:import`, `app:calc-sums`, `app:handle-subscriptions`, `app:anonymize-worklogs`,
+`app:user:set-roles`.
 
 `task phpfpm -- bin/console list app` is the authority if this list falls behind.
 
@@ -192,9 +193,10 @@ Authentication is Azure OIDC — `src/Security/AzureOIDCAuthenticator.php` plus
 
 ## Tests
 
-`phpunit.xml.dist` defines two suites: `unit` over `tests/Unit` (`Command`, `Enum`, `EventListener`,
-`MessageHandler`, `Service`, `Twig`) and `integration` over `tests/Integration` (`Controller`,
-`Repository`, `Service`).
+`phpunit.xml.dist` defines two suites: `unit` over `tests/Unit` (`Command`, `Doctrine`, `Entity`,
+`Enum`, `EventListener`, `MessageHandler`, `Service`, `Twig`) and `integration` over
+`tests/Integration` (`Controller`, `Form`, `Repository`, `Service`). Both are whole-directory globs,
+so a new subdirectory needs no config change.
 
 Three things surprise people:
 
