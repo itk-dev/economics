@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-350](https://github.com/itk-dev/economics/pull/350)
+  * Added a CSV export of the filtered worklog list, streamed in keyset-paged chunks so every page
+    is included at constant memory.
 * [PR-331](https://github.com/itk-dev/economics/pull/331)
   * Added entity, form, command and controller flow tests: coverage 64% to 90%, the gate 62 to 85.
   * Documented the two test isolation regimes and the `use_savepoints` dependency in `CLAUDE.md`.

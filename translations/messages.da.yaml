@@ -366,6 +366,10 @@ worklogs:
   form_project: "Projekt"
   form_data_provider: "Datakilde"
   form_is_billed_any: "Alle"
+  action_export: "Download .csv"
+  # The list shows the task and its description in one cell; the export gives them a column each.
+  export_issue: "Opgave"
+  export_description: "Beskrivelse"
 
 invoice_entry:
   amount: "Antal enheder"
