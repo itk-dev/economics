@@ -8,7 +8,7 @@
 [![GitHub License](https://img.shields.io/github/license/itk-dev/economics?style=flat-square)](https://github.com/itk-dev/economics/blob/develop/LICENSE)
 
 Integration with project/issue tracker to ease management. The worklogs
-and projects are synced from a project tracker (e.g. Jira).
+and projects are synced from a project tracker (e.g. Leantime).
 
 The project consists of the following parts:
 
