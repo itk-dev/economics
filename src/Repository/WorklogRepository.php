@@ -168,7 +168,7 @@ class WorklogRepository extends ServiceEntityRepository
                 ->leftJoin('invoiceEntry.invoice', 'invoice')
                 ->leftJoin('issue.epics', 'epic')
                 ->leftJoin('issue.versions', 'version')
-                ->select(
+                ->select([
                     'worklog.id AS id',
                     'worklog.started AS started',
                     'worklog.description AS description',
@@ -183,7 +183,7 @@ class WorklogRepository extends ServiceEntityRepository
                     // rows inside each group, so every title would otherwise repeat.
                     "GROUP_CONCAT(DISTINCT epic.title ORDER BY epic.title ASC SEPARATOR ', ') AS epics",
                     "GROUP_CONCAT(DISTINCT version.name ORDER BY version.name ASC SEPARATOR ', ') AS versions",
-                )
+                ])
                 // Group by the primary key of every joined table, not just the worklog: grouping
                 // on worklog.id alone while selecting issue.name trips ONLY_FULL_GROUP_BY, whereas
                 // the keys let MySQL prove the rest is functionally dependent.

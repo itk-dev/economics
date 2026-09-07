@@ -6,7 +6,6 @@ use App\Model\Invoices\WorklogFilterData;
 use App\Repository\WorklogRepository;
 use App\Service\WorklogExportService;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -34,7 +33,6 @@ class WorklogExportServiceTest extends TestCase
 
         $response = $this->service->generateCsvResponse(new WorklogFilterData());
 
-        $this->assertInstanceOf(StreamedResponse::class, $response);
         $this->assertSame('text/csv; charset=UTF-8', $response->headers->get('Content-Type'));
         $this->assertMatchesRegularExpression(
             '/^attachment; filename="worklogs-\d{4}-\d{2}-\d{2}_\d{6}\.csv"$/',

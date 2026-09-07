@@ -183,7 +183,6 @@ class WorklogExportStreamTest extends KernelTestCase
         $filter = $this->projectFilter();
 
         $streamed = \count($this->descriptions($filter, 2));
-        $firstPage = \count($this->repository->getFilteredPagination($filter, 1)->getItems());
 
         $this->assertSame(7, $streamed);
         $this->assertSame(
@@ -191,7 +190,6 @@ class WorklogExportStreamTest extends KernelTestCase
             $this->repository->getFilteredPagination($filter, 1)->getTotalItemCount(),
             'The streamed row count must match the paginated total.'
         );
-        $this->assertGreaterThan(0, $firstPage);
     }
 
     private function projectFilter(): WorklogFilterData

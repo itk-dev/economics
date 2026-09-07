@@ -70,7 +70,7 @@ readonly class WorklogExportService
      * Column labels, reusing the keys the list page's table headers already use so the two cannot
      * drift apart.
      *
-     * @return array<int, string>
+     * @return list<string>
      */
     private function headerRow(): array
     {
@@ -95,7 +95,7 @@ readonly class WorklogExportService
     /**
      * @param array<string, mixed> $row a row as yielded by WorklogRepository::streamFilteredForExport
      *
-     * @return array<int, string>
+     * @return list<string>
      */
     private function formatRow(array $row): array
     {
