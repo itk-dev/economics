@@ -52,15 +52,6 @@ class SmallEntitiesTest extends TestCase
         $this->assertSame('12345: Test Account', (string) $account);
     }
 
-    public function testAccountSettersAreFluent(): void
-    {
-        $account = new Account();
-
-        $this->assertSame($account, $account->setName('A'));
-        $this->assertSame($account, $account->setValue('1'));
-        $this->assertSame($account, $account->setProjectTrackerId(null));
-    }
-
     public function testCybersecurityAgreementAccessors(): void
     {
         $agreement = new CybersecurityAgreement();

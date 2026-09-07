@@ -48,6 +48,11 @@ class EuropeCopenhagenDateTimeTypesTest extends TestCase
     }
 
     /**
+     * Keep the null behind a `mixed` parameter.
+     *
+     * Passing it inline makes PHPStan narrow the argument and reject both
+     * assertions below as "always true" under treatPhpDocTypesAsCertain.
+     *
      * @return array<string, array{mixed}>
      */
     public static function nullValueProvider(): array

@@ -216,6 +216,21 @@ class IssueControllerTest extends AbstractTransactionalFlowTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertCount(2, $crawler->filter('form[action*="/editProduct/"]'));
+
+        $price = $this->findById(Product::class, $this->productId)->getPriceAsFloat();
+        $this->assertEqualsWithDelta(
+            5.0 * $price,
+            $this->parseAmount($crawler->filter('th.amount')->last()->text()),
+            0.01
+        );
+    }
+
+    /**
+     * Reverses the Danish `format_number` output the totals are rendered with.
+     */
+    private function parseAmount(string $rendered): float
+    {
+        return (float) str_replace(',', '.', str_replace('.', '', trim($rendered)));
     }
 
     private function submitFilter(string $name): Crawler

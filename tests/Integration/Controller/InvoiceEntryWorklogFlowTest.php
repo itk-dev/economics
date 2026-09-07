@@ -168,7 +168,7 @@ class InvoiceEntryWorklogFlowTest extends AbstractTransactionalFlowTestCase
         $this->assertResponseStatusCodeSame(400);
     }
 
-    public function testSelectingAnUnknownWorklogIsNotFound(): void
+    public function testSelectingAnUnknownWorklogFailsWithoutAnHttpStatus(): void
     {
         $this->postSelection([['id' => 99999999, 'checked' => true]]);
 

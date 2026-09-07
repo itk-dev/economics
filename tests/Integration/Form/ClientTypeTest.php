@@ -150,19 +150,19 @@ class ClientTypeTest extends AbstractFormTestCase
 
     public function testVersionNameChoicesAlwaysIncludeTheClientsOwnVersion(): void
     {
-        $assignedVersion = $this->entityManager->getRepository(Client::class)
+        $client = $this->entityManager->getRepository(Client::class)
             ->createQueryBuilder('c')
             ->where('c.versionName IS NOT NULL')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
 
-        $this->assertNotNull($assignedVersion, 'Fixtures should contain a client with a version name.');
+        $this->assertInstanceOf(Client::class, $client, 'Fixtures should contain a client with a version name.');
 
-        $choices = $this->createForm(ClientType::class, $assignedVersion, self::OPTIONS)
+        $choices = $this->createForm(ClientType::class, $client, self::OPTIONS)
             ->get('versionName')->getConfig()->getOption('choices');
 
-        $this->assertContains($assignedVersion->getVersionName(), $choices);
+        $this->assertContains($client->getVersionName(), $choices);
     }
 
     public function testVersionNameChoicesExcludeNonProjectBillingVersions(): void
