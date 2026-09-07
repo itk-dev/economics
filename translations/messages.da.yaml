@@ -369,6 +369,7 @@ worklogs:
   action_export: "Download .csv"
   # The list shows the task and its description in one cell; the export gives them a column each.
   export_issue: "Opgave"
+  export_issue_id: "Opgave-id"
   export_description: "Beskrivelse"
 
 invoice_entry:

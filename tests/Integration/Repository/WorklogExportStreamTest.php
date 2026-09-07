@@ -139,6 +139,8 @@ class WorklogExportStreamTest extends KernelTestCase
         $this->assertSame('Worklog export project', $row['projectName']);
         $this->assertSame('Worklog export provider', $row['dataProviderName']);
         $this->assertSame('EXP-tagged', $row['issueName']);
+        // The seed takes the id from the issue's tracker id, which carries a uniqid suffix.
+        $this->assertStringStartsWith('EXP-tagged-', (string) $row['issueId']);
         $this->assertSame(5400, $row['timeSpentSeconds']);
         $this->assertTrue((bool) $row['isBilled']);
         $this->assertSame('Worklog export invoice', $row['invoiceName']);

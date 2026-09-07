@@ -14,6 +14,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class WorklogExportServiceTest extends TestCase
 {
+    /**
+     * Column positions, named once: inserting a column shifts everything after it, and these are
+     * what catch a cell landing under the wrong header.
+     */
+    private const COLUMN_ISSUE_ID = 2;
+    private const COLUMN_PROJECT = 5;
+    private const COLUMN_DATA_PROVIDER = 6;
+    private const COLUMN_IS_BILLED = 7;
+    private const COLUMN_EPICS = 8;
+    private const COLUMN_VERSIONS = 9;
+    private const COLUMN_HOURS = 10;
+    private const COLUMN_INVOICE = 11;
+
     private WorklogRepository&\PHPUnit\Framework\MockObject\MockObject $worklogRepository;
     private WorklogExportService $service;
 
@@ -47,7 +60,8 @@ class WorklogExportServiceTest extends TestCase
         $header = $this->lines($this->render(new WorklogFilterData()))[0];
 
         $this->assertSame(
-            'worklog.date;worklogs.export_issue;worklogs.export_description;worklog.worker;'
+            'worklog.date;worklogs.export_issue;worklogs.export_issue_id;'
+            .'worklogs.export_description;worklog.worker;'
             .'worklogs.project;worklogs.data_provider;worklog.is_billed;worklog.epic;'
             .'worklog.version;worklog.time_spent;worklogs.invoice_entry',
             $header
@@ -63,10 +77,22 @@ class WorklogExportServiceTest extends TestCase
         // Only cells that need it are enclosed, which is why a description containing the
         // delimiter or a newline is still safe.
         $this->assertSame(
-            '20/04/2026;EXP-tagged;"Opsætning af båd";alice@test.local;"Export project";'
-            .'"Export provider";worklog.is_billed_true;"Epic one, Epic two";EXP-1;1,50;"Invoice 1"',
+            '20/04/2026;EXP-tagged;EXP-tagged-1234;"Opsætning af båd";alice@test.local;'
+            .'"Export project";"Export provider";worklog.is_billed_true;"Epic one, Epic two";'
+            .'EXP-1;1,50;"Invoice 1"',
             $row
         );
+    }
+
+    public function testTheTrackerIssueIdIsExported(): void
+    {
+        // The free-text filter searches this id, so without the column nothing in the file explains
+        // why a row matched an issue-number search.
+        $this->willStream([$this->row(['issueId' => 'ABC-42'])]);
+
+        $cells = explode(';', $this->lines($this->render(new WorklogFilterData()))[1]);
+
+        $this->assertSame('ABC-42', $cells[self::COLUMN_ISSUE_ID]);
     }
 
     public function testHoursUseADanishDecimalComma(): void
@@ -78,7 +104,7 @@ class WorklogExportServiceTest extends TestCase
         ]);
 
         $hours = array_map(
-            fn (string $line): string => explode(';', $line)[9],
+            fn (string $line): string => explode(';', $line)[self::COLUMN_HOURS],
             \array_slice($this->lines($this->render(new WorklogFilterData())), 1)
         );
 
@@ -93,7 +119,7 @@ class WorklogExportServiceTest extends TestCase
         ]);
 
         foreach (\array_slice($this->lines($this->render(new WorklogFilterData())), 1) as $line) {
-            $this->assertSame('worklog.is_billed_false', explode(';', $line)[6]);
+            $this->assertSame('worklog.is_billed_false', explode(';', $line)[self::COLUMN_IS_BILLED]);
         }
     }
 
@@ -111,11 +137,11 @@ class WorklogExportServiceTest extends TestCase
 
         $cells = explode(';', $this->lines($this->render(new WorklogFilterData()))[1]);
 
-        $this->assertSame('', $cells[4]);
-        $this->assertSame('', $cells[5]);
-        $this->assertSame('', $cells[7]);
-        $this->assertSame('', $cells[8]);
-        $this->assertSame('', $cells[10]);
+        $this->assertSame('', $cells[self::COLUMN_PROJECT]);
+        $this->assertSame('', $cells[self::COLUMN_DATA_PROVIDER]);
+        $this->assertSame('', $cells[self::COLUMN_EPICS]);
+        $this->assertSame('', $cells[self::COLUMN_VERSIONS]);
+        $this->assertSame('', $cells[self::COLUMN_INVOICE]);
     }
 
     public function testTheFilterIsPassedStraightToTheStreamedWalk(): void
@@ -161,6 +187,7 @@ class WorklogExportServiceTest extends TestCase
             'isBilled' => true,
             'timeSpentSeconds' => 5400,
             'issueName' => 'EXP-tagged',
+            'issueId' => 'EXP-tagged-1234',
             'projectName' => 'Export project',
             'dataProviderName' => 'Export provider',
             'invoiceName' => 'Invoice 1',

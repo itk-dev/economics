@@ -172,6 +172,7 @@ class WorklogRepository extends ServiceEntityRepository
                     'worklog.id AS id',
                     'worklog.started AS started',
                     'worklog.description AS description',
+                    'worklog.projectTrackerIssueId AS issueId',
                     'worklog.worker AS worker',
                     'worklog.isBilled AS isBilled',
                     'worklog.timeSpentSeconds AS timeSpentSeconds',

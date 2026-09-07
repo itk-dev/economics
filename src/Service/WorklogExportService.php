@@ -79,6 +79,7 @@ readonly class WorklogExportService
             [
                 'worklog.date',
                 'worklogs.export_issue',
+                'worklogs.export_issue_id',
                 'worklogs.export_description',
                 'worklog.worker',
                 'worklogs.project',
@@ -105,6 +106,9 @@ readonly class WorklogExportService
         return [
             $started instanceof \DateTimeInterface ? $started->format('d/m/Y') : '',
             $this->text($row['issueName']),
+            // The free-text filter searches this, so it belongs in the file: without it nothing
+            // explains why a row matched an issue-number search.
+            $this->text($row['issueId']),
             $this->text($row['description']),
             $this->text($row['worker']),
             $this->text($row['projectName']),

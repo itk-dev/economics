@@ -49,7 +49,7 @@ class WorklogExportFlowTest extends AbstractControllerTestCase
         $this->assertStringStartsWith("\xEF\xBB\xBF", $csv, 'Danish Excel needs the BOM to read UTF-8.');
 
         $header = $this->lines($csv)[0];
-        $this->assertStringContainsString('Dato;Opgave;Beskrivelse', $header);
+        $this->assertStringContainsString('Dato;Opgave;Opgave-id;Beskrivelse', $header);
         $this->assertStringContainsString('Timer', $header);
     }
 

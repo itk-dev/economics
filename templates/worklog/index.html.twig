@@ -19,13 +19,13 @@
         <div>
             <button class="button form-element">{{ 'worklogs.search'|trans }}</button>
         </div>
+        {# Fills the rest of the filter row so the export sits opposite the search button. It is a
+           link, not a submit: the active filter travels in its href. #}
+        <div class="items-end md:col-span-4">
+            <a class="button" href="{{ path('app_worklog_export', currentQuery) }}">{{ 'worklogs.action_export'|trans }}</a>
+        </div>
     </div>
     {{ form_end(form) }}
-
-    {# Outside the filter form: a link, so it carries the active filter rather than submitting it. #}
-    <div class="mt-3 mb-3">
-        <a class="button" href="{{ path('app_worklog_export', currentQuery) }}">{{ 'worklogs.action_export'|trans }}</a>
-    </div>
 
     {% set number_of_columns = 11 %}
 
