@@ -31,6 +31,7 @@ navigation:
   group: "Grupper"
   serviceagreements: "Driftsaftaler"
   cybersecurity_report: "Cybersikkerhedsrapport"
+  worklogs: "Worklogs"
 
 planning:
   group: "Vælg gruppe"
@@ -351,6 +352,20 @@ worklog:
   title_show: "Worklogs"
   sync_worklogs: "Synkroniser worklogs"
   sync_worklogs_success: "Succes - siden opdateres.."
+
+# The worklog: block above belongs to the invoice entry worklog picker. These are the strings
+# of the standalone worklog list under Admin.
+worklogs:
+  title: "Worklogs"
+  search: "Søg"
+  list_no_records_found: "Ingen worklogs fundet"
+  project: "Projekt"
+  data_provider: "Datakilde"
+  invoice_entry: "Faktura"
+  form_search: "Fritekstsøgning"
+  form_project: "Projekt"
+  form_data_provider: "Datakilde"
+  form_is_billed_any: "Alle"
 
 invoice_entry:
   amount: "Antal enheder"
