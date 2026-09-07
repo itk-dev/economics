@@ -9,10 +9,13 @@ use App\Entity\Worklog;
 use App\Enum\NonBillableEpicsEnum;
 use App\Enum\NonBillableVersionsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
+use App\Model\Invoices\WorklogFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Worklog>
@@ -24,9 +27,82 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class WorklogRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PaginatorInterface $paginator,
+    ) {
         parent::__construct($registry, Worklog::class);
+    }
+
+    /**
+     * Paginates every worklog in the system, narrowed by the admin worklog page's filter.
+     *
+     * Unlike findByFilterData() this is not scoped to a project or an invoice entry, so the
+     * predicates below have to be watertight on their own — see the parenthesised isBilled
+     * expression.
+     *
+     * @return PaginationInterface<int, Worklog>
+     */
+    public function getFilteredPagination(WorklogFilterData $filterData, int $page = 1): PaginationInterface
+    {
+        $qb = $this->createQueryBuilder('worklog')
+            ->leftJoin('worklog.issue', 'issue')->addSelect('issue')
+            ->leftJoin('worklog.project', 'project')->addSelect('project')
+            ->leftJoin('worklog.dataProvider', 'dataProvider')->addSelect('dataProvider');
+
+        if (!empty($filterData->search)) {
+            $qb->andWhere($qb->expr()->orX(
+                'worklog.description LIKE :search',
+                'issue.name LIKE :search',
+                'worklog.projectTrackerIssueId LIKE :search',
+            ))->setParameter('search', '%'.$filterData->search.'%');
+        }
+
+        if (isset($filterData->isBilled)) {
+            // The OR has to be wrapped: DQL binds AND tighter, so an unparenthesised
+            // "isBilled = FALSE OR isBilled IS NULL" would widen the whole query.
+            $qb->andWhere($filterData->isBilled
+                ? $qb->expr()->eq('worklog.isBilled', 'TRUE')
+                : $qb->expr()->orX('worklog.isBilled = FALSE', 'worklog.isBilled IS NULL'));
+        }
+
+        if (!empty($filterData->periodFrom)) {
+            $qb->andWhere('worklog.started >= :periodFrom')->setParameter('periodFrom', $filterData->periodFrom);
+        }
+
+        if (!empty($filterData->periodTo)) {
+            // Period to must include the selected day. Clone before modifying, so building the
+            // query cannot shift the filter the form still holds.
+            $periodTo = (clone $filterData->periodTo)->modify('tomorrow');
+            $qb->andWhere('worklog.started < :periodTo')->setParameter('periodTo', $periodTo);
+        }
+
+        if (!empty($filterData->worker)) {
+            // Worklog::$worker is the worker's email, not a relation.
+            $qb->andWhere('worklog.worker = :worker')->setParameter('worker', $filterData->worker->getEmail());
+        }
+
+        if (!empty($filterData->project)) {
+            $qb->andWhere('worklog.project = :project')->setParameter('project', $filterData->project);
+        }
+
+        if (!empty($filterData->dataProvider)) {
+            $qb->andWhere('worklog.dataProvider = :dataProvider')->setParameter('dataProvider', $filterData->dataProvider);
+        }
+
+        return $this->paginator->paginate($qb, $page, 25, [
+            'defaultSortFieldName' => 'worklog.started',
+            'defaultSortDirection' => 'desc',
+            'sortFieldAllowList' => [
+                'worklog.started',
+                'worklog.worker',
+                'worklog.timeSpentSeconds',
+                'worklog.isBilled',
+                'issue.name',
+                'project.name',
+                'dataProvider.name',
+            ],
+        ]);
     }
 
     public function save(Worklog $entity, bool $flush = false): void

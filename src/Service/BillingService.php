@@ -100,7 +100,7 @@ class BillingService
         }
 
         // Lock client values.
-        // The locked type is handled this way to be backwards compatible with Jira Economics.
+        // Legacy string values, kept for already recorded invoices.
         $invoice
             ->setLockedType(ClientTypeEnum::INTERNAL == $client->getType() ? 'INTERN' : 'EKSTERN')
             ->setLockedCustomerKey($client->getCustomerKey())

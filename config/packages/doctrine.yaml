@@ -36,7 +36,8 @@ when@test:
             # "TEST_TOKEN" is typically set by ParaTest
             #            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
-            # Enable savepoints for nested transactions
+            # Load-bearing: the transactional test bases nest a transaction inside the ones
+            # flush() opens, and without savepoints a nested rollBack() poisons the outer one.
             use_savepoints: true
 
 when@prod:
