@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'worklogs.title'|trans }}{% endblock %}
+
+{% import '_partials.html.twig' as macros %}
+
+{% block content %}
+    <h1 class="page-title">{{ 'worklogs.title'|trans }}</h1>
+
+    {{ form_start(form) }}
+    <div class="form-default">
+        {{ form_row(form.search) }}
+        {{ form_row(form.periodFrom) }}
+        {{ form_row(form.periodTo) }}
+        {{ form_row(form.worker) }}
+        {{ form_row(form.project) }}
+        {{ form_row(form.dataProvider) }}
+        {{ form_row(form.isBilled) }}
+        <div>
+            <button class="button form-element">{{ 'worklogs.search'|trans }}</button>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    {% set number_of_columns = 11 %}
+
+    <div class="overflow-x-auto w-full">
+        <table class="table margin-bottom">
+            <thead class="table-th">
+            <tr>
+                {{ macros.knp_pagination_sortable_header(worklogs, 'worklog.date'|trans, 'worklog.started') }}
+                {{ macros.knp_pagination_sortable_header(worklogs, 'worklog.name'|trans, 'issue.name') }}
+                {{ macros.knp_pagination_sortable_header(worklogs, 'worklog.worker'|trans, 'worklog.worker') }}
+                {{ macros.knp_pagination_sortable_header(worklogs, 'worklogs.project'|trans, 'project.name') }}
+                {{ macros.knp_pagination_sortable_header(worklogs, 'worklogs.data_provider'|trans, 'dataProvider.name') }}
+                {{ macros.knp_pagination_sortable_header(worklogs, 'worklog.is_billed'|trans, 'worklog.isBilled') }}
+                <th class="table-th">{{ 'worklog.epic'|trans }}</th>
+                <th class="table-th">{{ 'worklog.version'|trans }}</th>
+                {{ macros.knp_pagination_sortable_header(worklogs, 'worklog.time_spent'|trans, 'worklog.timeSpentSeconds', {class: 'text-right'}) }}
+                <th class="table-th">{{ 'worklogs.invoice_entry'|trans }}</th>
+                <th class="table-th"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for worklog in worklogs %}
+                {% set deleted = worklog.sourceDeletedDate is not null %}
+                <tr data-worklog-id="{{ worklog.id }}"
+                    class="{{ loop.index0 % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}{{ deleted ? ' line-through opacity-60' : '' }}">
+                    <td class="table-td whitespace-nowrap">{{ worklog.started|date('d/m/Y') }}</td>
+                    <td class="table-td">
+                        <div>{{ worklog.description }}</div>
+                        <div class="italic">
+                            {% if worklog.issue is not null %}
+                                <span>{{ worklog.issue.name }}</span>
+                                {% if worklog.issue.linkToIssue is not empty %}
+                                    <a href="{{ worklog.issue.linkToIssue }}" target="_blank" class="link">#{{ worklog.projectTrackerIssueId }}</a>
+                                {% else %}
+                                    <span>({{ worklog.projectTrackerIssueId }})</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="table-td">{{ worklog.worker }}</td>
+                    <td class="table-td">{{ worklog.project is not null ? worklog.project.name : '' }}</td>
+                    {# Name only: the DataProvider row also holds the tracker url and api token. #}
+                    <td class="table-td">{{ worklog.dataProvider is not null ? worklog.dataProvider.name : '' }}</td>
+                    <td class="table-td">{{ worklog.isBilled ? 'worklog.is_billed_true'|trans : 'worklog.is_billed_false'|trans }}</td>
+                    <td class="table-td">
+                        {% if worklog.issue is not null %}{% for epic in worklog.issue.epics %}{% if loop.index0 > 0 %}, {% endif %}{{ epic.title }}{% endfor %}{% endif %}
+                    </td>
+                    <td class="table-td">
+                        {% if worklog.issue is not null %}{% for version in worklog.issue.versions %}{% if loop.index0 > 0 %}, {% endif %}{{ version.name }}{% endfor %}{% endif %}
+                    </td>
+                    <td class="table-td text-right whitespace-nowrap">{{ (worklog.timeSpentSeconds / 60 / 60)|round(2) }}</td>
+                    <td class="table-td whitespace-nowrap">
+                        {% if worklog.invoiceEntry is not null and worklog.invoiceEntry.invoice is not null %}
+                            <a class="link" href="{{ path('app_invoice_entry_edit', {invoice: worklog.invoiceEntry.invoice.id, id: worklog.invoiceEntry.id}) }}">
+                                {{ worklog.invoiceEntry.invoice.name }}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td class="table-td">
+                        {% if deleted %}
+                            <span title="{{ 'common.deleted_in_the_source'|trans }}">{{ include('components/icons.html.twig', {icon: 'warning', class: 'w-6 h-6 fill-red-500'}) }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            {% if worklogs is empty %}
+                <tr class="table-tr">
+                    <td class="table-td" colspan="{{ number_of_columns }}">{{ 'worklogs.list_no_records_found'|trans }}</td>
+                </tr>
+            {% endif %}
+            <tr class="table-tr">
+                <td class="table-td text-right" colspan="{{ number_of_columns }}">
+                    {{ knp_pagination_render(worklogs) }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -122,8 +122,7 @@ Three families, and new code should follow the matching one rather than invent a
 
 Leantime is the only data provider. `src/Service/LeantimeApiService.php` implements
 `src/Interface/DataProviderInterface.php`, and `DataProviderService::IMPLEMENTATIONS`
-(`src/Service/DataProviderService.php:34`) is the registry. Jira is gone — the last remnant,
-`app:migrate-from-jira-economics`, was removed along with its migration guide.
+(`src/Service/DataProviderService.php:34`) is the registry.
 
 Authentication is Azure OIDC — `src/Security/AzureOIDCAuthenticator.php` plus
 `itk-dev/openid-connect-bundle`, with the role hierarchy in `config/packages/security.yaml` and
