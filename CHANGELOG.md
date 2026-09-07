@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-333](https://github.com/itk-dev/economics/pull/333)
+  * Documented the Leantime sync in `docs/leantime-sync.md`: the scheduled jobs, the command options, and the
+    paging, incrementality and deletion behaviour that is not obvious from the code.
+  * Rewrote `README.md`'s `Synchronization` section, which named a `QueueSyncCommand`, an `app:queue-sync` and
+    a `DataProviderServiceInterface` that do not exist, and credited the Symfony Scheduler for work cron does.
 * [PR-346](https://github.com/itk-dev/economics/pull/346)
   * Clicking a cell in the workload report now opens the worklogs behind the number, marking any
     that were deleted in the source but still counted.
@@ -90,6 +95,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     isolates one test from the next, which is the opposite of what a test author was being told.
   * Pointed the development, coding-standards, analysis, testing and asset commands at their `task`
     equivalents, since `Taskfile.yml` is the entrypoint and was unmentioned.
+  * Fixed `composer fixtures:load`, which called `hautelook:fixtures:load` without
+    `hautelook/alice-bundle` installed, so `task fixtures:load` could only ever fail. It now calls
+    `doctrine:fixtures:load`.
   * Corrected the `code-analysis` task description, which advertised Psalm while running PHPStan.
   * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
     host `php`, and does not have to rediscover the decisions it would otherwise undo — the split
