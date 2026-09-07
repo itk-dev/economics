@@ -52,37 +52,49 @@ accounts.
 
 ## Synchronization
 
-Economics depends on data fra external systems. The integrations with external systems are called Data Providers.
+Economics depends on data from external systems. The integrations with external systems are called Data Providers.
 
-Each Data Provider integration should implement `App\Interface\DataProviderServiceInterface`.
+Each Data Provider integration should implement `App\Interface\DataProviderInterface`. The only
+implementation today is `App\Service\LeantimeApiService`, which pulls from the
+[data-api plugin](https://github.com/itk-dev/data-api) running in Leantime.
 
-The data synchronization is handled by symfony messenger. This is handled differently in development and production.
+Synchronization is a paged pull driven by Symfony Messenger: a command dispatches one message per
+entity type, each message fetches a page of at most 100 rows and re-dispatches itself for the next
+page, and every fetched row becomes an upsert message of its own.
+
+See [docs/leantime-sync.md](docs/leantime-sync.md) for the full picture, the scheduled jobs and the
+command options.
 
 ### Production
 
-Supervisor is added to `docker-compose.server.override.yaml` to make sure the job queue is running.
-
-Symfony scheduler is used for creating a new job each hour at minute 5. See `App\Command\QueueSyncCommand`.
+Cron jobs on the server run the sync commands — see the `cron` section of
+`.woodpecker/prod_itk_economics.yml`. Supervisor is added in `docker-compose.server.override.yml` to
+keep a worker consuming the `async` transport.
 
 ### Develop
 
 In development the job queue should be run manually.
 
-```sh
-docker compose exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
+```shell
+task messenger
 ```
 
 ### Queuing jobs
 
-Jobs can be queued manually with App\Command\QueueSyncCommand
+Jobs can be queued manually.
 
-```sh
-docker compose exec phpfpm bin/console app:queue-sync
+```shell
+# Everything modified within the last hour.
+task phpfpm -- bin/console app:data-providers:sync-modified
+
+# Entities deleted within the last hour.
+task phpfpm -- bin/console app:data-providers:sync-deleted
+
+# A full sync of a single entity type, as async jobs, ignoring modified timestamps.
+task phpfpm -- bin/console app:data-providers:sync -j -p -d
 ```
 
 Jobs can also be queued in the admin interface in the bottom left corner.
-
-In production jobs are queued automatically each hour.
 
 ## Development
 
