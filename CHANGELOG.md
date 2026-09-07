@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-349](https://github.com/itk-dev/economics/pull/349)
+  * Added a worklog page under Admin for searching and filtering every worklog in Economics.
 * [PR-348](https://github.com/itk-dev/economics/pull/348)
   * Removed the `app:migrate-from-jira-economics` command and its migration doc — the JiraEconomics
     cutover is done and the doc referenced five commands that no longer exist.
