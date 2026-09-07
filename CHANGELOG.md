@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-331](https://github.com/itk-dev/economics/pull/331)
+  * Added entity, form, command and controller flow tests: coverage 64% to 90%, the gate 62 to 85.
+  * Documented the two test isolation regimes and the `use_savepoints` dependency in `CLAUDE.md`.
 * [PR-349](https://github.com/itk-dev/economics/pull/349)
   * Added a worklog page under Admin for searching and filtering every worklog in Economics.
 * [PR-348](https://github.com/itk-dev/economics/pull/348)
