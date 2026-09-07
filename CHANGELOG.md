@@ -8,6 +8,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.9.0] - 2026-09-07
+
+* [PR-349](https://github.com/itk-dev/economics/pull/349)
+  * Added a worklog page under Admin for searching and filtering every worklog in Economics.
+* [PR-348](https://github.com/itk-dev/economics/pull/348)
+  * Removed the `app:migrate-from-jira-economics` command and its migration doc — the JiraEconomics
+    cutover is done and the doc referenced five commands that no longer exist.
+* [PR-333](https://github.com/itk-dev/economics/pull/333)
+  * Documented the Leantime sync in `docs/leantime-sync.md`: the scheduled jobs, the command options, and the
+    paging, incrementality and deletion behaviour that is not obvious from the code.
+  * Rewrote `README.md`'s `Synchronization` section, which named a `QueueSyncCommand`, an `app:queue-sync` and
+    a `DataProviderServiceInterface` that do not exist, and credited the Symfony Scheduler for work cron does.
+* [PR-346](https://github.com/itk-dev/economics/pull/346)
+  * Clicking a cell in the workload report now opens the worklogs behind the number, marking any
+    that were deleted in the source but still counted.
+* [PR-298](https://github.com/itk-dev/economics/pull/298)
+  * Save hidden rows per report instead of sharing one list across planning and reports.
+  * Added hidden projects to planning projects view.
+* [PR-297](https://github.com/itk-dev/economics/pull/297)
+  * Added group filter to workload report and invoicing rate report.
+* [PR-329](https://github.com/itk-dev/economics/pull/329)
+  Blocked worklog selection on recorded invoices.
+* [PR-328](https://github.com/itk-dev/economics/pull/328)
+  * Added selected and total hours to the worklog selection list.
+* [PR-279](https://github.com/itk-dev/economics/pull/279)
+  * Anonymize worklogs after 5 years.
+  * `app:anonymize-worklogs` now reports how many worklogs it anonymized, and the fixtures
+    include a few worklogs old enough for it to act on.
+  * Fixed `composer fixtures:load`, which called the uninstalled `hautelook:fixtures:load`
+    instead of `doctrine:fixtures:load`.
+* [PR-344](https://github.com/itk-dev/economics/pull/344)
+  * Restored the `include` filter on the project ids that scope the sync — a second `->where()` was discarding
+    it, so issues, milestones and worklogs were synced for every known project, included or not.
+* [PR-345](https://github.com/itk-dev/economics/pull/345)
+  * Updated dependencies.
+  * Removed `webpack-notifier` and `.enableBuildNotifications()`, clearing the `uuid` advisory —
+    build notifications never reached the desktop from the `node` container anyway.
+
 ## [3.8.0] - 2026-08-21
 
 * [PR-343](https://github.com/itk-dev/economics/pull/343)
@@ -50,6 +88,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     it — the handlers each flush once, and wrapping every message in a transaction is a change of behaviour, not
     a fix.
 * [PR-337](https://github.com/itk-dev/economics/pull/337)
+  * Corrected the parts of `README.md` that documented commands which no longer exist:
+    `app:sync-projects`, `app:sync-accounts`, `app:sync-issues` and `app:sync-worklogs` are all
+    `app:data-providers:sync` with per-entity flags, `app:sync` is the same command, and the product
+    import is `app:products:import`, not `app:product:import`.
+  * Dropped the `.env.local` project-tracker block. `JIRA_PROJECT_TRACKER_*` and
+    `LEANTIME_PROJECT_TRACKER_TOKEN` are read nowhere in `config/` or `src/` — a data provider carries
+    its own URL and token — so following the README produced a setup that could not sync. The invoice
+    variables were named wrong too: the real ones are `APP_INVOICE_SUPPLIER_ACCOUNT`,
+    `APP_INVOICE_EXTERNAL_RECEIVER_ACCOUNT` and `APP_INVOICE_DESCRIPTION_TEMPLATE`.
+  * Removed the claim that DAMADoctrineTestBundle restores the database between tests. It is not
+    installed, and has not been; `tests/bootstrap.php` rebuilds the database once per run and nothing
+    isolates one test from the next, which is the opposite of what a test author was being told.
+  * Pointed the development, coding-standards, analysis, testing and asset commands at their `task`
+    equivalents, since `Taskfile.yml` is the entrypoint and was unmentioned.
+  * Fixed `composer fixtures:load`, which called `hautelook:fixtures:load` without
+    `hautelook/alice-bundle` installed, so `task fixtures:load` could only ever fail. It now calls
+    `doctrine:fixtures:load`.
+  * Corrected the `code-analysis` task description, which advertised Psalm while running PHPStan.
   * Added `CLAUDE.md`, so an agent starts from the Taskfile and the container rather than reaching for
     host `php`, and does not have to rediscover the decisions it would otherwise undo — the split
     retry policy, the hand-built Leantime HTTP client, soft-delete-by-source, ORM 2.
@@ -99,8 +155,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Paginated the Leantime delete sync, following [data-api#21](https://github.com/ITK-Leantime/data-api/pull/21):
     `/deleted` now serves one type per request with `start`/`limit`, so `delete()` queues a message per type and
     `deleteAsJob()` pages through them the way `updateAsJob()` already does. The whole deletion history no longer
-    has to arrive in a single response — which is what the 300s `max_duration` in `config/packages/framework.yaml`
-    was sized for, though it stays as it is for the entity endpoints.
+    has to arrive in a single response — a request nothing here bounded, since `framework.yaml` configures no
+    `http_client` at all and Symfony leaves `max_duration` unlimited by default.
   * The delete request now sends its timestamp as `deletedAfter`, the endpoint's new name for it, matching
     `modifiedAfter` on the entity endpoints. The old `deleted` answers 400 rather than being ignored, so the key
     cannot go missing unnoticed again.
@@ -808,7 +864,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.8.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.9.0...HEAD
+[3.9.0]: https://github.com/itk-dev/economics/compare/3.8.0...3.9.0
 [3.8.0]: https://github.com/itk-dev/economics/compare/3.7.0...3.8.0
 [3.7.0]: https://github.com/itk-dev/economics/compare/3.6.0...3.7.0
 [3.6.0]: https://github.com/itk-dev/economics/compare/3.5.0...3.6.0

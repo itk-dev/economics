@@ -2389,6 +2389,12 @@ parameters:
 			path: tests/Integration/Controller/InvoiceFullFlowTest.php
 
 		-
+			message: '#^Call to an undefined method object\:\:sumSelectableTimeSpentSecondsByFilterData\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Controller/InvoiceFullFlowTest.php
+
+		-
 			message: '#^Cannot call method getAmount\(\) on App\\Entity\\InvoiceEntry\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -2725,12 +2731,6 @@ parameters:
 			path: tests/Integration/Repository/ProjectRepositoryTest.php
 
 		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$entityManager is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: tests/Integration/Repository/ProjectRepositoryTest.php
-
-		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\ProjectRepositoryTest\:\:\$repository \(App\\Repository\\ProjectRepository\) does not accept object\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -2779,9 +2779,15 @@ parameters:
 			path: tests/Integration/Repository/WorkerRepositoryTest.php
 
 		-
+			message: '#^Call to an undefined method object\:\:findBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Repository/WorklogRepositoryTest.php
+
+		-
 			message: '#^Call to an undefined method object\:\:findOneBy\(\)\.$#'
 			identifier: method.notFound
-			count: 8
+			count: 12
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 
 		-
@@ -2823,12 +2829,6 @@ parameters:
 		-
 			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager \(Doctrine\\ORM\\EntityManagerInterface\) does not accept object\.$#'
 			identifier: assign.propertyType
-			count: 1
-			path: tests/Integration/Repository/WorklogRepositoryTest.php
-
-		-
-			message: '#^Property App\\Tests\\Integration\\Repository\\WorklogRepositoryTest\:\:\$entityManager is never read, only written\.$#'
-			identifier: property.onlyWritten
 			count: 1
 			path: tests/Integration/Repository/WorklogRepositoryTest.php
 

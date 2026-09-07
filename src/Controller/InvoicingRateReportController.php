@@ -53,9 +53,10 @@ class InvoicingRateReportController extends AbstractController
             $viewMode = InvoicingRateReportViewModeEnum::SUMMARY;
             $year = $form->get('year')->getData();
             $includeIssues = $form->get('includeIssues')->getData();
+            $group = $reportFormData->group;
 
             try {
-                $reportData = $this->invoicingRateReportService->getInvoicingRateReport($year, $viewPeriodType, $viewMode, $includeIssues);
+                $reportData = $this->invoicingRateReportService->getInvoicingRateReport($year, $viewPeriodType, $viewMode, $includeIssues, $group);
             } catch (\Exception $e) {
                 $error = $e->getMessage();
             }

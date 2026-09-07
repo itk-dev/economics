@@ -93,6 +93,15 @@ class LeantimeApiService implements DataProviderInterface
                 default => $this->projectRepository->getProjectTrackerIdsByDataProviders([$dataProvider]),
             };
 
+            // An empty list is not the same as no filter. With no included projects there is
+            // nothing to sync for this provider, and dispatching would send projectIds: [], leaving
+            // the endpoint to decide whether that means no projects or every project.
+            if ([] === $projectTrackerProjectIds) {
+                $this->logger->info(sprintf('Skipping %s sync for data provider %d: no included projects.', $className, $dataProvider->getId()));
+
+                continue;
+            }
+
             $this->messageBus->dispatch(
                 new LeantimeUpdateMessage($className, 0, $this::LIMIT, $dataProvider->getId(), $asyncJobQueue, $modifiedAfter, $projectTrackerProjectIds, $disableModifiedAtCheck),
                 [new TransportNamesStamp($asyncJobQueue ? $this::QUEUE_ASYNC : $this::QUEUE_SYNC)],

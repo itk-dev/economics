@@ -148,7 +148,7 @@
             "twig-cs-fixer check"
         ],
         "fixtures:load": [
-            "php bin/console hautelook:fixtures:load --no-interaction"
+            "php bin/console doctrine:fixtures:load --no-interaction"
         ],
         "prepare-code": [
             "composer normalize",

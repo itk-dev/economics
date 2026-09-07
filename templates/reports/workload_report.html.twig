@@ -1,5 +1,14 @@
-<div id="scrollContainer" class="overflow-x-auto w-full" {{ stimulus_controller('show-hide') }}
-     data-storage-key="hidePlanningAssignees">
+{# addController() mutates and returns void, so it cannot be chained inside the output tag.
+   Printing the variable needs |raw: StimulusAttributes escapes its own values, but assigning it
+   to a variable loses the is_safe marking the stimulus_controller() function carries. #}
+{% set scrollContainerAttributes = stimulus_controller('show-hide') %}
+{% do scrollContainerAttributes.addController('worklog-details', {
+    loadingText: 'workload_report.worklogs_loading'|trans,
+    errorText: 'workload_report.worklogs_error'|trans,
+}) %}
+<div id="scrollContainer" class="overflow-x-auto w-full"
+     {{ scrollContainerAttributes|raw }}
+     data-storage-key="hideWorkloadReportRows">
     <table
         class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
         <thead>
@@ -57,7 +66,16 @@
                     <td class="text-right px-3 border border-slate-600
 {{ (data.currentPeriodNumeric is defined) and (periodNumeric is same as(data.currentPeriodNumeric)) ? 'bg-slate-300 dark:bg-slate-800' : '' }}
 ">
-                        {{ week ~ '%' }}
+                        <button type="button" class="w-full text-right hover:underline"
+                                title="{{ 'workload_report.worklogs_show'|trans }}"
+                                {{ stimulus_action('worklog-details', 'open') }}
+                                data-url="{{ path('app_workload_report_worklogs', {
+                                    worker: worker.email,
+                                    year: data.year,
+                                    periodType: data.viewmode,
+                                    period: periodNumeric,
+                                    viewMode: data.reportViewMode.value,
+                                }) }}">{{ week ~ '%' }}</button>
                     </td>
                 {% endfor %}
                 <td class="text-right px-3 border border-slate-600 bg-slate-300 dark:bg-slate-800">
@@ -86,4 +104,16 @@
         {{ 'workload_report.hidden-entries'|trans }}:
         <span {{ stimulus_target('show-hide', 'hiddenEntries') }}></span>
     </div>
+
+    <dialog {{ stimulus_target('worklog-details', 'dialog') }}
+            {{ stimulus_action('worklog-details', 'clickOutside', 'click') }}
+            class="w-11/12 max-w-6xl p-0 rounded-lg backdrop:bg-black/50 bg-white text-black dark:bg-gray-900 dark:text-white">
+        <div class="flex justify-end p-3">
+            <button type="button" class="w-8" {{ stimulus_action('worklog-details', 'close') }}
+                    aria-label="{{ 'workload_report.worklogs_close'|trans }}">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="px-5 pb-5 overflow-x-auto" {{ stimulus_target('worklog-details', 'content') }}></div>
+    </dialog>
 </div>

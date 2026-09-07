@@ -9,9 +9,13 @@ use App\Entity\Worklog;
 use App\Enum\NonBillableEpicsEnum;
 use App\Enum\NonBillableVersionsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
+use App\Model\Invoices\WorklogFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Worklog>
@@ -23,9 +27,82 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class WorklogRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly PaginatorInterface $paginator,
+    ) {
         parent::__construct($registry, Worklog::class);
+    }
+
+    /**
+     * Paginates every worklog in the system, narrowed by the admin worklog page's filter.
+     *
+     * Unlike findByFilterData() this is not scoped to a project or an invoice entry, so the
+     * predicates below have to be watertight on their own — see the parenthesised isBilled
+     * expression.
+     *
+     * @return PaginationInterface<int, Worklog>
+     */
+    public function getFilteredPagination(WorklogFilterData $filterData, int $page = 1): PaginationInterface
+    {
+        $qb = $this->createQueryBuilder('worklog')
+            ->leftJoin('worklog.issue', 'issue')->addSelect('issue')
+            ->leftJoin('worklog.project', 'project')->addSelect('project')
+            ->leftJoin('worklog.dataProvider', 'dataProvider')->addSelect('dataProvider');
+
+        if (!empty($filterData->search)) {
+            $qb->andWhere($qb->expr()->orX(
+                'worklog.description LIKE :search',
+                'issue.name LIKE :search',
+                'worklog.projectTrackerIssueId LIKE :search',
+            ))->setParameter('search', '%'.$filterData->search.'%');
+        }
+
+        if (isset($filterData->isBilled)) {
+            // The OR has to be wrapped: DQL binds AND tighter, so an unparenthesised
+            // "isBilled = FALSE OR isBilled IS NULL" would widen the whole query.
+            $qb->andWhere($filterData->isBilled
+                ? $qb->expr()->eq('worklog.isBilled', 'TRUE')
+                : $qb->expr()->orX('worklog.isBilled = FALSE', 'worklog.isBilled IS NULL'));
+        }
+
+        if (!empty($filterData->periodFrom)) {
+            $qb->andWhere('worklog.started >= :periodFrom')->setParameter('periodFrom', $filterData->periodFrom);
+        }
+
+        if (!empty($filterData->periodTo)) {
+            // Period to must include the selected day. Clone before modifying, so building the
+            // query cannot shift the filter the form still holds.
+            $periodTo = (clone $filterData->periodTo)->modify('tomorrow');
+            $qb->andWhere('worklog.started < :periodTo')->setParameter('periodTo', $periodTo);
+        }
+
+        if (!empty($filterData->worker)) {
+            // Worklog::$worker is the worker's email, not a relation.
+            $qb->andWhere('worklog.worker = :worker')->setParameter('worker', $filterData->worker->getEmail());
+        }
+
+        if (!empty($filterData->project)) {
+            $qb->andWhere('worklog.project = :project')->setParameter('project', $filterData->project);
+        }
+
+        if (!empty($filterData->dataProvider)) {
+            $qb->andWhere('worklog.dataProvider = :dataProvider')->setParameter('dataProvider', $filterData->dataProvider);
+        }
+
+        return $this->paginator->paginate($qb, $page, 25, [
+            'defaultSortFieldName' => 'worklog.started',
+            'defaultSortDirection' => 'desc',
+            'sortFieldAllowList' => [
+                'worklog.started',
+                'worklog.worker',
+                'worklog.timeSpentSeconds',
+                'worklog.isBilled',
+                'issue.name',
+                'project.name',
+                'dataProvider.name',
+            ],
+        ]);
     }
 
     public function save(Worklog $entity, bool $flush = false): void
@@ -47,6 +124,40 @@ class WorklogRepository extends ServiceEntityRepository
     }
 
     public function findByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): iterable
+    {
+        return $this->createFilterDataQueryBuilder($project, $invoiceEntry, $filterData)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * Sum the time spent on the worklogs matching the given filter that can be
+     * added to the invoice entry.
+     *
+     * Already billed worklogs and worklogs held by another invoice entry are
+     * listed without a checkbox, so their time can never become part of the
+     * selection and must not be part of the total either.
+     */
+    public function sumSelectableTimeSpentSecondsByFilterData(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): int
+    {
+        $qb = $this->createFilterDataQueryBuilder($project, $invoiceEntry, $filterData);
+
+        $sum = $qb
+            ->select('SUM(worklog.timeSpentSeconds)')
+            ->andWhere('worklog.isBilled = FALSE OR worklog.isBilled is NULL')
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('worklog.invoiceEntry'),
+                $qb->expr()->eq('worklog.invoiceEntry', ':selectableInvoiceEntry')
+            ))
+            ->setParameter('selectableInvoiceEntry', $invoiceEntry)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // SUM returns null when no worklogs match the filter.
+        return (int) $sum;
+    }
+
+    private function createFilterDataQueryBuilder(Project $project, InvoiceEntry $invoiceEntry, InvoiceEntryWorklogsFilterData $filterData): QueryBuilder
     {
         $qb = $this->createQueryBuilder('worklog');
 
@@ -97,7 +208,7 @@ class WorklogRepository extends ServiceEntityRepository
             ))->setParameter('invoiceEntry', $invoiceEntry);
         }
 
-        return $qb->getQuery()->execute();
+        return $qb;
     }
 
     public function updateProjectByIssue(Issue $issue, Project $project): int
@@ -307,6 +418,22 @@ class WorklogRepository extends ServiceEntityRepository
             'page_size' => $pageSize,
             'paginator' => $paginator,
         ];
+    }
+
+    public function anonymizeWorklogs(\DateTimeInterface $anonymizeBefore): int
+    {
+        $qb = $this->createQueryBuilder('w');
+
+        $qb->update()
+            ->set('w.description', 'CONCAT(:prefix, w.id)')
+            ->set('w.anonymizedDate', ':now')
+            ->where('w.started < :anonymizeBefore')
+            ->andWhere('w.anonymizedDate IS NULL')
+            ->setParameter('prefix', 'worklog ')
+            ->setParameter('now', new \DateTime())
+            ->setParameter('anonymizeBefore', $anonymizeBefore);
+
+        return $qb->getQuery()->execute();
     }
 
     /**

@@ -1,0 +1,81 @@
+{% set deleted_worklogs = data.worklogs|filter(worklog => worklog.sourceDeletedDate is not null) %}
+
+<div class="mb-4">
+    <h2 class="text-xl font-semibold">
+        {{ data.workerName }}
+        &mdash;
+        {% if data.viewPeriodType.value == 'week' %}{{ 'workload_report.week'|trans }} {% endif %}{{ data.readablePeriod }} {{ data.year }}
+    </h2>
+    <p class="text-gray-800/75 dark:text-gray-200/75">
+        {{ 'workload_report.workload'|trans }} {{ data.expectedWorkload|round(2) }} {{ 'workload_report.worklogs_hours_short'|trans }}
+        &middot;
+        {# The view mode names what was counted — "Loggede timer", "Fakturerbare timer", "Fakturerede timer". #}
+        {{ data.viewMode|trans }} {{ data.loggedHours }} {{ 'workload_report.worklogs_hours_short'|trans }}
+        ({{ data.loggedPercentage }}%)
+    </p>
+</div>
+
+<table class="table margin-bottom">
+    <thead class="table-th">
+    <tr>
+        <th class="table-th">{{ 'worklog.date'|trans }}</th>
+        <th class="table-th">{{ 'worklog.name'|trans }}</th>
+        <th class="table-th">{{ 'workload_report.worklogs_project'|trans }}</th>
+        <th class="table-th">{{ 'worklog.is_billed'|trans }}</th>
+        <th class="table-th">{{ 'worklog.epic'|trans }}</th>
+        <th class="table-th">{{ 'worklog.version'|trans }}</th>
+        <th class="table-th text-right">{{ 'worklog.time_spent'|trans }}</th>
+        <th class="table-th"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for index, worklog in data.worklogs %}
+        {% set deleted = worklog.sourceDeletedDate is not null %}
+        <tr class="{{ index % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}{{ deleted ? ' line-through opacity-60' : '' }}">
+            <td class="table-td whitespace-nowrap">{{ worklog.started|date('d/m/Y') }}</td>
+            <td class="table-td">
+                <div>{{ worklog.description }}</div>
+                <div class="italic">
+                    {% if worklog.issue is not null %}
+                        <span>{{ worklog.issue.name }}</span>
+                        {% if worklog.issue.linkToIssue is not empty %}
+                            <a href="{{ worklog.issue.linkToIssue }}" target="_blank" class="link">#{{ worklog.projectTrackerIssueId }}</a>
+                        {% else %}
+                            <span>({{ worklog.projectTrackerIssueId }})</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </td>
+            <td class="table-td">{{ worklog.project is not null ? worklog.project.name : '' }}</td>
+            <td class="table-td">{{ worklog.isBilled ? 'worklog.is_billed_true'|trans : 'worklog.is_billed_false'|trans }}</td>
+            <td class="table-td">
+                {% if worklog.issue is not null %}{% for epic in worklog.issue.epics %}{% if loop.index0 > 0 %}, {% endif %}{{ epic.title }}{% endfor %}{% endif %}
+            </td>
+            <td class="table-td">
+                {% if worklog.issue is not null %}{% for version in worklog.issue.versions %}{% if loop.index0 > 0 %}, {% endif %}{{ version.name }}{% endfor %}{% endif %}
+            </td>
+            <td class="table-td text-right whitespace-nowrap">{{ (worklog.timeSpentSeconds / 60 / 60)|round(2) }}</td>
+            <td class="table-td">
+                {% if deleted %}
+                    <span title="{{ 'common.deleted_in_the_source'|trans }}">{{ include('components/icons.html.twig', {icon: 'warning', class: 'w-6 h-6 fill-red-500'}) }}</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% else %}
+        <tr class="table-tr">
+            <td colspan="8" class="table-td">{{ 'workload_report.worklogs_empty'|trans }}</td>
+        </tr>
+    {% endfor %}
+    {% if data.worklogs is not empty %}
+        <tr class="table-tr font-bold">
+            <td colspan="6" class="table-td">{{ 'workload_report.worklogs_total'|trans }}</td>
+            <td class="table-td text-right whitespace-nowrap">{{ data.loggedHours }}</td>
+            <td class="table-td"></td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>
+
+{% if deleted_worklogs is not empty %}
+    <p class="form-help">{{ 'workload_report.worklogs_deleted_note'|trans }}</p>
+{% endif %}

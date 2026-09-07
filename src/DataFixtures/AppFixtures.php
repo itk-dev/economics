@@ -355,6 +355,15 @@ class AppFixtures extends Fixture
             $wl->setIsBilled(true);
         }
 
+        // A few worklogs old enough for app:anonymize-worklogs to act on — every other worklog is
+        // stamped with the current year and can never be picked up. project-1-9 carries them
+        // because no test asserts on that project, so moving these rows out of the current year
+        // cannot shift a fixture total another test depends on.
+        $worklogsToAge = $worklogRepo->findBy(['project' => $projectsByKey['1-9']], ['id' => 'ASC'], 3);
+        foreach ($worklogsToAge as $index => $wl) {
+            $wl->setStarted(new \DateTime(sprintf('-%d years', 6 + $index)));
+        }
+
         // Service Agreements
         $sa1 = new ServiceAgreement();
         $sa1->setProject($project00);

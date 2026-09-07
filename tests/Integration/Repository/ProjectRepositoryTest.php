@@ -2,10 +2,12 @@
 
 namespace App\Tests\Integration\Repository;
 
+use App\Entity\DataProvider;
 use App\Entity\Project;
 use App\Model\Invoices\ProjectFilterData;
 use App\Repository\DataProviderRepository;
 use App\Repository\ProjectRepository;
+use App\Service\LeantimeApiService;
 use App\Service\LeantimeUrlGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -122,6 +124,52 @@ class ProjectRepositoryTest extends KernelTestCase
         $sorted = $result;
         sort($sorted);
         $this->assertEquals($sorted, $result);
+    }
+
+    public function testGetProjectTrackerIdsByDataProvidersOnlyReturnsIncludedProjects(): void
+    {
+        $dataProvider = new DataProvider();
+        $dataProvider->setName('Data Provider 8 - include filter');
+        $dataProvider->setEnabled(true);
+        $dataProvider->setClass(LeantimeApiService::class);
+        $dataProvider->setUrl('http://localhost/');
+        $dataProvider->setSecret('Not so secret');
+        $this->entityManager->persist($dataProvider);
+
+        // The three states include can hold: only the first scopes a sync.
+        $included = $this->createProject($dataProvider, 'include-filter-included', true);
+        $excluded = $this->createProject($dataProvider, 'include-filter-excluded', false);
+        $undecided = $this->createProject($dataProvider, 'include-filter-undecided', null);
+
+        $this->entityManager->flush();
+
+        try {
+            $result = $this->repository->getProjectTrackerIdsByDataProviders([$dataProvider]);
+
+            $this->assertEquals(['include-filter-included'], $result);
+        } finally {
+            // Tests share a database and are not wrapped in transactions, so these rows have to go
+            // even when the assertion above fails.
+            foreach ([$included, $excluded, $undecided, $dataProvider] as $entity) {
+                $this->entityManager->remove($entity);
+            }
+            $this->entityManager->flush();
+        }
+    }
+
+    private function createProject(DataProvider $dataProvider, string $projectTrackerId, ?bool $include): Project
+    {
+        $project = new Project();
+        $project->setDataProvider($dataProvider);
+        $project->setName($projectTrackerId);
+        $project->setProjectTrackerId($projectTrackerId);
+        $project->setProjectTrackerKey($projectTrackerId);
+        $project->setProjectTrackerProjectUrl('http://localhost/');
+        $project->setInclude($include);
+        $project->setIsBillable(true);
+        $this->entityManager->persist($project);
+
+        return $project;
     }
 
     public function testGetApiProjects(): void

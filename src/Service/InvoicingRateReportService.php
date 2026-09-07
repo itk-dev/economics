@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\WorkerGroup;
 use App\Model\Reports\InvoicingRateReportData;
 use App\Model\Reports\InvoicingRateReportViewModeEnum;
 use App\Model\Reports\InvoicingRateReportWorker;
@@ -27,6 +28,7 @@ class InvoicingRateReportService
      * @param PeriodTypeEnum                  $viewPeriodType the period type
      * @param InvoicingRateReportViewModeEnum $viewMode       the view mode
      * @param bool                            $includeIssues  whether to include detailed issue-level data in the report
+     * @param ?WorkerGroup                    $group          when set, only workers in this group are included
      *
      * @return InvoicingRateReportData the calculated invoicing rate report data
      *
@@ -37,13 +39,16 @@ class InvoicingRateReportService
         PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK,
         InvoicingRateReportViewModeEnum $viewMode = InvoicingRateReportViewModeEnum::SUMMARY,
         bool $includeIssues = false,
+        ?WorkerGroup $group = null,
     ): InvoicingRateReportData {
         $invoicingRateReportData = new InvoicingRateReportData($viewPeriodType->value);
         $invoicingRateReportData->includeIssues = $includeIssues;
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
         }
-        $workers = $this->workerRepository->findAllIncludedInReports();
+        $workers = null !== $group
+            ? $this->workerRepository->findIncludedInReportsByGroup($group)
+            : $this->workerRepository->findAllIncludedInReports();
         // Sort workers alphabetically by name (usort: list of objects, no keys to preserve).
         usort($workers, fn ($a, $b) => mb_strtolower((string) $a->getName()) <=> mb_strtolower((string) $b->getName()));
         $periods = $this->getPeriods($viewPeriodType, $year);
