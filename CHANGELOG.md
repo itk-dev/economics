@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-352](https://github.com/itk-dev/economics/pull/352)
+  * Made project, client and project lead searchable dropdowns on the service agreement form,
+    sorted by the name shown rather than by database order.
 * [PR-351](https://github.com/itk-dev/economics/pull/351)
   * Pinned the selectable-hours total to its own project, covering the unbilled-as-NULL worklog
     that no fixture row has.
