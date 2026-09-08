@@ -84,6 +84,7 @@ class ServiceAgreementType extends AbstractType
                     SystemOwnerNoticeEnum::SERVERFLYTNING => 'system_owner_notice_enum.serverflytning',
                     SystemOwnerNoticeEnum::SIKKERHEDSPATCH => 'system_owner_notice_enum.sikkerhedspatch',
                     SystemOwnerNoticeEnum::CYBERSIKKERSHEDSOPDATERING => 'system_owner_notice_enum.cybersikkershedsopdatering',
+                    SystemOwnerNoticeEnum::RELEASE => 'system_owner_notice_enum.release',
                 },
                 'choice_value' => fn (?SystemOwnerNoticeEnum $choice) => $choice?->value,
                 'multiple' => true,
