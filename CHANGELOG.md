@@ -14,6 +14,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     into the records that own each topic.
   * Restored the `include` filter on the project ids that scope the sync, which a second `->where()` was
     discarding — issues, milestones and worklogs were synced for every known project.
+* [PR-351](https://github.com/itk-dev/economics/pull/351)
+  * Pinned the selectable-hours total to its own project, covering the unbilled-as-NULL worklog
+    that no fixture row has.
+* [PR-350](https://github.com/itk-dev/economics/pull/350)
+  * Fixed the worklog picker's total hours covering a day more than the list below it, because
+    the period filter shifted itself each time the query was built.
+* [PR-331](https://github.com/itk-dev/economics/pull/331)
+  * Added entity, form, command and controller flow tests: coverage 64% to 90%, the gate 62 to 85.
+  * Documented the two test isolation regimes and the `use_savepoints` dependency in `CLAUDE.md`.
+* [PR-349](https://github.com/itk-dev/economics/pull/349)
+  * Added a worklog page under Admin for searching and filtering every worklog in Economics.
+* [PR-348](https://github.com/itk-dev/economics/pull/348)
+  * Removed the `app:migrate-from-jira-economics` command and its migration doc — the JiraEconomics
+    cutover is done and the doc referenced five commands that no longer exist.
+* [PR-333](https://github.com/itk-dev/economics/pull/333)
+  * Documented the Leantime sync in `docs/leantime-sync.md`: the scheduled jobs, the command options, and the
+    paging, incrementality and deletion behaviour that is not obvious from the code.
+  * Rewrote `README.md`'s `Synchronization` section, which named a `QueueSyncCommand`, an `app:queue-sync` and
+    a `DataProviderServiceInterface` that do not exist, and credited the Symfony Scheduler for work cron does.
 * [PR-346](https://github.com/itk-dev/economics/pull/346)
   * Clicking a cell in the workload report now opens the worklogs behind the number, marking any
     that were deleted in the source but still counted.
