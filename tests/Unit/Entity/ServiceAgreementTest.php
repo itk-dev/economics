@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\CybersecurityAgreement;
 use App\Entity\Project;
 use App\Entity\ServiceAgreement;
+use App\Entity\ServiceAgreementContact;
 use App\Entity\Worker;
 use App\Enum\HostingProviderEnum;
 use App\Enum\ServerSizeEnum;
@@ -30,6 +31,33 @@ class ServiceAgreementTest extends TestCase
         $this->assertSame([], $this->agreement->getSystemOwnerNotices());
         $this->assertNull($this->agreement->isActive());
         $this->assertNull($this->agreement->getServerSize());
+        $this->assertCount(0, $this->agreement->getContacts());
+    }
+
+    public function testContactCollectionKeepsBothSidesInSync(): void
+    {
+        $contact = new ServiceAgreementContact();
+
+        $this->agreement->addContact($contact);
+        $this->agreement->addContact($contact);
+        $this->assertCount(1, $this->agreement->getContacts());
+        $this->assertSame($this->agreement, $contact->getServiceAgreement());
+
+        $this->agreement->removeContact($contact);
+        $this->assertCount(0, $this->agreement->getContacts());
+        $this->assertNull($contact->getServiceAgreement());
+    }
+
+    public function testRemoveContactLeavesForeignOwnerAlone(): void
+    {
+        $other = new ServiceAgreement();
+        $contact = new ServiceAgreementContact();
+
+        $this->agreement->addContact($contact);
+        $other->getContacts()->add($contact);
+        $other->removeContact($contact);
+
+        $this->assertSame($this->agreement, $contact->getServiceAgreement());
     }
 
     public function testRelationAccessors(): void
@@ -75,8 +103,6 @@ class ServiceAgreementTest extends TestCase
         $this->agreement->setValidTo($validTo);
         $this->agreement->setIsActive(true);
         $this->agreement->setIsEol(true);
-        $this->agreement->setClientContactName('Jane Doe');
-        $this->agreement->setClientContactEmail('jane@example.com');
         $this->agreement->setDedicatedServer(true);
         $this->agreement->setServerSize(ServerSizeEnum::MELLEM);
 
@@ -87,8 +113,6 @@ class ServiceAgreementTest extends TestCase
         $this->assertSame($validTo, $this->agreement->getValidTo());
         $this->assertTrue($this->agreement->isActive());
         $this->assertTrue($this->agreement->isEol());
-        $this->assertSame('Jane Doe', $this->agreement->getClientContactName());
-        $this->assertSame('jane@example.com', $this->agreement->getClientContactEmail());
         $this->assertTrue($this->agreement->isDedicatedServer());
         $this->assertSame(ServerSizeEnum::MELLEM, $this->agreement->getServerSize());
     }
@@ -97,14 +121,10 @@ class ServiceAgreementTest extends TestCase
     {
         $this->agreement->setDocumentUrl(null);
         $this->agreement->setValidTo(null);
-        $this->agreement->setClientContactName(null);
-        $this->agreement->setClientContactEmail(null);
         $this->agreement->setServerSize(null);
 
         $this->assertNull($this->agreement->getDocumentUrl());
         $this->assertNull($this->agreement->getValidTo());
-        $this->assertNull($this->agreement->getClientContactName());
-        $this->assertNull($this->agreement->getClientContactEmail());
         $this->assertNull($this->agreement->getServerSize());
     }
 
@@ -179,8 +199,6 @@ class ServiceAgreementTest extends TestCase
         $this->assertSame($this->agreement, $this->agreement->setIsActive(true));
         $this->assertSame($this->agreement, $this->agreement->setIsEol(false));
         $this->assertSame($this->agreement, $this->agreement->setSystemOwnerNotices([]));
-        $this->assertSame($this->agreement, $this->agreement->setClientContactName(null));
-        $this->assertSame($this->agreement, $this->agreement->setClientContactEmail(null));
         $this->assertSame($this->agreement, $this->agreement->setDedicatedServer(false));
         $this->assertSame($this->agreement, $this->agreement->setServerSize(null));
     }

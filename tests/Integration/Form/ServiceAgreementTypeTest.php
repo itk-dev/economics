@@ -5,10 +5,12 @@ namespace App\Tests\Integration\Form;
 use App\Entity\Client;
 use App\Entity\Project;
 use App\Entity\ServiceAgreement;
+use App\Entity\ServiceAgreementContact;
 use App\Entity\Worker;
 use App\Enum\HostingProviderEnum;
 use App\Enum\ServerSizeEnum;
 use App\Enum\SystemOwnerNoticeEnum;
+use App\Form\ServiceAgreementContactType;
 use App\Form\ServiceAgreementType;
 use Symfony\Component\Form\FormInterface;
 
@@ -19,8 +21,7 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
         'isActive',
         'isEol',
         'client',
-        'clientContactName',
-        'clientContactEmail',
+        'contacts',
         'systemOwnerNotices',
         'validFrom',
         'validTo',
@@ -56,7 +57,7 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
     {
         $form = $this->createForm(ServiceAgreementType::class);
 
-        foreach (['isActive', 'isEol', 'clientContactName', 'clientContactEmail', 'systemOwnerNotices', 'validTo', 'dedicatedServer', 'serverSize', 'documentUrl'] as $field) {
+        foreach (['isActive', 'isEol', 'contacts', 'systemOwnerNotices', 'validTo', 'dedicatedServer', 'serverSize', 'documentUrl'] as $field) {
             $this->assertFalse($form->get($field)->isRequired(), sprintf('Field "%s" should be optional.', $field));
         }
     }
@@ -145,8 +146,6 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
             'projectLead' => (string) $workerId,
             'isActive' => '1',
             'isEol' => '1',
-            'clientContactName' => 'Contact Person',
-            'clientContactEmail' => 'contact@example.com',
             'systemOwnerNotices' => ['serverflytning', 'sikkerhedspatch'],
             'validFrom' => '2026-01-01',
             'validTo' => '2026-12-31',
@@ -165,8 +164,6 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
         $this->assertSame($workerId, $this->requireEntity(Worker::class, $agreement->getProjectLead())->getId());
         $this->assertTrue($agreement->isActive());
         $this->assertTrue($agreement->isEol());
-        $this->assertSame('Contact Person', $agreement->getClientContactName());
-        $this->assertSame('contact@example.com', $agreement->getClientContactEmail());
         $this->assertSame(
             [SystemOwnerNoticeEnum::SERVERFLYTNING, SystemOwnerNoticeEnum::SIKKERHEDSPATCH],
             $agreement->getSystemOwnerNotices()
@@ -180,6 +177,68 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
         $this->assertSame(ServerSizeEnum::STOR, $agreement->getServerSize());
         $this->assertSame('https://example.com/agreement.pdf', $agreement->getDocumentUrl());
         $this->assertSame(1234.5, $agreement->getPrice());
+    }
+
+    public function testContactsCollectionAllowsAddingAndRemovingRows(): void
+    {
+        $config = $this->createForm(ServiceAgreementType::class)->get('contacts')->getConfig();
+
+        $this->assertSame(ServiceAgreementContactType::class, $config->getOption('entry_type'));
+        $this->assertTrue($config->getOption('allow_add'));
+        $this->assertTrue($config->getOption('allow_delete'));
+        $this->assertFalse($config->getOption('by_reference'), 'Adds and removes must go through addContact()/removeContact().');
+        $this->assertNotNull($config->getOption('prototype'));
+    }
+
+    public function testSubmitMapsContactsOntoTheAgreement(): void
+    {
+        $agreement = new ServiceAgreement();
+        $form = $this->createForm(ServiceAgreementType::class, $agreement);
+
+        $form->submit($this->minimalPayload($form) + [
+            'contacts' => [
+                ['name' => 'Anna Hansen', 'email' => 'anna@example.com', 'roles' => ['Fakturering']],
+                ['name' => 'Bo Jensen', 'email' => 'bo@example.com', 'roles' => ['Daglig kontakt', 'Fakturering']],
+            ],
+        ]);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertTrue($form->isValid(), (string) $form->getErrors(true));
+
+        $contacts = $agreement->getContacts();
+        $this->assertCount(2, $contacts);
+
+        $first = $contacts->first();
+        $this->assertInstanceOf(ServiceAgreementContact::class, $first);
+        $this->assertSame('Anna Hansen', $first->getName());
+        $this->assertSame($agreement, $first->getServiceAgreement(), 'The owning side must be set by addContact().');
+
+        $last = $contacts->last();
+        $this->assertInstanceOf(ServiceAgreementContact::class, $last);
+        $this->assertCount(2, $last->getRoles());
+    }
+
+    public function testARoleUsedByTwoContactsBecomesASingleRole(): void
+    {
+        // Both contacts introduce "Fakturering" in the same submit; the unique
+        // index on the name would reject a second row.
+        $agreement = new ServiceAgreement();
+        $form = $this->createForm(ServiceAgreementType::class, $agreement);
+
+        $form->submit($this->minimalPayload($form) + [
+            'contacts' => [
+                ['name' => 'Anna Hansen', 'roles' => ['Fakturering']],
+                ['name' => 'Bo Jensen', 'roles' => ['Fakturering']],
+            ],
+        ]);
+
+        $this->assertTrue($form->isValid(), (string) $form->getErrors(true));
+
+        $first = $agreement->getContacts()->first();
+        $last = $agreement->getContacts()->last();
+        $this->assertInstanceOf(ServiceAgreementContact::class, $first);
+        $this->assertInstanceOf(ServiceAgreementContact::class, $last);
+        $this->assertSame($first->getRoles()->first(), $last->getRoles()->first());
     }
 
     public function testEolAgreementWithoutValidToIsInvalid(): void
@@ -226,16 +285,28 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
     {
         $form = $this->createForm(ServiceAgreementType::class, $agreement);
 
-        $form->submit([
+        $form->submit($this->minimalPayload($form) + ['documentUrl' => $documentUrl]);
+
+        return $form;
+    }
+
+    /**
+     * The smallest payload that passes validation, for tests that care about one
+     * field only.
+     *
+     * @param FormInterface<mixed> $form
+     *
+     * @return array<string, string>
+     */
+    private function minimalPayload(FormInterface $form): array
+    {
+        return [
             'project' => (string) $this->requireId($this->findOne(Project::class)->getId()),
             'client' => (string) $this->requireId($this->findOne(Client::class)->getId()),
             'projectLead' => (string) $this->requireId($this->findOne(Worker::class)->getId()),
             'validFrom' => '2026-01-01',
             'hostingProvider' => $this->choiceValue($form, 'hostingProvider', HostingProviderEnum::ADM),
-            'documentUrl' => $documentUrl,
             'price' => '0',
-        ]);
-
-        return $form;
+        ];
     }
 }
