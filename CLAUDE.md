@@ -42,7 +42,11 @@ on change. Use `task compose -- logs --tail 0 --follow node` to see compilation 
 1. `task prepare-code` — normalize, apply standards, PHPStan, tests.
 2. `task composer -- normalize` if you touched `composer.json`.
 3. Add a bullet to `CHANGELOG.md` under `## [Unreleased]`, keyed by PR link. **CI fails a PR whose
-   `CHANGELOG.md` is identical to the base branch**, so this is not optional.
+   `CHANGELOG.md` is identical to the base branch**, so this is not optional. Keep it to 1–2 lines,
+   3 at the most: what changed and the consequence, nothing else. The long prose entries already in
+   the file are not the style to copy. No entries for tests added or coverage moved, and no
+   rationale — reasoning that is worth keeping belongs in an ADR under `docs/adr/`
+   (see `docs/adr/README.md`).
 4. If you touched Markdown or YAML, they have their own CI gates:
 
    ```shell
