@@ -31,7 +31,9 @@ export default class extends Controller {
         }
 
         this.choices = new Choices(this.selectTarget, {
-            allowHTML: true,
+            // Role names are free text a user typed, and Choices writes labels
+            // with innerHTML when this is on. Nothing here wants HTML in a label.
+            allowHTML: false,
             itemSelectText: "",
             removeItems: true,
             removeItemButton: true,
@@ -68,6 +70,13 @@ export default class extends Controller {
         if (this.choices) {
             this.choices.destroy();
             this.choices = null;
+        }
+
+        // Cleared as well, or a reconnect finds the destroyed instance still on
+        // the element, bails out of connect(), and leaves a bare <select> with
+        // no way to type a new role.
+        if (this.hasSelectTarget) {
+            this.selectTarget.choices = null;
         }
     }
 
