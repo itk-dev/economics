@@ -83,10 +83,14 @@
                     {% endif %}
                 </td>
                 <td class="table-td whitespace-nowrap">
-                    {% if service_agreement.contacts is empty %}
+                    {# From the prefetched map, not service_agreement.contacts: touching
+                       the collection here would initialise it per row, and its roles per
+                       contact. #}
+                    {% set contacts = contacts_by_agreement[service_agreement.id] ?? [] %}
+                    {% if contacts is empty %}
                         -
                     {% else %}
-                        {{ include('service_agreement/_contacts_dialog.html.twig', {contacts: service_agreement.contacts}) }}
+                        {{ include('service_agreement/_contacts_dialog.html.twig', {contacts: contacts}) }}
                     {% endif %}
                 </td>
                 <td class="table-td">{{ service_agreement.projectLead ? (service_agreement.projectLead.name ?? service_agreement.projectLead.email) : service_agreement.projectLead.email }}</td>
