@@ -11,17 +11,39 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Service\ResetInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @extends AbstractType<ServiceAgreementContact>
  */
-class ServiceAgreementContactType extends AbstractType
+class ServiceAgreementContactType extends AbstractType implements ResetInterface
 {
+    /**
+     * The vocabulary as it stood when this request started.
+     *
+     * Cached because the options are built once per contact row and again for
+     * every PRE_SUBMIT rebuild, and the stored vocabulary cannot change within
+     * a request — a role introduced by the submit arrives via $extraNames.
+     *
+     * @var string[]|null
+     */
+    private ?array $existingNames = null;
+
     public function __construct(
         private readonly ContactRoleRepository $contactRoleRepository,
         private readonly TranslatorInterface $translator,
     ) {
+    }
+
+    /**
+     * Request scoped, on a shared service — see ContactRoleCollectionTransformer.
+     * Without this, a role created in one request would be missing from the
+     * suggestions of the next wherever the container is reused.
+     */
+    public function reset(): void
+    {
+        $this->existingNames = null;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -76,7 +98,9 @@ class ServiceAgreementContactType extends AbstractType
      */
     private function rolesOptions(array $extraNames = []): array
     {
-        $names = array_merge($this->contactRoleRepository->findAllNames(), $extraNames);
+        $this->existingNames ??= $this->contactRoleRepository->findAllNames();
+
+        $names = array_merge($this->existingNames, $extraNames);
         $names = array_values(array_unique(array_filter($names, fn (string $name) => '' !== trim($name))));
 
         return [
