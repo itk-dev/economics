@@ -22,20 +22,27 @@ class ServiceAgreementContact extends AbstractBaseEntity
     private ?ServiceAgreement $serviceAgreement = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Email]
+    #[Assert\Length(max: 255)]
     private ?string $email = null;
 
     /**
      * Roles cascade a persist because a role typed into the widget does not
      * exist yet when the contact is saved.
      *
+     * Assert\Valid so a role the widget just created is checked before it is
+     * cascaded — the form has no field bound to a role's own properties, so
+     * nothing else would reach them.
+     *
      * @var Collection<int, ContactRole>
      */
     #[ORM\ManyToMany(targetEntity: ContactRole::class, cascade: ['persist'])]
     #[ORM\OrderBy(['name' => 'ASC'])]
+    #[Assert\Valid]
     private Collection $roles;
 
     public function __construct()
