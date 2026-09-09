@@ -263,6 +263,25 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
         $this->assertFalse($form->isValid(), 'A nested contact email must still be validated.');
     }
 
+    /**
+     * The tag widget's choice list is widened on submit to whatever arrived, so
+     * ChoiceType's own "invalid choice" guard is gone and nothing else stands
+     * between a typed role and the 255-character column.
+     */
+    public function testAnOverlongRoleNameIsRejected(): void
+    {
+        $form = $this->createForm(ServiceAgreementType::class, new ServiceAgreement());
+
+        $form->submit($this->minimalPayload($form) + [
+            'contacts' => [
+                ['name' => 'Anna Hansen', 'roles' => [str_repeat('a', 256)]],
+            ],
+        ]);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertFalse($form->isValid(), 'A role name longer than the column must not reach the database.');
+    }
+
     public function testEolAgreementWithoutValidToIsInvalid(): void
     {
         $form = $this->createForm(ServiceAgreementType::class, new ServiceAgreement());
