@@ -7,6 +7,7 @@ use App\Repository\ContactRoleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Maps a contact's roles to the plain names the tag widget submits, creating a
@@ -14,7 +15,7 @@ use Symfony\Component\Form\DataTransformerInterface;
  *
  * @implements DataTransformerInterface<Collection<int, ContactRole>, string[]>
  */
-class ContactRoleCollectionTransformer implements DataTransformerInterface
+class ContactRoleCollectionTransformer implements DataTransformerInterface, ResetInterface
 {
     /**
      * Roles created during this request, keyed by lowercased name.
@@ -30,6 +31,19 @@ class ContactRoleCollectionTransformer implements DataTransformerInterface
     public function __construct(
         private readonly ContactRoleRepository $contactRoleRepository,
     ) {
+    }
+
+    /**
+     * The cache above is request scoped, but the service holding it is shared.
+     *
+     * Anywhere the container outlives a request — a worker, or a functional test
+     * that called disableReboot() — a role cached here would be handed to the
+     * next request's cascade after the entity manager had been cleared, which
+     * fails as a detached entity rather than as anything legible.
+     */
+    public function reset(): void
+    {
+        $this->created = [];
     }
 
     /**
