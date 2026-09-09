@@ -180,9 +180,13 @@ class ServiceAgreementFlowTest extends AbstractTransactionalFlowTestCase
         $crawler = $this->client->request('GET', '/admin/serviceagreements/new');
 
         $this->assertResponseIsSuccessful();
-        $this->assertGreaterThan(
-            0,
-            $crawler->filter('option:contains("Serverdrift")')->count(),
+
+        // A new agreement renders no contact rows, so the role options live only
+        // in the collection prototype the add button stamps out.
+        $prototype = $crawler->filter('[data-prototype]')->attr('data-prototype');
+        $this->assertStringContainsString(
+            'Serverdrift',
+            (string) $prototype,
             'A role created on one agreement should be suggested on the next.'
         );
     }
@@ -296,7 +300,7 @@ class ServiceAgreementFlowTest extends AbstractTransactionalFlowTestCase
     private function roleNames(ServiceAgreementContact $contact): array
     {
         $names = $contact->getRoles()
-            ->map(fn (ContactRole $role) => (string) $role->getName())
+            ->map(fn (ContactRole $role) => $role->getName())
             ->toArray();
         sort($names);
 

@@ -39,7 +39,7 @@ class ServiceAgreementContactTypeTest extends AbstractFormTestCase
 
     public function testRolesOffersEveryExistingRoleAsAChoice(): void
     {
-        $this->persistRole('Fakturering');
+        $this->existingRole('Fakturering');
 
         $choices = $this->createForm(ServiceAgreementContactType::class)->get('roles')->getConfig()->getOption('choices');
 
@@ -48,7 +48,7 @@ class ServiceAgreementContactTypeTest extends AbstractFormTestCase
 
     public function testSubmitMapsDataToContact(): void
     {
-        $this->persistRole('Fakturering');
+        $this->existingRole('Fakturering');
 
         $contact = new ServiceAgreementContact();
         $form = $this->createForm(ServiceAgreementContactType::class, $contact);
@@ -71,19 +71,20 @@ class ServiceAgreementContactTypeTest extends AbstractFormTestCase
         $contact = new ServiceAgreementContact();
         $form = $this->createForm(ServiceAgreementContactType::class, $contact);
 
+        // A name no fixture holds, so this really does exercise the create path.
         $form->submit([
             'name' => 'Bo Jensen',
-            'roles' => ['Daglig kontakt'],
+            'roles' => ['Kontraktansvarlig'],
         ]);
 
         $this->assertTrue($form->isSynchronized());
         $this->assertTrue($form->isValid(), (string) $form->getErrors(true));
-        $this->assertSame(['Daglig kontakt'], $this->roleNames($contact));
+        $this->assertSame(['Kontraktansvarlig'], $this->roleNames($contact));
     }
 
     public function testSubmitAcceptsAMixOfExistingAndNewRoles(): void
     {
-        $this->persistRole('Fakturering');
+        $this->existingRole('Fakturering');
 
         $contact = new ServiceAgreementContact();
         $form = $this->createForm(ServiceAgreementContactType::class, $contact);
@@ -120,8 +121,18 @@ class ServiceAgreementContactTypeTest extends AbstractFormTestCase
         $this->assertGreaterThan(0, $form->get('email')->getErrors()->count());
     }
 
-    private function persistRole(string $name): ContactRole
+    /**
+     * The fixtures already carry some roles, and the name is unique, so this
+     * reuses one rather than adding a second row.
+     */
+    private function existingRole(string $name): ContactRole
     {
+        $existing = $this->entityManager->getRepository(ContactRole::class)->findOneBy(['name' => $name]);
+
+        if ($existing instanceof ContactRole) {
+            return $existing;
+        }
+
         $role = new ContactRole();
         $role->setName($name);
 
@@ -138,7 +149,7 @@ class ServiceAgreementContactTypeTest extends AbstractFormTestCase
     private function roleNames(ServiceAgreementContact $contact): array
     {
         return $contact->getRoles()
-            ->map(fn (ContactRole $role) => (string) $role->getName())
+            ->map(fn (ContactRole $role) => $role->getName())
             ->toArray();
     }
 }

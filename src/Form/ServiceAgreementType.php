@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Client;
 use App\Entity\Project;
 use App\Entity\ServiceAgreement;
+use App\Entity\ServiceAgreementContact;
 use App\Entity\Worker;
 use App\Enum\HostingProviderEnum;
 use App\Enum\ServerSizeEnum;
@@ -13,10 +14,9 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -62,18 +62,22 @@ class ServiceAgreementType extends AbstractType
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row'],
             ])
-            ->add('clientContactName', TextType::class, [
-                'label' => 'service_agreement.client_contact_name',
+            ->add('contacts', CollectionType::class, [
+                'entry_type' => ServiceAgreementContactType::class,
+                'entry_options' => ['label' => false],
+                'allow_add' => true,
+                'allow_delete' => true,
+                // Routes adds and removes through addContact()/removeContact(),
+                // which is what keeps the owning side set.
+                'by_reference' => false,
+                'prototype' => true,
+                // A row that was added and then left untouched is dropped rather
+                // than saved as a nameless contact.
+                'delete_empty' => fn (?ServiceAgreementContact $contact) => null === $contact
+                    || (null === $contact->getName() && null === $contact->getEmail() && 0 === $contact->getRoles()->count()),
+                'label' => 'service_agreement.contacts',
+                'help' => 'service_agreement.contacts_help',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
-                'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
-                'required' => false,
-            ])
-            ->add('clientContactEmail', EmailType::class, [
-                'label' => 'service_agreement.client_contact_email',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row'],
                 'required' => false,

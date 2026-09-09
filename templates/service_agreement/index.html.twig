@@ -40,7 +40,7 @@
             <th class="table-th">{{ 'service_agreement.cybersecurity_price_short'|trans }}</th>
             <th class="table-th">{{ 'service_agreement.cyber_security_agreement.quarterly_hours'|trans }}</th>
             <th class="table-th">{{ 'service_agreement.note'|trans }}</th>
-            <th class="table-th">{{ 'service_agreement.client_contact_name_short'|trans }}</th>
+            <th class="table-th">{{ 'service_agreement.contacts'|trans }}</th>
             <th class="table-th {% if service_agreements.isSorted('projectLead.name') %} sorted{% endif %}">{{ knp_pagination_sortable(service_agreements, 'service_agreement.project_lead'|trans, 'projectLead.name') }}</th>
             <th class="table-th">{{ 'service_agreement.actions'|trans }}</th>
         </tr>
@@ -83,17 +83,10 @@
                     {% endif %}
                 </td>
                 <td class="table-td whitespace-nowrap">
-                    {% if service_agreement.clientContactName %}
-                        {{ service_agreement.clientContactName }}
-                        {% if service_agreement.clientContactEmail %}
-                            <a href="mailto:{{ service_agreement.clientContactEmail }}" title="{{ service_agreement.clientContactEmail }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 w-4 inline-block ml-1 align-text-bottom">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
-                                </svg>
-                            </a>
-                        {% endif %}
-                    {% else %}
+                    {% if service_agreement.contacts is empty %}
                         -
+                    {% else %}
+                        {{ include('service_agreement/_contacts_dialog.html.twig', {contacts: service_agreement.contacts}) }}
                     {% endif %}
                 </td>
                 <td class="table-td">{{ service_agreement.projectLead ? (service_agreement.projectLead.name ?? service_agreement.projectLead.email) : service_agreement.projectLead.email }}</td>

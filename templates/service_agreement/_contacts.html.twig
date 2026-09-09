@@ -1,0 +1,19 @@
+{# Rendered explicitly rather than by form_rest, so the add button and the row
+   wrappers the collection controller needs are under our control. #}
+<div class="form-row" {{ stimulus_controller('form-collection', {removeLabel: 'service_agreement.contact_remove'|trans}) }}>
+    {{ form_label(contacts) }}
+    {{ form_help(contacts) }}
+
+    <div {{ stimulus_target('form-collection', 'container') }}
+         data-prototype="{{ form_widget(contacts.vars.prototype)|e('html_attr') }}">
+        {# No extra wrapper: form_widget already emits one div per entry, so an
+           existing row and a row stamped from the prototype look the same. #}
+        {% for contact in contacts %}
+            {{ form_widget(contact) }}
+        {% endfor %}
+    </div>
+
+    <button type="button" class="btn" {{ stimulus_action('form-collection', 'add') }}>
+        {{ 'service_agreement.contact_add'|trans }}
+    </button>
+</div>
