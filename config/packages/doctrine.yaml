@@ -29,6 +29,10 @@ doctrine:
                 week: DoctrineExtensions\Query\Mysql\Week
                 weekofyear: DoctrineExtensions\Query\Mysql\WeekOfYear
                 year: DoctrineExtensions\Query\Mysql\Year
+            string_functions:
+                # Collapses an issue's epics and versions into one cell each for the worklog CSV
+                # export, so the export stays a single query per chunk.
+                group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
 
 when@test:
     doctrine:
