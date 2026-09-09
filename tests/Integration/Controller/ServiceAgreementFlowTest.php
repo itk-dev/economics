@@ -260,6 +260,33 @@ class ServiceAgreementFlowTest extends AbstractTransactionalFlowTestCase
         $this->assertNull($this->findByIdOrNull(ServiceAgreement::class, $id));
     }
 
+    /**
+     * The contact rows point at the agreement through a foreign key with no
+     * ON DELETE CASCADE, so nothing but orphanRemoval keeps this from failing
+     * in the database.
+     */
+    public function testDeleteRemovesTheAgreementWithItsContacts(): void
+    {
+        $this->submitCombinedForm('/admin/serviceagreements/new', attachCybersecurity: false, contacts: [
+            ['name' => 'Anna Hansen', 'roles' => ['Fakturering']],
+        ]);
+
+        $this->entityManager->clear();
+        $id = $this->requireId($this->latestAgreement()->getId());
+
+        $this->submitDeleteFormAt(
+            sprintf('/admin/serviceagreements/%d/edit', $id),
+            '/admin/serviceagreements/'.$id
+        );
+
+        $this->assertResponseRedirects('/admin/serviceagreements');
+
+        $this->entityManager->clear();
+        $this->assertNull($this->findByIdOrNull(ServiceAgreement::class, $id));
+        $this->assertCount(0, $this->entityManager->getRepository(ServiceAgreementContact::class)
+            ->findBy(['serviceAgreement' => $id]));
+    }
+
     public function testDeleteWithAnInvalidTokenKeepsTheAgreement(): void
     {
         $id = $this->persistAgreement();
