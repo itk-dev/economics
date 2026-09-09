@@ -1,5 +1,10 @@
 {# Rendered explicitly rather than by form_rest, so the add button and the row
-   wrappers the collection controller needs are under our control. #}
+   wrappers the collection controller needs are under our control.
+
+   Marked rendered by hand: form_label and form_help do not do it, and an empty
+   collection has no children to do it either, so form_rest would render the
+   whole row a second time on every new agreement. #}
+{% do contacts.setRendered() %}
 <div class="form-row" {{ stimulus_controller('form-collection', {removeLabel: 'service_agreement.contact_remove'|trans}) }}>
     {{ form_label(contacts) }}
     {{ form_help(contacts) }}
