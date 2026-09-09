@@ -75,10 +75,16 @@ class ServiceAgreement extends AbstractBaseEntity
      * agreement itself, and orphan removal is what the "remove row" button in
      * the form relies on.
      *
+     * Assert\Valid is what makes a contact's own constraints run: the form
+     * component walks the data graph of the root form only, so without the
+     * cascade the Assert\Email on ServiceAgreementContact is never reached
+     * through this form.
+     *
      * @var Collection<int, ServiceAgreementContact>
      */
     #[ORM\OneToMany(mappedBy: 'serviceAgreement', targetEntity: ServiceAgreementContact::class, cascade: ['persist'], orphanRemoval: true)]
     #[ORM\OrderBy(['id' => 'ASC'])]
+    #[Assert\Valid]
     private Collection $contacts;
 
     #[ORM\Column]
