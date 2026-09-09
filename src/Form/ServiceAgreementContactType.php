@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @extends AbstractType<ServiceAgreementContact>
@@ -19,6 +20,7 @@ class ServiceAgreementContactType extends AbstractType
 {
     public function __construct(
         private readonly ContactRoleRepository $contactRoleRepository,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -84,12 +86,21 @@ class ServiceAgreementContactType extends AbstractType
             'label_attr' => ['class' => 'label'],
             'attr' => [
                 'class' => 'form-element',
-                // Its own controller instance, so a row added from the
-                // prototype initialises itself.
-                'data-controller' => 'tags',
+                'data-tags-target' => 'select',
             ],
             'help_attr' => ['class' => 'form-help'],
-            'row_attr' => ['class' => 'form-row'],
+            'row_attr' => [
+                'class' => 'form-row',
+                // On the row, not the select: Choices.js wraps the select and so
+                // moves it, and a controller mounted on a moving element gets
+                // disconnected and reconnected forever. The row never moves, and
+                // being inside the entry it still initialises a row added from
+                // the prototype.
+                'data-controller' => 'tags',
+                // Translated here rather than passed as a key: it reaches the
+                // widget through Choices.js, which never sees the translator.
+                'data-tags-placeholder-value' => $this->translator->trans('service_agreement.contact_roles_placeholder'),
+            ],
         ];
     }
 }

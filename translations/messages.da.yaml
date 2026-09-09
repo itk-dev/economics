@@ -981,6 +981,7 @@ service_agreement:
   contact_email: "Email"
   contact_roles: "Rolle"
   contact_roles_help: "Vælg en eksisterende rolle, eller skriv en ny og tryk Enter."
+  contact_roles_placeholder: "Vælg eller skriv en rolle …"
   dedicated_server: "Dedikeret server"
   server_size: "Serverstørrelse"
   cybersecurity_price: "Cybersikkerhedsaftale Pris"

@@ -68,7 +68,7 @@ export default class extends Controller {
 
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "btn";
+        button.className = "button button-danger";
         button.textContent = this.removeLabelValue;
         button.dataset.formCollectionRemove = "true";
         button.dataset.action = "form-collection#remove";

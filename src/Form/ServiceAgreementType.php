@@ -64,7 +64,12 @@ class ServiceAgreementType extends AbstractType
             ])
             ->add('contacts', CollectionType::class, [
                 'entry_type' => ServiceAgreementContactType::class,
-                'entry_options' => ['label' => false],
+                // The class groups one contact's fields into a visible card;
+                // without it the rows run together.
+                'entry_options' => [
+                    'label' => false,
+                    'attr' => ['class' => 'service-agreement-contact'],
+                ],
                 'allow_add' => true,
                 'allow_delete' => true,
                 // Routes adds and removes through addContact()/removeContact(),

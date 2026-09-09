@@ -6,84 +6,140 @@ import "choices.js/src/styles/choices.scss";
  * A tag widget over a <select multiple>: pick an existing option, or type a new
  * one and press Enter.
  *
- * Choices.js has no create-new of its own, so the typed term is added as a
- * choice and selected — the select then submits it like any other value, and the
- * server side creates the missing role.
+ * Choices.js will not create a value of its own on a select — `_onEnterKey`
+ * adds an item only for text elements — and it binds its own keydown on the
+ * outer container in the capture phase. So the Enter key is intercepted one
+ * level higher, on this controller's element, which captures first.
  *
- * Attached per element rather than through a container, so a row added from a
- * collection prototype initialises itself.
+ * Mounted on the form row rather than the select, because Choices.js wraps the
+ * select and a controller on a moving element is disconnected and reconnected
+ * indefinitely. The row is inside the collection entry, so a row stamped from
+ * the prototype still initialises itself.
  */
 export default class extends Controller {
+    static targets = ["select"];
+
+    static values = { placeholder: String };
+
     connect() {
-        if (this.element.disabled || this.element.choices) {
+        if (
+            !this.hasSelectTarget ||
+            this.selectTarget.disabled ||
+            this.selectTarget.choices
+        ) {
             return;
         }
 
-        this.searchTerm = "";
-
-        this.choices = new Choices(this.element, {
+        this.choices = new Choices(this.selectTarget, {
             allowHTML: true,
             itemSelectText: "",
             removeItems: true,
             removeItemButton: true,
             duplicateItemsAllowed: false,
+            // Without it an empty field is a blank box with no hint that it
+            // takes typing.
+            placeholder: true,
+            placeholderValue: this.placeholderValue,
         });
 
         // Kept on the element for parity with choices_controller.
-        this.element.choices = this.choices;
+        this.selectTarget.choices = this.choices;
 
-        this.onSearch = (event) => {
-            this.searchTerm = event.detail.value ?? "";
+        // Set once the user walks the dropdown, cleared as soon as they type
+        // again: it is the only reliable signal that they mean the highlighted
+        // suggestion rather than what they typed.
+        this.navigated = false;
+
+        this.onKeyDown = (event) => this.trackNavigation(event);
+        this.onInput = (event) => {
+            if (event.target === this.choices.input.element) {
+                this.navigated = false;
+            }
         };
-        this.onKeyDown = (event) => this.createOnEnter(event);
 
-        this.element.addEventListener("search", this.onSearch);
-        this.element.addEventListener("change", () => {
-            this.searchTerm = "";
-        });
-        this.choices.input.element.addEventListener("keydown", this.onKeyDown);
+        this.element.addEventListener("keydown", this.onKeyDown, true);
+        this.element.addEventListener("input", this.onInput, true);
     }
 
     disconnect() {
-        this.element.removeEventListener("search", this.onSearch);
+        this.element.removeEventListener("keydown", this.onKeyDown, true);
+        this.element.removeEventListener("input", this.onInput, true);
 
         if (this.choices) {
             this.choices.destroy();
-            this.element.choices = null;
+            this.choices = null;
         }
+    }
+
+    trackNavigation(event) {
+        if (
+            ["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)
+        ) {
+            this.navigated = true;
+
+            return;
+        }
+
+        this.createOnEnter(event);
     }
 
     createOnEnter(event) {
-        if (event.key !== "Enter") {
+        if (event.key !== "Enter" || !this.choices) {
             return;
         }
 
-        const term = this.searchTerm.trim();
+        const term = this.choices.input.value.trim();
 
-        if (term === "" || this.hasChoice(term)) {
+        if (term === "") {
             return;
         }
 
-        // Stops Choices.js from selecting whatever the dropdown had highlighted,
-        // and stops the browser from submitting the form.
+        // Choices searches fuzzily through Fuse.js, so "Fisk" highlights
+        // "Fakturering". A highlight alone is therefore no reason to hand Enter
+        // over — only an exact match, or the user having walked the list.
+        if (this.navigated || this.exactMatchHighlighted(term)) {
+            return;
+        }
+
+        // Also stops the browser submitting the whole agreement form.
         event.preventDefault();
         event.stopPropagation();
 
-        this.choices.setChoices(
-            [{ value: term, label: term, selected: true }],
-            "value",
-            "label",
-            false,
-        );
+        if (!this.isSelected(term)) {
+            this.choices.setChoices(
+                [{ value: term, label: term }],
+                "value",
+                "label",
+                false,
+            );
+            this.choices.setChoiceByValue(term);
+        }
+
         this.choices.clearInput();
-        this.searchTerm = "";
+        this.choices.hideDropdown();
+        this.navigated = false;
     }
 
-    hasChoice(term) {
+    exactMatchHighlighted(term) {
+        if (!this.choices.dropdown.isActive) {
+            return false;
+        }
+
+        const highlighted =
+            this.choices.dropdown.element.querySelector(".is-highlighted");
+
+        return (
+            !!highlighted &&
+            (highlighted.dataset.value ?? "").toLowerCase() ===
+                term.toLowerCase()
+        );
+    }
+
+    isSelected(term) {
         const wanted = term.toLowerCase();
 
-        return Array.from(this.element.options).some(
-            (option) => option.value.toLowerCase() === wanted,
+        return (this.choices.getValue(true) || []).some(
+            (value) => String(value).toLowerCase() === wanted,
         );
     }
 }
