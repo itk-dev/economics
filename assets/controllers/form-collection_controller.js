@@ -15,9 +15,31 @@ export default class extends Controller {
     connect() {
         // Never decremented: a removed row must not free its index for reuse
         // within the same submit.
-        this.index = this.rows().length;
+        this.index = this.nextIndex();
 
         this.rows().forEach((row) => this.addRemoveButton(row));
+    }
+
+    /**
+     * One past the highest index rendered, read off the entry ids Symfony emits.
+     *
+     * Not the row count: `delete_empty` drops an untouched row server-side, so a
+     * form coming back from a failed validation can be keyed 0 and 2, and
+     * counting rows would hand the next row an index that is already taken —
+     * two rows would then submit under the same name and PHP would keep only
+     * the last, silently replacing a contact the user had filled in.
+     *
+     * The row count stays the floor, so a row without a numbered id cannot drag
+     * the index below what counting would have given.
+     */
+    nextIndex() {
+        const rows = this.rows();
+
+        return rows.reduce((next, row) => {
+            const index = /_(\d+)$/.exec(row.id);
+
+            return index ? Math.max(next, Number(index[1]) + 1) : next;
+        }, rows.length);
     }
 
     add() {
