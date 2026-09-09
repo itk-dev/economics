@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [PR-352](https://github.com/itk-dev/economics/pull/352)
-  * Replaced the single client contact on a service agreement with a list of contacts holding name,
-    email and freely created role tags, shown as a count and a dialog in the overview.
+  * Added a contact list to service agreements holding name, email and freely created role tags,
+    shown as a count and a dialog in the overview; the old contact columns are kept, deprecated.
 * [PR-351](https://github.com/itk-dev/economics/pull/351)
   * Pinned the selectable-hours total to its own project, covering the unbilled-as-NULL worklog
     that no fixture row has.

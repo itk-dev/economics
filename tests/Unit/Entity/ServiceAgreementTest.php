@@ -48,6 +48,25 @@ class ServiceAgreementTest extends TestCase
         $this->assertNull($contact->getServiceAgreement());
     }
 
+    /**
+     * The two columns the contact list replaced are kept, deprecated, so the
+     * migration loses nothing. No form writes them; only this covers them.
+     */
+    public function testDeprecatedClientContactAccessors(): void
+    {
+        $this->agreement->setClientContactName('Jane Doe');
+        $this->agreement->setClientContactEmail('jane@example.com');
+
+        $this->assertSame('Jane Doe', $this->agreement->getClientContactName());
+        $this->assertSame('jane@example.com', $this->agreement->getClientContactEmail());
+
+        $this->agreement->setClientContactName(null);
+        $this->agreement->setClientContactEmail(null);
+
+        $this->assertNull($this->agreement->getClientContactName());
+        $this->assertNull($this->agreement->getClientContactEmail());
+    }
+
     public function testRemoveContactLeavesForeignOwnerAlone(): void
     {
         $other = new ServiceAgreement();

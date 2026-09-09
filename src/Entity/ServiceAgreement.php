@@ -57,6 +57,20 @@ class ServiceAgreement extends AbstractBaseEntity
     private bool $isEol = false;
 
     /**
+     * @deprecated superseded by $contacts. Retained so the migration to the
+     *             contact list loses nothing; not editable through any form.
+     *             Read it only to recover pre-migration data.
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $clientContactName = null;
+
+    /**
+     * @deprecated superseded by $contacts — see $clientContactName
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $clientContactEmail = null;
+
+    /**
      * Contacts cascade a persist because the controller persists only the
      * agreement itself, and orphan removal is what the "remove row" button in
      * the form relies on.
@@ -230,6 +244,42 @@ class ServiceAgreement extends AbstractBaseEntity
     public function setIsEol(bool $isEol): static
     {
         $this->isEol = $isEol;
+
+        return $this;
+    }
+
+    /**
+     * @deprecated use getContacts()
+     */
+    public function getClientContactName(): ?string
+    {
+        return $this->clientContactName;
+    }
+
+    /**
+     * @deprecated use getContacts()
+     */
+    public function setClientContactName(?string $clientContactName): static
+    {
+        $this->clientContactName = $clientContactName;
+
+        return $this;
+    }
+
+    /**
+     * @deprecated use getContacts()
+     */
+    public function getClientContactEmail(): ?string
+    {
+        return $this->clientContactEmail;
+    }
+
+    /**
+     * @deprecated use getContacts()
+     */
+    public function setClientContactEmail(?string $clientContactEmail): static
+    {
+        $this->clientContactEmail = $clientContactEmail;
 
         return $this;
     }
