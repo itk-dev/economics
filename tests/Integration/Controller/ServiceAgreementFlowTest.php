@@ -131,6 +131,22 @@ class ServiceAgreementFlowTest extends AbstractTransactionalFlowTestCase
             ->findBy(['serviceAgreement' => $id]));
     }
 
+    /**
+     * form_label() and form_help() do not mark a view rendered, and an empty
+     * collection has no children to mark it for them, so form_rest() renders the
+     * contacts row a second time unless _contacts.html.twig marks it itself. A
+     * new agreement holds no contacts, so this is the default state of the page.
+     *
+     * The help div carries an id, so a repeat is a duplicate id as well.
+     */
+    public function testNewRendersTheContactsRowOnce(): void
+    {
+        $crawler = $this->client->request('GET', '/admin/serviceagreements/new');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(1, $crawler->filter('[id$="_contacts_help"]'));
+    }
+
     public function testNewCreatesAnAgreementWithContacts(): void
     {
         $this->submitCombinedForm('/admin/serviceagreements/new', attachCybersecurity: false, contacts: [

@@ -241,6 +241,28 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
         $this->assertSame($first->getRoles()->first(), $last->getRoles()->first());
     }
 
+    /**
+     * Through the agreement form the contact is nested, and Symfony walks the
+     * data graph of the root form only, so a contact's own constraints are
+     * reached only if the collection cascades validation.
+     *
+     * ServiceAgreementContactTypeTest covers the same email as a root form,
+     * which is the one arrangement where it is validated either way.
+     */
+    public function testAContactWithAMalformedEmailIsRejected(): void
+    {
+        $form = $this->createForm(ServiceAgreementType::class, new ServiceAgreement());
+
+        $form->submit($this->minimalPayload($form) + [
+            'contacts' => [
+                ['name' => 'Anna Hansen', 'email' => 'not-an-email'],
+            ],
+        ]);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertFalse($form->isValid(), 'A nested contact email must still be validated.');
+    }
+
     public function testEolAgreementWithoutValidToIsInvalid(): void
     {
         $form = $this->createForm(ServiceAgreementType::class, new ServiceAgreement());
