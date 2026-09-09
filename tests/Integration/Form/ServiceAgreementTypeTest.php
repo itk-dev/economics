@@ -280,6 +280,15 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
 
         $this->assertTrue($form->isSynchronized());
         $this->assertFalse($form->isValid(), 'A role name longer than the column must not reach the database.');
+
+        // Pinned because no template in this project renders form_errors() for a
+        // root form, so a violation that bubbled all the way up would reject the
+        // submit without telling the user why.
+        $this->assertGreaterThan(
+            0,
+            $form->get('contacts')->get('0')->get('roles')->getErrors()->count(),
+            'The violation must land on the roles field, where the entry template renders it.'
+        );
     }
 
     public function testEolAgreementWithoutValidToIsInvalid(): void
