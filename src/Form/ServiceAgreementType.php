@@ -10,6 +10,7 @@ use App\Entity\Worker;
 use App\Enum\HostingProviderEnum;
 use App\Enum\ServerSizeEnum;
 use App\Enum\SystemOwnerNoticeEnum;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -31,9 +32,13 @@ class ServiceAgreementType extends AbstractType
                 'class' => Project::class,
                 'label' => 'service_agreement.project',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
+                // Deliberately unfiltered: an agreement may point at a project
+                // that is excluded from reports.
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('project')
+                    ->orderBy('project.name', 'ASC'),
             ])
             ->add('isActive', CheckboxType::class, [
                 'label' => 'service_agreement.is_active',
@@ -58,9 +63,11 @@ class ServiceAgreementType extends AbstractType
                 'class' => Client::class,
                 'label' => 'service_agreement.client',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('client')
+                    ->orderBy('client.name', 'ASC'),
             ])
             ->add('contacts', CollectionType::class, [
                 'entry_type' => ServiceAgreementContactType::class,
@@ -93,6 +100,7 @@ class ServiceAgreementType extends AbstractType
                     SystemOwnerNoticeEnum::SERVERFLYTNING => 'system_owner_notice_enum.serverflytning',
                     SystemOwnerNoticeEnum::SIKKERHEDSPATCH => 'system_owner_notice_enum.sikkerhedspatch',
                     SystemOwnerNoticeEnum::CYBERSIKKERSHEDSOPDATERING => 'system_owner_notice_enum.cybersikkershedsopdatering',
+                    SystemOwnerNoticeEnum::RELEASE => 'system_owner_notice_enum.release',
                 },
                 'choice_value' => fn (?SystemOwnerNoticeEnum $choice) => $choice?->value,
                 'multiple' => true,
@@ -172,9 +180,14 @@ class ServiceAgreementType extends AbstractType
                 'class' => Worker::class,
                 'label' => 'service_agreement.project_lead_id',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
+                // Workers rarely carry a name, and Worker::__toString() then
+                // falls back to the email — so sort on whatever is displayed.
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('worker')
+                    ->addSelect('COALESCE(worker.name, worker.email) AS HIDDEN label')
+                    ->orderBy('label', 'ASC'),
             ]);
     }
 

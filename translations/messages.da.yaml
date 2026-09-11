@@ -287,6 +287,7 @@ system_owner_notice_enum:
   serverflytning: "Serverflytning"
   sikkerhedspatch: "Sikkerhedspatch"
   cybersikkershedsopdatering: "Cybersikkershedsopdatering"
+  release: "Release"
 
 server_size_enum:
   lille: "Lille"

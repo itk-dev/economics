@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-357](https://github.com/itk-dev/economics/pull/357)
   * Added a contact list to service agreements holding name, email and freely created role tags,
     shown as a count and a dialog in the overview; the old contact columns are kept, deprecated.
+* [PR-356](https://github.com/itk-dev/economics/pull/356)
+  * Added Release to system owner notices.
+* [PR-352](https://github.com/itk-dev/economics/pull/352)
+  * Made project, client and project lead searchable dropdowns on the service agreement form,
+    sorted by the name shown rather than by database order.
 * [PR-350](https://github.com/itk-dev/economics/pull/350)
   * Added a CSV export of the filtered worklog list, streamed in keyset-paged chunks so every page
     is included at constant memory.

@@ -131,6 +131,69 @@ class ServiceAgreementTypeTest extends AbstractFormTestCase
         ];
     }
 
+    /**
+     * Sorted by what the user actually reads, which is __toString() — Worker
+     * rows in particular usually carry no name and fall back to their email.
+     *
+     * @dataProvider entityFieldProvider
+     */
+    public function testEntityChoicesAreSortedByLabel(string $field): void
+    {
+        $view = $this->createForm(ServiceAgreementType::class)->createView()->children[$field];
+
+        $labels = array_values(array_map(
+            fn ($choiceView) => (string) $choiceView->data,
+            $view->vars['choices']
+        ));
+
+        $this->assertGreaterThan(1, count($labels), sprintf('Field "%s" needs several choices for the ordering to mean anything.', $field));
+
+        $sorted = $labels;
+        usort($sorted, 'strcasecmp');
+
+        $this->assertSame($sorted, $labels, sprintf('Choices for "%s" should be sorted by label.', $field));
+    }
+
+    /**
+     * The choices Stimulus controller only enhances elements carrying this
+     * target, so losing the attribute silently downgrades the widget.
+     *
+     * @dataProvider entityFieldProvider
+     */
+    public function testEntityFieldsUseTheChoicesWidget(string $field): void
+    {
+        $vars = $this->createForm(ServiceAgreementType::class)->createView()->children[$field]->vars;
+
+        $this->assertSame('choices', $vars['attr']['data-choices-target'] ?? null);
+        $this->assertStringContainsString('form-choices', $vars['row_attr']['class'] ?? '');
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function entityFieldProvider(): array
+    {
+        return [
+            'project' => ['project'],
+            'client' => ['client'],
+            'project lead' => ['projectLead'],
+        ];
+    }
+
+    /**
+     * Ordering must not turn into filtering: an agreement may well point at a
+     * project that is excluded from reports.
+     */
+    public function testProjectChoicesAreNotNarrowed(): void
+    {
+        $view = $this->createForm(ServiceAgreementType::class)->createView()->children['project'];
+
+        $this->assertCount(
+            count($this->entityManager->getRepository(Project::class)->findAll()),
+            $view->vars['choices']
+        );
+    }
+
     public function testSubmitMapsDataToServiceAgreement(): void
     {
         $projectId = $this->requireId($this->findOne(Project::class)->getId());
