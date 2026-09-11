@@ -1,0 +1,54 @@
+{# The overview table is already wide, so a row shows only how many contacts it
+   has and puts the detail in a modal. #}
+<div {{ stimulus_controller('contacts-dialog') }}>
+    <button type="button" class="link" {{ stimulus_action('contacts-dialog', 'open') }}
+            aria-haspopup="dialog">
+        {{ 'service_agreement.contacts_count'|trans({'%count%': contacts|length}) }}
+    </button>
+
+    <dialog {{ stimulus_target('contacts-dialog', 'dialog') }}
+            {{ stimulus_action('contacts-dialog', 'clickOutside', 'click') }}
+            aria-label="{{ 'service_agreement.contacts_dialog_title'|trans }}"
+            class="w-11/12 max-w-2xl p-0 rounded-lg backdrop:bg-black/50 bg-white text-black dark:bg-gray-900 dark:text-white">
+        <div class="flex justify-between items-center p-3">
+            <h2 class="font-bold">{{ 'service_agreement.contacts_dialog_title'|trans }}</h2>
+            <button type="button" class="w-8" {{ stimulus_action('contacts-dialog', 'close') }}
+                    aria-label="{{ 'service_agreement.contacts_dialog_close'|trans }}">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="px-5 pb-5 text-left">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="table-th">{{ 'service_agreement.contact_name'|trans }}</th>
+                    <th class="table-th">{{ 'service_agreement.contact_email'|trans }}</th>
+                    <th class="table-th">{{ 'service_agreement.contact_roles'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for contact in contacts %}
+                    <tr class="{{ loop.index0 % 2 == 0 ? 'table-tr' : 'table-tr-alt' }}">
+                        <td class="table-td">{{ contact.name ?? '-' }}</td>
+                        <td class="table-td">
+                            {% if contact.email %}
+                                <a class="link" href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="table-td">
+                            {% for role in contact.roles %}
+                                <span class="choices__item">{{ role.name }}</span>
+                            {% else %}
+                                -
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </dialog>
+</div>

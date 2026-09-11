@@ -12,7 +12,11 @@
 
     {{ form_start(form) }}
     <div class="selections" {{ stimulus_controller('choices eol-required') }}>
+        {# Captured first so form_rest sees it as rendered, then emitted below the
+           remaining fields. #}
+        {% set contacts %}{{ include('service_agreement/_contacts.html.twig', {contacts: form.serviceAgreement.contacts}) }}{% endset %}
         {{ form_rest(form) }}
+        {{ contacts }}
     </div>
     <button class="button mt-3">{{ 'clients.action_save'|trans }}</button>
     {{ form_end(form) }}

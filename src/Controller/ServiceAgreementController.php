@@ -8,6 +8,7 @@ use App\Form\CombinedServiceAgreementType;
 use App\Form\ServiceAgreementFilterType;
 use App\Model\Invoices\ServiceAgreementFilterData;
 use App\Repository\CybersecurityAgreementRepository;
+use App\Repository\ServiceAgreementContactRepository;
 use App\Repository\ServiceAgreementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\QueryException;
@@ -25,7 +26,7 @@ final class ServiceAgreementController extends AbstractController
      * @throws QueryException
      */
     #[Route(name: 'app_service_agreement_index', methods: ['GET'])]
-    public function index(Request $request, ServiceAgreementRepository $serviceAgreementRepository, CybersecurityAgreementRepository $cybersecurityAgreementRepository): Response
+    public function index(Request $request, ServiceAgreementRepository $serviceAgreementRepository, CybersecurityAgreementRepository $cybersecurityAgreementRepository, ServiceAgreementContactRepository $serviceAgreementContactRepository): Response
     {
         $serviceAgreementFilterData = new ServiceAgreementFilterData();
         $serviceAgreementFilterData->active = true;
@@ -37,9 +38,18 @@ final class ServiceAgreementController extends AbstractController
         // Get all cybersecurity agreements indexed by ID
         $cybersecurityAgreements = $cybersecurityAgreementRepository->findAllIndexed();
 
+        $serviceAgreementIds = [];
+
+        foreach ($pagination as $serviceAgreement) {
+            if ($serviceAgreement instanceof ServiceAgreement && null !== $serviceAgreement->getId()) {
+                $serviceAgreementIds[] = $serviceAgreement->getId();
+            }
+        }
+
         return $this->render('service_agreement/index.html.twig', [
             'service_agreements' => $pagination,
             'cyber_security_agreements' => $cybersecurityAgreements,
+            'contacts_by_agreement' => $serviceAgreementContactRepository->findForServiceAgreementsIndexed($serviceAgreementIds),
             'form' => $form,
         ]);
     }

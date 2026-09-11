@@ -339,6 +339,16 @@
         @apply mb-0;
     }
 
+    .service-agreement-contact {
+        @apply mb-4 p-4 rounded-lg border border-gray-300 dark:border-gray-600;
+    }
+
+    /* The last field's margin plus the card padding is too much space above
+       the remove button. */
+    .service-agreement-contact .form-row:last-of-type {
+        @apply mb-2;
+    }
+
     .selections .choices__list .choices__input {
         @apply text-black dark:text-white;
     }

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-357](https://github.com/itk-dev/economics/pull/357)
+  * Added a contact list to service agreements holding name, email and freely created role tags,
+    shown as a count and a dialog in the overview; the old contact columns are kept, deprecated.
 * [PR-356](https://github.com/itk-dev/economics/pull/356)
   * Added Release to system owner notices.
 * [PR-352](https://github.com/itk-dev/economics/pull/352)

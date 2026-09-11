@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Account;
+use App\Entity\ContactRole;
 use App\Entity\CybersecurityAgreement;
 use App\Entity\DataProvider;
 use App\Entity\Epic;
@@ -15,6 +16,7 @@ use App\Entity\Project;
 use App\Entity\ProjectBilling;
 use App\Entity\ProjectVersionBudget;
 use App\Entity\ServiceAgreement;
+use App\Entity\ServiceAgreementContact;
 use App\Entity\User;
 use App\Entity\Worker;
 use App\Entity\WorkerGroup;
@@ -80,6 +82,74 @@ class SmallEntitiesTest extends TestCase
         $this->assertNull($agreement->getServiceAgreement());
         $this->assertNull($agreement->getPrice());
         $this->assertNull($agreement->getNote());
+    }
+
+    public function testContactRoleAccessors(): void
+    {
+        $role = new ContactRole();
+
+        $role->setName('Fakturering');
+
+        $this->assertNull($role->getId());
+        $this->assertSame('Fakturering', $role->getName());
+        $this->assertSame('Fakturering', (string) $role);
+    }
+
+    public function testContactRoleTrimsItsName(): void
+    {
+        $role = new ContactRole();
+
+        $role->setName('  Daglig kontakt  ');
+
+        $this->assertSame('Daglig kontakt', $role->getName());
+    }
+
+    public function testContactRoleToStringWithoutAName(): void
+    {
+        $this->assertSame('', (string) new ContactRole());
+    }
+
+    public function testServiceAgreementContactAccessors(): void
+    {
+        $contact = new ServiceAgreementContact();
+        $serviceAgreement = new ServiceAgreement();
+
+        $this->assertNull($contact->getId());
+        $this->assertCount(0, $contact->getRoles());
+
+        $contact->setServiceAgreement($serviceAgreement);
+        $contact->setName('Anna Hansen');
+        $contact->setEmail('anna@example.com');
+
+        $this->assertSame($serviceAgreement, $contact->getServiceAgreement());
+        $this->assertSame('Anna Hansen', $contact->getName());
+        $this->assertSame('anna@example.com', $contact->getEmail());
+    }
+
+    public function testServiceAgreementContactNullableAccessors(): void
+    {
+        $contact = new ServiceAgreementContact();
+
+        $contact->setServiceAgreement(null);
+        $contact->setName(null);
+        $contact->setEmail(null);
+
+        $this->assertNull($contact->getServiceAgreement());
+        $this->assertNull($contact->getName());
+        $this->assertNull($contact->getEmail());
+    }
+
+    public function testServiceAgreementContactRoleCollection(): void
+    {
+        $contact = new ServiceAgreementContact();
+        $role = new ContactRole();
+
+        $contact->addRole($role);
+        $contact->addRole($role);
+        $this->assertCount(1, $contact->getRoles());
+
+        $contact->removeRole($role);
+        $this->assertCount(0, $contact->getRoles());
     }
 
     public function testDataProviderAccessors(): void
