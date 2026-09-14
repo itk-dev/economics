@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Account;
 use App\Entity\Client;
+use App\Entity\ContactRole;
 use App\Entity\CybersecurityAgreement;
 use App\Entity\DataProvider;
 use App\Entity\Epic;
@@ -14,6 +15,7 @@ use App\Entity\Product;
 use App\Entity\Project;
 use App\Entity\ProjectBilling;
 use App\Entity\ServiceAgreement;
+use App\Entity\ServiceAgreementContact;
 use App\Entity\Subscription;
 use App\Entity\User;
 use App\Entity\Version;
@@ -355,6 +357,15 @@ class AppFixtures extends Fixture
             $wl->setIsBilled(true);
         }
 
+        // A few worklogs old enough for app:anonymize-worklogs to act on — every other worklog is
+        // stamped with the current year and can never be picked up. project-1-9 carries them
+        // because no test asserts on that project, so moving these rows out of the current year
+        // cannot shift a fixture total another test depends on.
+        $worklogsToAge = $worklogRepo->findBy(['project' => $projectsByKey['1-9']], ['id' => 'ASC'], 3);
+        foreach ($worklogsToAge as $index => $wl) {
+            $wl->setStarted(new \DateTime(sprintf('-%d years', 6 + $index)));
+        }
+
         // Service Agreements
         $sa1 = new ServiceAgreement();
         $sa1->setProject($project00);
@@ -391,6 +402,30 @@ class AppFixtures extends Fixture
         $sa3->setIsActive(true);
         $sa3->setSystemOwnerNotices([SystemOwnerNoticeEnum::CYBERSIKKERSHEDSOPDATERING]);
         $manager->persist($sa3);
+
+        // Contacts on sa1 only, so the overview covers both a row with contacts
+        // and a row without. sa1 gets one contact with roles and one without.
+        $faktureringRole = new ContactRole();
+        $faktureringRole->setName('Fakturering');
+        $manager->persist($faktureringRole);
+
+        $dagligRole = new ContactRole();
+        $dagligRole->setName('Daglig kontakt');
+        $manager->persist($dagligRole);
+
+        $contact1 = new ServiceAgreementContact();
+        $contact1->setName('Anna Hansen');
+        $contact1->setEmail('anna.hansen@test.local');
+        $contact1->addRole($faktureringRole);
+        $contact1->addRole($dagligRole);
+        $sa1->addContact($contact1);
+        $manager->persist($contact1);
+
+        $contact2 = new ServiceAgreementContact();
+        $contact2->setName('Bo Jensen');
+        $contact2->setEmail('bo.jensen@test.local');
+        $sa1->addContact($contact2);
+        $manager->persist($contact2);
 
         // Cybersecurity Agreement
         $ca1 = new CybersecurityAgreement();

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Worker;
+use App\Entity\WorkerGroup;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -43,6 +44,20 @@ class WorkerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('w')
             ->where('w.includeInReports = true')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return Worker[]
+     */
+    public function findIncludedInReportsByGroup(WorkerGroup $group): array
+    {
+        return $this->createQueryBuilder('w')
+            ->innerJoin('w.workerGroups', 'g')
+            ->where('w.includeInReports = true')
+            ->andWhere('g = :group')
+            ->setParameter('group', $group)
             ->getQuery()
             ->getResult();
     }

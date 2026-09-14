@@ -103,7 +103,7 @@ class InvoiceController extends AbstractController
 
         $accountChoices = $accountRepository->getAllChoices();
 
-        // Backwards compatible with JiraEconomics.
+        // Keep legacy free-text account values selectable.
         $paidByAccountChoices = $accountChoices;
         $paidByAccountCurrentValue = $invoice->getPaidByAccount();
         if (!empty($paidByAccountCurrentValue)) {
@@ -112,7 +112,7 @@ class InvoiceController extends AbstractController
             }
         }
 
-        // Backwards compatible with JiraEconomics.
+        // Keep legacy free-text account values selectable.
         $defaultReceiverAccountChoices = $accountChoices;
         $defaultReceiverAccountCurrentValue = $invoice->getDefaultReceiverAccount();
         if (!empty($defaultReceiverAccountCurrentValue)) {

@@ -7,6 +7,7 @@ use App\Entity\Worklog;
 use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
+use App\Model\Reports\WorkloadReportWorker;
 use App\Repository\WorkerRepository;
 use App\Repository\WorklogRepository;
 use App\Service\DateTimeHelper;
@@ -198,5 +199,173 @@ class WorkloadReportServiceTest extends TestCase
 
         // Run method that triggers exception
         $workloadReportService->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetPeriodWorklogsSumsAndSortsTheWorklogsBehindACell(): void
+    {
+        $worker = $this->createMock(Worker::class);
+        $worker->method('getUserIdentifier')->willReturn('test0@test');
+        $worker->method('getWorkload')->willReturn(40.0);
+        $worker->method('getName')->willReturn('Test Zero');
+
+        // Returned out of order on purpose: the repository methods do not order.
+        $later = $this->createMock(Worklog::class);
+        $later->method('getTimeSpentSeconds')->willReturn(36000);
+        $later->method('getStarted')->willReturn(new \DateTime('2024-01-05 09:00:00'));
+
+        $earlier = $this->createMock(Worklog::class);
+        $earlier->method('getTimeSpentSeconds')->willReturn(18000);
+        $earlier->method('getStarted')->willReturn(new \DateTime('2024-01-02 09:00:00'));
+
+        $worklogRepoMock = $this->createMock(WorklogRepository::class);
+        $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$later, $earlier]);
+
+        $service = new WorkloadReportService(
+            $this->createMock(WorkerRepository::class),
+            $worklogRepoMock,
+            $this->getDateTimeHelperMock(),
+        );
+
+        $result = $service->getPeriodWorklogs($worker, 2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD, 1);
+
+        $this->assertSame('Test Zero', $result->workerName);
+        $this->assertSame('1', $result->readablePeriod);
+        $this->assertSame(40.0, $result->expectedWorkload);
+        // 36000s + 18000s = 15 hours of an expected 40.
+        $this->assertSame(15.0, $result->loggedHours);
+        $this->assertSame(37.5, $result->loggedPercentage);
+        $this->assertSame([$earlier, $later], $result->worklogs);
+    }
+
+    /**
+     * The modal must never contradict the cell it was opened from.
+     *
+     * @throws Exception
+     */
+    public function testGetPeriodWorklogsPercentageMatchesTheReportCell(): void
+    {
+        $worker = $this->createMock(Worker::class);
+        $worker->method('getUserIdentifier')->willReturn('test0@test');
+        $worker->method('getWorkload')->willReturn(40.0);
+
+        $worklog = $this->createMock(Worklog::class);
+        $worklog->method('getTimeSpentSeconds')->willReturn(36000);
+        $worklog->method('getStarted')->willReturn(new \DateTime('2024-01-02 09:00:00'));
+
+        $workerRepoMock = $this->createMock(WorkerRepository::class);
+        $workerRepoMock->method('findBy')->willReturn([$worker]);
+
+        $worklogRepoMock = $this->createMock(WorklogRepository::class);
+        $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([$worklog]);
+
+        $service = new WorkloadReportService($workerRepoMock, $worklogRepoMock, $this->getDateTimeHelperMock());
+
+        $report = $service->getWorkloadReport(2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD);
+        $reportWorker = $report->workers->first();
+        $this->assertInstanceOf(WorkloadReportWorker::class, $reportWorker);
+        $cell = $reportWorker->loggedPercentage->get(1);
+
+        $result = $service->getPeriodWorklogs($worker, 2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD, 1);
+
+        $this->assertSame($cell, $result->loggedPercentage);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetPeriodWorklogsUsesTheRepositoryMethodMatchingTheViewMode(): void
+    {
+        $worker = $this->createMock(Worker::class);
+        $worker->method('getUserIdentifier')->willReturn('test0@test');
+        $worker->method('getWorkload')->willReturn(40.0);
+
+        $worklogRepoMock = $this->createMock(WorklogRepository::class);
+        $worklogRepoMock->expects($this->never())->method('findWorklogsByWorkerAndDateRange');
+        $worklogRepoMock->expects($this->once())->method('findBillableWorklogsByWorkerAndDateRange')->willReturn([]);
+        $worklogRepoMock->expects($this->once())->method('findBilledWorklogsByWorkerAndDateRange')->willReturn([]);
+
+        $service = new WorkloadReportService(
+            $this->createMock(WorkerRepository::class),
+            $worklogRepoMock,
+            $this->getDateTimeHelperMock(),
+        );
+
+        $service->getPeriodWorklogs($worker, 2024, PeriodTypeEnum::WEEK, ViewModeEnum::BILLABLE, 1);
+        $service->getPeriodWorklogs($worker, 2024, PeriodTypeEnum::WEEK, ViewModeEnum::BILLED, 1);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetPeriodWorklogsThrowsWhenWorkerWorkloadIsUnset(): void
+    {
+        $worker = $this->createMock(Worker::class);
+        $worker->method('getUserIdentifier')->willReturn('test2@test');
+        $worker->method('getWorkload')->willReturn(null);
+
+        $worklogRepoMock = $this->createMock(WorklogRepository::class);
+        $worklogRepoMock->method('findWorklogsByWorkerAndDateRange')->willReturn([]);
+
+        $service = new WorkloadReportService(
+            $this->createMock(WorkerRepository::class),
+            $worklogRepoMock,
+            $this->getDateTimeHelperMock(),
+        );
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Workload of worker: test2@test cannot be null when generating workload report.');
+
+        $service->getPeriodWorklogs($worker, 2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD, 1);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testGetPeriodWorklogsThrowsWhenWorkerIdentifierIsEmpty(): void
+    {
+        $worker = $this->createMock(Worker::class);
+        $worker->method('getUserIdentifier')->willReturn('');
+        $worker->method('getWorkload')->willReturn(40.0);
+
+        $service = new WorkloadReportService(
+            $this->createMock(WorkerRepository::class),
+            $this->createMock(WorklogRepository::class),
+            $this->getDateTimeHelperMock(),
+        );
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Worker identifier cannot be empty');
+
+        $service->getPeriodWorklogs($worker, 2024, PeriodTypeEnum::WEEK, ViewModeEnum::WORKLOAD, 1);
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function getDateTimeHelperMock(): DateTimeHelper
+    {
+        $dateTimeHelperMock = $this->createMock(DateTimeHelper::class);
+        $dateTimeHelperMock->method('getWeeksOfYear')->willReturn(range(1, 52));
+        $dateTimeHelperMock->method('getMonthName')->willReturnCallback(function ($month) {
+            return date('F', (int) mktime(0, 0, 0, $month, 10));
+        });
+        $dateTimeHelperMock->method('getFirstAndLastDateOfWeek')->willReturn([
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-01-07 23:59:59'),
+        ]);
+        $dateTimeHelperMock->method('getFirstAndLastDateOfMonth')->willReturn([
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-01-31 23:59:59'),
+        ]);
+        $dateTimeHelperMock->method('getFirstAndLastDateOfYear')->willReturn([
+            'dateFrom' => new \DateTime('2024-01-01 00:00:00'),
+            'dateTo' => new \DateTime('2024-12-31 23:59:59'),
+        ]);
+        $dateTimeHelperMock->method('getWeekdaysBetween')->willReturn(5);
+
+        return $dateTimeHelperMock;
     }
 }

@@ -8,7 +8,22 @@ import {
     faMinimize,
     faCaretRight,
     faCaretDown,
+    faXmark,
+    faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
-library.add(faMaximize, faEyeSlash, faMinimize, faCaretRight, faCaretDown);
-dom.i2svg();
+library.add(
+    faMaximize,
+    faEyeSlash,
+    faMinimize,
+    faCaretRight,
+    faCaretDown,
+    faXmark,
+    faPlus,
+);
+
+// watch(), not i2svg(): i2svg() converts what is in the document at import time
+// and nothing after it, so an <i> a Stimulus controller appends later — a
+// collection row's remove button, say — stays an empty tag. watch() does that
+// first pass and then observes for icons added since.
+dom.watch();
