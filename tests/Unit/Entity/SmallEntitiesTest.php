@@ -109,6 +109,32 @@ class SmallEntitiesTest extends TestCase
         $this->assertSame('', (string) new ContactRole());
     }
 
+    /**
+     * @dataProvider provideContactRoleNames
+     */
+    public function testContactRoleNormalisesItsName(string $typed, string $stored): void
+    {
+        $role = new ContactRole();
+
+        $role->setName($typed);
+
+        $this->assertSame($stored, $role->getName());
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function provideContactRoleNames(): iterable
+    {
+        yield 'a hurried lower case name is capitalised' => ['fakturering', 'Fakturering'];
+        yield 'an acronym keeps its case' => ['IT-kontakt', 'IT-kontakt'];
+        yield 'only the first letter is touched' => ['daglig Kontakt', 'Daglig Kontakt'];
+        yield 'trimmed before capitalising' => ['  fakturering  ', 'Fakturering'];
+        yield 'a danish first letter' => ['økonomi', 'Økonomi'];
+        yield 'an already capitalised name is left alone' => ['Fakturering', 'Fakturering'];
+        yield 'blank stays blank' => ['   ', ''];
+    }
+
     public function testServiceAgreementContactAccessors(): void
     {
         $contact = new ServiceAgreementContact();

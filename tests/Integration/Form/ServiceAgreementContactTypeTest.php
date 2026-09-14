@@ -98,6 +98,66 @@ class ServiceAgreementContactTypeTest extends AbstractFormTestCase
         $this->assertSame(['Fakturering', 'Teknisk'], $this->roleNames($contact));
     }
 
+    public function testSubmitReusesAnExistingRoleTypedInAnotherCase(): void
+    {
+        $existing = $this->existingRole('Fakturering');
+
+        $contact = new ServiceAgreementContact();
+        $form = $this->createForm(ServiceAgreementContactType::class, $contact);
+
+        $form->submit([
+            'name' => 'Erik Sørensen',
+            'roles' => ['fAkTuReRiNg'],
+        ]);
+
+        $this->assertTrue($form->isValid(), (string) $form->getErrors(true));
+        $this->assertSame(['Fakturering'], $this->roleNames($contact));
+        $this->assertSame($existing, $contact->getRoles()->first());
+    }
+
+    /**
+     * The submitted spelling is canonicalised before the choice list is rebuilt,
+     * so the dropdown does not come back holding the role twice.
+     */
+    public function testARoleTypedInAnotherCaseDoesNotDuplicateTheChoiceList(): void
+    {
+        $this->existingRole('Fakturering');
+
+        $form = $this->createForm(ServiceAgreementContactType::class, new ServiceAgreementContact());
+        $form->submit(['name' => 'Erik Sørensen', 'roles' => ['FAKTURERING']]);
+
+        $choices = $form->get('roles')->getConfig()->getOption('choices');
+        $matching = array_values(array_filter(
+            $choices,
+            fn (string $name) => 'fakturering' === mb_strtolower($name)
+        ));
+
+        $this->assertSame(['Fakturering'], $matching);
+    }
+
+    public function testANewRoleIsStoredCapitalised(): void
+    {
+        $contact = new ServiceAgreementContact();
+        $form = $this->createForm(ServiceAgreementContactType::class, $contact);
+
+        $form->submit([
+            'name' => 'Frida Berg',
+            'roles' => ['kontraktansvarlig'],
+        ]);
+
+        $this->assertTrue($form->isValid(), (string) $form->getErrors(true));
+        $this->assertSame(['Kontraktansvarlig'], $this->roleNames($contact));
+    }
+
+    public function testTheRoleWidgetCarriesTheCreateLabelForTheTagController(): void
+    {
+        $rowAttr = $this->createForm(ServiceAgreementContactType::class)
+            ->get('roles')->getConfig()->getOption('row_attr');
+
+        $this->assertArrayHasKey('data-tags-add-label-value', $rowAttr);
+        $this->assertStringContainsString('%name%', $rowAttr['data-tags-add-label-value']);
+    }
+
     public function testEmptySubmitLeavesTheContactBlank(): void
     {
         $contact = new ServiceAgreementContact();

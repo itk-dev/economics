@@ -104,6 +104,17 @@ class ContactRoleCollectionTransformerTest extends TestCase
         $this->assertSame('Fakturering', $created->getName());
     }
 
+    public function testACreatedRoleIsStoredCapitalised(): void
+    {
+        $this->repository->method('findOneByName')->willReturn(null);
+
+        $roles = $this->transformer->reverseTransform(['fakturering']);
+
+        $created = $roles->first();
+        $this->assertInstanceOf(ContactRole::class, $created);
+        $this->assertSame('Fakturering', $created->getName());
+    }
+
     public function testReverseTransformAcceptsNull(): void
     {
         $this->assertCount(0, $this->transformer->reverseTransform(null));

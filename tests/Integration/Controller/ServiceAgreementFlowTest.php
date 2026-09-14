@@ -245,6 +245,37 @@ class ServiceAgreementFlowTest extends AbstractTransactionalFlowTestCase
         $this->assertStringContainsString('Anna Hansen', (string) $this->client->getResponse()->getContent());
     }
 
+    public function testTheContactsDialogRendersRolesAsChips(): void
+    {
+        $this->submitCombinedForm('/admin/serviceagreements/new', attachCybersecurity: false, contacts: [
+            ['name' => 'Anna Hansen', 'roles' => ['Fakturering', 'Daglig kontakt']],
+        ]);
+
+        $crawler = $this->client->request('GET', '/admin/serviceagreements');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertGreaterThan(0, $crawler->filter('dialog.modal .modal-header .modal-title')->count());
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('dialog .tag-list .tag')->count(),
+            'Roles should render as chips, not as bare text.'
+        );
+    }
+
+    /**
+     * The reviewer's "button overload": the remove button is built client-side,
+     * but the two server-rendered pieces — the card grid and a non-primary add
+     * button — are what keep the form from being a column of loud buttons.
+     */
+    public function testTheContactsFormIsAGridWithANonPrimaryAddButton(): void
+    {
+        $crawler = $this->client->request('GET', '/admin/serviceagreements/new');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(1, $crawler->filter('.service-agreement-contacts[data-form-collection-target="container"]'));
+        $this->assertCount(1, $crawler->filter('button.button.button-secondary[data-action="form-collection#add"]'));
+    }
+
     public function testDeleteRemovesTheAgreement(): void
     {
         $id = $this->persistAgreement();
