@@ -32,11 +32,35 @@ class ContactRole extends AbstractBaseEntity implements \Stringable
 
     public function setName(string $name): static
     {
-        // Trimmed on the way in so " Fakturering" cannot slip past the unique
-        // index as a second role.
-        $this->name = trim($name);
+        $this->name = self::normalizeName($name);
 
         return $this;
+    }
+
+    /**
+     * The name as it is stored.
+     *
+     * Trimmed so " Fakturering" cannot slip past the unique index as a second
+     * role, and the first letter upper-cased so a hurried "fakturering" does
+     * not sit in the list beside a stored "Fakturering".
+     *
+     * Only the first letter: ucwords() or MB_CASE_TITLE would rewrite
+     * "IT-kontakt" to "It-Kontakt", and the rest of the name is the user's to
+     * case. mb_* throughout, because a Danish role name can open on æ, ø or å
+     * and ucfirst() would corrupt the first byte of one.
+     *
+     * Public because ServiceAgreementContactType has to build the same
+     * spelling when it rebuilds the choice list around a submitted name.
+     */
+    public static function normalizeName(string $name): string
+    {
+        $name = trim($name);
+
+        if ('' === $name) {
+            return '';
+        }
+
+        return mb_strtoupper(mb_substr($name, 0, 1)).mb_substr($name, 1);
     }
 
     public function __toString(): string
