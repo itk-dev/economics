@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Account;
 use App\Entity\Client;
+use App\Entity\ContactRole;
 use App\Entity\CybersecurityAgreement;
 use App\Entity\DataProvider;
 use App\Entity\Epic;
@@ -14,6 +15,7 @@ use App\Entity\Product;
 use App\Entity\Project;
 use App\Entity\ProjectBilling;
 use App\Entity\ServiceAgreement;
+use App\Entity\ServiceAgreementContact;
 use App\Entity\Subscription;
 use App\Entity\User;
 use App\Entity\Version;
@@ -400,6 +402,30 @@ class AppFixtures extends Fixture
         $sa3->setIsActive(true);
         $sa3->setSystemOwnerNotices([SystemOwnerNoticeEnum::CYBERSIKKERSHEDSOPDATERING]);
         $manager->persist($sa3);
+
+        // Contacts on sa1 only, so the overview covers both a row with contacts
+        // and a row without. sa1 gets one contact with roles and one without.
+        $faktureringRole = new ContactRole();
+        $faktureringRole->setName('Fakturering');
+        $manager->persist($faktureringRole);
+
+        $dagligRole = new ContactRole();
+        $dagligRole->setName('Daglig kontakt');
+        $manager->persist($dagligRole);
+
+        $contact1 = new ServiceAgreementContact();
+        $contact1->setName('Anna Hansen');
+        $contact1->setEmail('anna.hansen@test.local');
+        $contact1->addRole($faktureringRole);
+        $contact1->addRole($dagligRole);
+        $sa1->addContact($contact1);
+        $manager->persist($contact1);
+
+        $contact2 = new ServiceAgreementContact();
+        $contact2->setName('Bo Jensen');
+        $contact2->setEmail('bo.jensen@test.local');
+        $sa1->addContact($contact2);
+        $manager->persist($contact2);
 
         // Cybersecurity Agreement
         $ca1 = new CybersecurityAgreement();

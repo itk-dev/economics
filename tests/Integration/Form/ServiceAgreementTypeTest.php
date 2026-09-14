@@ -1,0 +1,425 @@
+<?php
+
+namespace App\Tests\Integration\Form;
+
+use App\Entity\Client;
+use App\Entity\Project;
+use App\Entity\ServiceAgreement;
+use App\Entity\ServiceAgreementContact;
+use App\Entity\Worker;
+use App\Enum\HostingProviderEnum;
+use App\Enum\ServerSizeEnum;
+use App\Enum\SystemOwnerNoticeEnum;
+use App\Form\ServiceAgreementContactType;
+use App\Form\ServiceAgreementType;
+use Symfony\Component\Form\FormInterface;
+
+class ServiceAgreementTypeTest extends AbstractFormTestCase
+{
+    private const FIELDS = [
+        'project',
+        'isActive',
+        'isEol',
+        'client',
+        'contacts',
+        'systemOwnerNotices',
+        'validFrom',
+        'validTo',
+        'hostingProvider',
+        'dedicatedServer',
+        'serverSize',
+        'documentUrl',
+        'price',
+        'projectLead',
+    ];
+
+    public function testFormExposesExpectedFields(): void
+    {
+        $this->assertHasFields(ServiceAgreementType::class, self::FIELDS);
+    }
+
+    public function testConfiguredOptions(): void
+    {
+        $config = $this->createForm(ServiceAgreementType::class)->getConfig();
+
+        $this->assertSame(ServiceAgreement::class, $config->getOption('data_class'));
+        $this->assertTrue($config->getOption('cascade_validation'));
+    }
+
+    public function testIsActiveDefaultsToChecked(): void
+    {
+        $form = $this->createForm(ServiceAgreementType::class);
+
+        $this->assertTrue($form->get('isActive')->getConfig()->getOption('data'));
+    }
+
+    public function testOptionalFieldsAreNotRequired(): void
+    {
+        $form = $this->createForm(ServiceAgreementType::class);
+
+        foreach (['isActive', 'isEol', 'contacts', 'systemOwnerNotices', 'validTo', 'dedicatedServer', 'serverSize', 'documentUrl'] as $field) {
+            $this->assertFalse($form->get($field)->isRequired(), sprintf('Field "%s" should be optional.', $field));
+        }
+    }
+
+    public function testSystemOwnerNoticesOffersEveryEnumCase(): void
+    {
+        $config = $this->createForm(ServiceAgreementType::class)->get('systemOwnerNotices')->getConfig();
+
+        $this->assertSame(SystemOwnerNoticeEnum::cases(), $config->getOption('choices'));
+        $this->assertTrue($config->getOption('multiple'));
+        $this->assertTrue($config->getOption('expanded'));
+    }
+
+    public function testHostingProviderOffersEveryEnumCase(): void
+    {
+        $config = $this->createForm(ServiceAgreementType::class)->get('hostingProvider')->getConfig();
+
+        $this->assertSame(HostingProviderEnum::cases(), $config->getOption('choices'));
+    }
+
+    public function testServerSizeOffersEveryEnumCase(): void
+    {
+        $config = $this->createForm(ServiceAgreementType::class)->get('serverSize')->getConfig();
+
+        $this->assertSame(ServerSizeEnum::cases(), $config->getOption('choices'));
+    }
+
+    /**
+     * @dataProvider choiceLabelProvider
+     */
+    public function testChoiceLabelsAreTranslationKeys(string $field, \BackedEnum $case, string $expectedLabel): void
+    {
+        $choiceLabel = $this->createForm(ServiceAgreementType::class)->get($field)->getConfig()->getOption('choice_label');
+
+        $this->assertSame($expectedLabel, $choiceLabel($case));
+    }
+
+    /**
+     * @return array<string, array{string, \BackedEnum, string}>
+     */
+    public static function choiceLabelProvider(): array
+    {
+        return [
+            'serverflytning' => ['systemOwnerNotices', SystemOwnerNoticeEnum::SERVERFLYTNING, 'system_owner_notice_enum.serverflytning'],
+            'sikkerhedspatch' => ['systemOwnerNotices', SystemOwnerNoticeEnum::SIKKERHEDSPATCH, 'system_owner_notice_enum.sikkerhedspatch'],
+            'cybersikkershedsopdatering' => ['systemOwnerNotices', SystemOwnerNoticeEnum::CYBERSIKKERSHEDSOPDATERING, 'system_owner_notice_enum.cybersikkershedsopdatering'],
+            'server size lille' => ['serverSize', ServerSizeEnum::LILLE, 'server_size_enum.lille'],
+            'server size custom' => ['serverSize', ServerSizeEnum::CUSTOM, 'server_size_enum.custom'],
+            'hosting provider' => ['hostingProvider', HostingProviderEnum::HETZNER, 'HETZNER'],
+        ];
+    }
+
+    /**
+     * @dataProvider choiceValueProvider
+     */
+    public function testChoiceValueFallsBackToNull(string $field): void
+    {
+        $choiceValue = $this->createForm(ServiceAgreementType::class)->get($field)->getConfig()->getOption('choice_value');
+
+        $this->assertNull($choiceValue(null));
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function choiceValueProvider(): array
+    {
+        return [
+            'system owner notices' => ['systemOwnerNotices'],
+            'server size' => ['serverSize'],
+        ];
+    }
+
+    /**
+     * Sorted by what the user actually reads, which is __toString() — Worker
+     * rows in particular usually carry no name and fall back to their email.
+     *
+     * @dataProvider entityFieldProvider
+     */
+    public function testEntityChoicesAreSortedByLabel(string $field): void
+    {
+        $view = $this->createForm(ServiceAgreementType::class)->createView()->children[$field];
+
+        $labels = array_values(array_map(
+            fn ($choiceView) => (string) $choiceView->data,
+            $view->vars['choices']
+        ));
+
+        $this->assertGreaterThan(1, count($labels), sprintf('Field "%s" needs several choices for the ordering to mean anything.', $field));
+
+        $sorted = $labels;
+        usort($sorted, 'strcasecmp');
+
+        $this->assertSame($sorted, $labels, sprintf('Choices for "%s" should be sorted by label.', $field));
+    }
+
+    /**
+     * The choices Stimulus controller only enhances elements carrying this
+     * target, so losing the attribute silently downgrades the widget.
+     *
+     * @dataProvider entityFieldProvider
+     */
+    public function testEntityFieldsUseTheChoicesWidget(string $field): void
+    {
+        $vars = $this->createForm(ServiceAgreementType::class)->createView()->children[$field]->vars;
+
+        $this->assertSame('choices', $vars['attr']['data-choices-target'] ?? null);
+        $this->assertStringContainsString('form-choices', $vars['row_attr']['class'] ?? '');
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function entityFieldProvider(): array
+    {
+        return [
+            'project' => ['project'],
+            'client' => ['client'],
+            'project lead' => ['projectLead'],
+        ];
+    }
+
+    /**
+     * Ordering must not turn into filtering: an agreement may well point at a
+     * project that is excluded from reports.
+     */
+    public function testProjectChoicesAreNotNarrowed(): void
+    {
+        $view = $this->createForm(ServiceAgreementType::class)->createView()->children['project'];
+
+        $this->assertCount(
+            count($this->entityManager->getRepository(Project::class)->findAll()),
+            $view->vars['choices']
+        );
+    }
+
+    public function testSubmitMapsDataToServiceAgreement(): void
+    {
+        $projectId = $this->requireId($this->findOne(Project::class)->getId());
+        $clientId = $this->requireId($this->findOne(Client::class)->getId());
+        $workerId = $this->requireId($this->findOne(Worker::class)->getId());
+
+        $agreement = new ServiceAgreement();
+        $form = $this->createForm(ServiceAgreementType::class, $agreement);
+
+        $form->submit([
+            'project' => (string) $projectId,
+            'client' => (string) $clientId,
+            'projectLead' => (string) $workerId,
+            'isActive' => '1',
+            'isEol' => '1',
+            'systemOwnerNotices' => ['serverflytning', 'sikkerhedspatch'],
+            'validFrom' => '2026-01-01',
+            'validTo' => '2026-12-31',
+            'hostingProvider' => $this->choiceValue($form, 'hostingProvider', HostingProviderEnum::HETZNER),
+            'dedicatedServer' => '1',
+            'serverSize' => 'stor',
+            'documentUrl' => 'https://example.com/agreement.pdf',
+            'price' => '1234.5',
+        ]);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertTrue($form->isValid(), (string) $form->getErrors(true));
+
+        $this->assertSame($projectId, $this->requireEntity(Project::class, $agreement->getProject())->getId());
+        $this->assertSame($clientId, $this->requireEntity(Client::class, $agreement->getClient())->getId());
+        $this->assertSame($workerId, $this->requireEntity(Worker::class, $agreement->getProjectLead())->getId());
+        $this->assertTrue($agreement->isActive());
+        $this->assertTrue($agreement->isEol());
+        $this->assertSame(
+            [SystemOwnerNoticeEnum::SERVERFLYTNING, SystemOwnerNoticeEnum::SIKKERHEDSPATCH],
+            $agreement->getSystemOwnerNotices()
+        );
+        $this->assertInstanceOf(\DateTimeInterface::class, $agreement->getValidFrom());
+        $this->assertInstanceOf(\DateTimeInterface::class, $agreement->getValidTo());
+        $this->assertSame('2026-01-01', $agreement->getValidFrom()->format('Y-m-d'));
+        $this->assertSame('2026-12-31', $agreement->getValidTo()->format('Y-m-d'));
+        $this->assertSame(HostingProviderEnum::HETZNER, $agreement->getHostingProvider());
+        $this->assertTrue($agreement->isDedicatedServer());
+        $this->assertSame(ServerSizeEnum::STOR, $agreement->getServerSize());
+        $this->assertSame('https://example.com/agreement.pdf', $agreement->getDocumentUrl());
+        $this->assertSame(1234.5, $agreement->getPrice());
+    }
+
+    public function testContactsCollectionAllowsAddingAndRemovingRows(): void
+    {
+        $config = $this->createForm(ServiceAgreementType::class)->get('contacts')->getConfig();
+
+        $this->assertSame(ServiceAgreementContactType::class, $config->getOption('entry_type'));
+        $this->assertTrue($config->getOption('allow_add'));
+        $this->assertTrue($config->getOption('allow_delete'));
+        $this->assertFalse($config->getOption('by_reference'), 'Adds and removes must go through addContact()/removeContact().');
+        $this->assertNotNull($config->getOption('prototype'));
+    }
+
+    public function testSubmitMapsContactsOntoTheAgreement(): void
+    {
+        $agreement = new ServiceAgreement();
+        $form = $this->createForm(ServiceAgreementType::class, $agreement);
+
+        $form->submit($this->minimalPayload($form) + [
+            'contacts' => [
+                ['name' => 'Anna Hansen', 'email' => 'anna@example.com', 'roles' => ['Fakturering']],
+                ['name' => 'Bo Jensen', 'email' => 'bo@example.com', 'roles' => ['Daglig kontakt', 'Fakturering']],
+            ],
+        ]);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertTrue($form->isValid(), (string) $form->getErrors(true));
+
+        $contacts = $agreement->getContacts();
+        $this->assertCount(2, $contacts);
+
+        $first = $contacts->first();
+        $this->assertInstanceOf(ServiceAgreementContact::class, $first);
+        $this->assertSame('Anna Hansen', $first->getName());
+        $this->assertSame($agreement, $first->getServiceAgreement(), 'The owning side must be set by addContact().');
+
+        $last = $contacts->last();
+        $this->assertInstanceOf(ServiceAgreementContact::class, $last);
+        $this->assertCount(2, $last->getRoles());
+    }
+
+    public function testARoleUsedByTwoContactsBecomesASingleRole(): void
+    {
+        // Both contacts introduce "Fakturering" in the same submit; the unique
+        // index on the name would reject a second row.
+        $agreement = new ServiceAgreement();
+        $form = $this->createForm(ServiceAgreementType::class, $agreement);
+
+        $form->submit($this->minimalPayload($form) + [
+            'contacts' => [
+                ['name' => 'Anna Hansen', 'roles' => ['Fakturering']],
+                ['name' => 'Bo Jensen', 'roles' => ['Fakturering']],
+            ],
+        ]);
+
+        $this->assertTrue($form->isValid(), (string) $form->getErrors(true));
+
+        $first = $agreement->getContacts()->first();
+        $last = $agreement->getContacts()->last();
+        $this->assertInstanceOf(ServiceAgreementContact::class, $first);
+        $this->assertInstanceOf(ServiceAgreementContact::class, $last);
+        $this->assertSame($first->getRoles()->first(), $last->getRoles()->first());
+    }
+
+    /**
+     * Through the agreement form the contact is nested, and Symfony walks the
+     * data graph of the root form only, so a contact's own constraints are
+     * reached only if the collection cascades validation.
+     *
+     * ServiceAgreementContactTypeTest covers the same email as a root form,
+     * which is the one arrangement where it is validated either way.
+     */
+    public function testAContactWithAMalformedEmailIsRejected(): void
+    {
+        $form = $this->createForm(ServiceAgreementType::class, new ServiceAgreement());
+
+        $form->submit($this->minimalPayload($form) + [
+            'contacts' => [
+                ['name' => 'Anna Hansen', 'email' => 'not-an-email'],
+            ],
+        ]);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertFalse($form->isValid(), 'A nested contact email must still be validated.');
+    }
+
+    /**
+     * The tag widget's choice list is widened on submit to whatever arrived, so
+     * ChoiceType's own "invalid choice" guard is gone and nothing else stands
+     * between a typed role and the 255-character column.
+     */
+    public function testAnOverlongRoleNameIsRejected(): void
+    {
+        $form = $this->createForm(ServiceAgreementType::class, new ServiceAgreement());
+
+        $form->submit($this->minimalPayload($form) + [
+            'contacts' => [
+                ['name' => 'Anna Hansen', 'roles' => [str_repeat('a', 256)]],
+            ],
+        ]);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertFalse($form->isValid(), 'A role name longer than the column must not reach the database.');
+
+        // Pinned because no template in this project renders form_errors() for a
+        // root form, so a violation that bubbled all the way up would reject the
+        // submit without telling the user why.
+        $this->assertGreaterThan(
+            0,
+            $form->get('contacts')->get('0')->get('roles')->getErrors()->count(),
+            'The violation must land on the roles field, where the entry template renders it.'
+        );
+    }
+
+    public function testEolAgreementWithoutValidToIsInvalid(): void
+    {
+        $form = $this->createForm(ServiceAgreementType::class, new ServiceAgreement());
+
+        $form->submit([
+            'project' => (string) $this->requireId($this->findOne(Project::class)->getId()),
+            'client' => (string) $this->requireId($this->findOne(Client::class)->getId()),
+            'projectLead' => (string) $this->requireId($this->findOne(Worker::class)->getId()),
+            'isEol' => '1',
+            'validFrom' => '2026-01-01',
+            'validTo' => '',
+            'hostingProvider' => $this->choiceValue($form, 'hostingProvider', HostingProviderEnum::ADM),
+            'price' => '0',
+        ]);
+
+        $this->assertTrue($form->isSynchronized());
+        $this->assertFalse($form->isValid());
+        $this->assertStringContainsString('service_agreement.valid_to_required_when_eol', (string) $form->getErrors(true));
+    }
+
+    public function testMalformedDocumentUrlIsRejected(): void
+    {
+        $form = $this->submitMinimalAgreement(new ServiceAgreement(), 'http://exa mple.com');
+
+        $this->assertFalse($form->isValid());
+        $this->assertGreaterThan(0, $form->get('documentUrl')->getErrors()->count());
+    }
+
+    public function testDocumentUrlWithoutSchemeGetsDefaultProtocol(): void
+    {
+        $agreement = new ServiceAgreement();
+        $form = $this->submitMinimalAgreement($agreement, 'example.com');
+
+        $this->assertTrue($form->isValid(), (string) $form->getErrors(true));
+        $this->assertSame('http://example.com', $agreement->getDocumentUrl());
+    }
+
+    /**
+     * @return FormInterface<mixed>
+     */
+    private function submitMinimalAgreement(ServiceAgreement $agreement, string $documentUrl): FormInterface
+    {
+        $form = $this->createForm(ServiceAgreementType::class, $agreement);
+
+        $form->submit($this->minimalPayload($form) + ['documentUrl' => $documentUrl]);
+
+        return $form;
+    }
+
+    /**
+     * The smallest payload that passes validation, for tests that care about one
+     * field only.
+     *
+     * @param FormInterface<mixed> $form
+     *
+     * @return array<string, string>
+     */
+    private function minimalPayload(FormInterface $form): array
+    {
+        return [
+            'project' => (string) $this->requireId($this->findOne(Project::class)->getId()),
+            'client' => (string) $this->requireId($this->findOne(Client::class)->getId()),
+            'projectLead' => (string) $this->requireId($this->findOne(Worker::class)->getId()),
+            'validFrom' => '2026-01-01',
+            'hostingProvider' => $this->choiceValue($form, 'hostingProvider', HostingProviderEnum::ADM),
+            'price' => '0',
+        ];
+    }
+}
