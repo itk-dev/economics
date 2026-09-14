@@ -988,6 +988,9 @@ service_agreement:
   contact_roles: "Rolle"
   contact_roles_help: "Vælg en eksisterende rolle, eller skriv en ny og tryk Enter."
   contact_roles_placeholder: "Vælg eller skriv en rolle …"
+  contact_roles_add_new: 'Tilføj "%name%" som ny rolle'
+  contact_roles_no_results: "Ingen roller matcher"
+  contact_roles_no_choices: "Ingen flere roller at vælge"
   dedicated_server: "Dedikeret server"
   server_size: "Serverstørrelse"
   cybersecurity_price: "Cybersikkerhedsaftale Pris"

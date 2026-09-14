@@ -9,7 +9,7 @@
     {{ form_label(contacts) }}
     {{ form_help(contacts) }}
 
-    <div {{ stimulus_target('form-collection', 'container') }}
+    <div class="service-agreement-contacts" {{ stimulus_target('form-collection', 'container') }}
          data-prototype="{{ form_widget(contacts.vars.prototype)|e('html_attr') }}">
         {# No extra wrapper: form_widget already emits one div per entry, so an
            existing row and a row stamped from the prototype look the same. #}
@@ -18,7 +18,9 @@
         {% endfor %}
     </div>
 
-    <button type="button" class="button" {{ stimulus_action('form-collection', 'add') }}>
+    {# Secondary, so the one primary button on the page stays the save button. #}
+    <button type="button" class="button button-secondary" {{ stimulus_action('form-collection', 'add') }}>
+        <i class="fa-solid fa-plus"></i>
         {{ 'service_agreement.contact_add'|trans }}
     </button>
 </div>

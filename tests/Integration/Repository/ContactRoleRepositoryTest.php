@@ -12,7 +12,10 @@ class ContactRoleRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->repository = self::getContainer()->get(ContactRoleRepository::class);
+
+        $repository = self::getContainer()->get(ContactRoleRepository::class);
+        \assert($repository instanceof ContactRoleRepository);
+        $this->repository = $repository;
     }
 
     public function testFindAllNamesReturnsTheVocabularySorted(): void

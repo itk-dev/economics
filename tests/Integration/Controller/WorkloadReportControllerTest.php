@@ -40,7 +40,9 @@ class WorkloadReportControllerTest extends AbstractControllerTestCase
         $this->assertStringContainsString('/admin/reports/workload_report/worklogs', (string) $buttons->first()->attr('data-url'));
         $this->assertStringContainsString('periodType=week', (string) $buttons->first()->attr('data-url'));
         $this->assertStringContainsString('year='.$year, (string) $buttons->first()->attr('data-url'));
-        $this->assertCount(1, $crawler->filter('dialog'));
+        // .modal rather than bare dialog: this report and the service agreement
+        // contacts share one shell, and a copied one would drift.
+        $this->assertCount(1, $crawler->filter('dialog.modal.modal-wide'));
 
         // The markup being present is not enough — Stimulus has to be wired to it. Asserting the
         // attributes catches a template helper that silently renders nothing.

@@ -19,7 +19,12 @@ import "choices.js/src/styles/choices.scss";
 export default class extends Controller {
     static targets = ["select"];
 
-    static values = { placeholder: String };
+    static values = {
+        placeholder: String,
+        addLabel: String,
+        noResults: String,
+        noChoices: String,
+    };
 
     connect() {
         if (
@@ -29,6 +34,15 @@ export default class extends Controller {
         ) {
             return;
         }
+
+        // Read before Choices takes the options into its own store: this is the
+        // only place the whole vocabulary is available as plain strings, and
+        // the create affordance has to know what already exists.
+        this.known = new Set(
+            Array.from(this.selectTarget.options).map((option) =>
+                option.value.trim().toLowerCase(),
+            ),
+        );
 
         this.choices = new Choices(this.selectTarget, {
             // Role names are free text a user typed, and Choices writes labels
@@ -42,10 +56,15 @@ export default class extends Controller {
             // takes typing.
             placeholder: true,
             placeholderValue: this.placeholderValue,
+            // Choices.js renders its own English strings here otherwise.
+            noResultsText: this.noResultsValue,
+            noChoicesText: this.noChoicesValue,
         });
 
         // Kept on the element for parity with choices_controller.
         this.selectTarget.choices = this.choices;
+
+        this.addHint();
 
         // Set once the user walks the dropdown, cleared as soon as they type
         // again: it is the only reliable signal that they mean the highlighted
@@ -56,6 +75,7 @@ export default class extends Controller {
         this.onInput = (event) => {
             if (event.target === this.choices.input.element) {
                 this.navigated = false;
+                this.renderHint();
             }
         };
 
@@ -63,9 +83,65 @@ export default class extends Controller {
         this.element.addEventListener("input", this.onInput, true);
     }
 
+    /**
+     * The "add this as a new role" row.
+     *
+     * A hint of our own rather than a choice fed in through `setChoices`: a
+     * real choice is selectable as a literal value, and Choices highlights one
+     * after every render — which is exactly what `exactMatchHighlighted` reads
+     * to decide whether Enter belongs to the dropdown.
+     *
+     * Appended to the dropdown element, not to the list inside it: a re-render
+     * clears only the list.
+     */
+    addHint() {
+        this.hint = document.createElement("div");
+        this.hint.className = "tags-add-hint";
+        this.hint.hidden = true;
+
+        // mousedown, not click: a click would land after the input had blurred
+        // and Choices had already closed the dropdown underneath it.
+        this.onHintMouseDown = (event) => {
+            event.preventDefault();
+            this.createRole(this.choices.input.value.trim());
+        };
+        this.hint.addEventListener("mousedown", this.onHintMouseDown);
+
+        this.choices.dropdown.element.append(this.hint);
+    }
+
+    /**
+     * Shown while the typed value is not one the vocabulary holds. A fuzzy hit
+     * is no reason to hide it — Fuse matches "Fisk" against "Fakturering", and
+     * the user still means a role that does not exist.
+     */
+    renderHint() {
+        if (!this.choices || !this.hint) {
+            return;
+        }
+
+        const term = this.choices.input.value.trim();
+        const show = term !== "" && !this.known.has(term.toLowerCase());
+
+        // textContent, never innerHTML: allowHTML is off for the same reason.
+        this.hint.textContent = show
+            ? this.addLabelValue.replace("%name%", term)
+            : "";
+        this.hint.hidden = !show;
+
+        if (show && !this.choices.dropdown.isActive) {
+            this.choices.showDropdown(true);
+        }
+    }
+
     disconnect() {
         this.element.removeEventListener("keydown", this.onKeyDown, true);
         this.element.removeEventListener("input", this.onInput, true);
+
+        if (this.hint) {
+            this.hint.removeEventListener("mousedown", this.onHintMouseDown);
+            this.hint = null;
+        }
 
         if (this.choices) {
             this.choices.destroy();
@@ -114,6 +190,14 @@ export default class extends Controller {
         event.preventDefault();
         event.stopPropagation();
 
+        this.createRole(term);
+    }
+
+    createRole(term) {
+        if (!this.choices || term === "") {
+            return;
+        }
+
         if (!this.isSelected(term)) {
             this.choices.setChoices(
                 [{ value: term, label: term }],
@@ -122,11 +206,23 @@ export default class extends Controller {
                 false,
             );
             this.choices.setChoiceByValue(term);
+            // Part of the vocabulary now, so the hint stops offering it.
+            this.known.add(term.toLowerCase());
         }
 
         this.choices.clearInput();
-        this.choices.hideDropdown();
+        // preventInputBlur: hideDropdown() otherwise blurs the input in a
+        // requestAnimationFrame, which is what dropped focus out of the widget
+        // after every role added.
+        this.choices.hideDropdown(true);
+        // .input.element, not .input: the latter is guarded by Choices' own
+        // isFocussed flag, which is stale this early in the frame. Left closed
+        // — Choices reopens the dropdown on the next printable character, and
+        // reopening it here throws the whole vocabulary over a user who has
+        // just committed a value.
+        this.choices.input.element.focus();
         this.navigated = false;
+        this.renderHint();
     }
 
     exactMatchHighlighted(term) {

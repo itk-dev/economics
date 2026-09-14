@@ -83,6 +83,11 @@ export default class extends Controller {
         });
     }
 
+    /**
+     * A glyph in the row's corner rather than a labelled button under it: one
+     * solid red block per row is a lot to take in on a form that already has a
+     * save and a delete. The label survives as the accessible name.
+     */
     addRemoveButton(row) {
         if (row.querySelector("[data-form-collection-remove]")) {
             return;
@@ -90,10 +95,16 @@ export default class extends Controller {
 
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "button button-danger";
-        button.textContent = this.removeLabelValue;
+        button.className = "icon-button absolute top-2 right-2";
+        button.setAttribute("aria-label", this.removeLabelValue);
+        button.title = this.removeLabelValue;
         button.dataset.formCollectionRemove = "true";
         button.dataset.action = "form-collection#remove";
+
+        const icon = document.createElement("i");
+        icon.className = "fa-solid fa-xmark";
+        button.appendChild(icon);
+
         row.appendChild(button);
     }
 }
