@@ -11,6 +11,8 @@ use App\Enum\NonBillableVersionsEnum;
 use App\Model\Invoices\InvoiceEntryWorklogsFilterData;
 use App\Model\Invoices\WorklogFilterData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
@@ -27,6 +29,12 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class WorklogRepository extends ServiceEntityRepository
 {
+    /**
+     * Rows held in memory at a time while streaming an export. Raising this trades memory for
+     * fewer round trips; the walk cost per chunk is flat either way.
+     */
+    public const EXPORT_CHUNK_SIZE = 1000;
+
     public function __construct(
         ManagerRegistry $registry,
         private readonly PaginatorInterface $paginator,
@@ -45,10 +53,40 @@ class WorklogRepository extends ServiceEntityRepository
      */
     public function getFilteredPagination(WorklogFilterData $filterData, int $page = 1): PaginationInterface
     {
+        // The list page renders issue, project and data provider for every row, so fetch-join
+        // them here. The export deliberately does not — see streamFilteredForExport().
+        $qb = $this->createFilteredQueryBuilder($filterData)
+            ->addSelect('issue')
+            ->addSelect('project')
+            ->addSelect('dataProvider');
+
+        return $this->paginator->paginate($qb, $page, 25, [
+            'defaultSortFieldName' => 'worklog.started',
+            'defaultSortDirection' => 'desc',
+            'sortFieldAllowList' => [
+                'worklog.started',
+                'worklog.worker',
+                'worklog.timeSpentSeconds',
+                'worklog.isBilled',
+                'issue.name',
+                'project.name',
+                'dataProvider.name',
+            ],
+        ]);
+    }
+
+    /**
+     * Builds the admin worklog filter, without selecting anything beyond the worklog itself.
+     *
+     * Shared by the paginated list and the CSV export so the two can never drift apart. Callers
+     * add their own select: the list fetch-joins entities, the export selects scalars.
+     */
+    private function createFilteredQueryBuilder(WorklogFilterData $filterData): QueryBuilder
+    {
         $qb = $this->createQueryBuilder('worklog')
-            ->leftJoin('worklog.issue', 'issue')->addSelect('issue')
-            ->leftJoin('worklog.project', 'project')->addSelect('project')
-            ->leftJoin('worklog.dataProvider', 'dataProvider')->addSelect('dataProvider');
+            ->leftJoin('worklog.issue', 'issue')
+            ->leftJoin('worklog.project', 'project')
+            ->leftJoin('worklog.dataProvider', 'dataProvider');
 
         if (!empty($filterData->search)) {
             $qb->andWhere($qb->expr()->orX(
@@ -90,19 +128,103 @@ class WorklogRepository extends ServiceEntityRepository
             $qb->andWhere('worklog.dataProvider = :dataProvider')->setParameter('dataProvider', $filterData->dataProvider);
         }
 
-        return $this->paginator->paginate($qb, $page, 25, [
-            'defaultSortFieldName' => 'worklog.started',
-            'defaultSortDirection' => 'desc',
-            'sortFieldAllowList' => [
-                'worklog.started',
-                'worklog.worker',
-                'worklog.timeSpentSeconds',
-                'worklog.isBilled',
-                'issue.name',
-                'project.name',
-                'dataProvider.name',
-            ],
-        ]);
+        return $qb;
+    }
+
+    /**
+     * Walks every worklog matching the admin worklog filter, for the CSV export.
+     *
+     * Memory is bounded by $chunkSize rather than by the number of matches, so exporting the whole
+     * table costs the same as exporting a page. Two things buy that, and both are load-bearing:
+     *
+     * - Hydration is scalar, so no entities are created and the identity map never grows. This is
+     *   why there is no entityManager->clear() here, unlike ForecastReportService, which has to
+     *   clear precisely because it hydrates Worklog objects. It also keeps the walk clear of
+     *   Invoice's two eagerly fetched associations, which a hydrated invoiceEntry->invoice would
+     *   drag in per row.
+     * - Paging is keyset, not offset. LIMIT/OFFSET makes MySQL scan and discard everything before
+     *   the offset, so a deep walk degrades quadratically; the (started, id) predicate below is
+     *   served by the started_idx index and costs the same on the last chunk as on the first.
+     *
+     * The order is fixed at started DESC and ignores the list page's sort, which is what makes the
+     * keyset walk possible. The filter is honoured exactly.
+     *
+     * @return \Generator<int, array<string, mixed>>
+     */
+    public function streamFilteredForExport(WorklogFilterData $filterData, int $chunkSize = self::EXPORT_CHUNK_SIZE): \Generator
+    {
+        // Scalar hydration hands back the raw column string rather than applying the field type,
+        // so convert through the mapped type: that keeps the timezone rule in one place and the
+        // exported date identical to the one the list page renders.
+        $startedType = Type::getType(Types::DATETIME_MUTABLE);
+        $platform = $this->getEntityManager()->getConnection()->getDatabasePlatform();
+
+        $lastStarted = null;
+        $lastId = null;
+
+        do {
+            $qb = $this->createFilteredQueryBuilder($filterData)
+                ->leftJoin('worklog.invoiceEntry', 'invoiceEntry')
+                ->leftJoin('invoiceEntry.invoice', 'invoice')
+                ->leftJoin('issue.epics', 'epic')
+                ->leftJoin('issue.versions', 'version')
+                ->select([
+                    'worklog.id AS id',
+                    'worklog.started AS started',
+                    'worklog.description AS description',
+                    'worklog.projectTrackerIssueId AS issueId',
+                    'worklog.worker AS worker',
+                    'worklog.isBilled AS isBilled',
+                    'worklog.timeSpentSeconds AS timeSpentSeconds',
+                    'issue.name AS issueName',
+                    'project.name AS projectName',
+                    'dataProvider.name AS dataProviderName',
+                    'invoice.name AS invoiceName',
+                    // DISTINCT is required: joining both ManyToManys in one query multiplies the
+                    // rows inside each group, so every title would otherwise repeat.
+                    "GROUP_CONCAT(DISTINCT epic.title ORDER BY epic.title ASC SEPARATOR ', ') AS epics",
+                    "GROUP_CONCAT(DISTINCT version.name ORDER BY version.name ASC SEPARATOR ', ') AS versions",
+                ])
+                // Group by the primary key of every joined table, not just the worklog: grouping
+                // on worklog.id alone while selecting issue.name trips ONLY_FULL_GROUP_BY, whereas
+                // the keys let MySQL prove the rest is functionally dependent.
+                ->groupBy('worklog.id')
+                ->addGroupBy('issue.id')
+                ->addGroupBy('project.id')
+                ->addGroupBy('dataProvider.id')
+                ->addGroupBy('invoiceEntry.id')
+                ->addGroupBy('invoice.id')
+                ->orderBy('worklog.started', 'DESC')
+                ->addOrderBy('worklog.id', 'DESC')
+                ->setMaxResults($chunkSize);
+
+            if (null !== $lastStarted) {
+                // The orX wrapping is load-bearing for the same reason as the isBilled expression
+                // above: DQL binds AND tighter, so an unparenthesised tie-break would widen the
+                // whole query instead of narrowing it.
+                $qb->andWhere($qb->expr()->orX(
+                    'worklog.started < :lastStarted',
+                    'worklog.started = :lastStarted AND worklog.id < :lastId',
+                ))
+                    ->setParameter('lastStarted', $lastStarted)
+                    ->setParameter('lastId', $lastId);
+            }
+
+            /** @var array<int, array<string, mixed>> $rows */
+            $rows = $qb->getQuery()->getScalarResult();
+            $fetched = \count($rows);
+
+            foreach ($rows as $row) {
+                // Carry the cursor as the raw column value, so it round-trips to the next chunk
+                // byte for byte rather than through a timezone conversion.
+                $lastStarted = $row['started'];
+                $lastId = $row['id'];
+
+                $row['started'] = $startedType->convertToPHPValue($row['started'], $platform);
+
+                yield $row;
+            }
+        } while ($fetched === $chunkSize);
     }
 
     public function save(Worklog $entity, bool $flush = false): void
