@@ -31,6 +31,15 @@
         @apply bg-red-600 hover:bg-red-700 focus:ring-red-400;
     }
 
+    .button-secondary {
+        @apply text-gray-900 bg-transparent border border-gray-300 hover:bg-gray-100 focus:ring-gray-200 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700;
+    }
+
+    /* A bare glyph button: the modal close, and a collection row's remove. */
+    .icon-button {
+        @apply w-8 h-8 shrink-0 rounded text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400;
+    }
+
     .button-warning {
         @apply bg-amber-600 hover:bg-amber-700 focus:ring-amber-400;
     }
@@ -299,6 +308,63 @@
         @apply grid gap-12 md:grid-cols-3;
     }
 
+    /*
+    ** Modal
+    **
+    ** Both <dialog>s in the app share this shell. One horizontal padding, px-6,
+    ** that the header, the body and a table's outer cells all line up on.
+    */
+
+    /* p-0 is load-bearing: it kills the user agent's dialog { padding: 1em }.
+       text-left because a dialog nested in a table cell inherits its alignment. */
+    .modal {
+        @apply w-11/12 max-w-2xl p-0 rounded-lg text-left bg-white text-black dark:bg-gray-900 dark:text-white backdrop:bg-black/50;
+    }
+
+    /* Written as .modal.modal-wide so it wins on specificity, not source order. */
+    .modal.modal-wide {
+        @apply max-w-6xl;
+    }
+
+    .modal-header {
+        @apply flex items-center justify-between gap-4 px-6 py-4 border-b border-gray-300 dark:border-gray-600;
+    }
+
+    .modal-title {
+        @apply text-xl font-semibold;
+    }
+
+    .modal-body {
+        @apply px-6 py-4;
+    }
+
+    /* For a body that is nothing but a table. No horizontal padding of its own:
+       .table-td already pads px-6, so the columns line up with the title above
+       while the zebra stripe runs the full width of the modal — zeroing the
+       outer cells instead would line the columns up but leave the text sitting
+       on the edge of its own stripe. */
+    .modal-body-table {
+        @apply py-2 overflow-x-auto;
+    }
+
+    /* Both .table-tr and .table-tr-alt carry a bottom rule, which on the last
+       row draws a line floating just above the modal's own edge. */
+    .modal-body-table tbody tr:last-child {
+        @apply border-b-0;
+    }
+
+    /* The selected-tag look from the roles widget, for a read-only list outside
+       a Choices container — the .selections rules below never reach it. Values
+       taken from choices.scss, but break-words rather than its break-all: a
+       role name is short, and a mid-word break reads as a typo. */
+    .tag-list {
+        @apply flex flex-wrap gap-1;
+    }
+
+    .tag {
+        @apply inline-block align-middle px-2.5 py-1 rounded-full border text-xs font-medium break-words bg-gray-200 text-gray-900 border-gray-300 dark:bg-gray-600 dark:text-white dark:border-gray-500;
+    }
+
     .form-choices .choices {
         @apply m-0;
     }
@@ -337,6 +403,43 @@
 
     .form-row.select-none .label {
         @apply mb-0;
+    }
+
+    /* Cards, not a column: a handful of contacts is otherwise a long scroll.
+       The collection container is a plain div the Stimulus controller appends
+       to, so the grid adds no wrapper of its own. */
+    .service-agreement-contacts {
+        @apply grid gap-4 mt-4 md:grid-cols-2 xl:grid-cols-3;
+    }
+
+    /* relative so the remove button can sit in the corner; the grid gap does
+       the spacing a margin used to. */
+    .service-agreement-contact {
+        @apply relative p-4 rounded-lg border border-gray-300 dark:border-gray-600;
+    }
+
+    /* The remove button no longer sits under the last field, so that field's
+       bottom margin is dead space on top of the card's own padding. */
+    .service-agreement-contact .form-row:last-of-type {
+        @apply mb-0;
+    }
+
+    /* Room for the remove button in the corner. On the label only — on the row
+       it would shorten the input under it as well. */
+    .service-agreement-contact .form-row:first-of-type .label {
+        @apply pr-8;
+    }
+
+    /* The "add as a new role" row under the role dropdown. p-4 to match the
+       items above it, which carry `padding: 1em !important`.
+
+       It paints its own background: the row sits inside .choices__list--dropdown
+       but outside the list the app's dark rules are scoped to, so without one it
+       falls through to the vendor's white. No display utility either — the
+       controller toggles the `hidden` attribute, and a display declared in this
+       layer would beat preflight's [hidden] { display: none }. */
+    .tags-add-hint {
+        @apply p-4 text-sm font-medium cursor-pointer border-t border-gray-300 bg-gray-50 text-blue-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-blue-400 dark:hover:bg-gray-600;
     }
 
     .selections .choices__list .choices__input {

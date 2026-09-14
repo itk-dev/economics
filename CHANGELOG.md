@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-357](https://github.com/itk-dev/economics/pull/357)
+  * Added a contact list to service agreements holding name, email and freely created role tags,
+    shown as a count and a dialog in the overview; the old contact columns are kept, deprecated.
+  * Laid the contacts out as a card grid, gave both modals one shell and roles chips, offered
+    "tilføj som ny rolle" while typing, and made role names reuse case-insensitively.
 * [PR-344](https://github.com/itk-dev/economics/pull/344)
   * Added architecture decision records in `docs/adr`, recording nine decisions already live in the code.
   * Trimmed this changelog to one- and two-line entries, moving the design reasoning it had accumulated
