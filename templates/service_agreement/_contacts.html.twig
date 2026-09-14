@@ -19,7 +19,8 @@
     </div>
 
     {# Secondary, so the one primary button on the page stays the save button. #}
-    <button type="button" class="button button-secondary" {{ stimulus_action('form-collection', 'add') }}>
+    <button type="button" class="button button-secondary inline-flex items-center gap-2 mt-4"
+            {{ stimulus_action('form-collection', 'add') }}>
         <i class="fa-solid fa-plus"></i>
         {{ 'service_agreement.contact_add'|trans }}
     </button>

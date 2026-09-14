@@ -3,6 +3,21 @@ import Choices from "choices.js";
 import "choices.js/src/styles/choices.scss";
 
 /**
+ * The spelling the server will store — ContactRole::normalizeName(). The first
+ * letter only, so an acronym keeps its case. Mirrored here so the hint and the
+ * tag it creates show what you actually get rather than what you typed; the
+ * server normalises again regardless.
+ *
+ * Spread rather than charAt, to take a whole code point the way mb_substr does
+ * on the PHP side.
+ */
+function normalizeName(term) {
+    const [first, ...rest] = [...term];
+
+    return undefined === first ? "" : first.toUpperCase() + rest.join("");
+}
+
+/**
  * A tag widget over a <select multiple>: pick an existing option, or type a new
  * one and press Enter.
  *
@@ -59,6 +74,17 @@ export default class extends Controller {
             // Choices.js renders its own English strings here otherwise.
             noResultsText: this.noResultsValue,
             noChoicesText: this.noChoicesValue,
+            // Choices passes Fuse nothing but includeScore, which leaves it on
+            // its default threshold of 0.6 — loose enough that "He" matches
+            // "Fakturering". Role names are short and few, so this wants to
+            // behave like a substring search that forgives a typo, not like a
+            // fuzzy one. ignoreLocation because a match late in the name counts
+            // as much as one at the start.
+            fuseOptions: {
+                includeScore: true,
+                threshold: 0.2,
+                ignoreLocation: true,
+            },
         });
 
         // Kept on the element for parity with choices_controller.
@@ -111,9 +137,9 @@ export default class extends Controller {
     }
 
     /**
-     * Shown while the typed value is not one the vocabulary holds. A fuzzy hit
-     * is no reason to hide it — Fuse matches "Fisk" against "Fakturering", and
-     * the user still means a role that does not exist.
+     * Shown while the typed value is not one the vocabulary holds. A search hit
+     * is no reason to hide it — "Faktura" lists "Fakturering" and is still a
+     * role of its own that nobody has created yet.
      */
     renderHint() {
         if (!this.choices || !this.hint) {
@@ -125,7 +151,7 @@ export default class extends Controller {
 
         // textContent, never innerHTML: allowHTML is off for the same reason.
         this.hint.textContent = show
-            ? this.addLabelValue.replace("%name%", term)
+            ? this.addLabelValue.replace("%name%", normalizeName(term))
             : "";
         this.hint.hidden = !show;
 
@@ -198,16 +224,18 @@ export default class extends Controller {
             return;
         }
 
-        if (!this.isSelected(term)) {
+        const name = normalizeName(term);
+
+        if (!this.isSelected(name)) {
             this.choices.setChoices(
-                [{ value: term, label: term }],
+                [{ value: name, label: name }],
                 "value",
                 "label",
                 false,
             );
-            this.choices.setChoiceByValue(term);
+            this.choices.setChoiceByValue(name);
             // Part of the vocabulary now, so the hint stops offering it.
-            this.known.add(term.toLowerCase());
+            this.known.add(name.toLowerCase());
         }
 
         this.choices.clearInput();

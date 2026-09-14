@@ -409,7 +409,7 @@
        The collection container is a plain div the Stimulus controller appends
        to, so the grid adds no wrapper of its own. */
     .service-agreement-contacts {
-        @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+        @apply grid gap-4 mt-4 md:grid-cols-2 xl:grid-cols-3;
     }
 
     /* relative so the remove button can sit in the corner; the grid gap does
@@ -418,13 +418,28 @@
         @apply relative p-4 rounded-lg border border-gray-300 dark:border-gray-600;
     }
 
-    /* The "add as a new role" hint under the role dropdown. Padded to line up
-       with the items above it, which carry `padding: 1em !important`. No
-       display utility on purpose: the controller toggles the `hidden`
-       attribute, and a display declared in this layer would beat preflight's
-       [hidden] { display: none }. */
+    /* The remove button no longer sits under the last field, so that field's
+       bottom margin is dead space on top of the card's own padding. */
+    .service-agreement-contact .form-row:last-of-type {
+        @apply mb-0;
+    }
+
+    /* Room for the remove button in the corner. On the label only — on the row
+       it would shorten the input under it as well. */
+    .service-agreement-contact .form-row:first-of-type .label {
+        @apply pr-8;
+    }
+
+    /* The "add as a new role" row under the role dropdown. p-4 to match the
+       items above it, which carry `padding: 1em !important`.
+
+       It paints its own background: the row sits inside .choices__list--dropdown
+       but outside the list the app's dark rules are scoped to, so without one it
+       falls through to the vendor's white. No display utility either — the
+       controller toggles the `hidden` attribute, and a display declared in this
+       layer would beat preflight's [hidden] { display: none }. */
     .tags-add-hint {
-        @apply px-4 py-2 text-xs font-medium border-t border-gray-300 text-gray-600 cursor-pointer hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600;
+        @apply p-4 text-sm font-medium cursor-pointer border-t border-gray-300 bg-gray-50 text-blue-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-blue-400 dark:hover:bg-gray-600;
     }
 
     .selections .choices__list .choices__input {
