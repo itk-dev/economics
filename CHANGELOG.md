@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-358](https://github.com/itk-dev/economics/pull/358)
+  * Fixed the stray comma between the hidden-row chips in the planning, workload and
+    invoicing-rate views.
+  * Removed two dead `data-storage-key` attributes, a self-nested condition and a typo in the
+    cybersecurity notice label, and recorded the worklog anonymisation scope in `docs/adr`.
+
 ## [3.9.0] - 2026-09-07
 
 * [PR-357](https://github.com/itk-dev/economics/pull/357)
