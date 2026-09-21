@@ -31,6 +31,12 @@ export default class extends Controller {
             }
         });
 
+        // Hiding rows is the controller's job; listing what is hidden is the extra. A missing
+        // target would otherwise throw out of connect() and cost both.
+        if (!this.hasHiddenEntriesTarget) {
+            return;
+        }
+
         this.hiddenEntriesTarget.innerHTML = hiddenAssignees
             .map(
                 (
@@ -42,7 +48,7 @@ export default class extends Controller {
                     </svg> ${value.displayName}
                 </button>`,
             )
-            .join();
+            .join("");
     }
 
     toggleEntry(event) {

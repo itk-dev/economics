@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-358](https://github.com/itk-dev/economics/pull/358)
+  * Fixed the stray comma between the hidden-row chips in the planning, workload and
+    invoicing-rate views.
+  * Removed two dead `data-storage-key` attributes, a self-nested condition and a typo in the
+    cybersecurity notice label, and recorded the worklog anonymisation scope in `docs/adr`.
+
+## [3.9.0] - 2026-09-07
+
 * [PR-357](https://github.com/itk-dev/economics/pull/357)
   * Added a contact list to service agreements holding name, email and freely created role tags,
     shown as a count and a dialog in the overview; the old contact columns are kept, deprecated.
@@ -779,7 +787,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.8.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.9.0...HEAD
+[3.9.0]: https://github.com/itk-dev/economics/compare/3.8.0...3.9.0
 [3.8.0]: https://github.com/itk-dev/economics/compare/3.7.0...3.8.0
 [3.7.0]: https://github.com/itk-dev/economics/compare/3.6.0...3.7.0
 [3.6.0]: https://github.com/itk-dev/economics/compare/3.5.0...3.6.0

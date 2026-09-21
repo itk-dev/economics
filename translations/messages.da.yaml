@@ -286,7 +286,7 @@ material_number_enum:
 system_owner_notice_enum:
   serverflytning: "Serverflytning"
   sikkerhedspatch: "Sikkerhedspatch"
-  cybersikkershedsopdatering: "Cybersikkershedsopdatering"
+  cybersikkershedsopdatering: "Cybersikkerhedsopdatering"
   release: "Release"
 
 server_size_enum:

@@ -16,6 +16,7 @@ background on the practice.
 | [007](007-report-form-data-to-report-data-dtos.md) | Reports go form data in, report data out, through typed DTOs | Accepted | 2026-08-25 |
 | [008](008-self-rebuilding-test-database.md) | The test bootstrap rebuilds the database; no DAMADoctrineTestBundle | Accepted | 2026-08-25 |
 | [009](009-phpstan-level-8-with-frozen-baseline.md) | PHPStan level 8, with a baseline that is never regenerated | Accepted | 2026-08-25 |
+| [010](010-worklog-anonymisation-scope.md) | Worklog anonymisation scrubs the description and keeps the worker | Draft | 2026-09-18 |
 
 ## Writing a new ADR
 
