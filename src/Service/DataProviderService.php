@@ -251,7 +251,10 @@ class DataProviderService
         }
 
         $worklog->setWorklogId($upsertWorklogData->projectTrackerId);
-        $worklog->setDescription($upsertWorklogData->description);
+
+        if (null === $worklog->getAnonymizedDate()) {
+            $worklog->setDescription($upsertWorklogData->description);
+        }
 
         // A stand-in username describes a user the data provider could no longer resolve. It is
         // better than losing the worklog, but not better than the name already on record.

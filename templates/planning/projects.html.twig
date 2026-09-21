@@ -1,4 +1,4 @@
-<div id="scrollContainer" class="overflow-x-auto w-full" {{ stimulus_controller('show-hide') }}  data-storage-key="hidePlanningAssignees">
+<div id="scrollContainer" class="overflow-x-auto w-full" {{ stimulus_controller('show-hide') }}  data-storage-key="hidePlanningProjectsRows">
     <table class="table-auto border-separate border-spacing-0 border border-slate-600 relative" {{ stimulus_controller('planning-scroll') }}>
         <thead>
             <tr>
@@ -107,4 +107,9 @@
             </tbody>
         {% endfor %}
     </table>
+
+    <div class="my-5 sticky left-0">
+        {{ 'planning.hidden-projects'|trans }}:
+        <span {{ stimulus_target('show-hide', 'hiddenEntries') }}></span>
+    </div>
 </div>

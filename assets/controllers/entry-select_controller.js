@@ -8,6 +8,7 @@ export default class extends Controller {
         "spinner",
         "result",
         "submitButton",
+        "selectedHours",
     ];
 
     submitEndpoint = null;
@@ -20,6 +21,7 @@ export default class extends Controller {
 
     connect() {
         this.submitEndpoint = this.element.dataset.submitEndpoint;
+        this.updateSelectedHours();
     }
 
     toggleAll() {
@@ -30,11 +32,33 @@ export default class extends Controller {
         });
 
         this.selectAll = !this.selectAll;
+
+        this.updateSelectedHours();
     }
 
     checkboxClick(event) {
         const entryId = event.params.id;
         this.dirtyEntrys.add(entryId.toString());
+
+        this.updateSelectedHours();
+    }
+
+    updateSelectedHours() {
+        if (!this.hasSelectedHoursTarget) {
+            return;
+        }
+
+        const seconds = this.checkboxTargets.reduce((accumulator, target) => {
+            if (!target.checked) {
+                return accumulator;
+            }
+
+            return accumulator + Number(target.dataset.timeSpentSeconds);
+        }, 0);
+
+        this.selectedHoursTarget.textContent = String(
+            Math.round((seconds / 3600) * 100) / 100,
+        );
     }
 
     async submitFormRedirectWithIds(event) {

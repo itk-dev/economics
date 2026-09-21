@@ -2,8 +2,11 @@
 
 namespace App\Service;
 
+use App\Entity\Worker;
+use App\Entity\WorkerGroup;
 use App\Model\Reports\WorkloadReportData;
 use App\Model\Reports\WorkloadReportPeriodTypeEnum as PeriodTypeEnum;
+use App\Model\Reports\WorkloadReportPeriodWorklogsData;
 use App\Model\Reports\WorkloadReportViewModeEnum as ViewModeEnum;
 use App\Model\Reports\WorkloadReportWorker;
 use App\Repository\WorkerRepository;
@@ -29,18 +32,21 @@ class WorkloadReportService
      * @param int            $year           the year for which the workload report is generated
      * @param PeriodTypeEnum $viewPeriodType the period type (e.g., week, month, year) for the report
      * @param ViewModeEnum   $viewMode       the mode of viewing the workload (e.g., workload vs other modes)
+     * @param ?WorkerGroup   $group          when set, only workers in this group are included
      *
      * @return WorkloadReportData an object containing the workload report data
      *
      * @throws \Exception if a worker identifier is empty or the workload of a worker is null
      */
-    public function getWorkloadReport(int $year, PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD): WorkloadReportData
+    public function getWorkloadReport(int $year, PeriodTypeEnum $viewPeriodType = PeriodTypeEnum::WEEK, ViewModeEnum $viewMode = ViewModeEnum::WORKLOAD, ?WorkerGroup $group = null): WorkloadReportData
     {
-        $workloadReportData = new WorkloadReportData($viewPeriodType->value);
         if (!$year) {
             $year = (int) (new \DateTime())->format('Y');
         }
-        $workers = $this->workerRepository->findBy(['includeInReports' => true]);
+        $workloadReportData = new WorkloadReportData($viewPeriodType->value, $year, $viewMode);
+        $workers = null !== $group
+            ? $this->workerRepository->findIncludedInReportsByGroup($group)
+            : $this->workerRepository->findBy(['includeInReports' => true]);
         // Sort workers alphabetically by name (usort: list of objects, no keys to preserve).
         usort($workers, fn ($a, $b) => mb_strtolower((string) $a->getName()) <=> mb_strtolower((string) $b->getName()));
         $periods = $this->getPeriods($viewPeriodType, $year);
@@ -132,6 +138,53 @@ class WorkloadReportService
         }
 
         return $workloadReportData;
+    }
+
+    /**
+     * Returns the worklogs behind a single cell of the workload report.
+     *
+     * Deliberately built from the same private helpers as getWorkloadReport(), so the hours and
+     * percentage reported here cannot drift from the cell this was opened from.
+     *
+     * @throws \Exception if the worker identifier is empty or the workload of the worker is null
+     */
+    public function getPeriodWorklogs(Worker $worker, int $year, PeriodTypeEnum $viewPeriodType, ViewModeEnum $viewMode, int $period): WorkloadReportPeriodWorklogsData
+    {
+        $workerIdentifier = $worker->getUserIdentifier();
+
+        if (empty($workerIdentifier)) {
+            throw new \Exception('Worker identifier cannot be empty');
+        }
+
+        $workerWorkload = $worker->getWorkload();
+        if (!$workerWorkload) {
+            throw new \Exception("Workload of worker: $workerIdentifier cannot be null when generating workload report.");
+        }
+
+        ['dateFrom' => $dateFrom, 'dateTo' => $dateTo] = $this->getDatesOfPeriod($period, $year, $viewPeriodType);
+
+        $worklogs = $this->getWorklogs($viewMode, $workerIdentifier, $dateFrom, $dateTo);
+        // The repository methods do not order; sort so the modal reads chronologically.
+        usort($worklogs, fn ($a, $b) => $a->getStarted() <=> $b->getStarted());
+
+        $loggedHours = 0;
+        foreach ($worklogs as $worklog) {
+            $loggedHours += ($worklog->getTimeSpentSeconds() / 60 / 60);
+        }
+
+        $expectedWorkload = $this->getExpectedWorkHours($workerWorkload, $viewPeriodType, $dateFrom, $dateTo);
+
+        return new WorkloadReportPeriodWorklogsData(
+            $worker->getName() ?? $workerIdentifier,
+            $this->getReadablePeriod($period, $viewPeriodType),
+            $year,
+            $viewPeriodType,
+            $viewMode,
+            $expectedWorkload,
+            round($loggedHours, 2),
+            round($loggedHours / $expectedWorkload * 100, 1),
+            $worklogs,
+        );
     }
 
     private function getExpectedWorkHours(float $workloadWeekBase, PeriodTypeEnum $viewPeriodType, \DateTime $dateFrom, \DateTime $dateTo): float

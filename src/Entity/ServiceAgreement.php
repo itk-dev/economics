@@ -6,6 +6,8 @@ use App\Enum\HostingProviderEnum;
 use App\Enum\ServerSizeEnum;
 use App\Enum\SystemOwnerNoticeEnum;
 use App\Repository\ServiceAgreementRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -54,17 +56,47 @@ class ServiceAgreement extends AbstractBaseEntity
     #[ORM\Column]
     private bool $isEol = false;
 
+    /**
+     * @deprecated superseded by $contacts. Retained so the migration to the
+     *             contact list loses nothing; not editable through any form.
+     *             Read it only to recover pre-migration data.
+     */
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $clientContactName = null;
 
+    /**
+     * @deprecated superseded by $contacts — see $clientContactName
+     */
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $clientContactEmail = null;
+
+    /**
+     * Contacts cascade a persist because the controller persists only the
+     * agreement itself, and orphan removal is what the "remove row" button in
+     * the form relies on.
+     *
+     * Assert\Valid is what makes a contact's own constraints run: the form
+     * component walks the data graph of the root form only, so without the
+     * cascade the Assert\Email on ServiceAgreementContact is never reached
+     * through this form.
+     *
+     * @var Collection<int, ServiceAgreementContact>
+     */
+    #[ORM\OneToMany(mappedBy: 'serviceAgreement', targetEntity: ServiceAgreementContact::class, cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['id' => 'ASC'])]
+    #[Assert\Valid]
+    private Collection $contacts;
 
     #[ORM\Column]
     private bool $dedicatedServer = false;
 
     #[ORM\Column(enumType: ServerSizeEnum::class, nullable: true)]
     private ?ServerSizeEnum $serverSize = null;
+
+    public function __construct()
+    {
+        $this->contacts = new ArrayCollection();
+    }
 
     public function getProject(): ?Project
     {
@@ -222,11 +254,17 @@ class ServiceAgreement extends AbstractBaseEntity
         return $this;
     }
 
+    /**
+     * @deprecated use getContacts()
+     */
     public function getClientContactName(): ?string
     {
         return $this->clientContactName;
     }
 
+    /**
+     * @deprecated use getContacts()
+     */
     public function setClientContactName(?string $clientContactName): static
     {
         $this->clientContactName = $clientContactName;
@@ -234,14 +272,47 @@ class ServiceAgreement extends AbstractBaseEntity
         return $this;
     }
 
+    /**
+     * @deprecated use getContacts()
+     */
     public function getClientContactEmail(): ?string
     {
         return $this->clientContactEmail;
     }
 
+    /**
+     * @deprecated use getContacts()
+     */
     public function setClientContactEmail(?string $clientContactEmail): static
     {
         $this->clientContactEmail = $clientContactEmail;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ServiceAgreementContact>
+     */
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    public function addContact(ServiceAgreementContact $contact): static
+    {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts->add($contact);
+            $contact->setServiceAgreement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContact(ServiceAgreementContact $contact): static
+    {
+        if ($this->contacts->removeElement($contact) && $contact->getServiceAgreement() === $this) {
+            $contact->setServiceAgreement(null);
+        }
 
         return $this;
     }

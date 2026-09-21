@@ -5,18 +5,19 @@ namespace App\Form;
 use App\Entity\Client;
 use App\Entity\Project;
 use App\Entity\ServiceAgreement;
+use App\Entity\ServiceAgreementContact;
 use App\Entity\Worker;
 use App\Enum\HostingProviderEnum;
 use App\Enum\ServerSizeEnum;
 use App\Enum\SystemOwnerNoticeEnum;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -31,9 +32,13 @@ class ServiceAgreementType extends AbstractType
                 'class' => Project::class,
                 'label' => 'service_agreement.project',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
+                // Deliberately unfiltered: an agreement may point at a project
+                // that is excluded from reports.
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('project')
+                    ->orderBy('project.name', 'ASC'),
             ])
             ->add('isActive', CheckboxType::class, [
                 'label' => 'service_agreement.is_active',
@@ -58,22 +63,33 @@ class ServiceAgreementType extends AbstractType
                 'class' => Client::class,
                 'label' => 'service_agreement.client',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('client')
+                    ->orderBy('client.name', 'ASC'),
             ])
-            ->add('clientContactName', TextType::class, [
-                'label' => 'service_agreement.client_contact_name',
+            ->add('contacts', CollectionType::class, [
+                'entry_type' => ServiceAgreementContactType::class,
+                // The class groups one contact's fields into a visible card;
+                // without it the rows run together.
+                'entry_options' => [
+                    'label' => false,
+                    'attr' => ['class' => 'service-agreement-contact'],
+                ],
+                'allow_add' => true,
+                'allow_delete' => true,
+                // Routes adds and removes through addContact()/removeContact(),
+                // which is what keeps the owning side set.
+                'by_reference' => false,
+                'prototype' => true,
+                // A row that was added and then left untouched is dropped rather
+                // than saved as a nameless contact.
+                'delete_empty' => fn (?ServiceAgreementContact $contact) => null === $contact
+                    || (null === $contact->getName() && null === $contact->getEmail() && 0 === $contact->getRoles()->count()),
+                'label' => 'service_agreement.contacts',
+                'help' => 'service_agreement.contacts_help',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
-                'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
-                'required' => false,
-            ])
-            ->add('clientContactEmail', EmailType::class, [
-                'label' => 'service_agreement.client_contact_email',
-                'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
                 'help_attr' => ['class' => 'form-help'],
                 'row_attr' => ['class' => 'form-row'],
                 'required' => false,
@@ -84,6 +100,7 @@ class ServiceAgreementType extends AbstractType
                     SystemOwnerNoticeEnum::SERVERFLYTNING => 'system_owner_notice_enum.serverflytning',
                     SystemOwnerNoticeEnum::SIKKERHEDSPATCH => 'system_owner_notice_enum.sikkerhedspatch',
                     SystemOwnerNoticeEnum::CYBERSIKKERSHEDSOPDATERING => 'system_owner_notice_enum.cybersikkershedsopdatering',
+                    SystemOwnerNoticeEnum::RELEASE => 'system_owner_notice_enum.release',
                 },
                 'choice_value' => fn (?SystemOwnerNoticeEnum $choice) => $choice?->value,
                 'multiple' => true,
@@ -163,9 +180,14 @@ class ServiceAgreementType extends AbstractType
                 'class' => Worker::class,
                 'label' => 'service_agreement.project_lead_id',
                 'label_attr' => ['class' => 'label'],
-                'attr' => ['class' => 'form-element'],
+                'attr' => ['class' => 'form-element', 'data-choices-target' => 'choices'],
                 'help_attr' => ['class' => 'form-help'],
-                'row_attr' => ['class' => 'form-row'],
+                'row_attr' => ['class' => 'form-row form-choices'],
+                // Workers rarely carry a name, and Worker::__toString() then
+                // falls back to the email — so sort on whatever is displayed.
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('worker')
+                    ->addSelect('COALESCE(worker.name, worker.email) AS HIDDEN label')
+                    ->orderBy('label', 'ASC'),
             ]);
     }
 

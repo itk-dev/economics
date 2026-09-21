@@ -1,0 +1,27 @@
+{# Rendered explicitly rather than by form_rest, so the add button and the row
+   wrappers the collection controller needs are under our control.
+
+   Marked rendered by hand: form_label and form_help do not do it, and an empty
+   collection has no children to do it either, so form_rest would render the
+   whole row a second time on every new agreement. #}
+{% do contacts.setRendered() %}
+<div class="form-row" {{ stimulus_controller('form-collection', {removeLabel: 'service_agreement.contact_remove'|trans}) }}>
+    {{ form_label(contacts) }}
+    {{ form_help(contacts) }}
+
+    <div class="service-agreement-contacts" {{ stimulus_target('form-collection', 'container') }}
+         data-prototype="{{ form_widget(contacts.vars.prototype)|e('html_attr') }}">
+        {# No extra wrapper: form_widget already emits one div per entry, so an
+           existing row and a row stamped from the prototype look the same. #}
+        {% for contact in contacts %}
+            {{ form_widget(contact) }}
+        {% endfor %}
+    </div>
+
+    {# Secondary, so the one primary button on the page stays the save button. #}
+    <button type="button" class="button button-secondary inline-flex items-center gap-2 mt-4"
+            {{ stimulus_action('form-collection', 'add') }}>
+        <i class="fa-solid fa-plus"></i>
+        {{ 'service_agreement.contact_add'|trans }}
+    </button>
+</div>

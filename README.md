@@ -8,7 +8,7 @@
 [![GitHub License](https://img.shields.io/github/license/itk-dev/economics?style=flat-square)](https://github.com/itk-dev/economics/blob/develop/LICENSE)
 
 Integration with project/issue tracker to ease management. The worklogs
-and projects are synced from a project tracker (e.g. Jira).
+and projects are synced from a project tracker (e.g. Leantime).
 
 The project consists of the following parts:
 
@@ -52,60 +52,65 @@ accounts.
 
 ## Synchronization
 
-Economics depends on data fra external systems. The integrations with external systems are called Data Providers.
+Economics depends on data from external systems. The integrations with external systems are called Data Providers.
 
-Each Data Provider integration should implement `App\Interface\DataProviderServiceInterface`.
+Each Data Provider integration should implement `App\Interface\DataProviderInterface`. The only
+implementation today is `App\Service\LeantimeApiService`, which pulls from the
+[data-api plugin](https://github.com/itk-dev/data-api) running in Leantime.
 
-The data synchronization is handled by symfony messenger. This is handled differently in development and production.
+Synchronization is a paged pull driven by Symfony Messenger: a command dispatches one message per
+entity type, each message fetches a page of at most 100 rows and re-dispatches itself for the next
+page, and every fetched row becomes an upsert message of its own.
+
+See [docs/leantime-sync.md](docs/leantime-sync.md) for the full picture, the scheduled jobs and the
+command options.
 
 ### Production
 
-Supervisor is added to `docker-compose.server.override.yaml` to make sure the job queue is running.
-
-Symfony scheduler is used for creating a new job each hour at minute 5. See `App\Command\QueueSyncCommand`.
+Cron jobs on the server run the sync commands — see the `cron` section of
+`.woodpecker/prod_itk_economics.yml`. Supervisor is added in `docker-compose.server.override.yml` to
+keep a worker consuming the `async` transport.
 
 ### Develop
 
 In development the job queue should be run manually.
 
-```sh
-docker compose exec phpfpm bin/console messenger:consume async -vv --failure-limit 1
+```shell
+task messenger
 ```
 
 ### Queuing jobs
 
-Jobs can be queued manually with App\Command\QueueSyncCommand
+Jobs can be queued manually.
 
-```sh
-docker compose exec phpfpm bin/console app:queue-sync
+```shell
+# Everything modified within the last hour.
+task phpfpm -- bin/console app:data-providers:sync-modified
+
+# Entities deleted within the last hour.
+task phpfpm -- bin/console app:data-providers:sync-deleted
+
+# A full sync of a single entity type, as async jobs, ignoring modified timestamps.
+task phpfpm -- bin/console app:data-providers:sync -j -p -d
 ```
 
 Jobs can also be queued in the admin interface in the bottom left corner.
 
-In production jobs are queued automatically each hour.
-
 ## Development
 
-Getting started:
+Getting started — `Taskfile.yml` wraps the container commands, so install
+[go-task](https://taskfile.dev) (`brew install go-task`) and run:
 
 ```shell
-docker compose pull
-docker compose run --rm node npm install
-docker compose up --detach
-docker compose exec phpfpm composer install
-docker compose exec phpfpm bin/console doctrine:migrations:migrate --no-interaction
+task setup
 ```
 
-Set create `.env.local` with the following values set
+That creates the `frontend` network, pulls the images, installs the npm and Composer dependencies,
+starts the stack and runs the migrations. Run `task` to list every available task.
+
+Create `.env.local` with the following values set:
 
 ```shell
-###> Project tracker connection ###
-JIRA_PROJECT_TRACKER_URL=<VALUE>
-JIRA_PROJECT_TRACKER_USER=<VALUE>
-JIRA_PROJECT_TRACKER_TOKEN=<VALUE>
-LEANTIME_PROJECT_TRACKER_TOKEN=<VALUE>
-###< Project tracker connection ###
-
 ###> itk-dev/openid-connect-bundle ###
 USER_OIDC_METADATA_URL=<VALUE>
 USER_OIDC_CLIENT_ID=<VALUE>
@@ -115,30 +120,28 @@ USER_OIDC_ALLOW_HTTP=<VALUE>
 USER_OIDC_LEEWAY=<VALUE>
 ###< itk-dev/openid-connect-bundle ###
 
-APP_INVOICE_RECEIVER_ACCOUNT=<VALUE>
-APP_INVOICE_DEFAULT_DESCRIPTION=<VALUE>
-
-JIRA_API_SERVICE_CUSTOM_FIELD_EPIC_LINK=<VALUE>
-JIRA_API_SERVICE_CUSTOM_FIELD_ACCOUNT=<VALUE>
-JIRA_API_SERVICE_CUSTOM_FIELD_SPRINT=<VALUE>
-JIRA_API_SERVICE_DEFAULT_BOARD=<VALUE>
+APP_INVOICE_SUPPLIER_ACCOUNT=<VALUE>
+APP_INVOICE_EXTERNAL_RECEIVER_ACCOUNT=<VALUE>
+APP_INVOICE_DESCRIPTION_TEMPLATE=<VALUE>
 ```
 
-Sync projects and accounts.
+The project tracker connection is *not* configured through the environment. Each integration is a
+`DataProvider` row holding its own URL and token, created with:
 
 ```shell
-docker compose exec phpfpm bin/console app:sync-projects
-docker compose exec phpfpm bin/console app:sync-accounts
+task phpfpm -- bin/console app:data-provider:create
 ```
 
 Visit /admin/project and "include" the projects that should be synchronized in the installation.
 
-Then sync issues and worklogs
+Then synchronize:
 
 ```shell
-docker compose exec phpfpm bin/console app:sync-issues
-docker compose exec phpfpm bin/console app:sync-worklogs
+task phpfpm -- bin/console app:data-providers:sync
 ```
+
+Run `app:data-providers:sync --help` for the per-entity flags (`-p` projects, `-r` workers,
+`-s` versions, `-i` issues, `-w` worklogs).
 
 ### Assets
 
@@ -148,7 +151,7 @@ recompile.
 Use
 
 ``` shell
-docker compose logs --tail 0 --follow node
+task compose -- logs --tail 0 --follow node
 ```
 
 to see the compilation log, e.g. to detect errors.
@@ -160,30 +163,36 @@ Each PR is reviewed with Github Actions.
 Check coding standards with:
 
 ```shell
-# Apply coding standards and run static analysis for php and twig
-docker compose exec phpfpm composer coding-standards-check
+# Check coding standards for php and twig
+task coding-standards:php:check
 
 # Check coding standards for assets and markdown
-docker compose run --rm node npm run coding-standards-check
+task coding-standards:js:check
 ```
 
-Apply some coding standards with:
+Apply coding standards with:
 
 ```shell
-# Apply coding standards and run static analysis for php and twig
-docker compose exec phpfpm composer prepare-code
+# Apply coding standards for php and twig
+task coding-standards:php:apply
 
 # Apply coding standards for assets and markdown
-docker compose run --rm node npm run coding-standards-apply
+task coding-standards:js:apply
 ```
+
+`task prepare-code` runs the whole set — Composer normalization, coding standards, static analysis
+and the tests — and is the check to run before pushing.
 
 ### Code analysis
 
-We use [PHPStan](https://phpstan.org/) for static code analysis:
+We use [PHPStan](https://phpstan.org/) for static code analysis, at level 8 over `src` and `tests`:
 
 ``` shell
-docker compose exec phpfpm composer code-analysis
+task code-analysis
 ```
+
+Pre-existing errors are recorded in `phpstan-baseline.neon`. New code is expected to be clean rather
+than added to the baseline.
 
 ### Testing
 
@@ -192,11 +201,18 @@ The test setup follows the guidelines from: <https://symfony.com/doc/current/tes
 To run tests:
 
 ```shell
-docker compose exec phpfpm composer tests
+task test
+
+# a single file
+task test:file -- tests/Unit/Service/LeantimeApiServiceTest.php
+
+# fail if line coverage drops below the threshold, as CI does
+task test:coverage:check
 ```
 
-DoctrineFixtures are load each time phpunit is run.
-Between each test the initial state of the database is restored using DAMADoctrineTestBundle.
+`tests/bootstrap.php` rebuilds the test database on every run — it clears the cache, then drops,
+creates and migrates the database and loads `App\DataFixtures\AppFixtures`. Tests are not wrapped in
+transactions, so a test that writes is responsible for cleaning up after itself.
 
 ## Production
 
@@ -205,7 +221,7 @@ Between each test the initial state of the database is restored using DAMADoctri
 Build the assets locally
 
 ```shell
-docker compose run --rm node npm run build
+task assets:build
 ```
 
 Copy the `/public/build` folder to the server.
@@ -221,7 +237,7 @@ docker compose exec phpfpm bin/console doctrine:migrations:migrate
 Run synchronization with a cron process with a given interval to synchronize with the project tracker:
 
  ```shell
-   bin/console app:sync
+   bin/console app:data-providers:sync
 ```
 
 ## Importing products
@@ -229,7 +245,7 @@ Run synchronization with a cron process with a given interval to synchronize wit
 We need an initial product import to get going. Use
 
 ``` shell
-docker compose exec phpfpm bin/console app:product:import «CSV filename»
+task phpfpm -- bin/console app:products:import «CSV filename»
 ```
 
 to import from a CSV file.
