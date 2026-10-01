@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.9.1] - 2026-10-01
+
+* [PR-359](https://github.com/itk-dev/economics/pull/359)
+  * Checked RabbitMQ health on the server with `nc` every 10s instead of `rabbitmq-diagnostics` every second.
 * [PR-358](https://github.com/itk-dev/economics/pull/358)
   * Fixed the stray comma between the hidden-row chips in the planning, workload and
     invoicing-rate views.
@@ -787,7 +791,8 @@ complete process.
 * Updated to authorization code flow.
 * Changed worklog save button styling to be sticky.
 
-[Unreleased]: https://github.com/itk-dev/economics/compare/3.9.0...HEAD
+[Unreleased]: https://github.com/itk-dev/economics/compare/3.9.1...HEAD
+[3.9.1]: https://github.com/itk-dev/economics/compare/3.9.0...3.9.1
 [3.9.0]: https://github.com/itk-dev/economics/compare/3.8.0...3.9.0
 [3.8.0]: https://github.com/itk-dev/economics/compare/3.7.0...3.8.0
 [3.7.0]: https://github.com/itk-dev/economics/compare/3.6.0...3.7.0
