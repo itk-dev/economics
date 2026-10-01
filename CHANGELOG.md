@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-359](https://github.com/itk-dev/economics/pull/359)
+  * Checked RabbitMQ health on the server with `nc` every 10s instead of `rabbitmq-diagnostics` every second.
 * [PR-358](https://github.com/itk-dev/economics/pull/358)
   * Fixed the stray comma between the hidden-row chips in the planning, workload and
     invoicing-rate views.
