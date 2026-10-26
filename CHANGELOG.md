@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.9.1] - 2026-10-01
 
+* [PR-360](https://github.com/itk-dev/economics/pull/360)
+  * Switched the nginx image from the archived `nginxinc/nginx-unprivileged` to `nginx/nginx-unprivileged`.
 * [PR-359](https://github.com/itk-dev/economics/pull/359)
   * Checked RabbitMQ health on the server with `nc` every 10s instead of `rabbitmq-diagnostics` every second.
 * [PR-358](https://github.com/itk-dev/economics/pull/358)
