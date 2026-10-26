@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-361](https://github.com/itk-dev/economics/pull/361)
+  * Switched the nginx image from the archived `nginxinc/nginx-unprivileged` to `nginx/nginx-unprivileged`.
 * [PR-358](https://github.com/itk-dev/economics/pull/358)
   * Fixed the stray comma between the hidden-row chips in the planning, workload and
     invoicing-rate views.
