@@ -17,10 +17,12 @@ services:
     volumes:
       - ".docker/data/rabbitmq:/var/lib/rabbitmq/mnesia/"
     healthcheck:
-      test: rabbitmq-diagnostics check_port_connectivity
-      interval: 1s
+      test: ["CMD", "nc", "-z", "-w", "2", "127.0.0.1", "5672"]
+      interval: 10s
       timeout: 3s
-      retries: 30
+      retries: 3
+      start_period: 60s
+      start_interval: 1s
 
   nginx:
     environment:
